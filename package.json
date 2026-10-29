@@ -1,19 +1,26 @@
 {
   "name": "ptewriting",
   "version": "20.4.7",
-  "description": "PTE Writing Practice Portal \u2014 connected summaries, meaning-based scoring and student feedback",
+  "description": "PTE Writing Practice Portal — connected summaries, meaning-based scoring and student feedback",
   "main": "server.js",
   "scripts": {
     "postinstall": "node scripts/build-frontend.js && node scripts/validate-public-assets.js && node scripts/validate-writing-audio.js && npm run install:edge-tts && npm run validate:edge-tts && node scripts/generate-user-speaking-audio.js && node scripts/validate-speaking-content.js && npm run install:browser && node scripts/validate-puppeteer-browser.js",
     "validate:assets": "node scripts/validate-public-assets.js",
     "validate:audio": "node scripts/validate-writing-audio.js",
     "validate:speaking": "node scripts/validate-speaking-content.js",
+    "audit:full-mock": "node scripts/audit-full-mock.js",
+    "validate:full-mock": "node scripts/audit-full-mock.js --strict",
+    "freeze:full-mock-1": "node scripts/freeze-full-mock-1.js",
+    "validate:full-mock-1": "node scripts/validate-full-mock-1.js --probe",
+    "test:full-mock:systems": "node scripts/verify-full-mock-systems.js",
+    "check:full-mock:release": "node scripts/check-full-mock-release.js",
+    "compare:full-mock": "node scripts/compare-full-mock-benchmarks.js",
     "start": "node server.js",
     "dev": "node server.js",
     "test": "node --test tests/*.test.js",
     "test:calibration": "node tests/calibration.js",
     "test:scoring": "node --test tests/swt-scoring-policy.test.js tests/swt-feedback.test.js",
-    "build": "node scripts/build-frontend.js && node --test tests/frontend-build.test.js tests/login-assets.test.js tests/practice-catalogue.test.js tests/portal-workspace.test.js tests/reading-practice.test.js tests/content-trust.test.js tests/study-plan-progress.test.js && node scripts/validate-prediction-swt-samples.js && node scripts/validate-swt-content.js && node scripts/validate-reading-fib-content.js && node scripts/validate-writing-audio.js && node scripts/validate-content-metadata.js && npm run validate:edge-tts && node scripts/validate-puppeteer-browser.js && node scripts/verify-di-reference-sync.js && node scripts/verify-di-display.js",
+    "build": "node scripts/build-frontend.js && node --test tests/frontend-build.test.js tests/login-assets.test.js tests/practice-catalogue.test.js tests/portal-workspace.test.js tests/reading-practice.test.js tests/content-trust.test.js tests/study-plan-progress.test.js && node scripts/validate-prediction-swt-samples.js && node scripts/validate-swt-content.js && node scripts/validate-reading-fib-content.js && node scripts/validate-writing-audio.js && node scripts/validate-content-metadata.js && npm run validate:edge-tts && node scripts/validate-puppeteer-browser.js && node scripts/verify-di-reference-sync.js && node scripts/verify-di-display.js && node scripts/validate-full-mock-1.js --probe",
     "validate:prediction-swt": "node scripts/validate-prediction-swt-samples.js",
     "validate:swt-content": "node scripts/validate-swt-content.js",
     "validate:reading-fib": "node scripts/validate-reading-fib-content.js",
@@ -35,5 +42,9 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "6.0.0",
+    "linkedom": "0.18.12"
   }
 }

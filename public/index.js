@@ -12550,6 +12550,15 @@ function ensureSpeakingMockRuntimeLoaded() {
   if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-08249f21161d','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
   return speakingMockRuntimeLoadPromise;
 }
+let fullMockRuntimeLoadPromise = null;
+function ensureFullMockRuntimeLoaded() {
+  if (window.FullMock) return Promise.resolve(window.FullMock);
+  if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-a71807eea621', 'full mock report')
+    .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-5579f818c5e8', 'full mock'))
+    .then(() => { if (!window.FullMock) throw Error('Full mock did not load.'); return window.FullMock; })
+    .catch(error => { fullMockRuntimeLoadPromise = null; throw error; });
+  return fullMockRuntimeLoadPromise;
+}
 
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
@@ -12925,6 +12934,7 @@ function switchSection(section, options = {}) {
   }
   if (active === 'practice-hub') portalCatalogue.openPractice();
   if(activeRoute?.speakingMock)ensureSpeakingMockRuntimeLoaded().then(mock=>{if(portalWorkspace.current()===active)mock.open({...options.mockRequest,history:activeRoute.mockHistory});}).catch(error=>{const host=document.getElementById('speakingMockPane');if(host)host.innerHTML='<p role="alert">Speaking mock could not load. Return to Mock Tests and retry.</p>';toast(error.message,true);});
+  if (activeRoute?.fullMock) ensureFullMockRuntimeLoaded().then(mock => { if (portalWorkspace.current() === active) mock.open(options.mockRequest || {}); }).catch(error => { const host = document.getElementById('fullMockPane'); if (host) host.innerHTML = '<p role="alert">Full Mock could not load. Return to Mock Tests and retry.</p>'; toast(error.message, true); });
   if (activeRoute?.pane === 'mockTestsPane') portalCatalogue.openMocks({ module: route?.catalogueModule });
   if (active === 'dashboard') {
     updateDashboard();

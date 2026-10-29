@@ -1,0 +1,25 @@
+{
+  "repository": "rhasspy/piper-voices",
+  "revision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+  "voice": "en_US-ljspeech-high",
+  "files": {
+    "en_US-ljspeech-high.onnx": {
+      "bytes": 114199011,
+      "sha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a"
+    },
+    "en_US-ljspeech-high.onnx.json": {
+      "bytes": 4970,
+      "sha256": "7e1f4634af596d83cca997fb7a931ba80b70f8a316a2655ee69c55365e0ace14"
+    },
+    "MODEL_CARD": {
+      "bytes": 513,
+      "sha256": "289f7421072d689a3d91f6c632f486af46f9b8b04417536104a4ea667b8a394b"
+    }
+  },
+  "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/5041a7a49ae5b3a0f30e6837769eb03fdbb231bd/en/en_US/ljspeech/high/MODEL_CARD",
+  "dataset": "https://keithito.com/LJ-Speech-Dataset/",
+  "datasetLicenseAsPublished": "public domain",
+  "runtime": "piper-tts 1.3.0 (local authoring tool; not deployed)",
+  "softwareSource": "https://github.com/OHF-Voice/piper1-gpl",
+  "notes": "Only generated MP3 assets are stored in the paper. Model weights and the authoring environment are not distributed in this repository."
+}

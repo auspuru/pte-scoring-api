@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "context": {
+    "paperHash": "f1dfe1045d4c657ed3a03c428ca3953f91dc706ff53281598b697a7ce84de173",
+    "runtimeHash": "03c80b24e112356207c8dfb2d0b1c021d3f4814f7e509fdb48f179b98cdce562"
+  },
+  "checks": [
+    {
+      "id": "desktop-real-microphone",
+      "status": "pending",
+      "checkedAt": null,
+      "evidenceRef": null,
+      "reviewedBy": null
+    },
+    {
+      "id": "mobile-real-microphone",
+      "status": "pending",
+      "checkedAt": null,
+      "evidenceRef": null,
+      "reviewedBy": null
+    },
+    {
+      "id": "live-provider-contracts",
+      "status": "pending",
+      "checkedAt": null,
+      "evidenceRef": null,
+      "reviewedBy": null
+    },
+    {
+      "id": "independent-editorial-listening",
+      "status": "pending",
+      "checkedAt": null,
+      "evidenceRef": null,
+      "reviewedBy": null
+    }
+  ]
+}

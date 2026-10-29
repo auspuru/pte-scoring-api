@@ -21,6 +21,7 @@
     'speaking-mocks': {pane:'mockTestsPane',nav:'nav-mock-tests',catalogueModule:'speaking',title:'Speaking mocks',path:'speaking-mocks',eyebrow:'Mock Tests · Speaking',context:''},
     'speaking-run': {pane:'speakingMockPane',nav:'nav-mock-tests',speakingMock:true,title:'Speaking mock',path:'speaking-attempt',eyebrow:'Mock Tests · Speaking',context:''},
     'speaking-history': {pane:'speakingMockPane',nav:'nav-mock-tests',speakingMock:true,mockHistory:true,title:'Saved speaking mocks',path:'speaking-mock-attempts',eyebrow:'Mock Tests · Saved attempts',context:''},
+    'full-mock': { pane:'fullMockPane',nav:'nav-mock-tests',fullMock:true,title:'Full mock',path:'full-mock',eyebrow:'Full Mock',context:'' },
     swt: { pane: 'swtPane', nav: 'nav-practice-hub', title: 'Summarise written text', path: 'swt', eyebrow: 'Practice · SWT', context: '' },
     practice: { pane: 'practiceScreen', nav: 'nav-practice-hub', title: 'Essay practice', path: 'essays', eyebrow: 'Practice · Essays', context: '' },
     'spoken-text': { pane: 'writingLabScreen', nav: 'nav-practice-hub', labTab: 'sst', title: 'Summarise spoken text', path: 'spoken-text', eyebrow: 'Listening Practice · SST', context: '' },
@@ -74,6 +75,7 @@
       const changed = current !== section;
       if (changed && routes[current]?.pane === 'speakingPane') win.SpeakingPractice?.leave();
       if (changed && routes[current]?.pane === 'speakingMockPane') win.SpeakingMock?.leave();
+      if (changed && routes[current]?.pane === 'fullMockPane') win.FullMock?.leave();
       if (changed && routes[current]?.pane === 'readingPane') win.ReadingPractice?.leave();
       if (changed && routes[current]?.pane === 'writingLabScreen' && routes[section]?.pane !== 'writingLabScreen') {
         win.WritingLab?.leave?.();
@@ -160,7 +162,7 @@
         ready = true;
         onNavigate(routeFromHash(win.location.hash), { history: 'replace', focus: false });
       },
-      reset() { win.PortalExamMode?.reset(); win.ReadingPractice?.reset(); win.SpeakingPractice?.reset(); win.SpeakingMock?.reset(); ready = false; current = null; closeMenu(); },
+      reset() { win.PortalExamMode?.reset(); win.ReadingPractice?.reset(); win.SpeakingPractice?.reset(); win.SpeakingMock?.reset(); win.FullMock?.reset(); ready = false; current = null; closeMenu(); },
       closeMenu
     };
   }

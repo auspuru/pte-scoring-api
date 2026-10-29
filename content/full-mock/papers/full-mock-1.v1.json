@@ -1,0 +1,3875 @@
+{
+  "schemaVersion": 1,
+  "id": "full-mock-1",
+  "version": 1,
+  "title": "IPT Brisbane — Full Mock 1",
+  "status": "frozen-draft",
+  "createdAt": "2026-10-29",
+  "baseCommit": "1d6bc40cb07a54ce3058528c09118736b34eee6a",
+  "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
+  "introduction": {
+    "type": "intro",
+    "scored": false,
+    "preparationSeconds": 25,
+    "responseSeconds": 30,
+    "id": "fm1-intro",
+    "instruction": "Introduce yourself after the preparation period. This familiarisation recording is not scored."
+  },
+  "clockPolicy": {
+    "overallCountdown": false,
+    "speakingWriting": "per-item",
+    "readingSeconds": 1500,
+    "sstSeconds": 600,
+    "sstIncludesPlayback": true,
+    "listeningAfterSstSeconds": 1500,
+    "sharedListeningClockContinuesBetweenItems": true
+  },
+  "scoringSourcesAtFreeze": {
+    "schemaVersion": 1,
+    "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
+    "files": {
+      "delivery-rubric.js": {
+        "sha256": "ff0deff2081f49d45387d72be41f8f952938e813ae0399317c601e876a9147b3",
+        "version": "intelligibility-delivery-v5"
+      },
+      "describe-image-feedback.js": {
+        "sha256": "9007b443fa29d350ddcac535bb9ded9548a3ee9c63698d53405a892d53ae5f23",
+        "version": null
+      },
+      "describe-image-feedback/scoring-policy.js": {
+        "sha256": "e3ab902ec27dad63aa3deade1da6b1d048376b2625a9e0f138b97356151515ec",
+        "version": null
+      },
+      "di-reference.js": {
+        "sha256": "3699d9f1ef5c01503add68ec7bf5f8e0675b81fc8367da777a2eb05f5239921e",
+        "version": null
+      },
+      "essay-assessment-service.js": {
+        "sha256": "a95f563194088c4fe5d03e7b9b6ca951b1fbb1a84d9a81ececd84e59f5bed02c",
+        "version": null
+      },
+      "essay-evidence.js": {
+        "sha256": "2e28d4904e75e848590de8f37cf182a8d1740dd51cb5200a7c57f4ee8f1c7dc0",
+        "version": null
+      },
+      "essay-judge-format.js": {
+        "sha256": "5f8b6ba1b67e4388c67f47e5f00f41148e13193810cb31052fed030eb9f4f7cd",
+        "version": null
+      },
+      "full-mock/asq-scoring.js": {
+        "sha256": "03af8e89e9af544436e574de97596672398a2bf10540080db0e89317ce2fcf8c",
+        "version": "full-mock-asq-2026-10-28.1"
+      },
+      "full-mock/blueprint.js": {
+        "sha256": "ee5f56f160821e6f3bd8ead5a797f4d46114aef0b14b06bbfeabdc6665e0330e",
+        "version": null
+      },
+      "full-mock/rubrics.js": {
+        "sha256": "e4a62b3809278e7aa43e432dede2c4da7f8c4f1a157913cb712014d553c59565",
+        "version": null
+      },
+      "gpt-speaking-delivery.js": {
+        "sha256": "cb42317a9cf1b4f34dbdcceeb32ff7df509fe55a449e518b6a312d40142cb580",
+        "version": null,
+        "versionExpression": "'gpt-delivery-2026-10-25.1:' + MODEL"
+      },
+      "listening-scoring.js": {
+        "sha256": "f3ecff70034f0f641248b47a2f457979934bd7ef034f0214dda452988331536c",
+        "version": null
+      },
+      "local-scoring-engine.js": {
+        "sha256": "52f605df6952c3de6894dd9f5357a4a97f5c84c19be93581af7ea3a8f69ef6ac",
+        "version": null
+      },
+      "public/essay-scoring.js": {
+        "sha256": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
+        "version": "essay-unified-2.6"
+      },
+      "public/reading-mock-tools.js": {
+        "sha256": "ef3a28b80678ee9e9c1b03831dcc87054e65dd8cebc5ee7848b370180ee42588",
+        "version": null
+      },
+      "public/reading-practice.js": {
+        "sha256": "4e80ba9501ba1d63fa7191ff263179b5bc15cef49e41c082ccb36ec2fead5d8d",
+        "version": null
+      },
+      "public/writing-lab-report.js": {
+        "sha256": "9df6a755fddf4342731462708d84d0e9100a37fb99d4c29fe9e3decb76d88b69",
+        "version": null
+      },
+      "server.js": {
+        "sha256": "0e2b2be1525cfccc85118b25810b6a4880a4cf47e52b337ede50b382714878e0",
+        "version": null
+      },
+      "situation-content-policy.js": {
+        "sha256": "a38eea55cc0dbec6e6011d59a50b91068bd61e866b6a3103337eb5085e2036fd",
+        "version": "functional-situation-content-2026-10-24.1"
+      },
+      "speaking-delivery.js": {
+        "sha256": "3eff2225f3daa16d85cf45e2fc88acff043e8212397fcb76b7a206092a55be0b",
+        "version": null
+      },
+      "speaking-lab.js": {
+        "sha256": "76cd004fe38a26819d0621a985a12c439daaeaebaeda6f58b92e4120c40a7cb1",
+        "version": null
+      },
+      "speaking-scoring.js": {
+        "sha256": "0c673372149fe2732f7aa6b950862ea01ce4c6473e5df4a55daf49d2740ca3a2",
+        "version": "speaking-content-2026-10-25.2"
+      },
+      "spoken-summary-policy.js": {
+        "sha256": "469d8543929f1035310868a6153e89424d1fef084e61c0a47e70892a5ae7a2e4",
+        "version": "connected-spoken-summary-2026-10-25.1"
+      },
+      "swt-form-policy.js": {
+        "sha256": "43ffe8755a7b025cbb9ba354fb69058d85d90d716666ed0233a5826c678bb2c2",
+        "version": null
+      },
+      "swt-judge-format.js": {
+        "sha256": "ef669a5e3fc732d4df51923959ee8b93d272fbb7510c85d717bf6bf6a21cf520",
+        "version": null
+      },
+      "swt-judgment-service.js": {
+        "sha256": "345c834b13ce1c94313270442852d71c20598d4e22de8c2fed13639b5d95015b",
+        "version": null
+      },
+      "swt-reference.js": {
+        "sha256": "252823dcc952fa561195591c79e79855d388a8c4f2e39a7b7534d1c74dd36a3a",
+        "version": null
+      },
+      "swt-scoring-policy.js": {
+        "sha256": "d369ae53a42633f4b6acfa49480b563229bac19fad28d6a6a41df59fbb16d81b",
+        "version": "20.3.16"
+      },
+      "writing-lab-scoring.js": {
+        "sha256": "a130307d850613728d40a36634b3aef337ea211a620695cc9e2217f0bbb1fad6",
+        "version": "exam-practice-2026-10-09.1"
+      }
+    }
+  },
+  "sourceFiles": {
+    "content/full-mock/original-items.js": "ca86b94b05874ee54b4df836ab78f47cd50de60685b7332fe5181a9a8bbf6563",
+    "full-mock/authoring.js": "2ba80d14aac35c2aebfa7b8749c21c9566585bd0efe625e15eca8c740ba577a3",
+    "scripts/generate-full-mock-audio.py": "adaea8d2332029121d78b001875b0d6ad30599972a7a580b86dd860264f90c4a",
+    "scripts/generate-full-mock-visuals.js": "62478bf10e99557f4ab8b4e78852a07e7ad27f09497b400fa695e3d188c2575f",
+    "speaking-visuals.js": "ed2f30655aec9a8138c46dd82d3296ba58897b9742c8558e7012ffc6881c7ae2",
+    "content/speaking-bank.js": "ee8a350005b3276c7ad8b8cc912125fa0ff90d82b1c90661cc674c55638ae03b",
+    "content/full-mock/voice-model-source.json": "3699e9ffb6daf74746264aad86156d11ea4c6af8138571717a49dc59e3eff33b"
+  },
+  "editorial": {
+    "provenance": "49 newly authored items and 16 repository-declared original speaking items; no recalled/prediction items.",
+    "sourceKeyReview": "AI-assisted authoring and source review; objective key explanations are retained with each item.",
+    "difficultyBasis": "editorial labels only; not empirical calibration and never a score adjustment",
+    "visualReview": {
+      "status": "assistant-reviewed",
+      "date": "2026-10-29",
+      "evidence": "All five vectors rendered at 730×500; labels, quantities and reference facts inspected. Independent editorial review remains pending."
+    },
+    "humanListeningReview": "pending",
+    "independentEditorialReview": "pending",
+    "studentReleaseApproved": false
+  },
+  "questions": [
+    {
+      "id": "full-mock-1/fm1-ra-01",
+      "question": {
+        "id": "fm1-ra-01",
+        "type": "ra",
+        "name": "Read Aloud",
+        "preparation": 35,
+        "seconds": 40,
+        "instruction": "Read the passage aloud after the start tone. Prepare for 35 seconds and finish within the recording time.",
+        "title": "Urban green spaces",
+        "text": "Urban parks provide more than attractive places to relax. Trees offer shade, absorb rainwater and create habitats for wildlife. However, these benefits depend on thoughtful planning and regular maintenance. By choosing suitable plants and involving local residents, cities can develop green spaces that remain useful and welcoming throughout the year.",
+        "sample": "Urban parks provide more than attractive places to relax. Trees offer shade, absorb rainwater and create habitats for wildlife. However, these benefits depend on thoughtful planning and regular maintenance. By choosing suitable plants and involving local residents, cities can develop green spaces that remain useful and welcoming throughout the year.",
+        "sourceId": "ra-1",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "ra-1",
+          "sourceFingerprint": "e6e7745ec904eeaae69571a9d43898606fe43f67ce86622a2ce4f0bd35cfbb2b",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-ra-02",
+      "question": {
+        "id": "fm1-ra-02",
+        "type": "ra",
+        "name": "Read Aloud",
+        "preparation": 35,
+        "seconds": 40,
+        "instruction": "Read the passage aloud after the start tone. Prepare for 35 seconds and finish within the recording time.",
+        "title": "Learning through retrieval",
+        "text": "Students often review familiar notes because the material feels easy to recognise. Yet recognition is not the same as remembering information independently. Brief practice tests encourage learners to retrieve ideas from memory. When followed by useful feedback, this approach can reveal gaps in understanding and support more effective revision.",
+        "sample": "Students often review familiar notes because the material feels easy to recognise. Yet recognition is not the same as remembering information independently. Brief practice tests encourage learners to retrieve ideas from memory. When followed by useful feedback, this approach can reveal gaps in understanding and support more effective revision.",
+        "sourceId": "ra-2",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "ra-2",
+          "sourceFingerprint": "f231b9a8a606dc5d54849105e3cd97f2fd13df5e01e4174849ce594b959d4d8b",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-ra-03",
+      "question": {
+        "id": "fm1-ra-03",
+        "type": "ra",
+        "name": "Read Aloud",
+        "preparation": 35,
+        "seconds": 40,
+        "instruction": "Read the passage aloud after the start tone. Prepare for 35 seconds and finish within the recording time.",
+        "title": "Preserving digital records",
+        "text": "Digital collections allow researchers to consult historical documents without travelling to an archive. Nevertheless, scanning a document is only the beginning of preservation. Files need accurate descriptions, reliable storage and regular checks. As technology changes, institutions must also update older formats so that valuable information remains accessible to future readers.",
+        "sample": "Digital collections allow researchers to consult historical documents without travelling to an archive. Nevertheless, scanning a document is only the beginning of preservation. Files need accurate descriptions, reliable storage and regular checks. As technology changes, institutions must also update older formats so that valuable information remains accessible to future readers.",
+        "sourceId": "ra-3",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "ra-3",
+          "sourceFingerprint": "3d3253c718490d125e367a0a09ce6dc3875377f66be58d5a9c5981148d59a6bf",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-ra-04",
+      "question": {
+        "id": "fm1-ra-04",
+        "type": "ra",
+        "name": "Read Aloud",
+        "preparation": 35,
+        "seconds": 40,
+        "instruction": "Read the passage aloud after the start tone. Prepare for 35 seconds and finish within the recording time.",
+        "title": "Public transport connections",
+        "text": "A convenient public transport network depends on connections as well as frequent services. Passengers need clear information and enough time to transfer between routes. When buses and trains follow coordinated schedules, journeys become more predictable. This reliability can make public transport a practical choice for people with different daily routines.",
+        "sample": "A convenient public transport network depends on connections as well as frequent services. Passengers need clear information and enough time to transfer between routes. When buses and trains follow coordinated schedules, journeys become more predictable. This reliability can make public transport a practical choice for people with different daily routines.",
+        "sourceId": "ra-4",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "ra-4",
+          "sourceFingerprint": "5cd2013700ebda68a5e1fd8944209212d944aba3020395aaa2e72548247b2ca6",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-ra-05",
+      "question": {
+        "id": "fm1-ra-05",
+        "type": "ra",
+        "name": "Read Aloud",
+        "preparation": 35,
+        "seconds": 40,
+        "instruction": "Read the passage aloud after the start tone. Prepare for 35 seconds and finish within the recording time.",
+        "title": "Citizen science",
+        "text": "Citizen science projects invite members of the public to contribute observations to research. Volunteers may record bird sightings or measure local rainfall using shared methods. Training and careful data checks help improve reliability. In return, participants gain a better understanding of scientific questions and the environments in which they live.",
+        "sample": "Citizen science projects invite members of the public to contribute observations to research. Volunteers may record bird sightings or measure local rainfall using shared methods. Training and careful data checks help improve reliability. In return, participants gain a better understanding of scientific questions and the environments in which they live.",
+        "sourceId": "ra-5",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "ra-5",
+          "sourceFingerprint": "dadde501270a69e193969cdcd19381256c996ba91791e66387ad4f61c83b54a5",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-ra-06",
+      "question": {
+        "id": "fm1-ra-06",
+        "type": "ra",
+        "title": "A field notebook",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "A field notebook records more than successful observations. Researchers also note uncertain measurements, unexpected conditions and changes to their methods. These details help another person understand how the evidence was collected. A clear record therefore supports later analysis and makes it easier to distinguish a useful discovery from an error in the original procedure.",
+        "instruction": "Read the passage aloud after the start tone. Prepare for 35 seconds and finish within the recording time.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "preparation": 35,
+        "seconds": 40,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-rs-01",
+      "question": {
+        "id": "fm1-rs-01",
+        "type": "rs",
+        "title": "Repeat Sentence",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "The laboratory entrance is beside the lift on the ground floor.",
+        "sample": "The laboratory entrance is beside the lift on the ground floor.",
+        "audioRate": "-3%",
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/d9bdc2bfee250553653138d6b55d8737058367cc70fd733abcc10509de4af7c1.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/d9bdc2bfee250553653138d6b55d8737058367cc70fd733abcc10509de4af7c1.mp3",
+          "textSha256": "08a66cec3a00be3d41bf0d4724f6295733f3a2c928fb7e652d38a4c0e23fe815",
+          "audioSha256": "d9bdc2bfee250553653138d6b55d8737058367cc70fd733abcc10509de4af7c1",
+          "bytes": 20973,
+          "seconds": 3.456,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rs-02",
+      "question": {
+        "id": "fm1-rs-02",
+        "type": "rs",
+        "title": "Repeat Sentence",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "Students should keep a copy of every assignment they submit online.",
+        "sample": "Students should keep a copy of every assignment they submit online.",
+        "audioRate": "-3%",
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/9021408afadb6a5a5c69e37a39c96fbd3d6b3b944c12586987edc87209d1fe86.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/9021408afadb6a5a5c69e37a39c96fbd3d6b3b944c12586987edc87209d1fe86.mp3",
+          "textSha256": "d6bdf58d50693d0f4aff3cc083368cc914dd34b7196389920873f0e67ffd6650",
+          "audioSha256": "9021408afadb6a5a5c69e37a39c96fbd3d6b3b944c12586987edc87209d1fe86",
+          "bytes": 26445,
+          "seconds": 4.368,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rs-03",
+      "question": {
+        "id": "fm1-rs-03",
+        "type": "rs",
+        "title": "Repeat Sentence",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "The visiting lecturer will answer questions after the afternoon presentation.",
+        "sample": "The visiting lecturer will answer questions after the afternoon presentation.",
+        "audioRate": "-3%",
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/496111a549bc0b855a0af7b58acc38bdf3558fd217a2bf698da8bf9a7bf918cd.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/496111a549bc0b855a0af7b58acc38bdf3558fd217a2bf698da8bf9a7bf918cd.mp3",
+          "textSha256": "c3689535f7d86b57b148c8da645dca7d2a33218e47cae163c423bad8b0f02384",
+          "audioSha256": "496111a549bc0b855a0af7b58acc38bdf3558fd217a2bf698da8bf9a7bf918cd",
+          "bytes": 28029,
+          "seconds": 4.632,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rs-04",
+      "question": {
+        "id": "fm1-rs-04",
+        "type": "rs",
+        "title": "Repeat Sentence",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "Our research group is comparing transport patterns in three coastal towns.",
+        "sample": "Our research group is comparing transport patterns in three coastal towns.",
+        "audioRate": "-3%",
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/dedff3a295469b6f0f683c4bf9eea8ebbfefcdf3a4acd5516cd489f07c23ae3c.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/dedff3a295469b6f0f683c4bf9eea8ebbfefcdf3a4acd5516cd489f07c23ae3c.mp3",
+          "textSha256": "d720634fb66e62a460eb279333f2f3fbeb190054809ee090677fbe4115fa2e61",
+          "audioSha256": "dedff3a295469b6f0f683c4bf9eea8ebbfefcdf3a4acd5516cd489f07c23ae3c",
+          "bytes": 31341,
+          "seconds": 5.184,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rs-05",
+      "question": {
+        "id": "fm1-rs-05",
+        "type": "rs",
+        "title": "Repeat Sentence",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "Please return the borrowed equipment before the reception desk closes today.",
+        "sample": "Please return the borrowed equipment before the reception desk closes today.",
+        "audioRate": "-3%",
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/e132d191bd372f38b41ae45564e5812eca00d5f5c12389171732bf3fe9e187f9.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/e132d191bd372f38b41ae45564e5812eca00d5f5c12389171732bf3fe9e187f9.mp3",
+          "textSha256": "d1f43f7fdb3973bed8967bae15d3eaa29e091df3d7452f65438a62f5ff075693",
+          "audioSha256": "e132d191bd372f38b41ae45564e5812eca00d5f5c12389171732bf3fe9e187f9",
+          "bytes": 26013,
+          "seconds": 4.296,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rs-06",
+      "question": {
+        "id": "fm1-rs-06",
+        "type": "rs",
+        "title": "Repeat Sentence",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "A short written explanation should accompany each diagram in your report.",
+        "sample": "A short written explanation should accompany each diagram in your report.",
+        "audioRate": "-3%",
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/c1afca829720ec17cd8aec3bb3ddbf1fc5765334a0371942e15eea1516319796.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/c1afca829720ec17cd8aec3bb3ddbf1fc5765334a0371942e15eea1516319796.mp3",
+          "textSha256": "4dbe3774787665a0d452c92e945ef20b2e501bf3b2888c381206a1893376927b",
+          "audioSha256": "c1afca829720ec17cd8aec3bb3ddbf1fc5765334a0371942e15eea1516319796",
+          "bytes": 27453,
+          "seconds": 4.536,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rs-07",
+      "question": {
+        "id": "fm1-rs-07",
+        "type": "rs",
+        "title": "Repeat Sentence",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "The new timetable gives students more time between their practical classes.",
+        "sample": "The new timetable gives students more time between their practical classes.",
+        "audioRate": "-3%",
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/bda06efe68e77bc8af4f03897cbcbbfcbbed91329156b3e2b1be4bd385275949.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/bda06efe68e77bc8af4f03897cbcbbfcbbed91329156b3e2b1be4bd385275949.mp3",
+          "textSha256": "3dd6491edd4d6da131976b145108ccea93dbebfe6c1cf64706327f234f2b395f",
+          "audioSha256": "bda06efe68e77bc8af4f03897cbcbbfcbbed91329156b3e2b1be4bd385275949",
+          "bytes": 27309,
+          "seconds": 4.512,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rs-08",
+      "question": {
+        "id": "fm1-rs-08",
+        "type": "rs",
+        "title": "Repeat Sentence",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "Several volunteers helped the museum catalogue its collection of historical photographs.",
+        "sample": "Several volunteers helped the museum catalogue its collection of historical photographs.",
+        "audioRate": "-3%",
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/6cb9bd83eb61611bbd75ae21cedad56077523bf1c4ae8388e88a92319bb19985.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/6cb9bd83eb61611bbd75ae21cedad56077523bf1c4ae8388e88a92319bb19985.mp3",
+          "textSha256": "03bfb1dfd4350e4c589844568884d8b19a112ee00758b86fec63b9e63f07936b",
+          "audioSha256": "6cb9bd83eb61611bbd75ae21cedad56077523bf1c4ae8388e88a92319bb19985",
+          "bytes": 35949,
+          "seconds": 5.952,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rs-09",
+      "question": {
+        "id": "fm1-rs-09",
+        "type": "rs",
+        "title": "Repeat Sentence",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "You can reserve a quiet study room through the university website.",
+        "sample": "You can reserve a quiet study room through the university website.",
+        "audioRate": "-3%",
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/c93d712e153bda148668d6404005b2f008ff1302397b486934aca0ee4a043900.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/c93d712e153bda148668d6404005b2f008ff1302397b486934aca0ee4a043900.mp3",
+          "textSha256": "acd6c6e18e21f6354d9aed43a1f000b67d15a73480235ff68921d03e99690ff7",
+          "audioSha256": "c93d712e153bda148668d6404005b2f008ff1302397b486934aca0ee4a043900",
+          "bytes": 25149,
+          "seconds": 4.152,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rs-10",
+      "question": {
+        "id": "fm1-rs-10",
+        "type": "rs",
+        "title": "Repeat Sentence",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "The final workshop will focus on interpreting evidence rather than memorising facts.",
+        "sample": "The final workshop will focus on interpreting evidence rather than memorising facts.",
+        "audioRate": "-3%",
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/08567a0bfb8f61f1b9aaa78279aa3c6cce6f96d6f573778df7adf1ff4e7cdddb.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/08567a0bfb8f61f1b9aaa78279aa3c6cce6f96d6f573778df7adf1ff4e7cdddb.mp3",
+          "textSha256": "f88873f0b77ee5959d43715b2d35bf92b7cd8c0d7aca8db8d0a2780a115ea125",
+          "audioSha256": "08567a0bfb8f61f1b9aaa78279aa3c6cce6f96d6f573778df7adf1ff4e7cdddb",
+          "bytes": 30333,
+          "seconds": 5.016,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-di-01",
+      "question": {
+        "id": "fm1-di-01",
+        "type": "di",
+        "name": "Describe Image",
+        "preparation": 25,
+        "seconds": 40,
+        "instruction": "Study the visual for 25 seconds. After the tone, describe its main features and relationships within 40 seconds.",
+        "title": "Household electricity use",
+        "visual": {
+          "kind": "bar",
+          "title": "Household electricity use",
+          "subtitle": "Share of annual consumption (%)",
+          "labels": [
+            "Heating",
+            "Cooling",
+            "Appliances",
+            "Lighting"
+          ],
+          "values": [
+            40,
+            25,
+            20,
+            15
+          ]
+        },
+        "facts": [
+          "The chart compares four uses of household electricity.",
+          "Heating is highest at 40%.",
+          "Cooling is 25%, appliances 20% and lighting 15%.",
+          "Heating and cooling together account for 65%, almost two thirds of use."
+        ],
+        "sample": "The given image provides the detailed information about household electricity use. Overall, heating accounts for the largest share at 40 percent, followed by cooling at 25 percent and appliances at 20 percent. Lighting has the smallest proportion, at 15 percent. Together, heating and cooling make up 65 percent of consumption, so controlling indoor temperature uses almost two thirds of the household’s electricity.",
+        "imageCategory": "bar",
+        "optionalFactIndices": [],
+        "imageReference": {
+          "version": "di-image-reference-2026-10-27.1",
+          "questionId": "di-1",
+          "source": {
+            "kind": "visual-sha256",
+            "sha256": "f19115d5ea1c3e5963f0f62b19a49a20b4900049f5f7892a1394dd0d921791ba"
+          },
+          "mappingHash": "fa19c24241c1f8c080cf6c4cb39fcf3174cbdda6f16de01b15889df73948d8db"
+        },
+        "sourceId": "di-1",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "di-1",
+          "sourceFingerprint": "8e5ccd1094331b12a9e0c411ed65df04cb5687f8a314e1e1abe2bfd3766cdb0d",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "image": {
+        "path": "content/full-mock/assets/aeaba5ae757842426ea3cfda5024494f5842b0451962adfe88b3a77284372c54.svg",
+        "sha256": "aeaba5ae757842426ea3cfda5024494f5842b0451962adfe88b3a77284372c54"
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-di-02",
+      "question": {
+        "id": "fm1-di-02",
+        "type": "di",
+        "name": "Describe Image",
+        "preparation": 25,
+        "seconds": 40,
+        "instruction": "Study the visual for 25 seconds. After the tone, describe its main features and relationships within 40 seconds.",
+        "title": "A student’s monthly budget",
+        "visual": {
+          "kind": "pie",
+          "title": "A student’s monthly budget",
+          "subtitle": "Share of monthly spending (%)",
+          "labels": [
+            "Rent",
+            "Food",
+            "Transport",
+            "Study materials",
+            "Leisure"
+          ],
+          "values": [
+            40,
+            25,
+            15,
+            12,
+            8
+          ]
+        },
+        "facts": [
+          "The pie chart shows five categories of a student’s monthly spending.",
+          "Rent is the largest category at 40%, followed by food at 25% and transport at 15%.",
+          "Study materials represent 12% and leisure 8%.",
+          "Rent and food together account for 65% of the budget."
+        ],
+        "sample": "The given image provides the detailed information about a student’s monthly budget. Rent is the largest expense at 40 percent, followed by food at 25 percent and transport at 15 percent. The remaining categories are study materials at 12 percent and leisure at 8 percent. Overall, rent and food together account for 65 percent of spending, while leisure is the smallest expense.",
+        "imageCategory": "pie",
+        "optionalFactIndices": [],
+        "imageReference": {
+          "version": "di-image-reference-2026-10-27.1",
+          "questionId": "di-2",
+          "source": {
+            "kind": "visual-sha256",
+            "sha256": "25ebe6ce94cc5cec9ba90c56a8d4d459cd38144866099f81f9e7c1807c4a134c"
+          },
+          "mappingHash": "32e8800e289666989bacbe93c165451330024d952e9526b53d50d00484045ee5"
+        },
+        "sourceId": "di-2",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "di-2",
+          "sourceFingerprint": "5389de2ab49513e0287657446034bfaae083f9ae420e105ed500171a9746048b",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "image": {
+        "path": "content/full-mock/assets/ab116eb45f9787561ccf66e5228d913e9fa939182f88054a7278cd68202b45ed.svg",
+        "sha256": "ab116eb45f9787561ccf66e5228d913e9fa939182f88054a7278cd68202b45ed"
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-di-03",
+      "question": {
+        "id": "fm1-di-03",
+        "type": "di",
+        "name": "Describe Image",
+        "preparation": 25,
+        "seconds": 40,
+        "instruction": "Study the visual for 25 seconds. After the tone, describe its main features and relationships within 40 seconds.",
+        "title": "Bicycle trips to campus",
+        "visual": {
+          "kind": "line",
+          "title": "Bicycle trips to campus",
+          "subtitle": "Average trips per weekday",
+          "labels": [
+            "2019",
+            "2020",
+            "2021",
+            "2022",
+            "2023"
+          ],
+          "values": [
+            200,
+            280,
+            250,
+            360,
+            450
+          ]
+        },
+        "facts": [
+          "The line graph shows average weekday bicycle trips to campus from 2019 to 2023.",
+          "Trips rose from 200 in 2019 to 280 in 2020.",
+          "There was a temporary fall to 250 in 2021.",
+          "Trips then increased to 360 in 2022 and peaked at 450 in 2023.",
+          "The final value is more than twice the initial value."
+        ],
+        "sample": "The given image provides the detailed information about bicycle trips to campus between 2019 and 2023. Overall, the number of trips increased substantially, from 200 to 450 per weekday. It first rose to 280 in 2020, then fell slightly to 250 in 2021. After that, it climbed to 360 in 2022 and reached its highest point in 2023, more than double the starting figure.",
+        "imageCategory": "line",
+        "optionalFactIndices": [
+          4
+        ],
+        "imageReference": {
+          "version": "di-image-reference-2026-10-27.1",
+          "questionId": "di-3",
+          "source": {
+            "kind": "visual-sha256",
+            "sha256": "bd2c6591082088f0192671940f97f569e197454278e30185855f25c311a3ec4a"
+          },
+          "mappingHash": "c12065b81188ee8ae522afe7f4b1de19eb62bdfd461e41195ad9430390ffe6a0"
+        },
+        "sourceId": "di-3",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "di-3",
+          "sourceFingerprint": "43870e8a43c4b44593630122c81059fa558618d07ef7352666575183396fdbc4",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "image": {
+        "path": "content/full-mock/assets/d1e150286d9827b696ef0a627f9c1f645d8b5e7f95875aafd5e19c344024e3a1.svg",
+        "sha256": "d1e150286d9827b696ef0a627f9c1f645d8b5e7f95875aafd5e19c344024e3a1"
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-di-04",
+      "question": {
+        "id": "fm1-di-04",
+        "type": "di",
+        "name": "Describe Image",
+        "preparation": 25,
+        "seconds": 40,
+        "instruction": "Study the visual for 25 seconds. After the tone, describe its main features and relationships within 40 seconds.",
+        "title": "Getting to campus",
+        "visual": {
+          "kind": "table",
+          "title": "Getting to campus",
+          "subtitle": "Students surveyed at two campuses",
+          "columns": [
+            "Transport",
+            "North",
+            "South"
+          ],
+          "rows": [
+            [
+              "Bus",
+              "180",
+              "140"
+            ],
+            [
+              "Train",
+              "120",
+              "160"
+            ],
+            [
+              "Bicycle",
+              "60",
+              "80"
+            ],
+            [
+              "Walk",
+              "40",
+              "20"
+            ]
+          ]
+        },
+        "facts": [
+          "The table compares four travel methods at North and South campuses.",
+          "Bus travel is highest at North with 180 students; train travel is highest at South with 160.",
+          "Cycling is more common at South, 80 versus 60.",
+          "Walking is least common at both campuses, 40 at North and 20 at South."
+        ],
+        "sample": "The given image provides the detailed information about how students travel to two campuses. Buses are most popular at North, with 180 users, while trains lead at South with 160. South also has more cyclists, at 80 compared with 60. Walking is the least common method at both campuses, with 40 students at North and 20 at South. Overall, the two campuses show different preferences for bus and train travel.",
+        "imageCategory": "table",
+        "optionalFactIndices": [],
+        "imageReference": {
+          "version": "di-image-reference-2026-10-27.1",
+          "questionId": "di-4",
+          "source": {
+            "kind": "visual-sha256",
+            "sha256": "6faffb7169c11dd0ac1daca4b0d6f5b10ce97b482492d5db687f4bb012e36974"
+          },
+          "mappingHash": "548bee7b02730e4d590f99d35152890fd78126d04bd5ff11b6cb0fcdcdd260a1"
+        },
+        "sourceId": "di-4",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "di-4",
+          "sourceFingerprint": "41fbd625919cb62408f14202be9a5571f7d3c34c5c4ab1259423c152f2f5a8d1",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "image": {
+        "path": "content/full-mock/assets/ee6298bf745f6cad64b1a0248d0972274393b1d570795ea59a26da4af28ec07f.svg",
+        "sha256": "ee6298bf745f6cad64b1a0248d0972274393b1d570795ea59a26da4af28ec07f"
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-di-05",
+      "question": {
+        "id": "fm1-di-05",
+        "type": "di",
+        "name": "Describe Image",
+        "preparation": 25,
+        "seconds": 40,
+        "instruction": "Study the visual for 25 seconds. After the tone, describe its main features and relationships within 40 seconds.",
+        "title": "Collecting rainwater",
+        "visual": {
+          "kind": "process",
+          "title": "Collecting rainwater for a garden",
+          "subtitle": "A simple five-stage system",
+          "steps": [
+            "Rain falls on roof",
+            "Gutters collect runoff",
+            "Filter removes debris",
+            "Tank stores water",
+            "Pump supplies garden"
+          ]
+        },
+        "facts": [
+          "The diagram explains a five-stage process for collecting rainwater for garden use.",
+          "Rain falls on a roof and gutters collect the runoff.",
+          "A filter removes debris before water enters a storage tank.",
+          "A pump moves stored water to the garden.",
+          "The diagram does not show treatment that makes the water safe to drink."
+        ],
+        "sample": "The given image provides the detailed information about collecting rainwater for a garden. The process begins when rain falls on a roof. Gutters collect the runoff and direct it through a filter, which removes debris. The filtered water then enters a storage tank. Finally, a pump supplies the garden. Overall, the system collects, filters, stores and reuses rainwater; it does not show a drinking-water treatment process.",
+        "imageCategory": "process",
+        "optionalFactIndices": [],
+        "imageReference": {
+          "version": "di-image-reference-2026-10-27.1",
+          "questionId": "di-5",
+          "source": {
+            "kind": "visual-sha256",
+            "sha256": "bc8dfdd61fa0c2c0a9deb470245a0ee100cc5f8b3a5da57095430f02240324f9"
+          },
+          "mappingHash": "d5c5ad52d6dfad512a468a7eb1b1d71b0d44fc8e0f0b36e13e53ecbee0fcd8d0"
+        },
+        "sourceId": "di-5",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "di-5",
+          "sourceFingerprint": "8d57379284db0ce62f787ce2bd7b57e1b56513bd94294692020990fe90b07243",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "image": {
+        "path": "content/full-mock/assets/e8ab3cf35f903fc194d43ffa13bb68841c8bbe450110e9458b74472c5d3b072a.svg",
+        "sha256": "e8ab3cf35f903fc194d43ffa13bb68841c8bbe450110e9458b74472c5d3b072a"
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rl-01",
+      "question": {
+        "id": "fm1-rl-01",
+        "type": "rl",
+        "name": "Retell Lecture",
+        "preparation": 10,
+        "seconds": 40,
+        "instruction": "Listen once, then use 10 seconds to prepare. After the tone, retell the lecture in your own words within 40 seconds.",
+        "title": "Digital access to museum collections",
+        "text": "Museums increasingly make their collections available online, but digital access is not simply a matter of uploading photographs. A useful digital record needs context. Visitors may need to know where an object was made, how it was used and why different communities value it. Accurate descriptions make collections searchable and help prevent misleading interpretations. Online access can benefit people who live far from a museum or cannot enter the building easily. It can also support teachers who want to compare objects from several institutions. Nevertheless, a photograph cannot reproduce every aspect of a physical object. Its scale, texture and surrounding exhibition may be difficult to convey. Digital projects also require continuing maintenance. Websites, file formats and accessibility requirements change, so institutions must budget for future updates. The strongest approach treats digital collections as a complement to physical visits, not a complete replacement. Technology is most useful when it broadens access while preserving the context that gives an object meaning.",
+        "facts": [
+          "Digital museum records need reliable context, not photographs alone.",
+          "Descriptions explain origins, uses and significance and support searching.",
+          "Online collections improve access and help teaching.",
+          "Digital images cannot fully convey physical scale, texture or exhibition context.",
+          "Ongoing updates are needed, and digital access complements physical visits."
+        ],
+        "sample": "The speaker argues that effective digital museum collections need accurate context as well as photographs. Descriptions help people understand an object’s origin and significance, while online access benefits distant visitors and teachers. However, images cannot fully reproduce physical qualities such as scale and texture. Digital collections also need continuing updates. They therefore work best as a complement to physical visits, broadening access without losing meaning.",
+        "sourceId": "rl-3",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "rl-3",
+          "sourceFingerprint": "21a62ff2ad401dbeeb3f279389cc9e98c61775866e50376d6480a81608e13349",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/0690273f1ab8d3bb2224e9d5d3057dead01690633f605bbf4753b6630da76a8e.mp3",
+        "entry": {
+          "textSha256": "31a83541047d9efda759271fbb1cb708630a4fffcee53cd67fc4084106d46387",
+          "audioSha256": "0690273f1ab8d3bb2224e9d5d3057dead01690633f605bbf4753b6630da76a8e",
+          "bytes": 470397,
+          "seconds": 78.36,
+          "voices": [
+            "en-AU-NatashaNeural"
+          ],
+          "path": "content/full-mock/assets/0690273f1ab8d3bb2224e9d5d3057dead01690633f605bbf4753b6630da76a8e.mp3"
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rl-02",
+      "question": {
+        "id": "fm1-rl-02",
+        "type": "rl",
+        "name": "Retell Lecture",
+        "preparation": 10,
+        "seconds": 40,
+        "instruction": "Listen once, then use 10 seconds to prepare. After the tone, retell the lecture in your own words within 40 seconds.",
+        "title": "Reducing food waste on campus",
+        "text": "A university cafeteria that wants to reduce food waste should first find out where the waste occurs. Food discarded during preparation requires a different response from food left on customers’ plates. For example, better forecasting may prevent the kitchen from preparing too many portions, while allowing customers to choose a smaller serving may reduce plate waste. Staff should measure waste over several ordinary weeks rather than draw conclusions from one unusually busy day. The results can guide a small trial, such as changing portion sizes at one counter. Importantly, reducing waste does not mean ignoring food safety. Surplus food can only be redistributed when storage, handling and collection meet the relevant requirements. Communication also matters: customers may accept changes more readily if they understand the reasons and retain a choice of portions. Finally, the cafeteria should measure waste again after the trial. A successful programme uses evidence, tests practical changes and checks whether those changes actually produce a lasting improvement.",
+        "facts": [
+          "Measure where and how much food is wasted before intervening.",
+          "Forecasting reduces overproduction; portion choices can reduce plate waste.",
+          "Collect representative data and trial a targeted change.",
+          "Redistribution must still satisfy food-safety requirements.",
+          "Explain changes and measure outcomes again to check lasting improvement."
+        ],
+        "sample": "The lecture recommends an evidence-based approach to reducing cafeteria food waste. Staff should distinguish preparation waste from plate waste and collect data over several weeks. Better forecasting can reduce overproduction, while smaller serving options may help customers waste less. Any redistribution must remain safe. The speaker concludes that targeted trials, clear communication and follow-up measurements are needed to identify changes that work over time.",
+        "sourceId": "rl-4",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "rl-4",
+          "sourceFingerprint": "b76fb0395e8d29dc666dc669ff8226b7525f548ec9a06dc6b0bdddfc7985ddde",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/bcd6d30d94d13787042dd9e3f87be64e671116870f28d629e17f7ee54b263e23.mp3",
+        "entry": {
+          "textSha256": "7ecccf87e235d2da88edc7f5fd5cd8a700aa134a4cd92cbaa32525c767b7b215",
+          "audioSha256": "bcd6d30d94d13787042dd9e3f87be64e671116870f28d629e17f7ee54b263e23",
+          "bytes": 444477,
+          "seconds": 74.04,
+          "voices": [
+            "en-AU-NatashaNeural"
+          ],
+          "path": "content/full-mock/assets/bcd6d30d94d13787042dd9e3f87be64e671116870f28d629e17f7ee54b263e23.mp3"
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-asq-01",
+      "question": {
+        "id": "fm1-asq-01",
+        "type": "asq",
+        "title": "A person who writes",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "What do we call the person who writes a book or a novel?",
+        "acceptedAnswers": [
+          "author",
+          "writer"
+        ],
+        "sample": "author",
+        "audioRate": "-5%",
+        "instruction": "Listen once and answer in one word or a short phrase. Recording opens without a start tone. You have 10 seconds.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "preparation": 0,
+        "seconds": 10,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 0,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a.mp3",
+          "textSha256": "c04aa4bb76593db1d4a367665e22158b8a528c2bde05bf71336379f5c6e46d45",
+          "audioSha256": "37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a",
+          "bytes": 21837,
+          "seconds": 3.6,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-5%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-asq-02",
+      "question": {
+        "id": "fm1-asq-02",
+        "type": "asq",
+        "title": "Measuring temperature",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "Which instrument do you use to measure the temperature of a room?",
+        "acceptedAnswers": [
+          "thermometer"
+        ],
+        "sample": "thermometer",
+        "audioRate": "-5%",
+        "instruction": "Listen once and answer in one word or a short phrase. Recording opens without a start tone. You have 10 seconds.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "preparation": 0,
+        "seconds": 10,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 0,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62.mp3",
+          "textSha256": "c9e1681c36339de5e9aa9a7915d13bc8439e6dfbdaf6fb732dae7e5eaabc7469",
+          "audioSha256": "f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62",
+          "bytes": 20397,
+          "seconds": 3.36,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-5%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-asq-03",
+      "question": {
+        "id": "fm1-asq-03",
+        "type": "asq",
+        "title": "Time of day",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "If a meeting begins at noon, at what time of day does it start?",
+        "acceptedAnswers": [
+          "noon",
+          "midday",
+          "twelve",
+          "12",
+          "twelve pm",
+          "12 pm",
+          "12pm",
+          "12:00",
+          "12:00 pm",
+          "twelve o'clock",
+          "12 o'clock"
+        ],
+        "sample": "noon",
+        "audioRate": "-5%",
+        "instruction": "Listen once and answer in one word or a short phrase. Recording opens without a start tone. You have 10 seconds.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "preparation": 0,
+        "seconds": 10,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 0,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3.mp3",
+          "textSha256": "eb6d0f4c7f73c5b5cbb685852467d1ba0311262312d1abf2fc3850995b937e5d",
+          "audioSha256": "cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3",
+          "bytes": 24141,
+          "seconds": 3.984,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-5%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-asq-04",
+      "question": {
+        "id": "fm1-asq-04",
+        "type": "asq",
+        "title": "A shape",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "How many equal sides are there in a square?",
+        "acceptedAnswers": [
+          "four",
+          "4"
+        ],
+        "sample": "four",
+        "audioRate": "-5%",
+        "instruction": "Listen once and answer in one word or a short phrase. Recording opens without a start tone. You have 10 seconds.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "preparation": 0,
+        "seconds": 10,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 0,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6.mp3",
+          "textSha256": "cad9fb9778ba688e0d41a938d1c8c6591303c25ed7398959fafd1671a4a2ae6f",
+          "audioSha256": "3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6",
+          "bytes": 18525,
+          "seconds": 3.048,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-15%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-asq-05",
+      "question": {
+        "id": "fm1-asq-05",
+        "type": "asq",
+        "title": "A direction",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "What is the opposite direction to north on a compass?",
+        "acceptedAnswers": [
+          "south"
+        ],
+        "sample": "south",
+        "audioRate": "-5%",
+        "instruction": "Listen once and answer in one word or a short phrase. Recording opens without a start tone. You have 10 seconds.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "preparation": 0,
+        "seconds": 10,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 0,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0.mp3",
+          "textSha256": "2e4b16774d69f27767f1a5162eb805beda55b968e34ac6768a277eeeff581c6f",
+          "audioSha256": "47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0",
+          "bytes": 19389,
+          "seconds": 3.192,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-5%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-sgd-01",
+      "question": {
+        "id": "fm1-sgd-01",
+        "type": "sgd",
+        "name": "Summarise Group Discussion",
+        "preparation": 10,
+        "seconds": 120,
+        "instruction": "Listen to the three speakers once. Prepare for 10 seconds, then summarise their discussion within two minutes.",
+        "title": "Extending library opening hours",
+        "turns": [
+          [
+            "Maya",
+            "I think the library should stay open later throughout the semester, not only during exams. Some students work in the evening and need somewhere quiet afterwards. My shared house is noisy, so having access until midnight would make a real difference. What do you both think?"
+          ],
+          [
+            "Ben",
+            "I understand the need, but opening the whole building could be expensive. We would need security, lighting and staff even if only a few students came. I would rather see a limited late-opening area, with student-card access, than promise a service the library cannot sustain."
+          ],
+          [
+            "Clara",
+            "A small area sounds sensible, but getting home safely is another issue. The last bus leaves before midnight. Students without cars might not benefit unless transport is considered too. Perhaps the university could coordinate a shuttle on the busiest nights rather than run it every evening."
+          ],
+          [
+            "Maya",
+            "That is a fair point. I do not need the borrowing desk to stay open; I mainly need a desk, power and internet. We could start with the ground-floor study room. A short survey might tell us which nights working students actually need it most."
+          ],
+          [
+            "Ben",
+            "I would support a trial based on that survey. We could count visits and check the cost for six weeks, then decide whether to continue. Clear rules would matter, especially about noise, visitors and what students should do if they need help after staff leave."
+          ],
+          [
+            "Clara",
+            "Then our recommendation could combine a small supervised study area with a transport check. We should ask students about both demand and travel, and make sure accessibility is included. That gives the university evidence before it commits to opening the entire library later."
+          ]
+        ],
+        "facts": [
+          "The discussion concerns later library access for students.",
+          "Maya supports later opening because work and noisy housing limit study opportunities.",
+          "Ben worries about cost and proposes a small card-access area with rules and a six-week trial.",
+          "Clara raises safe transport and accessibility, suggesting a shuttle on busy nights.",
+          "The group converges on surveying demand and trialling a limited study area alongside transport planning."
+        ],
+        "sample": "The three students discuss extending library opening hours. Maya supports later access because students with jobs or noisy accommodation need a quiet place to study. Ben agrees there may be demand, but questions the cost of keeping the whole building open. He suggests a smaller area with controlled access, clear rules and a six-week trial. Clara adds that safe travel is equally important, since the last bus leaves before midnight, and proposes checking shuttle options and accessibility. Maya accepts the smaller-area idea because she mainly needs a desk and internet, not a borrowing service. The discussion therefore moves from a general request for longer hours towards a more practical proposal: survey students, trial a limited study space and consider transport before expanding the service.",
+        "text": "Maya: I think the library should stay open later throughout the semester, not only during exams. Some students work in the evening and need somewhere quiet afterwards. My shared house is noisy, so having access until midnight would make a real difference. What do you both think?\nBen: I understand the need, but opening the whole building could be expensive. We would need security, lighting and staff even if only a few students came. I would rather see a limited late-opening area, with student-card access, than promise a service the library cannot sustain.\nClara: A small area sounds sensible, but getting home safely is another issue. The last bus leaves before midnight. Students without cars might not benefit unless transport is considered too. Perhaps the university could coordinate a shuttle on the busiest nights rather than run it every evening.\nMaya: That is a fair point. I do not need the borrowing desk to stay open; I mainly need a desk, power and internet. We could start with the ground-floor study room. A short survey might tell us which nights working students actually need it most.\nBen: I would support a trial based on that survey. We could count visits and check the cost for six weeks, then decide whether to continue. Clear rules would matter, especially about noise, visitors and what students should do if they need help after staff leave.\nClara: Then our recommendation could combine a small supervised study area with a transport check. We should ask students about both demand and travel, and make sure accessibility is included. That gives the university evidence before it commits to opening the entire library later.",
+        "sourceId": "sgd-1",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "sgd-1",
+          "sourceFingerprint": "ad1335e29bae41b6ad5229df318a35dfa4b41f99547dfaa7ccf4ff914d9634b8",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "hard",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires connecting several ideas or speakers and preserving relationships."
+        },
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/70a61518eebd7c3c809e5dcaa57571934f080eb90b3f5624f808aad49582f6ff.mp3",
+        "entry": {
+          "textSha256": "166f70b591f87aeeeb5f4d29a97f2a13457f3410100119f6b07e2af2c5dc6108",
+          "audioSha256": "70a61518eebd7c3c809e5dcaa57571934f080eb90b3f5624f808aad49582f6ff",
+          "bytes": 653565,
+          "seconds": 108.888,
+          "voices": [
+            "en-AU-NatashaNeural",
+            "en-US-GuyNeural",
+            "en-GB-SoniaNeural"
+          ],
+          "path": "content/full-mock/assets/70a61518eebd7c3c809e5dcaa57571934f080eb90b3f5624f808aad49582f6ff.mp3"
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-sgd-02",
+      "question": {
+        "id": "fm1-sgd-02",
+        "type": "sgd",
+        "name": "Summarise Group Discussion",
+        "preparation": 10,
+        "seconds": 120,
+        "instruction": "Listen to the three speakers once. Prepare for 10 seconds, then summarise their discussion within two minutes.",
+        "title": "Choosing a group-project format",
+        "turns": [
+          [
+            "Daniel",
+            "For our environmental project, I would like to make a short video instead of a slide presentation. We could show the recycling facilities around campus and interview students. That might make our findings easier to understand than reading statistics from a screen during the final class."
+          ],
+          [
+            "Leah",
+            "A video could be engaging, but editing takes time and none of us has much experience. We also have to show how we collected and analysed our data. I worry that production work might distract us from the research, which is the main part of the assessment."
+          ],
+          [
+            "Omar",
+            "Could we combine the approaches? A few short clips could introduce the problem, followed by slides explaining the evidence. We should also provide captions and avoid filming anyone without permission. The format should help communicate the findings rather than become the main focus of the project."
+          ],
+          [
+            "Daniel",
+            "I like that compromise. We could record the facilities without identifying students, and use an anonymous questionnaire instead of interviews. I can take responsibility for two brief clips. If the clips do not work well, the research presentation would still be complete without them."
+          ],
+          [
+            "Leah",
+            "That makes the workload more manageable. Let us agree on the research questions and divide the analysis first. Then we can set a strict time limit for filming and editing. I would also like us to practise together so the final presentation feels like one coherent explanation."
+          ],
+          [
+            "Omar",
+            "Agreed. We should check the assessment instructions before committing, share a draft early and keep the clips short and accessible. The final plan is a slide-based presentation supported by video, with research quality, consent and clear teamwork taking priority over elaborate production."
+          ]
+        ],
+        "facts": [
+          "The students are deciding how to present an environmental group project.",
+          "Daniel initially favours a video showing campus recycling and interviews.",
+          "Leah worries editing will distract from research and exceed their skills or time.",
+          "Omar proposes short clips plus evidence-focused slides, with captions and consent.",
+          "They agree on a mainly slide-based presentation, limited filming, clear responsibilities and joint rehearsal."
+        ],
+        "sample": "The group discusses the best format for an environmental project. Daniel initially favours a video because footage of campus recycling could make the findings engaging. Leah is concerned that filming and editing would consume time needed for research and analysis. Omar proposes a compromise: use a few short clips to introduce the issue, then present the evidence through slides. He also highlights captions and permission when filming. Daniel accepts the compromise and offers to produce brief clips without identifying students. Leah then recommends agreeing on research questions, dividing the analysis and rehearsing together. Overall, they choose a research-led slide presentation with limited video support, balancing engagement with workload, accessibility and ethical responsibilities.",
+        "text": "Daniel: For our environmental project, I would like to make a short video instead of a slide presentation. We could show the recycling facilities around campus and interview students. That might make our findings easier to understand than reading statistics from a screen during the final class.\nLeah: A video could be engaging, but editing takes time and none of us has much experience. We also have to show how we collected and analysed our data. I worry that production work might distract us from the research, which is the main part of the assessment.\nOmar: Could we combine the approaches? A few short clips could introduce the problem, followed by slides explaining the evidence. We should also provide captions and avoid filming anyone without permission. The format should help communicate the findings rather than become the main focus of the project.\nDaniel: I like that compromise. We could record the facilities without identifying students, and use an anonymous questionnaire instead of interviews. I can take responsibility for two brief clips. If the clips do not work well, the research presentation would still be complete without them.\nLeah: That makes the workload more manageable. Let us agree on the research questions and divide the analysis first. Then we can set a strict time limit for filming and editing. I would also like us to practise together so the final presentation feels like one coherent explanation.\nOmar: Agreed. We should check the assessment instructions before committing, share a draft early and keep the clips short and accessible. The final plan is a slide-based presentation supported by video, with research quality, consent and clear teamwork taking priority over elaborate production.",
+        "sourceId": "sgd-2",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "sgd-2",
+          "sourceFingerprint": "68a170fab51fb5ae8fb5e8c8ac8c97ead5d8e495e0b2f97f2a17505c26a42a7b",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "hard",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires connecting several ideas or speakers and preserving relationships."
+        },
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/7052001c63b407122e0dd2cb40e2d6331e679b1b8152e099c649e88ef2c7eb18.mp3",
+        "entry": {
+          "textSha256": "5b5edd9409373ddbfdd56501470aad0d19ac41f6a1c89e235d1bd59ae0fc3f7c",
+          "audioSha256": "7052001c63b407122e0dd2cb40e2d6331e679b1b8152e099c649e88ef2c7eb18",
+          "bytes": 675885,
+          "seconds": 112.608,
+          "voices": [
+            "en-AU-NatashaNeural",
+            "en-US-GuyNeural",
+            "en-GB-SoniaNeural"
+          ],
+          "path": "content/full-mock/assets/7052001c63b407122e0dd2cb40e2d6331e679b1b8152e099c649e88ef2c7eb18.mp3"
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rts-01",
+      "question": {
+        "id": "fm1-rts-01",
+        "type": "rts",
+        "name": "Respond to a Situation",
+        "preparation": 10,
+        "seconds": 40,
+        "instruction": "Read and listen to the situation. Prepare for 10 seconds, then speak directly to the person named in the question within 40 seconds.",
+        "title": "Clarifying assignment feedback",
+        "text": "Your tutor has returned an assignment with a comment saying that your argument needs stronger evidence. You are unsure what evidence is missing and want advice on improving your assignment. You meet your tutor after class. What would you say to your tutor?",
+        "facts": [
+          "Address the tutor directly and politely.",
+          "Explain uncertainty about the comment on evidence.",
+          "Ask which claim or type of evidence needs improvement.",
+          "Suggest a specific next step such as reviewing a paragraph or attending consultation."
+        ],
+        "sample": "Excuse me, could I ask about the feedback on my assignment? You mentioned that my argument needs stronger evidence, and I would like to understand how to improve it. Is there a particular claim that needs more support, or should I use a different type of source? If you have time, could we look at one paragraph together? Otherwise, I would be happy to bring it to your next consultation session.",
+        "promptVersion": "rts-prompt-2026-10-28.1",
+        "promptAudioKey": "rts-1-prompt-20261028-1",
+        "sourceId": "rts-1",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "rts-1",
+          "sourceFingerprint": "e23be9d4d656ac1574f1d9bb9b388014debfa2b77351316792cdabdb06c23d71",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/65daf1a9c2801cd127f5477e736bd1cfee656a837255a0d5c54592f83c967679.mp3",
+        "entry": {
+          "questionId": "rts-1",
+          "promptVersion": "rts-prompt-2026-10-28.1",
+          "textSha256": "3b71a80fa33640fa7202c4e6edaec495aea42329f21a7ec7e9b95d7736e98ffb",
+          "audioSha256": "65daf1a9c2801cd127f5477e736bd1cfee656a837255a0d5c54592f83c967679",
+          "bytes": 107517,
+          "seconds": 17.88,
+          "voices": [
+            "en-AU-NatashaNeural"
+          ],
+          "generator": "edge-tts 7.3.1",
+          "path": "content/full-mock/assets/65daf1a9c2801cd127f5477e736bd1cfee656a837255a0d5c54592f83c967679.mp3"
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-rts-02",
+      "question": {
+        "id": "fm1-rts-02",
+        "type": "rts",
+        "name": "Respond to a Situation",
+        "preparation": 10,
+        "seconds": 40,
+        "instruction": "Read and listen to the situation. Prepare for 10 seconds, then speak directly to the person named in the question within 40 seconds.",
+        "title": "Changing a group meeting",
+        "text": "Your group has arranged to meet tomorrow afternoon, but your work shift has unexpectedly changed. You cannot attend and need to agree on another arrangement that allows you to contribute to the project. What would you say to your group members?",
+        "facts": [
+          "Speak directly to the group and explain the scheduling conflict.",
+          "Acknowledge the inconvenience without blaming others.",
+          "Offer an alternative time or remote contribution.",
+          "Commit to completing or sharing your allocated work."
+        ],
+        "sample": "Hi everyone, I’m sorry, but my work shift has changed unexpectedly and I can’t make tomorrow afternoon’s meeting. I know we have already organised the time, so I don’t want to hold up the project. Would an evening call work for you? If not, please go ahead without me. I’ll upload my research notes beforehand and respond to any questions afterwards, so my part of the work stays on schedule.",
+        "promptVersion": "rts-prompt-2026-10-28.1",
+        "promptAudioKey": "rts-2-prompt-20261028-1",
+        "sourceId": "rts-2",
+        "contentOrigin": {
+          "kind": "repository-original",
+          "source": "content/speaking-bank.js",
+          "sourceId": "rts-2",
+          "sourceFingerprint": "a1e59286b7481cc5e14091dadd35507dc6576284abdcce0d7c1d01f0060f9b58",
+          "evidence": "The speaking bank explicitly declares original teaching material; no user prediction item is selected."
+        },
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/f2b9a60f8e6d6f89bf6495b39c580f6b839365f20c59242f0dda4e284e5683fe.mp3",
+        "entry": {
+          "questionId": "rts-2",
+          "promptVersion": "rts-prompt-2026-10-28.1",
+          "textSha256": "7b332f1e07a1916292479f54bea887ed477234508f400a6e3415e4f1567a1bf1",
+          "audioSha256": "f2b9a60f8e6d6f89bf6495b39c580f6b839365f20c59242f0dda4e284e5683fe",
+          "bytes": 98301,
+          "seconds": 16.344,
+          "voices": [
+            "en-AU-NatashaNeural"
+          ],
+          "generator": "edge-tts 7.3.1",
+          "path": "content/full-mock/assets/f2b9a60f8e6d6f89bf6495b39c580f6b839365f20c59242f0dda4e284e5683fe.mp3"
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-swt-01",
+      "question": {
+        "id": "fm1-swt-01",
+        "type": "swt",
+        "title": "Learning from a prototype",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "A prototype is an early version of a product or service used to explore how an idea might work. It may be a rough model, a simple digital screen or even a role-play of a proposed service. Its purpose is not to impress an audience with a finished result. Instead, it allows a team to test important assumptions before committing substantial resources.\n\nThe value of a prototype depends on the question it helps answer. A detailed model can be wasteful if the team only needs to check whether people understand a basic instruction. Conversely, an attractive sketch cannot establish whether a physical mechanism will operate safely. Teams therefore need to choose a level of detail that suits the uncertainty they are investigating.\n\nFeedback also requires interpretation. Participants may say that they like a design while struggling to use it, so observing their actions can reveal difficulties that a simple preference survey misses. A disappointing trial can still be useful when it exposes a weakness early enough to change the proposal.\n\nPrototyping is consequently a process of learning rather than a single demonstration. Teams build an appropriate model, gather relevant evidence and revise their assumptions. By repeating this cycle, they can reduce uncertainty and direct their effort towards solutions that address a real need.",
+        "keyPoints": [
+          "Prototypes test assumptions before substantial resources are committed.",
+          "The model and evaluation method should match the uncertainty being investigated.",
+          "Observation, feedback and repeated revision make prototyping a learning process."
+        ],
+        "sample": "Prototypes help teams test assumptions before committing substantial resources, and their level of detail and evaluation methods should match the uncertainty being investigated; by observing use, interpreting feedback and revising their ideas repeatedly, teams can reduce uncertainty and develop solutions that address a real need.",
+        "instruction": "Write one complete sentence summarising the passage in 5–75 words. You have 10 minutes.",
+        "difficulty": {
+          "band": "hard",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires connecting several ideas or speakers and preserving relationships."
+        },
+        "seconds": 600
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-swt-02",
+      "question": {
+        "id": "fm1-swt-02",
+        "type": "swt",
+        "title": "Managing a seed collection",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "Seed collections can help protect plant diversity by keeping material that may otherwise disappear from farms or natural habitats. However, placing seeds in storage is only the beginning of conservation. The collection must retain information about where each sample came from, when it was gathered and the conditions in which the parent plants grew. Without these records, researchers may struggle to interpret the differences between samples or choose material suitable for a future purpose.\n\nStored seeds also change over time. Their ability to germinate can decline, even under carefully controlled conditions. Staff therefore test samples periodically and produce replacement seed when necessary. This process needs care because growing only a small number of plants may unintentionally narrow the genetic variety that the original sample contained.\n\nDecisions about access create further responsibilities. Farmers and local communities may have maintained valuable varieties for generations. Institutions need clear arrangements that recognise those contributions and explain how material and associated knowledge will be used.\n\nA useful seed collection is thus an active system rather than a permanent warehouse. Reliable records, continuing biological checks and responsible relationships with contributors work together to preserve both the usefulness and the diversity of the material. Success depends on the quality of this continuing work, not simply on the number of packets stored.",
+        "keyPoints": [
+          "Seed conservation requires reliable origin and growing-condition records.",
+          "Regular germination checks and careful replacement protect viability and genetic variety.",
+          "Responsible arrangements with contributors are part of an actively maintained collection."
+        ],
+        "sample": "Seed collections preserve useful plant diversity through reliable records of origin and growing conditions, regular checks and careful replacement to maintain viability and genetic variety, while responsible arrangements with contributing communities make conservation an active and continuing process rather than simply the storage of many seed packets.",
+        "instruction": "Write one complete sentence summarising the passage in 5–75 words. You have 10 minutes.",
+        "difficulty": {
+          "band": "hard",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires connecting several ideas or speakers and preserving relationships."
+        },
+        "seconds": 600
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-essay-01",
+      "question": {
+        "id": "fm1-essay-01",
+        "type": "essay",
+        "title": "Practical projects at university",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "Some universities require every student to complete a practical project with a local organisation as part of their degree. Discuss one benefit and one difficulty of this requirement, and explain whether you support making it compulsory.",
+        "keyPoints": [
+          "Develop one relevant benefit of a compulsory practical project.",
+          "Develop one relevant difficulty of the requirement.",
+          "Give and support a clear position on whether the project should be compulsory."
+        ],
+        "sample": "A practical project with a local organisation can connect university study with problems outside the classroom. Although such projects can offer valuable experience, requiring every student to participate creates difficulties that universities must address. I support a compulsory project only when students receive suitable choices and support.\n\nOne benefit is the opportunity to apply knowledge in a setting where the answer is not supplied in a textbook. For example, a group studying communication might help a community centre improve information for new visitors. Students would need to understand the audience, discuss competing priorities and revise their work after feedback. This process can strengthen judgement as well as subject knowledge.\n\nA difficulty is that external projects can place unequal demands on students. Someone with a job or caring responsibilities may be unable to attend meetings during ordinary working hours. An organisation may also change its plans unexpectedly, leaving students dependent on circumstances beyond their control. A compulsory requirement would be unfair if these problems affected access to assessment.\n\nUniversities should therefore offer several project formats, including options that can be completed remotely or within a predictable timetable. They should assess the student’s contribution and learning rather than the organisation’s eventual success. With these arrangements, a practical project can be a valuable part of every degree. Without them, participation should remain optional rather than becoming a barrier to completion.",
+        "instruction": "Write a 200–300 word essay addressing the prompt. You have 20 minutes.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "seconds": 1200
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-dropdown-01",
+      "question": {
+        "id": "fm1-dropdown-01",
+        "type": "dropdown",
+        "title": "Testing a new ticket machine",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "Before replacing its ticket machines, a transport authority asked passengers to try a simple prototype. The trial was designed to [[1]] whether instructions were easy to follow, rather than to measure the speed of the final system. Observers recorded where passengers hesitated and asked them to explain their choices. Several people selected the wrong fare because two labels appeared almost identical. This finding [[2]] the designers to change the wording before installing expensive equipment. The team then repeated the trial with different users. By treating early feedback as [[3]] for revision, the authority reduced the risk of introducing a system that looked efficient but caused confusion in everyday use.",
+        "answers": [
+          "establish",
+          "prompted",
+          "evidence"
+        ],
+        "options": [
+          [
+            "invent",
+            "estimate",
+            "establish",
+            "assure"
+          ],
+          [
+            "prevented",
+            "preserved",
+            "prohibited",
+            "prompted"
+          ],
+          [
+            "permission",
+            "evidence",
+            "certainty",
+            "decoration"
+          ]
+        ],
+        "explanation": "The answers fit the passage’s meaning, grammar and established word combinations.",
+        "instruction": "Choose the best option for each gap. This task uses the shared Reading section clock.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-dropdown-02",
+      "question": {
+        "id": "fm1-dropdown-02",
+        "type": "dropdown",
+        "title": "Keeping a community orchard healthy",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "A community orchard depends on more than the initial planting of trees. Volunteers need to agree on watering, pruning and the collection of fallen fruit. Without a clear division of [[1]], essential work may be overlooked because everyone assumes that someone else will do it. A simple seasonal schedule can make these tasks visible. It should also remain [[2]] enough to respond to unexpected weather or a shortage of volunteers. Recording which methods work well allows new members to benefit from earlier experience. In this way, the orchard becomes a continuing shared project whose success [[3]] on coordination as well as enthusiasm.",
+        "answers": [
+          "responsibility",
+          "flexible",
+          "depends"
+        ],
+        "options": [
+          [
+            "responsibility",
+            "respond",
+            "responsibly",
+            "responsible"
+          ],
+          [
+            "flex",
+            "flexible",
+            "flexibility",
+            "flexibly"
+          ],
+          [
+            "occurs",
+            "insists",
+            "consists",
+            "depends"
+          ]
+        ],
+        "explanation": "The answers fit the passage’s meaning, grammar and established word combinations.",
+        "instruction": "Choose the best option for each gap. This task uses the shared Reading section clock.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-dropdown-03",
+      "question": {
+        "id": "fm1-dropdown-03",
+        "type": "dropdown",
+        "title": "Interpreting a survey",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "A survey of library users may reveal useful patterns, but its conclusions depend on who takes part. If responses come mainly from frequent visitors, people who rarely enter the building may be [[1]]. Their absence matters because the reasons for not visiting could point to barriers that regular users do not experience. Researchers can address this problem by inviting responses in other community settings. They should also explain the [[2]] of the sample when presenting their findings. A large number of replies does not automatically make a survey representative. The aim is to collect evidence that reflects the relevant population, rather than merely to [[3]] the largest possible total.",
+        "answers": [
+          "underrepresented",
+          "limitations",
+          "achieve"
+        ],
+        "options": [
+          [
+            "overprepared",
+            "overestimated",
+            "underrepresented",
+            "misprinted"
+          ],
+          [
+            "permissions",
+            "instructions",
+            "locations",
+            "limitations"
+          ],
+          [
+            "achieve",
+            "behave",
+            "approve",
+            "declare"
+          ]
+        ],
+        "explanation": "The answers fit the passage’s meaning, grammar and established word combinations.",
+        "instruction": "Choose the best option for each gap. This task uses the shared Reading section clock.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-dropdown-04",
+      "question": {
+        "id": "fm1-dropdown-04",
+        "type": "dropdown",
+        "title": "Maintaining a shared catalogue",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "When several museums share an online catalogue, visitors can search collections that were previously described in separate systems. However, combining records is not simply a matter of copying files. Different institutions may use different names for the same type of object. Unless these differences are [[1]], a search can miss relevant material or return misleading results. Staff therefore agree on common descriptions while preserving important local information. They also record where each entry came from so that changes can be [[2]]. A shared catalogue remains useful only when its records are maintained. Technical connections make cooperation possible, but continuing attention to meaning and [[3]] makes the information dependable.",
+        "answers": [
+          "resolved",
+          "traced",
+          "accuracy"
+        ],
+        "options": [
+          [
+            "removed",
+            "resolved",
+            "refused",
+            "replaced"
+          ],
+          [
+            "trained",
+            "traded",
+            "traced",
+            "treated"
+          ],
+          [
+            "accuracy",
+            "accurately",
+            "accurate",
+            "inaccurate"
+          ]
+        ],
+        "explanation": "The answers fit the passage’s meaning, grammar and established word combinations.",
+        "instruction": "Choose the best option for each gap. This task uses the shared Reading section clock.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-dropdown-05",
+      "question": {
+        "id": "fm1-dropdown-05",
+        "type": "dropdown",
+        "title": "Learning from an unsuccessful experiment",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "An experiment that fails to support a prediction can still make a valuable contribution. The result may show that an explanation needs to be [[1]], or that an effect occurs only under particular conditions. This value depends on the quality of the methods and the clarity of the record. Researchers must describe what they actually did, including any unexpected departures from the original plan. Otherwise, later readers cannot [[2]] between a meaningful result and a problem in the procedure. Reporting an unsuccessful trial also helps other teams avoid repeating the same work. Scientific progress therefore requires the careful communication of evidence, [[3]] of whether it confirms the researcher’s initial expectation.",
+        "answers": [
+          "revised",
+          "distinguish",
+          "regardless"
+        ],
+        "options": [
+          [
+            "revising",
+            "revise",
+            "revision",
+            "revised"
+          ],
+          [
+            "distinguish",
+            "distract",
+            "dissolve",
+            "distribute"
+          ],
+          [
+            "despite",
+            "regardless",
+            "because",
+            "instead"
+          ]
+        ],
+        "explanation": "The answers fit the passage’s meaning, grammar and established word combinations.",
+        "instruction": "Choose the best option for each gap. This task uses the shared Reading section clock.",
+        "difficulty": {
+          "band": "hard",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires connecting several ideas or speakers and preserving relationships."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-mcma-01",
+      "question": {
+        "id": "fm1-mcma-01",
+        "type": "mcma",
+        "title": "An equipment loan trial",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "A college began lending laptops for short periods because some students had no suitable device at home. During the trial, staff recorded demand at different times of the semester and asked borrowers about difficulties. They found that a two-day loan was sufficient for many routine tasks but too short for major assignments. The college therefore introduced longer loans during assessment weeks while keeping some devices available for urgent requests. It also provided a clear process for reporting faults. The review did not recommend buying the most expensive models; reliability and access were considered more important than advanced features.",
+        "prompt": "Which TWO changes followed the trial?",
+        "choices": [
+          "Every laptop was replaced with the most expensive model.",
+          "Some devices were kept for urgent requests.",
+          "All loans were restricted to a single afternoon.",
+          "Longer loans were offered during assessment weeks.",
+          "Students had to buy a device before borrowing one."
+        ],
+        "answers": [
+          3,
+          1
+        ],
+        "explanation": "The trial led to longer assessment-period loans and a reserve for urgent requests.",
+        "instruction": "Select all correct responses. Each incorrect selection loses one point; the item score cannot fall below zero.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-mcma-02",
+      "question": {
+        "id": "fm1-mcma-02",
+        "type": "mcma",
+        "title": "A stream monitoring project",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "Students monitoring a local stream were given a standard procedure for taking water samples. The teacher explained that collecting a large number of samples would not compensate for inconsistent methods. Teams recorded the time, recent weather and location of each sample so that unexpected readings could be investigated. When two teams reported very different results at the same location, they repeated the measurement together rather than deleting one result immediately. The project’s value came from learning to question and improve the evidence, not from producing an impressive total of measurements or claiming that a single visit described the stream permanently.",
+        "prompt": "Which TWO practices supported the quality of the evidence?",
+        "choices": [
+          "Recording the conditions of each sample.",
+          "Repeating a disputed measurement together.",
+          "Deleting every unusual measurement immediately.",
+          "Using a different procedure for every team.",
+          "Treating one visit as a permanent description."
+        ],
+        "answers": [
+          0,
+          1
+        ],
+        "explanation": "The teams recorded sampling conditions and repeated a disputed measurement collaboratively.",
+        "instruction": "Select all correct responses. Each incorrect selection loses one point; the item score cannot fall below zero.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-reorder-01",
+      "question": {
+        "id": "fm1-reorder-01",
+        "type": "reorder",
+        "title": "A rooftop garden",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "items": [
+          {
+            "key": "0d8467ad27140628",
+            "text": "Before choosing plants, the project team asked an engineer to check how much weight the roof could support."
+          },
+          {
+            "key": "9a4b51df29889b13",
+            "text": "A university decided to create a small rooftop garden for teaching."
+          },
+          {
+            "key": "8c7d261e73e8a1fa",
+            "text": "Those choices allowed the garden to provide useful teaching space without exceeding the building’s structural limits."
+          },
+          {
+            "key": "32156193d4cdc678",
+            "text": "The resulting report limited the depth of soil, so the team selected shallow containers and suitable species."
+          }
+        ],
+        "answers": [
+          "9a4b51df29889b13",
+          "0d8467ad27140628",
+          "32156193d4cdc678",
+          "8c7d261e73e8a1fa"
+        ],
+        "explanation": "Follow the introduction, investigation, consequence and final outcome; later references depend on earlier information.",
+        "instruction": "Put the text boxes in their logical order. Correct adjacent pairs receive credit.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-reorder-02",
+      "question": {
+        "id": "fm1-reorder-02",
+        "type": "reorder",
+        "title": "Restoring an old map",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "items": [
+          {
+            "key": "6e022767a55540d5",
+            "text": "The tests showed that some inks would spread, so cleaning had to avoid those areas."
+          },
+          {
+            "key": "0a6ddf1f43f69d77",
+            "text": "A conservator first photographed its condition and tested how the paper reacted to small amounts of moisture."
+          },
+          {
+            "key": "ffecf3d8bcb0ce1d",
+            "text": "After this careful treatment, the museum displayed a digital copy while keeping the fragile original in controlled storage."
+          },
+          {
+            "key": "383efd2c2d101d1d",
+            "text": "A museum acquired a paper map that had become difficult to read after years of poor storage."
+          }
+        ],
+        "answers": [
+          "383efd2c2d101d1d",
+          "0a6ddf1f43f69d77",
+          "6e022767a55540d5",
+          "ffecf3d8bcb0ce1d"
+        ],
+        "explanation": "Follow the introduction, investigation, consequence and final outcome; later references depend on earlier information.",
+        "instruction": "Put the text boxes in their logical order. Correct adjacent pairs receive credit.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-wordbank-01",
+      "question": {
+        "id": "fm1-wordbank-01",
+        "type": "wordbank",
+        "title": "A shared rehearsal room",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "A rehearsal room can [[1]] several groups only if bookings are [[2]]. A shared calendar helps users see when the space is available, while a clear [[3]] policy allows unused time to be offered to others. The system should be simple enough to use without special training. Its purpose is to make access [[4]], rather than to create extra administration.",
+        "answers": [
+          "serve",
+          "visible",
+          "cancellation",
+          "fair"
+        ],
+        "bank": [
+          "visibly",
+          "serve",
+          "cancellation",
+          "visible",
+          "fairly",
+          "fair",
+          "service"
+        ],
+        "explanation": "Each answer fits both the grammatical position and the relationship between the ideas.",
+        "instruction": "Place a word from the bank into each gap. Some words are not needed.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-wordbank-02",
+      "question": {
+        "id": "fm1-wordbank-02",
+        "type": "wordbank",
+        "title": "Checking an estimate",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "An estimate becomes more [[1]] when its assumptions are [[2]]. A project manager who explains the expected price of materials and the amount of work required allows others to question the calculation. If circumstances change, the estimate can then be updated [[3]]. A single unexplained number may look [[4]], but it offers little guidance about why the eventual cost differs.",
+        "answers": [
+          "useful",
+          "explicit",
+          "systematically",
+          "precise"
+        ],
+        "bank": [
+          "precision",
+          "systematically",
+          "systematic",
+          "usefully",
+          "useful",
+          "explicit",
+          "precise"
+        ],
+        "explanation": "Each answer fits both the grammatical position and the relationship between the ideas.",
+        "instruction": "Place a word from the bank into each gap. Some words are not needed.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-wordbank-03",
+      "question": {
+        "id": "fm1-wordbank-03",
+        "type": "wordbank",
+        "title": "A volunteer handbook",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "A volunteer handbook should describe [[1]] tasks in language that new members can understand. Long lists of rules may be less [[2]] than short explanations supported by examples. The handbook also needs a [[3]] process for asking questions. When volunteers report a confusing instruction, revising the document can prevent the same problem from [[4]] with the next group.",
+        "answers": [
+          "essential",
+          "helpful",
+          "clear",
+          "recurring"
+        ],
+        "bank": [
+          "clear",
+          "recurring",
+          "helpful",
+          "essential",
+          "essentially",
+          "recurrence",
+          "clearly"
+        ],
+        "explanation": "Each answer fits both the grammatical position and the relationship between the ideas.",
+        "instruction": "Place a word from the bank into each gap. Some words are not needed.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-wordbank-04",
+      "question": {
+        "id": "fm1-wordbank-04",
+        "type": "wordbank",
+        "title": "Preparing a public display",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "A public display has [[1]] space, so curators must [[2]] information carefully. A short label should help visitors [[3]] why an object matters without assuming detailed prior knowledge. Extra information can be offered through another format. This approach keeps the main display [[4]] while allowing interested visitors to explore the subject more deeply at their own pace.",
+        "answers": [
+          "limited",
+          "select",
+          "understand",
+          "accessible"
+        ],
+        "bank": [
+          "accessible",
+          "limitations",
+          "understand",
+          "selection",
+          "accessibly",
+          "select",
+          "limited"
+        ],
+        "explanation": "Each answer fits both the grammatical position and the relationship between the ideas.",
+        "instruction": "Place a word from the bank into each gap. Some words are not needed.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-mcsa-01",
+      "question": {
+        "id": "fm1-mcsa-01",
+        "type": "mcsa",
+        "title": "Finding a suitable workshop time",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "A community centre wanted to offer a repair workshop but received conflicting requests about its timetable. Instead of selecting the most popular time immediately, the coordinator asked who would be excluded by each option. An evening session suited full-time workers but was difficult for people who depended on an infrequent bus service. A weekend session created different problems for some carers. The centre eventually offered two shorter sessions on different days. This did not remove every difficulty, but it allowed a wider range of residents to participate than either single session would have done.",
+        "prompt": "Why did the centre offer two shorter sessions?",
+        "choices": [
+          "To reduce the number of volunteers permanently.",
+          "To accommodate residents with different constraints.",
+          "To avoid providing any transport information.",
+          "To ensure that everyone attended both sessions."
+        ],
+        "answer": 1,
+        "explanation": "Different schedules excluded different residents; two options broadened access.",
+        "instruction": "Read the passage and select one response.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-mcsa-02",
+      "question": {
+        "id": "fm1-mcsa-02",
+        "type": "mcsa",
+        "title": "Reading a building’s energy data",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "passage": "A school’s electricity use fell after new windows were installed. The head teacher welcomed the result but did not immediately claim that the windows had caused the entire reduction. The same period included milder weather and a week when part of the building was closed. To investigate further, the school compared use during occupied days with similar weather conditions and checked records from previous years. The example shows why a useful observation should lead to further inquiry rather than an immediate conclusion about cause.",
+        "prompt": "What is the main point of the passage?",
+        "choices": [
+          "Historical records are always unreliable.",
+          "A building’s electricity use cannot be measured.",
+          "A change in energy use may have several explanations.",
+          "New windows never reduce electricity demand."
+        ],
+        "answer": 2,
+        "explanation": "The weather and closure offer other explanations, so the window effect needs a more careful comparison.",
+        "instruction": "Read the passage and select one response.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "minutes": 25,
+        "timeGroup": "reading"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ]
+    },
+    {
+      "id": "full-mock-1/fm1-sst-01",
+      "question": {
+        "id": "fm1-sst-01",
+        "type": "sst",
+        "title": "Planning useful public seating",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "When a town installs public benches, it may report success by counting how many seats have been added. That figure is easy to communicate, but it tells us little about whether the benches are useful. Location can matter more than quantity. A seat near a steep path may allow an older resident to complete a walk that would otherwise be too difficult. Shade, shelter and a view of approaching transport can also influence whether people choose to sit. The design needs to consider different users. Some people need a firm back and arms to help them stand, while a space beside the bench can allow a wheelchair user to remain with friends. These requirements are easier to understand when residents take part in planning. However, consultation should include people who currently avoid the area, not just those who already use it. Finally, a bench requires continuing care. A damaged or poorly maintained seat can quickly lose its value, regardless of how well it was designed. The main lesson is that public seating should be assessed through the journeys and social activities it supports. Counting installations is a starting point, but observing use and responding to feedback provide a better guide to whether an investment has improved everyday access.",
+        "keyPoints": [
+          "Useful public seating depends on location and inclusive design more than installation counts.",
+          "Consultation should include different users and people who currently avoid the area.",
+          "Maintenance and observation of supported journeys and social activity are essential to evaluation."
+        ],
+        "sample": "The speaker argues that public benches should be judged by their usefulness rather than their number. Suitable locations, shelter and inclusive features can support walking and social activity. Planning should involve different residents, including people who currently avoid an area. Continuing maintenance, observation and feedback are needed to establish whether the seating has improved everyday access.",
+        "audioRate": "-3%",
+        "instruction": "Listen once and write a 50–70 word summary. Your 10 minutes include listening to the recording.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "seconds": 600,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "minutes": 10
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/4929898e1162409c3b403a80d9b21102a7ed2d0484ec4352de0875c531bef6bc.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/4929898e1162409c3b403a80d9b21102a7ed2d0484ec4352de0875c531bef6bc.mp3",
+          "textSha256": "0dcfd402a7ab9a0b9cf1e121225c4ab7c7d2fd18914dd313fe6ebbe14327fe0d",
+          "audioSha256": "4929898e1162409c3b403a80d9b21102a7ed2d0484ec4352de0875c531bef6bc",
+          "bytes": 460173,
+          "seconds": 76.656,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-lmcma-01",
+      "question": {
+        "id": "fm1-lmcma-01",
+        "type": "lmcma",
+        "title": "An evening skills course",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "A training centre introduced an evening course in basic digital skills after local residents asked for help with online services. At first, the organisers assumed that a single sequence of lessons would suit everyone. The opening session showed otherwise. Some learners were confident using a phone but had never worked with a keyboard. Others could type comfortably but were anxious about recognising suspicious messages. The centre therefore began each lesson with a short choice of activities rather than asking every participant to complete the same exercise. Learners could practise an unfamiliar skill while a tutor offered help where it was needed. The organisers also discovered that attendance was affected by more than the quality of teaching. Two participants regularly arrived late because their bus connection was unreliable, and another left early to collect a child. Moving the start time slightly and sharing brief written summaries made it easier for these learners to continue. The centre did not remove its learning goals. It changed the route through them so that different starting points and practical responsibilities were less likely to prevent participation. Its review recommended continuing to ask about these barriers instead of treating missed classes as evidence of a lack of interest.",
+        "prompt": "Which TWO changes made the course more accessible?",
+        "choices": [
+          "Offering a choice of activities at the start of lessons.",
+          "Adjusting the timetable and providing brief summaries.",
+          "Treating late arrival as proof of low motivation.",
+          "Requiring everyone to use the same device.",
+          "Removing all learning goals from the course."
+        ],
+        "answers": [
+          0,
+          1
+        ],
+        "explanation": "The centre offered different activities and adjusted timing and written support to address practical barriers.",
+        "audioRate": "-3%",
+        "instruction": "Listen once and select all correct responses. Incorrect selections lose points, with a minimum item score of zero.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 7,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/9ba290220e79c30ba0ab984120534f8f5e2641e9946b62b2c186ad6d116d21f1.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/9ba290220e79c30ba0ab984120534f8f5e2641e9946b62b2c186ad6d116d21f1.mp3",
+          "textSha256": "c0c3368d56d44a0f1e7fbee2d18830b3936f1809fe61f89261a11c5b1ad936a7",
+          "audioSha256": "9ba290220e79c30ba0ab984120534f8f5e2641e9946b62b2c186ad6d116d21f1",
+          "bytes": 497613,
+          "seconds": 82.896,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-11%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-lmcma-02",
+      "question": {
+        "id": "fm1-lmcma-02",
+        "type": "lmcma",
+        "title": "A shared tool workshop",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "A neighbourhood workshop lends tools and provides space for small repair projects. When it first opened, members were encouraged to leave comments in a suggestion box. The organisers received many requests for new equipment and almost ordered several expensive machines. Before doing so, they examined the booking records and spoke to members who rarely visited. This revealed a different problem. Several tools were already available, but their names in the catalogue were unfamiliar and their storage locations were unclear. New members often assumed that the workshop did not own what they needed. The organisers improved the catalogue with photographs and short descriptions. They also introduced a regular orientation session in which members practised finding and returning equipment. Demand for some proposed purchases then fell because existing tools became easier to locate. This did not mean that new equipment was unnecessary. It meant that purchasing decisions could be based on a clearer picture of what members actually lacked. The workshop continued to record requests, but it considered them alongside observed use, maintenance costs and the training required for safe operation. The main lesson was that improving access to existing resources can sometimes solve a problem more effectively than increasing the amount of equipment.",
+        "prompt": "Which TWO actions helped the organisers understand what was needed?",
+        "choices": [
+          "Ordering every machine mentioned in the suggestion box.",
+          "Removing the catalogue to encourage exploration.",
+          "Examining booking records and speaking to infrequent users.",
+          "Ending orientation because equipment was self-explanatory.",
+          "Considering requests alongside use and maintenance needs."
+        ],
+        "answers": [
+          2,
+          4
+        ],
+        "explanation": "Records and conversations revealed access problems; requests were then evaluated with use, maintenance and safety training.",
+        "audioRate": "-3%",
+        "instruction": "Listen once and select all correct responses. Incorrect selections lose points, with a minimum item score of zero.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 7,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/886ee8fa890ed03d9f2ad70190866079841c53b614fc1381e91d2e3ea7128215.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/886ee8fa890ed03d9f2ad70190866079841c53b614fc1381e91d2e3ea7128215.mp3",
+          "textSha256": "9f78e9e63252f8325e5e1e6e9133a24dd23c2ee484011f3ad0ee1025f3b66a83",
+          "audioSha256": "886ee8fa890ed03d9f2ad70190866079841c53b614fc1381e91d2e3ea7128215",
+          "bytes": 484365,
+          "seconds": 80.688,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-lfi-01",
+      "question": {
+        "id": "fm1-lfi-01",
+        "type": "lfi",
+        "title": "A neighbourhood weather station",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "A neighbourhood weather station can provide useful information, but its location affects the measurements. A sensor placed against a warm wall may report a higher temperature than the surrounding air. Volunteers therefore need clear instructions about positioning the equipment and recording any changes nearby. Regular maintenance is equally important. Leaves can block a rain gauge, and a weak battery can interrupt the record. The aim is not simply to collect more numbers, but to produce observations that other people can interpret with confidence.",
+        "passage": "A neighbourhood weather station can provide useful information, but its location affects the [[1]]. A sensor placed against a warm wall may report a higher temperature than the [[2]] air. Volunteers therefore need clear instructions about [[3]] the equipment and recording any changes nearby. Regular [[4]] is equally important. Leaves can block a rain gauge, and a weak battery can interrupt the record. The aim is not simply to collect more numbers, but to produce observations that other people can interpret with [[5]].",
+        "answers": [
+          "measurements",
+          "surrounding",
+          "positioning",
+          "maintenance",
+          "confidence"
+        ],
+        "explanation": "The key restores the exact spoken words with their correct spelling.",
+        "audioRate": "-3%",
+        "instruction": "Listen once and type the missing words into the transcript. Check your spelling.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 7,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/5e6989007b026e866fca0322b2bac41ce9c3400a4c72031c533c13001d5014f2.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/5e6989007b026e866fca0322b2bac41ce9c3400a4c72031c533c13001d5014f2.mp3",
+          "textSha256": "14acba13b96651827e7619466f821fee13fad21d5e41887ebe0a83dac0809e8e",
+          "audioSha256": "5e6989007b026e866fca0322b2bac41ce9c3400a4c72031c533c13001d5014f2",
+          "bytes": 190749,
+          "seconds": 31.752,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-lfi-02",
+      "question": {
+        "id": "fm1-lfi-02",
+        "type": "lfi",
+        "title": "Comparing packaging designs",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "A company comparing two packaging designs should first decide what problem the change is intended to solve. A lighter container may reduce the amount of material used, but it is not necessarily better if more products are damaged during transport. The trial should therefore record both material use and the condition of delivered goods. Feedback from people who open the packages can reveal further difficulties. A useful comparison considers the whole process rather than choosing the design that performs best on one convenient measurement.",
+        "passage": "A company comparing two packaging designs should first decide what problem the change is [[1]] to solve. A lighter container may reduce the amount of material used, but it is not [[2]] better if more products are damaged during [[3]]. The trial should therefore record both material use and the condition of [[4]] goods. Feedback from people who open the packages can reveal further difficulties. A useful [[5]] considers the whole process rather than choosing the design that performs best on one convenient measurement.",
+        "answers": [
+          "intended",
+          "necessarily",
+          "transport",
+          "delivered",
+          "comparison"
+        ],
+        "explanation": "The key restores the exact spoken words with their correct spelling.",
+        "audioRate": "-3%",
+        "instruction": "Listen once and type the missing words into the transcript. Check your spelling.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 7,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/2eba7ef0116eb3ca8454c3158d45dcc1877c3546f3cc3db7dacb5b68e78e7bd7.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/2eba7ef0116eb3ca8454c3158d45dcc1877c3546f3cc3db7dacb5b68e78e7bd7.mp3",
+          "textSha256": "9237714f45b23f3ed1067131531638ddb4950a19e162ae185a5e3b7cda4edb62",
+          "audioSha256": "2eba7ef0116eb3ca8454c3158d45dcc1877c3546f3cc3db7dacb5b68e78e7bd7",
+          "bytes": 202989,
+          "seconds": 33.792,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-hcs-01",
+      "question": {
+        "id": "fm1-hcs-01",
+        "type": "hcs",
+        "title": "Interpreting a waiting list",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "A waiting list can show that a service is under pressure, but its length does not explain the whole problem. Some people may have joined several lists because they do not know which provider will respond first. Others may remain on a list after their circumstances change. A service should therefore check the information before treating every entry as a separate current need. At the same time, people who find the application process difficult may be missing from the list altogether. Understanding demand requires both reliable records and attention to those who have not been able to register. The purpose is to improve access, rather than merely to reduce the published total.",
+        "choices": [
+          "A waiting list needs careful interpretation: records may be outdated or duplicated, while barriers can prevent some people from registering.",
+          "Services should remove applications whenever people cannot be contacted immediately.",
+          "Waiting lists should be ignored because every entry is unreliable.",
+          "A shorter published waiting list always proves that access has improved."
+        ],
+        "answer": 0,
+        "explanation": "The recording combines record quality with unmet need hidden by registration barriers.",
+        "audioRate": "-3%",
+        "instruction": "Listen once and select the summary that best represents the recording.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/b186b775b5a7e03443a24b0cacfa1973cda0158a6ee7d2e61f2a7eb20304b1cd.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/b186b775b5a7e03443a24b0cacfa1973cda0158a6ee7d2e61f2a7eb20304b1cd.mp3",
+          "textSha256": "a140f217448f354f92c131b8058bb2f761f47cc9bfd240e8a3c40711d7e053bb",
+          "audioSha256": "b186b775b5a7e03443a24b0cacfa1973cda0158a6ee7d2e61f2a7eb20304b1cd",
+          "bytes": 234093,
+          "seconds": 38.976,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-hcs-02",
+      "question": {
+        "id": "fm1-hcs-02",
+        "type": "hcs",
+        "title": "A reusable cup trial",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "A café tried a reusable cup scheme to reduce disposable waste. Customers paid a small deposit and could return the cup during a later visit. The first review counted how many cups had been borrowed, but staff pointed out that borrowing was only the beginning of the cycle. Cups needed to be returned, washed effectively and used again before the scheme could deliver its intended benefit. The café improved return instructions and added a collection point beside the entrance. It then tracked how often individual cups completed the cycle. The experiment illustrates why an environmental scheme should be judged by actual patterns of use, including the work needed to keep it operating, rather than by an encouraging launch figure alone.",
+        "choices": [
+          "Customers should be prevented from returning cups after their first visit.",
+          "Washing cups prevents them from being reused and should be avoided.",
+          "A reusable cup scheme should be evaluated through completed return and reuse cycles, including cleaning and convenient returns, rather than borrowing totals alone.",
+          "The number of cups borrowed on the first day is sufficient to prove a scheme’s environmental value."
+        ],
+        "answer": 2,
+        "explanation": "Completed reuse cycles and the practical work behind them are the central measures of success.",
+        "audioRate": "-3%",
+        "instruction": "Listen once and select the summary that best represents the recording.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/b47a8970db318404d3926419b987ddd73625f2873323d31c415a7711f431a83e.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/b47a8970db318404d3926419b987ddd73625f2873323d31c415a7711f431a83e.mp3",
+          "textSha256": "d6493316ac5c8925b93ddb954cc058934808ee65c88da01c0b44c07efcfc462f",
+          "audioSha256": "b47a8970db318404d3926419b987ddd73625f2873323d31c415a7711f431a83e",
+          "bytes": 269949,
+          "seconds": 44.952,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-lmcsa-01",
+      "question": {
+        "id": "fm1-lmcsa-01",
+        "type": "lmcsa",
+        "title": "An accessible walking route",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "A local walking group wanted to describe the difficulty of its routes more clearly. Labels such as easy and moderate seemed helpful, but different walkers interpreted them differently. The group began publishing the distance, typical surface and locations of steep sections. It also noted where seats and toilets were available. Members could then judge a route against their own needs instead of relying on a single broad label. The aim was not to promise that everyone would find the same walk comfortable, but to provide enough specific information for an informed choice.",
+        "prompt": "Why did the group publish more detailed route information?",
+        "choices": [
+          "To guarantee that every route would suit every walker.",
+          "To help people judge routes against their individual needs.",
+          "To remove every steep section from its walks.",
+          "To replace all group walks with indoor meetings."
+        ],
+        "answer": 1,
+        "explanation": "Specific details allow individuals to decide whether a route suits them.",
+        "audioRate": "-3%",
+        "instruction": "Listen once and select one response to the question.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 5,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/1555cac3fcd3bf7f74d542ffaba01bd727554b3540663e1a80e13bd8d774e285.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/1555cac3fcd3bf7f74d542ffaba01bd727554b3540663e1a80e13bd8d774e285.mp3",
+          "textSha256": "ce2afde7af8ac0c4ee096935f467d951046fed4e23cb510c7f25912d19cd1853",
+          "audioSha256": "1555cac3fcd3bf7f74d542ffaba01bd727554b3540663e1a80e13bd8d774e285",
+          "bytes": 200253,
+          "seconds": 33.336,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-lmcsa-02",
+      "question": {
+        "id": "fm1-lmcsa-02",
+        "type": "lmcsa",
+        "title": "A useful project handover",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "When a student society elected a new committee, the outgoing members prepared a handover folder. It included more than a list of passwords and future events. They explained why certain arrangements had been chosen, which suppliers had been reliable and what had caused problems during the previous year. These notes could not predict every new situation, but they gave the incoming committee a starting point. The most useful handover preserved the reasoning behind decisions so that new members could adapt the plan intelligently rather than repeat it without understanding.",
+        "prompt": "What made the handover especially useful?",
+        "choices": [
+          "It explained the reasoning and experience behind earlier decisions.",
+          "It contained a prediction of every future problem.",
+          "It replaced the need to speak to other members.",
+          "It prevented the new committee from changing any decision."
+        ],
+        "answer": 0,
+        "explanation": "The recording emphasises preserving reasons and experience so later members can adapt.",
+        "audioRate": "-3%",
+        "instruction": "Listen once and select one response to the question.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 5,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/39880c8a0647fddbbcc8ac60666fb4177582e841a38d00d9c7b24dd4c5322eed.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/39880c8a0647fddbbcc8ac60666fb4177582e841a38d00d9c7b24dd4c5322eed.mp3",
+          "textSha256": "521a792e68ceac5edcfcb4794c9c36dbbe7054c3a59a648a2e453fe8a3432cea",
+          "audioSha256": "39880c8a0647fddbbcc8ac60666fb4177582e841a38d00d9c7b24dd4c5322eed",
+          "bytes": 192765,
+          "seconds": 32.088,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-smw-01",
+      "question": {
+        "id": "fm1-smw-01",
+        "type": "smw",
+        "title": "Checking the cause of a delay",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "A delivery company noticed that journeys were taking longer and initially blamed a new road layout. Before requesting changes, the manager compared the affected journeys with routes that had not changed. Both groups showed similar delays. Records then revealed that loading had started later because a sorting machine was being repaired. The road layout might still need attention, but the available evidence did not support treating it as",
+        "choices": [
+          "a complete solution",
+          "the main cause of the delay",
+          "a permanent repair to the machine",
+          "a source of faster sorting"
+        ],
+        "answer": 1,
+        "explanation": "The delay also occurred on unchanged routes and loading had started late, so the new layout was not supported as the main cause.",
+        "audioEndCue": true,
+        "audioRate": "-3%",
+        "instruction": "Listen once. A beep replaces the ending. Select the words that best complete the recording.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/1d4acc7de024f71faf1bac156aa0ba06a367f044cf026a4fe073a386985e1696.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/1d4acc7de024f71faf1bac156aa0ba06a367f044cf026a4fe073a386985e1696.mp3",
+          "textSha256": "e7bcf55c0de7380f7d77a8703e23d31177bee55ac752fa52a2685fa8d712d154",
+          "audioSha256": "1d4acc7de024f71faf1bac156aa0ba06a367f044cf026a4fe073a386985e1696",
+          "bytes": 161517,
+          "seconds": 26.88,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": true
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-hiw-01",
+      "question": {
+        "id": "fm1-hiw-01",
+        "type": "hiw",
+        "title": "Choosing bicycle parking",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "A college surveyed students before installing new bicycle parking. Many respondents wanted spaces near classroom entrances, but the design also needed to protect emergency access. Planners compared several locations and checked how bicycles would move through each area at busy times. They selected a site with clear visibility and enough room for people walking past. After installation, the college monitored use and invited feedback. This allowed minor problems to be corrected before the arrangement was expanded to other parts of the campus.",
+        "passage": "A college surveyed students before installing new bicycle parking. Many respondents wanted spaces near classroom entrances, but the design also needed to protect ordinary access. Planners compared several locations and checked how bicycles would move through each area at busy times. They selected a site with clear availability and enough room for people walking past. After installation, the college restricted use and invited feedback. This allowed minor problems to be corrected before the arrangement was abandoned to other parts of the campus.",
+        "answers": [
+          23,
+          47,
+          59,
+          75
+        ],
+        "explanation": "Each keyed position differs from the recording; unchanged words must not be selected.",
+        "audioRate": "-3%",
+        "instruction": "Follow the transcript while listening once. Select words that differ from the recording. Incorrect selections lose points, with a zero floor.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 10,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/37708173a7dc415c6c67a51f1af541acaf9d852aaa21ae45143ca761ac6f3caf.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/37708173a7dc415c6c67a51f1af541acaf9d852aaa21ae45143ca761ac6f3caf.mp3",
+          "textSha256": "9a9856d034addb0cfbf4b9c7fcebafbcc0053978d9798c1ee0bb765a2aa38534",
+          "audioSha256": "37708173a7dc415c6c67a51f1af541acaf9d852aaa21ae45143ca761ac6f3caf",
+          "bytes": 200541,
+          "seconds": 33.384,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-hiw-02",
+      "question": {
+        "id": "fm1-hiw-02",
+        "type": "hiw",
+        "title": "Recording local place names",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "Volunteers creating a local history map began by recording the place names used by older residents. Different names sometimes referred to the same location, so the team kept the original accounts and added explanatory notes. They did not assume that the most familiar spelling was always the oldest one. Instead, they compared memories with written records and identified uncertain details. The finished map showed both established information and questions that required further research, allowing readers to understand the evidence behind the labels.",
+        "passage": "Volunteers creating a local history map began by recording the place names used by older residents. Different names sometimes referred to the same location, so the team kept the official accounts and added temporary notes. They did not assume that the most familiar spelling was always the oldest one. Instead, they compared memories with written records and identified unimportant details. The finished map showed both established information and questions that required earlier research, allowing readers to understand the evidence behind the labels.",
+        "answers": [
+          29,
+          33,
+          58,
+          71
+        ],
+        "explanation": "Each keyed position differs from the recording; unchanged words must not be selected.",
+        "audioRate": "-3%",
+        "instruction": "Follow the transcript while listening once. Select words that differ from the recording. Incorrect selections lose points, with a zero floor.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 10,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/13b151134ae5e0d88f82ca5dfcf6ec3e6fb59c6c752cdd99cfe8a827d9f5596d.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/13b151134ae5e0d88f82ca5dfcf6ec3e6fb59c6c752cdd99cfe8a827d9f5596d.mp3",
+          "textSha256": "188e7827537322ababfd862549c36eeaddc33ed5a0eb8770291e52b6b395ddbf",
+          "audioSha256": "13b151134ae5e0d88f82ca5dfcf6ec3e6fb59c6c752cdd99cfe8a827d9f5596d",
+          "bytes": 196509,
+          "seconds": 32.712,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-wfd-01",
+      "question": {
+        "id": "fm1-wfd-01",
+        "type": "wfd",
+        "title": "Dictation sentence 1",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "The revised schedule will be available on Friday morning.",
+        "sample": "The revised schedule will be available on Friday morning.",
+        "audioRate": "-3%",
+        "instruction": "Listen once and type the sentence you hear. Check the words and their spelling.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/9d101a166ff0a63275cf676a7b39538981fe570f579370b995e5f418a2d9209c.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/9d101a166ff0a63275cf676a7b39538981fe570f579370b995e5f418a2d9209c.mp3",
+          "textSha256": "5a2fb0a67a26e001c444c633ef7bf26a43a8f8d1d2cd91eac963249df172225f",
+          "audioSha256": "9d101a166ff0a63275cf676a7b39538981fe570f579370b995e5f418a2d9209c",
+          "bytes": 19677,
+          "seconds": 3.24,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-wfd-02",
+      "question": {
+        "id": "fm1-wfd-02",
+        "type": "wfd",
+        "title": "Dictation sentence 2",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "Please include a clear title above each table.",
+        "sample": "Please include a clear title above each table.",
+        "audioRate": "-3%",
+        "instruction": "Listen once and type the sentence you hear. Check the words and their spelling.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/db9699178acb23c857f9a4965f9c2409be2772e358c7606dee043a02aa8ed7c2.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/db9699178acb23c857f9a4965f9c2409be2772e358c7606dee043a02aa8ed7c2.mp3",
+          "textSha256": "66c5de43f4837841f6c103d3c5d07de9fed0e142b6adab8e34915fd69979d60c",
+          "audioSha256": "db9699178acb23c857f9a4965f9c2409be2772e358c7606dee043a02aa8ed7c2",
+          "bytes": 18957,
+          "seconds": 3.12,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "full-mock-1/fm1-wfd-03",
+      "question": {
+        "id": "fm1-wfd-03",
+        "type": "wfd",
+        "title": "Dictation sentence 3",
+        "contentOrigin": {
+          "kind": "original",
+          "author": "Codex (AI-assisted authoring)",
+          "date": "2026-10-28",
+          "source": "content/full-mock/original-items.js"
+        },
+        "text": "Students can borrow recording equipment from the media office.",
+        "sample": "Students can borrow recording equipment from the media office.",
+        "audioRate": "-3%",
+        "instruction": "Listen once and type the sentence you hear. Check the words and their spelling.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "minutes": 25,
+        "timeGroup": "listening"
+      },
+      "origins": [
+        "full-mock-1-v1-authoring"
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/d8713e2e19097bdcb40a0a771a7172a33a9db9c66924583ed5eb3dc9c4f48466.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/d8713e2e19097bdcb40a0a771a7172a33a9db9c66924583ed5eb3dc9c4f48466.mp3",
+          "textSha256": "359122963e691fae0872abe60715d52a17877403e60ea46383dccd3731c27946",
+          "audioSha256": "d8713e2e19097bdcb40a0a771a7172a33a9db9c66924583ed5eb3dc9c4f48466",
+          "bytes": 24573,
+          "seconds": 4.056,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-3%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    }
+  ],
+  "assets": [
+    {
+      "path": "content/full-mock/assets/0690273f1ab8d3bb2224e9d5d3057dead01690633f605bbf4753b6630da76a8e.mp3",
+      "sha256": "0690273f1ab8d3bb2224e9d5d3057dead01690633f605bbf4753b6630da76a8e",
+      "bytes": 470397,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/08567a0bfb8f61f1b9aaa78279aa3c6cce6f96d6f573778df7adf1ff4e7cdddb.mp3",
+      "sha256": "08567a0bfb8f61f1b9aaa78279aa3c6cce6f96d6f573778df7adf1ff4e7cdddb",
+      "bytes": 30333,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/13b151134ae5e0d88f82ca5dfcf6ec3e6fb59c6c752cdd99cfe8a827d9f5596d.mp3",
+      "sha256": "13b151134ae5e0d88f82ca5dfcf6ec3e6fb59c6c752cdd99cfe8a827d9f5596d",
+      "bytes": 196509,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/1555cac3fcd3bf7f74d542ffaba01bd727554b3540663e1a80e13bd8d774e285.mp3",
+      "sha256": "1555cac3fcd3bf7f74d542ffaba01bd727554b3540663e1a80e13bd8d774e285",
+      "bytes": 200253,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/1d4acc7de024f71faf1bac156aa0ba06a367f044cf026a4fe073a386985e1696.mp3",
+      "sha256": "1d4acc7de024f71faf1bac156aa0ba06a367f044cf026a4fe073a386985e1696",
+      "bytes": 161517,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/2eba7ef0116eb3ca8454c3158d45dcc1877c3546f3cc3db7dacb5b68e78e7bd7.mp3",
+      "sha256": "2eba7ef0116eb3ca8454c3158d45dcc1877c3546f3cc3db7dacb5b68e78e7bd7",
+      "bytes": 202989,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/37708173a7dc415c6c67a51f1af541acaf9d852aaa21ae45143ca761ac6f3caf.mp3",
+      "sha256": "37708173a7dc415c6c67a51f1af541acaf9d852aaa21ae45143ca761ac6f3caf",
+      "bytes": 200541,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a.mp3",
+      "sha256": "37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a",
+      "bytes": 21837,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/39880c8a0647fddbbcc8ac60666fb4177582e841a38d00d9c7b24dd4c5322eed.mp3",
+      "sha256": "39880c8a0647fddbbcc8ac60666fb4177582e841a38d00d9c7b24dd4c5322eed",
+      "bytes": 192765,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6.mp3",
+      "sha256": "3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6",
+      "bytes": 18525,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0.mp3",
+      "sha256": "47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0",
+      "bytes": 19389,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/4929898e1162409c3b403a80d9b21102a7ed2d0484ec4352de0875c531bef6bc.mp3",
+      "sha256": "4929898e1162409c3b403a80d9b21102a7ed2d0484ec4352de0875c531bef6bc",
+      "bytes": 460173,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/496111a549bc0b855a0af7b58acc38bdf3558fd217a2bf698da8bf9a7bf918cd.mp3",
+      "sha256": "496111a549bc0b855a0af7b58acc38bdf3558fd217a2bf698da8bf9a7bf918cd",
+      "bytes": 28029,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/5e6989007b026e866fca0322b2bac41ce9c3400a4c72031c533c13001d5014f2.mp3",
+      "sha256": "5e6989007b026e866fca0322b2bac41ce9c3400a4c72031c533c13001d5014f2",
+      "bytes": 190749,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/65daf1a9c2801cd127f5477e736bd1cfee656a837255a0d5c54592f83c967679.mp3",
+      "sha256": "65daf1a9c2801cd127f5477e736bd1cfee656a837255a0d5c54592f83c967679",
+      "bytes": 107517,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/6cb9bd83eb61611bbd75ae21cedad56077523bf1c4ae8388e88a92319bb19985.mp3",
+      "sha256": "6cb9bd83eb61611bbd75ae21cedad56077523bf1c4ae8388e88a92319bb19985",
+      "bytes": 35949,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/7052001c63b407122e0dd2cb40e2d6331e679b1b8152e099c649e88ef2c7eb18.mp3",
+      "sha256": "7052001c63b407122e0dd2cb40e2d6331e679b1b8152e099c649e88ef2c7eb18",
+      "bytes": 675885,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/70a61518eebd7c3c809e5dcaa57571934f080eb90b3f5624f808aad49582f6ff.mp3",
+      "sha256": "70a61518eebd7c3c809e5dcaa57571934f080eb90b3f5624f808aad49582f6ff",
+      "bytes": 653565,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/886ee8fa890ed03d9f2ad70190866079841c53b614fc1381e91d2e3ea7128215.mp3",
+      "sha256": "886ee8fa890ed03d9f2ad70190866079841c53b614fc1381e91d2e3ea7128215",
+      "bytes": 484365,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/9021408afadb6a5a5c69e37a39c96fbd3d6b3b944c12586987edc87209d1fe86.mp3",
+      "sha256": "9021408afadb6a5a5c69e37a39c96fbd3d6b3b944c12586987edc87209d1fe86",
+      "bytes": 26445,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/9ba290220e79c30ba0ab984120534f8f5e2641e9946b62b2c186ad6d116d21f1.mp3",
+      "sha256": "9ba290220e79c30ba0ab984120534f8f5e2641e9946b62b2c186ad6d116d21f1",
+      "bytes": 497613,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/9d101a166ff0a63275cf676a7b39538981fe570f579370b995e5f418a2d9209c.mp3",
+      "sha256": "9d101a166ff0a63275cf676a7b39538981fe570f579370b995e5f418a2d9209c",
+      "bytes": 19677,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/ab116eb45f9787561ccf66e5228d913e9fa939182f88054a7278cd68202b45ed.svg",
+      "sha256": "ab116eb45f9787561ccf66e5228d913e9fa939182f88054a7278cd68202b45ed",
+      "bytes": 2100,
+      "mime": "image/svg+xml"
+    },
+    {
+      "path": "content/full-mock/assets/aeaba5ae757842426ea3cfda5024494f5842b0451962adfe88b3a77284372c54.svg",
+      "sha256": "aeaba5ae757842426ea3cfda5024494f5842b0451962adfe88b3a77284372c54",
+      "bytes": 1379,
+      "mime": "image/svg+xml"
+    },
+    {
+      "path": "content/full-mock/assets/b186b775b5a7e03443a24b0cacfa1973cda0158a6ee7d2e61f2a7eb20304b1cd.mp3",
+      "sha256": "b186b775b5a7e03443a24b0cacfa1973cda0158a6ee7d2e61f2a7eb20304b1cd",
+      "bytes": 234093,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/b47a8970db318404d3926419b987ddd73625f2873323d31c415a7711f431a83e.mp3",
+      "sha256": "b47a8970db318404d3926419b987ddd73625f2873323d31c415a7711f431a83e",
+      "bytes": 269949,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/bcd6d30d94d13787042dd9e3f87be64e671116870f28d629e17f7ee54b263e23.mp3",
+      "sha256": "bcd6d30d94d13787042dd9e3f87be64e671116870f28d629e17f7ee54b263e23",
+      "bytes": 444477,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/bda06efe68e77bc8af4f03897cbcbbfcbbed91329156b3e2b1be4bd385275949.mp3",
+      "sha256": "bda06efe68e77bc8af4f03897cbcbbfcbbed91329156b3e2b1be4bd385275949",
+      "bytes": 27309,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/c1afca829720ec17cd8aec3bb3ddbf1fc5765334a0371942e15eea1516319796.mp3",
+      "sha256": "c1afca829720ec17cd8aec3bb3ddbf1fc5765334a0371942e15eea1516319796",
+      "bytes": 27453,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/c93d712e153bda148668d6404005b2f008ff1302397b486934aca0ee4a043900.mp3",
+      "sha256": "c93d712e153bda148668d6404005b2f008ff1302397b486934aca0ee4a043900",
+      "bytes": 25149,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3.mp3",
+      "sha256": "cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3",
+      "bytes": 24141,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/d1e150286d9827b696ef0a627f9c1f645d8b5e7f95875aafd5e19c344024e3a1.svg",
+      "sha256": "d1e150286d9827b696ef0a627f9c1f645d8b5e7f95875aafd5e19c344024e3a1",
+      "bytes": 2364,
+      "mime": "image/svg+xml"
+    },
+    {
+      "path": "content/full-mock/assets/d8713e2e19097bdcb40a0a771a7172a33a9db9c66924583ed5eb3dc9c4f48466.mp3",
+      "sha256": "d8713e2e19097bdcb40a0a771a7172a33a9db9c66924583ed5eb3dc9c4f48466",
+      "bytes": 24573,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/d9bdc2bfee250553653138d6b55d8737058367cc70fd733abcc10509de4af7c1.mp3",
+      "sha256": "d9bdc2bfee250553653138d6b55d8737058367cc70fd733abcc10509de4af7c1",
+      "bytes": 20973,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/db9699178acb23c857f9a4965f9c2409be2772e358c7606dee043a02aa8ed7c2.mp3",
+      "sha256": "db9699178acb23c857f9a4965f9c2409be2772e358c7606dee043a02aa8ed7c2",
+      "bytes": 18957,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/dedff3a295469b6f0f683c4bf9eea8ebbfefcdf3a4acd5516cd489f07c23ae3c.mp3",
+      "sha256": "dedff3a295469b6f0f683c4bf9eea8ebbfefcdf3a4acd5516cd489f07c23ae3c",
+      "bytes": 31341,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/e132d191bd372f38b41ae45564e5812eca00d5f5c12389171732bf3fe9e187f9.mp3",
+      "sha256": "e132d191bd372f38b41ae45564e5812eca00d5f5c12389171732bf3fe9e187f9",
+      "bytes": 26013,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/e8ab3cf35f903fc194d43ffa13bb68841c8bbe450110e9458b74472c5d3b072a.svg",
+      "sha256": "e8ab3cf35f903fc194d43ffa13bb68841c8bbe450110e9458b74472c5d3b072a",
+      "bytes": 1890,
+      "mime": "image/svg+xml"
+    },
+    {
+      "path": "content/full-mock/assets/ee6298bf745f6cad64b1a0248d0972274393b1d570795ea59a26da4af28ec07f.svg",
+      "sha256": "ee6298bf745f6cad64b1a0248d0972274393b1d570795ea59a26da4af28ec07f",
+      "bytes": 1805,
+      "mime": "image/svg+xml"
+    },
+    {
+      "path": "content/full-mock/assets/f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62.mp3",
+      "sha256": "f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62",
+      "bytes": 20397,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/f2b9a60f8e6d6f89bf6495b39c580f6b839365f20c59242f0dda4e284e5683fe.mp3",
+      "sha256": "f2b9a60f8e6d6f89bf6495b39c580f6b839365f20c59242f0dda4e284e5683fe",
+      "bytes": 98301,
+      "mime": "audio/mpeg"
+    }
+  ]
+}

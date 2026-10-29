@@ -10,6 +10,19 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: full_mock_test
+          POSTGRES_USER: full_mock_test
+          POSTGRES_PASSWORD: full_mock_test
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U full_mock_test -d full_mock_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -20,4 +33,14 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak python3-venv
       - run: npm ci
       - name: Verify production release
-        run: node scripts/verify-release.js
+        env:
+          FULL_MOCK_TEST_DATABASE_URL: postgresql://full_mock_test:full_mock_test@127.0.0.1:5432/full_mock_test
+          FULL_MOCK_TEST_CHROME_PATH: /usr/bin/google-chrome
+        run: node scripts/verify-full-mock-systems.js --evidence-out .cache/full-mock-validation.json
+      - name: Save Full Mock validation evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-mock-validation
+          path: .cache/full-mock-validation.json
+          include-hidden-files: true
+          if-no-files-found: error
