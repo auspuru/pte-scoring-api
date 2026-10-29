@@ -45,7 +45,13 @@ function createStore({ pool, directory }) {
   async function initialise() {
     if (!ready) ready = (async () => {
       if (!pool) { await fs.mkdir(directory, { recursive: true, mode: 0o700 }); return; }
-      await pool.query(`CREATE TABLE IF NOT EXISTS full_mock_attempts (
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        // IF NOT EXISTS does not serialize concurrent catalogue creation by
+        // independent server processes. Keep startup DDL on one transaction.
+        await client.query("SELECT pg_advisory_xact_lock(hashtext(current_schema()::text), hashtext('full-mock-schema'))");
+        await client.query(`CREATE TABLE IF NOT EXISTS full_mock_attempts (
         id UUID PRIMARY KEY, username TEXT NOT NULL REFERENCES accounts(username) ON DELETE CASCADE,
         paper JSONB NOT NULL, state JSONB NOT NULL, revision BIGINT NOT NULL DEFAULT 1,
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
@@ -55,6 +61,9 @@ function createStore({ pool, directory }) {
         attempt_id UUID NOT NULL REFERENCES full_mock_attempts(id) ON DELETE CASCADE,
         segment_id UUID NOT NULL, sequence INTEGER NOT NULL, sha256 TEXT NOT NULL, mime TEXT NOT NULL,
         payload BYTEA NOT NULL, PRIMARY KEY(attempt_id,segment_id,sequence));`);
+        await client.query('COMMIT');
+      } catch (error) { await client.query('ROLLBACK').catch(() => {}); throw error; }
+      finally { client.release(); }
     })().catch(error => { ready = null; throw error; });
     return ready;
   }

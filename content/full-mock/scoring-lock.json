@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "2766bf6282bd49bedac0f044107ea7d076e13e3c",
+  "baseCommit": "ce21637b5fb604e7fabcdca1a1e157d890e90e76",
   "checkedAt": "2026-10-29",
-  "scope": "Phase 5 current source fingerprints include submitted-only reports, feedback projection and owned history, alongside Phase 4 native assessment, media verification and five profiles. The immutable v1 paper retains its historical freeze-time fingerprints. These are provisional IPT practice indices, not calibrated Pearson scores.",
+  "scope": "Phase 6 current source fingerprints include transaction-scoped PostgreSQL schema startup alongside native assessment, protected reports, recording verification and five profiles. Validation tooling keeps physical/provider/editorial and calibration evidence separate. The immutable v1 paper retains its freeze-time fingerprints; indices remain uncalibrated IPT practice indices.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -128,7 +128,7 @@
         "version": "full-mock-session-2026-10-29.2"
       },
       "full-mock/store.js": {
-        "sha256": "7c0a13f1f906a7d694edbea1ad7c87838899ea15a8543f526499abe951bb6c55",
+        "sha256": "baf13429d7f788372dbcd4957c5a896580596d74d50ef23ccafaefbf51fd2896",
         "version": null
       },
       "gpt-speaking-delivery.js": {

@@ -1,0 +1,68 @@
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { randomUUID } = require('node:crypto');
+const { database } = require('./helpers/full-mock-systems');
+const { loadPaper, digest } = require('../full-mock/paper');
+const { createStore } = require('../full-mock/store');
+const session = require('../full-mock/session');
+const { createEngine } = require('../full-mock/assessment');
+const adapters = require('../full-mock/adapters');
+const paper = loadPaper(), native = q => adapters.result(q, adapters.maxima(q));
+const make = (id, at) => session.create(id, paper, at, { preview:true });
+
+test('PostgreSQL: concurrent startup and attempt creation preserve one active owned attempt', async t => {
+  const db = await database(t), stores = [createStore({ pool:db.first }), createStore({ pool:db.pool() })];
+  await Promise.all(stores.map(store => store.initialise()));
+  const records = await Promise.all(stores.map(store => store.create('alice', randomUUID(), paper, make, 1000)));
+  assert.equal(records[0].state.id, records[1].state.id);
+  assert.equal((await stores[0].list('alice')).length, 1); assert.equal(await stores[0].get('bob', records[0].state.id), null);
+  assert.equal(digest(records[0].paper), digest(paper));
+  await assert.rejects(stores[1].create('bob', records[0].state.id, paper, make, 1000), { status:404 });
+});
+test('PostgreSQL: racing revisions, sealed answers, shared deadlines and reconnects survive new pools', async t => {
+  const db = await database(t), a = createStore({ pool:db.first }); await a.initialise();
+  const b = createStore({ pool:db.pool() }); await b.initialise(); const id = randomUUID();
+  await a.create('alice', id, paper, make, 1000);
+  await a.update('alice', id, state => { state.counter = 0; return state; });
+  for (let n = 0; n < 4; n++) await Promise.all([a,b,a,b].map(store => store.update('alice', id, state => { state.counter++; return state; })));
+  assert.equal((await b.get('alice', id)).state.counter, 16);
+  await a.update('alice', id, state => { while (session.item(paper, state.index).question.type !== 'swt') session.next(state, paper, { itemToken:state.current.token, skip:true }, 1000); return state; });
+  const before = (await b.get('alice', id)).state, token = before.current.token;
+  await Promise.all([a,b].map((store, index) => store.update('alice', id, state => { session.saveDraft(state, paper, { itemToken:token, sequence:index + 1, answer:[index ? 'Newest saved draft' : 'Older draft'] }); return state; })));
+  assert.deepEqual((await a.get('alice', id)).state.responses[before.index].draft, ['Newest saved draft']);
+  await a.update('alice', id, state => { session.reconcile(state, paper, before.current.endsAt); return state; });
+  const restart = createStore({ pool:db.pool() }), saved = (await restart.get('alice', id)).state;
+  assert.deepEqual(saved.responses[before.index].answer, ['Newest saved draft']); assert.equal(saved.current.enteredAt, before.current.endsAt);
+  const originalAnswer = structuredClone(saved.responses[before.index].answer);
+  await restart.update('alice', id, state => { session.recover(state, paper, { itemToken:token, sequence:3, answer:['Late separate evidence'] }, before.current.endsAt + 1); return state; });
+  assert.deepEqual((await a.get('alice', id)).state.responses[before.index].answer, originalAnswer);
+  await a.update('alice', id, state => { while (session.item(paper, state.index).question.type !== 'dropdown') session.next(state, paper, { itemToken:state.current.token, skip:true }, state.current.enteredAt); return state; });
+  const reading = (await b.get('alice', id)).state;
+  await b.update('alice', id, state => { session.next(state, paper, { itemToken:state.current.token }, state.current.enteredAt + 1000); return state; });
+  assert.equal((await restart.get('alice', id)).state.current.endsAt, reading.current.endsAt);
+});
+test('PostgreSQL: immutable BYTEA recordings retain bytes, ownership and manifests after reconnect', async t => {
+  const db = await database(t), a = createStore({ pool:db.first }); await a.initialise(); const id = randomUUID(), segment = randomUUID(), bytes = Buffer.from([0,1,255,0,200,33]);
+  await a.create('alice', id, paper, make, 1000);
+  const chunk = await a.putChunk('alice', id, segment, 0, 'audio/webm', bytes);
+  const b = createStore({ pool:db.pool() }), restored = await b.getChunk('alice', id, segment, 0);
+  assert.deepEqual(restored.bytes, bytes); assert.equal(restored.sha256, chunk.sha256); assert.equal(await b.getChunk('bob', id, segment, 0), null);
+  await b.putChunk('alice', id, segment, 0, 'audio/webm', bytes);
+  await assert.rejects(a.putChunk('alice', id, segment, 0, 'audio/webm', Buffer.from('replacement')), /cannot be replaced/);
+  assert.deepEqual((await b.getChunk('alice', id, segment, 0)).bytes, bytes);
+});
+test('PostgreSQL: two leased workers, failed-provider retries and process recovery never double-grade saved work', async t => {
+  const db = await database(t), a = createStore({ pool:db.first }); await a.initialise(); const b = createStore({ pool:db.pool() }); await b.initialise();
+  const id = randomUUID(); await a.create('alice', id, paper, make, 1000); await a.update('alice', id, state => { session.end(state, paper, 1000); return state; });
+  const calls = new Map(); let failure = true;
+  const implementation = { assess:async q => { calls.set(q.id, (calls.get(q.id) || 0) + 1); await new Promise(resolve => setImmediate(resolve)); return q.type === 'essay' && failure ? { status:'failed', reason:'writing-unavailable' } : native(q); } };
+  const engines = [createEngine({ store:a, adapters:implementation }), createEngine({ store:b, adapters:implementation })]; t.after(() => Promise.all(engines.map(engine => engine.stop())));
+  await Promise.all(engines.map(engine => engine.request('alice', id))); await Promise.all(engines.map(engine => engine.drain()));
+  const result = await engines[0].results('alice', id); assert.equal(result.assessedCount, 64); assert.equal(result.profiles.writing.practiceIndex, null); assert([...calls.values()].every(count => count === 1));
+  await engines[1].request('alice', id); await engines[1].drain(); assert([...calls.values()].every(count => count === 1));
+  failure = false; await engines[1].request('alice', id, { retry:true }); await engines[1].drain(); assert.equal((await engines[0].results('alice', id)).ready, true);
+  for (const candidate of paper.questions) assert.equal(calls.get(candidate.question.id), candidate.question.type === 'essay' ? 2 : 1);
+  await a.update('alice', id, state => { state.assessment.status = 'processing'; state.assessment.lease = { id:randomUUID(), expiresAt:0 }; delete state.assessment.items[paper.questions[0].id]; return state; });
+  await engines[1].recover(); await engines[1].drain(); assert.equal((await engines[0].results('alice', id)).ready, true); assert.equal(calls.get(paper.questions[0].question.id), 2);
+});

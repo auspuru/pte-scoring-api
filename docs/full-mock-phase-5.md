@@ -121,3 +121,7 @@ No student data or paid provider calls are used.
 Phase 6 still owns real desktop/mobile microphone/autoplay checks, live provider
 validation, a PostgreSQL deployment smoke test, independent calibration and the
 human editorial/listening clearance required before student release.
+
+Phase 6 adds PostgreSQL/Chromium system verification, consented benchmark
+comparison and evidence-bound readiness checks. See `docs/full-mock-phase-6.md`;
+synthetic browser tests do not replace physical-device or live-provider review.
