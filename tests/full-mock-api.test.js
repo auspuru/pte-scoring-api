@@ -10,11 +10,11 @@ const { loadPaper } = require('../full-mock/paper');
 const { installFullMock } = require('../full-mock/api');
 const { createStore } = require('../full-mock/store');
 const speech = type => ['intro', 'ra', 'rs', 'di', 'rl', 'asq', 'sgd', 'rts'].includes(type);
-async function fixture(t) {
+async function fixture(t, options = {}) {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'full-mock-api-')), app = express(); app.use(express.json());
   let now = 1000000;
-  const roles = { alice: 'admin', bob: 'admin', student: 'user' };
-  const service = installFullMock(app, { directory, verifyToken: token => roles[token] ? token : null, getAccount: async uid => ({ role: roles[uid] }), now: () => now });
+  const roles = { alice: 'admin', bob: 'admin', student: 'user', mahabir1:'user' };
+  const service = installFullMock(app, { directory, verifyToken: token => roles[token] ? token : null, getAccount: async uid => ({ role: roles[uid] }), now: () => now, ...options });
   const server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
   t.after(async () => { service.stop(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); await fs.rm(directory, { recursive: true, force: true }); });
   const base = 'http://127.0.0.1:' + server.address().port + '/api/full-mocks';
@@ -44,6 +44,18 @@ test('Only authorised previews start; accounts, draft media and future questions
   assert.equal((await f.request('/attempts/' + a.id + '/media/' + future)).status, 404);
   f.roles.alice = 'user'; assert.equal((await f.request('/attempts/' + a.id)).status, 403);
   assert.deepEqual((await f.request('/attempts')).body, []);
+});
+test('A configured ordinary account starts an owned preview while other students stay blocked', async t => {
+  const f = await fixture(t,{canPreview:require('../full-mock/access').createPreviewAccess({users:'mahabir1'})});
+  const catalog = await f.request('/catalog',undefined,{user:'mahabir1'});
+  assert.equal(catalog.body.available,true); assert.equal(catalog.body.preview,true); assert.equal(catalog.body.papers[0].questionCount,65);
+  const body = {id:randomUUID(),paperId:'full-mock-1',checks:{microphone:true,playback:true}};
+  const started = await f.request('/attempts',body,{user:'mahabir1'}); assert.equal(started.status,200);
+  assert.equal((await f.service.store.get('mahabir1',started.body.id)).state.preview,true);
+  assert.equal((await f.request('/attempts/'+started.body.id,undefined,{user:'student'})).status,404);
+  assert.equal((await f.request('/attempts',body,{user:'student'})).status,403);
+  assert.equal((await f.request('/catalog',undefined,{user:'student'})).body.available,false);
+  assert.equal(f.roles.mahabir1,'user');
 });
 test('Concurrent starts resume one attempt; handoff rejects a stale page and restart preserves clocks', async t => {
   const f = await fixture(t), a = await f.start(), deadline = a.current.endsAt;

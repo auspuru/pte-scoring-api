@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "ce21637b5fb604e7fabcdca1a1e157d890e90e76",
+  "baseCommit": "922ce2631a87d95a9d8ddcd164d4ef918ba47435",
   "checkedAt": "2026-10-29",
-  "scope": "Phase 6 current source fingerprints include transaction-scoped PostgreSQL schema startup alongside native assessment, protected reports, recording verification and five profiles. Validation tooling keeps physical/provider/editorial and calibration evidence separate. The immutable v1 paper retains its freeze-time fingerprints; indices remain uncalibrated IPT practice indices.",
+  "scope": "Account-specific Full Mock preview access is included in current source fingerprints. Native rubrics, weighting, frozen paper and calibration are unchanged. Named preview access does not release the paper to other students.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -75,6 +75,10 @@
         "sha256": "1d0adabaf1722922942cb7adba2849f76b8539812a858ab21c09926929e717ce",
         "version": null
       },
+      "full-mock/access.js": {
+        "sha256": "b6b86396a26da40fa3da7faffcc74224753ff95453ecbce02bc690ab7fa2f68e",
+        "version": null
+      },
       "full-mock/adapters.js": {
         "sha256": "940e500ccad7169994e3637557b3511c37e64489e626bdb803b13056559326f2",
         "version": "full-mock-adapters-2026-10-29.2"
@@ -96,7 +100,7 @@
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
-        "sha256": "13c2e1e63a307853d71e524693c13c14dc5c3f4a3b696f5b107d1709ae6c0e1a",
+        "sha256": "0cf1281b915115ecfd7a355f4058b0336181d2ba4eb0127f7cad2b801274889e",
         "version": null
       },
       "full-mock/blueprint.js": {
@@ -161,7 +165,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "b67eb143053669ec3835026b84cc393d8cb76e51d1e7a2dc0a1a59da9bd46224",
+        "sha256": "14980c74f5a99b1ef65b656550a790b2469c5ed86cd0c4c2e1eff3c590768d8e",
         "version": null
       },
       "situation-content-policy.js": {

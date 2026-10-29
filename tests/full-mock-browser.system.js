@@ -18,7 +18,8 @@ async function fixture(t, mobile) {
   await run('ffmpeg', ['-hide_banner','-loglevel','error','-nostdin','-y','-i',path.join(root, source),'-ar','48000','-ac','1','-c:a','pcm_s16le',microphone]);
   let offset = 0; const now = () => Date.now() + offset, calls = new Map(), native = adapters.createAdapters();
   const app = express(); app.use(express.json());
-  const service = installFullMock(app, { pool:db.first, now, verifyToken:token => ['alice','student'].includes(token) ? token : null, getAccount:async uid => ({ role:uid === 'alice' ? 'admin' : 'user' }),
+  const service = installFullMock(app, { pool:db.first, now, verifyToken:token => ['alice','student'].includes(token) ? token : null, getAccount:async uid => ({ username:uid,role:'user' }),
+    canPreview:require('../full-mock/access').createPreviewAccess({users:'alice'}),
     assessment:{ adapters:{ assess:async (q, response, options) => {
       calls.set(q.id, (calls.get(q.id) || 0) + 1);
       if (adapters.SPOKEN.has(q.type) && !options.recording || !adapters.SPOKEN.has(q.type) && !['swt','essay','sst'].includes(q.type)) return native.assess(q, response, options);

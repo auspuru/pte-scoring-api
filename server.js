@@ -6409,7 +6409,9 @@ const fullMock = require('./full-mock/api').installFullMock(app, {
   pool: pgPool, directory: path.join(DATA_DIR, 'full-mock'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: getPracticeAccount,
-  canPreview: ({ account, token }) => account.role === 'admin' || !!verifyImpersonationToken(token),
+  canPreview: require('./full-mock/access').createPreviewAccess({
+    users:process.env.FULL_MOCK_PREVIEW_USERS, verifyImpersonation:verifyImpersonationToken
+  }),
   assessment: {
     adapters: require('./full-mock/adapters').createAdapters({ speakingContentModel, writingContentModel,
       swtGrader: (question, text) => judgeContentWithClaude(text, question.text, {}), essayGrader }),
