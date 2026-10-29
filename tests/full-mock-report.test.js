@@ -92,11 +92,33 @@ test('Every task review is readable and escaped, with no form controls that can 
   report.items[0].feedback.overview = '<svg onload=attack()>';
   const { document } = parseHTML(renderer.page(report, report.items[0].id));
   assert.equal(document.querySelector('script,svg,img'), null); assert.match(document.querySelector('h1').textContent, /<script>/);
-  assert.equal(document.querySelectorAll('.fm-score-card').length, 5); assert.match(document.querySelector('.fm-score-overall').textContent, /90–90/);
+  assert.equal(document.querySelectorAll('.fm-score-card').length, 5); assert.match(document.querySelector('.fm-score-overall').textContent, /90/);
   assert.equal(document.querySelectorAll('#fm-review-select option').length, 65);
   for (const item of report.items) {
     const { document:doc } = parseHTML(renderer.review(item)); assert(doc.querySelector('h3,h4')); assert.equal(doc.querySelector('textarea,input,select'), null); assert(doc.querySelector('details.fm-reference'));
-    assert.match(doc.querySelector('article').textContent, /native marks/);
+    assert.match(doc.querySelector('article').textContent, /marks/);
+  }
+});
+test('Student reports show results and coaching without exposing calculation details', () => {
+  const report = reports.buildReport(paper, complete()), marker = 'PRIVATE_CALCULATION_DETAILS';
+  for (const key of Object.keys(report.interpretation)) report.interpretation[key] = marker;
+  report.weightingVersion = marker; report.practiceIndexPolicy.version = marker;
+  for (const profile of Object.values(report.profiles)) profile.version = marker;
+  for (const item of report.items) {
+    for (const issue of item.feedback.issues) issue.scoreRationale = marker;
+    if (item.feedback.gated) {
+      item.feedback.overview = marker;
+      for (const criterion of item.feedback.criteria) criterion.feedback = marker;
+    }
+  }
+  const { document } = parseHTML(renderer.page(report, report.items[0].id));
+  assert.equal(document.querySelectorAll('.fm-score-card').length, 5);
+  assert.equal(document.querySelector('.fm-method,.fm-interpretation'), null);
+  assert.equal(document.querySelector('.fm-task-summary').hasAttribute('open'), false);
+  assert(document.querySelector('[data-fm="retry"]').hasAttribute('hidden'));
+  for (const markup of [renderer.page(report), renderer.history([reports.summary(paper, complete())]), ...report.items.map(renderer.review)]) {
+    assert(!markup.includes(marker));
+    assert(!/How to read this report|native marks|Index policy|Overall uses|mark fractions|holistic|separate point deductions/i.test(markup));
   }
 });
 
