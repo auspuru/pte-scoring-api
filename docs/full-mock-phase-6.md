@@ -42,6 +42,11 @@ Next/Skip request was in flight. Preparation and recording now stay stopped unti
 navigation finishes. A regression test holds the server acknowledgement while
 ticks continue and rejects any new declaration for the sealed question. This
 prevents stale recording retries from exhausting the existing request limit.
+Early finish uses the same recording/navigation lock and sits above the exam,
+away from the sticky answer footer. Browser tests scroll controls into view and
+verify the pointer target before interacting; an unexpected early-finish dialog
+fails the test instead of being accepted automatically. Unordered checkbox
+answers are checked in their actual DOM order while ordered answers retain order.
 
 Both browser cases use the actual Full Mock client, report, styles, exam-mode
 controller, authenticated HTTP API, IndexedDB, MediaRecorder and PostgreSQL store.

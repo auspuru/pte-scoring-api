@@ -34,7 +34,8 @@ async function fixture(t, mobile) {
     args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream','--use-file-for-fake-audio-capture=' + microphone] });
   t.diagnostic('Browser: ' + await browser.version() + '; sandbox enabled; synthetic microphone; ' + (mobile ? 'mobile emulation' : 'desktop'));
   const page = await browser.newPage(); await page.setViewport(mobile ? { width:390, height:844, isMobile:true, hasTouch:true, deviceScaleFactor:1 } : { width:1365, height:1000 });
-  page.setDefaultTimeout(15000); page.on('dialog', dialog => dialog.accept());
+  page.setDefaultTimeout(15000); const unexpectedDialogs = [];
+  page.on('dialog', dialog => { if (dialog.message().startsWith('Finish this preview')) { unexpectedDialogs.push(dialog.message()); return dialog.dismiss(); } return dialog.accept(); });
   const errors = [], apiErrors = []; page.on('pageerror', error => errors.push(error.message));
   page.on('response', response => { if (response.status() >= 400 && response.url().includes('/api/full-mocks/')) apiErrors.push(response.status() + ' ' + new URL(response.url()).pathname); });
   await page.setRequestInterception(true);
@@ -42,7 +43,12 @@ async function fixture(t, mobile) {
   await page.evaluateOnNewDocument(() => { window.__cues = 0; const create = AudioContext.prototype.createOscillator; AudioContext.prototype.createOscillator = function (...args) { window.__cues++; return create.apply(this, args); }; });
   await page.goto('http://127.0.0.1:' + server.address().port);
   const state = async () => (await service.store.list('alice'))[0];
-  return { page, service, errors, apiErrors, calls, state, advanceTo:at => { offset += Math.max(0, at - now()); } };
+  return { page, service, errors, apiErrors, unexpectedDialogs, calls, state, advanceTo:at => { offset += Math.max(0, at - now()); } };
+}
+async function clickControl(page, selector) {
+  await page.$eval(selector, node => node.scrollIntoView({ block:'center', inline:'nearest' }));
+  await page.waitForFunction(selector => { const node = document.querySelector(selector); if (!node) return false; const box = node.getBoundingClientRect(), target = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2); return node === target || node.contains(target); }, {}, selector);
+  if (page.viewport()?.hasTouch) await page.tap(selector); else await page.click(selector);
 }
 async function paste(page, selector, text) { await page.$eval(selector, (node, value) => { node.value = value; node.dispatchEvent(new Event('input', { bubbles:true })); }, text); }
 async function answer(page, q) {
@@ -54,14 +60,14 @@ async function answer(page, q) {
       for (let moves = 0; moves < q.items.length; moves++) {
         const index = await page.$$eval('[data-fm-box]', (nodes, key) => nodes.findIndex(node => node.dataset.fmBox === key), q.answers[target]);
         if (index === target) break;
-        await page.click('[data-fm-box="' + q.answers[target] + '"] [data-fm="up"]');
+        await clickControl(page, '[data-fm-box="' + q.answers[target] + '"] [data-fm="up"]');
       }
     }
     return q.answers;
   }
   const values = q.answers || [q.answer];
-  for (const value of values) await page.click(q.type === 'hiw' ? '[data-fm="highlight"][data-index="' + value + '"]' : '[data-fm-choice="' + value + '"]');
-  return values;
+  for (const value of values) await clickControl(page, q.type === 'hiw' ? '[data-fm="highlight"][data-index="' + value + '"]' : '[data-fm-choice="' + value + '"]');
+  return q.type === 'hiw' ? values : [...values].sort((a, b) => a - b);
 }
 for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation' : 'desktop') + ': native recording, all 22 forms, refresh recovery and submitted report', { timeout:240000 }, async t => {
   const f = await fixture(t, mobile), { page } = f;
@@ -89,8 +95,8 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
         else f.advanceTo(saved.current.responseAt - 2000);
         await page.waitForFunction(() => document.getElementById('fm-record-status')?.textContent === 'Recording');
         await until(async () => (await f.state()).responses[i + 1].segments.some(segment => Object.values(segment.chunks).some(chunk => chunk.stored)), 'Native MediaRecorder did not upload audio.');
-        await page.click('[data-fm="next"]');
-      } else await page.click('[data-fm="skip"]');
+        await clickControl(page, '[data-fm="next"]');
+      } else await clickControl(page, '[data-fm="skip"]');
     } else {
       const response = await answer(page, q); expected.set(i + 1, response);
       if (q.type === 'swt' && !mobile && ![...expected.keys()].some(index => index !== i + 1 && paper.questions[index - 1].question.type === 'swt')) {
@@ -100,13 +106,14 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
         await page.waitForFunction(value => document.getElementById('fm-text')?.value === value, {}, expected.get(i + 1)[0]);
         assert.equal((await f.state()).current.endsAt, saved.current.endsAt);
       }
-      await page.click('[data-fm="next"]');
+      await clickControl(page, '[data-fm="next"]');
     }
   }
   await page.waitForSelector('.fm-report-status'); await page.waitForFunction(() => /All 65/.test(document.querySelector('.fm-report-status')?.textContent), { timeout:30000 });
   await f.service.assessor.drain(); const result = await f.service.assessor.results('alice', attemptId), saved = await f.state();
   assert.equal(seen.size, 22); assert.equal(result.ready, true); assert.equal(result.items.length, 65); assert.equal(result.profiles.overall.practiceIndex, null);
-  for (const [index, response] of expected) assert.deepEqual(saved.responses[index].answer, response);
+  for (const [index, response] of expected) assert.deepEqual(saved.responses[index].answer, response, 'Saved answer for Q' + index);
+  assert.deepEqual(f.unexpectedDialogs, []);
   assert.equal(f.calls.size, 65); assert([...f.calls.values()].every(count => count === 1)); assert.equal(f.errors.length, 0, f.errors.join('; '));
   for (const type of ['ra','rs']) { const index = paper.questions.findIndex(row => row.question.type === type) + 1; assert(saved.responses[index].segments.some(segment => segment.finished && segment.chunkCount > 0)); }
   assert(await page.evaluate(() => window.__cues > 0), 'Start cue was not produced');
@@ -121,6 +128,6 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
     const saved = await f.state();
     t.diagnostic('Expected Q' + expectedIndex + '; saved index=' + saved?.index + '; status=' + saved?.status + '; type=' + saved?.responses[saved?.index]?.type);
     t.diagnostic('Screen: ' + await page.$eval('#fullMockPane', node => node.textContent.slice(-2200)).catch(() => 'unavailable'));
-    t.diagnostic('API errors: ' + f.apiErrors.slice(-12).join('; ')); throw error;
+    t.diagnostic('API errors: ' + f.apiErrors.slice(-12).join('; ')); t.diagnostic('Unexpected dialogs: ' + f.unexpectedDialogs.join('; ')); throw error;
   }
 });

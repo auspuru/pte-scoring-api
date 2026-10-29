@@ -311,9 +311,9 @@
       if (rendering === attempt.current.token) return;
       stopCapture(); stopPrompt(); rendering = attempt.current.token; played = ''; cued = ''; lastPhase = ''; sequence = attempt.draftSequence; draft = structuredClone(attempt.draft || []);
       const q = attempt.question;
-      shell('<header class="fm-exam-header"><div><span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><strong>' + esc(q.type === 'intro' ? 'Personal Introduction · Not scored' : q.name) + '</strong></div><div class="fm-exam-meta"><span class="fm-badge">Preview</span><span>' + (attempt.index === 0 ? 'Introduction' : 'Question ' + attempt.index + ' of 65') + '</span><strong id="fm-time" aria-label="Time remaining"></strong></div></header><main class="fm-exam-body"><p class="fm-instruction">' + esc(q.instruction) + '</p>'
+      shell((attempt.preview ? '<div class="fm-preview-tools"><button type="button" class="fm-text-button" data-fm="end">Finish preview early</button></div>' : '') + '<header class="fm-exam-header"><div><span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><strong>' + esc(q.type === 'intro' ? 'Personal Introduction · Not scored' : q.name) + '</strong></div><div class="fm-exam-meta"><span class="fm-badge">Preview</span><span>' + (attempt.index === 0 ? 'Introduction' : 'Question ' + attempt.index + ' of 65') + '</span><strong id="fm-time" aria-label="Time remaining"></strong></div></header><main class="fm-exam-body"><p class="fm-instruction">' + esc(q.instruction) + '</p>'
         + (q.audio ? '<section class="fm-prompt"><span id="fm-audio-status" role="status">Audio will play automatically.</span><label>Volume <input type="range" id="fm-volume" min="0" max="1" step="0.1" value="1" aria-label="Prompt volume"></label><button type="button" class="portal-button" data-fm="audio" id="fm-audio-resume" hidden>Resume remaining audio</button></section>' : '')
-        + '<div id="fm-question">' + renderQuestion(q, draft) + '</div>' + (speech(q.type) ? '<button class="portal-button" data-fm="mic" id="fm-mic-resume" hidden>Reconnect microphone</button>' : '') + '<p id="fm-save-status" class="fm-save-status" role="status">Responses save automatically.</p><p id="fm-notice" role="status"></p></main><footer class="fm-exam-footer"><div><button class="fm-text-button" data-fm="end">Finish preview early</button>' + (speech(q.type) ? '<button class="fm-text-button" data-fm="skip">Skip this item</button>' : '') + '</div><button class="portal-button primary" id="fm-next" data-fm="next">' + (attempt.index === 65 ? 'Submit test' : 'Next') + ' →</button></footer>');
+        + '<div id="fm-question">' + renderQuestion(q, draft) + '</div>' + (speech(q.type) ? '<button class="portal-button" data-fm="mic" id="fm-mic-resume" hidden>Reconnect microphone</button>' : '') + '<p id="fm-save-status" class="fm-save-status" role="status">Responses save automatically.</p><p id="fm-notice" role="status"></p></main><footer class="fm-exam-footer"><div>' + (speech(q.type) ? '<button class="fm-text-button" data-fm="skip">Skip this item</button>' : '') + '</div><button class="portal-button primary" id="fm-next" data-fm="next">' + (attempt.index === 65 ? 'Submit test' : 'Next') + ' →</button></footer>');
       recoverDraft(rendering).catch(error => notice(error.message, true)); loadMedia(rendering); if (speech(q.type)) prepareSegment(rendering);
       doc.getElementById('fm-question')?.querySelector('textarea,input,select,button')?.focus({ preventScroll: true });
     }
@@ -468,6 +468,13 @@
       } catch (error) { notice(error.message, true); }
       finally { advancing = false; const current = doc.getElementById('fm-question'); if (current) current.inert = false; }
     }
+    async function finishPreview() {
+      if (advancing || attempt?.status !== 'active' || !env.confirm('Finish this preview now? Unanswered questions will be submitted without an answer.')) return;
+      advancing = true; const id = attempt.id, ticket = generation;
+      const editor = doc.getElementById('fm-question'); if (editor) editor.inert = true;
+      try { stopCapture(); await commitDraft(); if (!valid(ticket)) return; await flush(); if (valid(ticket)) accept(await api('/attempts/' + id + '/end', { confirm:true })); }
+      finally { advancing = false; const current = doc.getElementById('fm-question'); if (current) current.inert = false; }
+    }
     function input(event) {
       const element = event.target;
       if (element.id === 'fm-review-select') { selectReview(element.value); return; }
@@ -517,7 +524,7 @@
           case 'up': reorder(Number(button.dataset.index), Number(button.dataset.index) - 1); break;
           case 'down': reorder(Number(button.dataset.index), Number(button.dataset.index) + 1); break;
           case 'highlight': { const index = Number(button.dataset.index); draft = draft.includes(index) ? draft.filter(value => value !== index) : [...draft, index]; button.setAttribute('aria-pressed', String(draft.includes(index))); await persistDraft(); break; }
-          case 'end': if (!advancing && env.confirm('Finish this preview now? Unanswered questions will be submitted without an answer.')) { const id = attempt.id, ticket = generation; stopCapture(); await commitDraft(); if (!valid(ticket)) break; await flush(); if (valid(ticket)) accept(await api('/attempts/' + id + '/end', { confirm: true })); } break;
+          case 'end': await finishPreview(); break;
         }
       } catch (error) { notice(error.message, true); }
     }
