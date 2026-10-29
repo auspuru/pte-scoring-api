@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "c4a6ea782d3dd0a7713ecd35dd531c7368c4b201",
+  "baseCommit": "a87e478660263154730215ab41e8bb3f1f3aeba7",
   "checkedAt": "2026-10-29",
-  "scope": "All signed-in users can access Full Mock; navigation and fullscreen controls changed without changing native rubrics, weights or provider models. One audited access-only baseline preserves existing attempt snapshots and successful native grades.",
+  "scope": "Separate delayed recording upload arrival from capture duration; automatically resume completed media previously blocked by late transport. Exact production baselines preserve snapshots, native graders, provider models, weights and successful grades.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "f532f47c61dc36d86b8732cb38b2e07abd990af08b6a435d9467136f0c7a0e43",
+        "sha256": "3ccdb381309f83e06d22439e108012595cdc207a8c195aacdf08dbf3a2a5d4b9",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -116,11 +116,11 @@
         "version": "full-mock-profiles-2026-10-29.1"
       },
       "full-mock/recording.js": {
-        "sha256": "e213b6fbf8ca28e59bd716eb4d972175e28ca0f173f122a0e769de3f6160b154",
-        "version": "full-mock-recording-2026-10-29.1"
+        "sha256": "480756dcae089f44f6153f6a45ff849a713d8e68b2076df0a4d34a41d9060f63",
+        "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "69525ec99b41071a6f3c46274d97adbb87f91ec638dd2f566a8b51e6a7233bf4",
+        "sha256": "e41664c107d76db24e92eaf8859766719217d34dfbfc74ef4a8217fca91fc30c",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
@@ -132,7 +132,7 @@
         "version": "full-mock-session-2026-10-29.2"
       },
       "full-mock/store.js": {
-        "sha256": "4490f9e1182799fcee1fa8a2888e5ebf014424c08e26dd51bf28cd3ecf1b2934",
+        "sha256": "0567fc91d4598c9c0267a89b6ae595c61cdc8351480b87731e56dcf596fcf07e",
         "version": null
       },
       "gpt-speaking-delivery.js": {

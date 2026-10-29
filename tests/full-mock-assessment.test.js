@@ -82,6 +82,32 @@ test('A lost recording remains pending, then durable media wakes that question w
   await f.engine.wakeMedia('alice', f.id); await f.engine.drain();
   assert.equal((await f.engine.results('alice', f.id)).ready, true); assert.equal(transcriptions, 1); assert.equal((await f.state()).assessment.run, 1);
 });
+test('A production attempt blocked only by late uploads recovers automatically without rescoring completed questions', async t => {
+  const calls = new Map(), target = paper.questions[0].id;
+  const f = await fixture(t, { adapters:{ assess:async q => { calls.set(q.id, (calls.get(q.id) || 0) + 1); return full(q); } } });
+  const original = { ...structuredClone(f.engine.snapshot), scoringSources:require('../content/full-mock/media-compatible-sources.json') };
+  const bytes = media.wav(Buffer.alloc(32000, 1)), segment = { id:randomUUID(), mime:'audio/wav', finished:true, chunkCount:1, chunks:{ 0:{ sha256:hash(bytes), bytes:bytes.length, stored:true, late:true } } };
+  await f.store.putChunk('alice', f.id, segment.id, 0, segment.mime, bytes);
+  await f.store.update('alice', f.id, state => {
+    state.assessment = require('../full-mock/assessment').stateFor(original);
+    state.responses[1].segments = [segment]; state.responses[1].reason = 'time-expired';
+    return state;
+  });
+  await f.engine.request('alice', f.id); await f.engine.drain();
+  assert.equal((await f.engine.results('alice', f.id)).ready, true);
+  await f.store.update('alice', f.id, state => {
+    state.assessment.status = 'needs-attention';
+    const job = state.assessment.items[target]; job.status = 'pending'; job.reason = 'late-recording'; delete job.result;
+    return state;
+  });
+  assert((await f.store.assessmentQueue()).some(row => row.id === f.id && row.status === 'needs-attention'));
+  await f.engine.recover(); await f.engine.drain();
+  const result = await f.engine.results('alice', f.id), state = await f.state();
+  assert.equal(result.ready, true); assert.equal(state.assessment.snapshotHash, digest(original));
+  for (const [id, count] of calls) assert.equal(count, id === paper.questions[0].question.id ? 2 : 1);
+  await f.engine.recover(); await f.engine.drain();
+  assert.equal(calls.get(paper.questions[0].question.id), 2, 'Recovery does not keep regrading the repaired response');
+});
 test('Recovery resumes a persisted processing attempt after lease expiry and never overwrites a different version', async t => {
   const f = await fixture(t); await f.engine.request('alice', f.id); await f.engine.drain();
   await f.store.update('alice', f.id, state => { state.assessment.status = 'processing'; state.assessment.lease = { id:randomUUID(), expiresAt:0 }; delete state.assessment.items[paper.questions[0].id]; return state; });
@@ -120,7 +146,8 @@ test('Recording reconstruction checks every immutable byte, decodes containers a
   const ready = await media.assemble('alice', f.id, q, response, opts); assert.equal(ready.status, 'ready'); assert(Math.abs(ready.recording.seconds - 1) < 0.01);
   assert.equal((await media.assemble('bob', f.id, q, response, opts)).status, 'needs-review');
   const bad = structuredClone(response); bad.segments[0].chunks[0].sha256 = '0'.repeat(64); assert.equal((await media.assemble('alice', f.id, q, bad, opts)).reason, 'recording-integrity');
-  const late = structuredClone(response); late.segments[0].chunks[0].late = true; assert.equal((await media.assemble('alice', f.id, q, late, opts)).reason, 'late-recording');
+  const late = structuredClone(response); late.segments[0].chunks[0].late = true; assert.equal((await media.assemble('alice', f.id, q, late, opts)).status, 'ready', 'Delayed transport must not turn valid audio into permanent pending');
+  late.segments[0].lateActivation = true; assert.equal((await media.assemble('alice', f.id, q, late, opts)).reason, 'late-recording', 'An undeclared late recording still requires review');
   const pending = structuredClone(response); pending.segments[0].chunks[1].stored = false; assert.equal((await media.assemble('alice', f.id, q, pending, opts)).status, 'pending');
   const decoded = await media.convert([{ mime:'audio/wav', bytes }, { mime:'audio/wav', bytes }], 10); assert(Math.abs(decoded.seconds - 2) < 0.01);
   await assert.rejects(media.convert([{ mime:'audio/wav', bytes }], 0.1), /duration/);

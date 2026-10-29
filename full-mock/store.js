@@ -167,7 +167,13 @@ function createStore({ pool, directory }) {
   }
   async function assessmentQueue() {
     await initialise();
-    if (pool) return (await pool.query("SELECT username,state->>'id' AS id FROM full_mock_attempts WHERE state->>'status'='submitted' AND state->'assessment'->>'status'='processing' ORDER BY updated_at LIMIT 100")).rows.map(row => ({ uid: row.username, id: row.id }));
+    if (pool) return (await pool.query(`SELECT username,state->>'id' AS id,state->'assessment'->>'status' AS status
+      FROM full_mock_attempts WHERE state->>'status'='submitted' AND (
+        state->'assessment'->>'status'='processing' OR (
+          state->'assessment'->>'status'='needs-attention' AND EXISTS (
+            SELECT 1 FROM jsonb_each(state->'assessment'->'items') AS job
+            WHERE job.value->>'status'='pending' AND job.value->>'reason'='late-recording')))
+      ORDER BY (state->'assessment'->>'status'='processing') DESC,updated_at LIMIT 100`)).rows.map(row => ({ uid:row.username, id:row.id, status:row.status }));
     const rows = [];
     for (const dir of await fs.readdir(directory, { withFileTypes: true })) {
       if (!dir.isDirectory()) continue;
@@ -175,7 +181,8 @@ function createStore({ pool, directory }) {
       if (!index) continue;
       for (const id of index.value.ids.slice(-100)) {
         const saved = await readVersion(path.join(directory, dir.name, id, 'state'));
-        if (saved?.value.status === 'submitted' && saved.value.assessment?.status === 'processing') rows.push({ uid: index.value.owner, id });
+        const assessment = saved?.value.assessment;
+        if (saved?.value.status === 'submitted' && (assessment?.status === 'processing' || assessment?.status === 'needs-attention' && Object.values(assessment.items || {}).some(job => job.status === 'pending' && job.reason === 'late-recording'))) rows.push({ uid: index.value.owner, id, status:assessment.status });
       }
     }
     return rows.slice(0, 100);
