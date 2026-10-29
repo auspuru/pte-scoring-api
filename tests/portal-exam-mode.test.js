@@ -86,6 +86,14 @@ test('Fullscreen preflight holds the questions until the runner starts and may b
   h.mode.reset();assert.equal(h.doc.fullscreenElement,null);
   const second=h.mode.prepare('reading',h.reading);buttons[1].onclick();assert.equal(await second,false);assert(!h.mode.isActive());
 });
+test('Immediate fullscreen uses the start gesture and retains the same protected transition', async () => {
+  const h=harness();let requested=0;const native=h.doc.documentElement.requestFullscreen;
+  h.doc.documentElement.requestFullscreen=()=>{requested++;return native();};
+  const ready=h.mode.prepare('full-mock',h.reading,{immediate:true});
+  assert.equal(requested,1);assert.equal(await ready,true);assert(h.mode.isLocked());
+  h.mode.set('full-mock',true,h.reading,{onEvent(){}});
+  assert(!h.mode.isLocked());assert(h.guard().hidden);assert.equal(h.doc.fullscreenElement,h.doc.documentElement);
+});
 
 test('Tab or window departures lock the questions, record one interruption and require an explicit fullscreen return', async () => {
   const h=harness(),records=[],ready=h.mode.prepare('reading',h.reading);

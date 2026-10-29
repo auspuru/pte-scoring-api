@@ -1,9 +1,10 @@
 'use strict';
 // Read-only pre-deployment check. Never creates users or changes credentials.
 async function main() {
-  const { previewUsers, checkPreviewAccounts } = require('../full-mock/access');
+  const { previewUsers, checkPreviewAccounts, everyoneEnabled } = require('../full-mock/access');
+  const all = everyoneEnabled(process.env.FULL_MOCK_PREVIEW_ALL);
   const users = previewUsers(process.env.FULL_MOCK_PREVIEW_USERS);
-  if (!users.length) { console.log('[full-mock-preview-access] No named preview accounts configured.'); return; }
+  if (!all && !users.length) { console.log('[full-mock-preview-access] No named preview accounts configured.'); return; }
   const connectionString = process.env.PGURL || process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL;
   if (!connectionString) throw Error('Preview account verification requires the configured database.');
   const { Pool } = require('pg');
@@ -11,7 +12,7 @@ async function main() {
   const pool = new Pool({connectionString,max:1,connectionTimeoutMillis:10000,
     ssl:local ? false : {rejectUnauthorized:false},statement_timeout:10000});
   try {
-    const result = await checkPreviewAccounts(users,(...args) => pool.query(...args));
+    const result = await checkPreviewAccounts(users,(...args) => pool.query(...args),{all});
     console.log('[full-mock-preview-access]',JSON.stringify(result));
   } finally { await pool.end(); }
 }

@@ -1,5 +1,9 @@
 # Account-specific Full Mock preview
 
+The subsequent [Full Mock access and fullscreen update](full-mock-fullscreen.md)
+supersedes the account restriction below: the user later requested access for
+all signed-in users. This document preserves the earlier named-account rollout.
+
 On 29 October 2026 the user requested Full Mock access for the existing
 `mahabir1` account. This permits a named test account on the normal portal;
 it does not clear the frozen paper for general student release.

@@ -58,7 +58,7 @@ async function fixture(t, type = 'intro') {
     navigator: { mediaDevices: { getUserMedia: async () => { const track = { readyState: 'live', stop() { this.readyState = 'ended'; } }; tracks.push(track); return { getTracks: () => [track], getAudioTracks: () => [track] }; } } },
     setInterval: fn => { const key = ++timerId; intervals.set(key, fn); return key; }, clearInterval: key => intervals.delete(key),
     setTimeout: (fn, delay) => { const key = ++timerId; timeouts.set(key, { fn, at: now + delay }); return key; }, clearTimeout: key => timeouts.delete(key),
-    addEventListener() {}, PortalExamMode: { set() {} },
+    addEventListener() {}, PortalExamMode: { set() {}, prepare:async () => true },
     fetch: async (route, init = {}) => {
       requests.push({ route, init, owner }); if (offline || closing) throw Error('Offline');
       const send = async () => { const task = fetch(base + route, init); flights.add(task); try { return await task; } finally { flights.delete(task); } };
@@ -103,6 +103,29 @@ test('Equipment check requires a recorded local sample and sound confirmation be
   await f.click('[data-fm="begin"]'); assert.match(f.document.querySelector('.fm-exam-header').textContent, /Not scored/);
   assert.equal(f.requests.filter(row => /\/attempts$/.test(row.route) && row.init.method === 'POST').length, 1);
   assert.equal(f.requests.filter(row => row.init.method === 'PUT').length, 0, 'Equipment sample must stay local');
+});
+test('Fullscreen is requested before an attempt starts, and cancelling it keeps the start button available', async t => {
+  const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
+  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio'));
+  const target=f.document.getElementById('fm-heard');target.checked=true;f.document.getElementById('fullMockPane').onchange({target});
+  let calls=0;f.env.PortalExamMode.prepare=async (owner,pane,options)=>{calls++;assert.equal(owner,'full-mock');assert.equal(options.immediate,true);assert.equal(f.requests.filter(r=>r.route==='/api/full-mocks/attempts'&&r.init.method==='POST').length,0);return false;};
+  await f.click('[data-fm="begin"]');assert.equal(calls,1);assert.equal(f.document.getElementById('fm-begin').disabled,false);
+  assert.equal(f.requests.filter(r=>r.route==='/api/full-mocks/attempts'&&r.init.method==='POST').length,0);
+});
+test('Next and Skip advance directly without confirmation, and double clicks cannot skip a question', async t => {
+  const f=await fixture(t);f.env.confirm=()=>{throw Error('Unexpected confirmation');};await f.resume();
+  await f.step((await f.state()).current.responseAt-f.now());
+  let release;f.intercept(async(route,init,send)=>{if(route.endsWith('/next')&&!release){await new Promise(resolve=>{release=resolve;});}return send();});
+  const moving=f.click('[data-fm="next"]');await until(()=>release);await f.click('[data-fm="next"]');
+  assert.equal(f.requests.filter(r=>r.route.endsWith('/next')).length,1);release();await moving;
+  assert.equal((await f.state()).index,1);assert(!/preview/i.test(f.document.querySelector('.fm-exam-header').textContent));
+  await f.click('[data-fm="skip"]');assert.equal((await f.state()).index,2);
+});
+test('The final Next submits the full mock without a confirmation popup', async t => {
+  const f=await fixture(t,'wfd');await f.service.store.update('alice',f.id,state=>{while(state.index<65)session.next(state,paper,{itemToken:state.current.token,skip:true},f.now());return state;});
+  f.env.confirm=()=>{throw Error('Unexpected confirmation');};await f.resume();f.input('A saved final response.');await settle();
+  await f.click('[data-fm="next"]');assert.equal((await f.state()).status,'submitted');
+  assert.deepEqual((await f.state()).responses[65].answer,['A saved final response.']);
 });
 
 test('Typing offline survives refresh and Next seals the newest revision even with an older save in flight', async t => {

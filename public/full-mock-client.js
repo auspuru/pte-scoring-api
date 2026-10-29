@@ -132,7 +132,7 @@
           shell('<h1>Continue your full mock</h1><p>Your saved timer continues while you reconnect.</p><button class="portal-button primary" data-fm="resume" data-id="' + esc(options.attemptId) + '">Continue</button><p id="fm-notice" role="status"></p>'); return;
         }
         shell('<header class="fm-hub-header"><span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><h1>Full Mock 1</h1><p>A continuous test covering Speaking, Writing, Reading and Listening.</p></header>'
-          + (catalog.available ? catalog.papers.map(paper => '<article class="fm-card"><span class="fm-badge">Preview</span><h2>' + esc(paper.title) + '</h2><p>65 scored questions · 22 task types · unscored introduction</p><p>Use headphones and a working microphone. Audio plays once, answers save as you work, and you cannot return to earlier questions.</p><button type="button" class="portal-button primary" data-fm="setup" data-paper="' + esc(paper.id) + '">Check equipment</button></article>').join('') : '<p>Full mocks are being prepared. Your sectional mocks remain available.</p>')
+          + (catalog.available ? catalog.papers.map(paper => '<article class="fm-card"><span class="fm-badge">Full Mock</span><h2>' + esc(paper.title) + '</h2><p>65 scored questions · 22 task types · unscored introduction</p><p>Use headphones and a working microphone. Audio plays once, answers save as you work, and you cannot return to earlier questions.</p><button type="button" class="portal-button primary" data-fm="setup" data-paper="' + esc(paper.id) + '">Check equipment</button></article>').join('') : '<p>Full mocks are being prepared. Your sectional mocks remain available.</p>')
           + '<h2>Saved attempts</h2>' + reports.history(history) + '<p id="fm-notice" role="status"></p>');
       } catch (error) { if (valid(ticket)) { shell('<h1>Full Mock</h1><p id="fm-notice" role="alert"></p><button class="portal-button" data-fm="reload">Retry</button>'); notice(error.message, true); } }
     }
@@ -201,11 +201,14 @@
       const ticket = generation;
       const button = doc.getElementById('fm-begin'); button.disabled = true;
       try {
+        if (!env.PortalExamMode?.prepare) throw Error('Reload the portal to start this full mock in fullscreen.');
+        const ready = await env.PortalExamMode.prepare(OWNER, host, { immediate:true });
+        if (!ready || !valid(ticket)) { button.disabled = false; return; }
         await unlockAudio(); if (!valid(ticket)) return; let id;
         const key = prefix() + 'starting'; id = env.sessionStorage.getItem(key) || random(); env.sessionStorage.setItem(key, id);
         const value = await api('/attempts', { id, paperId: setupPaper, checks: { microphone: true, playback: true } });
         if (!valid(ticket)) return; env.sessionStorage.removeItem(key); attempt = value; await establishClaim(); if (valid(ticket)) startPlayer();
-      } catch (error) { if (valid(ticket)) { button.disabled = false; notice(error.message, true); } }
+      } catch (error) { if (valid(ticket)) { env.PortalExamMode?.set(OWNER, false, host); button.disabled = false; notice(error.message, true); } }
     }
     async function resume(id, knownStatus = 'active') {
       const ticket = generation;
@@ -213,14 +216,23 @@
       // report never requires browser audio or microphone support.
       const unlocking = knownStatus === 'submitted' ? null : unlockAudio().then(() => null, error => error);
       try {
+        if (knownStatus !== 'submitted') {
+          if (!env.PortalExamMode?.prepare) throw Error('Reload the portal to continue this full mock in fullscreen.');
+          const ready = await env.PortalExamMode.prepare(OWNER, host, { immediate:true });
+          if (!ready || !valid(ticket)) return;
+        }
         const value = await api('/attempts/' + id); if (!valid(ticket)) return; attempt = value;
         if (value.status === 'active') { if (unlocking) { const error = await unlocking; if (error) throw error; } else await unlockAudio(); if (!valid(ticket)) return; if (speech(value.question.type)) await microphone(); if (!valid(ticket)) return; await establishClaim(); if (valid(ticket)) startPlayer(); }
         else { accept(value); render(); await flush(); await syncReport(); }
-      } catch (error) { if (valid(ticket)) notice(error.message, true); }
+      } catch (error) { if (valid(ticket)) { env.PortalExamMode?.set(OWNER, false, host); notice(error.message, true); } }
     }
     function startPlayer() {
       if (attempt?.status !== 'active') { render(); return; }
-      render(); env.PortalExamMode?.set(OWNER, true, host);
+      render(); env.PortalExamMode?.set(OWNER, true, host, {
+        onEvent:event => logEvent(event.reason),
+        onLock:() => { stopCapture(); output?.pause(); },
+        onResume:() => { played = ''; tick(); }
+      });
       env.clearInterval(timer); env.clearInterval(poller);
       timer = env.setInterval(tick, 100); poller = env.setInterval(() => { sync(); flush(); }, 1200); tick(); flush();
     }
@@ -311,11 +323,12 @@
       if (rendering === attempt.current.token) return;
       stopCapture(); stopPrompt(); rendering = attempt.current.token; played = ''; cued = ''; lastPhase = ''; sequence = attempt.draftSequence; draft = structuredClone(attempt.draft || []);
       const q = attempt.question;
-      shell((attempt.preview ? '<div class="fm-preview-tools"><button type="button" class="fm-text-button" data-fm="end">Finish preview early</button></div>' : '') + '<header class="fm-exam-header"><div><span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><strong>' + esc(q.type === 'intro' ? 'Personal Introduction · Not scored' : q.name) + '</strong></div><div class="fm-exam-meta"><span class="fm-badge">Preview</span><span>' + (attempt.index === 0 ? 'Introduction' : 'Question ' + attempt.index + ' of 65') + '</span><strong id="fm-time" aria-label="Time remaining"></strong></div></header><main class="fm-exam-body"><p class="fm-instruction">' + esc(q.instruction) + '</p>'
+      shell((attempt.preview ? '<div class="fm-preview-tools"><button type="button" class="fm-text-button" data-fm="end">Finish test early</button></div>' : '') + '<header class="fm-exam-header"><div><span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><strong>' + esc(q.type === 'intro' ? 'Personal Introduction · Not scored' : q.name) + '</strong></div><div class="fm-exam-meta"><span class="fm-badge">Full Mock</span><span>' + (attempt.index === 0 ? 'Introduction' : 'Question ' + attempt.index + ' of 65') + '</span><strong id="fm-time" aria-label="Time remaining"></strong></div></header><main class="fm-exam-body"><p class="fm-instruction">' + esc(q.instruction) + '</p>'
         + (q.audio ? '<section class="fm-prompt"><span id="fm-audio-status" role="status">Audio will play automatically.</span><label>Volume <input type="range" id="fm-volume" min="0" max="1" step="0.1" value="1" aria-label="Prompt volume"></label><button type="button" class="portal-button" data-fm="audio" id="fm-audio-resume" hidden>Resume remaining audio</button></section>' : '')
         + '<div id="fm-question">' + renderQuestion(q, draft) + '</div>' + (speech(q.type) ? '<button class="portal-button" data-fm="mic" id="fm-mic-resume" hidden>Reconnect microphone</button>' : '') + '<p id="fm-save-status" class="fm-save-status" role="status">Responses save automatically.</p><p id="fm-notice" role="status"></p></main><footer class="fm-exam-footer"><div>' + (speech(q.type) ? '<button class="fm-text-button" data-fm="skip">Skip this item</button>' : '') + '</div><button class="portal-button primary" id="fm-next" data-fm="next">' + (attempt.index === 65 ? 'Submit test' : 'Next') + ' →</button></footer>');
       recoverDraft(rendering).catch(error => notice(error.message, true)); loadMedia(rendering); if (speech(q.type)) prepareSegment(rendering);
       doc.getElementById('fm-question')?.querySelector('textarea,input,select,button')?.focus({ preventScroll: true });
+      host.scrollTop = 0; env.scrollTo?.({ top:0, left:0, behavior:'auto' });
     }
     async function recoverDraft(token) {
       const records = await queueList(prefix() + attempt.id + ':draft:');
@@ -340,20 +353,20 @@
     function updateAudioStatus(message) { const node = doc.getElementById('fm-audio-status'); if (node) node.textContent = message; }
     function audioFailure() { logEvent('media-failure'); updateAudioStatus('Audio interrupted.'); const node = doc.getElementById('fm-audio-resume'); if (node) node.hidden = false; }
     async function playPrompt() {
-      if (!attempt?.question.audio || !outputUrl || !output || played === rendering) return;
+      if (!attempt?.question.audio || !outputUrl || !output || played === rendering || env.PortalExamMode?.isLocked?.(OWNER)) return;
       const token = rendering, audio = output, url = outputUrl;
       if (serverNow() >= attempt.current.promptEndsAt) { played = rendering; updateAudioStatus('Audio completed.'); return; }
       played = rendering;
       try {
         if (audio.readyState < 1) await new Promise((resolve, reject) => { const timeout = env.setTimeout(() => reject(Error('Audio load timed out.')), 10000); audio.onloadedmetadata = () => { env.clearTimeout(timeout); resolve(); }; audio.onerror = () => { env.clearTimeout(timeout); reject(Error('Audio interrupted.')); }; });
-        if (rendering !== token || outputUrl !== url || !attempt?.current) return;
+        if (rendering !== token || outputUrl !== url || !attempt?.current || env.PortalExamMode?.isLocked?.(OWNER)) return;
         if (serverNow() >= attempt.current.promptEndsAt) { updateAudioStatus('Audio completed.'); return; }
         audio.currentTime = Math.max(0, (serverNow() - attempt.current.promptAt) / 1000); await audio.play();
         if (rendering === token) { updateAudioStatus('Playing — listen once.'); doc.getElementById('fm-audio-resume').hidden = true; }
       } catch { if (rendering === token) { played = token; audioFailure(); } }
     }
     async function prepareSegment(token) {
-      if (advancing || preparingSegment || capture || !stream || attempt?.status !== 'active' || attempt.current?.token !== token) return;
+      if (advancing || preparingSegment || capture || !stream || attempt?.status !== 'active' || attempt.current?.token !== token || env.PortalExamMode?.isLocked?.(OWNER)) return;
       preparingSegment = true;
       try {
         const used = attempt.recordingSegments?.length || segmentCounts.get(token);
@@ -362,14 +375,14 @@
         const value = { kind: 'segment', id: attempt.id, itemToken: token, segmentId: permit.id, segmentToken: permit.token, mime: selectedMime, count: 0 };
         const ownerPrefix = prefix(), ticket = generation, key = ownerPrefix + value.id + ':segment:' + value.segmentId;
         await queuePut(key, value); segmentCounts.set(token, (segmentCounts.get(token) || 0) + 1);
-        if (advancing || rendering !== token || !valid(ticket)) { await finishCapture(value, ownerPrefix); return; }
+        if (advancing || rendering !== token || !valid(ticket) || env.PortalExamMode?.isLocked?.(OWNER)) { await finishCapture(value, ownerPrefix); return; }
         capture = { ...value, key, ownerPrefix, ticket, preparedRecorder, recorder: null, persisted: [], lastSoundAt: null, stopped: false };
         flush();
       } catch (error) { notice(error.message, true); logEvent('local-storage-failure'); }
       finally { preparingSegment = false; }
     }
     function record() {
-      if (advancing || !capture || capture.recorder || capture.stopped || !stream) return;
+      if (advancing || !capture || capture.recorder || capture.stopped || !stream || env.PortalExamMode?.isLocked?.(OWNER)) return;
       const current = capture, media = current.preparedRecorder || recorder(); current.recorder = media; current.lastSoundAt = serverNow();
       media.ondataavailable = event => {
         if (!event.data.size) return;
@@ -399,6 +412,9 @@
       const time = doc.getElementById('fm-time'); if (time) time.textContent = clock(phase === 'preparing' ? current.responseAt - now : current.endsAt - now);
       meter(); const level = doc.getElementById('fm-level'); if (level) level.value = readingLevel;
       if (phase !== lastPhase) { lastPhase = phase; const label = doc.getElementById('fm-record-status'); if (label) label.textContent = { instructions: 'Audio begins shortly', listening: 'Listening', preparing: 'Preparing', recording: 'Recording' }[phase] || phase; }
+      if (env.PortalExamMode?.isLocked?.(OWNER)) {
+        stopCapture(); output?.pause(); if (now >= current.endsAt) sync(); return;
+      }
       if (q.audio && now >= current.promptAt && now < current.promptEndsAt && outputUrl && played !== rendering) playPrompt();
       if (!advancing && speech(q.type) && !capture && now < current.endsAt) prepareSegment(rendering);
       if (q.startCueMs && cued !== rendering && now >= current.responseAt - q.startCueMs && now < current.responseAt) { cued = rendering; beep(); }
@@ -457,19 +473,23 @@
       if (queued?.value.sequence === packet.sequence) await queueDelete(key);
     }
     async function advance(skip = false, automatic = false) {
-      if (advancing || !attempt?.current) return;
-      if (!automatic && !env.confirm(skip ? 'Skip this item? You cannot return to it.' : 'Submit this response and move on? You cannot return to this item.')) return;
+      if (advancing || !attempt?.current || env.PortalExamMode?.isLocked?.(OWNER)) return;
       advancing = true; const id = attempt.id, token = attempt.current.token, ticket = generation;
+      const next = doc.getElementById('fm-next'); if (next) { next.disabled = true; next.textContent = 'Saving…'; }
       const editor = doc.getElementById('fm-question'); if (editor) editor.inert = true;
       try {
         stopCapture(); await flush();
         if (!valid(ticket)) return; await commitDraft(); if (!valid(ticket)) return;
         const value = await api('/attempts/' + id + '/next', { itemToken: token, skip }); accept(value);
       } catch (error) { notice(error.message, true); }
-      finally { advancing = false; const current = doc.getElementById('fm-question'); if (current) current.inert = false; }
+      finally {
+        advancing = false; const current = doc.getElementById('fm-question'); if (current) current.inert = false;
+        const next = doc.getElementById('fm-next'); if (next) next.textContent = (attempt?.index === 65 ? 'Submit test' : 'Next') + ' →';
+        if (valid(ticket)) tick();
+      }
     }
     async function finishPreview() {
-      if (advancing || attempt?.status !== 'active' || !env.confirm('Finish this preview now? Unanswered questions will be submitted without an answer.')) return;
+      if (advancing || attempt?.status !== 'active' || !env.confirm('Finish this full mock now? Unanswered questions will be submitted without an answer.')) return;
       advancing = true; const id = attempt.id, ticket = generation;
       const editor = doc.getElementById('fm-question'); if (editor) editor.inert = true;
       try { stopCapture(); await commitDraft(); if (!valid(ticket)) return; await flush(); if (valid(ticket)) accept(await api('/attempts/' + id + '/end', { confirm:true })); }

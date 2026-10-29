@@ -19,7 +19,7 @@ async function fixture(t, mobile) {
   let offset = 0; const now = () => Date.now() + offset, calls = new Map(), native = adapters.createAdapters();
   const app = express(); app.use(express.json());
   const service = installFullMock(app, { pool:db.first, now, verifyToken:token => ['alice','student'].includes(token) ? token : null, getAccount:async uid => ({ username:uid,role:'user' }),
-    canPreview:require('../full-mock/access').createPreviewAccess({users:'alice'}),
+    canPreview:require('../full-mock/access').createPreviewAccess({all:true}),
     assessment:{ adapters:{ assess:async (q, response, options) => {
       calls.set(q.id, (calls.get(q.id) || 0) + 1);
       if (adapters.SPOKEN.has(q.type) && !options.recording || !adapters.SPOKEN.has(q.type) && !['swt','essay','sst'].includes(q.type)) return native.assess(q, response, options);
@@ -36,7 +36,7 @@ async function fixture(t, mobile) {
   t.diagnostic('Browser: ' + await browser.version() + '; sandbox enabled; synthetic microphone; ' + (mobile ? 'mobile emulation' : 'desktop'));
   const page = await browser.newPage(); await page.setViewport(mobile ? { width:390, height:844, isMobile:true, hasTouch:true, deviceScaleFactor:1 } : { width:1365, height:1000 });
   page.setDefaultTimeout(15000); const unexpectedDialogs = [];
-  page.on('dialog', dialog => { if (dialog.message().startsWith('Finish this preview')) { unexpectedDialogs.push(dialog.message()); return dialog.dismiss(); } return dialog.accept(); });
+  page.on('dialog', dialog => { unexpectedDialogs.push(dialog.message()); return dialog.dismiss(); });
   const errors = [], apiErrors = []; page.on('pageerror', error => errors.push(error.message));
   page.on('response', response => { if (response.status() >= 400 && response.url().includes('/api/full-mocks/')) apiErrors.push(response.status() + ' ' + new URL(response.url()).pathname); });
   await page.setRequestInterception(true);
@@ -74,11 +74,12 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
   const f = await fixture(t, mobile), { page } = f;
   let expectedIndex = 0;
   try {
-  await page.waitForSelector('[data-fm="setup"]'); await page.click('[data-fm="setup"]');
+  await page.waitForSelector('[data-fm="setup"]'); assert(!await page.$eval('.fm-shell',node=>/preview/i.test(node.textContent))); await page.click('[data-fm="setup"]');
   await page.click('[data-fm="sample"]'); await page.waitForSelector('#fm-sample audio');
   await page.click('#fm-sample audio', { offset:{ x:20, y:25 } });
   await page.waitForFunction(() => document.querySelector('#fm-sample audio').currentTime > 0);
   await page.click('#fm-heard'); await page.waitForFunction(() => !document.getElementById('fm-begin').disabled); await page.click('#fm-begin');
+  await page.waitForFunction(() => document.fullscreenElement === document.documentElement);
   await page.waitForSelector('[data-fm="skip"]'); await page.click('[data-fm="skip"]');
   const expected = new Map(), seen = new Set(); let attemptId, readingDeadline, listeningDeadline;
   for (let i = 0; i < paper.questions.length; i++) {
@@ -87,6 +88,16 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
     if (!seen.has(q.type)) t.diagnostic('Entering ' + q.type + ' at question ' + expectedIndex);
     await page.waitForFunction(number => document.querySelector('.fm-exam-meta')?.textContent.includes('Question ' + number + ' of 65'), {}, i + 1);
     const saved = await f.state(); attemptId = saved.id; assert.equal(saved.index, i + 1); seen.add(q.type);
+    assert(await page.evaluate(() => document.fullscreenElement === document.documentElement && document.getElementById('portal-exam-guard').hidden), 'Fullscreen was lost between questions');
+    assert(!await page.$eval('.fm-exam-header', node => /preview/i.test(node.textContent)));
+    if (!mobile && i === 0) {
+      await page.evaluate(() => document.exitFullscreen());
+      await page.waitForSelector('#portal-exam-guard:not([hidden])');
+      assert(await page.$eval('#fullMockPane',node=>node.inert));
+      await clickControl(page,'#portal-exam-guard .portal-button.primary');
+      await page.waitForFunction(()=>document.fullscreenElement===document.documentElement&&document.getElementById('portal-exam-guard').hidden);
+      assert.equal((await f.state()).current.endsAt,saved.current.endsAt);
+    }
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Page overflow at ' + q.type);
     if (q.type === 'dropdown') { readingDeadline ||= saved.current.endsAt; assert.equal(saved.current.endsAt, readingDeadline); }
     if (['lmcma','lfi','hcs','lmcsa','smw','hiw','wfd'].includes(q.type)) { listeningDeadline ||= saved.current.endsAt; assert.equal(saved.current.endsAt, listeningDeadline); }
@@ -105,6 +116,7 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
         await page.setOfflineMode(true); await paste(page, '#fm-text', response[0] + ' Saved while offline.'); expected.set(i + 1, [response[0] + ' Saved while offline.']);
         await until(async () => page.evaluate(() => new Promise(resolve => { const open = indexedDB.open('ipt-full-mock-v1', 1); open.onsuccess = () => { const db = open.result, read = db.transaction('pending').objectStore('pending').getAll(); read.onsuccess = () => { resolve(read.result.some(row => row.value.kind === 'draft')); db.close(); }; }; })), 'Offline draft was not saved to IndexedDB.');
         await page.setOfflineMode(false); await page.reload(); await page.waitForSelector('[data-fm="resume"]'); await page.click('[data-fm="resume"]');
+        await page.waitForFunction(() => document.fullscreenElement === document.documentElement);
         await page.waitForFunction(value => document.getElementById('fm-text')?.value === value, {}, expected.get(i + 1)[0]);
         assert.equal((await f.state()).current.endsAt, saved.current.endsAt);
       }
@@ -112,6 +124,8 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
     }
   }
   await page.waitForSelector('.fm-report-status'); await page.waitForFunction(() => /All 65/.test(document.querySelector('.fm-report-status')?.textContent), { timeout:30000 });
+  assert(await page.evaluate(() => !document.fullscreenElement), 'Submitted report did not release fullscreen');
+  assert(!await page.$eval('.fm-report-header',node=>/preview/i.test(node.textContent)));
   await f.service.assessor.drain(); const result = await f.service.assessor.results('alice', attemptId), saved = await f.state();
   assert.equal(seen.size, 22); assert.equal(result.ready, true); assert.equal(result.items.length, 65); assert.equal(result.profiles.overall.practiceIndex, null);
   for (const [index, response] of expected) assert.deepEqual(saved.responses[index].answer, response, 'Saved answer for Q' + index);

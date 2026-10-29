@@ -142,7 +142,8 @@ test('Mock tabs, filtering and launch show labels and timing without content des
   assert.match(board(), /writing-33/); assert.equal((board().match(/data-mock-id=/g) || []).length, 1);
   h.click({ mockId: 'writing-33' }); assert.deepEqual(h.starts[1], ['writing', 'writing-33']);
   assert.doesNotMatch(h.mocks.innerHTML, /data-catalogue-mode="full"/);
-  assert.match(h.mocks.innerHTML, /Full Mock · Coming later/);
+  assert.match(h.mocks.innerHTML, /data-full-mock-preview hidden>Full Mock<\/button>/);
+  assert.doesNotMatch(h.mocks.innerHTML, /Full Mock · (Coming later|Preview)/);
   assert.equal(h.starts.length, 2, 'Filtering never starts or replaces an attempt');
   await h.controller.openMocks(); assert.equal(h.calls.length, 2, 'Loaded banks are reused');
   assert.equal(h.nodes.get('catalogue-module').value, 'writing');

@@ -57,6 +57,18 @@ test('A configured ordinary account starts an owned preview while other students
   assert.equal((await f.request('/catalog',undefined,{user:'student'})).body.available,false);
   assert.equal(f.roles.mahabir1,'user');
 });
+test('Everyone mode exposes Full Mock to signed-in students and keeps accounts and recordings private', async t => {
+  const f = await fixture(t,{canPreview:require('../full-mock/access').createPreviewAccess({all:true}),
+    getAccount:async uid => ({username:uid,role:'user',blocked:uid === 'student'})});
+  for (const user of ['mahabir1','alice']) {
+    assert.equal((await f.request('/catalog',undefined,{user})).body.available,true);
+    const started = await f.request('/attempts',{id:randomUUID(),paperId:'full-mock-1',checks:{microphone:true,playback:true}},{user});
+    assert.equal(started.status,200);
+    assert.equal((await f.request('/attempts/'+started.body.id,undefined,{user:user === 'alice' ? 'mahabir1' : 'alice'})).status,404);
+  }
+  assert.equal((await f.request('/catalog',undefined,{user:'student'})).status,401);
+  assert.equal((await f.request('/catalog',undefined,{user:''})).status,401);
+});
 test('Concurrent starts resume one attempt; handoff rejects a stale page and restart preserves clocks', async t => {
   const f = await fixture(t), a = await f.start(), deadline = a.current.endsAt;
   const starts = await Promise.all([1, 2, 3].map(() => f.request('/attempts', { id: randomUUID(), paperId: 'full-mock-1', checks: { microphone: true, playback: true } })));
