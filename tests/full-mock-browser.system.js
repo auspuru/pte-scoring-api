@@ -27,7 +27,7 @@ async function fixture(t, mobile) {
     } } } });
   await service.store.initialise();
   app.use(express.static(path.join(root, 'public'), { index:false }));
-  app.get('/', (req, res) => res.type('html').send('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/portal-workspace.css"><link rel="stylesheet" href="/full-mock.css"></head><body style="margin:0"><main id="appShell"><section id="fullMockPane" class="pane active"></section></main><script>window.currentUserId="alice";sessionStorage.setItem("pte_session_token","alice");</script><script src="/portal-exam-mode.js"></script><script src="/full-mock-report.js"></script><script src="/full-mock-client.js"></script><script>FullMock.open();</script></body></html>'));
+  app.get('/', (req, res) => res.type('html').send('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/portal-workspace.css"><link rel="stylesheet" href="/full-mock.css"><link rel="stylesheet" href="/mock-report-ui.css"></head><body style="margin:0"><main id="appShell"><section id="fullMockPane" class="pane active"></section></main><script>window.currentUserId="alice";sessionStorage.setItem("pte_session_token","alice");</script><script src="/portal-exam-mode.js"></script><script src="/mock-report-ui.js"></script><script src="/full-mock-report.js"></script><script src="/full-mock-client.js"></script><script>FullMock.open();</script></body></html>'));
   const server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
   let browser;
   db.onClose(async () => { await browser?.close(); await service.stop(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); await fs.rm(directory, { recursive:true, force:true }); });
@@ -131,16 +131,16 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
   assert(await page.evaluate(() => !document.fullscreenElement), 'Submitted report did not release fullscreen');
   assert(!await page.$eval('.fm-report-header',node=>/preview/i.test(node.textContent)));
   assert.equal(await page.$('.fm-method,.fm-interpretation'), null);
-  assert.equal(await page.$('.fm-task-summary[open]'), null);
-  await page.click('.fm-task-summary > summary');
-  await page.waitForSelector('.fm-task-summary[open]');
+  assert(await page.$('.ipr-score-report .ipr-logo'), 'Score report is missing the IPT logo');
+  await page.click('[data-mock-tab="analysis"]');
+  await page.waitForSelector('[data-mock-panel="analysis"]:not([hidden])');
   await f.service.assessor.drain(); const result = await f.service.assessor.results('alice', attemptId), saved = await f.state();
   assert.equal(seen.size, 22); assert.equal(result.ready, true); assert.equal(result.items.length, 65); assert.equal(result.profiles.overall.practiceIndex, null);
   for (const [index, response] of expected) assert.deepEqual(saved.responses[index].answer, response, 'Saved answer for Q' + index);
   assert.deepEqual(f.unexpectedDialogs, []);
   assert.equal(f.calls.size, 65); assert([...f.calls.values()].every(count => count === 1)); assert.equal(f.errors.length, 0, f.errors.join('; '));
   for (const type of ['ra','rs']) { const index = paper.questions.findIndex(row => row.question.type === type) + 1; assert(saved.responses[index].segments.some(segment => segment.finished && segment.chunkCount > 0)); }
-  assert.equal(await page.$$eval('.fm-score-card', nodes => nodes.length), 5); assert.equal(await page.$$eval('#fm-review-select option', nodes => nodes.length), 65);
+  assert.equal(await page.$$eval('.ipr-overall,.ipr-skill', nodes => nodes.length), 5); assert.equal(await page.$$eval('#fm-review-select option', nodes => nodes.length), 65);
   await page.click('[data-fm="review-type"][data-type="di"]'); await page.click('[data-kind="image"]'); await page.waitForFunction(() => document.querySelector('#fm-review-image img')?.naturalWidth > 0);
   await page.click('[data-fm="review-type"][data-type="rs"]'); await page.click('[data-kind="prompt"]'); await page.waitForSelector('#fm-review-prompt audio');
   await page.click('[data-fm="review-type"][data-type="ra"]'); await page.click('[data-kind="recording"]:not([disabled])'); await page.waitForSelector('#fm-review-detail audio');

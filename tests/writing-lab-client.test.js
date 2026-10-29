@@ -72,7 +72,7 @@ function harness({ audioReadyState = 4, protectedMode = false, portal = false, s
       if(context.replyOnce) {context.reply=null;context.replyOnce=false;}
       return {ok:true,json:async()=>value}; }
   };
-  context.window={WritingLabReport:report,PteEstimateDisplay:{render:(reading,writing)=>'<div class="test-estimate">'+writing+'<small> / 90</small></div>'},parent:{postMessage(){}},events:{},addEventListener(name,fn){listen(this.events,name,fn);},scrollTo(){}};
+  context.window={MockReportUI:require('../public/mock-report-ui'),WritingLabReport:report,PteEstimateDisplay:{render:(reading,writing)=>'<div class="test-estimate">'+writing+'<small> / 90</small></div>'},parent:{postMessage(){}},events:{},addEventListener(name,fn){listen(this.events,name,fn);},scrollTo(){}};
   if(studioMode){context.window.ListeningStudio=require('../public/listening-studio');context.window.ListeningTasks=require('../public/listening-tasks');}
   const recovery = require('../public/grading-request');
   context.window.GradingRequest = { request: (url, options, extra) => recovery.request(url, options,
@@ -456,7 +456,7 @@ test('Backgrounding or expiry cancels a queued recording without resetting the s
   const finished={...a,status:'submitted',deadline:null,questions:bank.mocks[0].questions,results:bank.mocks[0].questions.map(q=>({total:0,maximum:report.maximumFor(q),maxima:{content:report.maximumFor(q)},scores:{content:0},feedback:{},strengths:[],improvements:[],errors:[]}))};
   expiry.context.reply=finished;expiry.setNow(102001);await expiry.hooks.tick();await expiry.countdown();
   assert.equal(expiry.recordings[0].plays,0);
-  assert.match(expiry.nodes.get('lab').innerHTML,/10<small> \/ 90/);
+  assert.match(expiry.nodes.get('lab').innerHTML,/<strong>10<\/strong><small>\/90/);
 });
 
 test('Results render pending and completed task estimates out of 90 with safe dictation feedback',()=>{
@@ -464,8 +464,8 @@ test('Results render pending and completed task estimates out of 90 with safe di
   a.results=a.questions.map(q=>({total:report.maximumFor(q),maximum:report.maximumFor(q),maxima:{content:report.maximumFor(q)},scores:{content:report.maximumFor(q)},feedback:{content:'Complete'},strengths:[],improvements:[],errors:[]}));
   a.results[4].wordFeedback=[{word:'<script>bad</script>',correct:false}];
   open(h,a);const html=h.nodes.get('lab').innerHTML;
-  assert.match(html,/90<small> \/ 90/);assert.match(html,/Write from Dictation/);
-  assert.match(html,/View correct sentence/);assert.match(html,/&lt;script&gt;bad&lt;\/script&gt;/);
+  assert.match(html,/<strong>90<\/strong><small>\/90/);assert.match(html,/Write from Dictation/);
+  assert.match(html,/Correct sentence/);assert.match(html,/&lt;script&gt;bad&lt;\/script&gt;/);
   assert.doesNotMatch(html,/<script>bad/);
 });
 
@@ -601,15 +601,15 @@ test('Unavailable writing overview offers a separate retry without rerunning ind
  assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,0);
 });
 
-test('Writing results use the weighted score and show task weights beside the independent overall feedback',()=>{
+test('Writing results retain the saved overall and feedback without exposing calculation details',()=>{
  const h=harness(),a=attempt();a.status='submitted';a.module='writing';a.questions=structuredClone(bank.mocks[0].questions);
  const texts=['Classical mechanics is sometimes considered as a branch of applied mathematics.','Coursework gives students the chance to thoroughly explore the subject.','In my view the damaged car should be repaired as soon as possible.'];
  texts.forEach((text,i)=>a.questions[i+4].text=text);
  a.results=[8,7,16,9,8,7,12].map((total,i)=>({total,maximum:report.maximumFor(a.questions[i]),maxima:{content:report.maximumFor(a.questions[i])},scores:{content:total},feedback:{content:'Saved feedback.'},reasons:[]}));
  h.hooks.set(a);h.hooks.renderResults();const html=h.nodes.get('lab').innerHTML;
- assert.match(html,/class="score-total">69<small>/);assert.match(html,/Weighted Writing practice estimate/);
- assert.match(html,/74\.2% weighted accuracy/);assert.match(html,/not calibrated to Pearson scores/);
- for(const weight of [28,31,18,23])assert.match(html,new RegExp(weight+'% mock weight'));
+ assert.match(html,/<strong>69<\/strong>/);assert.match(html,/alt="IPT Brisbane"/);
+ assert.doesNotMatch(html,/weighted accuracy|mock weight|not calibrated|Weighted Writing/);
+ assert.match(html,/data-mock-tab="answers"/);assert.match(html,/data-mock-tab="feedback"/);
  assert(h.nodes.get('overall-feedback').innerHTML.includes('Overall writing feedback'));
  assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,0);
 });

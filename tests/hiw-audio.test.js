@@ -237,7 +237,7 @@ async function readingClient() {
   const h = harness({ suspended: true }), values = new Map(), intervals = [];
   let now = 100000;
   const host = { hidden: false, innerHTML: '', replaceChildren() { this.innerHTML = ''; }, querySelector() { return null; }, querySelectorAll() { return []; } };
-  const ctx = { ...h.env, currentUserId: 'audio-student',
+  const ctx = { ...h.env, MockReportUI: require('../public/mock-report-ui'), currentUserId: 'audio-student',
     document: { getElementById: () => host, hidden: false },
     localStorage: { getItem: key => values.get(key), setItem: (key, value) => values.set(key, value) },
     fetch: async () => ({ ok: true, json: async () => bank }),
@@ -262,7 +262,7 @@ async function readingClient() {
   const h = harness({ suspended: true }), values = new Map(), intervals = [];
   let now = 100000;
   const host = { hidden: false, innerHTML: '', replaceChildren() { this.innerHTML = ''; }, querySelector() { return null; }, querySelectorAll() { return []; } };
-  const ctx = { ...h.env, currentUserId: 'audio-student',
+  const ctx = { ...h.env, MockReportUI: require('../public/mock-report-ui'), currentUserId: 'audio-student',
     document: { getElementById: () => host, hidden: false },
     localStorage: { getItem: key => values.get(key), setItem: (key, value) => values.set(key, value) },
     fetch: async () => ({ ok: true, json: async () => bank }),

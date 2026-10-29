@@ -91,8 +91,8 @@ test('Every task review is readable and escaped, with no form controls that can 
   report.title = '<script>attack()</script>'; report.items[0].reference.sample = '<img onerror=attack() src=x>';
   report.items[0].feedback.overview = '<svg onload=attack()>';
   const { document } = parseHTML(renderer.page(report, report.items[0].id));
-  assert.equal(document.querySelector('script,svg,img'), null); assert.match(document.querySelector('h1').textContent, /<script>/);
-  assert.equal(document.querySelectorAll('.fm-score-card').length, 5); assert.match(document.querySelector('.fm-score-overall').textContent, /90/);
+  assert.equal(document.querySelector('script,svg,img:not(.ipr-logo)'), null); assert.match(document.querySelector('h1').textContent, /<script>/);
+  assert.equal(document.querySelectorAll('.ipr-overall,.ipr-skill').length, 5); assert.match(document.querySelector('.ipr-overall').textContent, /90/);
   assert.equal(document.querySelectorAll('#fm-review-select option').length, 65);
   for (const item of report.items) {
     const { document:doc } = parseHTML(renderer.review(item)); assert(doc.querySelector('h3,h4')); assert.equal(doc.querySelector('textarea,input,select'), null); assert(doc.querySelector('details.fm-reference'));
@@ -112,7 +112,7 @@ test('Student reports show results and coaching without exposing calculation det
     }
   }
   const { document } = parseHTML(renderer.page(report, report.items[0].id));
-  assert.equal(document.querySelectorAll('.fm-score-card').length, 5);
+  assert.equal(document.querySelectorAll('.ipr-overall,.ipr-skill').length, 5);
   assert.equal(document.querySelector('.fm-method,.fm-interpretation'), null);
   assert.equal(document.querySelector('.fm-task-summary').hasAttribute('open'), false);
   assert(document.querySelector('[data-fm="retry"]').hasAttribute('hidden'));
@@ -183,9 +183,9 @@ async function clientFixture(t) {
   return { ...f, env, document, client, click, requests, revoked, until, poll:async () => { for (const fn of intervals.values()) fn(); }, offline:value => { offline = value; }, intercept:value => { intercept = value; }, owner:value => { owner = value; env.sessionStorage.setItem('pte_session_token', value); } };
 }
 test('History opens a complete report without microphone/audio hardware; task navigation and media cleanup work', async t => {
-  const f = await clientFixture(t); await f.client.open(); assert.match(f.document.getElementById('fullMockPane').textContent, /View report/);
+  const f = await clientFixture(t); await f.client.open(); assert.match(f.document.getElementById('fullMockPane').textContent, /Score report/);
   await f.click('[data-fm="resume"]'); await f.until(() => f.document.querySelector('#fm-review-select'));
-  assert.equal(f.document.querySelectorAll('.fm-score-card').length, 5); assert.equal(f.requests.some(row => row.route.endsWith('/claim')), false);
+  assert.equal(f.document.querySelectorAll('.ipr-overall,.ipr-skill').length, 5); assert.equal(f.requests.some(row => row.route.endsWith('/claim')), false);
   await f.click('[data-fm="review-type"][data-type="rs"]'); const select = f.document.getElementById('fm-review-select'); assert.match(select.value, /fm1-rs-01/);
   await f.click('[data-fm="review-media"][data-kind="prompt"]'); assert(f.document.querySelector('#fm-review-prompt audio'));
   const request = f.requests.find(row => row.route.includes('/review/')); assert.equal(request.init.headers['x-session-token'], 'alice'); assert(!request.route.includes('alice'));
@@ -195,8 +195,8 @@ test('History opens a complete report without microphone/audio hardware; task na
 test('A pending report recovers offline, explicitly retries incomplete work, and polls to a complete report', async t => {
   const f = await clientFixture(t), essay = paper.questions.find(row => row.question.type === 'essay');
   await f.service.store.update('alice', f.id, state => { state.assessment.items[essay.id].status = 'failed'; state.assessment.status = 'needs-attention'; return state; });
-  await f.client.open({ attemptId:f.id }); await f.until(() => f.document.querySelector('.fm-score-card'));
-  assert.match(f.document.querySelector('.fm-score-overall').textContent, /Pending/); assert.equal(f.document.querySelector('[data-fm="assessment-retry"]').hidden, false);
+  await f.client.open({ attemptId:f.id }); await f.until(() => f.document.querySelector('.ipr-overall,.ipr-skill'));
+  assert.match(f.document.querySelector('.ipr-overall').textContent, /Pending/); assert.equal(f.document.querySelector('[data-fm="assessment-retry"]').hidden, false);
   f.offline(true); await f.click('[data-fm="retry"]'); assert.match(f.document.getElementById('fm-notice').textContent, /Connection interrupted/);
   f.offline(false); await f.click('[data-fm="assessment-retry"]'); await f.service.assessor.drain();
   await f.poll(); await f.until(() => /All 65/.test(f.document.querySelector('.fm-report-status').textContent));
