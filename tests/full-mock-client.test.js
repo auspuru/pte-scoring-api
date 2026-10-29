@@ -225,8 +225,10 @@ test('The portal route and lazy loader include the player with fresh immutable c
   const read = name => fs.readFile(path.join(__dirname, '..', name), 'utf8');
   const html = await read('public/index.html'), source = await read('public/index.js');
   const hash = text => createHash('sha256').update(text).digest('hex').slice(0, 12);
-  const client = await read('public/full-mock-client.js'), css = await read('public/full-mock.css');
+  const client = await read('public/full-mock-client.js'), report = await read('public/full-mock-report.js'), css = await read('public/full-mock.css');
   assert(source.includes('full-mock-client.js?v=sha256-' + hash(client)));
+  assert(source.includes('full-mock-report.js?v=sha256-' + hash(report)));
+  assert(source.indexOf("loadDeferredScript('/full-mock-report.js") < source.indexOf("loadDeferredScript('/full-mock-client.js"));
   assert(html.includes('full-mock.css?v=sha256-' + hash(css)));
   assert(html.includes('id="fullMockPane"'));
   assert.equal(require('../public/portal-workspace').routeFromHash('#/full-mock'), 'full-mock');

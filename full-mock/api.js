@@ -5,6 +5,7 @@ const fs = require('node:fs/promises');
 const { loadPaper, digest, assertReleased } = require('./paper');
 const { createStore, fail } = require('./store');
 const session = require('./session');
+const reports = require('./report');
 
 function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper(), assessment } = {}) {
   const store = createStore({ pool, directory }), router = express.Router();
@@ -50,7 +51,15 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
   }
   router.get('/catalog', wrap(async (req, res) => res.json({ available: available(req.fullMock), preview: paper.status !== 'released',
     papers: available(req.fullMock) ? [{ id: paper.id, version: paper.version, title: paper.title, questionCount: 65, taskTypeCount: 22, preview: paper.status !== 'released' }] : [] })));
-  router.get('/attempts', wrap(async (req, res) => res.json((await store.list(req.fullMock.uid)).filter(state => !state.preview || req.fullMock.preview).map(state => ({ id: state.id, title: state.title, status: state.status, createdAt: state.createdAt, preview: state.preview, completedCount: state.responses.filter(value => value.sealed).length })))));
+  router.get('/attempts', wrap(async (req, res) => {
+    const saved = (await store.list(req.fullMock.uid)).filter(state => !state.preview || req.fullMock.preview).sort((a, b) => b.createdAt - a.createdAt);
+    const rows = [];
+    for (const state of saved) {
+      const record = await read(req.fullMock.uid, state.id, req.fullMock);
+      rows.push(reports.summary(record.paper, record.state, now()));
+    }
+    res.json(rows);
+  }));
   router.post('/attempts', wrap(async (req, res) => {
     if (!available(req.fullMock)) throw fail('Full Mock 1 is not available for student attempts yet.', 403);
     if (req.body?.paperId !== paper.id || req.body?.checks?.microphone !== true || req.body?.checks?.playback !== true) throw fail('Complete the microphone and playback checks first.', 400);
@@ -71,6 +80,26 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     await read(req.fullMock.uid, req.params.id, req.fullMock);
     if (!assessor) throw fail('Assessment is not enabled.', 503);
     res.json(await assessor.results(req.fullMock.uid, req.params.id));
+  }));
+  router.get('/attempts/:id/report', wrap(async (req, res) => {
+    const record = await read(req.fullMock.uid, req.params.id, req.fullMock);
+    res.json(reports.buildReport(record.paper, record.state, now()));
+  }));
+  router.get('/attempts/:id/review/:questionId/media/:asset', wrap(async (req, res) => {
+    const record = await read(req.fullMock.uid, req.params.id, req.fullMock);
+    const { candidate } = reports.reviewItem(record.paper, record.state, req.params.questionId);
+    const descriptor = candidate.audio?.entry.audioSha256 === req.params.asset ? candidate.audio : candidate.image?.sha256 === req.params.asset ? candidate.image : null;
+    const asset = descriptor && record.paper.assets.find(value => value.path === descriptor.path && value.sha256 === req.params.asset);
+    if (!asset) throw fail('Review media not found.', 404);
+    const bytes = await fs.readFile(path.join(__dirname, '..', asset.path));
+    if (require('./store').hash(bytes) !== asset.sha256) throw fail('Review media failed verification.', 503);
+    res.type(asset.mime).send(bytes);
+  }));
+  router.get('/attempts/:id/review/:questionId/recordings/:segment', wrap(async (req, res) => {
+    const record = await read(req.fullMock.uid, req.params.id, req.fullMock);
+    const { response } = reports.reviewItem(record.paper, record.state, req.params.questionId);
+    const audio = await reports.recordingBytes(req.fullMock.uid, req.params.id, response, req.params.segment, store.getChunk);
+    res.type(audio.mime).send(audio.bytes);
   }));
   router.post('/attempts/:id/claim', wrap(async (req, res) => res.json(view(await change(req, state => session.claim(state, req.body || {}, now()), { controlling: false })))));
   router.post('/attempts/:id/pulse', wrap(async (req, res) => res.json(view(await change(req, () => {})))));

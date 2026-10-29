@@ -146,3 +146,7 @@ The current source lock includes the Phase 4 engine and the reused Visual Academ
 dependencies. The frozen v1 paper and historical source fingerprints are unchanged.
 Human editorial/listening review, live provider/device validation, PostgreSQL
 deployment smoke checks and independent calibration still precede student release.
+
+Phase 5 adds a separate submitted-only report/review projection, protected media
+playback and richer saved history. The limited Phase 4 `/results` projection stays
+unchanged. See `docs/full-mock-phase-5.md`.

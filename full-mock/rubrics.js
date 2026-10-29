@@ -40,6 +40,6 @@ const VERSION_EXPORTS = {
   'situation-content-policy.js': 'VERSION', 'writing-lab-scoring.js': 'VERSION',
   'swt-scoring-policy.js': 'POLICY_VERSION', 'public/essay-scoring.js': 'VERSION',
   'full-mock/asq-scoring.js': 'VERSION', 'full-mock/adapters.js': 'VERSION', 'full-mock/aggregation.js': 'VERSION',
-  'full-mock/assessment.js': 'VERSION', 'full-mock/profiles.js': 'VERSION', 'full-mock/recording.js': 'VERSION', 'full-mock/session.js': 'VERSION'
+  'full-mock/assessment.js': 'VERSION', 'full-mock/profiles.js': 'VERSION', 'full-mock/recording.js': 'VERSION', 'full-mock/session.js': 'VERSION', 'full-mock/report.js': 'VERSION'
 };
 module.exports = { RUBRICS, VERSION_EXPORTS };

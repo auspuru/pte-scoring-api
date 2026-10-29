@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "75b74ca18b19331912761abd50c10ec55121cb48",
+  "baseCommit": "2766bf6282bd49bedac0f044107ea7d076e13e3c",
   "checkedAt": "2026-10-29",
-  "scope": "Phase 4 current source fingerprints include native assessment adapters, provider/format contracts, Visual Academy dependencies, media reconstruction, five weighting profiles and protected aggregation. The immutable v1 paper retains its historical freeze-time fingerprints. These are provisional IPT practice indices, not calibrated Pearson scores.",
+  "scope": "Phase 5 current source fingerprints include submitted-only reports, feedback projection and owned history, alongside Phase 4 native assessment, media verification and five profiles. The immutable v1 paper retains its historical freeze-time fingerprints. These are provisional IPT practice indices, not calibrated Pearson scores.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -76,15 +76,15 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "ceab53b904e9506fc38608f45b5c3a24472ceb2315a168275c56b876cb0ff74d",
-        "version": "full-mock-adapters-2026-10-29.1"
+        "sha256": "940e500ccad7169994e3637557b3511c37e64489e626bdb803b13056559326f2",
+        "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
         "sha256": "10505a5d6bdbf1dd97b8fd7c01a6936f498545b261fe5775790bd2e8dd96adb2",
         "version": "full-mock-aggregation-2026-10-29.1"
       },
       "full-mock/api.js": {
-        "sha256": "c1e8c02fce8e295aca6b7ccaef9dfa6058fc900dabef9ead08116d8140aee5df",
+        "sha256": "03d6433eae2fbcc78b025b9b21b19ea63edd5ba29179423c8d78b9d3b36f6b26",
         "version": null
       },
       "full-mock/asq-scoring.js": {
@@ -96,7 +96,7 @@
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
-        "sha256": "3000f604d4cdf98de8be40383bf55e1c62701d79d31f98615468a851f4ff0867",
+        "sha256": "13c2e1e63a307853d71e524693c13c14dc5c3f4a3b696f5b107d1709ae6c0e1a",
         "version": null
       },
       "full-mock/blueprint.js": {
@@ -115,8 +115,12 @@
         "sha256": "e213b6fbf8ca28e59bd716eb4d972175e28ca0f173f122a0e769de3f6160b154",
         "version": "full-mock-recording-2026-10-29.1"
       },
+      "full-mock/report.js": {
+        "sha256": "69525ec99b41071a6f3c46274d97adbb87f91ec638dd2f566a8b51e6a7233bf4",
+        "version": "full-mock-report-2026-10-29.1"
+      },
       "full-mock/rubrics.js": {
-        "sha256": "cc2e3b85568282c0cc107e197566a9ad8c3c6dfaa36cad8bb5010cb428ff58af",
+        "sha256": "117c51a483f49d5f4127055001698aedc2ddb4004940751b4fe25cf66959e02a",
         "version": null
       },
       "full-mock/session.js": {

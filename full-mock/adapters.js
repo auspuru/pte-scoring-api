@@ -6,7 +6,7 @@ const reading = require('../public/reading-practice');
 const { RUBRICS } = require('./rubrics');
 const asq = require('./asq-scoring');
 const { nativeValid } = require('./aggregation');
-const VERSION = 'full-mock-adapters-2026-10-29.1';
+const VERSION = 'full-mock-adapters-2026-10-29.2';
 const SPOKEN = new Set(['ra','rs','di','rl','asq','sgd','rts']);
 function maxima(q) {
   if (q.type === 'ra') return { content: speech.tokens(q.text).length, pronunciation: 5, fluency: 5 };
@@ -89,7 +89,9 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         for (const key of ['pronunciation','fluency']) {
           const trait = raw?.[key];
           if (traits[key] == null && raw?.deliveryEvidence?.sufficient !== false && !['unassessed','unavailable'].includes(trait?.status)
-            && Number.isFinite(trait?.score) && trait.score >= 0 && trait.score <= 5) traits[key] = { score: trait.score, evidence: trait.evidence || [], version: raw.deliveryVersion, provider: raw.deliveryProvider };
+            && Number.isFinite(trait?.score) && trait.score >= 0 && trait.score <= 5) traits[key] = { score: trait.score, evidence: trait.evidence || [], version: raw.deliveryVersion, provider: raw.deliveryProvider,
+              descriptor:typeof trait.descriptor === 'string' ? trait.descriptor.slice(0, 2000) : '', coaching:typeof trait.coaching === 'string' ? trait.coaching.slice(0, 3000) : '',
+              words:Array.isArray(trait.words) ? trait.words.filter(word => word && typeof word.word === 'string').slice(0, 20).map(word => ({ word:word.word.slice(0, 200), errorType:String(word.errorType || '').slice(0, 80) })) : [] };
         }
         stages.delivery = { status: Object.keys(traits).length === 2 ? 'complete' : 'partial', attemptedRun: run, traits, uncertain: !!error?.uncertain };
         await checkpoint(stages);
