@@ -1,8 +1,8 @@
 (function (root, factory) {
-  const api = factory();
+  const api = factory(typeof module==='object'&&module.exports?require('./mock-report-ui'):root.MockReportUI);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.ReadingReview = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (layout) {
   'use strict';
   const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   const items = value => Array.isArray(value) ? value : [];
@@ -34,7 +34,7 @@
       + '<button class="portal-button" data-review-reset '+(view.filter==='all'&&view.type==='all'?'hidden':'')+'>Reset filters</button>'
       + '<span class="reading-review-count" data-review-count role="status" aria-live="polite"></span></div></div>';
   }
-  function overview(session, total, labels, model, view) {
+  function legacyOverview(session, total, labels, model, view) {
     const correct=model.filter(item=>item.status==='correct').length;
     const improve=model.filter(item=>['review','unanswered'].includes(item.status)).length;
     const grading=session.questions.some(q=>session.assessments?.[q.uid]?.status==='working');
@@ -48,6 +48,13 @@
       + '<div class="reading-performance-heading"><h3>Your task breakdown</h3><span>Select a task to focus your review</span></div><div class="reading-task-performance">'
       + total.rows.map(row=>{const percent=row.gradedPossible?Math.round(row.earned/row.gradedPossible*100):0;return '<button type="button" data-review-type="'+row.type+'" aria-pressed="'+(view.type===row.type)+'"><span>'+escape(labels[row.type])+'</span><strong>'+(row.gradedPossible?row.earned+'/'+row.gradedPossible:'—')+'</strong><span class="reading-performance-track" aria-hidden="true"><i style="width:'+percent+'%"></i></span>'+(row.pending||row.excluded?'<small>'+(row.pending?'Awaiting assessment':'Audio incomplete')+'</small>':'')+'</button>';}).join('')
       + '</div></section>';
+  }
+  function overview(session,total,labels,model,view) {
+    const original=legacyOverview(session,total,labels,model,view);
+    if(session.practiceUid)return original;
+    const ready=!total.pending&&total.percent!=null,value=total.percent;
+    const feedback=model.filter(item=>['review','unanswered','excluded'].includes(item.status)).slice(0,3).map(item=>'<article class="reading-card"><h3>'+escape(labels[item.q.type])+'</h3><p>'+escape(item.q.reasoning?.correct||'Compare your response with the correct answer and review the saved explanation.')+'</p><button type="button" class="portal-button" data-review-type="'+escape(item.q.type)+'">Review answers</button></article>').join('')||'<p class="ipr-empty">Open an answer to compare your response with its explanation.</p>';
+    return '<div data-reading-hero>'+layout.hero({title:session.name||'Reading mock',at:session.startedAt,duration:Math.max(1,Math.round((session.finishedAt-session.startedAt)/60000))+' min',count:session.questions.length,overall:value,unit:'%',scoreLabel:'Reading accuracy',skills:[{name:'Reading',value,maximum:100,unit:'%'}],status:ready?'Completed':'Assessing'})+'</div><div data-reading-analysis>'+original+'</div><div data-reading-feedback>'+feedback+'</div>';
   }
   const list = values => values.length ? '<ol>' + values.map(value => '<li>' + escape(value) + '</li>').join('') + '</ol>' : '<p class="reading-unanswered">Not answered</p>';
   const paragraph = text => '<p class="reading-review-text">' + escape(text) + '</p>';
