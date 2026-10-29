@@ -32,11 +32,25 @@ function snapshot(config = configuration(), root = require('node:path').resolve(
     weighting: structuredClone(weighting.SNAPSHOT), calibration: 'uncalibrated', official: false });
 }
 function stateFor(value) { return { version: VERSION, snapshot: structuredClone(value), snapshotHash: digest(value), status: 'not-requested', run: 0, items: {} }; }
+// One audited access/UI-only upgrade may finish existing attempts with their
+// original snapshot. Any native scorer, model, rubric, weighting or paper change
+// still requires a different assessment version and cannot use this exception.
+const ACCESS_BASE = require('../content/full-mock/access-compatible-sources.json');
+const ACCESS_BASE_HASH = '275016a6cdf793dbd6ef7a0750bc10294a601d87ab8e4e0faa74418ea2419556';
+function accessOnlyUpgrade(saved, current) {
+  if (digest(ACCESS_BASE) !== ACCESS_BASE_HASH || digest(saved.scoringSources) !== ACCESS_BASE_HASH) return false;
+  const allowed = new Set(['full-mock/access.js','full-mock/api.js','full-mock/assessment.js']);
+  const before = ACCESS_BASE.files, after = current.scoringSources.files;
+  if (Object.keys(before).sort().join() !== Object.keys(after).sort().join()
+    || Object.keys(before).some(name => !allowed.has(name) && digest(before[name]) !== digest(after[name]))) return false;
+  return digest({ ...saved, scoringSources:current.scoringSources }) === digest(current);
+}
 function createEngine({ store, adapters = createAdapters(), providerConfiguration = configuration(), now = Date.now, assemble = media.assemble, concurrency = 2, paper = loadPaper() } = {}) {
   const currentSnapshot = snapshot(providerConfiguration, undefined, paper), currentHash = digest(currentSnapshot), jobs = new Map(); let sweep, closing = false;
   function validate(state) {
     const saved = state.assessment;
-    if (!saved || digest(saved.snapshot) !== saved.snapshotHash || saved.snapshotHash !== currentHash || saved.version !== VERSION || saved.snapshot.paperHash !== state.paperHash) throw fail('This attempt uses a different assessment version. Its saved answers and results are retained.', 409);
+    if (!saved || digest(saved.snapshot) !== saved.snapshotHash || saved.version !== VERSION || saved.snapshot.paperHash !== state.paperHash
+      || saved.snapshotHash !== currentHash && !accessOnlyUpgrade(saved.snapshot, currentSnapshot)) throw fail('This attempt uses a different assessment version. Its saved answers and results are retained.', 409);
   }
   async function request(uid, id, { retry = false } = {}) {
     const saved = await store.get(uid, id); if (!saved) throw fail('Attempt not found.', 404);
@@ -71,7 +85,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
       state.assessment.lease = { id: lease, expiresAt: now() + 180000 }; claimed = true; return state;
     });
     if (!claimed) return;
-    const record = await store.get(uid, id), savedPaper = record.paper;
+    const record = await store.get(uid, id), savedPaper = record.paper, attemptHash = state.assessment.snapshotHash;
     if (digest(savedPaper) !== state.paperHash) throw fail('Saved paper integrity failed.', 503);
     async function save(update) {
       return store.update(uid, id, current => {
@@ -87,12 +101,12 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
         const saved = await store.get(uid, id), response = saved.state.responses[position + 1];
         if (!response?.sealed) continue;
         const fingerprint = inputHash(response), previous = saved.state.assessment.items[candidate.id];
-        if (previous?.inputHash === fingerprint && previous.snapshotHash === currentHash && previous.status === 'assessed') continue;
-        const stages = previous?.inputHash === fingerprint && previous.snapshotHash === currentHash ? previous.stages : {};
+        if (previous?.inputHash === fingerprint && previous.snapshotHash === attemptHash && previous.status === 'assessed') continue;
+        const stages = previous?.inputHash === fingerprint && previous.snapshotHash === attemptHash ? previous.stages : {};
         const persist = async patch => save(current => {
           if (inputHash(current.responses[position + 1]) !== fingerprint) throw fail('Saved media changed while assessment was running.');
           const prior = current.assessment.items[candidate.id];
-          current.assessment.items[candidate.id] = { ...(prior?.inputHash === fingerprint && prior.snapshotHash === currentHash ? prior : {}), inputHash: fingerprint, snapshotHash: currentHash, ...patch };
+          current.assessment.items[candidate.id] = { ...(prior?.inputHash === fingerprint && prior.snapshotHash === attemptHash ? prior : {}), inputHash: fingerprint, snapshotHash: attemptHash, ...patch };
         });
         try {
           await persist({ status: 'processing', stages });

@@ -30,3 +30,13 @@ test('Deployment account verification is read-only and rejects missing or blocke
   await assert.rejects(checkPreviewAccounts(['mahabir1'],async () => ({rows:[{username:'mahabir1',blocked:true}]})),/missing or blocked/);
   assert.deepEqual(await checkPreviewAccounts([],() => {throw Error('Should not query');}),{configured:0,verified:0});
 });
+test('Everyone mode permits every existing unblocked account while preserving sign-in and block checks', async () => {
+  const can = createPreviewAccess({all:'true'});
+  for (const uid of ['mahabir1','student','new-student','pppp']) assert.equal(can({uid,account:{role:'user'}}),true);
+  for (const account of [null,{role:'user',blocked:true},{role:'admin',blocked:true}]) assert.equal(can({uid:'student',account}),false);
+  assert.equal(can({uid:'',account:{role:'user'}}),false);
+  for (const all of ['false','yes','*',false]) assert.equal(createPreviewAccess({all})({uid:'student',account:{role:'user'}}),false);
+  const queries = [];
+  assert.deepEqual(await checkPreviewAccounts([],async sql => {queries.push(sql);return {rows:[]};},{all:true}),{mode:'all-signed-in',database:'verified'});
+  assert.deepEqual(queries,['SELECT 1 FROM accounts LIMIT 0']);
+});

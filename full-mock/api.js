@@ -132,7 +132,8 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
   }));
   router.post('/attempts/:id/segments/:segment/finish', wrap(async (req, res) => res.json(view(await change(req, state => session.finishSegment(state, req.body.itemToken, req.params.segment, req.body.segmentToken, req.body.chunks, now()), { controlling: false })))));
   router.post('/attempts/:id/events', wrap(async (req, res) => {
-    const allowed = ['tab-hidden', 'window-blur', 'media-failure', 'microphone-interrupted', 'recording-resumed', 'local-storage-failure'];
+    const allowed = ['tab-hidden', 'window-blur', 'media-failure', 'microphone-interrupted', 'recording-resumed', 'local-storage-failure',
+      'fullscreen-exit', 'fullscreen-required', 'external-paste-blocked', 'external-drop-blocked'];
     if (!allowed.includes(req.body?.reason)) throw fail('Invalid event.', 400);
     await change(req, state => { if (state.events.length < 500) state.events.push({ reason: req.body.reason, receivedAt: now(), index: state.index }); }, { controlling: false });
     res.json({ saved: true });

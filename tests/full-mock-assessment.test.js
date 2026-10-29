@@ -14,6 +14,7 @@ const adapters = require('../full-mock/adapters');
 const media = require('../full-mock/recording');
 const { installFullMock } = require('../full-mock/api');
 const paper = loadPaper();
+const accessBase = require('../content/full-mock/access-compatible-sources.json');
 const full = q => adapters.result(q, adapters.maxima(q));
 async function fixture(t, options = {}) {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'full-mock-assessment-')), store = createStore({ directory });
@@ -47,6 +48,27 @@ test('Explicit retry processes failures only and preserves every successful nati
   assert.equal((await f.engine.results('alice', f.id)).ready, true);
   for (const [key, count] of calls) assert.equal(count, key.startsWith('asq') ? 2 : 1);
   await f.engine.request('alice', f.id, { retry:true }); await f.engine.drain(); assert.equal((await f.state()).assessment.run, 2);
+});
+test('The audited access-only upgrade finishes old attempts without changing their snapshot or rescoring successful items', async t => {
+  const calls=new Map();let retry=false;
+  const target=paper.questions[0].question.id;
+  const f=await fixture(t,{adapters:{assess:async q=>{calls.set(q.id,(calls.get(q.id)||0)+1);return q.id===target&&!retry?{status:'failed',reason:'provider-unavailable'}:full(q);}}});
+  const original={...structuredClone(f.engine.snapshot),scoringSources:structuredClone(accessBase)};
+  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+  const originalHash=digest(original);await f.engine.request('alice',f.id);await f.engine.drain();
+  assert.equal((await f.engine.results('alice',f.id)).assessedCount,64);
+  retry=true;await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();
+  assert.equal((await f.engine.results('alice',f.id)).ready,true);
+  const saved=await f.state();assert.equal(saved.assessment.snapshotHash,originalHash);assert.deepEqual(saved.assessment.snapshot,original);
+  for(const [id,count] of calls)assert.equal(count,id===target?2:1);
+  assert(Object.values(saved.assessment.items).every(item=>item.snapshotHash===originalHash));
+});
+for(const change of ['model','native-source'])test('Access upgrade compatibility cannot accept a changed '+change,async t=>{
+  const f=await fixture(t),original={...structuredClone(f.engine.snapshot),scoringSources:structuredClone(accessBase)};
+  if(change==='model')original.configuration.transcription.model='different-model';
+  else original.scoringSources.files['speaking-scoring.js'].sha256='0'.repeat(64);
+  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+  await assert.rejects(f.engine.request('alice',f.id),/different assessment version/);
 });
 test('A lost recording remains pending, then durable media wakes that question without repeating paid failures', async t => {
   let transcriptions = 0;

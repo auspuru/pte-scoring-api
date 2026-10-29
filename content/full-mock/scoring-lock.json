@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "922ce2631a87d95a9d8ddcd164d4ef918ba47435",
+  "baseCommit": "c4a6ea782d3dd0a7713ecd35dd531c7368c4b201",
   "checkedAt": "2026-10-29",
-  "scope": "Account-specific Full Mock preview access is included in current source fingerprints. Native rubrics, weighting, frozen paper and calibration are unchanged. Named preview access does not release the paper to other students.",
+  "scope": "All signed-in users can access Full Mock; navigation and fullscreen controls changed without changing native rubrics, weights or provider models. One audited access-only baseline preserves existing attempt snapshots and successful native grades.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -76,7 +76,7 @@
         "version": null
       },
       "full-mock/access.js": {
-        "sha256": "b6b86396a26da40fa3da7faffcc74224753ff95453ecbce02bc690ab7fa2f68e",
+        "sha256": "e0d65c72cf660e5d1b9cf13c5a74c77cc57356f71f19b87f20ed066c3ccb53b3",
         "version": null
       },
       "full-mock/adapters.js": {
@@ -88,7 +88,7 @@
         "version": "full-mock-aggregation-2026-10-29.1"
       },
       "full-mock/api.js": {
-        "sha256": "03d6433eae2fbcc78b025b9b21b19ea63edd5ba29179423c8d78b9d3b36f6b26",
+        "sha256": "323ce54aedb7351e6a2676181f4bced7cf81bea62b75b6f35644c3d3ec455d8c",
         "version": null
       },
       "full-mock/asq-scoring.js": {
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "68e78e246bea7b37d421dd39263a2ae748e9d2cd3d14df9f98d468904f004085",
+        "sha256": "f532f47c61dc36d86b8732cb38b2e07abd990af08b6a435d9467136f0c7a0e43",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {

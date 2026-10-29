@@ -187,7 +187,7 @@
         host.onclick = e => { if (e.target.closest('[data-retry-catalogue]')) openMocks(options); }; return;
       }
       host.innerHTML = '<div class="catalogue-heading"><span class="mock-catalogue-shell-kicker">Timed practice</span><h2>Mock Tests</h2><p>Choose a practice or sectional mock, continue an unfinished attempt, or review your saved test history.</p></div>'
-        + '<div class="catalogue-modes" role="group" aria-label="Mock type">' + [['practice','Practice Mock'],['sectional','Sectional Mock']].map(([id,label]) => '<button type="button" data-catalogue-mode="' + id + '" aria-pressed="' + (filters.mode === id) + '">' + label + '</button>').join('') + '<span class="catalogue-coming-soon" aria-label="Full Mock is not available yet">Full Mock · Coming later</span><button type="button" data-full-mock-preview hidden>Full Mock · Preview</button></div>'
+        + '<div class="catalogue-modes" role="group" aria-label="Mock type">' + [['practice','Practice Mock'],['sectional','Sectional Mock']].map(([id,label]) => '<button type="button" data-catalogue-mode="' + id + '" aria-pressed="' + (filters.mode === id) + '">' + label + '</button>').join('') + '<button type="button" data-full-mock-preview hidden>Full Mock</button></div>'
         + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search tests" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option>' + (canAccessSpeaking()?'<option value="speaking">Speaking</option>':'') + '<option value="reading">Reading</option><option value="writing">Writing</option><option value="listening">Listening</option></select></label></div>'
         + '<div class="catalogue-saved"><span>Saved mock attempts</span>' + (canAccessSpeaking()?'<button type="button" data-mock-history="speaking">Speaking</button>':'') + '<button type="button" data-mock-history="reading">Reading</button><button type="button" data-mock-history="writing">Writing</button><button type="button" data-mock-history="listening">Listening</button></div>'
         + '<p id="catalogue-count" role="status"></p><div class="mock-catalogue-grid" id="catalogue-board"></div><p id="catalogue-empty" class="catalogue-empty" hidden></p><div class="catalogue-pagination" id="catalogue-pagination"><button type="button" class="portal-button" id="catalogue-prev" data-catalogue-page="-1">Previous</button><span id="catalogue-page"></span><button type="button" class="portal-button" id="catalogue-next" data-catalogue-page="1">Next</button></div>';
@@ -211,7 +211,7 @@
       renderList();
       const previewToken = getSessionToken();
       if (previewToken) get('/api/full-mocks/catalog', { headers: { 'x-session-token': previewToken }, cache: 'no-store' })
-        .then(response => response.ok ? response.json() : null).then(value => { if (getSessionToken() !== previewToken) return; const button = host.querySelector('[data-full-mock-preview]'); if (button && value?.available) button.hidden = false; }).catch(() => {});
+        .then(response => response.ok ? response.json() : null).then(value => { if (getSessionToken() !== previewToken) return; const button = host.querySelector('[data-full-mock-preview]'); if (button) button.hidden = !value?.available; }).catch(() => {});
     }
     return { openPractice, openMocks };
   }

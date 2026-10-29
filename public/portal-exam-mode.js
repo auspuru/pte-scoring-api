@@ -158,10 +158,12 @@
       }
       if (options && (options.pending || !fullscreen() || !focused())) lock('fullscreen-required');
     }
-    function prepare(owner, pane) {
+    function prepare(owner, pane, { immediate = false } = {}) {
       set(owner, true, pane, { pending:true });
       if (active?.owner !== owner) return Promise.resolve(false);
-      return new Promise(resolve => { active.ready = resolve; });
+      const ready = new Promise(resolve => { active.ready = resolve; });
+      if (immediate) enter.onclick();
+      return ready;
     }
     function editor(target) {
       return active?.pane.contains(target) && /^(TEXTAREA|INPUT)$/.test(target?.tagName) && !target.disabled && !target.readOnly ? target : null;
