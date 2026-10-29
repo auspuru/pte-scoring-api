@@ -130,6 +130,10 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
   await page.waitForSelector('.fm-report-status'); await page.waitForFunction(() => /All 65/.test(document.querySelector('.fm-report-status')?.textContent), { timeout:30000 });
   assert(await page.evaluate(() => !document.fullscreenElement), 'Submitted report did not release fullscreen');
   assert(!await page.$eval('.fm-report-header',node=>/preview/i.test(node.textContent)));
+  assert.equal(await page.$('.fm-method,.fm-interpretation'), null);
+  assert.equal(await page.$('.fm-task-summary[open]'), null);
+  await page.click('.fm-task-summary > summary');
+  await page.waitForSelector('.fm-task-summary[open]');
   await f.service.assessor.drain(); const result = await f.service.assessor.results('alice', attemptId), saved = await f.state();
   assert.equal(seen.size, 22); assert.equal(result.ready, true); assert.equal(result.items.length, 65); assert.equal(result.profiles.overall.practiceIndex, null);
   for (const [index, response] of expected) assert.deepEqual(saved.responses[index].answer, response, 'Saved answer for Q' + index);
