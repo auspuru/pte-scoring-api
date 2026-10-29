@@ -230,7 +230,7 @@
       if (attempt?.status !== 'active') { render(); return; }
       render(); env.PortalExamMode?.set(OWNER, true, host, {
         onEvent:event => logEvent(event.reason),
-        onLock:() => { stopCapture(); output?.pause(); },
+        onLock:() => { if (capture?.recorder) stopCapture(); output?.pause(); },
         onResume:() => { played = ''; tick(); }
       });
       env.clearInterval(timer); env.clearInterval(poller);
@@ -375,7 +375,7 @@
         const value = { kind: 'segment', id: attempt.id, itemToken: token, segmentId: permit.id, segmentToken: permit.token, mime: selectedMime, count: 0 };
         const ownerPrefix = prefix(), ticket = generation, key = ownerPrefix + value.id + ':segment:' + value.segmentId;
         await queuePut(key, value); segmentCounts.set(token, (segmentCounts.get(token) || 0) + 1);
-        if (advancing || rendering !== token || !valid(ticket) || env.PortalExamMode?.isLocked?.(OWNER)) { await finishCapture(value, ownerPrefix); return; }
+        if (advancing || rendering !== token || !valid(ticket)) { await finishCapture(value, ownerPrefix); return; }
         capture = { ...value, key, ownerPrefix, ticket, preparedRecorder, recorder: null, persisted: [], lastSoundAt: null, stopped: false };
         flush();
       } catch (error) { notice(error.message, true); logEvent('local-storage-failure'); }
@@ -413,7 +413,7 @@
       meter(); const level = doc.getElementById('fm-level'); if (level) level.value = readingLevel;
       if (phase !== lastPhase) { lastPhase = phase; const label = doc.getElementById('fm-record-status'); if (label) label.textContent = { instructions: 'Audio begins shortly', listening: 'Listening', preparing: 'Preparing', recording: 'Recording' }[phase] || phase; }
       if (env.PortalExamMode?.isLocked?.(OWNER)) {
-        stopCapture(); output?.pause(); if (now >= current.endsAt) sync(); return;
+        if (capture?.recorder) stopCapture(); output?.pause(); if (now >= current.endsAt) sync(); return;
       }
       if (q.audio && now >= current.promptAt && now < current.promptEndsAt && outputUrl && played !== rendering) playPrompt();
       if (!advancing && speech(q.type) && !capture && now < current.endsAt) prepareSegment(rendering);

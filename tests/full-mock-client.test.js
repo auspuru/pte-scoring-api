@@ -127,6 +127,16 @@ test('The final Next submits the full mock without a confirmation popup', async 
   await f.click('[data-fm="next"]');assert.equal((await f.state()).status,'submitted');
   assert.deepEqual((await f.state()).responses[65].answer,['A saved final response.']);
 });
+test('Fullscreen interruption before recording preserves its prepared segment without creating an empty replacement', async t => {
+  const f=await fixture(t);let locked=false,options;
+  f.env.PortalExamMode.isLocked=()=>locked;
+  f.env.PortalExamMode.set=(owner,enabled,pane,value)=>{if(enabled&&value)options=value;};
+  await f.resume();await until(async()=>(await f.state()).responses[0].segments.length===1);await settle();
+  const original=(await f.state()).responses[0].segments[0].id;
+  locked=true;options.onLock();await f.step(100);locked=false;options.onResume();await f.step(100);
+  await f.step((await f.state()).current.responseAt-f.now());await until(()=>f.recorders.some(r=>r.state==='recording'));
+  const segments=(await f.state()).responses[0].segments;assert.equal(segments.length,1);assert.equal(segments[0].id,original);
+});
 
 test('Typing offline survives refresh and Next seals the newest revision even with an older save in flight', async t => {
   const f = await fixture(t, 'swt'); await f.resume();
