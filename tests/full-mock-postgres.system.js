@@ -65,4 +65,18 @@ test('PostgreSQL: two leased workers, failed-provider retries and process recove
   for (const candidate of paper.questions) assert.equal(calls.get(candidate.question.id), candidate.question.type === 'essay' ? 2 : 1);
   await a.update('alice', id, state => { state.assessment.status = 'processing'; state.assessment.lease = { id:randomUUID(), expiresAt:0 }; delete state.assessment.items[paper.questions[0].id]; return state; });
   await engines[1].recover(); await engines[1].drain(); assert.equal((await engines[0].results('alice', id)).ready, true); assert.equal(calls.get(paper.questions[0].question.id), 2);
+  const bytes = require('../full-mock/recording').wav(Buffer.alloc(32000, 1)), segment = randomUUID();
+  const chunk = await a.putChunk('alice', id, segment, 0, 'audio/wav', bytes);
+  await a.update('alice', id, state => {
+    state.responses[1].segments = [{ id:segment, mime:'audio/wav', finished:true, chunkCount:1, chunks:{ 0:{ sha256:chunk.sha256, bytes:bytes.length, stored:true, late:true } } }];
+    const job = state.assessment.items[paper.questions[0].id];
+    job.inputHash = require('../full-mock/aggregation').inputHash(state.responses[1]); job.status = 'pending'; job.reason = 'late-recording'; delete job.result;
+    state.assessment.status = 'needs-attention'; return state;
+  });
+  assert((await b.assessmentQueue()).some(row => row.id === id && row.status === 'needs-attention'));
+  await engines[1].recover(); await engines[1].drain();
+  assert.equal((await engines[0].results('alice', id)).ready, true);
+  assert.equal(calls.get(paper.questions[0].question.id), 3);
+  await engines[1].recover(); await engines[1].drain();
+  assert.equal(calls.get(paper.questions[0].question.id), 3);
 });

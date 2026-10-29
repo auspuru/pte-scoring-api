@@ -91,7 +91,7 @@ function buildReport(paper, state, at = Date.now()) {
       turns:Array.isArray(q.turns) ? q.turns.slice(0, 20).map(row => [clean(row[0], 100), clean(row[1], 5000)]) : [] };
     const recordings = response.segments.filter(segment => !segment.cancelled).map((segment, position) => ({ id:segment.id, number:position + 1,
       ready:segment.finished && segment.chunkCount > 0 && Object.keys(segment.chunks).length === segment.chunkCount && Object.values(segment.chunks).every(chunk => chunk.stored),
-      reviewRequired:!!segment.lateActivation || Object.values(segment.chunks).some(chunk => chunk.late) || response.segments.filter(value => !value.cancelled && value.chunkCount !== 0).length > 1 }));
+      reviewRequired:!!segment.lateActivation || response.segments.filter(value => !value.cancelled && value.chunkCount !== 0).length > 1 }));
     const transcription = trusted && job.stages?.transcription?.status === 'complete' ? clean(job.stages.transcription.value, 20000) : '';
     return { ...marks, number:index + 1, label:task.label, section:task.section, skills:[...task.skills], title:clean(q.title), question, reference,
       answer:structuredClone(response.answer), responseReason:clean(response.reason, 80), transcript:transcription, recordings,

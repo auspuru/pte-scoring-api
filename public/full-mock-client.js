@@ -398,7 +398,9 @@
         catch (error) { if (valid(current.ticket)) { notice(error.message, true); logEvent('local-storage-failure'); } }
       };
       media.onerror = () => { if (valid(current.ticket) && capture === current) { logEvent('microphone-interrupted'); stopCapture(); notice('Recording interrupted. Saved audio will retry; reconnect to continue.', true); const button = doc.getElementById('fm-mic-resume'); if (button) button.hidden = false; } };
-      media.start(1000);
+      // Batch a few seconds per upload so slow database round trips cannot
+      // build a backlog faster than the microphone produces audio.
+      media.start(5000);
     }
     function beep() { try { if (!context) return; const tone = context.createOscillator(), gain = context.createGain(); tone.frequency.value = 1000; gain.gain.value = 0.07; tone.connect(gain); gain.connect(context.destination); tone.start(); tone.stop(context.currentTime + 0.12); } catch {} }
     async function finishCapture(current, ownerPrefix) {

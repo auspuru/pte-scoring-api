@@ -4,7 +4,7 @@ const path = require('node:path');
 const os = require('node:os');
 const run = require('node:util').promisify(require('node:child_process').execFile);
 const { hash } = require('./store');
-const VERSION = 'full-mock-recording-2026-10-29.1';
+const VERSION = 'full-mock-recording-2026-10-29.2';
 function wav(pcm) {
   const header = Buffer.alloc(44); header.write('RIFF'); header.writeUInt32LE(pcm.length + 36, 4); header.write('WAVEfmt ', 8); header.writeUInt32LE(16, 16);
   header.writeUInt16LE(1, 20); header.writeUInt16LE(1, 22); header.writeUInt32LE(16000, 24); header.writeUInt32LE(32000, 28);
@@ -35,7 +35,9 @@ async function assemble(uid, id, q, response, { getChunk, decode = convert }) {
   const segments = response.segments.filter(value => !value.cancelled && value.chunkCount !== 0);
   if (!segments.length) return { status: 'missing' };
   if (segments.some(segment => !segment.finished || !segment.chunkCount)) return { status: 'pending' };
-  if (segments.some(segment => segment.lateActivation || Object.values(segment.chunks).some(chunk => chunk.late))) return { status: 'needs-review', reason: 'late-recording' };
+  // Network arrival is not recording time. Final MediaRecorder bytes normally
+  // arrive after the timer; retain integrity and decoded-duration checks.
+  if (segments.some(segment => segment.lateActivation)) return { status: 'needs-review', reason: 'late-recording' };
   const containers = [];
   for (const segment of segments) {
     if (Object.keys(segment.chunks).length !== segment.chunkCount) return { status: 'pending' };

@@ -32,25 +32,32 @@ function snapshot(config = configuration(), root = require('node:path').resolve(
     weighting: structuredClone(weighting.SNAPSHOT), calibration: 'uncalibrated', official: false });
 }
 function stateFor(value) { return { version: VERSION, snapshot: structuredClone(value), snapshotHash: digest(value), status: 'not-requested', run: 0, items: {} }; }
-// One audited access/UI-only upgrade may finish existing attempts with their
-// original snapshot. Any native scorer, model, rubric, weighting or paper change
-// still requires a different assessment version and cannot use this exception.
-const ACCESS_BASE = require('../content/full-mock/access-compatible-sources.json');
-const ACCESS_BASE_HASH = '275016a6cdf793dbd6ef7a0750bc10294a601d87ab8e4e0faa74418ea2419556';
-function accessOnlyUpgrade(saved, current) {
-  if (digest(ACCESS_BASE) !== ACCESS_BASE_HASH || digest(saved.scoringSources) !== ACCESS_BASE_HASH) return false;
-  const allowed = new Set(['full-mock/access.js','full-mock/api.js','full-mock/assessment.js']);
-  const before = ACCESS_BASE.files, after = current.scoringSources.files;
+// Exact production baselines may adopt these audited transport/recovery fixes.
+// Native graders, models, weights, paper and saved successful grades stay pinned.
+const COMPATIBLE_BASES = [
+  [require('../content/full-mock/access-compatible-sources.json'), '275016a6cdf793dbd6ef7a0750bc10294a601d87ab8e4e0faa74418ea2419556'],
+  [require('../content/full-mock/media-compatible-sources.json'), '50f715d2da0f112e96756269018adcbb9b642701f361d31958f2fa990947d88b']
+];
+function compatibleTransportUpgrade(saved, current) {
+  const baseline = COMPATIBLE_BASES.find(([value, hash]) => digest(value) === hash && digest(saved.scoringSources) === hash)?.[0];
+  if (!baseline) return false;
+  const allowed = new Set(['full-mock/access.js','full-mock/api.js','full-mock/assessment.js','full-mock/recording.js','full-mock/store.js','full-mock/report.js']);
+  const before = baseline.files, after = current.scoringSources.files;
   if (Object.keys(before).sort().join() !== Object.keys(after).sort().join()
     || Object.keys(before).some(name => !allowed.has(name) && digest(before[name]) !== digest(after[name]))) return false;
   return digest({ ...saved, scoringSources:current.scoringSources }) === digest(current);
+}
+function recoverableUploadDelay(job, response) {
+  const segments = response?.segments.filter(value => !value.cancelled && value.chunkCount !== 0) || [];
+  return job?.status === 'pending' && job.reason === 'late-recording' && segments.length === 1
+    && !segments[0].lateActivation && segments[0].finished && segments[0].chunkCount > 0;
 }
 function createEngine({ store, adapters = createAdapters(), providerConfiguration = configuration(), now = Date.now, assemble = media.assemble, concurrency = 2, paper = loadPaper() } = {}) {
   const currentSnapshot = snapshot(providerConfiguration, undefined, paper), currentHash = digest(currentSnapshot), jobs = new Map(); let sweep, closing = false;
   function validate(state) {
     const saved = state.assessment;
     if (!saved || digest(saved.snapshot) !== saved.snapshotHash || saved.version !== VERSION || saved.snapshot.paperHash !== state.paperHash
-      || saved.snapshotHash !== currentHash && !accessOnlyUpgrade(saved.snapshot, currentSnapshot)) throw fail('This attempt uses a different assessment version. Its saved answers and results are retained.', 409);
+      || saved.snapshotHash !== currentHash && !compatibleTransportUpgrade(saved.snapshot, currentSnapshot)) throw fail('This attempt uses a different assessment version. Its saved answers and results are retained.', 409);
   }
   async function request(uid, id, { retry = false } = {}) {
     const saved = await store.get(uid, id); if (!saved) throw fail('Attempt not found.', 404);
@@ -67,7 +74,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
   async function wakeMedia(uid, id) {
     const record = await store.get(uid, id); if (!record?.state.assessment) return;
     const changed = record.paper.questions.some((candidate, index) => {
-      const job = record.state.assessment.items[candidate.id]; return SPOKEN.has(candidate.question.type) && ['pending','assessed'].includes(job?.status) && job.inputHash !== inputHash(record.state.responses[index + 1]);
+      const job = record.state.assessment.items[candidate.id]; return SPOKEN.has(candidate.question.type) && ['pending','assessed'].includes(job?.status) && (job.inputHash !== inputHash(record.state.responses[index + 1]) || recoverableUploadDelay(job, record.state.responses[index + 1]));
     });
     if (!changed) return record.state;
     const state = await store.update(uid, id, state => { validate(state); if (state.assessment.status !== 'processing') state.assessment.status = 'processing'; return state; });
@@ -128,6 +135,8 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
       await Promise.all([itemWorker(), itemWorker()]);
       state = await save(current => { current.assessment.status = aggregate(savedPaper, current).ready ? 'complete' : closing ? 'processing' : 'needs-attention'; if (!closing) current.assessment.finishedAt = now(); });
       await store.update(uid, id, current => { if (current.assessment.lease?.id === lease) delete current.assessment.lease; return current; });
+      const result = aggregate(savedPaper, state);
+      console.info('[full-mock-assessment]', JSON.stringify({ uid, id, status:state.assessment.status, assessedCount:result.assessedCount, pendingReasons:[...new Set(Object.values(state.assessment.items).filter(item => item.status !== 'assessed').map(item => item.result?.reason || item.reason || item.status))] }));
     } finally { clearInterval(heartbeat); }
   }
   async function results(uid, id) {
@@ -135,7 +144,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     if (record.state.assessment && digest(record.state.assessment.snapshot) !== record.state.assessment.snapshotHash) throw fail('Saved assessment integrity failed.', 503);
     return aggregate(record.paper, record.state);
   }
-  async function recover() { for (const row of await store.assessmentQueue()) { if (jobs.size >= concurrency) break; queue(row.uid, row.id); } }
+  async function recover() { for (const row of await store.assessmentQueue()) { if (jobs.size >= concurrency) break; if (row.status === 'needs-attention') await wakeMedia(row.uid, row.id); else queue(row.uid, row.id); } }
   function start() { closing = false; if (!sweep) { sweep = setInterval(() => recover().catch(() => {}), 10000); sweep.unref?.(); recover().catch(() => {}); } }
   function stop() { closing = true; clearInterval(sweep); sweep = null; return drain(); }
   async function drain() { await Promise.allSettled([...jobs.values()]); }
