@@ -1,11 +1,11 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
 const source=fs.readFileSync(require.resolve('../public/index.js'),'utf8');
-const navigation=source.slice(source.indexOf('function essayQuestionNavigation()'),source.indexOf('function renderPracticeMain()'));
+const navigation=source.slice(source.indexOf('function saveEssayQuestionDraft('),source.indexOf('function renderPracticeMain()'));
 test('Essay navigation restores separate drafts and blocks a move when saving fails',()=>{
  const data={},ctx={essays:[{id:'a',question:'First question'},{id:'b',question:'Second question'}],practiceSubmissionPending:false,
  practiceState:{view:'write',questionSource:'library',selectedQuestionId:'a',essayText:'First draft',timerStartedAt:123},
- getPteStorageKey:k=>'alice:'+k,LocalStore:{get:k=>data[k]?JSON.parse(data[k]):null},safeLSSet:(k,v)=>{data[k]=v;return true;},stopPracticeTimer(){},renderPracticeMain(){},toast(){}};
+ document:{getElementById:()=>null},stopLoadingMessages(){},startLoadingMessages(){},getPteStorageKey:k=>'alice:'+k,LocalStore:{get:k=>data[k]?JSON.parse(data[k]):null},safeLSSet:(k,v)=>{data[k]=v;return true;},stopPracticeTimer(){},renderPracticeMain(){},toast(){}};
  vm.createContext(ctx);vm.runInContext(navigation,ctx);
  ctx.moveEssayQuestion(1);assert.equal(ctx.practiceState.selectedQuestionId,'b');assert.equal(ctx.practiceState.essayText,'');
  ctx.practiceState.essayText='Second draft';ctx.moveEssayQuestion(-1);assert.equal(ctx.practiceState.essayText,'First draft');assert.equal(ctx.practiceState.timerStartedAt,123);
@@ -37,4 +37,19 @@ test('SWT priority passages use visual positions but save and grade by stable da
  assert.match(source,/const passageId = p\?\.id;/);
  assert.match(source,/summaryInputEl\.value = \(summaries\[p\.id\]/);
  assert.match(source,/scores\[swtPassageStorageId\(\)\]/);
+});
+
+
+test('Essay navigation leaves a pending review attached to its question and Back returns to its picker',()=>{
+ const data={},ctx={essays:[{id:'a',question:'First question'},{id:'b',question:'Second question'}],practiceSubmissionPending:true,
+ practiceState:{view:'loading',questionSource:'library',selectedQuestionId:'a',essayText:'Saved answer',submissionId:'review-a'},
+ submitPracticeEssay:Object.assign(()=>{},{jobs:new Map([['review-a',{}]])}),document:{getElementById:()=>null},
+ getPteStorageKey:k=>k,LocalStore:{get:k=>data[k]?JSON.parse(data[k]):null},safeLSSet:(k,v)=>{data[k]=v;return true;},
+ stopPracticeTimer(){},stopLoadingMessages(){},startLoadingMessages(){},renderPracticeMain(){},toast(){}};
+ vm.createContext(ctx);vm.runInContext(navigation,ctx);
+ assert.match(ctx.essayQuestionNavigation(),/Next/);ctx.moveEssayQuestion(1);assert.equal(ctx.practiceState.selectedQuestionId,'b');
+ ctx.moveEssayQuestion(-1);assert.equal(ctx.practiceState.view,'loading');assert.equal(ctx.practiceState.essayText,'Saved answer');
+ ctx.submitPracticeEssay.jobs.clear();ctx.moveEssayQuestion(1);ctx.moveEssayQuestion(-1);assert.equal(ctx.practiceState.view,'write');
+ ctx.practiceState.view='results';ctx.backToEssayQuestions();assert.equal(ctx.practiceState.view,'write');assert.equal(ctx.practiceState.writeStep,1);
+ assert.match(source,/onclick="backToEssayQuestions\(\)">← Back to essays/);
 });

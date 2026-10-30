@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "a87e478660263154730215ab41e8bb3f1f3aeba7",
-  "checkedAt": "2026-10-29",
-  "scope": "Separate delayed recording upload arrival from capture duration; automatically resume completed media previously blocked by late transport. Exact production baselines preserve snapshots, native graders, provider models, weights and successful grades.",
+  "baseCommit": "07cf4bfb15356f1eb0529c3ac96c0e4564a931c8",
+  "checkedAt": "2026-10-30",
+  "scope": "Practice navigation separates saved responses from assessment. Exact audited baselines preserve saved Full Mock snapshots and successful grades; the shared exported transcription function is unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "3ccdb381309f83e06d22439e108012595cdc207a8c195aacdf08dbf3a2a5d4b9",
+        "sha256": "a5ad473bfc9b0980fe85f661e2135fd1f571c0c26e0ab5902e60966ce3d6ddc5",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -181,7 +181,7 @@
         "version": null
       },
       "speaking-lab.js": {
-        "sha256": "76cd004fe38a26819d0621a985a12c439daaeaebaeda6f58b92e4120c40a7cb1",
+        "sha256": "759f6aa54529eb5979aae0bb87b4663fabcf9ea0da3b3c61ecbf7972fadaf479",
         "version": null
       },
       "speaking-scoring.js": {
