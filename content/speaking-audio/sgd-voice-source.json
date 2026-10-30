@@ -2,7 +2,7 @@
   "model": "Piper en_GB VCTK medium",
   "modelSource": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/",
   "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD",
-  "dataset": "CSTR VCTK Corpus, University of Edinburgh",
+  "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
   "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
   "license": "CC BY 4.0",
   "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
@@ -10,5 +10,10 @@
   "sha256": {
     "en_GB-vctk-medium.onnx": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
     "en_GB-vctk-medium.onnx.json": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8"
-  }
+  },
+  "datasetCreators": [
+    "Junichi Yamagishi",
+    "Christophe Veaux",
+    "Kirsten MacDonald"
+  ]
 }
