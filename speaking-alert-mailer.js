@@ -8,8 +8,8 @@ const failure = (code, httpStatus = 400) => Object.assign(
 );
 
 function createAlertMailer({ env = process.env, nodemailer, fetchImpl = globalThis.fetch } = {}) {
-  const selection = (env.SPEAKING_MOCK_ALERT_TRANSPORT || 'auto').trim().toLowerCase();
-  const useResend = selection === 'resend' || selection === 'auto' && !!(env.RESEND_API_KEY || env.SPEAKING_MOCK_ALERT_FROM);
+  const selection = (env.MOCK_ALERT_TRANSPORT || env.SPEAKING_MOCK_ALERT_TRANSPORT || 'auto').trim().toLowerCase();
+  const useResend = selection === 'resend' || selection === 'auto' && !!(env.RESEND_API_KEY || env.MOCK_ALERT_FROM || env.SPEAKING_MOCK_ALERT_FROM);
   if (!['auto', 'smtp', 'resend'].includes(selection)) {
     return { from: '', mailer: { provider: 'unconfigured', configured: false, configurationError: 'MAIL_TRANSPORT_INVALID' } };
   }
@@ -26,7 +26,7 @@ function createAlertMailer({ env = process.env, nodemailer, fetchImpl = globalTh
     return { from, mailer };
   }
 
-  const from = (env.SPEAKING_MOCK_ALERT_FROM || '').trim();
+  const from = (env.MOCK_ALERT_FROM || env.SPEAKING_MOCK_ALERT_FROM || '').trim();
   const configured = !!env.RESEND_API_KEY && address(from);
   const mailer = {
     provider: 'resend', configured, configurationError: configured ? null : 'RESEND_NOT_CONFIGURED',
