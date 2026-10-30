@@ -8,7 +8,7 @@ const { fail } = require('./store');
 const media = require('./recording');
 const weighting = require('./profiles');
 const VERSION = 'full-mock-assessment-2026-10-29.1';
-function configuration(env = process.env) {
+function legacyConfiguration(env = process.env) {
   const content = env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
   const essay = require('../essay-provider').configuration(env);
   return {
@@ -18,6 +18,16 @@ function configuration(env = process.env) {
     swt: { provider: 'anthropic', model: env.SWT_CLAUDE_MODEL || 'claude-sonnet-4-6', reviewModel: env.SWT_REVIEW_MODEL || env.SWT_CLAUDE_MODEL || 'claude-sonnet-4-6' },
     essay: { ...essay, reviewModel: essay.provider === 'openai' ? essay.model : env.CLAUDE_REASSESSMENT_MODEL || 'claude-sonnet-4-6', reasoningEffort: env.ESSAY_OPENAI_REASONING_EFFORT || 'medium' },
     sst: { provider: 'anthropic', model: content }
+  };
+}
+function configuration(env = process.env) {
+  const previous = legacyConfiguration(env);
+  const content = require('../mock-content-provider').configuration();
+  return { ...previous,
+    speakingContent:{...previous.speakingContent,...content,reviewModel:content.model},
+    swt:{...previous.swt,...content,reviewModel:content.model},
+    essay:{...previous.essay,...content,reviewModel:content.model,reasoningEffort:require('../mock-content-provider').REASONING_EFFORT},
+    sst:{...content}
   };
 }
 function snapshot(config = configuration(), root = require('node:path').resolve(__dirname, '..'), paper = loadPaper()) {
@@ -35,6 +45,7 @@ function stateFor(value) { return { version: VERSION, snapshot: structuredClone(
 // Exact production baselines may adopt these audited transport/recovery fixes.
 // Native graders, models, weights, paper and saved successful grades stay pinned.
 const COMPATIBLE_BASES = [
+  [require('../content/full-mock/content-provider-compatible-sources.json'), '9b13a955f7ab351a65742fe33c14b8a33f6b53bcfa6d16547c62cd478f359b11'],
   [require('../content/full-mock/automatic-recovery-compatible-sources.json'), 'f49a6e3c4385918f9e83820c330518e13fb0e3eb202fb1ae1dbe9e847108a4ef'],
   [require('../content/full-mock/assessment-completion-compatible-sources.json'), 'ddaf791fda201c7b3424f6dc298472fd646d623a8b4bd8b104d8eea998b712d0'],
   [require('../content/full-mock/navigation-compatible-sources.json'), '348f9fb6beac5e43e1cc1d58ff4125414a44864799bd53354d6c194a375e6749'],
@@ -42,7 +53,28 @@ const COMPATIBLE_BASES = [
   [require('../content/full-mock/media-compatible-sources.json'), '50f715d2da0f112e96756269018adcbb9b642701f361d31958f2fa990947d88b'],
   [require('../content/full-mock/alerts-compatible-sources.json'), '7fe217fe37f2b2e2803d911b1de3db15ccb8170f57523502508f2e0b46e2d42d']
 ];
+// This projection is used only to finish frozen attempts with their OLD
+// adapters/configuration. It cannot turn a Claude grade into a GPT grade.
+// Exact hashes prevent future source drift from inheriting this exception.
+const CONTENT_WIRING_HASHES = {
+  'server.js':'937a9f1e0cf80786c104e3d73302ca93d9dd31a0fa39698193ae3f887ea25491',
+  'full-mock/audit.js':'d85b73b2572bff1ef78354a49daf0521fff84bdf14b5d0ff25ef5503d231c5ba',
+  'mock-content-provider.js':'3efa737c0e2a8ae047bd24b0c140f6cc2c67e2329cb3184950ef38bb1f5e8492',
+  'mock-content-assessment.js':'f418438dd65ac47a81ee93faf62dbae5e5c7d7aa92c0ee4e30cb0d8eaa984253'
+};
+function transportSources(current) {
+  const files = current.files, baseline = COMPATIBLE_BASES[0][0];
+  if (digest(baseline) !== COMPATIBLE_BASES[0][1]
+    || Object.entries(CONTENT_WIRING_HASHES).some(([name,sha]) => files[name]?.sha256 !== sha)) return current;
+  const projected = structuredClone(current);
+  for (const name of Object.keys(CONTENT_WIRING_HASHES)) {
+    if (baseline.files[name]) projected.files[name] = structuredClone(baseline.files[name]);
+    else delete projected.files[name];
+  }
+  return projected;
+}
 function compatibleTransportUpgrade(saved, current) {
+  current = {...current,scoringSources:transportSources(current.scoringSources)};
   const baseline = COMPATIBLE_BASES.find(([value, hash]) => digest(value) === hash && digest(saved.scoringSources) === hash)?.[0];
   if (!baseline) return false;
   const allowed = new Set(['full-mock/access.js','full-mock/api.js','full-mock/assessment.js','full-mock/recording.js','full-mock/store.js','full-mock/report.js']);
@@ -85,12 +117,17 @@ function scheduleRecovery(assessment, at) {
   if (recovery.retries >= RECOVERY_DELAYS.length) { recovery.status = 'exhausted'; return; }
   recovery.status = 'scheduled'; recovery.nextAt = at + RECOVERY_DELAYS[recovery.retries];
 }
-function createEngine({ store, adapters = createAdapters(), providerConfiguration = configuration(), now = Date.now, assemble = media.assemble, concurrency = 2, paper = loadPaper() } = {}) {
+function createEngine({ store, adapters = createAdapters(), providerConfiguration = configuration(), legacyAdapters, legacyProviderConfiguration,
+  now = Date.now, assemble = media.assemble, concurrency = 2, paper = loadPaper() } = {}) {
   const currentSnapshot = snapshot(providerConfiguration, undefined, paper), currentHash = digest(currentSnapshot), jobs = new Map(); let sweep, closing = false, recovering = false; const recoveryErrors = new Set();
+  const legacySnapshot = legacyAdapters && legacyProviderConfiguration ? snapshot(legacyProviderConfiguration,undefined,paper) : null;
   function validate(state) {
     const saved = state.assessment;
-    if (!saved || digest(saved.snapshot) !== saved.snapshotHash || saved.version !== VERSION || saved.snapshot.paperHash !== state.paperHash
-      || saved.snapshotHash !== currentHash && !compatibleTransportUpgrade(saved.snapshot, currentSnapshot)) throw fail('This attempt uses a different assessment version. Its saved answers and results are retained.', 409);
+    if (saved && digest(saved.snapshot) === saved.snapshotHash && saved.version === VERSION && saved.snapshot.paperHash === state.paperHash) {
+      if (saved.snapshotHash === currentHash || compatibleTransportUpgrade(saved.snapshot,currentSnapshot)) return adapters;
+      if (legacySnapshot && compatibleTransportUpgrade(saved.snapshot,legacySnapshot)) return legacyAdapters;
+    }
+    throw fail('This attempt uses a different assessment version. Its saved answers and results are retained.', 409);
   }
   async function request(uid, id, { retry = false } = {}) {
     const saved = await store.get(uid, id); if (!saved) throw fail('Attempt not found.', 404);
@@ -128,6 +165,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
       state.assessment.lease = { id: lease, expiresAt: now() + 180000 }; claimed = true; return state;
     });
     if (!claimed) return;
+    const activeAdapters = validate(state);
     const record = await store.get(uid, id), savedPaper = record.paper, attemptHash = state.assessment.snapshotHash;
     if (digest(savedPaper) !== state.paperHash) throw fail('Saved paper integrity failed.', 503);
     async function save(update) {
@@ -161,7 +199,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
             if (audio.status !== 'ready') { await persist({ status: 'pending', reason: audio.reason || 'recording-not-ready' }); continue; }
             recording = audio.recording;
           }
-          const value = await adapters.assess(q, response, { recording, previous: stages, run: state.assessment.run,
+          const value = await activeAdapters.assess(q, response, { recording, previous: stages, run: state.assessment.run,
             checkpoint: value => persist({ status: 'processing', stages: value }) });
           const { stages: evidence = stages, ...result } = value;
           if (!['assessed','pending','failed'].includes(result.status) || result.status === 'assessed' && (result.version !== adapterVersion || !nativeValid(result, maxima(q)))) throw Error('Invalid native assessment result.');
@@ -221,4 +259,4 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
   async function drain() { await Promise.allSettled([...jobs.values()]); }
   return { snapshot: currentSnapshot, request, wakeMedia, results, recover, start, stop, drain, jobs };
 }
-module.exports = { VERSION, configuration, snapshot, stateFor, createEngine };
+module.exports = { VERSION, configuration, legacyConfiguration, snapshot, stateFor, createEngine };

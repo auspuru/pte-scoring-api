@@ -3,6 +3,26 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const bank=require('../content/speaking-mocks'),report=require('../speaking-mock-report'),{installSpeakingMock,present}=require('../speaking-mock'),{createMockJobs}=require('../speaking-mock-jobs'),{createStore}=require('../writing-lab-store');
 const delivery=()=>({status:'assessed',pronunciation:{status:'scored',score:5,maximum:5},fluency:{status:'scored',score:4,maximum:5}});
 function fixture(){const questions=structuredClone(bank.papers[0].questions);return{id:crypto.randomUUID(),title:'Speaking mock',paperId:bank.papers[0].id,status:'submitted',startedAt:1,deadline:999999,index:questions.length,questionCount:27,questions,responses:questions.map(()=>({skipped:true})),assessmentProfile:{mode:'progressive-v1',owner:'student',diBackend:'academy'},integrity:{events:[]},grading:{status:'pending'}};}
+test('New mock DI jobs use the selected GPT reviewer with the Academy rubric and keep Azure delivery independent',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-gpt-content-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
+ const store=createStore(null,directory,{table:'speaking_mock_attempts'}),a=fixture(),index=a.questions.findIndex(q=>q.type==='di');
+ a.assessmentProfile={...a.assessmentProfile,diBackend:'portal-gpt',contentProvider:'openai',contentModel:'gpt-6.1-sol'};
+ a.questions[index]={id:'test-di',type:'di',title:'Campus travel',imageCategory:'line',facts:['Trips rose from 200 to 450, with a brief fall.']};
+ const text='The image shows trips rising from 200 to 450, despite a brief fall.';
+ a.responses[index]={recording:recording(),transcript:text,transcriptionStatus:'assessed'};await store.update('student',a.id,()=>a);
+ let contentCalls=0,azureCalls=0;
+ const jobs=createMockJobs({directory,store,transcribe:()=>{throw Error('Reuse saved transcript');},
+  academyClient:{submit:()=>{throw Error('New GPT jobs must not call the legacy remote model');}},
+  callModel:async(prompt,context)=>{contentCalls++;assert.equal(context.contentPolicy,require('../describe-image-academy').VERSION);
+   return {judgment:{score:6,relevance:'image-specific',accuracy:'accurate',scoreImpact:null,
+    requiredEvidence:{quote:'trips rising from 200 to 450',factIndices:[0],kind:'relationship'},inaccuracy:null,otherEvidence:[]},
+    reason:'The main trend and exception are connected.',nextStep:'Keep the connected comparison.'};},
+  assessAzure:async()=>{azureCalls++;return delivery();}});t.after(()=>jobs.stop());
+ await jobs.ensure('student',a);await jobs.wait();
+ const saved=await store.get('student',a.id);assert.equal(saved.assessment.status,'ready');assert.equal(contentCalls,1);assert.equal(azureCalls,1);
+ assert.equal(saved.responses[index].content.total,6);assert.equal(saved.responses[index].content.source,'Describe Image Academy');
+ await jobs.ensure('student',saved);await jobs.wait();assert.equal(contentCalls,1);assert.equal(azureCalls,1);
+});
 const recording=()=>({hash:crypto.randomBytes(32).toString('hex'),data:Buffer.alloc(200,7).toString('base64'),mime:'audio/webm'});
 test('an answer starts scoring at upload; no report or reference leaks before both reports are ready',async t=>{
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-bg-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));

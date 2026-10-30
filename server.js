@@ -6385,6 +6385,13 @@ async function speakingContentModel(prompt,context) {
   const response=await anthropic.messages.create(format.request(prompt,model,context),{timeout:context?.wholeMockEntries?120000:60000,maxRetries:0});
   return format.response(response,context);
 }
+const mockContent = require('./mock-content-assessment').createMockContentAssessment({
+  onAttemptError:details=>console.warn('[mock-content] assessment failed:',JSON.stringify(details)),
+  onAssessment:details=>console.info('[mock-content]',JSON.stringify(details))
+});
+console.info('[mock-content]',JSON.stringify({event:'configured',...mockContent.configuration,
+  reasoningEffort:require('./mock-content-provider').REASONING_EFFORT,
+  tasks:['di','rl','sgd','rts','swt','essay','sst','writing-overall'],configured:!!process.env.OPENAI_API_KEY}));
 app.use(['/api/speaking','/api/speaking-mocks'],require('./speaking-access').gate(token=>verifySessionToken(token)||verifyImpersonationToken(token),speakingAccess.allowed));
 const speakingLab = require('./speaking-lab').installSpeakingLab(app, {
   pool: pgPool, directory: path.join(DATA_DIR, 'speaking-lab'),
@@ -6396,7 +6403,8 @@ const speakingLab = require('./speaking-lab').installSpeakingLab(app, {
 const speakingMock = require('./speaking-mock').installSpeakingMock(app, {
   pool:pgPool,directory:path.join(DATA_DIR,'speaking-mock'),
   verifyToken:token=>verifySessionToken(token)||verifyImpersonationToken(token),
-  getAccount:getPracticeAccount,callModel:speakingContentModel,backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'
+  getAccount:getPracticeAccount,callModel:mockContent.speaking,contentModel:mockContent.configuration.model,
+  backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'
 });
 const speakingAlertTransport=require('./speaking-alert-mailer').createAlertMailer({nodemailer});
 async function writingContentModel(prompt) {
@@ -6415,8 +6423,13 @@ const fullMock = require('./full-mock/api').installFullMock(app, {
     users:process.env.FULL_MOCK_PREVIEW_USERS, verifyImpersonation:verifyImpersonationToken
   }),
   assessment: {
-    adapters: require('./full-mock/adapters').createAdapters({ speakingContentModel, writingContentModel,
-      swtGrader: (question, text) => judgeContentWithClaude(text, question.text, {}), essayGrader }),
+    adapters: require('./full-mock/adapters').createAdapters({ speakingContentModel:mockContent.speaking, writingContentModel:mockContent.writing,
+      swtGrader:mockContent.swt, essayGrader:mockContent.essay }),
+    // Attempts frozen before the model change keep their concrete providers.
+    // Their successful stages are never repeated or relabelled as GPT grades.
+    legacyAdapters: require('./full-mock/adapters').createAdapters({ speakingContentModel, writingContentModel,
+      swtGrader:(question,text)=>judgeContentWithClaude(text,question.text,{}),essayGrader }),
+    legacyProviderConfiguration:require('./full-mock/assessment').legacyConfiguration(),
     providerConfiguration: require('./full-mock/assessment').configuration()
   }
 });
@@ -6437,12 +6450,8 @@ const writingLab = require('./writing-lab').installWritingLab(app, {
   getAccount: getPracticeAccount,
   essayGrader,
   swtGrader: (question,text) => judgeContentWithClaude(text,question.text,{}),
-  overallGrader: async attempt => {
-    if (!anthropic) throw new Error('Overall writing assessment is not configured.');
-    const overall = require('./writing-mock-overall');
-    const response = await anthropic.messages.create(overall.request(attempt,'claude-sonnet-4-6'), { timeout:120000, maxRetries:0 });
-    return overall.response(response);
-  },
+  mockGraders:{callModel:mockContent.writing,swtGrader:mockContent.swt,essayGrader:mockContent.essay},
+  overallGrader:mockContent.overall,
   callModel: writingContentModel
 });
 mockTestAlerts=require('./mock-test-alerts').createMockTestAlerts({pool:pgPool,directory:path.join(DATA_DIR,'mock-alerts'),delivery:speakingAlerts,enabled:mockAlertsEnabled,
@@ -6564,10 +6573,10 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
         if(request.scope==='overall')await speakingMock.recoverOverall(request);
         else if(request.scope==='provider-comparisons')await require('./speaking-mock-combined').recoverComparisons({...request,mockStore:speakingMock.store,ensureDelivery:speakingMock.recoverOverall});
         else if(request.scope==='combined')await require('./speaking-mock-combined').recover({...request,mockStore:speakingMock.store,practiceStore:speakingLab.store,
-          callModel:speakingContentModel,transcribe:require('./speaking-lab').transcribeRecording,ensureDelivery:speakingMock.recoverOverall});
+          callModel:mockContent.speaking,transcribe:require('./speaking-lab').transcribeRecording,ensureDelivery:speakingMock.recoverOverall});
         else if(request.scope==='manual-rs-delivery')await require('./speaking-manual-delivery').fillMissingRepeatSentence({...request,mockStore:speakingMock.store});
         else await require('./speaking-content-recovery').recoverLatest({...request,practiceStore:speakingLab.store,mockStore:speakingMock.store,
-          callModel:speakingContentModel,transcribe:require('./speaking-lab').transcribeRecording});
+          callModel:speakingContentModel,mockCallModel:mockContent.speaking,transcribe:require('./speaking-lab').transcribeRecording});
       }catch{console.warn('[speaking-content-recovery] Repair could not start.');}});
     }
   } catch (error) {

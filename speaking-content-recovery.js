@@ -41,7 +41,7 @@ async function recoverLatest(options){
    try{
    let text=r.transcript||'';if(!text.trim()&&r.recording&&transcribe)text=await transcribe(r.recording);
    if(!text.trim()){report.unavailable++;report.issues.push({index,type:q.type,issue:'missing_transcript'});continue;}
-   const assessed=await scoring.grade(q,text,callModel,{academyDescribeImage:chosen.kind===1});if(!confirmed(assessed)){report.unavailable++;report.issues.push({index,type:q.type,issue:String(assessed.fallbackReason||'').includes('contradicts')?'score_conflict':assessed.contentReviewIssue||'review_unavailable',diagnostic:assessed.contentReviewDiagnostic});continue;}
+   const assessed=await scoring.grade(q,text,chosen.kind===1&&options.mockCallModel?options.mockCallModel:callModel,{academyDescribeImage:chosen.kind===1});if(!confirmed(assessed)){report.unavailable++;report.issues.push({index,type:q.type,issue:String(assessed.fallbackReason||'').includes('contradicts')?'score_conflict':assessed.contentReviewIssue||'review_unavailable',diagnostic:assessed.contentReviewDiagnostic});continue;}
    let written=false;
    await store.update(username,chosen.id,a=>{
     written=false;if(a.contentRecovery?.claim!==claim)return a;

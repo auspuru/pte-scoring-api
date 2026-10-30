@@ -15,6 +15,24 @@ const media = require('../full-mock/recording');
 const { installFullMock } = require('../full-mock/api');
 const paper = loadPaper();
 const accessBase = require('../content/full-mock/access-compatible-sources.json');
+test('The content-model rollout keeps old full mocks on their pinned providers and uses GPT for new mocks',async t=>{
+  let currentCalls=0,oldCalls=0;
+  const legacy=require('../full-mock/assessment').legacyConfiguration({ESSAY_SCORING_PROVIDER:'openai'});
+  const f=await fixture(t,{adapters:{assess:async q=>{currentCalls++;return full(q);}},
+    legacyAdapters:{assess:async q=>{oldCalls++;return full(q);}},legacyProviderConfiguration:legacy});
+  const baseline=require('../content/full-mock/content-provider-compatible-sources.json');
+  const original={...structuredClone(f.engine.snapshot),configuration:legacy,scoringSources:baseline};
+  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+  await f.engine.request('alice',f.id);await f.engine.drain();
+  assert.equal((await f.engine.results('alice',f.id)).ready,true);assert.equal(oldCalls,65);assert.equal(currentCalls,0);
+  assert.deepEqual((await f.state()).assessment.snapshot,original);
+  await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal(oldCalls,65);
+  for(const name of ['speakingContent','swt','essay','sst']){
+    assert.equal(f.engine.snapshot.configuration[name].provider,'openai');assert.equal(f.engine.snapshot.configuration[name].model,'gpt-6.1-sol');
+  }
+  const other=await fixture(t,{adapters:{assess:async q=>{currentCalls++;return full(q);}}});
+  await other.engine.request('alice',other.id);await other.engine.drain();assert.equal(currentCalls,65);
+});
 test('The alert-wiring upgrade resumes the pinned pre-alert snapshot and retains successful assessments',async t=>{
   const f=await fixture(t),baseline=require('../content/full-mock/alerts-compatible-sources.json');
   assert.equal(digest(baseline),'7fe217fe37f2b2e2803d911b1de3db15ccb8170f57523502508f2e0b46e2d42d');

@@ -22,7 +22,7 @@ function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,c
     const retain=(data,provider,value)=>{if(!value)return;const prior={...original,...data.patch},next={...value,status:'assessed',recordingHash:recording.hash,assessedAt:now()};
       for(const name of ['pronunciation','fluency'])if(report.deliveryTraits({recording,[provider]:next},provider)[name]===null&&report.deliveryTraits(prior,provider)[name]!==null)next[name]=prior[provider]?.[name];data.patch[provider]=next;};
     const contentGated=()=>report.validContent(q,response().content)&&response().content.total===0;
-    if(q.type==='di'&&text.trim()){
+    if(q.type==='di'&&text.trim()&&d.diBackend!=='portal-gpt'){
       if(!report.validContent(q,response().content))tasks.push((async()=>{
         try{
           if(!ctx.data.remote&&ctx.data.remotePrepared){try{const found=await academyClient.poll(ctx.data.remotePrepared,recording.hash);if(found.inputReady!==false||found.status==='ready')await ctx.save(data=>{data.remote=data.remotePrepared;});}catch(error){if(error.status!==404)throw error;}}
@@ -42,7 +42,7 @@ function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,c
   }});
   async function ensure(uid,a){if(!a||a.lease?.expiresAt>now())return;for(let i=0;i<a.questions.length;i++){const r=a.responses[i];if(a.questions[i].type==='intro'||!r?.recording||!missing(a,i))continue;
     const patch={};for(const name of ['transcript','transcriptionStatus','content','gpt','azure'])if(r[name]!=null)patch[name]=r[name];
-    const row=await jobs.enqueue({id:identity(a,i),owner:uid,groupId:a.id,inputHash:hash({recording:r.recording.hash,question:a.questions[i]}),data:{index:i,recordingHash:r.recording.hash,questionHash:hash(a.questions[i]),patch,stages:{},version:VERSION}});
+    const row=await jobs.enqueue({id:identity(a,i),owner:uid,groupId:a.id,inputHash:hash({recording:r.recording.hash,question:a.questions[i]}),data:{index:i,recordingHash:r.recording.hash,questionHash:hash(a.questions[i]),diBackend:a.assessmentProfile?.diBackend||'academy',patch,stages:{},version:VERSION}});
     await jobs.retire(uid,row.id,['gpt',...(report.validContent(a.questions[i],{...a.responses[i],...row.data.patch}.content)?['academy']:[])]);
   }await publish(uid,a.id);await worker.wake();}
   async function hydrate(uid,a){if(!a)return a;const result=structuredClone(a),rows=await jobs.list(uid,a.id);for(const row of rows){const d=row.data,i=d.index;if(a.responses[i]?.recording?.hash!==d.recordingHash||hash(a.questions[i])!==d.questionHash)continue;

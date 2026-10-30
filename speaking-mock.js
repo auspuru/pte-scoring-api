@@ -49,13 +49,14 @@ function present(a,now=Date.now(),{completeOnly=false,progress}={}){
 function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,
   assessAzure=azure.assessRecording,gradeResponse,
   azureAvailable=azure.isConfigured(),
-  assessAzureOverall=azureWhole.assess,azureOverallAvailable=azureAvailable&&azure.isConfigured(),backgroundEnabled=false,academyClient,now=Date.now}={}){
+  assessAzureOverall=azureWhole.assess,azureOverallAvailable=azureAvailable&&azure.isConfigured(),backgroundEnabled=false,academyClient,contentModel,now=Date.now}={}){
   const gptAvailable=false;
   const store=createStore(pool,directory,{table:'speaking_mock_attempts'}),router=express.Router(),jobs=new Map(),instance=crypto.randomUUID();
   const progressive=require('./speaking-mock-jobs').createMockJobs({pool,directory,store,transcribe,assessAzure,callModel,gradeResponse,academyClient,includeLegacy:backgroundEnabled,now});
   const useProgressive=a=>backgroundEnabled||a?.assessmentProfile?.mode==='progressive-v1';
   const view=a=>present(a,now(),{completeOnly:useProgressive(a)});
-  const profile=uid=>backgroundEnabled?{assessmentProfile:{mode:'progressive-v1',owner:uid,diBackend:'academy',requiredProviders:['azure']}}:{};
+  const profile=uid=>backgroundEnabled?{assessmentProfile:{mode:'progressive-v1',owner:uid,
+    diBackend:contentModel?'portal-gpt':'academy',...(contentModel?{contentProvider:'openai',contentModel}:{}),requiredProviders:['azure']}}:{};
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved mock is safe; please retry.'}));
   const read=(uid,id)=>store.update(uid,id,a=>{if(!a)throw fail('Mock attempt not found.',404);return reconcile(a,now());});
   async function readResults(uid,id){
