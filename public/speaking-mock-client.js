@@ -4,9 +4,9 @@
   const clock=value=>{const s=Math.max(0,Math.ceil(value));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
   const labels={intro:'Introduction',ra:'Read Aloud',rs:'Repeat Sentence',di:'Describe Image',rl:'Retell Lecture',sgd:'Summarise Group Discussion',rts:'Respond to a Situation'};
   function createController(env,{getUserId=()=>env.currentUserId||''}={}){
-    const doc=env.document,OWNER='speaking-mock',memory=new Map(),done=new Set(),urls=new Map(),promptFinished=new Set(),startCue=cues.create(env),imageViewer=images.create(env);let rsCue;
+    const doc=env.document,OWNER='speaking-mock',memory=new Map(),done=new Set(),urls=new Map(),promptFinished=new Set(),startCue=cues.create(env),imageViewer=images.create(env);let rsCue,check,checkTimer,flow,serverOffset=0;
     let host,catalog,a,owner='',serial=0,busy=false,ending=false,stream,recorder,capture,recordingPromise,prompt,played='',timer,poller,pollBusy=false,pollUntil=0,pollFailures=0,nextPollAt=0,resultVersion=0,notice='',selected=null,reportFilter='all',reviewSignature='',reviewAudioTicket=0,reportSection='overview',reportProvider='azure',responsePane='feedback',context,analyser,silence=0,heard=false;
-    const now=()=>env.Date?.now?.()||Date.now(),identity=()=>String(getUserId()||'').trim().toLowerCase();
+    const localNow=()=>env.Date?.now?.()||Date.now(),now=()=>localNow()+serverOffset,identity=()=>String(getUserId()||'').trim().toLowerCase();
     const valid=ticket=>ticket===serial&&identity()===owner;
     const key=(id,index)=>owner+':'+id+':'+index;
     const token=()=>{
@@ -17,7 +17,7 @@
       const headers={'x-session-token':token()};if(body!==undefined)headers['Content-Type']=raw?body.type.split(';')[0]:'application/json';
       try{
         const response=await env.fetch('/api/speaking-mocks'+route,{method:body===undefined?'GET':'POST',headers,body:body===undefined?undefined:raw?body:JSON.stringify(body),cache:'no-store',signal:AbortSignal.timeout(30000)});
-        const data=await response.json();if(!response.ok)throw Object.assign(Error(data.error||'The mock could not finish this action.'),{status:response.status,retryable:response.status===408||response.status===429||response.status>=500});return data;
+        const data=await response.json();if(Number.isFinite(data.serverNow))serverOffset=data.serverNow-localNow();if(!response.ok)throw Object.assign(Error(data.error||'The mock could not finish this action.'),{status:response.status,retryable:response.status===408||response.status===429||response.status>=500});return data;
       }catch(error){
         if(error.status)throw error;
         throw Object.assign(Error('The connection was interrupted. Your saved mock is safe; please retry.'),{retryable:true});
@@ -39,12 +39,13 @@
     function stopPrompt(){if(prompt){prompt.pause();prompt.onended=null;prompt=null;}}
     function stopTimer(){env.clearInterval(timer);timer=null;}
     function stopPolling(){env.clearInterval(poller);poller=null;}
-    function release(){imageViewer.close();stopTimer();stopPrompt();startCue.close();rsCue=null;if(recorder?.state==='recording')recorder.stop();stream?.getTracks().forEach(t=>t.stop());stream=null;analyser=null;context?.close?.().catch(()=>{});context=null;}
+    function release(){stopCheck();flow=null;imageViewer.close();stopTimer();stopPrompt();startCue.close();rsCue=null;if(recorder?.state==='recording')recorder.stop();stream?.getTracks().forEach(t=>t.stop());stream=null;analyser=null;context?.close?.().catch(()=>{});context=null;}
     function leave(){stopPolling();release();serial++;}
     function reset(){leave();a=null;owner='';selected=null;reportFilter='all';reportSection='overview';reportProvider='azure';responsePane='feedback';reviewSignature='';for(const url of urls.values())env.URL.revokeObjectURL(url);urls.clear();host?.replaceChildren();}
-    function shell(html){imageViewer.close();host.innerHTML=html;images.bindFallback(host);host.onclick=click;host.onchange=reportChange;host.onkeydown=reportKeydown;host.oninput=e=>{if(e.target.id==='sm-volume'&&prompt)prompt.volume=Number(e.target.value);};}
+    function shell(html){imageViewer.close();host.innerHTML=html;images.bindFallback(host);host.onclick=click;host.onchange=e=>{if(e.target.id==='sm-check-heard'&&check){check.confirmed=!!e.target.checked;checkControls();}else reportChange(e);};host.onkeydown=reportKeydown;host.oninput=e=>{if(e.target.id==='sm-volume'&&prompt)prompt.volume=Number(e.target.value);};}
     function protectedMode(){env.PortalExamMode?.set(OWNER,a?.status==='active',host,{onEvent:event=>{if(a)api('/attempts/'+a.id+'/integrity',{events:[event]}).catch(()=>{});},onLock:()=>{stopPrompt();startCue.cancel();rsCue=null;played='';if(recorder?.state==='recording')recorder.stop();},onResume:()=>{if(a)refresh().catch(e=>message(e.message));}});}
     async function open(options={}){
+      if(check)release();
       if(owner&&owner!==identity())reset();stopPolling();owner=identity();if(!owner)return;host=doc.getElementById('speakingMockPane');const ticket=++serial;
       shell('<p role="status">Loading speaking mocks…</p>');
       try{const values=await Promise.all([api('/catalog'),api('/attempts')]);if(!valid(ticket))return;catalog=values[0];hub(values[1],options);}
@@ -60,17 +61,60 @@
       if(stream)return;if(!env.MediaRecorder||!env.navigator?.mediaDevices?.getUserMedia)throw Error('This browser cannot record microphone audio. Use a supported browser for the speaking mock.');stream=await env.navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false});
       try{const Context=env.AudioContext||env.webkitAudioContext;if(Context){context=new Context();await context.resume();const source=context.createMediaStreamSource(stream);analyser=context.createAnalyser();analyser.fftSize=256;source.connect(analyser);}}catch{analyser=null;}
     }
-    async function start(paperId,reattemptId){
-      if(busy)return;startCue.unlock();busy=true;const ticket=serial;
-      try{const ready=await env.PortalExamMode.prepare(OWNER,host);if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}
-        const id=env.crypto.randomUUID();a=await api(reattemptId?'/attempts/'+reattemptId+'/reattempt':'/attempts',reattemptId?{id}:{id,paperId});if(!valid(ticket))return;stopPolling();selected=null;capture=null;recordingPromise=null;played='';await begin();
+    function stopCheck(){
+      const previous=check;check=null;env.clearInterval(checkTimer);checkTimer=null;
+      if(previous){previous.audio?.pause();if(previous.recorder?.state==='recording')previous.recorder.stop();if(previous.url)env.URL.revokeObjectURL(previous.url);}
+    }
+    function checkControls(){
+      const ready=check?.blob?.size&&check.played&&check.confirmed;
+      const begin=doc.getElementById('sm-check-begin');if(begin)begin.disabled=!ready||busy;
+      const heard=doc.getElementById('sm-check-heard');if(heard)heard.disabled=!check?.played;
+      const play=doc.getElementById('sm-check-play');if(play)play.disabled=!check?.blob?.size||check.recorder?.state==='recording';
+      const record=doc.getElementById('sm-check-record');if(record)record.disabled=busy||check?.recorder?.state==='recording';
+    }
+    function start(paperId,reattemptId){
+      if(busy)return;release();check={paperId,reattemptId,ticket:serial,confirmed:false,played:false};
+      shell('<section class="sm-equipment"><p class="ipr-eyebrow">Before you begin</p><h1>Check your microphone and headphones</h1><p>Record a few words, play them through your headset, then confirm you can hear your voice clearly. The test starts after this check.</p><label class="sm-check-meter">Microphone level<meter id="sm-check-level" min="0" max="1" value="0"></meter></label><div class="sm-check-actions"><button type="button" class="portal-button" id="sm-check-record" data-sm="check-record">Record a 3-second sample</button><button type="button" class="portal-button" id="sm-check-play" data-sm="check-play" disabled>Play my sample</button></div><p id="sm-check-status" role="status">Your sample stays on this device.</p><label class="sm-check-confirm"><input type="checkbox" id="sm-check-heard" disabled> I can hear my recorded voice clearly.</label><p id="sm-notice" role="status"></p><div class="sm-check-actions"><button type="button" class="portal-button" data-sm="reload">Back</button><button type="button" class="portal-button primary" id="sm-check-begin" data-sm="check-begin" disabled>Begin speaking mock</button></div></section>');
+      checkTimer=env.setInterval(()=>{
+        if(!check)return;
+        if(analyser){const values=new Uint8Array(analyser.fftSize);analyser.getByteTimeDomainData(values);const level=Math.sqrt(values.reduce((sum,n)=>sum+((n-128)/128)**2,0)/values.length);const meter=doc.getElementById('sm-check-level');if(meter)meter.value=Math.min(1,level*5);}
+        if(check.recorder?.state==='recording'&&localNow()-check.startedAt>=3000)check.recorder.stop();
+      },100);
+    }
+    async function recordCheck(){
+      if(!check||busy||check.recorder?.state==='recording')return;busy=true;const active=check;checkControls();
+      try{
+        await microphone();if(check!==active||!valid(active.ticket))return;
+        active.audio?.pause();if(active.url)env.URL.revokeObjectURL(active.url);active.url=null;active.blob=null;active.played=false;active.confirmed=false;const heard=doc.getElementById('sm-check-heard');if(heard)heard.checked=false;
+        const type=['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(value=>env.MediaRecorder.isTypeSupported?.(value));
+        const recorded=new env.MediaRecorder(stream,type?{mimeType:type}:undefined),chunks=[];active.recorder=recorded;
+        recorded.ondataavailable=event=>{if(event.data?.size)chunks.push(event.data);};
+        recorded.onstop=()=>{if(check!==active||!valid(active.ticket))return;active.blob=new env.Blob(chunks,{type:recorded.mimeType||type||'audio/webm'});if(active.blob.size)active.url=env.URL.createObjectURL(active.blob);doc.getElementById('sm-check-status').textContent=active.blob.size?'Sample recorded. Play it through your headset.':'No sample was captured. Check the microphone and record again.';checkControls();};
+        recorded.onerror=()=>{if(check===active){message('The sample could not be recorded. Check your microphone and try again.');if(recorded.state==='recording')recorded.stop();}};
+        active.startedAt=localNow();recorded.start();doc.getElementById('sm-check-status').textContent='Say a few words now…';message('');
+      }catch(error){if(check===active)message(error.message||'Allow microphone access, then record the sample again.');}
+      finally{busy=false;checkControls();}
+    }
+    async function playCheck(){
+      const active=check;if(!active?.url||active.recorder?.state==='recording')return;
+      active.audio?.pause();active.played=false;active.confirmed=false;const heard=doc.getElementById('sm-check-heard');if(heard)heard.checked=false;
+      const audio=new env.Audio(active.url);active.audio=audio;
+      audio.onended=()=>{if(check!==active||active.audio!==audio||!valid(active.ticket))return;active.played=true;doc.getElementById('sm-check-status').textContent='If you heard your voice clearly, confirm below to begin.';checkControls();};
+      audio.onerror=()=>{if(check===active)message('The sample could not play. Check your headset connection and record another sample.');};
+      try{await audio.play();if(check===active){message('');doc.getElementById('sm-check-status').textContent='Playing your sample…';}}catch{if(check===active)message('Playback was blocked. Select Play my sample again.');}checkControls();
+    }
+    async function beginMock(){
+      if(busy||!check?.blob?.size||!check.played||!check.confirmed)return;
+      const {paperId,reattemptId}=check;startCue.unlock();busy=true;checkControls();const ticket=serial;
+      try{const ready=await env.PortalExamMode.prepare(OWNER,host,{immediate:true});if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}
+        const id=env.crypto.randomUUID();a=await api(reattemptId?'/attempts/'+reattemptId+'/reattempt':'/attempts',reattemptId?{id}:{id,paperId});if(!valid(ticket))return;stopCheck();stopPolling();selected=null;capture=null;recordingPromise=null;played='';await begin();
       }catch(error){message(error.message||'Microphone access is required to start the speaking mock.');env.PortalExamMode?.set(OWNER,false,host);release();}
-      finally{busy=false;}
+      finally{busy=false;checkControls();}
     }
     async function resume(id){
       if(busy)return;startCue.unlock();busy=true;const ticket=serial;
       try{const saved=await api('/attempts/'+id);if(!valid(ticket))return;
-        if(saved.status==='active'){const ready=await env.PortalExamMode.prepare(OWNER,host);if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}}
+        if(saved.status==='active'){const ready=await env.PortalExamMode.prepare(OWNER,host,{immediate:true});if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}}
         a=saved;selected=null;reportFilter='all';reportSection='overview';responsePane='feedback';reviewSignature='';
         if(a.status==='active'){const blob=await pending('get',key(a.id,a.index));if(blob){done.add(key(a.id,a.index));await upload(blob,a.id,a.index);}await begin();}else{startCue.close();results();}
       }catch(error){message(error.message);env.PortalExamMode?.set(OWNER,false,host);}
@@ -78,7 +122,8 @@
     }
     async function begin(){
       if(a.status!=='active'){results();return;}
-      if(a.timing.phase==='ready')a=await api('/attempts/'+a.id+'/begin',{index:a.index});
+      const fresh=a.timing.phase==='ready';if(fresh)a=await api('/attempts/'+a.id+'/begin',{index:a.index,timingVersion:2});
+      flow={key:key(a.id,a.index),leadUntil:localNow()+(fresh?3000:Math.max(0,a.timing.audioAt-now())),fresh,ended:a.timing.playbackDriven&&a.timing.prepAt!=null,prepUntil:null,finishing:false};
       notice='';renderExam();protectedMode();stopTimer();timer=env.setInterval(tick,100);tick();
     }
     function renderExam(){
@@ -87,7 +132,7 @@
         +'<main class="sm-exam-main"><p class="sm-instructions">'+esc(q.instruction)+'</p><div class="sm-question '+(q.type==='di'?'sm-visual':'')+'">'
         +'<div class="sm-stimulus">'+(q.text?'<p class="sm-passage">'+esc(q.text)+'</p>':'')+(q.imageUrl?'<button type="button" class="sm-exam-image" data-sm="zoom-image" aria-label="Enlarge question image">'+images.image(q)+'</button><button type="button" class="portal-button sm-image-enlarge" data-sm="zoom-image">Enlarge image</button>'+images.legend(q):'')+'</div>'
         +'<div class="sm-controls">'+(q.audioUrl?'<section class="sm-audio-panel" aria-label="Prompt audio"><div>Status: <span id="sm-audio-status">Beginning shortly</span></div><label class="sm-volume">Volume <input id="sm-volume" aria-label="Prompt volume" type="range" min="0" max="1" step="0.1" value="1"></label><div class="sm-bar"><span id="sm-audio-bar"></span></div></section>':'')
-        +'<section class="sm-record-panel" aria-label="Recorded answer"><strong>Recorded Answer</strong><p>Current Status:</p><div id="sm-record-status" role="status" aria-live="polite">Beginning shortly</div><div class="sm-bar"><span id="sm-record-bar"></span></div></section></div></div>'
+        +'<section class="sm-record-panel" aria-label="Recorded answer"><strong>Recorded Answer</strong><p>Current Status:</p><div id="sm-preparation-status" role="status"></div><div id="sm-record-status" role="status" aria-live="polite">Beginning shortly</div><div class="sm-bar"><span id="sm-record-bar"></span></div></section></div></div>'
         +'<p id="sm-notice" role="status">'+esc(notice)+'</p><button class="portal-button" data-sm="play" id="sm-play" hidden>Play remaining audio</button><button class="portal-button" data-sm="upload" id="sm-upload" hidden>Retry saving recording</button></main>'
         +'<footer class="sm-exam-footer"><span>'+esc(q.type==='intro'?'Personal Introduction · Not scored':labels[q.type])+'</span><button type="button" class="sm-next" data-sm="next" id="sm-next">Next <span aria-hidden="true">➜</span></button></footer><dialog id="sm-image-dialog" class="sm-image-dialog" aria-label="Full-size question image"></dialog></div>');
     }
@@ -95,17 +140,24 @@
     async function playPrompt(){
       if(!a?.question.audioUrl||env.PortalExamMode?.isLocked(OWNER))return;
       const clipKey=key(a.id,a.index);played=clipKey;stopPrompt();prompt=new env.Audio(a.question.audioUrl);
-      const audio=prompt;audio.currentTime=Math.max(0,(now()-a.timing.audioAt)/1000);
+      const audio=prompt;audio.currentTime=flow?.fresh?0:Math.max(0,(now()-a.timing.audioAt)/1000);
       const ticket=serial;promptFinished.delete(clipKey);
-      audio.onended=()=>{if(!valid(ticket)||!a||key(a.id,a.index)!==clipKey||prompt!==audio)return;promptFinished.add(clipKey);stopPrompt();tick();};
-      audio.onerror=()=>message('The prompt audio could not load. Check your connection before continuing.');
-      try{await audio.play();}catch{const node=doc.getElementById('sm-play');if(node)node.hidden=false;message('Audio was blocked. Select Play remaining audio to continue.');}
+      audio.onended=()=>{if(!valid(ticket)||!a||key(a.id,a.index)!==clipKey||prompt!==audio)return;promptFinished.add(clipKey);stopPrompt();if(a.timing.playbackDriven){flow.ended=true;finishPrompt();}else tick();};
+      audio.onerror=()=>{const node=doc.getElementById('sm-play');if(node)node.hidden=false;message('The prompt audio could not load. Select Play remaining audio to retry.');};
+      try{await audio.play();if(valid(ticket)&&prompt===audio){const node=doc.getElementById('sm-play');if(node)node.hidden=true;}}catch{const node=doc.getElementById('sm-play');if(node)node.hidden=false;message('Audio was blocked. Select Play remaining audio to continue.');}
+    }
+    async function finishPrompt(){
+      const active=flow;if(!active||active.finishing||!a||!a.timing.playbackDriven||a.timing.prepAt!=null)return;
+      active.finishing=true;const id=a.id,index=a.index,ticket=serial;
+      try{const saved=await api('/attempts/'+id+'/playback',{index});if(!valid(ticket)||flow!==active||a?.id!==id||a.index!==index)return;a=saved;active.prepUntil=localNow()+a.question.preparation*1000;const button=doc.getElementById('sm-play');if(button){button.hidden=true;button.textContent='Play remaining audio';}message('');tick();}
+      catch(error){if(valid(ticket)&&flow===active){message(error.message+' Select Continue after audio to retry.');const button=doc.getElementById('sm-play');if(button){button.textContent='Continue after audio';button.hidden=false;}}}
+      finally{active.finishing=false;}
     }
     function startRecording(){
       const captureKey=key(a.id,a.index);if(done.has(captureKey)||capture?.key===captureKey)return;
       const options=['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(type=>env.MediaRecorder.isTypeSupported?.(type));
       try{
-        recorder=new env.MediaRecorder(stream,options?{mimeType:options}:undefined);const activeRecorder=recorder,chunks=[],current={key:captureKey,id:a.id,index:a.index,ticket:serial,startedAt:now(),endsAt:a.question.type==='rs'?now()+a.question.seconds*1000:a.timing.endsAt};capture=current;
+        recorder=new env.MediaRecorder(stream,options?{mimeType:options}:undefined);const activeRecorder=recorder,chunks=[],current={key:captureKey,id:a.id,index:a.index,ticket:serial,startedAt:now(),endsAt:a.question.type==='rs'||a.timing.playbackDriven?now()+a.question.seconds*1000:a.timing.endsAt};capture=current;
         heard=false;silence=0;if(a.question.type!=='rs')beep();
         recordingPromise=new Promise(resolve=>{
           recorder.ondataavailable=event=>{if(event.data?.size)chunks.push(event.data);};
@@ -139,7 +191,21 @@
       const t=a.timing,current=now(),q=a.question,captureKey=key(a.id,a.index);
       const completed=t.phase==='completed'||done.has(captureKey);
       let text;
-      if(completed)text='Completed';else if(current<t.audioAt)text='Beginning in '+clock((t.recordingAt-current)/1000);else if(current<t.prepAt){text='Beginning in '+clock((t.recordingAt-current)/1000);if(played!==captureKey)playPrompt();}
+      if(completed)text='Completed';
+      else if(t.playbackDriven){
+        if(flow&&localNow()<flow.leadUntil)text='Audio begins in '+clock((flow.leadUntil-localNow())/1000);
+        else if(!flow?.ended){text='Listening';if(played!==captureKey)playPrompt();}
+        else if(t.prepAt==null)text='Preparing your response…';
+        else if((flow?.prepUntil!=null&&localNow()<flow.prepUntil)||current<t.cueAt)text='Preparation time: '+clock(Math.max((flow?.prepUntil||0)-localNow(),t.cueAt-current)/1000);
+        else if(q.type==='rs'){
+          if(rsCue?.key!==captureKey){const pending={key:captureKey,ready:false};rsCue=pending;startCue.play(captureKey,()=>{if(rsCue===pending)pending.ready=true;});}
+          if(!rsCue.ready||current<t.recordingAt)text='Get ready';
+          else if(!capture||capture.key!==captureKey||current<capture.endsAt){text='Recording';startRecording();}
+          else{if(recorder?.state==='recording')recorder.stop();text=done.has(captureKey)?'Completed':'Recording period completed';}
+        }else if(!capture||capture.key!==captureKey||current<capture.endsAt){text='Recording';startRecording();}
+        else{if(recorder?.state==='recording')recorder.stop();text=done.has(captureKey)?'Completed':'Recording period completed';}
+      }
+      else if(current<t.audioAt)text='Beginning in '+clock((t.recordingAt-current)/1000);else if(current<t.prepAt){text='Beginning in '+clock((t.recordingAt-current)/1000);if(played!==captureKey)playPrompt();}
       else if(q.type==='rs'){
         if(!promptFinished.has(captureKey)){
           text='Listening';if(played!==captureKey)playPrompt();
@@ -154,10 +220,11 @@
       else if(current<t.endsAt){stopPrompt();text='Recording';startRecording();}
       else{if(recorder?.state==='recording')recorder.stop();text=done.has(captureKey)?'Completed':'Recording period completed';}
       const status=doc.getElementById('sm-record-status');if(status&&status.textContent!==text)status.textContent=text;
-      const began=q.type==='rs'?(capture?.key===captureKey?capture.startedAt:Math.max(current,t.recordingAt)):t.recordingAt;
+      const began=q.type==='rs'||t.playbackDriven?(capture?.key===captureKey?capture.startedAt:current):t.recordingAt;
       const bar=doc.getElementById('sm-record-bar');if(bar)bar.style.width=(completed?100:Math.max(0,Math.min(100,(current-began)/(q.seconds*10))))+'%';
-      const audioStatus=doc.getElementById('sm-audio-status');if(audioStatus)audioStatus.textContent=current<t.audioAt?'Beginning shortly':current<t.prepAt||q.type==='rs'&&!promptFinished.has(captureKey)?'Playing':'Completed';
-      const audioBar=doc.getElementById('sm-audio-bar');if(audioBar)audioBar.style.width=Math.max(0,Math.min(100,(current-t.audioAt)/(q.audioSeconds*10)))+'%';
+      const audioStatus=doc.getElementById('sm-audio-status');if(audioStatus)audioStatus.textContent=t.playbackDriven?(flow&&localNow()<flow.leadUntil?'Beginning in '+clock((flow.leadUntil-localNow())/1000):flow?.ended?'Completed':prompt?.paused?'Select Play remaining audio':'Playing'):current<t.audioAt?'Beginning shortly':current<t.prepAt||q.type==='rs'&&!promptFinished.has(captureKey)?'Playing':'Completed';
+      const preparation=doc.getElementById('sm-preparation-status');if(preparation)preparation.textContent=text.startsWith('Preparation time:')?text:'';
+      const audioBar=doc.getElementById('sm-audio-bar');if(audioBar)audioBar.style.width=(t.playbackDriven?(flow?.ended?100:Math.max(0,Math.min(100,(prompt?.currentTime||0)/(q.audioSeconds||1)*100))):Math.max(0,Math.min(100,(current-t.audioAt)/(q.audioSeconds*10))))+'%';
       if(analyser&&recorder?.state==='recording'){
         const data=new Uint8Array(analyser.fftSize);analyser.getByteTimeDomainData(data);const level=Math.sqrt(data.reduce((sum,n)=>sum+((n-128)/128)**2,0)/data.length);
         if(level>.015){heard=true;silence=0;}else if(heard){silence||=current;if(current-silence>=3000)recorder.stop();}
@@ -318,7 +385,10 @@
       }
       if(data.sm==='filter'){reportSection='answers';reportFilter=Object.hasOwn(labels,data.type)&&data.type!=='intro'?data.type:'all';updateResults();return;}
       if(data.sm==='review-step'){const list=visibleAnswers(),position=list.findIndex(r=>r.index===selected),next=list[position+Number(data.step)];if(next)return review(next.index);return;}
-      if(data.sm==='play'){played='';return playPrompt();}
+      if(data.sm==='check-record')return recordCheck();
+      if(data.sm==='check-play')return playCheck();
+      if(data.sm==='check-begin')return beginMock();
+      if(data.sm==='play'){if(flow?.ended&&a?.timing.playbackDriven)return finishPrompt();played='';return playPrompt();}
       if(data.sm==='upload'){const blob=await pending('get',key(a.id,a.index));if(blob)try{await upload(blob,a.id,a.index);}catch(error){message(error.message);}return;}
       if(data.sm==='retry'){
         if(busy||!a)return;busy=true;button.disabled=true;stopPolling();const ticket=serial,id=a.id,version=++resultVersion;
