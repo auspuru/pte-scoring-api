@@ -6,7 +6,7 @@
   "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
   "license": "CC BY 4.0",
   "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
-  "changes": "Neural speech synthesised from user-supplied transcripts; converted to mono 24 kHz MP3 with brief turn gaps and timing adjustment where necessary. No original corpus recording is redistributed.",
+  "changes": "Neural speech synthesised from supplied and original SGD transcripts, including introductory narration; three stable voices with contrasting tones and accents; converted to mono 24 kHz MP3 with turn gaps and timing adjustment where necessary. No original corpus recording is redistributed.",
   "sha256": {
     "en_GB-vctk-medium.onnx": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
     "en_GB-vctk-medium.onnx.json": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8"
@@ -15,5 +15,25 @@
     "Junichi Yamagishi",
     "Christophe Veaux",
     "Kirsten MacDonald"
-  ]
+  ],
+  "speakerProfiles": {
+    "p225": {
+      "gender": "F",
+      "accent": "English",
+      "region": "Southern England"
+    },
+    "p237": {
+      "gender": "M",
+      "accent": "Scottish",
+      "region": "Fife"
+    },
+    "p238": {
+      "gender": "F",
+      "accent": "NorthernIrish",
+      "region": "Belfast"
+    }
+  },
+  "speakerMetadataSource": "https://datashare.ed.ac.uk/server/api/core/bitstreams/ab3c7d2f-98b2-4271-b7e4-40a6ffb40d1d/content",
+  "speakerMetadataSha256": "daa68d27a01418d113ac79e6914017beeded4e7de65d03f7705f9d81295da236",
+  "profileVersion": "sgd-contrasting-voices-20261030-1"
 }

@@ -21,12 +21,14 @@ function validate() {
       assert.equal(entry.textSha256,crypto.createHash('sha256').update(q.text).digest('hex'));
       if(q.type==='sgd') {
         assert.equal(new Set(entry.voices).size,3,q.id+' distinct recorded voices');
-        if(q.source?.date==='2026-10-30') {
-          assert(q.text.startsWith('Narration: '+q.narration+'\n'),q.id+' narration');
-          assert.deepEqual(Object.keys(entry.speakerVoices),['Speaker 1','Speaker 2','Speaker 3']);
-          assert.equal(new Set(Object.values(entry.speakerVoices)).size,3,q.id+' stable speaker voices');
-          assert.deepEqual(entry.turnSpeakers,q.turns.map(t=>t[0]),q.id+' recorded turn order');
-        }
+        const speakers=[...new Set(q.turns.map(t=>t[0]))];
+        assert(q.narration&&q.text.startsWith('Narration: '+q.narration+'\n'),q.id+' narration');
+        assert.equal(entry.narrationIncluded,true,q.id+' spoken introduction');
+        assert.equal(entry.narrationSha256,crypto.createHash('sha256').update(q.narration).digest('hex'));
+        assert.deepEqual(Object.keys(entry.speakerVoices),speakers);
+        assert.equal(new Set(Object.values(entry.speakerVoices)).size,3,q.id+' stable speaker voices');
+        assert.equal(new Set(Object.values(entry.speakerAccents)).size,3,q.id+' contrasting accents');
+        assert.deepEqual(entry.turnSpeakers,q.turns.map(t=>t[0]),q.id+' recorded turn order');
       }
       const bounds={rs:[3,9],rl:[45,90],sgd:[90,180],rts:[5,35]}[q.type];
       assert(entry.seconds>=bounds[0]&&entry.seconds<=bounds[1],q.id+' duration');
