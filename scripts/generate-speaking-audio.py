@@ -26,6 +26,10 @@ async def main():
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
     limit = asyncio.Semaphore(3)
     async def generate(q):
+        # All SGD prompts, including their introductions and stable speaker
+        # identities, are authored by generate-user-sgd-audio.py.
+        if q['type'] == 'sgd':
+            return
         # Versioned RTS prompts have a dedicated append-only generator. Keep
         # the old question-ID recordings available to historical attempts.
         if q.get('promptAudioKey'):
