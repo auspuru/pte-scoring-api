@@ -38,8 +38,10 @@ for(const mobile of [false,true])test('Speaking mock Chrome '+(mobile?'mobile':'
  await advance(1100);await page.waitForFunction(()=>window.__examStarts===1);assert.equal(await page.evaluate(()=>window.__promptPlays),1);
  await page.waitForFunction(()=>window.__examBytes>100);
  await click('#sm-next');await until(async()=>!!(await service.store.get('alice',attempt.id)).responses[index]?.recording,'Speaking response was not saved.');assert.equal(uploads,1);
+ await page.waitForFunction(item=>document.querySelector('.sm-exam-header')?.textContent.includes('Item '+item+' of'),{},index+2);
  await page.evaluate(()=>{
    SpeakingMock.reset();
+   PortalExamMode.set('speaking-mock',false,document.getElementById('speakingMockPane'));
    document.getElementById('speakingMockPane').innerHTML=MockReportUI.frame({key:'contribution-layout',title:'Writing mock report',score:MockReportUI.hero({title:'Writing mock',overall:75,skills:[{name:'Writing',value:75}]})+MockReportUI.contributions({section:'writing',groups:[{type:'swt',total:8,maximum:9,count:1,marked:1},{type:'sst',total:6,maximum:12,count:1,marked:1},{type:'wfd',total:12,maximum:20,count:3,marked:3}]})});
  });
  assert.equal(await page.$$eval('[data-contribution-skill]',nodes=>nodes.length),2);
