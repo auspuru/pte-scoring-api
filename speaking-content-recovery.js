@@ -6,10 +6,12 @@ async function recoverLatest(options){
  if(options.scope==='recent')return recoverRecent({...options,scope:undefined});
  const {username,operation,attemptId,kind,questionTypes,practiceStore,mockStore,callModel,transcribe,logger=console,now=Date.now}=options;
  if(!require('./speaking-access').allowed(username)||!operation||operation.length>120)throw Error('Invalid content repair scope.');
+ const reassess=options.reassess===true;
+ if(reassess&&(username!=='mahabir1'||kind!=='mock'||!Number.isFinite(options.startedBefore)||!Array.isArray(questionTypes)||questionTypes.some(type=>!['di','rl','sgd','rts'].includes(type))))throw Error('Invalid reassessment scope.');
  const lists=await Promise.all([practiceStore.list(username),mockStore.list(username)]);
  const completed=lists.flat().find(a=>a.contentRecovery?.operation===operation);
  if(completed){logger.info('[speaking-content-recovery]',JSON.stringify({operation,attemptId:completed.id,status:'already-run'}));return completed.contentRecovery;}
- const choices=lists.flatMap((rows,kind)=>rows.filter(a=>a.status==='submitted').map(a=>({kind,id:a.id,startedAt:a.startedAt}))).sort((a,b)=>b.startedAt-a.startedAt);
+ const choices=lists.flatMap((rows,kind)=>rows.filter(a=>a.status==='submitted'&&(!reassess||a.startedAt<=options.startedBefore)).map(a=>({kind,id:a.id,startedAt:a.startedAt}))).sort((a,b)=>b.startedAt-a.startedAt);
  if(!choices.length){logger.info('[speaking-content-recovery]',JSON.stringify({operation,status:'no-submitted-attempt'}));return;}
  const chosen=attemptId?choices.find(a=>a.id===attemptId&&(!kind||(a.kind===0?'practice':'mock')===kind)):choices.find(a=>!kind||(a.kind===0?'practice':'mock')===kind);
  if(!chosen)throw Error('The requested submitted attempt was not found.');
@@ -36,7 +38,7 @@ async function recoverLatest(options){
     }else{report.reviewed++;report.unavailable++;report.issues.push({index,type:q?.type,issue:'missing_recording'});}
     continue;
    }
-   if(confirmed(result)){report.existing.push({index,questionId:q?.id,total:result.total,maximum:result.maximum});continue;}report.reviewed++;
+   if(confirmed(result)&&!reassess){report.existing.push({index,questionId:q?.id,total:result.total,maximum:result.maximum});continue;}report.reviewed++;
    if(!q){report.unavailable++;continue;}
    try{
    let text=r.transcript||'';if(!text.trim()&&r.recording&&transcribe)text=await transcribe(r.recording);
@@ -46,10 +48,10 @@ async function recoverLatest(options){
    await store.update(username,chosen.id,a=>{
     written=false;if(a.contentRecovery?.claim!==claim)return a;
     const target=index===null?a:a.responses[index];if(!target||(target.transcript||'')!==(r.transcript||'')||target.recording?.hash!==r.recording?.hash)return a;
-    const previous=index===null?target.result:target.content;if(confirmed(previous))return a;
+    const previous=index===null?target.result:target.content;if(reassess?JSON.stringify(previous)!==JSON.stringify(result):confirmed(previous))return a;
     target.contentScoreHistory=[...(target.contentScoreHistory||[]),{operation,at:now(),previous:previous||null}].slice(-3);
     if(index===null){const delivery=Object.fromEntries(deliveryKeys.filter(k=>Object.hasOwn(previous||{},k)).map(k=>[k,previous[k]]));target.result={...assessed,...delivery};if(!target.transcript){target.transcription=text;target.revision=(target.revision||0)+1;}}
-    else{target.content=assessed;target.transcriptionStatus='assessed';}
+    else{target.content=reassess?{...assessed,scoringProvider:'openai',scoringModel:'gpt-6.1-sol',reassessmentOperation:operation}:assessed;target.transcriptionStatus='assessed';}
     target.transcript=text;written=true;return a;
    });
    if(written){report.recovered++;report.scores.push({index,questionId:q.id,total:assessed.total,maximum:assessed.maximum});}else report.unavailable++;
