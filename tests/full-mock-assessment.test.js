@@ -192,3 +192,13 @@ test('Assessment HTTP endpoints require ownership and submission, ignore injecte
   assert.equal((await request('/attempts/' + id + '/assessment', { retry:true })).status, 202);
   roles.alice = 'user'; assert.equal((await request('/attempts/' + id + '/results')).status, 403);
 });
+
+
+test('Practice navigation upgrade preserves current production mock snapshots and the exact native transcription function',async t=>{
+ const f=await fixture(t),original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/navigation-compatible-sources.json')};
+ const source=require('../speaking-lab').transcribeRecording.toString();
+ assert.equal(require('node:crypto').createHash('sha256').update(source).digest('hex'),'6779768323a86f2488ac0621c8dd7f0949ca1348bdf0c23a98d10f64eaa84f4a');
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
+ assert.deepEqual((await f.state()).assessment.snapshot,original);
+});

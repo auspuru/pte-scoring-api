@@ -12531,7 +12531,7 @@ function ensureSpeakingRuntimeLoaded() {
   if (window.SpeakingPractice) return Promise.resolve(window.SpeakingPractice);
   if (speakingRuntimeLoadPromise) return speakingRuntimeLoadPromise;
 
-  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-77c243c41325', 'speaking practice'))
+  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-4c47c43a8fe0', 'speaking practice'))
     .then(() => {
       if (!window.SpeakingPractice) throw new Error('Speaking practice did not initialise.');
       return window.SpeakingPractice;
@@ -13026,9 +13026,9 @@ function setPortalLibraryView(view) {
 
 function savePortalEssayDraft(options = {}) {
   clearTimeout(portalDraftTimer);
-  if (!currentUserId || practiceState.view !== 'write') return;
+  if (!currentUserId || practiceState.view !== 'write') return false;
   const signature = JSON.stringify(['essayText', 'questionText', 'questionTitle', 'selectedQuestionId', 'questionSource', 'writeStep', 'sampleBand', 'timerEnabled', 'timerStartedAt', 'revisionParentId', 'submissionId', 'submissionSignature'].map(k => practiceState[k]));
-  if (savePortalEssayDraft.owner === currentUserId && savePortalEssayDraft.signature === signature) return;
+  if (savePortalEssayDraft.owner === currentUserId && savePortalEssayDraft.signature === signature) return true;
   const saved = !!portalDraftStore?.write(currentUserId, practiceState);
   if (saved) {
     savePortalEssayDraft.owner = currentUserId;
@@ -13041,6 +13041,7 @@ function savePortalEssayDraft(options = {}) {
     status.dataset.state = saved ? 'saved' : 'error';
   }
   if (!options.skipSync && typeof queueSync === 'function') queueSync({ localSaved: saved });
+  return saved;
 }
 
 function queuePortalEssayDraft() {
@@ -13563,7 +13564,6 @@ function practiceCurrentEssay() {
     toast('Please enter a question prompt for this essay before practicing.', true);
     return;
   }
-  if (practiceSubmissionPending) { toast('Your current essay review is still running.'); return; }
   savePortalEssayDraft();
   archivePracticeDraftForUndo('Previous essay draft archived.');
   
@@ -13858,21 +13858,40 @@ function viewPracticeAttempt(id) {
 
 // ---------- Main view rendering (welcome / write / loading / results) ----------
 
+function saveEssayQuestionDraft(state = practiceState) {
+  if (!state.selectedQuestionId || !['write','loading'].includes(state.view)) return true;
+  const key = getPteStorageKey('essay-question-drafts'), drafts = LocalStore.get(key) || {};
+  drafts[state.selectedQuestionId] = { ...state, timerIntervalId: null };
+  return safeLSSet(key, JSON.stringify(drafts));
+}
+function essayReviewPending(id) {
+  return typeof submitPracticeEssay === 'function' && submitPracticeEssay.jobs?.has(id);
+}
 function essayQuestionNavigation() {
-  if(!['write','results'].includes(practiceState.view)||(practiceState.view==='write'&&practiceState.questionSource!=='library'))return '';
+  if(!['write','loading','results'].includes(practiceState.view)||(practiceState.view!=='results'&&practiceState.questionSource!=='library'))return '';
   const questions=essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId));
   return `<nav class="speaking-actions" aria-label="Practice questions"><button class="btn" onclick="moveEssayQuestion(-1)" ${index<=0?'disabled':''}>← Back</button><span>${index<0?'Choose a question':'Question '+(index+1)+' of '+questions.length}</span><button class="btn" onclick="moveEssayQuestion(1)" ${index>=questions.length-1?'disabled':''}>Next →</button></nav>`;
 }
 function moveEssayQuestion(direction) {
-  if(practiceSubmissionPending)return;
   const questions=essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId)),target=questions[index+direction];
   if(!target)return;
-  const key=getPteStorageKey('essay-question-drafts'),drafts=LocalStore.get(key)||{};
-  if(practiceState.view==='write'&&practiceState.selectedQuestionId){drafts[practiceState.selectedQuestionId]={...practiceState};if(!safeLSSet(key,JSON.stringify(drafts))){toast('Could not save your draft. Please keep this question open.',true);return;}}
-  stopPracticeTimer();
-  const saved=drafts[target.id];
-  Object.assign(practiceState,saved||{view:'write',writeStep:1,questionSource:'library',selectedQuestionId:target.id,questionTitle:target.title||'',questionText:target.question,essayText:'',revisionParentId:null,submissionId:null,currentAttempt:null,viewingAttemptId:null,timerStartedAt:null});
-  practiceState.view='write';practiceState.timerIntervalId=null;renderPracticeMain();
+  const ta=document.getElementById('practiceEssayInput');if(ta&&practiceState.view==='write')practiceState.essayText=ta.value;
+  if(!saveEssayQuestionDraft()){toast('Could not save your draft. Please keep this question open.',true);return;}
+  stopPracticeTimer();stopLoadingMessages();
+  const saved=(LocalStore.get(getPteStorageKey('essay-question-drafts'))||{})[target.id];
+  Object.assign(practiceState,saved||{view:'write',writeStep:1,questionSource:'library',selectedQuestionId:target.id,questionTitle:target.title||'',questionText:target.question,essayText:'',revisionParentId:null,submissionId:null,submissionSignature:'',currentAttempt:null,viewingAttemptId:null,timerStartedAt:null});
+  // After refresh a saved response opens for review; it never submits itself.
+  if(practiceState.view==='loading'&&!essayReviewPending(practiceState.submissionId))practiceState.view='write';
+  practiceState.timerIntervalId=null;renderPracticeMain();
+  if(practiceState.view==='loading')startLoadingMessages();
+}
+function backToEssayQuestions() {
+  stopPracticeTimer();stopLoadingMessages();
+  const reviewed=practiceState.view==='results'?practiceState.currentAttempt:null;
+  if(reviewed)Object.assign(practiceState,{selectedQuestionId:reviewed.questionId||null,questionTitle:reviewed.questionTitle||'',questionText:reviewed.questionText||'',essayText:reviewed.essayText||''});
+  practiceState.view='write';practiceState.writeStep=1;practiceState.questionSource='library';
+  renderPracticeMain();
+  document.getElementById('practiceQuestionSearch')?.focus();
 }
 function renderPracticeMain() {
   const c = document.getElementById('practiceContent');
@@ -13913,7 +13932,6 @@ function welcomeView() {
 }
 
 function startNewPractice() {
-  if (practiceSubmissionPending) { toast('Your essay review is still running. You can keep using the other practice sections.'); return; }
   const previous = portalDraftStore?.read(currentUserId);
   if ((practiceState.view === 'write' && practiceState.essayText.trim()) || previous?.essayText.trim()) {
     archivePracticeDraftForUndo('Previous essay draft archived.');
@@ -14485,7 +14503,7 @@ function loadingView() {
       <img class="ipt-assessment-logo" src="assets/ipt-brisbane-logo.png" alt="IPT Brisbane — IELTS and PTE Tutorial" width="180" height="109">
       <div class="practice-loading-icon" aria-hidden="true"></div>
       <div class="practice-loading-text" role="status" aria-live="polite">Checking your response…</div>
-      <div class="practice-loading-sub" id="practiceLoadingText" aria-live="off">Your feedback will appear here after both assessments finish.</div>
+      <div class="practice-loading-sub" id="practiceLoadingText" aria-live="off">Your response is saved. You can move to another question while feedback is prepared.</div>
     </div>
   `;
 }
@@ -14515,7 +14533,8 @@ function stopLoadingMessages() {
 // ---------- Submit & score with Claude ----------
 
 async function submitPracticeEssay() {
-  if (practiceSubmissionPending) return;
+  const jobs = submitPracticeEssay.jobs ||= new Map();
+  if (jobs.has(practiceState.submissionId)) return;
   const ta = document.getElementById('practiceEssayInput');
   if (ta) practiceState.essayText = ta.value;
   const customInput = document.getElementById('practiceCustomPrompt');
@@ -14543,9 +14562,10 @@ async function submitPracticeEssay() {
   }
   const submissionId = practiceState.submissionId;
   const parentAttemptId = practiceState.revisionParentId;
-  savePortalEssayDraft();
+  if (savePortalEssayDraft() === false || !saveEssayQuestionDraft()) { toast('Could not save your draft. Please keep this question open.', true); return; }
   const sameOwner = () => owner.uid === canonicalClientUserId(currentUserId) && owner.token === sessionToken;
   stopPracticeTimer();
+  jobs.set(submissionId, owner);
   practiceSubmissionPending = true;
   practiceState.view = 'loading';
   renderPracticeMain();
@@ -14564,7 +14584,7 @@ async function submitPracticeEssay() {
       validate: value => !!EssayScoring.normalizeResult(value, essay),
       onRecover: () => {
         const status = document.getElementById('practiceLoadingText');
-        if (status) status.textContent = 'Completing your review… Your essay is saved; no need to submit again.';
+        if (status && sameOwner() && practiceState.submissionId === submissionId) status.textContent = 'Completing your review… Your essay is saved; no need to submit again.';
       } });
     const result = EssayScoring.normalizeResult(data, essay);
     const attempt = {
@@ -14587,8 +14607,13 @@ async function submitPracticeEssay() {
     const history = mergePracticeHistoryClient(getPracticeHistory(), [attempt], practiceHistoryDeleted);
     const saving = savePracticeHistory(history, { immediate: true });
     if (!sameOwner()) return;
-    stopLoadingMessages();
-    if (practiceState.view === 'loading' && practiceState.questionText.trim() === question) {
+    const draftKey = getPteStorageKey('essay-question-drafts'), drafts = LocalStore.get(draftKey) || {};
+    if (drafts[questionId]?.submissionId === submissionId) {
+      drafts[questionId] = { ...drafts[questionId], view:'results', currentAttempt:attempt, viewingAttemptId:attempt.id };
+      safeLSSet(draftKey, JSON.stringify(drafts));
+    }
+    if (practiceState.view === 'loading' && practiceState.submissionId === submissionId) {
+      stopLoadingMessages();
       practiceState.currentAttempt = attempt;
       practiceState.viewingAttemptId = attempt.id;
       practiceRevision = null;
@@ -14609,12 +14634,12 @@ async function submitPracticeEssay() {
     }
   } catch (err) {
     if (sameOwner()) {
-      stopLoadingMessages();
-      if (practiceState.view === 'loading') { practiceState.view = 'write'; renderPracticeMain(); }
+      if (practiceState.view === 'loading' && practiceState.submissionId === submissionId) { stopLoadingMessages(); practiceState.view = 'write'; renderPracticeMain(); }
       toast(err.message || 'Scoring could not be completed. Your essay is still here.', true);
     }
   } finally {
-    practiceSubmissionPending = false;
+    jobs.delete(submissionId);
+    practiceSubmissionPending = jobs.size > 0;
   }
 }
 
@@ -14850,14 +14875,13 @@ function resultsView() {
         <button class="practice-action-btn primary" onclick="reattemptPractice()">↻ Re-attempt this question</button>
         <button class="practice-action-btn" onclick="startNewPractice()">+ Try a different question</button>
         <button class="practice-action-btn" onclick="window.print()"><span style="margin-right: 4px;">🖨</span> Print / Save PDF</button>
-        <button class="practice-action-btn" onclick="closePractice()">← Back to essays</button>
+        <button class="practice-action-btn" onclick="backToEssayQuestions()">← Back to essays</button>
       </div>
     </div>
   `;
 }
 
 function reattemptPractice() {
-  if (practiceSubmissionPending) { toast('Your current essay review is still running.'); return; }
   archivePracticeDraftForUndo('Previous essay draft archived.');
   // Keep the same question, blank the essay, switch back to write view
   const a = practiceState.currentAttempt;
@@ -14889,7 +14913,6 @@ function reattemptPractice() {
 function revisePracticeEssay() {
   const a = practiceState.currentAttempt;
   if (!a) return;
-  if (practiceSubmissionPending) { toast('Your current essay review is still running.'); return; }
   archivePracticeDraftForUndo('Previous essay draft archived.');
   const text = practiceRevision?.attemptId === a.id ? practiceRevision.text : a.essayText;
   practiceState.questionTitle = a.questionTitle || '';

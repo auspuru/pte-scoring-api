@@ -128,7 +128,7 @@ test('Describe Image renders quoted Keep/Change/Try coaching safely and refreshe
  assert.match(h.host.innerHTML,/&lt;img src=x onerror=alert\(1\)&gt;/);assert.doesNotMatch(h.host.innerHTML,/<img src=x/);assert.doesNotMatch(h.host.innerHTML,/Duplicate generic advice/);
  const uploads=h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length,recorders=h.recorders.length;
  await h.click({speakingAction:'refresh-di-feedback'});
- assert.deepEqual(JSON.parse(h.requests.filter(r=>r.url.endsWith('/submit')).at(-1).body),{refreshDescribeFeedback:true});
+ assert.deepEqual(JSON.parse(h.requests.filter(r=>r.url.endsWith('/submit')).at(-1).body),{background:true,refreshDescribeFeedback:true});
  assert.equal(h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length,uploads);assert.equal(h.recorders.length,recorders);
  assert.match(h.host.innerHTML,/Image coaching could not be completed/);
 });
@@ -313,7 +313,11 @@ test('Every catalogue page is reachable and search resets pagination',async()=>{
 test('Filtered result navigation stays within the selected image category',async()=>{
   const h=harness();await h.controller.open('di');
   await h.host.onchange({target:{id:'speaking-image-category',value:'line'}});
-  await h.click({speakingQuestion:'di-3'});await h.click({speakingAction:'skip'});h.tick(41000);await flush();
+  await h.click({speakingQuestion:'di-3'});
+  const next={dataset:{speakingMove:'1'},disabled:false},back={dataset:{speakingMove:'-1'},disabled:false};
+  h.host.querySelectorAll=selector=>selector.includes('[data-speaking-move]')&&h.host.innerHTML.includes('data-speaking-move')?[next,back]:[];
+  await h.click({speakingAction:'skip'});h.tick(41000);await flush();
+  assert.equal(next.disabled,true);assert.equal(back.disabled,true);
   assert.match(h.host.innerHTML,/Question 1 of 1/);
   await h.click({speakingMove:'1'});assert.equal(h.attempts.size,1);
   await h.click({speakingAction:'list'});assert.equal(h.nodes.get('speaking-match-count').textContent,'1 of 5 questions');
@@ -350,12 +354,15 @@ test('Skipping preparation opens the next question without submitting an empty a
  await h.click({speakingMove:'-1'});assert.match(h.host.innerHTML,/Question 1 of/);
 });
 
-test('Skipping during recording discards unfinished audio and stops the old timer',async()=>{
+test('Next during recording saves the audio and stops the old timer',async()=>{
  const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});await h.click({speakingAction:'skip'});
  await h.click({speakingMove:'1'});await flush();
  assert.equal(h.recorders[0].state,'inactive');assert.match(h.host.innerHTML,/Question 2 of/);
- assert(!h.requests.some(r=>r.url.endsWith('/submit')||r.url.endsWith('/recording')));
- assert.equal([...h.attempts.values()][0].status,'draft');
+ assert(h.requests.some(r=>r.url.endsWith('/recording')&&r.body));
+ const saved=[...h.attempts.values()][0];assert(saved.recording);assert.equal(saved.status,'submitted');
+ const submissions=h.requests.filter(r=>r.url.endsWith('/submit')).length;
+ await h.click({speakingMove:'-1'});assert.match(h.host.innerHTML,/Question 1 of/);
+ assert.equal(h.requests.filter(r=>r.url.endsWith('/submit')).length,submissions);assert.match(h.nodes.get('speaking-playback').innerHTML,/audio controls/);
 });
 
 test('Respond now stops the situation audio and starts exactly one recording',async()=>{
@@ -417,4 +424,33 @@ test('Saved local full marks display pending content while preserving audio coac
   assert.match(h.host.innerHTML,/Stress the key topic words/);
   assert.match(h.host.innerHTML,/Pause between related ideas/);
   assert.doesNotMatch(h.host.innerHTML,/Fully covered|Every point covered|Content strengths/);
+});
+
+
+test('Next stays on the captured response when upload fails and retry preserves the recording',async()=>{
+ const h=harness();h.env.rejectUpload=true;await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});await h.click({speakingAction:'skip'});
+ await h.click({speakingMove:'1'});await flush();assert.match(h.host.innerHTML,/Question 1 of/);
+ assert.equal(h.nodes.get('speaking-upload-retry').hidden,false);assert.equal(h.requests.filter(r=>r.url.endsWith('/submit')).length,0);
+ h.env.rejectUpload=false;await h.click({speakingAction:'upload-retry'});await flush();await h.click({speakingMove:'1'});
+ assert.match(h.host.innerHTML,/Question 2 of/);assert([...h.attempts.values()][0].recording);
+});
+
+test('Resume opens a saved draft for playback without submitting it',async()=>{
+ const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});
+ const a=[...h.attempts.values()][0];a.recording={mime:'audio/webm',data:Buffer.alloc(300).toString('base64')};
+ await h.click({speakingAttempt:a.id});assert.equal(h.requests.filter(r=>r.url.endsWith('/submit')).length,0);
+ assert.equal(h.recorders.length,0);assert.match(h.nodes.get('speaking-playback').innerHTML,/audio controls/);
+ assert.equal(h.nodes.get('speaking-assess-retry').textContent,'Submit saved recording');
+});
+
+test('A background assessment cannot delay Next or replace the next question',async()=>{
+ const h=harness(),request=h.env.fetch;let finish;
+ h.env.fetch=async(url,options={})=>{
+  if(url.endsWith('/submit')){h.requests.push({url,body:options.body});return new Promise(resolve=>{finish=()=>resolve({ok:true,json:async()=>({ ...present([...h.attempts.values()][0]),assessment:{status:'pending'} })});});}
+  return request(url,options);
+ };
+ await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});await h.click({speakingAction:'skip'});
+ await Promise.all([h.click({speakingMove:'1'}),h.click({speakingMove:'1'})]);await flush();
+ assert.match(h.host.innerHTML,/Question 2 of/);assert.equal(h.attempts.size,2);assert.equal(h.requests.filter(r=>r.url.endsWith('/submit')).length,1);
+ finish();await flush();assert.match(h.host.innerHTML,/Question 2 of/);h.controller.reset();
 });

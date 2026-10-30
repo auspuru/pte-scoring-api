@@ -25,7 +25,7 @@ function result() {
 }
 function harness(scoring = policy) {
   const requests = [], saves = [], views = [], messages = [];
-  let history = [], quota = 0;
+  let history = [], quota = 0; const drafts = {};
   const ctx = {
     EssayScoring: scoring, API_URL: '', currentUserId: 'student', sessionToken: 'session-a',
     practiceSubmissionPending: false, practiceSamplePendingId: null, practiceHistoryDeleted: [], practiceRevision: null,
@@ -35,7 +35,8 @@ function harness(scoring = policy) {
     practiceSampleBandLabel: value => 'Band ' + policy.normalizeSampleBand(value),
     getPracticeTemplateOverlap: () => ({ level:'low', percent:0, matchedWords:0, totalWords:policy.words(essay) }),
     canonicalClientUserId: sync.canonicalUserId, mergePracticeHistoryClient: sync.mergeHistory,
-    savePortalEssayDraft() {}, stopPracticeTimer() {}, getPracticeElapsedMs: () => null,
+    getPteStorageKey: k => k, LocalStore:{get:k=>drafts[k]?JSON.parse(drafts[k]):null}, safeLSSet:(k,v)=>{drafts[k]=v;return true;},
+    savePortalEssayDraft() { return true; }, stopPracticeTimer() {}, getPracticeElapsedMs: () => null,
     startLoadingMessages() {}, stopLoadingMessages() {}, renderPracticeHistory() {}, updatePracticeStats() {},
     renderPracticeMain: () => views.push(ctx.practiceState.view), toast: text => messages.push(text),
     portalDraftStore: { read: () => null }, consumeQuota: async () => { quota++; },
@@ -49,7 +50,7 @@ function harness(scoring = policy) {
   ctx.GradingRequest = { request: (url, options, extra) => recovery.request(url, options,
     { ...extra, fetch: ctx.fetch, wait: async () => {} }) };
   vm.createContext(ctx);
-  vm.runInContext(fn('submitPracticeEssay') + '\n' + fn('retryPracticeSample'), ctx);
+  vm.runInContext(source.slice(source.indexOf('function saveEssayQuestionDraft('), source.indexOf('function essayQuestionNavigation()')) + '\n' + fn('submitPracticeEssay') + '\n' + fn('retryPracticeSample'), ctx);
   return { ctx, requests, saves, views, messages, quota: () => quota,
     setHistory: value => { history = value; }, history: () => history };
 }
@@ -133,4 +134,31 @@ test('A sample arriving after an account switch cannot update the next account',
   h.requests[0].reply(result()); await retry;
   assert.equal(h.saves.length, 0); assert.equal(h.quota(), 0);
   assert.equal(h.ctx.practiceState.currentAttempt, null);
+});
+
+
+test('Two essays can finish out of order without replacing the question currently open',async()=>{
+ const h=harness(),first=h.ctx.submitPracticeEssay(),firstId=h.ctx.practiceState.submissionId;
+ h.ctx.practiceState={...h.ctx.practiceState,view:'write',selectedQuestionId:'q2',questionText:question+' Discuss.',submissionId:null};
+ const second=h.ctx.submitPracticeEssay();assert.equal(h.requests.length,2);
+ const secondId=h.ctx.practiceState.submissionId;
+ h.requests[0].reply({...result(),attemptId:firstId});await until(()=>h.saves.length===1);
+ assert.equal(h.ctx.practiceState.view,'loading');assert.equal(h.ctx.practiceState.submissionId,secondId);
+ h.saves[0].finish();await first;assert.equal(h.ctx.practiceSubmissionPending,true);
+ h.requests[1].reply({...result(),attemptId:secondId});await until(()=>h.saves.length===2);
+ assert.equal(h.ctx.practiceState.currentAttempt.questionId,'q2');assert.equal(h.history().length,2);
+ h.saves[1].finish();await second;assert.equal(h.ctx.practiceSubmissionPending,false);
+});
+
+test('A failed old review leaves the new essay and its loading state intact',async()=>{
+ const h=harness(),first=h.ctx.submitPracticeEssay();
+ h.ctx.practiceState={...h.ctx.practiceState,view:'write',selectedQuestionId:'q2',questionText:question+' Discuss.',submissionId:null};
+ const second=h.ctx.submitPracticeEssay();h.requests[0].fail();await first;
+ assert.equal(h.ctx.practiceState.view,'loading');assert.equal(h.ctx.practiceState.selectedQuestionId,'q2');
+ h.requests[1].fail();await second;assert.equal(h.ctx.practiceState.view,'write');
+});
+
+test('Essay submission stays on the response if saving fails',async()=>{
+ const h=harness();h.ctx.savePortalEssayDraft=()=>false;await h.ctx.submitPracticeEssay();
+ assert.equal(h.requests.length,0);assert.equal(h.ctx.practiceState.view,'write');assert.equal(h.ctx.practiceState.essayText,essay);
 });
