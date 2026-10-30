@@ -7,6 +7,15 @@
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const names={score:'Score report',answers:'Answers',analysis:'Analysis',feedback:'Feedback'};
   const colors={listening:'#326c9f',reading:'#3f9279',speaking:'#8270bb',writing:'#d49a46'};
+  // Display-only copies of the existing full-mock skill profiles. A contract
+  // test binds these to full-mock/profiles.js; saved grades are never changed.
+  const contributionProfiles={
+    listening:{rs:17,rl:13,asq:4,sgd:20,sst:10,lmcma:3,lfi:8,hcs:2,lmcsa:2,smw:1,hiw:8,wfd:13},
+    reading:{swt:23,dropdown:25,mcma:5,reorder:9,wordbank:20,mcsa:3,hcs:3,hiw:13},
+    speaking:{ra:9,rs:16,di:31,rl:13,sgd:19,rts:13},
+    writing:{swt:28,essay:31,sst:18,wfd:23}
+  };
+  const taskNames={ra:'Read Aloud',rs:'Repeat Sentence',di:'Describe Image',rl:'Retell Lecture',asq:'Answer Short Question',sgd:'Summarise Group Discussion',rts:'Respond to a Situation',swt:'Summarise Written Text',essay:'Write Essay',dropdown:'Fill in the Blanks (Dropdown)',mcma:'Multiple Choice, Multiple Answers',reorder:'Reorder Paragraphs',wordbank:'Fill in the Blanks (Drag and Drop)',mcsa:'Multiple Choice, Single Answer',sst:'Summarise Spoken Text',lmcma:'Multiple Choice, Multiple Answers',lfi:'Fill in the Blanks (Type In)',hcs:'Highlight Correct Summary',lmcsa:'Multiple Choice, Single Answer',smw:'Select Missing Word',hiw:'Highlight Incorrect Words',wfd:'Write from Dictation'};
   const number=value=>typeof value==='number'&&Number.isFinite(value)?String(Math.round(value*10)/10):value==null?'Pending':String(value);
   const date=value=>value?new Date(value).toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'}):'';
   function identity(){try{return typeof currentUserId==='undefined'?'Your report':String(currentUserId||'Your report');}catch{return 'Your report';}}
@@ -16,6 +25,36 @@
       +(skills.length?'<div class="ipr-skills"><h3>Communicative skills</h3><div class="ipr-skill-grid">'+skills.map(skill=>{const value=number(skill.value),numeric=Number(value),fill=Number.isFinite(numeric)?Math.max(0,Math.min(100,numeric/(skill.maximum||90)*100)):0;return '<div class="ipr-skill"><div class="ipr-ring" style="--ipr-color:'+esc(colors[skill.name.toLowerCase()]||'#326c9f')+';--ipr-fill:'+fill+'%" role="img" aria-label="'+esc(skill.name+' '+value+(skill.unit||unit))+'"><strong>'+esc(value)+'</strong></div><p>'+esc(skill.name)+'</p></div>';}).join('')+'</div></div>':'')+'<footer>IPT Brisbane · Practice results</footer></article>';
   }
   function traits(rows=[]){return '<div class="ipr-traits">'+rows.map(row=>'<span class="ipr-trait'+(row.value==null?' ipr-trait-pending':'')+'"><span>'+esc(row.label)+'</span><strong>'+esc(number(row.value))+'</strong>'+(row.maximum==null?'':'<small>/'+esc(row.maximum)+'</small>')+'</span>').join('')+'</div>';}
+  function skillContributions(section,groups=[]){
+    if(!Object.hasOwn(contributionProfiles,section))return [];
+    const pooled=new Map();
+    for(const group of Array.isArray(groups)?groups:[]){
+      if(!Object.hasOwn(taskNames,group?.type))continue;
+      const row=pooled.get(group.type)||{type:group.type,label:taskNames[group.type],count:0,total:0,maximum:0,ready:true,unavailable:false};
+      const counts=Number.isInteger(group.count)&&group.count>0&&group.marked===group.count;
+      const points=Number.isFinite(group.total)&&Number.isFinite(group.maximum)&&group.maximum>0&&group.total>=0&&group.total<=group.maximum;
+      row.count+=Number.isInteger(group.count)&&group.count>0?group.count:0;
+      row.ready=row.ready&&counts&&points&&group.complete!==false&&!(group.pending>0)&&group.status!=='unavailable';
+      row.unavailable=row.unavailable||group.status==='unavailable';
+      if(points){row.total+=group.total;row.maximum+=group.maximum;}
+      pooled.set(group.type,row);
+    }
+    return Object.entries(contributionProfiles).filter(([skill])=>skill!==section).flatMap(([skill,weights])=>{
+      const tasks=[...pooled.values()].filter(row=>Object.hasOwn(weights,row.type)).map(row=>({type:row.type,label:row.label,count:row.count,maximum:weights[row.type],earned:row.ready?weights[row.type]*row.total/row.maximum:null,status:row.unavailable?'unavailable':row.ready?'complete':'pending'}));
+      if(!tasks.length)return [];
+      const complete=tasks.every(row=>row.status==='complete');
+      return [{skill,label:skill[0].toUpperCase()+skill.slice(1),maximum:tasks.reduce((sum,row)=>sum+row.maximum,0),earned:complete?tasks.reduce((sum,row)=>sum+row.earned,0):null,status:tasks.some(row=>row.status==='unavailable')?'unavailable':complete?'complete':'pending',tasks}];
+    });
+  }
+  function contributions({section,groups}={}){
+    const rows=skillContributions(section,groups),title='<h3>Other skill contributions</h3>';
+    if(!Array.isArray(groups))return '<section class="ipr-contributions">'+title+'<p class="ipr-empty">Contributions are pending assessment.</p></section>';
+    if(!rows.length)return '<section class="ipr-contributions">'+title+'<p class="ipr-empty">This mock has no tasks that contribute to other skills.</p></section>';
+    const amount=row=>row.status==='complete'?number(row.earned):row.status==='unavailable'?'Unavailable':'Pending';
+    const cards=rows.map(row=>'<article class="ipr-contribution" data-contribution-skill="'+row.skill+'" style="--ipr-contribution-color:'+colors[row.skill]+'"><h4>'+row.label+'</h4><p class="ipr-contribution-value"><strong>'+amount(row)+'</strong><span> / '+number(row.maximum)+' pts</span></p>'+(row.status==='complete'?'<div class="ipr-contribution-track" role="progressbar" aria-label="'+row.label+' contribution" aria-valuemin="0" aria-valuemax="'+row.maximum+'" aria-valuenow="'+number(row.earned)+'"><span style="width:'+Math.max(0,Math.min(100,row.earned/row.maximum*100))+'%"></span></div>':'<p class="ipr-contribution-pending">'+(row.status==='unavailable'?'Some responses could not be assessed.':'Waiting for the contributing responses.')+'</p>')+'<p class="ipr-contribution-count">'+row.tasks.length+' contributing task type'+(row.tasks.length===1?'':'s')+'</p></article>').join('');
+    const tasks=rows.flatMap(row=>row.tasks.map(task=>'<tr><th scope="row">'+esc(task.label)+'</th><td>'+row.label+'</td><td>'+amount(task)+' / '+number(task.maximum)+' pts</td></tr>')).join('');
+    return '<section class="ipr-contributions">'+title+'<p class="ipr-contribution-note">IPT practice contribution points from this mock’s tasks.</p><div class="ipr-contribution-grid">'+cards+'</div><details class="ipr-contribution-details"><summary>View contributing tasks</summary><div class="ipr-contribution-table"><table><thead><tr><th scope="col">Task</th><th scope="col">Skill</th><th scope="col">Contribution</th></tr></thead><tbody>'+tasks+'</tbody></table></div></details></section>';
+  }
   function frame({key,title,meta='',actions='',score='',answers='',analysis='',feedback='',status=''}={}){
     return '<section class="ipt-mock-report" data-mock-key="'+esc(key)+'"><header class="ipr-heading"><div><p class="ipr-eyebrow">IPT Brisbane · Mock report</p><h1>'+esc(title)+'</h1>'+(meta?'<p class="ipr-subtitle">'+esc(meta)+'</p>':'')+'</div><div class="ipr-actions">'+actions+'</div></header><nav class="ipr-tabs" role="tablist" aria-label="Mock report sections">'+Object.entries(names).map(([value,label])=>'<button type="button" role="tab" id="'+esc(key)+'-tab-'+value+'" data-mock-tab="'+value+'" aria-controls="'+esc(key)+'-'+value+'" aria-selected="'+(value==='score')+'" tabindex="'+(value==='score'?0:-1)+'">'+label+'</button>').join('')+'</nav>'+(status?'<div class="ipr-report-status" role="status">'+status+'</div>':'')+Object.entries({score,answers,analysis,feedback}).map(([value,content])=>'<section class="ipr-panel" id="'+esc(key)+'-'+value+'" role="tabpanel" aria-labelledby="'+esc(key)+'-tab-'+value+'" data-mock-panel="'+value+'"'+(value==='score'?'':' hidden')+'>'+(content||'<p class="ipr-empty">'+(value==='feedback'?'Open an answer to review its saved feedback.':'No '+names[value].toLowerCase()+' is available yet.')+'</p>')+'</section>').join('')+'</section>';
   }
@@ -65,5 +104,5 @@
     if(env.MutationObserver)new env.MutationObserver(records=>{if(records.some(record=>record.target.closest?.('.reading-results-view,.ipt-mock-report,[data-reading-recent-results]')||[...record.addedNodes].some(node=>node.nodeType===1&&(node.matches?.('.reading-results-view,.ipt-mock-report,[data-reading-recent-results]')||node.querySelector?.('.reading-results-view,.ipt-mock-report,[data-reading-recent-results]')))))schedule();}).observe(doc.documentElement,{childList:true,subtree:true});
     if(doc.readyState==='loading')doc.addEventListener('DOMContentLoaded',update,{once:true});else update();
   }
-  return {esc,number,date,identity,logo,hero,traits,frame,historyCard,sectionFor,sectionTabs,activate,enhanceReading,install};
+  return {esc,number,date,identity,logo,hero,traits,contributionProfiles,skillContributions,contributions,frame,historyCard,sectionFor,sectionTabs,activate,enhanceReading,install};
 });

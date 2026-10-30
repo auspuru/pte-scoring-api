@@ -5,6 +5,54 @@ const {parseHTML}=require('linkedom');
 const layout=require('../public/mock-report-ui');
 const reading=require('../public/reading-review');
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
+const group=(type,total,maximum,count=1)=>({type,total,maximum,count,marked:count});
+test('Sectional contribution routes and amounts match the existing full mock skill profiles',()=>{
+  const profiles=require('../full-mock/profiles').PROFILES;
+  for(const skill of ['listening','reading','speaking','writing'])assert.deepEqual(layout.contributionProfiles[skill],profiles[skill].weights);
+});
+test('Writing contributions report Reading from SWT and Listening from SST and WFD, independently of Essay',()=>{
+  const groups=[group('swt',8,9),group('essay',26,26),group('sst',6,12),group('wfd',20,40,4)];
+  const result=layout.skillContributions('writing',groups),reading=result.find(row=>row.skill==='reading'),listening=result.find(row=>row.skill==='listening');
+  assert.equal(result.length,2);assert.equal(reading.maximum,23);assert.equal(reading.earned,23*8/9);
+  assert.equal(listening.maximum,23);assert.equal(listening.earned,11.5);
+  groups[1].total=0;assert.deepEqual(layout.skillContributions('writing',groups),result);
+});
+test('Speaking and Listening mocks expose only their integrated contributions to other skills',()=>{
+  const speaking=layout.skillContributions('speaking',[group('ra',10,10),group('rs',13,26,2),group('rl',8,16),group('sgd',16,16),group('di',16,16),group('rts',16,16)]);
+  assert.equal(speaking.length,1);assert.equal(speaking[0].skill,'listening');assert.equal(speaking[0].earned,35);assert.equal(speaking[0].maximum,50);
+  assert.deepEqual(speaking[0].tasks.map(row=>row.type),['rs','rl','sgd']);
+  const listening=layout.skillContributions('listening',[group('sst',12,12),group('wfd',10,20),group('hcs',1,1),group('hiw',1,2),group('lmcma',3,3)]);
+  assert.equal(listening.find(row=>row.skill==='writing').earned,29.5);
+  assert.equal(listening.find(row=>row.skill==='writing').maximum,41);
+  assert.equal(listening.find(row=>row.skill==='reading').earned,9.5);
+  assert.equal(listening.find(row=>row.skill==='reading').maximum,16);
+});
+test('Contribution points pool native results within a type without multiplying weights by count or length',()=>{
+  const groups=[group('wfd',2,4),group('wfd',9,12,2)],saved=JSON.stringify(groups);
+  const result=layout.skillContributions('listening',groups);
+  assert.equal(result.length,1);assert.equal(result[0].maximum,23);assert.equal(result[0].earned,23*11/16);
+  assert.equal(result[0].tasks[0].count,3);assert.equal(JSON.stringify(groups),saved);
+});
+test('A completed zero earns zero, while pending, invalid and excluded contributions never become zero scores',()=>{
+  const zero=layout.skillContributions('writing',[group('swt',0,9)])[0];assert.equal(zero.earned,0);assert.equal(zero.status,'complete');
+  for(const incomplete of [{...group('swt',8,9),marked:0},{...group('swt',8,9),complete:false},group('swt',10,9),group('swt',NaN,9),group('swt',0,0)]){
+    const result=layout.skillContributions('writing',[incomplete])[0];assert.equal(result.earned,null);assert.equal(result.status,'pending');
+  }
+  const excluded=layout.skillContributions('reading',[{type:'hcs',count:0,marked:0,total:0,maximum:0,status:'unavailable'}])[0];
+  assert.equal(excluded.status,'unavailable');assert.equal(excluded.earned,null);
+  const partial=layout.skillContributions('writing',[group('swt',9,9),{...group('sst',12,12),marked:0},group('wfd',20,20)]);
+  assert.equal(partial.find(row=>row.skill==='reading').earned,23);assert.equal(partial.find(row=>row.skill==='listening').earned,null);
+});
+test('Contribution cards show earned and available points with a collapsed task breakdown and accurate pending states',()=>{
+  const {document}=parseHTML(layout.contributions({section:'writing',groups:[group('swt',8,9),group('sst',6,12),group('wfd',20,40)]}));
+  assert.equal(document.querySelectorAll('[data-contribution-skill]').length,2);
+  assert.equal(document.querySelector('[data-contribution-skill="reading"] strong').textContent,'20.4');
+  assert.match(document.querySelector('[data-contribution-skill="reading"]').textContent,/23 pts/);
+  assert.equal(document.querySelector('details').hasAttribute('open'),false);assert.equal(document.querySelectorAll('tbody tr').length,3);
+  const pending=parseHTML(layout.contributions({section:'writing',groups:[{...group('swt',0,9),marked:0}]})).document;
+  assert.equal(pending.querySelector('[data-contribution-skill="reading"] strong').textContent,'Pending');assert.equal(pending.querySelector('[role="progressbar"]'),null);
+  assert.match(layout.contributions({section:'reading',groups:['dropdown','mcma','reorder','wordbank','mcsa'].map(type=>group(type,1,2))}),/no tasks that contribute to other skills/);
+});
 function browser(markup){
   const {window,document}=parseHTML('<html><body><main>'+markup+'</main></body></html>');
   layout.install(window);
@@ -71,4 +119,14 @@ test('Reading mock uses its native accuracy and keeps standalone practice review
   assert.equal(document.querySelector('.ipr-overall small').textContent,'%');
   assert.equal(document.querySelector('.ipr-logo').getAttribute('alt'),'IPT Brisbane');
   assert(!reading.overview({...session,practiceUid:'one'},total,{},[],{type:'all',filter:'all'}).includes('data-reading-hero'));
+});
+test('Reading reports distinguish a reading-only paper from an integrated task without crediting excluded audio',()=>{
+  const session={name:'Reading mock',startedAt:1000,finishedAt:61000,questions:[],assessments:{}};
+  const total={percent:100,pending:0,excluded:0,earned:9,possible:9,rows:[{type:'swt',count:1,earned:9,possible:9,gradedPossible:9,pending:0,excluded:0}]};
+  const {document}=parseHTML(reading.overview(session,total,{swt:'SWT'},[],{type:'all',filter:'all'}));
+  assert.equal(document.querySelector('[data-contribution-skill="writing"] strong').textContent,'28');
+  total.rows=[{type:'hcs',count:1,earned:0,possible:1,gradedPossible:0,pending:0,excluded:1}];total.excluded=1;
+  const excluded=parseHTML(reading.overview(session,total,{hcs:'Summary'},[],{type:'all',filter:'all'})).document;
+  assert.equal(excluded.querySelector('[data-contribution-skill="listening"] strong').textContent,'Unavailable');
+  assert.equal(excluded.querySelector('[data-contribution-skill="writing"]'),null);
 });
