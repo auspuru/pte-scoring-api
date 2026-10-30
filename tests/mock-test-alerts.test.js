@@ -85,6 +85,7 @@ test('source adapters distinguish mocks, modes and full/sectional readiness with
 });
 test('HTTP capture observes only authenticated owning mocks, excludes validation errors and practice, and records server errors',async t=>{
   const h=await fixture(t),reading=h.put('reading',{id:'reading-test',questions:[{type:'mcsa'}],done:true}),full=h.put('full');
+  const read=h.sources.reading.get;let readingReads=0;h.sources.reading.get=async(...args)=>{readingReads++;return read(...args);};
   const app=express();app.use(express.json());app.use(capture({monitor:()=>h.monitor,verifyToken:token=>token==='valid'?'student':null,logger:{warn(){}}}));
   app.post('/api/sync/:userId',(req,res)=>res.sendStatus(req.query.fail?500:200));
   app.post('/api/full-mocks/attempts/:id/end',(req,res)=>res.sendStatus(req.query.bad?400:req.query.fail?503:200));
@@ -94,9 +95,14 @@ test('HTTP capture observes only authenticated owning mocks, excludes validation
   await post('/api/sync/other',{readingProgress:{history:[reading]}});await post('/api/full-mocks/attempts/'+full.id+'/end',{},'invalid');
   await post('/api/full-mocks/attempts/'+full.id+'/end?bad=1');
   await new Promise(resolve=>setImmediate(resolve));await h.wait();assert.equal(h.messages.length,0);
+  await post('/api/sync/student',{readingProgress:{history:[{...reading,id:'old-reading',finishedAt:h.time()-1}],session:{...reading,id:'active-reading',done:false}}});
+  await new Promise(resolve=>setImmediate(resolve));await h.wait();assert.equal(readingReads,0,'Routine saves must not reread old history or an ordinary active draft.');
   await post('/api/sync/student',{readingProgress:{history:[reading]}});
   await post('/api/full-mocks/attempts/'+full.id+'/end?fail=1');
   // The finish listener queues independent durable work after the response.
   for(let n=0;n<20&&h.messages.length<3;n++){await new Promise(resolve=>setTimeout(resolve,5));await h.wait();}
   assert.equal(h.messages.length,3);assert(h.messages.some(m=>m.subject.includes('Reading mock submitted')));assert(h.messages.some(m=>m.text.includes('HTTP_503')));
+  const readsAfterSubmission=readingReads;
+  await post('/api/sync/student',{readingProgress:{history:[reading],session:reading}});
+  await new Promise(resolve=>setImmediate(resolve));await h.wait();assert.equal(readingReads,readsAfterSubmission,'A registered Reading submission must not reload on each later sync.');
 });

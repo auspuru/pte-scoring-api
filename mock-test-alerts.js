@@ -82,7 +82,7 @@ function createMockTestAlerts({pool,directory,delivery,sources={},enabled=false,
     const rows=await delivery.eventJobs.list(username,engine+':'+id);
     return{engine,...snapshot,notifications:rows.map(row=>({kind:row.data.event.kind,status:row.status,outcome:row.data.outcome||null,sentAt:row.data.sentAt||null,code:row.data.stages?.email?.detail?.code||row.data.stages?.email?.failure||null}))};
   }
-  return{watches,observe,observeId,error,check,diagnostics,health:()=>({...delivery.health(),scope:'all-mocks',engines:Object.keys(sources),events:['submitted','error','attention'],watchdogMinutes:10,activeSince:since||null}),
+  return{watches,observe,observeId,error,check,diagnostics,hasSubmission:(engine,username,id)=>registered.has(engine+':'+username+':'+id),health:()=>({...delivery.health(),scope:'all-mocks',engines:Object.keys(sources),events:['submitted','error','attention'],watchdogMinutes:10,activeSince:since||null}),
     async start(){if(!enabled||started)return;await watches.initialise();
       const config=await watches.enqueue({id:'mock-alert-activation-v1',owner:'system',groupId:'configuration',inputHash:'mock-alert-activation-v1',data:{control:true,since:now(),stages:{}}});
       since=config.data.since;started=true;await worker.start();await check();timer=setInterval(()=>check().catch(warning),intervalMs);timer.unref?.();

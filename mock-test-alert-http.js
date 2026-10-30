@@ -14,8 +14,13 @@ function capture({monitor,verifyToken,logger=console}){
       void(async()=>{
         if(sync){
           if(req.method!=='POST'||decodeURIComponent(sync[1]).toLowerCase()!==uid.toLowerCase())return;
+          const health=service.health();if(!health.enabled||!health.activeSince)return;
+          const seen=new Set();
           for(const a of readingRecords(req.body?.readingProgress)){
-            const value=snapshot('reading',a);if(!value?.isMock||!ID.test(a.id||''))continue;
+            const value=snapshot('reading',a);if(!value?.isMock||!ID.test(a.id||'')||seen.has(a.id))continue;seen.add(a.id);
+            const recentSubmission=value.submitted&&Number.isFinite(value.finishedAt)&&value.finishedAt>=health.activeSince;
+            if(res.statusCode>=500&&a!==req.body?.readingProgress?.session&&!recentSubmission)continue;
+            if(res.statusCode<400&&(!value.mediaError&&(!recentSubmission||service.hasSubmission('reading',uid,a.id))))continue;
             if(res.statusCode>=500)await service.error('reading',uid,a.id,'sync','HTTP_'+res.statusCode,a.name);
             else await service.observeId('reading',uid,a.id);
           }
