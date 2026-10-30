@@ -207,6 +207,8 @@ app.use((req,res,next)=>{
   next();
 });
 app.use(express.json({ limit: '25mb' }));
+let mockTestAlerts;
+app.use(require('./mock-test-alert-http').capture({monitor:()=>mockTestAlerts,verifyToken:token=>verifySessionToken(token)||verifyImpersonationToken(token)}));
 
 // H2 (v19.17): rate-limit the paid grading + spellcheck endpoints if the
 // limiter is available. Generous enough for real practice (a student scores
@@ -6418,7 +6420,8 @@ const fullMock = require('./full-mock/api').installFullMock(app, {
     providerConfiguration: require('./full-mock/assessment').configuration()
   }
 });
-const speakingAlerts=require('./speaking-mock-alerts').createSpeakingMockAlerts({pool:pgPool,directory:path.join(DATA_DIR,'speaking-mock'),mockStore:speakingMock.store,progressive:speakingMock.progressive,...speakingAlertTransport,recipient:process.env.SPEAKING_MOCK_ALERT_EMAIL||'',enabled:process.env.SPEAKING_MOCK_ALERTS_ENABLED==='true'});
+const mockAlertsEnabled=(process.env.MOCK_ALERTS_ENABLED??process.env.SPEAKING_MOCK_ALERTS_ENABLED)==='true';
+const speakingAlerts=require('./speaking-mock-alerts').createSpeakingMockAlerts({pool:pgPool,directory:path.join(DATA_DIR,'speaking-mock'),mockStore:speakingMock.store,progressive:speakingMock.progressive,...speakingAlertTransport,recipient:process.env.MOCK_ALERT_EMAIL||process.env.SPEAKING_MOCK_ALERT_EMAIL||'',enabled:mockAlertsEnabled});
 const academyAzure=require('./academy-azure-service').installAcademyAzure(app,{pool:pgPool,directory:path.join(DATA_DIR,'academy-azure'),secret:process.env.PTE_DI_SERVICE_KEY||'',transcribe:require('./speaking-lab').transcribeRecording});
 app.get('/api/admin/speaking-mock-alerts',requireAdmin,(req,res)=>res.set('Cache-Control','no-store').json(speakingAlerts.health()));
 app.post('/api/admin/speaking-mock-alerts/test',requireAdmin,async(req,res)=>{try{res.set('Cache-Control','no-store').status(202).json(await speakingAlerts.sendTest(req.body?.operation));}catch(error){res.status(error.status||503).json({error:error.status?error.message:'Test email could not be queued.'});}});
@@ -6429,6 +6432,7 @@ const writingLab = require('./writing-lab').installWritingLab(app, {
   speakingAllowed:speakingAccess.allowed,
   pool: pgPool,
   directory: path.join(DATA_DIR, 'writing-lab'),
+  onMockError:event=>mockTestAlerts?.error(event.engine,event.username,event.attemptId,event.operation,event.code,event.title),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: getPracticeAccount,
   essayGrader,
@@ -6440,6 +6444,14 @@ const writingLab = require('./writing-lab').installWritingLab(app, {
     return overall.response(response);
   },
   callModel: writingContentModel
+});
+mockTestAlerts=require('./mock-test-alerts').createMockTestAlerts({pool:pgPool,directory:path.join(DATA_DIR,'mock-alerts'),delivery:speakingAlerts,enabled:mockAlertsEnabled,
+  sources:require('./mock-test-alert-sources').createSources({pool:pgPool,speakingStore:speakingMock.store,writingStore:writingLab.store,fullStore:fullMock.store,
+    loadReading:async username=>(await StorageAPI.getUserData(username))?.readingProgress})});
+app.get('/api/admin/mock-alerts',requireAdmin,(req,res)=>res.set('Cache-Control','no-store').json(mockTestAlerts.health()));
+app.get('/api/admin/mock-alerts/:engine/:username/:id',requireAdmin,async(req,res)=>{
+  try{const value=await mockTestAlerts.diagnostics(req.params.engine,req.params.username,req.params.id);res.set('Cache-Control','no-store').status(value?200:404).json(value||{error:'Mock attempt not found.'});}
+  catch{res.status(503).json({error:'Mock alert diagnostics temporarily unavailable.'});}
 });
 app.get(['/writing-mocks', '/spoken-text'], (req, res) => {
   res.set('Cache-Control', 'no-store');
@@ -6533,6 +6545,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
     await speakingMock.start();
     fullMock.start();
     await speakingAlerts.start();
+    await mockTestAlerts.start();
     await academyAzure.start();
     serviceReadiness.markInitialized();
     console.log('[service-readiness] storage and practice stores initialized');
@@ -6609,6 +6622,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
 installGracefulShutdown(httpServer, {
   onShutdown: () => serviceReadiness.stop(),
   cleanup: async () => {
+    await mockTestAlerts.stop();
     await speakingAlerts.stop();
     await academyAzure.stop();
     await speakingMock.stop();

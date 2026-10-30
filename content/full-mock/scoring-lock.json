@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "07cf4bfb15356f1eb0529c3ac96c0e4564a931c8",
+  "baseCommit": "a03958c4e57307a0d6e68f84042308c2302d1016",
   "checkedAt": "2026-10-30",
-  "scope": "Practice navigation separates saved responses from assessment. Exact audited baselines preserve saved Full Mock snapshots and successful grades; the shared exported transcription function is unchanged.",
+  "scope": "Add administrator submission, error and delayed-report alerts across mock tests. Preserve exact audited Full Mock source baselines, successful grades, provider configuration, native grading and weighting.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "a5ad473bfc9b0980fe85f661e2135fd1f571c0c26e0ab5902e60966ce3d6ddc5",
+        "sha256": "624e40b54c59e647b209c8cd43901a8863af1dade302f98a3bdbfedfe948ab16",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -165,7 +165,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "14980c74f5a99b1ef65b656550a790b2469c5ed86cd0c4c2e1eff3c590768d8e",
+        "sha256": "a952f788eb10c493a3614796bf5b5d8f9af985a51f23e6ffb681e6cd22886459",
         "version": null
       },
       "situation-content-policy.js": {
