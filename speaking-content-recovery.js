@@ -3,6 +3,7 @@ const crypto=require('node:crypto'),bank=require('./content/speaking-bank'),scor
 const confirmed=r=>Number.isFinite(r?.total)&&r.scoringMode!=='local'&&r.contentStatus!=='unavailable'&&!r.score_provisional&&!r.needs_semantic_review;
 const deliveryKeys=['pronunciation','fluency','deliveryVersion','deliveryEvidence','deliveryStatus','deliveryAssessment','deliveryProvider','deliveryModel','deliveryObservation','deliveryComparisons','deliveryRubricVersion','deliveryCalibration','deliveryFailureTraits','deliveryComparisonHistory','deliveryRequestedModel'];
 async function recoverLatest(options){
+ if(options.kind==='full-mock-writing')return require('./full-mock/writing-reassessment').run(options);
  if(options.kind==='full-mock')return require('./full-mock/content-reassessment').run({...options,callModel:options.mockCallModel||options.callModel});
  if(options.scope==='recent')return recoverRecent({...options,scope:undefined});
  const {username,operation,attemptId,kind,questionTypes,practiceStore,mockStore,callModel,transcribe,logger=console,now=Date.now}=options;
