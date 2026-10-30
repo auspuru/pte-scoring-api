@@ -18,7 +18,7 @@ function benchmarkContext(paper = loadPaper()) {
 }
 function runtimeContext(root = ROOT, paper = loadPaper()) {
   const source = scoringSnapshot(root), frontend = {};
-  for (const file of ['speaking-mock.js','public/speaking-mock-client.js','public/speaking-mock.css','tests/speaking-mock-browser.system.js','public/mock-report-ui.js','public/mock-report-ui.css','public/full-mock-client.js','public/full-mock-report.js','public/full-mock.css','public/index.js','public/index.html','public/index.css','public/portal-workspace.css','public/portal-workspace.js','public/portal-exam-mode.js',
+  for (const file of ['speaking-mock.js','public/speaking-mock-client.js','public/speaking-mock.css','tests/speaking-mock-browser.system.js','public/mock-report-ui.js','public/mock-report-ui.css','public/writing-lab-client.js','public/reading-review.js','public/full-mock-client.js','public/full-mock-report.js','public/full-mock.css','public/index.js','public/index.html','public/index.css','public/portal-workspace.css','public/portal-workspace.js','public/portal-exam-mode.js',
     'full-mock/validation.js','scripts/verify-release.js','scripts/verify-full-mock-systems.js','tests/full-mock-browser.system.js','tests/full-mock-postgres.system.js','tests/helpers/full-mock-systems.js']) frontend[file] = hash(fs.readFileSync(path.join(root, file)));
   return { paperHash:digest(paper), runtimeHash:digest({ source, frontend }) };
 }

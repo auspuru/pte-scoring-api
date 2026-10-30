@@ -601,6 +601,29 @@ test('Unavailable writing overview offers a separate retry without rerunning ind
  assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,0);
 });
 
+test('Saved Writing and Listening mocks render their integrated skill contributions without rescoring',()=>{
+ for(const module of ['writing','listening']){
+  const h=harness(),a=attempt();a.status='submitted';a.module=module;
+  a.questions=structuredClone(module==='writing'?bank.mocks[0].questions:require('../content/listening-mocks').mocks[0].questions);
+  a.answers=a.questions.map(()=>'');
+  a.results=a.questions.map(q=>({total:report.maximumFor(q),maximum:report.maximumFor(q),feedback:{content:'Saved assessment.'}}));
+  h.hooks.set(a);h.hooks.renderResults();
+  const {document}=require('linkedom').parseHTML(h.nodes.get('lab').innerHTML);
+  assert.equal(document.querySelector('.ipr-overall strong').textContent,'90');
+  const other=[...document.querySelectorAll('[data-contribution-skill]')].map(node=>node.dataset.contributionSkill);
+  assert.deepEqual(other,module==='writing'?['listening','reading']:['reading','writing']);
+  assert.equal(document.querySelector('[data-contribution-skill="reading"] strong').textContent,module==='writing'?'23':'16');
+  if(module==='listening'){
+   assert.equal(document.querySelector('[data-contribution-skill="writing"] strong').textContent,'41');
+   a.results[a.questions.findIndex(q=>q.type==='sst')].score_provisional=true;h.hooks.renderResults();
+   const pending=require('linkedom').parseHTML(h.nodes.get('lab').innerHTML).document;
+   assert.equal(pending.querySelector('[data-contribution-skill="writing"] strong').textContent,'Pending');
+   assert.equal(pending.querySelector('[data-contribution-skill="reading"] strong').textContent,'16');
+  }
+  assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,0);
+ }
+});
+
 test('Writing results retain the saved overall and feedback without exposing calculation details',()=>{
  const h=harness(),a=attempt();a.status='submitted';a.module='writing';a.questions=structuredClone(bank.mocks[0].questions);
  const texts=['Classical mechanics is sometimes considered as a branch of applied mathematics.','Coursework gives students the chance to thoroughly explore the subject.','In my view the damaged car should be repaired as soon as possible.'];

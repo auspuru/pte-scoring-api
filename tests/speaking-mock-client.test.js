@@ -264,6 +264,16 @@ async function sampleReport(h,{paperIndex=0,processing=false}={}){
 }
 const escaped=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+test('Saved Speaking mock reports include the earned Listening contribution from RS, RL and SGD',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h),before=structuredClone((await h.lab.store.get('alice',id)).responses);
+ const {document}=require('linkedom').parseHTML(h.nodes.get('sm-results-summary').innerHTML);
+ const card=document.querySelector('[data-contribution-skill="listening"]');
+ assert(card);assert.equal(card.querySelector('strong').textContent,'46.6');assert.match(card.textContent,/50 pts/);
+ assert.equal(document.querySelectorAll('[data-contribution-skill]').length,1);
+ assert.deepEqual((await h.lab.store.get('alice',id)).responses,before);
+ assert.equal(h.requests.filter(r=>r.method==='POST').length,0);
+});
+
 test('an excluded faulty-headphones response shows its note and an overall for the other 26 answers',async t=>{
  const h=await harness(t),{id}=await sampleReport(h,{paperIndex:1}),note='Feedback could not be generated for your response to the faulty headphones question. This question is excluded from your overall assessment.';
  await h.lab.store.update('alice',id,a=>{const q=a.questions[27],r=a.responses[27];delete r.content;a.assessmentExclusions={27:{attemptId:id,username:'alice',index:27,questionId:q.id,questionHash:require('../scoring-jobs').hash(q),recordingHash:r.recording.hash,operation:'exclude-headphones-ui',note,reason:'feedback-unavailable',authorizedBy:'administrator',excludedAt:1}};return a;});

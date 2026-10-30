@@ -12499,7 +12499,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-mock-tools.js?v=20261001-mock-input2', 'reading mock tools'],
       ['reading-exam-player.js?v=20261001-exam-focus', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
-      ['reading-review.js?v=sha256-424c7a0212fa', 'reading review'],
+      ['reading-review.js?v=sha256-42319d886b27', 'reading review'],
       ['reading-practice.js?v=sha256-4e80ba9501ba', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
@@ -12547,7 +12547,7 @@ function ensureSpeakingRuntimeLoaded() {
 let speakingMockRuntimeLoadPromise=null;
 function ensureSpeakingMockRuntimeLoaded() {
   if(window.SpeakingMock)return Promise.resolve(window.SpeakingMock);
-  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-ebadc0bcee4f','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
+  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-6b95a70fa500','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
   return speakingMockRuntimeLoadPromise;
 }
 let fullMockRuntimeLoadPromise = null;
@@ -12563,7 +12563,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-7223fac1ec59', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-c258357b2715', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
