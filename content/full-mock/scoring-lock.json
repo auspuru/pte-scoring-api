@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "baseCommit": "65caa90433b497a7cc147b9500122809c9bccfef",
   "checkedAt": "2026-10-30",
-  "scope": "Allow background Essay review to finish and assess delivery independently of content coverage. Exact source compatibility retains saved snapshots and all successful grades; native graders, maxima, models and weights are unchanged.",
+  "scope": "Complete background Essay review, independent delivery evidence and explicit stronger DI review after invalid evidence. Exact compatibility retains saved snapshots and successful grades; native validators, maxima and weights remain unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -80,7 +80,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "3bf5da4bb74c71ceccf68570b9ba64e10766968c14b090363694903ffe84340c",
+        "sha256": "41132b2eee6c0fd9402b6f6ee3831118f951fc48547037f8f2412f63fe280e76",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "02c41a21e77228e9a416f7312fa1159225daba51c3e4e387e127fe709d7fba7f",
+        "sha256": "fe718d1c86d0b6495de166c5d38923ac45ec218b694f81fc2147cede65596675",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {

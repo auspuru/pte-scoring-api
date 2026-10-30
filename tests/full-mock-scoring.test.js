@@ -172,3 +172,19 @@ test('A short RS recording can receive independent delivery marks despite low re
  assert.equal(r.status,'assessed');assert.equal(r.scores.pronunciation,3);assert.equal(r.scores.fluency,4);
  assert(r.scores.content>0&&r.scores.content<r.maxima.content);
 });
+
+
+test('An explicit retry of invalid DI evidence uses the configured review model once and keeps the Academy validator',async()=>{
+ const question={id:'di-evidence',type:'di',title:'Campus travel',imageCategory:'line',facts:['Trips rose from 200 to 450, with a brief fall in 2021.']};
+ const transcript='The image shows trips rising from 200 to 450, despite a brief fall.';let calls=0,transcriptions=0;
+ const wire=()=>({judgment:{score:6,relevance:'image-specific',accuracy:'accurate',scoreImpact:null,requiredEvidence:{quote:'trips rising from 200 to 450',factIndices:[0],kind:'relationship'},otherEvidence:[]},reason:'The main trend and exception form a clear picture.',nextStep:'Keep the connected trend and exception.'});
+ const service=adapters.createAdapters({transcribe:async()=>{transcriptions++;return transcript;},speakingContentModel:async(prompt,context)=>{
+  calls++;const raw=wire();if(!context.recoveryReview)raw.judgment.accuracy='major-errors';return raw;
+ },assessDelivery:async()=>({pronunciation:{score:4},fluency:{score:4}})});
+ const saved={...response(),segments:[{}]},first=await service.assess(question,saved,{recording:{},run:1});
+ assert.equal(first.status,'failed');assert.equal(calls,1);
+ await service.assess(question,saved,{recording:{},previous:first.stages,run:1});assert.equal(calls,1);
+ const repaired=await service.assess(question,saved,{recording:{},previous:first.stages,run:2});
+ assert.equal(repaired.status,'assessed');assert.equal(repaired.scores.content,6);assert.equal(calls,2);assert.equal(transcriptions,1);
+ await service.assess(question,saved,{recording:{},previous:repaired.stages,run:3});assert.equal(calls,2);
+});

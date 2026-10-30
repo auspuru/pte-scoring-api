@@ -50,9 +50,9 @@ function compatibleTransportUpgrade(saved, current) {
   if (before['speaking-lab.js']?.sha256 === '76cd004fe38a26819d0621a985a12c439daaeaebaeda6f58b92e4120c40a7cb1'
     && after['speaking-lab.js']?.sha256 === '759f6aa54529eb5979aae0bb87b4663fabcf9ea0da3b3c61ecbf7972fadaf479') allowed.add('speaking-lab.js');
   // This exact revision changes only assessment completion options: independent
-  // delivery evidence and the background Essay time budget. Retain saved marks.
+  // delivery evidence, explicit DI review and the Essay time budget. Retain marks.
   if (before['full-mock/adapters.js']?.sha256 === '940e500ccad7169994e3637557b3511c37e64489e626bdb803b13056559326f2'
-    && after['full-mock/adapters.js']?.sha256 === '3bf5da4bb74c71ceccf68570b9ba64e10766968c14b090363694903ffe84340c') allowed.add('full-mock/adapters.js');
+    && after['full-mock/adapters.js']?.sha256 === '41132b2eee6c0fd9402b6f6ee3831118f951fc48547037f8f2412f63fe280e76') allowed.add('full-mock/adapters.js');
   if (Object.keys(before).sort().join() !== Object.keys(after).sort().join()
     || Object.keys(before).some(name => !allowed.has(name) && digest(before[name]) !== digest(after[name]))) return false;
   return digest({ ...saved, scoringSources:current.scoringSources }) === digest(current);

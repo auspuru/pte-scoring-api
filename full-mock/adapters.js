@@ -75,7 +75,9 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         const marked = asq.scoreTranscript(q, transcript);
         return { ...result(q, marked.scores, { nativeVersion: marked.version }), stages };
       }
-      const content = await stage('content', () => gradeSpeaking(q, transcript, speakingContentModel), value => value && Number.isInteger(value.total) && value.total >= 0 && value.total <= maxima(q).content
+      const contentModel = q.type === 'di' && stages.content?.status === 'failed' && typeof speakingContentModel === 'function'
+        ? (prompt, context) => speakingContentModel(prompt, { ...context, recoveryReview: true }) : speakingContentModel;
+      const content = await stage('content', () => gradeSpeaking(q, transcript, contentModel), value => value && Number.isInteger(value.total) && value.total >= 0 && value.total <= maxima(q).content
         && value.maximum === maxima(q).content && !value.score_provisional && !value.needs_semantic_review
         && (['ra','rs'].includes(q.type) || value.scoringMode === 'ai' && value.contentStatus === 'assessed'));
       if (!content) return failed('content-unavailable');
