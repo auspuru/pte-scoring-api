@@ -166,6 +166,26 @@ test('Repeat Sentence reserves its beep interval before the full response window
   const t=timing(a,1000);assert.equal(t.recordingAt-t.prepAt,300);assert.equal(t.endsAt-t.recordingAt,15000);assert.equal(timing(a,t.cueAt+1).phase,'cue');
   const legacy=structuredClone(a);delete legacy.questions[0].startCueMs;assert.equal(timing(legacy,1000).recordingAt,t.prepAt,'Already-started legacy snapshots retain their clock.');
 });
+test('Playback-driven timing waits for the actual audio end before preparation, without changing legacy clocks',()=>{
+ const q=bank.papers[0].questions.find(q=>q.type==='rl'),a={questions:[q],responses:[],index:0,status:'active',questionStartedAt:1000,questionTimingVersion:2};
+ const waiting=timing(a,200000);assert.equal(waiting.phase,'listening');assert.equal(waiting.recordingAt,null);assert.equal(waiting.endsAt,null);
+ a.promptFinishedAt=200000;const ready=timing(a,200001);assert.equal(ready.phase,'preparing');assert.equal(ready.recordingAt,210000);assert.equal(ready.endsAt,250000);
+ const legacy={...a};delete legacy.questionTimingVersion;assert.equal(timing(legacy,200001).phase,'expired');
+});
+test('Prompt-end receipts enforce account, active question, minimum duration and idempotence before accepting recordings',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-playback-')),app=express();app.use(express.json());let now=1000000;
+ const lab=installSpeakingMock(app,{directory,verifyToken:t=>['alice','bob'].includes(t)?t:null,getAccount:async()=>({}),now:()=>now});
+ const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(async()=>{await lab.waitForJobs();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
+ const id=crypto.randomUUID(),q=bank.papers[0].questions.find(q=>q.type==='rl');await lab.store.update('alice',id,()=>({id,questions:[q],responses:[],index:0,status:'active',startedAt:now,deadline:now+600000,questionCount:1}));
+ const request=async(route,body,user='alice',raw=false)=>{const response=await fetch('http://127.0.0.1:'+server.address().port+'/api/speaking-mocks/attempts/'+id+route,{method:'POST',headers:{'x-session-token':user,'Content-Type':raw?'audio/webm':'application/json'},body:raw?body:JSON.stringify(body)});return{status:response.status,body:await response.json()};};
+ await request('/begin',{index:0,timingVersion:2});assert.equal((await request('/playback',{index:0})).status,409);
+ now+=3000+q.audioSeconds*1000+5000;assert.equal((await request('/recordings/0',Buffer.alloc(200),'alice',true)).status,409);
+ assert.equal((await request('/playback',{index:0},'bob')).status,404);assert.equal((await request('/playback',{index:1})).status,409);
+ const first=await request('/playback',{index:0});assert.equal(first.status,200);assert.equal(first.body.timing.phase,'preparing');assert.equal(first.body.serverNow,now);
+ now+=1000;assert.equal((await request('/playback',{index:0})).body.timing.recordingAt,first.body.timing.recordingAt);
+ assert.equal((await request('/recordings/0',Buffer.alloc(200),'alice',true)).status,409);now=first.body.timing.recordingAt+1;
+ assert.equal((await request('/recordings/0',Buffer.alloc(200),'alice',true)).status,200);
+});
 test('all mock DI placements use supplied original PNGs and reattempts replace legacy photos without editing saved work',()=>{
  const fs=require('node:fs'),path=require('node:path'),manifest=require('../content/di-reference-manifest.json');
  for(const paper of bank.papers)for(const q of paper.questions.filter(q=>q.type==='di')){

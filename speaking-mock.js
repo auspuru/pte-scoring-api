@@ -12,21 +12,25 @@ function timing(a,now=Date.now()){
   const q=a.questions[a.index];if(!q||a.status!=='active')return {phase:'finished'};
   if(a.responses[a.index]?.recording||a.responses[a.index]?.skipped)return {phase:'completed'};
   if(!a.questionStartedAt)return {phase:'ready'};
-  const audioAt=a.questionStartedAt+3000,prepAt=audioAt+(q.audioSeconds||0)*1000;
+  const audioAt=a.questionStartedAt+3000,playbackDriven=a.questionTimingVersion===2&&!!q.audioSource;
+  // New players wait for the actual prompt-end receipt, including loading delays.
+  // Existing attempts retain their original fixed timetable.
+  if(playbackDriven&&!a.promptFinishedAt)return {audioAt,prepAt:null,cueAt:null,recordingAt:null,endsAt:null,playbackDriven:true,phase:now<audioAt?'instructions':'listening'};
+  const prepAt=playbackDriven?a.promptFinishedAt:audioAt+(q.audioSeconds||0)*1000;
   const cueAt=prepAt+q.preparation*1000,recordingAt=cueAt+(q.type==='rs'?q.startCueMs||0:0),endsAt=recordingAt+q.seconds*1000;
-  return {audioAt,prepAt,cueAt,recordingAt,endsAt,phase:now<audioAt?'instructions':now<prepAt?'listening':now<cueAt?'preparing':now<recordingAt?'cue':now<endsAt?'recording':'expired'};
+  return {audioAt,prepAt,cueAt,recordingAt,endsAt,...(playbackDriven?{playbackDriven:true}:{}),phase:now<audioAt?'instructions':now<prepAt?'listening':now<cueAt?'preparing':now<recordingAt?'cue':now<endsAt?'recording':'expired'};
 }
 function reconcile(a,now=Date.now()){
   if(a.status==='active'&&now>=a.deadline){a.status='submitted';a.finishedAt=now;a.grading={status:'pending'};}
   return a;
 }
 function present(a,now=Date.now(),{completeOnly=false,progress}={}){
-  if(completeOnly){const ready=a.status==='submitted'&&require('./speaking-mock-jobs').complete(a);if(!ready)return{id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,integrity:a.integrity,grading:{status:'processing'},resultsReady:false,resultStatus:progress||{status:'preparing',ready:false,total:a.questionCount},speakingReport:null,overall:null,overallAzure:null,combinedOverall:null,overallFeedback:null,combinedComparisons:null,...(a.status==='active'&&a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],false),timing:timing(a,now)}:{})};}
+  if(completeOnly){const ready=a.status==='submitted'&&require('./speaking-mock-jobs').complete(a);if(!ready)return{serverNow:now,id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,integrity:a.integrity,grading:{status:'processing'},resultsReady:false,resultStatus:progress||{status:'preparing',ready:false,total:a.questionCount},speakingReport:null,overall:null,overallAzure:null,combinedOverall:null,overallFeedback:null,combinedComparisons:null,...(a.status==='active'&&a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],false),timing:timing(a,now)}:{})};}
 
   const submitted=a.status==='submitted';
   const hasExclusions=a.questions.some((q,i)=>speakingReport.exclusionFor(a,q,i));
   const savedContent=!hasExclusions&&a.combinedOverall?.status==='assessed'&&a.combinedOverall.sourceFingerprint===combined.fingerprint(a)?a.combinedOverall.content:null;
-  return {id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
+  return {serverNow:now,id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
     reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,...(completeOnly?{resultsReady:true,resultStatus:{status:'ready',ready:true}}:{}),grading:a.grading,overall:null,overallAzure:a.overallAzure||null,combinedOverall:null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,
     speakingReport:submitted?speakingReport.summarize(a):null,
     overallFeedback:submitted&&savedContent?{summary:savedContent.summary,strengths:savedContent.strengths||[],nextSteps:savedContent.nextSteps||[]}:null,
@@ -188,7 +192,17 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   router.get('/attempts/:id/status',wrap(async(req,res)=>{const a=await readResults(req.mockUser,req.params.id);res.json(useProgressive(a)?await progressive.status(req.mockUser,a):{ready:a.grading?.status==='complete',status:a.grading?.status==='complete'?'ready':'preparing'});}));
   router.get('/attempts/:id',wrap(async(req,res)=>{const a=await readResults(req.mockUser,req.params.id);res.json(view(a));queue(req.mockUser,a);}));
   router.post('/attempts/:id/begin',limiter,wrap(async(req,res)=>{
-    const a=await store.update(req.mockUser,req.params.id,a=>{if(!a)throw fail('Mock attempt not found.',404);reconcile(a,now());if(a.status!=='active')throw fail('This mock has finished.',409);if(req.body.index!==a.index)throw fail('A different question is active. Reopen the mock.',409);a.questionStartedAt||=now();return a;});res.json(view(a));
+    const a=await store.update(req.mockUser,req.params.id,a=>{if(!a)throw fail('Mock attempt not found.',404);reconcile(a,now());if(a.status!=='active')throw fail('This mock has finished.',409);if(req.body.index!==a.index)throw fail('A different question is active. Reopen the mock.',409);if(!a.questionStartedAt){a.questionStartedAt=now();if(req.body.timingVersion===2)a.questionTimingVersion=2;}return a;});res.json(view(a));
+  }));
+  router.post('/attempts/:id/playback',limiter,wrap(async(req,res)=>{
+    const a=await store.update(req.mockUser,req.params.id,a=>{
+      if(!a)throw fail('Mock attempt not found.',404);reconcile(a,now());
+      if(a.status!=='active'||req.body?.index!==a.index||a.questionTimingVersion!==2||!a.questionStartedAt||!a.questions[a.index]?.audioSource)throw fail('This prompt is no longer active.',409);
+      if(a.responses[a.index]?.recording||a.responses[a.index]?.skipped)throw fail('This response is locked.',409);
+      const earliest=a.questionStartedAt+3000+(a.questions[a.index].audioSeconds||0)*1000;
+      if(now()+500<earliest)throw fail('The prompt has not finished yet.',409);
+      a.promptFinishedAt||=now();return a;
+    });res.json(view(a));
   }));
   router.post('/attempts/:id/recordings/:index',limiter,express.raw({type:['audio/webm','audio/mp4','audio/wav','audio/mpeg'],limit:'3mb'}),wrap(async(req,res)=>{
     const index=Number(req.params.index),mime=String(req.headers['content-type']||'').split(';')[0],data=req.body;
@@ -198,7 +212,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       if(!a)throw fail('Mock attempt not found.',404);
       if(a.responses[index]?.recording?.hash===hash)return a;
       if(a.status!=='active'||index!==a.index||!a.questionStartedAt||a.responses[index]?.recording)throw fail('This response is locked.',409);
-      const clock=timing(a,now());if(now()<clock.recordingAt)throw fail('The recording period has not begun.',409);
+      const clock=timing(a,now());if(!Number.isFinite(clock.recordingAt)||now()<clock.recordingAt)throw fail('The recording period has not begun.',409);
       if(now()>clock.endsAt+90000)throw fail('The recording period has expired. Continue to the next question.',409);
       a.responses[index]={recording:{mime,data:data.toString('base64'),hash},savedAt:now()};a.completedCount=a.responses.filter((r,i)=>r?.recording&&a.questions[i].type!=='intro').length;return a;
     });res.json(view(a));queue(req.mockUser,a);
@@ -213,7 +227,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       if(req.body.index<a.index)return a;
       if(a.status!=='active'||req.body.index!==a.index)throw fail('This question is no longer active.',409);
       if(!a.responses[a.index]?.recording&&!req.body.skip)throw fail('Save your response before continuing.');
-      a.responses[a.index]||={skipped:true};a.index++;delete a.questionStartedAt;
+      a.responses[a.index]||={skipped:true};a.index++;delete a.questionStartedAt;delete a.promptFinishedAt;delete a.questionTimingVersion;
       if(a.index===a.questions.length){a.status='submitted';a.finishedAt=now();a.grading={status:'pending'};}return a;
     });res.json(view(a));queue(req.mockUser,a);
   }));
