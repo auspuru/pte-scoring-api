@@ -1,12 +1,12 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path');
 const {createController}=require('../public/speaking-mock-client'),{installSpeakingMock}=require('../speaking-mock');
-async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,gradeGate=Promise.resolve(),audioCue=false}={}){
+async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,gradeGate=Promise.resolve(),audioCue=false,autoCheck=true}={}){
   let at=1000000,uid='alice',recorderStarts=0,permissionCalls=0,full=false;const nodes=new Map(),intervals=new Map(),requests=[],audios=[];let seq=0;
   class Element{constructor(id){this.id=id;this.hidden=false;this.disabled=false;this.textContent='';this.style={};nodes.set(id,this);}set innerHTML(text){this.html=text;if(this.id==='speakingMockPane'){for(const id of [...nodes.keys()])if(id!==this.id)nodes.delete(id);}for(const m of text.matchAll(/id="([^"]+)"/g))new Element(m[1]);}get innerHTML(){return this.html||'';}replaceChildren(){this.innerHTML='';}}
   const host=new Element('speakingMockPane');
-  class Recorder{static isTypeSupported(type){return type==='audio/webm;codecs=opus';}constructor(){this.state='inactive';this.mimeType='audio/webm';}start(){this.state='recording';recorderStarts++;}stop(){if(this.state!=='recording')return;this.state='inactive';this.ondataavailable?.({data:new Blob([Buffer.alloc(200,2)],{type:this.mimeType})});this.onstop?.();}}
-  class Audio{constructor(url){this.url=url;this.currentTime=0;this.volume=1;audios.push(this);const id=url.split('/').at(-1).split('.mp3')[0];this.duration=require('../content/speaking-mocks').papers.flatMap(p=>p.questions).find(q=>q.id===id)?.audioSeconds;}async play(){this.played=true;this.paused=false;this.playedAt=at;this.offset=this.currentTime;}pause(){this.paused=true;}}
+  class Recorder{static isTypeSupported(type){return type==='audio/webm;codecs=opus';}constructor(){this.state='inactive';this.mimeType='audio/webm';}start(){this.state='recording';if(!nodes.has('sm-check-record'))recorderStarts++;}stop(){if(this.state!=='recording')return;this.state='inactive';this.ondataavailable?.({data:new Blob([Buffer.alloc(200,2)],{type:this.mimeType})});this.onstop?.();}}
+  class Audio{constructor(url){this.url=url;this.currentTime=0;this.volume=1;audios.push(this);const id=url.split('/').at(-1).split('.mp3')[0];this.duration=url.startsWith('blob:')?3:require('../content/speaking-mocks').papers.flatMap(p=>p.questions).find(q=>q.id===id)?.audioSeconds;}async play(){this.played=true;this.paused=false;this.playedAt=at;this.offset=this.currentTime;}pause(){this.paused=true;}}
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-mock-ui-')),app=require('express')();app.use(require('express').json());
   const lab=installSpeakingMock(app,{directory,backgroundEnabled,now:()=>at,verifyToken:token=>token==='alice'?'alice':null,getAccount:async()=>({}),gptAvailable:true,azureAvailable:true,
     gradeResponse:async q=>{await gradeGate;return({transcript:'A clear response.',content:{total:require('../speaking-mock-report').contentMaximum(q),maximum:require('../speaking-mock-report').contentMaximum(q),scoringMode:'ai'},gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:5}}});},
@@ -25,13 +25,63 @@ async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,
   const controller=createController(env,{getUserId:()=>uid});
   t.after(async()=>{controller.reset();await lab.waitForJobs();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
   const flush=async()=>{for(let n=0;n<25;n++)await new Promise(resolve=>setImmediate(resolve));};
-  return {env,host,nodes,requests,audios,controller,lab,flush,cueAudio,
-    click:data=>host.onclick({target:{closest:()=>({dataset:data,disabled:false})}}),
-    tick:async ms=>{at+=ms;for(const audio of audios)if(audio.played&&!audio.paused&&!audio.ended&&audio.duration&&at>=audio.playedAt+(audio.duration-audio.offset)*1000){audio.ended=true;audio.onended?.();}cueAudio?.run();for(const fn of [...intervals.values()])await fn();await flush();},
+  const tick=async ms=>{at+=ms;for(const audio of audios)if(audio.played&&!audio.paused&&!audio.ended&&audio.duration&&at>=audio.playedAt+(audio.duration-audio.offset)*1000){audio.ended=true;audio.onended?.();}cueAudio?.run();for(const fn of [...intervals.values()])await fn();await flush();const ends=Date.now()+3000;while(nodes.get('sm-record-status')?.textContent==='Preparing your response…'&&Date.now()<ends)await new Promise(resolve=>setTimeout(resolve,1));};
+  const rawClick=data=>host.onclick({target:{closest:()=>({dataset:data,disabled:false})}});
+  const finishCheck=async()=>{await rawClick({sm:'check-record'});await tick(3001);await rawClick({sm:'check-play'});await tick(3001);host.onchange({target:{id:'sm-check-heard',checked:true}});await rawClick({sm:'check-begin'});};
+  return {env,host,nodes,requests,audios,controller,lab,flush,cueAudio,finishCheck,rawClick,
+    click:async data=>{await rawClick(data);if(autoCheck&&['start','reattempt'].includes(data.sm)&&nodes.has('sm-check-record'))await finishCheck();},tick,
     active:async()=>{const [row]=await lab.store.list('alice');return row&&lab.store.update('alice',row.id,a=>a);},
     starts:()=>recorderStarts,permissions:()=>permissionCalls,protected:()=>full,user:value=>uid=value};
 }
 
+test('Headset check records and plays locally before creating a timed mock, with explicit sound confirmation',async t=>{
+ const h=await harness(t,{autoCheck:false});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
+ assert.match(h.host.innerHTML,/Check your microphone and headphones/);assert.equal(h.permissions(),0);assert.equal(await h.active(),undefined);
+ await h.rawClick({sm:'check-begin'});assert.equal(await h.active(),undefined);
+ await h.rawClick({sm:'check-record'});await h.tick(3001);
+ assert.equal(h.permissions(),1);assert.equal(h.starts(),0);assert.equal(h.requests.filter(r=>r.method==='POST').length,0);
+ h.host.onchange({target:{id:'sm-check-heard',checked:true}});await h.rawClick({sm:'check-begin'});assert.equal(await h.active(),undefined);
+ await h.rawClick({sm:'check-play'});assert(h.audios.at(-1).url.startsWith('blob:'));await h.tick(3001);
+ await h.rawClick({sm:'check-begin'});assert.equal(await h.active(),undefined,'Listening alone does not confirm the headset.');
+ h.host.onchange({target:{id:'sm-check-heard',checked:true}});await h.rawClick({sm:'check-begin'});
+ assert.equal((await h.active()).index,0);assert.equal(h.permissions(),1);assert.equal(h.protected(),true);assert.equal(h.starts(),0);
+ assert.equal(h.requests.filter(r=>r.method==='POST'&&r.url.includes('/recordings/')).length,0,'Headset samples are never uploaded.');
+});
+test('Leaving the headset check stops the sample and microphone without creating an attempt',async t=>{
+ const h=await harness(t,{autoCheck:false});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});await h.rawClick({sm:'check-record'});
+ h.controller.leave();await h.tick(5000);assert.equal(await h.active(),undefined);assert.equal(h.requests.filter(r=>r.method==='POST').length,0);assert.equal(h.starts(),0);
+});
+test('Denied microphone access and blocked sample playback keep the mock unstarted and allow another check',async t=>{
+ const h=await harness(t,{autoCheck:false});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});const microphone=h.env.navigator.mediaDevices.getUserMedia;
+ h.env.navigator.mediaDevices.getUserMedia=async()=>{throw Error('Microphone permission denied');};await h.rawClick({sm:'check-record'});
+ assert.match(h.nodes.get('sm-notice').textContent,/Microphone permission denied/);assert.equal(await h.active(),undefined);
+ h.env.navigator.mediaDevices.getUserMedia=microphone;await h.rawClick({sm:'check-record'});await h.tick(3001);
+ const Audio=h.env.Audio;h.env.Audio=class extends Audio{async play(){throw Error('Playback blocked');}};await h.rawClick({sm:'check-play'});
+ assert.match(h.nodes.get('sm-notice').textContent,/Playback was blocked/);h.host.onchange({target:{id:'sm-check-heard',checked:true}});await h.rawClick({sm:'check-begin'});assert.equal(await h.active(),undefined);
+ h.env.Audio=Audio;await h.rawClick({sm:'check-play'});await h.tick(3001);h.host.onchange({target:{id:'sm-check-heard',checked:true}});
+ await h.rawClick({sm:'check-record'});await h.tick(3001);await h.rawClick({sm:'check-begin'});assert.equal(await h.active(),undefined,'A new sample must be listened to and confirmed again.');
+});
+test('A delayed begin response and a fast device clock do not consume the visible audio countdown',async t=>{
+ const h=await harness(t),clock=h.env.Date.now;h.env.Date.now=()=>clock()+300000;
+ await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});const saved=await h.active(),index=saved.questions.findIndex(q=>q.type==='rl');
+ await h.lab.store.update('alice',saved.id,a=>{a.index=index;delete a.questionStartedAt;return a;});await h.controller.open();const request=h.env.fetch;
+ h.env.fetch=async(url,options)=>{const response=await request(url,options);if(url.endsWith('/begin'))await h.tick(5000);return response;};
+ await h.click({sm:'resume',id:saved.id});const prompts=()=>h.audios.filter(a=>a.url.startsWith('/speaking-mock-audio/'));
+ assert.equal(prompts().length,0);await h.tick(2999);assert.equal(prompts().length,0);await h.tick(1);assert.equal(prompts().length,1);assert.equal(prompts()[0].offset,0);
+});
+for(const type of ['rl','sgd','rts'])test(type+': a full visible lead-in and preparation follow real prompt completion, even when playback is delayed',async t=>{
+ const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
+ const first=await h.active(),index=first.questions.findIndex(q=>q.type===type);await h.lab.store.update('alice',first.id,a=>{a.index=index;delete a.questionStartedAt;return a;});
+ await h.controller.open();await h.click({sm:'resume',id:first.id});
+ const prompts=()=>h.audios.filter(a=>a.url.startsWith('/speaking-mock-audio/'));
+ assert.equal(prompts().length,0);await h.tick(2999);assert.equal(prompts().length,0);await h.tick(1);
+ const audio=prompts().at(-1);assert.equal(audio.offset,0);audio.playedAt+=5000;
+ await h.tick(audio.duration*1000);assert.equal(h.starts(),0);assert.equal(h.nodes.get('sm-record-status').textContent,'Listening');
+ await h.tick(5001);assert.match(h.nodes.get('sm-record-status').textContent,/Preparation time: 0:10/);assert.equal(h.starts(),0);
+ await h.tick(9999);assert.equal(h.starts(),0);await h.tick(1);assert.equal(h.starts(),1);
+ await h.tick(first.questions[index].seconds*1000-1);assert.equal((await h.active()).responses[index],undefined);
+ await h.tick(1);await h.flush();const saved=await h.active();assert(saved.responses[index].recording);assert.equal(prompts().length,1);
+});
 test('the active mock shows a verified clear image with enlargement while preserving the saved question',async t=>{
  const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
  const saved=await h.active(),index=saved.questions.findIndex(q=>q.type==='di');await h.lab.store.update('alice',saved.id,a=>{a.index=index;delete a.questionStartedAt;return a;});
@@ -49,7 +99,7 @@ test('background results show only a preparing banner, poll automatically and op
 
 test('Cancelling protected-screen preflight creates no attempt and does not open the microphone',async t=>{
   const h=await harness(t,{prepare:false});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
-  assert.equal(h.permissions(),0);assert.equal(h.requests.filter(r=>r.method==='POST').length,0);assert.equal(await h.active(),undefined);
+  assert.equal(h.permissions(),1);assert.equal(h.requests.filter(r=>r.method==='POST').length,0);assert.equal(await h.active(),undefined);
 });
 test('Next opens the following question without a confirmation when the current question is unanswered',async t=>{
  const h=await harness(t);h.env.confirm=()=>{throw Error('Next must not open a confirmation.');};
@@ -94,7 +144,7 @@ test('One complete mock runs timed recording, reuses saved audio, hides feedback
   for(let index=0;index<28;index++){
     const a=await h.active(),q=a.questions[index];const recordingAt=a.questionStartedAt+3000+(q.audioSeconds||0)*1000+q.preparation*1000+(q.startCueMs||0);
     if(q.audioSource){await h.tick(Math.max(0,a.questionStartedAt+3001-h.env.Date.now()));const count=h.audios.length;await h.tick(100);assert.equal(h.audios.length,count,'A prompt plays once.');}
-    await h.tick(Math.max(0,recordingAt+100-h.env.Date.now()));assert.equal(h.starts(),index+1);
+    if(q.audioSource){await h.tick(q.audioSeconds*1000+100);await h.tick(q.preparation*1000+(q.startCueMs||0)+100);}else await h.tick(Math.max(0,recordingAt+100-h.env.Date.now()));assert.equal(h.starts(),index+1);
     await h.click({sm:'next'});
   }
   await h.lab.waitForJobs();await h.tick(3000);
@@ -102,13 +152,13 @@ test('One complete mock runs timed recording, reuses saved audio, hides feedback
   assert.doesNotMatch(h.host.innerHTML,/GPT pronunciation|OpenAI-based overall/);assert.match(h.host.innerHTML,/Pronunciation \/ fluency/);
   assert.match(h.nodes.get('sm-result-rows').innerHTML,/5\/5/);assert.match(h.nodes.get('sm-result-rows').innerHTML,/4\/5/);
   assert(h.requests.filter(r=>r.method==='POST'&&r.url.includes('/recordings/')).every(r=>r.headers['x-session-token']==='alice'));
-  assert(h.audios.every(a=>a.url.startsWith('/speaking-mock-audio/')));
+  assert(h.audios.every(a=>a.url.startsWith('/speaking-mock-audio/')||a.url.startsWith('blob:')));
   assert.match(h.host.innerHTML,/Reattempt this mock/);
   const original=await h.active(),before=JSON.stringify(original);
   await h.controller.open({history:true});assert.match(h.host.innerHTML,/data-sm="reattempt"/);
   const prepare=h.env.PortalExamMode.prepare,posts=h.requests.filter(r=>r.method==='POST').length;
   h.env.PortalExamMode.prepare=async()=>false;await h.click({sm:'reattempt',id:original.id});
-  assert.equal(h.requests.filter(r=>r.method==='POST').length,posts);assert.equal(h.permissions(),1);
+  assert.equal(h.requests.filter(r=>r.method==='POST').length,posts);assert.equal(h.permissions(),2);
   h.env.PortalExamMode.prepare=prepare;await h.click({sm:'reattempt',id:original.id});
   const creation=h.requests.findLast(r=>r.method==='POST'&&r.url.endsWith('/reattempt')),freshId=JSON.parse(creation.body).id;
   assert(creation.url.includes(original.id));assert.notEqual(freshId,original.id);
