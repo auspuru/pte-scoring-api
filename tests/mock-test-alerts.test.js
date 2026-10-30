@@ -106,3 +106,17 @@ test('HTTP capture observes only authenticated owning mocks, excludes validation
   await post('/api/sync/student',{readingProgress:{history:[reading],session:reading}});
   await new Promise(resolve=>setImmediate(resolve));await h.wait();assert.equal(readingReads,readsAfterSubmission,'A registered Reading submission must not reload on each later sync.');
 });
+
+
+test('A held real full-mock submission is discovered using submittedAt and sends one administrator attention notice',async t=>{
+ const h=await fixture(t),paper=require('../full-mock/paper').loadPaper(),session=require('../full-mock/session');
+ const state=session.create(randomUUID(),paper,h.time(),{preview:true});session.end(state,paper,h.time());
+ state.assessment={status:'needs-attention',recovery:{status:'exhausted',retries:2},items:{}};
+ assert.equal(state.finishedAt,undefined);assert.equal(state.submittedAt,h.time());
+ h.sources.full.get=async()=>snapshot('full',state,{paper});
+ await h.monitor.observeId('full','student',state.id);await h.wait();
+ assert.equal(h.messages.filter(m=>m.subject.includes('mock submitted')).length,1);
+ assert.equal(h.messages.filter(m=>m.subject.includes('mock needs attention')).length,1);
+ await h.monitor.check();await h.wait();assert.equal(h.messages.length,2);
+ assert(!JSON.stringify(h.messages).includes('practical project'));
+});

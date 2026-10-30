@@ -35,6 +35,7 @@ function stateFor(value) { return { version: VERSION, snapshot: structuredClone(
 // Exact production baselines may adopt these audited transport/recovery fixes.
 // Native graders, models, weights, paper and saved successful grades stay pinned.
 const COMPATIBLE_BASES = [
+  [require('../content/full-mock/automatic-recovery-compatible-sources.json'), 'f49a6e3c4385918f9e83820c330518e13fb0e3eb202fb1ae1dbe9e847108a4ef'],
   [require('../content/full-mock/assessment-completion-compatible-sources.json'), 'ddaf791fda201c7b3424f6dc298472fd646d623a8b4bd8b104d8eea998b712d0'],
   [require('../content/full-mock/navigation-compatible-sources.json'), '348f9fb6beac5e43e1cc1d58ff4125414a44864799bd53354d6c194a375e6749'],
   [require('../content/full-mock/access-compatible-sources.json'), '275016a6cdf793dbd6ef7a0750bc10294a601d87ab8e4e0faa74418ea2419556'],
@@ -68,8 +69,24 @@ function recoverableUploadDelay(job, response) {
   return job?.status === 'pending' && job.reason === 'late-recording' && segments.length === 1
     && !segments[0].lateActivation && segments[0].finished && segments[0].chunkCount > 0;
 }
+const RECOVERY_DELAYS = [30000, 120000];
+const RECOVERY_REASONS = new Set(['transcription-unavailable','content-unavailable','delivery-unavailable','writing-unavailable']);
+function canRecover(job) {
+  return job?.status === 'failed' && RECOVERY_REASONS.has(job.result?.reason || job.reason)
+    && !Object.values(job.stages || {}).some(stage => stage.uncertain);
+}
+function scheduleRecovery(assessment, at) {
+  const recovery = assessment.recovery;
+  if (!recovery) return; // Older held attempts require an explicit request to arm recovery.
+  delete recovery.nextAt;
+  if (assessment.status === 'complete') { recovery.status = 'complete'; return; }
+  if (assessment.status === 'processing') return;
+  if (!Object.values(assessment.items).some(canRecover)) { recovery.status = 'held'; return; }
+  if (recovery.retries >= RECOVERY_DELAYS.length) { recovery.status = 'exhausted'; return; }
+  recovery.status = 'scheduled'; recovery.nextAt = at + RECOVERY_DELAYS[recovery.retries];
+}
 function createEngine({ store, adapters = createAdapters(), providerConfiguration = configuration(), now = Date.now, assemble = media.assemble, concurrency = 2, paper = loadPaper() } = {}) {
-  const currentSnapshot = snapshot(providerConfiguration, undefined, paper), currentHash = digest(currentSnapshot), jobs = new Map(); let sweep, closing = false;
+  const currentSnapshot = snapshot(providerConfiguration, undefined, paper), currentHash = digest(currentSnapshot), jobs = new Map(); let sweep, closing = false, recovering = false; const recoveryErrors = new Set();
   function validate(state) {
     const saved = state.assessment;
     if (!saved || digest(saved.snapshot) !== saved.snapshotHash || saved.version !== VERSION || saved.snapshot.paperHash !== state.paperHash
@@ -82,6 +99,8 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
       state.assessment ||= stateFor(currentSnapshot); validate(state);
       if (state.assessment.status === 'processing' || state.assessment.status === 'complete' && aggregate(saved.paper, state).ready) return state;
       if (state.assessment.run && !retry) return state;
+      state.assessment.recovery ||= { version:1, retries:0 };
+      state.assessment.recovery.status = 'armed'; delete state.assessment.recovery.nextAt; delete state.assessment.recovery.automaticRun;
       state.assessment.status = 'processing'; state.assessment.run++; state.assessment.requestedAt = now(); return state;
     });
     if (state.assessment.status === 'processing') queue(uid, id);
@@ -105,6 +124,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     let state = await store.update(uid, id, state => {
       claimed = false; validate(state);
       if (state.status !== 'submitted' || state.assessment.status !== 'processing' || state.assessment.lease?.expiresAt > now()) return state;
+      state.assessment.recovery ||= { version:1, retries:0, status:'armed' };
       state.assessment.lease = { id: lease, expiresAt: now() + 180000 }; claimed = true; return state;
     });
     if (!claimed) return;
@@ -125,6 +145,8 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
         if (!response?.sealed) continue;
         const fingerprint = inputHash(response), previous = saved.state.assessment.items[candidate.id];
         if (previous?.inputHash === fingerprint && previous.snapshotHash === attemptHash && previous.status === 'assessed') continue;
+        if (state.assessment.recovery?.automaticRun === state.assessment.run && previous?.inputHash === fingerprint
+          && previous.snapshotHash === attemptHash && previous.status === 'failed' && !canRecover(previous)) continue;
         const stages = previous?.inputHash === fingerprint && previous.snapshotHash === attemptHash ? previous.stages : {};
         const persist = async patch => save(current => {
           if (inputHash(current.responses[position + 1]) !== fingerprint) throw fail('Saved media changed while assessment was running.');
@@ -149,7 +171,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     }
     try {
       await Promise.all([itemWorker(), itemWorker()]);
-      state = await save(current => { current.assessment.status = aggregate(savedPaper, current).ready ? 'complete' : closing ? 'processing' : 'needs-attention'; if (!closing) current.assessment.finishedAt = now(); });
+      state = await save(current => { current.assessment.status = aggregate(savedPaper, current).ready ? 'complete' : closing ? 'processing' : 'needs-attention'; if (!closing) { current.assessment.finishedAt = now(); scheduleRecovery(current.assessment, now()); } });
       await store.update(uid, id, current => { if (current.assessment.lease?.id === lease) delete current.assessment.lease; return current; });
       const result = aggregate(savedPaper, state);
       console.info('[full-mock-assessment]', JSON.stringify({ uid, id, status:state.assessment.status, assessedCount:result.assessedCount, pendingReasons:[...new Set(Object.values(state.assessment.items).filter(item => item.status !== 'assessed').map(item => item.result?.reason || item.reason || item.status))] }));
@@ -160,8 +182,41 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     if (record.state.assessment && digest(record.state.assessment.snapshot) !== record.state.assessment.snapshotHash) throw fail('Saved assessment integrity failed.', 503);
     return aggregate(record.paper, record.state);
   }
-  async function recover() { for (const row of await store.assessmentQueue()) { if (jobs.size >= concurrency) break; if (row.status === 'needs-attention') await wakeMedia(row.uid, row.id); else queue(row.uid, row.id); } }
-  function start() { closing = false; if (!sweep) { sweep = setInterval(() => recover().catch(() => {}), 10000); sweep.unref?.(); recover().catch(() => {}); } }
+  async function resumeAutomatically(uid, id) {
+    const state = await store.update(uid, id, state => {
+      const a = state.assessment, r = a?.recovery;
+      if (state.status !== 'submitted' || a?.status !== 'needs-attention' || r?.status !== 'scheduled'
+        || !Number.isFinite(r.nextAt) || r.nextAt > now() || r.retries >= RECOVERY_DELAYS.length) return state;
+      validate(state);
+      if (!Object.values(a.items).some(canRecover)) { r.status = 'held'; delete r.nextAt; return state; }
+      a.status = 'processing'; a.run++; a.requestedAt = now();
+      r.retries++; r.status = 'running'; r.automaticRun = a.run; delete r.nextAt;
+      return state;
+    });
+    if (state.assessment?.status === 'processing') queue(uid, id);
+    return state.assessment?.status === 'processing';
+  }
+  async function recover() {
+    if (closing || recovering) return; recovering = true;
+    try {
+      for (const row of await store.assessmentQueue(now())) {
+        if (jobs.size >= concurrency) break;
+        try {
+          if (row.status === 'needs-attention') { if (!await resumeAutomatically(row.uid, row.id)) await wakeMedia(row.uid, row.id); }
+          else queue(row.uid, row.id);
+        } catch (error) {
+          if (!recoveryErrors.has(row.id)) {
+            recoveryErrors.add(row.id); if (recoveryErrors.size > 1000) recoveryErrors.delete(recoveryErrors.values().next().value);
+            console.warn('[full-mock-recovery]', JSON.stringify({id:row.id, code:error.status || 'unavailable'}));
+          }
+        }
+      }
+    } finally { recovering = false; }
+  }
+  function start() { closing = false; if (!sweep) {
+    sweep = setInterval(() => recover().catch(() => {}), 10000); sweep.unref?.(); recover().catch(() => {});
+    console.info('[full-mock-recovery]', JSON.stringify({event:'monitor_ready',maxAutomaticRetries:RECOVERY_DELAYS.length,backoffMs:RECOVERY_DELAYS}));
+  } }
   function stop() { closing = true; clearInterval(sweep); sweep = null; return drain(); }
   async function drain() { await Promise.allSettled([...jobs.values()]); }
   return { snapshot: currentSnapshot, request, wakeMedia, results, recover, start, stop, drain, jobs };

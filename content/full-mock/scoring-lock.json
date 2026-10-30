@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "f3fdea752897cfcffee56bcc92948e418a9c7673",
+  "baseCommit": "73bde1b698f4bc98878e9283dcdeb3df685ad3d8",
   "checkedAt": "2026-10-30",
-  "scope": "Complete background Essay review, independent delivery evidence and explicit DI review after invalid output. Preserve mock alerts, exact submitted source snapshots and successful grades; native validators, maxima and weights remain unchanged.",
+  "scope": "Bounded durable recovery of known failed assessment stages, with backoff, leases and escalation. Saved snapshots, successful grades, native graders and provider configuration are retained.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "6c477989d636c89136276a80180a75e29033859804668d4ce9e8836a35018891",
+        "sha256": "b065adc791b200039da8246436a325b26d775b34aa2320f00e15a1e11a06d3d9",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -120,7 +120,7 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "e41664c107d76db24e92eaf8859766719217d34dfbfc74ef4a8217fca91fc30c",
+        "sha256": "73910bc92329f92520f29fc49c6a164fc3748b2f2745c377e27667a510fd1839",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
@@ -132,7 +132,7 @@
         "version": "full-mock-session-2026-10-29.2"
       },
       "full-mock/store.js": {
-        "sha256": "0567fc91d4598c9c0267a89b6ae595c61cdc8351480b87731e56dcf596fcf07e",
+        "sha256": "dd93668cd632c448216ee4bc4f495c4763ade4bed2ffb1d66491caf4963a14a6",
         "version": null
       },
       "gpt-speaking-delivery.js": {
