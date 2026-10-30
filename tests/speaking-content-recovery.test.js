@@ -73,12 +73,12 @@ test('Mock recovery reports missing recordings and continues after a transcripti
  assert.equal(r.reviewed,3);assert.equal(r.unavailable,2);assert.equal(r.recovered,1);assert.equal(r.status,'needs-review');
  assert.equal(r.issues[0].issue,'missing_recording');assert.equal((await s.mockStore.get(uid,mock)).responses[2].content.total,6);
 });
-test('Explicit Mahabir reassessment replaces confirmed content once, retaining Azure and prior content history',async t=>{
+for(const username of ['mahabir1','sukhpal'])test(username+' reassessment replaces confirmed content once, retaining Azure and prior content history',async t=>{
  const s=await setup(t),mock=id(),old={total:2,maximum:6,scoringMode:'ai'},azure={pronunciation:{score:4},fluency:{score:5}};
- await s.mockStore.update(uid,mock,()=>({id:mock,status:'submitted',startedAt:10,questions:[q],responses:[{recording:{hash:'saved'},transcript:text,content:old,azure}]}));
- let calls=0;const options={...s,kind:'mock',reassess:true,startedBefore:20,questionTypes:['rl'],mockCallModel:async()=>{calls++;return review();}};
+ await s.mockStore.update(username,mock,()=>({id:mock,status:'submitted',startedAt:10,questions:[q],responses:[{recording:{hash:'saved'},transcript:text,content:old,azure}]}));
+ let calls=0;const options={...s,username,kind:'mock',reassess:true,startedBefore:20,questionTypes:['rl'],mockCallModel:async()=>{calls++;return review();}};
  const r=await recoverLatest(options);assert.equal(r.recovered,1);assert.equal(calls,1);
- const a=await s.mockStore.get(uid,mock);assert.equal(a.responses[0].content.scoringModel,'gpt-6.1-sol');assert.deepEqual(a.responses[0].azure,azure);
+ const a=await s.mockStore.get(username,mock);assert.equal(a.responses[0].content.scoringModel,'gpt-6.1-sol');assert.deepEqual(a.responses[0].azure,azure);
  assert.deepEqual(a.responses[0].contentScoreHistory[0].previous,old);
  await recoverLatest(options);assert.equal(calls,1);
  await assert.rejects(recoverLatest({...options,username:'pppp'}),/Invalid reassessment/);
