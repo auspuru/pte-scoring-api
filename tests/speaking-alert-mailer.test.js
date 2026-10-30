@@ -2,6 +2,10 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { createAlertMailer } = require('../speaking-alert-mailer');
+test('generic mock mail settings reuse the same provider and override legacy aliases',()=>{
+  const {from,mailer}=createAlertMailer({env:{MOCK_ALERT_TRANSPORT:'resend',MOCK_ALERT_FROM:'generic@example.test',SPEAKING_MOCK_ALERT_FROM:'legacy@example.test',RESEND_API_KEY:'test-key'}});
+  assert.equal(from,'generic@example.test');assert.equal(mailer.provider,'resend');assert.equal(mailer.configured,true);
+});
 const env = { RESEND_API_KEY: 'test-key', SPEAKING_MOCK_ALERT_FROM: 'alerts@example.test' };
 const message = { from: 'IPT <alerts@example.test>', to: 'auspuru@gmail.com', replyTo: 'alerts@example.test', subject: 'Staff attention', text: 'Saved attempt needs checking.', messageId: '<unique-attempt@example.test>' };
 const response = (status, data) => ({ status, ok: status >= 200 && status < 300, json: async () => data });

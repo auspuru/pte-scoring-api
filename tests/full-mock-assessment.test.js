@@ -15,6 +15,14 @@ const media = require('../full-mock/recording');
 const { installFullMock } = require('../full-mock/api');
 const paper = loadPaper();
 const accessBase = require('../content/full-mock/access-compatible-sources.json');
+test('The alert-wiring upgrade resumes the pinned pre-alert snapshot and retains successful assessments',async t=>{
+  const f=await fixture(t),baseline=require('../content/full-mock/alerts-compatible-sources.json');
+  assert.equal(digest(baseline),'7fe217fe37f2b2e2803d911b1de3db15ccb8170f57523502508f2e0b46e2d42d');
+  const original={...structuredClone(f.engine.snapshot),scoringSources:structuredClone(baseline)};
+  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+  await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
+  assert.deepEqual((await f.state()).assessment.snapshot,original);
+});
 const full = q => adapters.result(q, adapters.maxima(q));
 async function fixture(t, options = {}) {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'full-mock-assessment-')), store = createStore({ directory });

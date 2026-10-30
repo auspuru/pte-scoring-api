@@ -10,6 +10,8 @@ test('Release checks cannot use production storage, paid providers or mail', () 
   for (const key of Object.keys(source).filter(k => !['PATH', 'NODE_ENV', 'RAILWAY_VOLUME_MOUNT_PATH'].includes(k))) assert.equal(sanitized[key], '');
   assert.equal(sanitized.RAILWAY_VOLUME_MOUNT_PATH, undefined);
   assert.equal(sanitized.PATH, '/bin');
+  assert.equal(releaseEnvironment({MOCK_ALERTS_ENABLED:'true',SPEAKING_MOCK_ALERTS_ENABLED:'true'}).MOCK_ALERTS_ENABLED,'false');
+  assert.equal(releaseEnvironment({MOCK_ALERTS_ENABLED:'true',SPEAKING_MOCK_ALERTS_ENABLED:'true'}).SPEAKING_MOCK_ALERTS_ENABLED,'false');
   assert.equal(source.DATABASE_URL, 'private');
 });
 

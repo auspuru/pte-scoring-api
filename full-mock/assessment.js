@@ -35,15 +35,20 @@ function stateFor(value) { return { version: VERSION, snapshot: structuredClone(
 // Exact production baselines may adopt these audited transport/recovery fixes.
 // Native graders, models, weights, paper and saved successful grades stay pinned.
 const COMPATIBLE_BASES = [
-  [require('../content/full-mock/assessment-completion-compatible-sources.json'), '7fe217fe37f2b2e2803d911b1de3db15ccb8170f57523502508f2e0b46e2d42d'],
+  [require('../content/full-mock/assessment-completion-compatible-sources.json'), 'ddaf791fda201c7b3424f6dc298472fd646d623a8b4bd8b104d8eea998b712d0'],
   [require('../content/full-mock/navigation-compatible-sources.json'), '348f9fb6beac5e43e1cc1d58ff4125414a44864799bd53354d6c194a375e6749'],
   [require('../content/full-mock/access-compatible-sources.json'), '275016a6cdf793dbd6ef7a0750bc10294a601d87ab8e4e0faa74418ea2419556'],
-  [require('../content/full-mock/media-compatible-sources.json'), '50f715d2da0f112e96756269018adcbb9b642701f361d31958f2fa990947d88b']
+  [require('../content/full-mock/media-compatible-sources.json'), '50f715d2da0f112e96756269018adcbb9b642701f361d31958f2fa990947d88b'],
+  [require('../content/full-mock/alerts-compatible-sources.json'), '7fe217fe37f2b2e2803d911b1de3db15ccb8170f57523502508f2e0b46e2d42d']
 ];
 function compatibleTransportUpgrade(saved, current) {
   const baseline = COMPATIBLE_BASES.find(([value, hash]) => digest(value) === hash && digest(saved.scoringSources) === hash)?.[0];
   if (!baseline) return false;
   const allowed = new Set(['full-mock/access.js','full-mock/api.js','full-mock/assessment.js','full-mock/recording.js','full-mock/store.js','full-mock/report.js']);
+  // Alert wiring does not change a grader. Permit only the reviewed before/after
+  // server pair, rather than allowing arbitrary future changes to server.js.
+  if(baseline.files['server.js'].sha256==='14980c74f5a99b1ef65b656550a790b2469c5ed86cd0c4c2e1eff3c590768d8e'
+    && current.scoringSources.files['server.js'].sha256===ALERT_SERVER_SHA256)allowed.add('server.js');
   const before = baseline.files, after = current.scoringSources.files;
   // Only the audited practice-navigation revision may change this shared file.
   // Its exported transcription function is byte-for-byte unchanged.
@@ -57,6 +62,7 @@ function compatibleTransportUpgrade(saved, current) {
     || Object.keys(before).some(name => !allowed.has(name) && digest(before[name]) !== digest(after[name]))) return false;
   return digest({ ...saved, scoringSources:current.scoringSources }) === digest(current);
 }
+const ALERT_SERVER_SHA256='a952f788eb10c493a3614796bf5b5d8f9af985a51f23e6ffb681e6cd22886459';
 function recoverableUploadDelay(job, response) {
   const segments = response?.segments.filter(value => !value.cancelled && value.chunkCount !== 0) || [];
   return job?.status === 'pending' && job.reason === 'late-recording' && segments.length === 1

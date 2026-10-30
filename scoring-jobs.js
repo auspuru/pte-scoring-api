@@ -4,7 +4,7 @@ const fs=require('node:fs/promises'),path=require('node:path'),crypto=require('n
 const canonical=value=>Array.isArray(value)?value.map(canonical):value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(key=>[key,canonical(value[key])])):value;
 const hash=value=>crypto.createHash('sha256').update(Buffer.isBuffer(value)||typeof value==='string'?value:JSON.stringify(canonical(value))).digest('hex');
 function createJobs({pool,directory,table,now=Date.now}={}){
-  if(!['speaking_answer_jobs','academy_di_jobs','speaking_mock_alert_jobs','admin_alert_test_jobs','academy_azure_jobs'].includes(table))throw Error('Invalid job namespace.');
+  if(!['speaking_answer_jobs','academy_di_jobs','speaking_mock_alert_jobs','admin_alert_test_jobs','academy_azure_jobs','mock_admin_event_jobs','mock_test_watch_jobs'].includes(table))throw Error('Invalid job namespace.');
   let ready,lock=Promise.resolve();
   const file=id=>path.join(directory,hash(id)+'.json');
   async function initialise(){return ready||=Promise.resolve().then(async()=>{

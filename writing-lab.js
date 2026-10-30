@@ -102,7 +102,7 @@ function present(a) {
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation } : {}) }));
   return result;
 }
-function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, overallGrader = null, speakingAllowed = require('./speaking-access').allowed }) {
+function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, overallGrader = null, onMockError = async()=>{}, speakingAllowed = require('./speaking-access').allowed }) {
   const router = express.Router(), store = createStore(pool, directory), pending = new Map();
   const reviewer = overall.createReviewer({ store, callModel:overallGrader });
   const retryableSwt = (result,question) => !!(swtGrader && question?.type === 'swt' && result
@@ -170,6 +170,9 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       });
     });
     pending.set(key, task);
+    task.catch(()=>{
+      if(a.kind==='mock')void Promise.resolve().then(()=>onMockError({engine:a.module==='listening'?'listening':'writing',username:uid,attemptId:a.id,title:a.title,operation:'assessment',code:'ASSESSMENT_FAILED'})).catch(()=>{});
+    });
     // Also clean up tasks rejected before they ever enter the worker queue
     // (for example when the bounded queue is full).
     task.finally(() => {

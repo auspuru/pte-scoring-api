@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "65caa90433b497a7cc147b9500122809c9bccfef",
+  "baseCommit": "f3fdea752897cfcffee56bcc92948e418a9c7673",
   "checkedAt": "2026-10-30",
-  "scope": "Complete background Essay review, independent delivery evidence and explicit stronger DI review after invalid evidence. Exact compatibility retains saved snapshots and successful grades; native validators, maxima and weights remain unchanged.",
+  "scope": "Complete background Essay review, independent delivery evidence and explicit DI review after invalid output. Preserve mock alerts, exact submitted source snapshots and successful grades; native validators, maxima and weights remain unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "fe718d1c86d0b6495de166c5d38923ac45ec218b694f81fc2147cede65596675",
+        "sha256": "6c477989d636c89136276a80180a75e29033859804668d4ce9e8836a35018891",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -165,7 +165,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "14980c74f5a99b1ef65b656550a790b2469c5ed86cd0c4c2e1eff3c590768d8e",
+        "sha256": "a952f788eb10c493a3614796bf5b5d8f9af985a51f23e6ffb681e6cd22886459",
         "version": null
       },
       "situation-content-policy.js": {

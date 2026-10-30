@@ -3,7 +3,7 @@ const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 
 function releaseEnvironment(source) {
-  const env = { ...source, NODE_ENV: 'test' };
+  const env = { ...source, NODE_ENV: 'test', MOCK_ALERTS_ENABLED:'false', SPEAKING_MOCK_ALERTS_ENABLED:'false' };
   // Railway exposes service variables during builds. Release tests must never
   // connect to student storage, send mail, or consume paid provider credits.
   for (const key of ['PGURL', 'DATABASE_URL', 'DATABASE_PUBLIC_URL', 'FULL_MOCK_PREVIEW_USERS', 'FULL_MOCK_PREVIEW_ALL', 'ANTHROPIC_API_KEY',
