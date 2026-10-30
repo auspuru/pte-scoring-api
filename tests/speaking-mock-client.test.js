@@ -233,6 +233,22 @@ test('Task-weighted reports update with question marks and never fall back to a 
  assert.doesNotMatch(html,/37\.5%|31\.25%|>75</);assert.match(h.nodes.get('sm-assessment-status').textContent,/27 of 27 content scores available/);
 });
 
+test('a completed short response explains withheld delivery estimates while showing the published practice score',async t=>{
+ const h=await harness(t),{id,questions}=await sampleReport(h),index=questions.findIndex(q=>q.type==='ra');
+ await h.lab.store.update('alice',id,a=>{
+  const r=a.responses[index];r.recording={mime:'audio/webm',hash:'short-recording',data:Buffer.alloc(200,2).toString('base64')};
+  r.transcript='one two three';r.transcriptionStatus='assessed';r.content.total=3;
+  r.azure={status:'assessed',recordingHash:'short-recording',pronunciation:{score:null,raw:80},fluency:{score:null,raw:70},deliveryEvidence:{sufficient:false,durationSeconds:6.2,spokenWords:3}};return a;
+ });
+ await h.click({sm:'resume',id});await h.click({sm:'review',index:String(index)});
+ assert.match(h.nodes.get('sm-results-summary').innerHTML,/27 of 27 responses assessed/);
+ assert.match(h.nodes.get('sm-results-summary').innerHTML,/no delivery credit/);
+ assert.match(h.nodes.get('sm-review-details').innerHTML,/Short response/);
+ assert.match(h.nodes.get('sm-review-details').innerHTML,/no delivery points are awarded/);
+ assert.match(h.nodes.get('sm-review-details').innerHTML,/Unavailable/);
+ assert.equal(h.requests.filter(r=>r.url.endsWith('/retry')).length,0);
+});
+
 test('Provider comparison shows two explicitly labeled totals using the same content and each provider audio traits',async t=>{
  const h=await harness(t),{id}=await sampleReport(h),combined=require('../speaking-mock-combined');
  await h.lab.store.update('alice',id,a=>{

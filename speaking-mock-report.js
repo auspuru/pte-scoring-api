@@ -4,7 +4,8 @@ const {confirmed}=require('./speaking-content-recovery');
 const manual=require('./speaking-manual-delivery');
 const {hash}=require('./scoring-jobs');
 
-const VERSION='speaking-task-weighted-azure-2026-10-27.1';
+const VERSION='speaking-task-weighted-azure-2026-10-30.1';
+const INSUFFICIENT_SPEECH_NOTE='This response has too little speech for reliable pronunciation and fluency estimates. Its saved content points count; no delivery points are awarded in this practice result.';
 // Pearson's rounded average Speaking contributions total 101, not 100.
 // Normalise their relative weights; never silently change RTS from 13 to 12.
 const WEIGHTS=Object.freeze({ra:9,rs:16,di:31,rl:13,sgd:19,rts:13});
@@ -41,6 +42,19 @@ function deliveryTraits(response,provider){
   }
   return {...values,missing,manualTraits};
 }
+function confirmedInsufficientSpeech(q,response,provider){
+  // This is a terminal practice-credit policy, not an invented acoustic grade.
+  // Only a successful, recording-matched Azure assessment can establish it.
+  const result=response?.[provider],evidence=result?.deliveryEvidence;
+  if(provider!=='azure'||result?.status!=='assessed'||unavailable(result)
+    ||!response?.recording?.hash||result.recordingHash!==response.recording.hash
+    ||response.transcriptionStatus!=='assessed'||!response.transcript?.trim()
+    ||evidence?.sufficient!==false||!Number.isFinite(evidence.durationSeconds)||evidence.durationSeconds<=0
+    ||!Number.isInteger(evidence.spokenWords)||evidence.spokenWords<1||result.deliveryFailureTraits?.length)return false;
+  for(const name of ['pronunciation','fluency'])if(!bounded(result[name]?.raw,100)||unavailable(result[name]))return false;
+  const expected=require('./speaking-delivery').deliveryEvidence(q,response.transcript,evidence.durationSeconds,{contentIndependent:true});
+  return !expected.sufficient&&expected.spokenWords===evidence.spokenWords;
+}
 function questionResult(a,q,response,index,provider){
   const cmax=contentMaximum(q),maximum=cmax===null?null:cmax+10;
   const base={index,questionId:q.id,type:q.type,maximum,contentMaximum:cmax,content:null,pronunciation:null,fluency:null,total:null,manualTraits:[]};
@@ -57,6 +71,11 @@ function questionResult(a,q,response,index,provider){
   const content=response.content.total;
   if(content===0)return {...base,status:'content-gated',content:0,pronunciation:0,fluency:0,total:0,missing:[]};
   const traits=deliveryTraits(response,provider);
+  if(traits.missing.length&&confirmedInsufficientSpeech(q,response,provider)){
+    const pronunciation=traits.pronunciation??0,fluency=traits.fluency??0;
+    return {...base,...traits,content,pronunciation,fluency,status:'insufficient-speech',missing:[],
+      total:content+pronunciation+fluency,deliveryNote:INSUFFICIENT_SPEECH_NOTE,deliveryCreditPolicy:'minimum-speech-no-credit-v1'};
+  }
   return {...base,...traits,content,status:traits.missing.length?'pending':'scored',
     total:traits.missing.length?null:content+traits.pronunciation+traits.fluency};
 }
@@ -83,6 +102,7 @@ function providerReport(a,provider){
     questionCount:included.length,originalQuestionCount:rows.length,assessedCount:included.filter(r=>r.total!==null).length,
     excludedCount:excluded.length,excludedQuestions:excluded.map(r=>({index:r.index,number:a.questions.slice(0,r.index+1).filter(q=>q.type!=='intro').length,questionId:r.questionId,title:a.questions[r.index].title,note:r.exclusion.note})),
     unansweredCount:rows.filter(r=>r.status==='unanswered').length,contentGatedCount:rows.filter(r=>r.status==='content-gated').length,
+    insufficientSpeechCount:rows.filter(r=>r.status==='insufficient-speech').length,
     manualOverrideCount:rows.filter(r=>r.manualTraits.length).length,
     missingQuestions:included.filter(r=>r.total===null).map(r=>({index:r.index,missing:r.missing})),
     coverageValid,supported,fullProfile:missingTypes.length===0,missingTypes,weightTotal,byType,questions:rows};
