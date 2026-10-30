@@ -4,8 +4,9 @@ const bank=require('../content/speaking-bank');
 function validate() {
   const manifest=require('../content/speaking-audio-manifest')();
   let recordings=0;
-  assert.equal(bank.questions.length,30+require('../content/di-user-predictions.json').length+require('../content/rts-original-practice.json').length+require('../content/user-speaking-oct24.json').length);assert.equal(new Set(bank.questions.map(q=>q.id)).size,bank.questions.length);
-  for(const type of Object.keys(bank.types))assert.equal(bank.questions.filter(q=>q.type===type).length,type==='di'?5+require('../content/di-user-predictions.json').length:type==='rts'?6+require('../content/rts-original-practice.json').length:type==='rl'?9:5);
+  const discussions=require('../content/user-sgd-oct30.json');
+  assert.equal(bank.questions.length,30+require('../content/di-user-predictions.json').length+require('../content/rts-original-practice.json').length+require('../content/user-speaking-oct24.json').length+discussions.length);assert.equal(new Set(bank.questions.map(q=>q.id)).size,bank.questions.length);
+  for(const type of Object.keys(bank.types))assert.equal(bank.questions.filter(q=>q.type===type).length,type==='di'?5+require('../content/di-user-predictions.json').length:type==='rts'?6+require('../content/rts-original-practice.json').length:type==='rl'?9:type==='sgd'?5+discussions.length:5);
   for(const q of bank.questions) {
     assert(q.sample&&q.sample.trim(),q.id+' sample');
     if(['ra','rts'].includes(q.type))assert(q.text.split(/\s+/).length<=60,q.id+' prompt length');
@@ -18,6 +19,15 @@ function validate() {
       assert(entry,q.id);assert.equal(entry.bytes,bytes.length);
       assert.equal(entry.audioSha256,crypto.createHash('sha256').update(bytes).digest('hex'));
       assert.equal(entry.textSha256,crypto.createHash('sha256').update(q.text).digest('hex'));
+      if(q.type==='sgd') {
+        assert.equal(new Set(entry.voices).size,3,q.id+' distinct recorded voices');
+        if(q.source?.date==='2026-10-30') {
+          assert(q.text.startsWith('Narration: '+q.narration+'\n'),q.id+' narration');
+          assert.deepEqual(Object.keys(entry.speakerVoices),['Speaker 1','Speaker 2','Speaker 3']);
+          assert.equal(new Set(Object.values(entry.speakerVoices)).size,3,q.id+' stable speaker voices');
+          assert.deepEqual(entry.turnSpeakers,q.turns.map(t=>t[0]),q.id+' recorded turn order');
+        }
+      }
       const bounds={rs:[3,9],rl:[45,90],sgd:[90,180],rts:[5,35]}[q.type];
       assert(entry.seconds>=bounds[0]&&entry.seconds<=bounds[1],q.id+' duration');
     }

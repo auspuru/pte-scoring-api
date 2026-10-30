@@ -1,0 +1,616 @@
+[
+  {
+    "id": "sgd-user-20261030-01",
+    "type": "sgd",
+    "title": "Tackling a college essay",
+    "narration": "Three students are discussing how to tackle the challenge of writing a college essay.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Guys, I'm really struggling with this essay. It's so much more difficult than high school, and I have no idea where to start. It's just overwhelming. I keep rereading the prompt, but I'm still not sure if I'm interpreting it correctly."
+      ],
+      [
+        "Speaker 2",
+        "Hey, don't worry too much about it. The first thing you should do is to make sure you understand the question. Trying to write without a clear idea of what you're supposed to be discussing will just make things harder. Maybe try breaking the prompt down into smaller parts or even talk to your professor after class to clarify what they're looking for."
+      ],
+      [
+        "Speaker 3",
+        "Yeah. You don't need to start by writing the summary or introduction. Just start with the main content first. Get all your ideas down, and then you can organize them into a logical order later. I always do a brain dump first just writing everything I know or think about the topic without worrying about structure."
+      ],
+      [
+        "Speaker 2",
+        "That's true. Once you have your main points, you can write a draft and then go back and revise. You might find it easier to write the summary once you've done that. And don't forget, we're here to help, too. We can proofread your draft and give you some feedback. If you want, we could even set up a study session this weekend to go over your outline together."
+      ],
+      [
+        "Speaker 1",
+        "That sounds like a good plan. I feel much better about this now. I think I'll try the brain dump method tonight and then maybe share my rough points with you tomorrow."
+      ],
+      [
+        "Speaker 3",
+        "The writing center on campus is also a great resource. They can help you brainstorm ideas and even review your essay before you submit it."
+      ],
+      [
+        "Speaker 2",
+        "Exactly, don't hesitate to use the resources available to you. And take breaks too when you find yourself stuck. Sometimes stepping away for a bit can help clear your mind and give you a fresh perspective. I always set a timer like 45 minutes of writing, then a 10-minute break. It keeps me from burning out."
+      ],
+      [
+        "Speaker 1",
+        "Yeah, you guys make a lot of sense. I'll start by understanding the question and then move on from there. And I'll definitely use the writing center's help, too. Thank you so much! I was so stressed earlier, but now I actually have a clear starting point."
+      ],
+      [
+        "Speaker 3",
+        "You're welcome! Just remember to take it one step at a time. Writing an essay doesn't have to be a huge, insurmountable task. You're capable of breaking it down and conquering it, piece by piece. And honestly, your first draft doesn't have to be perfect just getting something on paper is already progress."
+      ],
+      [
+        "Speaker 2",
+        "Exactly, remember we're only a call away. We all struggle at times, but that's how we learn and grow. You've got this!"
+      ]
+    ],
+    "facts": [
+      "The discussion concerns helping a student who feels overwhelmed by a college essay and is unsure about the prompt.",
+      "Speaker 2 recommends understanding the question, breaking it into parts or asking the professor for clarification.",
+      "Speaker 3 recommends brainstorming or a brain dump before organising the main content; the introduction or summary can wait.",
+      "Speaker 2 offers peer proofreading, feedback and a study session, and recommends regular breaks to avoid burnout.",
+      "Speaker 3 recommends the campus writing center and reassures the student that an imperfect first draft is progress.",
+      "Speaker 1 feels reassured and plans to clarify the question, brainstorm, share ideas and use the writing center."
+    ],
+    "sample": "The students discuss how to approach a difficult college essay. The first speaker feels overwhelmed and is unsure how to interpret the prompt. The second recommends breaking down the question or asking the professor for clarification, then drafting and revising with peer feedback. The third suggests getting ideas down before worrying about structure and using the campus writing center. The second also recommends regular breaks to avoid burnout, while the third stresses that an imperfect first draft is still progress. The first speaker accepts this advice and plans to brainstorm, share rough points and seek support. Overall, the discussion moves from anxiety to a manageable writing plan.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-10-30",
+      "image": "AdobeExpressPhotos_a720df8ed6be4d7fa5bfd18d7ae3c3cf_CopyEdited.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%"
+  },
+  {
+    "id": "sgd-user-20261030-02",
+    "type": "sgd",
+    "title": "AI tools for academic assignments",
+    "narration": "Three students are debating over the pros and cons of using AI tools for academic assignments, gathered at a cozy corner table in the library lounge.",
+    "turns": [
+      [
+        "Speaker 1",
+        "I have serious concerns about relying on AI for academic work. Last week, I reviewed a peer's paper that was clearly AI-generated - it sounded polished but completely lacked original thought. What's the point of education if we're not developing our own thinking abilities?"
+      ],
+      [
+        "Speaker 2",
+        "I completely agree. The bigger issue is academic integrity. My professor just announced that any detected AI-generated content will result in automatic failure. It's becoming impossible to trust what's authentic anymore. Remember how we used to spend hours in the library actually engaging with sources? That struggle is where real learning happens."
+      ],
+      [
+        "Speaker 3",
+        "I understand your concerns, but I think you're overlooking the positive aspects. AI tools have been incredibly helpful for overcoming writer's block and organizing my thoughts. The outlining feature alone has saved me hours of frustration. It's not about replacing thinking - it's about enhancing it."
+      ],
+      [
+        "Speaker 1",
+        "But that's exactly the problem! When we rely on AI for organization and structure, we're missing out on developing those crucial skills ourselves. I've noticed my analytical abilities have declined since I started using these tools last semester."
+      ],
+      [
+        "Speaker 2",
+        "And what about the classroom experience? If everyone comes to class with AI-polished contributions, how do we have genuine discussions? The imperfections and hesitations in our conversations are where the most interesting insights often emerge."
+      ],
+      [
+        "Speaker 3",
+        "I see your points, but consider the accessibility benefits. For students with learning differences or those struggling with academic writing, AI tools provide crucial support that might not otherwise be available. It's not about perfect papers - it's about giving everyone a fair chance to express their ideas. These tools can help bridge gaps for neuro diverse students or those writing in a second language, allowing their ideas to be heard more clearly."
+      ],
+      [
+        "Speaker 1",
+        "I appreciate that perspective, but I worry we're creating a dependency. What happens when these tools are no longer available? Will we still know how to think for ourselves? We need to ensure we're not sacrificing fundamental skills for short-term convenience, as true intellectual development comes from working through challenges independently."
+      ],
+      [
+        "Speaker 2",
+        "That's my concern too. The value of education isn't just in the final product - it's in the struggle to get there. If we shortcut that process with AI, we're missing the most important part of learning."
+      ],
+      [
+        "Speaker 3",
+        "I guess we'll have to agree to disagree. I still believe that when used responsibly, AI can be a valuable tool rather than a threat to genuine learning. The key is finding the right balance."
+      ]
+    ],
+    "facts": [
+      "The students debate the benefits and risks of AI tools for academic assignments.",
+      "Speaker 1 worries that polished AI work lacks original thought and that relying on AI weakens analytical and organisational skills.",
+      "Speaker 1 also warns about dependency and sacrificing independent intellectual development for convenience.",
+      "Speaker 2 raises academic integrity, an announced automatic-failure policy and the loss of authentic classroom discussion.",
+      "Speaker 2 believes engaging with sources and struggling through the learning process matter more than the final product alone.",
+      "Speaker 3 values AI for overcoming writer’s block, organising thoughts and supporting students with learning differences or a second language.",
+      "They remain divided: Speaker 3 advocates responsible, balanced use rather than agreeing to reject AI."
+    ],
+    "sample": "The students debate AI use in academic assignments. The first speaker argues that polished AI writing can lack original thought and warns that dependence may weaken students’ analytical and organisational abilities. The second agrees, raising academic integrity, possible failure penalties and the loss of authentic classroom discussion. Both believe that working through difficulties is central to learning. In contrast, the third speaker finds AI useful for overcoming writer’s block and organising ideas, and highlights its accessibility benefits for students with learning differences or language barriers. The discussion ends without full agreement: the first two remain concerned, while the third supports responsible, balanced use.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-10-30",
+      "image": "AdobeExpressPhotos_c608cedb33034dafb40cf6931a521c44_CopyEdited.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%"
+  },
+  {
+    "id": "sgd-user-20261030-03",
+    "type": "sgd",
+    "title": "Campus part-time jobs",
+    "narration": "Three students are debating the pros and cons of campus part-time jobs, gathered at a corner table in the student lounge, the air filled with the faint smell of coffee and the rustle of textbook pages.",
+    "turns": [
+      [
+        "Speaker 1",
+        "I think working part-time on campus is a total waste of energy. Last month I took a job at the library desk, and between shelving books and scanning IDs, I barely had any mental capacity left for my coursework. I ended up dozing off during my morning lectures twice last week."
+      ],
+      [
+        "Speaker 2",
+        "Actually, I find my part-time job at the academic office really helpful. It forces me to manage my time better. I used to procrastinate all afternoon, but now I block out my shifts and study hours in advance. Plus, I'm earning my own spending money it feels good not to have to ask my parents for every little thing."
+      ],
+      [
+        "Speaker 3",
+        "But the workload is no joke. I tried working at the campus café last semester and it drained me completely. Some days I'd finish my shift at 8 pm, and then still have to write a lab report due at midnight. I got so stressed I had to quit after a month. It's not just about time it's the mental toll."
+      ],
+      [
+        "Speaker 1",
+        "Exactly! And let's be honest most of these jobs don't even relate to our future careers. I'd rather join a student club or work on a project that actually builds my resume. Stuffing envelopes or swiping cards isn't going to help me get into grad school."
+      ],
+      [
+        "Speaker 2",
+        "I see what you mean, but you're overlooking the soft skills. I've learned to talk to supervisors, handle complaints, and show up on time that's real-world experience. And it's not always about the job itself; it's about showing you can balance responsibilities."
+      ],
+      [
+        "Speaker 3",
+        "I guess, but I still think it depends on your schedule. If you're taking 18 credits like I am this semester, adding a job is just unrealistic. The stress isn't sustainable. Maybe if the university limited work hours to under 10 per week... but even then, I'd rather use that time to review or sleep."
+      ],
+      [
+        "Speaker 1",
+        "Same. I'd prefer a work-study program that's more flexible and aligned with my major. Maybe assisting a professor with research instead of stacking books. That way I'm earning and learning at the same time. Otherwise, it just feels like trading precious study hours for tasks that don't contribute to my long-term goals."
+      ],
+      [
+        "Speaker 2",
+        "That's a fair point. I wouldn't say no to a more relevant job either. But still, even a simple job teaches discipline. And let's be real not all of us can get those research assistant roles. Sometimes starting with a basic job can actually open doors to those better opportunities later on."
+      ],
+      [
+        "Speaker 3",
+        "Well, if I'm going to work, I'd want it to mean something beyond the pay check. Otherwise, I'd rather focus on my grades. There has to be a balance. Burnout is real, and no amount of money is worth compromising both my health and academic performance."
+      ]
+    ],
+    "facts": [
+      "The discussion weighs campus part-time jobs against study demands and wellbeing.",
+      "Speaker 1 finds library work exhausting and insufficiently related to future career goals.",
+      "Speaker 1 would prefer flexible work-study or research assistance aligned with their major.",
+      "Speaker 2 says office work improves time management, financial independence, communication, reliability and discipline.",
+      "Speaker 2 accepts that relevant work is preferable but argues basic jobs can lead to better opportunities.",
+      "Speaker 3 describes café work causing stress, quitting after a month, and an unsustainable workload with 18 credits.",
+      "Speaker 3 prioritises health and grades and considers limited hours, while the group recognises the need for balance without fully agreeing on the value of campus work."
+    ],
+    "sample": "The students discuss whether campus part-time jobs are worthwhile. The first speaker says library work drains energy and offers little career relevance, preferring flexible work connected to their major, such as research assistance. The second values office work for income, better time management and transferable skills, arguing that basic jobs can also lead to better opportunities. The third describes quitting a café job because of stress and conflicting deadlines, and believes heavy study loads leave little room for employment. Although more relevant work appeals to the group, their views remain different. The discussion highlights balancing income and experience against academic performance and health.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-10-30",
+      "image": "AdobeExpressPhotos_c0b1846dbca24098b0490884d3e4956a_CopyEdited.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%"
+  },
+  {
+    "id": "sgd-user-20261030-04",
+    "type": "sgd",
+    "title": "On-campus and off-campus housing",
+    "narration": "Three students are talking about their living experiences in on-campus dorms and off-campus housing.",
+    "turns": [
+      [
+        "Speaker 1",
+        "I live in a house off campus with my friends. It's quite far from the school, but I am lucky because I live close to bus stops and it is very convenient. Also, our landlord is nice and takes care of things like cleaning and other problems around the house."
+      ],
+      [
+        "Speaker 2",
+        "I live in the school dormitory, which is very convenient, and there are places where I can study. Actually, I'd be quite happy to share a house with friends off campus, but the rent is too expensive. Also, I don't want to get up early, and the dormitory is very close to the teaching buildings."
+      ],
+      [
+        "Speaker 3",
+        "I also live in the school dormitory. If anything in the dorm breaks, it gets repaired soon, so students don't have to bother with it. Some friends living outside have problems with water and have to wait for a long time to have it fixed."
+      ],
+      [
+        "Speaker 1",
+        "That's honestly a huge advantage of living on campus. Even though our landlord is responsible and helpful, off-campus maintenance is really slow in general. We once had a water leakage issue and waited nearly a week for someone to fix it, which was really troublesome."
+      ],
+      [
+        "Speaker 2",
+        "While dorm life has plenty of benefits, it definitely comes with some annoying downsides as well. The fire alarm in our dormitory building often goes off in the middle of the night. Whenever the alarm goes off, we have to leave the building and wait until it has been checked. I'm fed up with being forced to get out of bed and evacuate outside because of fire alarms on cold winter nights."
+      ],
+      [
+        "Speaker 3",
+        "I totally agree with your opinion. I've experienced two fire alarms in the dorm, and both times they were caused by someone using a toaster illegally in the building. Can't they find the people who are cooking illegally and deal with them more quickly? Still, I think the system is quite safe, so I accept this accommodation plan."
+      ],
+      [
+        "Speaker 1",
+        "I had no idea dorm life had such annoying safety issues. Living off-campus definitely gives us more private space and flexible schedules. We can cook freely in our own kitchen without violating any campus rules, and we never suffer from sudden fire alarms at night."
+      ],
+      [
+        "Speaker 2",
+        "That sounds really relaxing, but off-campus accommodation still has obvious drawbacks. Apart from the high rent and slow maintenance, you also have to spend plenty of time on daily housework and commuting every single day."
+      ],
+      [
+        "Speaker 3",
+        "Exactly. Every living option has its own pros and cons. On-campus dorms are affordable, safe and time-saving, while off-campus houses provide more freedom and privacy. It all depends on personal study habits and lifestyle choices."
+      ]
+    ],
+    "facts": [
+      "The students compare on-campus dormitories with off-campus shared housing.",
+      "Speaker 1 values living with friends off campus, nearby buses, privacy, freedom and flexible cooking, but describes slow repairs.",
+      "Speaker 2 values dormitory convenience, study spaces, affordability and proximity to teaching buildings.",
+      "Speakers 2 and 3 complain about night-time fire alarms and evacuations; Speaker 3 still considers the dormitory safe.",
+      "Speaker 3 highlights quick on-campus repairs, unlike some off-campus water problems.",
+      "Speaker 2 notes that off-campus housing adds rent, maintenance, housework and commuting burdens.",
+      "Speaker 3 concludes that each option has trade-offs and the choice depends on study habits and lifestyle."
+    ],
+    "sample": "The students compare university dormitories and off-campus housing. The first speaker enjoys sharing a house with friends, nearby transport and greater privacy and freedom, but acknowledges that repairs can be slow. The second values affordable dormitory accommodation close to classrooms and study spaces, while the third highlights prompt maintenance. However, both dormitory residents complain about disruptive fire alarms at night, although the third still considers the system safe. The second also notes the higher rent, housework and commuting associated with living off campus. They conclude that dormitories offer convenience and affordability, whereas private housing offers independence, and the best choice depends on individual habits and priorities.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-10-30",
+      "image": "AdobeExpressPhotos_5b59236be7d34fce8617748fa561a571_CopyEdited.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%"
+  },
+  {
+    "id": "sgd-user-20261030-05",
+    "type": "sgd",
+    "title": "Choosing courses for next semester",
+    "narration": "three students are discussing which course to take next semester.",
+    "turns": [
+      [
+        "Speaker 1",
+        "So, have you guys checked out the course list for next semester? I skimmed through it, and I think we should pick something that's actually helpful for our major to make learning more meaningful. I'm considering research or design-survey courses. For me, high grades are not everything. As long as a course brings personal benefits and supports our future careers, that is good enough."
+      ],
+      [
+        "Speaker 2",
+        "Absolutely! I was thinking the exact same thing. There is no value in choosing an easy-high-grade course with no practical relevance. We ought to select subjects that build real-world practical skills. Curiosity will drive us to explore deeper and bring long-term rewards. I am interested in the business course, but it involves statistics, and I am not confident about my data-handling ability."
+      ],
+      [
+        "Speaker 3",
+        "Honestly, I believe personal interest should be the top priority, even if the subject is not tightly linked to our major. As a business student, I am really attracted by languages and cross-cultural content. That is why I plan to sign up for Spanish next semester. I hold the view that genuine interest helps us stay focused and pass assessments, so Spanish is my final pick."
+      ],
+      [
+        "Speaker 1",
+        "I agree interest plays an important role. Still, purely interesting courses with no major-related value can feel like a waste of time. We need to think about input-output efficiency and future job-hunting advantages. Meanwhile, course difficulty cannot be ignored; being able to pass the final exam should be a realistic goal for us."
+      ],
+      [
+        "Speaker 2",
+        "I actually disagree that Spanish has no practical value for business majors. Language skills are great assets in today's global marketplace. Whether you negotiate with overseas clients, cooperate in multicultural teams, or travel for business work, foreign-language communication brings us obvious competitive edges."
+      ],
+      [
+        "Speaker 3",
+        "To be honest, I did not weigh those career-related advantages too carefully when I made my choice. My decision mainly comes from my real passion for Spanish culture and the language itself. When you are truly fascinated by a subject, you naturally pay more attention and devote more energy to your studies. And even if the coursework gets difficult, this inner motivation can help you get through and pass."
+      ],
+      [
+        "Speaker 1",
+        "That makes sense. So there is not just one single correct way to choose courses. We have to balance practical career benefits, personal interest and the difficulty of each subject before we make our final decisions."
+      ],
+      [
+        "Speaker 2",
+        "Right. Everyone's priorities are different. Some people focus more on career preparation, while others value personal interest more. There is no one-size-fits-all answer for course selection."
+      ],
+      [
+        "Speaker 3",
+        "Exactly. The most important thing is that we are clear about our own goals, no matter which subject we end up enrolling in."
+      ]
+    ],
+    "facts": [
+      "The students discuss choosing next semester’s courses by balancing practical relevance, interest and difficulty.",
+      "Speaker 1 prioritises courses useful for their major and career rather than high grades alone, but also considers whether the final exam is manageable.",
+      "Speaker 2 initially supports practical skills and is interested in business but worries about statistics and data handling.",
+      "Speaker 3 chooses Spanish mainly from personal interest and believes genuine motivation supports attention, effort and passing difficult coursework.",
+      "Speaker 2 challenges the idea that Spanish lacks practical value, citing international clients, multicultural teams and business travel.",
+      "They agree there is no single correct course choice and students should understand their own priorities and goals."
+    ],
+    "sample": "The students discuss selecting courses for the next semester. The first speaker values subjects relevant to their major and future career, while also considering difficulty and the ability to pass. The second agrees about practical skills but worries about the statistics involved in a business course. The third prioritises personal interest and chooses Spanish, explaining that enthusiasm sustains motivation even when coursework is difficult. The second also argues that languages have practical benefits for international business, challenging the idea that Spanish lacks career value. They ultimately agree that course selection should balance career benefits, interest and difficulty according to each student’s goals.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-10-30",
+      "image": "AdobeExpressPhotos_5d900e909af5430d8a6e327577da855a_CopyEdited.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%"
+  },
+  {
+    "id": "sgd-user-20261030-06",
+    "type": "sgd",
+    "title": "AI as a proofreading tool",
+    "narration": "three students are discussing using artificial intelligence as a proofreading tool.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hey guys, have you ever thought about using AI for proofreading? I just got feedback on my essay from my tutor, and she said I need to proofread it. AI can check grammar for me and provide me some ideas, but I don't know if I should use AI tools because I don't want to be suspected of plagiarism."
+      ],
+      [
+        "Speaker 2",
+        "There is indeed a significant risk of being accused of plagiarism if you use AI. Many universities are now implementing strict policies about AI-generated content. If the AI suggests substantial changes to your sentence structures or replaces too many of your original words, the final work might not truly be yours anymore."
+      ],
+      [
+        "Speaker 3",
+        "Well, I don't mind using AI as long as it is for educational purposes and is used responsibly. AI can be used because students often use some computer software to check grammar, and are supposed to use others' words to improve their own vocabulary when learning linguistic expressions. In the past, we used dictionaries to check grammar, and it's really no different from using AI."
+      ],
+      [
+        "Speaker 1",
+        "Well, I get your point. I think the line when it comes to using AI for proofreading can get really blurry. I definitely don't want to be suspected of plagiarism, so is there another way I can improve my assignments next time without using AI?"
+      ],
+      [
+        "Speaker 2",
+        "I'm not sure. I still think this needs to be considered carefully. For example, when Word marks mistakes with red and green underlines, is that considered AI-assisted proofreading? Different institutions and even different professors may have different standards for what counts as acceptable AI use. I'd be especially careful with major assignments or final papers."
+      ],
+      [
+        "Speaker 3",
+        "Actually, I've already been using AI on my tablet for proofreading for a while now. But, I still get asked by my teacher to do another proofread myself. I think the key thing is, you won't get any new ideas from AI. AI will only make your existing ideas clearer and more correct. It's really just an advanced tool that helps polish your work, not something that creates content for you. The fundamental thinking and ideas still need to come from you."
+      ],
+      [
+        "Speaker 1",
+        "Okay, I see. Thanks. I think I'll go back and ask for advice from my tutor about it first. I really don't want to be accused of plagiarism, especially since I'm not clear on where the line is drawn. It's better to be safe and get proper guidance rather than risk any academic consequences."
+      ],
+      [
+        "Speaker 2",
+        "That makes total sense. Since acceptance standards vary widely among teachers and universities, relying on your own judgment can be risky. It is wise to get clear instructions directly from your tutor."
+      ],
+      [
+        "Speaker 3",
+        "I agree. No matter whether you end up using AI tools or not, your own original ideas should always stay at the core of your writing."
+      ]
+    ],
+    "facts": [
+      "The discussion concerns whether AI proofreading is acceptable after Speaker 1 receives essay feedback.",
+      "Speaker 1 is unsure where assistance becomes plagiarism and wants to improve safely.",
+      "Speaker 2 warns that substantial rewriting can undermine authorship and that institutional and teacher standards vary.",
+      "Speaker 2 uses Word’s error underlines to illustrate the unclear boundary and advises particular caution for major assignments.",
+      "Speaker 3 supports responsible educational proofreading to polish the student’s own ideas rather than generate content, and still proofreads personally.",
+      "Speaker 1 decides to ask the tutor for guidance, and the others support clear instructions and keeping original thinking central."
+    ],
+    "sample": "The students discuss using AI to proofread assignments. The first speaker wants help after receiving essay feedback but fears plagiarism. The second warns that extensive changes may undermine authorship and explains that acceptable use varies between institutions and teachers. The third supports responsible proofreading as a way to clarify existing ideas, comparing it with other language tools, while stressing that students must supply their own thinking and still review their work. Because the boundary is unclear, the first speaker decides to ask the tutor for advice. The others support this approach and agree that original ideas should remain central to the writing.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-10-30",
+      "image": "AdobeExpressPhotos_95b98ff55b634ccf9d9b046e304c8cd5_CopyEdited.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%"
+  },
+  {
+    "id": "sgd-user-20261030-07",
+    "type": "sgd",
+    "title": "Making the university more eco-friendly",
+    "narration": "Three students are discussing how to make their university more eco-friendly.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hey fellas, I think there is still room for improvement when it comes to making our campus more eco-friendly. The staff should install recycling stations on key spots around the university, making it convenient for us to recycle plastic bottles, which can reduce landfill waste."
+      ],
+      [
+        "Speaker 2",
+        "Actually, we should reduce waste from the source, namely, reduce the amount of waste produced by us instead of having more bins. Just the campus cafe alone uses hundreds of paper cups every day. People should use fewer single-use coffee cups at the cafe and bring their own reusable cups."
+      ],
+      [
+        "Speaker 3",
+        "You are right. It is good for the cafeteria to use recycled paper, but they give out too many napkins at one time. Also, some packaging is too excessive, such as five layers of packaging for an apple."
+      ],
+      [
+        "Speaker 1",
+        "Yes, and students can also play a role here. We should take only what we actually need and avoid wasting food, paper, and other resources, by which we would also save money in the long run."
+      ],
+      [
+        "Speaker 3",
+        "If students bring their own bottles and cups, the university could reduce the amount of waste while students could develop more environmentally friendly habits. Another thing is more sustainable transportation. The university should build better bike paths, and provide more bike parking spaces, in order to encourage students to ride bikes with dual benefits, which is eco-friendly and great for their physical health."
+      ],
+      [
+        "Speaker 2",
+        "For students rushing between lectures, bicycles can cut their travel time. But there would be limited impact because few students own bikes. The university should establish a shared bicycle station."
+      ],
+      [
+        "Speaker 3",
+        "That sounds practical because students would not need to buy or maintain their own bicycles. They could simply rent a bike when they need one and return it after class."
+      ],
+      [
+        "Speaker 1",
+        "The university should also encourage carpooling, like having cheap parking to reward carpooling students or even free parking. It can also reduce the number of cars on campus and lower traffic congestion, especially during busy hours in the morning and afternoon."
+      ],
+      [
+        "Speaker 2",
+        "Yes, carpooling allows students to get together. Anyway, better public transport should also be considered, like buses or trains. If public transport is more convenient and reliable, students may be less dependent on private cars. This could make a bigger difference in the long term."
+      ],
+      [
+        "Speaker 1",
+        "We are a part of this green community, and should join in the eco-friendly movement. There are a lot of things to do, but we should start from small ones by ourselves, like bringing our own cups to the cafeteria, and carpooling."
+      ]
+    ],
+    "facts": [
+      "The group discusses reducing university waste and making transport more sustainable.",
+      "Speaker 1 proposes convenient recycling stations, using only needed resources and parking incentives for carpooling.",
+      "Speaker 2 prioritises preventing waste at its source by replacing disposable coffee cups with reusable cups.",
+      "Speaker 3 criticises excessive napkins and packaging and supports reusable bottles and cups.",
+      "Speaker 3 proposes better bike paths and parking; Speaker 2 adds shared bicycles because few students own bikes, and Speaker 3 supports renting them.",
+      "Speaker 2 also advocates reliable public transport to reduce car dependence.",
+      "They support both university improvements and small personal actions such as reusable cups and carpooling."
+    ],
+    "sample": "The students discuss making their university greener through waste reduction and sustainable transport. The first speaker proposes recycling stations, avoiding unnecessary resource use and encouraging carpooling with cheaper parking. The second argues that preventing waste is more useful than adding bins and recommends reusable cups. The third agrees and criticises excessive packaging and napkins, then suggests better cycling facilities. The second adds a bike-sharing scheme because few students own bicycles and calls for more reliable public transport. The third supports shared bikes as a convenient alternative to ownership. Overall, they favour practical campus improvements alongside personal habits such as reusing cups and sharing journeys.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-10-30",
+      "image": "AdobeExpressPhotos_c034a2a7a7ce4ae7803434ec7f1f8110_CopyEdited.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%"
+  },
+  {
+    "id": "sgd-user-20261030-08",
+    "type": "sgd",
+    "title": "Adjusting to university life",
+    "narration": "three students are discussing the new experience at university.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hey everyone! Can't believe we've been at university for a month already. How's everyone feeling about it? I come from a small town where there wasn't much to do, mostly just watching movies or playing football with friends. But now that I'm here in the big city, everything feels so fresh and exciting."
+      ],
+      [
+        "Speaker 2",
+        "University life doesn't bring huge changes to me because I spent high school years in a big city. Students in high school organized activities and gatherings, but I wasn't of the outgoing type and seldom went out. I didn't enjoy social or entertainment activities."
+      ],
+      [
+        "Speaker 3",
+        "That is interesting. Personally, I believe the biggest challenge for freshmen is keeping a sensible balance between countless university activities and academic study. There are so many events both on campus and off campus, and many new students easily get overwhelmed by them."
+      ],
+      [
+        "Speaker 1",
+        "Exactly. Now that I have moved to this big city, almost everything around me feels incredibly fresh and exciting. There are concerts, exhibitions and social events I could never access in my small hometown. I am eager to explore as much as I possibly can."
+      ],
+      [
+        "Speaker 2",
+        "To be honest, I rarely took part in those high school social or entertainment events. They never really appealed to me. My daily routine here works in my own way. I tend to go out and hang out with people during weekdays when my study pressure is relatively light."
+      ],
+      [
+        "Speaker 3",
+        "A lot of my classmates burn themselves out from too many activities. They end up feeling worn out, with little energy left to review lessons or finish homework. Some of them can only catch up on proper rest during weekends or official holidays."
+      ],
+      [
+        "Speaker 1",
+        "Still, I realize there is a hidden risk. It is surprisingly easy for newcomers like me to get distracted by all these brand new attractions in the city. I have to remind myself frequently not to neglect my schoolwork while enjoying city life."
+      ],
+      [
+        "Speaker 2",
+        "I save most of my homework, laundry and house chores for weekends. If there is an invitation, I may join my friends' parties on Saturday nights. It serves as a nice little break after a full week of classes and casual outings."
+      ],
+      [
+        "Speaker 3",
+        "My strategy is to finish all my urgent study tasks immediately after class before I go out for fun. This way, I make sure important school assignments will never get delayed. Even so, I run into my own trouble, and I only plan short breaks, yet these breaks often stretch out and become far longer than expected."
+      ]
+    ],
+    "facts": [
+      "The students compare their first month at university and approaches to balancing study and social activities.",
+      "Speaker 1 comes from a small town and is excited by city concerts, exhibitions and social events.",
+      "Speaker 1 recognises the risk of distraction and wants to avoid neglecting coursework.",
+      "Speaker 2 already lived in a city and was not very outgoing, so university is less of a change.",
+      "Speaker 2 socialises on lighter weekdays, reserves most homework and chores for weekends and sometimes attends Saturday parties.",
+      "Speaker 3 warns that too many activities cause burnout and incomplete study, and completes urgent assignments before going out.",
+      "Speaker 3 admits that intended short breaks can become too long; the discussion highlights different routines rather than one agreed schedule."
+    ],
+    "sample": "The students compare their experiences of starting university. The first speaker is excited by the opportunities of city life after growing up in a small town, but recognises that new attractions could distract from coursework. The second finds the transition less dramatic because of a city background and follows a personal routine of weekday outings and weekend homework and chores. The third stresses the danger of overcommitting to activities and becoming too exhausted to study, preferring to finish urgent tasks before socialising. However, even this speaker struggles when short breaks become longer than planned. Their experiences highlight the need to balance enjoyment, rest and academic responsibilities.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-10-30",
+      "image": "AdobeExpressPhotos_66afbceabb2a4a9eb4192205279345ef_CopyEdited.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%"
+  },
+  {
+    "id": "sgd-user-20261030-09",
+    "type": "sgd",
+    "title": "Presenting at a sociology conference",
+    "narration": "Two students and a tutor are discussing their presentation at a sociology conference.",
+    "turns": [
+      [
+        "Speaker 1",
+        "There will be a great sociology conference taking place this summer, and I have been looking forward to this academic event for a long time. I really want to attend the conference and give a presentation about my research, because I can get valuable and professional feedback from many experienced scholars and peers."
+      ],
+      [
+        "Speaker 2",
+        "I totally feel the same way. I also hope to take part in this big academic presentation conference. So far, only two professors have watched and commented on our research, so we really need more external opinions. Luckily, there are many common points in our separate studies, so we plan to deliver a joint presentation together."
+      ],
+      [
+        "Speaker 3",
+        "I appreciate your enthusiasm for academic participation, but I have to be honest with you. I don't think it is a good idea for you two to deliver a formal oral presentation at such a professional conference, because neither of you has any related presentation experience, and it will be extremely challenging for new learners."
+      ],
+      [
+        "Speaker 1",
+        "We understand that oral presentations at formal conferences are very challenging for us. However, our research is still at the early stage, and attending this conference is a precious chance for us to practice and improve ourselves. A joint presentation can also make our research content more complete and logical."
+      ],
+      [
+        "Speaker 2",
+        "Exactly. We were actually planning to write a formal proposal and ask for your approval before deciding to attend the conference. We know our research still has many imperfections, so diverse feedback from the conference will be very helpful for our future revision and in-depth study."
+      ],
+      [
+        "Speaker 3",
+        "I have a more suitable suggestion for both of you. Instead of doing a stressful oral presentation, you can try poster presentation as observers this time. It is much less stressful, and you can still get useful feedback from passing participants and teachers at the conference."
+      ],
+      [
+        "Speaker 1",
+        "I think your suggestion about poster presentation is really good and practical. It perfectly matches our current academic level and research progress. I am fully prepared to start designing and preparing for our poster presentation seriously."
+      ],
+      [
+        "Speaker 2",
+        "I totally agree with this arrangement as well. Doing a joint poster presentation is definitely a wise choice for our early-stage research. It allows us to accumulate formal conference experience without too much pressure, and it can lay a solid foundation for our future oral presentations."
+      ],
+      [
+        "Speaker 3",
+        "That's great to hear. This low-pressure but high-reward participation method can help you gain academic insights, communicate with other researchers, and polish your research findings, which is far more suitable for your current situation."
+      ]
+    ],
+    "facts": [
+      "Two students and a tutor discuss presenting early-stage research at a summer sociology conference.",
+      "Speaker 1 wants professional feedback and experience, and sees a joint presentation as a way to strengthen the research.",
+      "Speaker 2 wants broader feedback beyond two professors, notes overlapping research and plans a joint proposal for tutor approval.",
+      "Speaker 3 is the tutor and thinks a formal oral presentation would be too challenging given the students’ lack of experience.",
+      "The tutor suggests a poster presentation as a less stressful way to receive feedback and meet researchers.",
+      "Both students accept the joint poster format as suitable for their research stage and preparation for future oral presentations."
+    ],
+    "sample": "Two students discuss presenting their research at a sociology conference with their tutor. The first wants professional feedback and practice, while the second explains that their overlapping projects could form a joint presentation and benefit from opinions beyond their two professors. The tutor appreciates their enthusiasm but considers a formal oral presentation too demanding because they lack experience. The students explain the value of improving their early-stage research and seeking approval. The tutor then suggests a poster presentation as a less stressful alternative that still offers feedback and contact with researchers. Both students accept this proposal as appropriate for their current level and useful preparation for future presentations.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-10-30",
+      "image": "AdobeExpressPhotos_81c94fc923614f90a355000e6c6e3c69_CopyEdited.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%"
+  },
+  {
+    "id": "sgd-user-20261030-10",
+    "type": "sgd",
+    "title": "The new semester timetable",
+    "narration": "Three students are discussing the new timetable for this semester.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hey, guys! Have you checked out the timetable for the new semester yet? I just looked at mine this morning, and I found my schedule is really full this term. I've got several early morning classes, which means I have to get up really early almost every day. My new timetable is quite packed, leaving me little spare time in the morning."
+      ],
+      [
+        "Speaker 2",
+        "Yeah, I've also switched to a new timetable this semester. Most of my classes start at 9 a.m., and I have to say I really don't like this arrangement. I always feel so tired and sleepy in the morning, so I definitely need a cup of coffee before class to wake myself up, otherwise I can't focus at all. Getting up early every single day has already made me feel exhausted."
+      ],
+      [
+        "Speaker 3",
+        "Oh, well. I've checked my timetable, and it's quite different from both of yours. I don't have any very early morning classes; most of my classes are scheduled in the afternoon, which I really prefer. I have many seminars and lectures arranged throughout the daytime, but at least I don't need to rush out of bed in a hurry."
+      ],
+      [
+        "Speaker 1",
+        "Honestly, these early morning classes have completely messed up my daily routine. I'm not used to getting up so early, and I often feel distracted during the first lesson. It's tough to stay energetic and efficient when I haven't had enough rest in the morning."
+      ],
+      [
+        "Speaker 2",
+        "I totally agree with you. Morning classes are such a struggle for me. Even though my classes start at nine o'clock, I still need to get up early to wash up, have breakfast and walk to the teaching building. I basically rely on coffee to stay awake for my whole morning study."
+      ],
+      [
+        "Speaker 3",
+        "I'm really lucky in comparison. Having all my classes in the afternoon allows me to sleep longer in the morning and prepare well for my study. I can finish my revision, preview my courses and organize my notes calmly before heading to class."
+      ],
+      [
+        "Speaker 1",
+        "I wish I could adjust my timetable a little bit. A fully packed schedule with non-stop morning classes makes my semester feel extremely busy and stressful. I barely have time to relax or do extra reading in the morning."
+      ],
+      [
+        "Speaker 2",
+        "Same here. I hope I can gradually get used to this early class routine later. Drinking coffee every morning is not a long-term solution, but for now, it's the only way for me to keep up with my study progress."
+      ],
+      [
+        "Speaker 3",
+        "Although I don't have early classes, my afternoon seminars and lectures are intensive and require lots of concentration. Still, I think studying in the afternoon suits my personal study habit better, making my overall schedule more manageable and comfortable."
+      ]
+    ],
+    "facts": [
+      "The students compare their new semester timetables, especially morning and afternoon classes.",
+      "Speaker 1 has a packed early-morning schedule that disrupts sleep and routine, reduces concentration and leaves little time to relax or read.",
+      "Speaker 1 wishes the timetable could be adjusted.",
+      "Speaker 2 has mostly 9 a.m. classes, feels exhausted and relies on coffee to stay awake after getting ready and walking to class.",
+      "Speaker 2 hopes to adapt and recognises that daily coffee is not a long-term solution.",
+      "Speaker 3 prefers afternoon classes because they allow more sleep, revision and preparation before class.",
+      "Speaker 3 acknowledges that afternoon teaching is demanding but finds the schedule better suited to personal study habits; no timetable change is agreed."
+    ],
+    "sample": "The students compare their new semester timetables. The first speaker has many early classes and finds that the packed schedule disrupts sleep, concentration and time for reading or relaxation, so would like an adjustment. The second also struggles with morning teaching, explaining that even nine o’clock classes require getting up early and relying on coffee. This speaker hopes to adapt but recognises that coffee is not a lasting solution. In contrast, the third prefers afternoon classes, which allow more sleep and time to revise and prepare beforehand. Although afternoon sessions are intensive, they suit this speaker’s study habits. The discussion highlights how class timing affects students differently.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-10-30",
+      "image": "AdobeExpressPhotos_123ccab49b41462ea7bfcd41e81ac640_CopyEdited.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%"
+  }
+]
