@@ -32,16 +32,17 @@ const LABELS = { content:'Content', form:'Form', grammar:'Grammar', vocabulary:'
 const clean = (value, maximum = 3000) => typeof value === 'string' ? value.trim().slice(0, maximum) : '';
 const texts = value => Array.isArray(value) ? value.filter(x => typeof x === 'string').slice(0, 6).map(x => clean(x)).filter(Boolean) : [];
 const pendingMedia = state => state.responses.reduce((n, response) => n + response.segments.filter(segment => !segment.cancelled && !segment.finished).length, 0);
-function reasonFor(job, trusted) {
+function reasonFor(job, trusted, recovering = false) {
   if (!trusted) return { code:'not-assessed', label:'Assessment pending', action:'Your saved response has not received a verified assessment.' };
   const code = job.result?.reason || job.reason || 'not-assessed';
   if (['late-recording','interrupted-recording','recording-integrity','recording-decode','recording-duration'].includes(code)) return { code, label:'Teacher review required', action:'The recording needs review before marks can be confirmed. Its saved evidence is retained.' };
   if (['recording-not-ready','missing-recording'].includes(code)) return { code, label:'Recording pending', action:'Keep the recording device online and retry pending saves. Missing audio is not scored as zero.' };
+  if (job.status === 'failed' && recovering) return {code:'assessment-pending',label:'Assessment pending',action:'Your response is saved. Feedback is being prepared automatically.'};
   if (job.status === 'failed') return { code:'assessment-unavailable', label:'Assessment interrupted', action:'Retry assessment to request the incomplete stages again. Completed stages are retained.' };
   return { code:'not-assessed', label:'Assessment pending', action:'This item is waiting for a verified assessment.' };
 }
-function feedbackFor(q, response, job, marks, trusted) {
-  if (marks.status !== 'assessed') return { overview:reasonFor(job, trusted).action, criteria:[], strengths:[], improvements:[], coverage:[], corrections:[], issues:[], changes:[] };
+function feedbackFor(q, response, job, marks, trusted, recovering) {
+  if (marks.status !== 'assessed') return { overview:reasonFor(job, trusted, recovering).action, criteria:[], strengths:[], improvements:[], coverage:[], corrections:[], issues:[], changes:[] };
   const result = job.result, content = job.stages?.content?.status === 'complete' ? job.stages.content.value : {};
   const native = result.native || {};
   const gated = result.gated === true;
@@ -70,7 +71,7 @@ function metadata(paper, state, at) {
     completedCount:state.responses.slice(1).filter(row => row.sealed).length, expectedCount:paper.questions.length, mediaPending:pendingMedia(state) };
 }
 function statusFor(state, result) {
-  return state.assessment?.displayStatus || (result.ready ? 'complete' : state.assessment?.status === 'complete' ? 'needs-attention' : state.assessment?.status) || 'not-requested';
+  return state.assessment?.displayStatus || (state.assessment?.status === 'needs-attention' && state.assessment.recovery?.status === 'scheduled' ? 'processing' : null) || (result.ready ? 'complete' : state.assessment?.status === 'complete' ? 'needs-attention' : state.assessment?.status) || 'not-requested';
 }
 function summary(paper, state, at = Date.now()) {
   const common = metadata(paper, state, at);
@@ -96,8 +97,8 @@ function buildReport(paper, state, at = Date.now()) {
     return { ...marks, number:index + 1, label:task.label, section:task.section, skills:[...task.skills], title:clean(q.title), question, reference,
       answer:structuredClone(response.answer), responseReason:clean(response.reason, 80), transcript:transcription, recordings,
       recovered:state.recoveries.filter(row => row.itemToken === response.token).map(row => ({ answer:structuredClone(row.answer), receivedAt:row.receivedAt, status:'needs-review' })),
-      assessment:marks.status === 'assessed' ? { code:'assessed', label:'Assessed' } : reasonFor(job, trusted),
-      feedback:feedbackFor(q, response, job, marks, trusted), practice:{ path:'#/' + GUIDANCE[q.type][0], instruction:GUIDANCE[q.type][1] } };
+      assessment:marks.status === 'assessed' ? { code:'assessed', label:'Assessed' } : reasonFor(job, trusted, state.assessment?.recovery?.status === 'scheduled'),
+      feedback:feedbackFor(q, response, job, marks, trusted, state.assessment?.recovery?.status === 'scheduled'), practice:{ path:'#/' + GUIDANCE[q.type][0], instruction:GUIDANCE[q.type][1] } };
   });
   const groups = TASKS.map(task => ({ type:task.type, label:task.label, section:task.section, skills:[...task.skills], ...result.groups[task.type],
     assessedCount:items.filter(item => item.type === task.type && item.status === 'assessed').length }));

@@ -221,3 +221,58 @@ test('Completion recovery retains every previously assessed item and the submitt
  allow=true;await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
  assert.deepEqual((await f.state()).assessment.snapshot,original);for(const [id,count]of calls)assert.equal(count,id===target?2:1);
 });
+
+test('Automatic recovery survives restart and competing workers, reuses saved stages and preserves completed marks',async t=>{
+ let at=1000,available=false,calls=new Map();const target=paper.questions.find(c=>c.question.type==='essay').question.id;
+ const implementation={assess:async(q,response,context)=>{
+  calls.set(q.id,(calls.get(q.id)||0)+1);
+  if(q.id===target&&!available)return{status:'failed',reason:'writing-unavailable',stages:{writing:{status:'failed',attemptedRun:context.run,uncertain:false},saved:{status:'complete',value:'verified stage'}}};
+  if(q.id===target)assert.equal(context.previous.saved.value,'verified stage');
+  return full(q);
+ }};
+ const f=await fixture(t,{now:()=>at,adapters:implementation});
+ await f.engine.request('alice',f.id);await f.engine.drain();const before=await f.state();
+ assert.equal(before.assessment.recovery.status,'scheduled');assert.equal(before.assessment.recovery.nextAt,31000);
+ const verified=Object.fromEntries(Object.entries(before.assessment.items).filter(([,j])=>j.status==='assessed'));
+ await f.engine.stop();
+ const replacements=[1,2].map(()=>createEngine({store:createStore({directory:f.directory}),now:()=>at,adapters:implementation}));f.engines.push(...replacements);
+ await replacements[0].recover();await replacements[0].drain();assert.equal(calls.get(target),1);
+ at=31000;available=true;await Promise.all(replacements.map(e=>e.recover()));await Promise.all(replacements.map(e=>e.drain()));
+ const after=await f.state();assert.equal((await replacements[0].results('alice',f.id)).ready,true);
+ assert.equal(after.assessment.recovery.retries,1);assert.equal(after.assessment.recovery.status,'complete');
+ assert.deepEqual(after.assessment.snapshot,before.assessment.snapshot);assert.deepEqual(after.responses,before.responses);
+ for(const [id,j]of Object.entries(verified))assert.deepEqual(after.assessment.items[id],j);
+ for(const [id,count]of calls)assert.equal(count,id===target?2:1);
+ await replacements[0].recover();await replacements[0].drain();assert.equal(calls.get(target),2);
+});
+
+test('Persistent failures stop after two automatic retries and remain visible to the admin watchdog',async t=>{
+ let at=1000,calls=0;const target=paper.questions[0].question.id;
+ const f=await fixture(t,{now:()=>at,adapters:{assess:async q=>{if(q.id!==target)return full(q);calls++;return{status:'failed',reason:'content-unavailable'};}}});
+ await f.engine.request('alice',f.id);await f.engine.drain();
+ for(const delay of [30000,120000]){const s=await f.state();assert.equal(s.assessment.recovery.nextAt,at+delay);at+=delay;await f.engine.recover();await f.engine.drain();}
+ const held=await f.state();assert.equal(calls,3);assert.equal(held.assessment.recovery.status,'exhausted');assert.equal(held.assessment.status,'needs-attention');
+ assert.equal(require('../mock-test-alert-sources').snapshot('full',held,{paper}).held,true);
+ at+=3600000;await f.engine.recover();await f.engine.drain();assert.equal(calls,3);assert.equal((await f.engine.results('alice',f.id)).assessedCount,64);
+});
+
+test('Automatic recovery skips uncertain requests and old held attempts while processing safe failures',async t=>{
+ let at=1000,calls=new Map(),available=false;const [uncertain,safe]=paper.questions.slice(0,2).map(c=>c.question.id);
+ const f=await fixture(t,{now:()=>at,adapters:{assess:async q=>{
+  calls.set(q.id,(calls.get(q.id)||0)+1);
+  if(q.id===uncertain)return{status:'failed',reason:'transcription-unavailable',stages:{transcription:{status:'failed',uncertain:true}}};
+  if(q.id===safe&&!available)return{status:'failed',reason:'content-unavailable'};
+  return full(q);
+ }}});
+ await f.engine.request('alice',f.id);await f.engine.drain();at+=30000;available=true;await f.engine.recover();await f.engine.drain();
+ const state=await f.state();assert.equal(calls.get(uncertain),1);assert.equal(calls.get(safe),2);assert.equal(state.assessment.recovery.status,'held');
+ await f.store.update('alice',f.id,state=>{delete state.assessment.recovery;return state;});
+ at+=3600000;await f.engine.recover();await f.engine.drain();assert.equal(calls.get(uncertain),1);
+});
+
+test('The recovery upgrade accepts its exact previous production snapshot without regrading successful items',async t=>{
+ const f=await fixture(t),original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/automatic-recovery-compatible-sources.json')};
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
+ assert.deepEqual((await f.state()).assessment.snapshot,original);
+});

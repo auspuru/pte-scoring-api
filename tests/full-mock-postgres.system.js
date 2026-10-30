@@ -80,3 +80,16 @@ test('PostgreSQL: two leased workers, failed-provider retries and process recove
   await engines[1].recover(); await engines[1].drain();
   assert.equal(calls.get(paper.questions[0].question.id), 3);
 });
+
+test('PostgreSQL: scheduled recovery is durable, waits for its deadline and has one worker after restart',async t=>{
+ const db=await database(t),store=createStore({pool:db.first});await store.initialise();const id=randomUUID();let at=1000,available=false,calls=new Map();
+ await store.create('alice',id,paper,make,at);await store.update('alice',id,state=>{session.end(state,paper,at);return state;});
+ const target=paper.questions.find(c=>c.question.type==='essay').question.id;
+ const implementation={assess:async q=>{calls.set(q.id,(calls.get(q.id)||0)+1);return q.id===target&&!available?{status:'failed',reason:'writing-unavailable'}:native(q);}};
+ const first=createEngine({store,now:()=>at,adapters:implementation});await first.request('alice',id);await first.drain();await first.stop();
+ assert(!(await store.assessmentQueue(at)).some(row=>row.id===id));
+ const engines=[1,2].map(()=>createEngine({store:createStore({pool:db.pool()}),now:()=>at,adapters:implementation}));t.after(()=>Promise.all(engines.map(e=>e.stop())));
+ at=31000;available=true;assert((await store.assessmentQueue(at)).some(row=>row.id===id));
+ await Promise.all(engines.map(e=>e.recover()));await Promise.all(engines.map(e=>e.drain()));
+ assert.equal((await engines[0].results('alice',id)).ready,true);for(const [key,count]of calls)assert.equal(count,key===target?2:1);
+});

@@ -5,7 +5,7 @@ function readingRecords(progress){
 }
 function snapshot(engine,a,record){
   if(!a)return null;
-  const base={id:a.id,title:a.title||a.name,isMock:true,submitted:a.status==='submitted',finishedAt:Number(a.finishedAt),ready:false,held:false,pending:0};
+  const base={id:a.id,title:a.title||a.name,isMock:true,submitted:a.status==='submitted',finishedAt:Number(engine==='full'?(a.submittedAt??a.finishedAt):a.finishedAt),ready:false,held:false,pending:0};
   if(engine==='reading'){
     base.isMock=!a.practiceUid&&Array.isArray(a.questions)&&a.questions.length>0;
     if(!base.isMock)return null;
@@ -51,9 +51,11 @@ function createSources({pool,speakingStore,writingStore,fullStore,loadReading}){
         if(!pool)return{rows:[],nextCursor:''};
         // Speaking submission notices do not need question text, transcripts or audio.
         const projection=engine==='speaking'?"data-'responses'-'questions'":column;
+        const timestamps=engine==='full'?['submittedAt','finishedAt']:['finishedAt'];
+        const submittedAt='COALESCE('+timestamps.map(field=>`CASE WHEN jsonb_typeof(${column}->'${field}')='number' THEN (${column}->>'${field}')::numeric END`).join(',')+',0)';
         const rows=(await pool.query(`SELECT username,${projection} AS value FROM ${table}
           WHERE id::text>$1 AND ${column}->>'status'='submitted'
-          AND CASE WHEN jsonb_typeof(${column}->'finishedAt')='number' THEN (${column}->>'finishedAt')::numeric ELSE 0 END >= $2
+          AND ${submittedAt} >= $2
           ORDER BY id LIMIT $3`,[cursor,since,limit])).rows;
         return{rows:rows.map(row=>({username:row.username,snapshot:snapshot(engine,row.value)})).filter(row=>row.snapshot?.isMock),nextCursor:rows.length===limit?rows.at(-1).value.id:''};
       }

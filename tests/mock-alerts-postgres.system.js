@@ -27,7 +27,10 @@ test('PostgreSQL recovery discovers all five mock types and concurrent alert wor
   await speaking.update('student',speakingId,()=>({id:speakingId,status:'submitted',finishedAt:time,assessment:{status:'ready'}}));
   await writing.update('student',writingId,()=>({id:writingId,kind:'mock',module:'writing',status:'submitted',finishedAt:time,questions:[{type:'swt'}],answers:['PRIVATE'],results:[{total:9,maximum:9}],overallFeedback:{status:'complete'}}));
   await writing.update('student',listeningId,()=>({id:listeningId,kind:'mock',module:'listening',status:'submitted',finishedAt:time,questions:[{type:'hcs'}],answers:['PRIVATE'],results:[{total:1,maximum:1}]}));
-  await full.create('student',fullId,{questions:[{}]},()=>({id:fullId,status:'submitted',finishedAt:time,questionCount:1,assessment:{status:'complete',items:{q:{status:'assessed'}}}}),time);
+  const paper=require('../full-mock/paper').loadPaper(),session=require('../full-mock/session');
+  await full.create('student',fullId,paper,(id,at)=>{const state=session.create(id,paper,at,{preview:true});session.end(state,paper,at);
+    state.assessment={status:'complete',items:Object.fromEntries(paper.questions.map(q=>[q.id,{status:'assessed'}]))};return state;},time);
+  assert.equal((await sources.full.get('student',fullId)).finishedAt,time);
   await pool.query('INSERT INTO user_data(username,data) VALUES($1,$2)',['student',JSON.stringify({readingProgress:{history:[{id:'reading-synthetic',done:true,finishedAt:time,questions:[{type:'mcsa'}],answers:{secret:'PRIVATE'}}]}})]);
   const second=await service();await Promise.all([first.monitor.check(),second.monitor.check()]);await Promise.all(services.map(s=>s.wait()));
   assert.equal(messages.length,5);assert.equal(new Set(messages.map(m=>m.messageId)).size,5);assert(messages.every(m=>m.to==='admin@example.test'&&!m.text.includes('PRIVATE')));

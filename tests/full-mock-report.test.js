@@ -212,3 +212,11 @@ test('Delayed review media cannot attach after switching questions, leaving the 
   release = null; const second = f.click('[data-fm="review-media"][data-kind="prompt"]'); await f.until(() => release);
   f.client.reset(); f.owner('bob'); release(); await second; assert.equal(f.document.querySelector('audio[src]'), null);
 });
+
+test('Scheduled recovery displays pending feedback without asking the student to submit again',()=>{
+ const state=complete(),id=paper.questions[0].id;state.assessment.status='needs-attention';state.assessment.recovery={status:'scheduled',retries:0,nextAt:30000};
+ Object.assign(state.assessment.items[id],{status:'failed',result:{status:'failed',reason:'content-unavailable'}});
+ const report=reports.buildReport(paper,state);assert.equal(report.ready,false);assert.equal(report.retryAvailable,false);assert.equal(report.assessmentStatus,'processing');
+ assert.equal(report.items[0].assessment.label,'Assessment pending');assert.match(report.items[0].feedback.overview,/automatically/);
+ state.assessment.recovery.status='exhausted';assert.equal(reports.buildReport(paper,state).retryAvailable,true);
+});

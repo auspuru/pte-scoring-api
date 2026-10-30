@@ -165,15 +165,18 @@ function createStore({ pool, directory }) {
     try { const row = JSON.parse(await fs.readFile(path.join(attemptDirectory(uid, id), 'audio', segment, sequence + '.json'), 'utf8')); return { sha256: row.sha256, mime: row.mime, bytes: Buffer.from(row.data, 'base64') }; }
     catch (error) { if (error.code === 'ENOENT') return null; throw error; }
   }
-  async function assessmentQueue() {
+  async function assessmentQueue(at = Date.now()) {
     await initialise();
     if (pool) return (await pool.query(`SELECT username,state->>'id' AS id,state->'assessment'->>'status' AS status
       FROM full_mock_attempts WHERE state->>'status'='submitted' AND (
-        state->'assessment'->>'status'='processing' OR (
-          state->'assessment'->>'status'='needs-attention' AND EXISTS (
-            SELECT 1 FROM jsonb_each(state->'assessment'->'items') AS job
-            WHERE job.value->>'status'='pending' AND job.value->>'reason'='late-recording')))
-      ORDER BY (state->'assessment'->>'status'='processing') DESC,updated_at LIMIT 100`)).rows.map(row => ({ uid:row.username, id:row.id, status:row.status }));
+        (state->'assessment'->>'status'='processing' AND
+          CASE WHEN jsonb_typeof(state#>'{assessment,lease,expiresAt}')='number' THEN (state#>>'{assessment,lease,expiresAt}')::numeric ELSE 0 END <= $1) OR (
+          state->'assessment'->>'status'='needs-attention' AND (
+            (state#>>'{assessment,recovery,status}'='scheduled' AND
+              CASE WHEN jsonb_typeof(state#>'{assessment,recovery,nextAt}')='number' THEN (state#>>'{assessment,recovery,nextAt}')::numeric <= $1 ELSE false END)
+            OR EXISTS (SELECT 1 FROM jsonb_each(state->'assessment'->'items') AS job
+              WHERE job.value->>'status'='pending' AND job.value->>'reason'='late-recording'))))
+      ORDER BY (state->'assessment'->>'status'='processing') DESC,updated_at LIMIT 100`, [at])).rows.map(row => ({ uid:row.username, id:row.id, status:row.status }));
     const rows = [];
     for (const dir of await fs.readdir(directory, { withFileTypes: true })) {
       if (!dir.isDirectory()) continue;
@@ -182,7 +185,11 @@ function createStore({ pool, directory }) {
       for (const id of index.value.ids.slice(-100)) {
         const saved = await readVersion(path.join(directory, dir.name, id, 'state'));
         const assessment = saved?.value.assessment;
-        if (saved?.value.status === 'submitted' && (assessment?.status === 'processing' || assessment?.status === 'needs-attention' && Object.values(assessment.items || {}).some(job => job.status === 'pending' && job.reason === 'late-recording'))) rows.push({ uid: index.value.owner, id, status:assessment.status });
+        const processing = assessment?.status === 'processing' && !(assessment.lease?.expiresAt > at);
+        const due = assessment?.recovery?.status === 'scheduled' && Number.isFinite(assessment.recovery.nextAt) && assessment.recovery.nextAt <= at;
+        const lateMedia = Object.values(assessment?.items || {}).some(job => job.status === 'pending' && job.reason === 'late-recording');
+        if (saved?.value.status === 'submitted' && (processing || assessment?.status === 'needs-attention' && (due || lateMedia)))
+          rows.push({ uid:index.value.owner, id, status:assessment.status });
       }
     }
     return rows.slice(0, 100);
