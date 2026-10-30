@@ -39,8 +39,10 @@ function present(a,now=Date.now(),{completeOnly=false,progress}={}){
     ...(submitted?{responses:a.questions.map((q,i)=>{
       const r=a.responses[i]||{};
       const exclusion=speakingReport.exclusionFor(a,q,i);
+      const result=speakingReport.questionResult(a,q,r,i,'azure');
       return {index:i,question:bank.publicQuestion(q,true),recording:!!r.recording,transcript:r.transcript||'',skipped:!r.recording,
         ...(exclusion?{exclusion:{reason:exclusion.reason,note:exclusion.note}}:{}),
+        ...(result.status==='insufficient-speech'?{deliveryOutcome:{status:result.status,note:result.deliveryNote}}:{}),
         content:exclusion?null:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{azure:exclusion?null:academy.deliveryForClient(r.content,q.type==='rs'?manualDelivery.effective(r,'azure'):r.azure)||null}};
     })}:{})};
 }

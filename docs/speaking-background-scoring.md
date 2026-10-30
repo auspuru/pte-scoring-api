@@ -51,3 +51,21 @@ Pronunciation and fluency in practice and mocks use Microsoft Azure exclusively.
 Visual Academy uses the existing shared service key to call the authenticated `/internal/v1/academy-azure` service in this portal. `POST /jobs` accepts verified PCM WAV, its hash and the automatic transcript. Azure jobs and audio are stored separately, deduplicated by a stable ID and fingerprint, and processed with chunk checkpoints and bounded retries. `GET /jobs/:id` exposes only status, receipt and native results. An authenticated `POST /jobs/:id/retry` accepts a unique `operation`, and requires `acknowledgeUncertain:true` for an uncertain Azure request after staff investigation. Audio expires a day after terminal completion, or after three days at most; job receipts expire after 90 days. Azure credentials stay in this service. The Academy holds its receipt, polls without a new provider request, and combines completed Azure marks with saved content.
 
 Deploy this portal first, then Academy. The Academy startup probe verifies authenticated Azure capabilities without consuming speech credits. Historical Academy GPT scores remain stored but are withheld by the current view; a new recording supplies Azure evidence because original Academy recordings were not retained. No bulk paid reassessment is performed.
+
+## Completed short responses (30 October 2026)
+
+A successful Azure assessment can confirm that a saved response is below the
+portal's existing minimum-speech safeguard. That is a completed, short answer,
+not a provider failure requiring perpetual retries. For the sectional practice
+aggregate, retain its confirmed content credit and full question denominator,
+with no credit for delivery traits that cannot be estimated reliably. Keep the
+original provider marks null and display an explicit short-response explanation.
+This is an institute practice-credit policy, not a measured zero pronunciation
+score or a claim about Pearson's conversion.
+
+This terminal outcome requires matching recording hashes, confirmed nonempty
+transcription, finite native Azure measurements for both traits, and positive
+duration/word evidence consistent with the existing safeguard. Missing audio,
+provider failures, stale evidence and incomplete native measurements still block
+publication. Existing held results can publish from saved checkpoints without
+retranscription, provider calls, exclusions or instructor overrides.
