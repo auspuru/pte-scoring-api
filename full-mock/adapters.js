@@ -84,7 +84,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         const traits = { ...(stages.delivery?.traits || {}) }; let raw, error;
         stages.delivery = { status: 'running', attemptedRun: run, traits, uncertain: true };
         await checkpoint(stages);
-        try { raw = await assessDelivery(recording, { question: q, transcript, transcribe: async () => transcript }); }
+        try { raw = await assessDelivery(recording, { question: q, transcript, transcribe: async () => transcript, contentIndependent: true }); }
         catch (caught) { error = caught; }
         for (const key of ['pronunciation','fluency']) {
           const trait = raw?.[key];
@@ -109,7 +109,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
       if (q.type === 'swt') value = await writing.gradeUnifiedSwt(q, text, swtGrader);
       else if (q.type === 'essay') {
         if (!essayGrader) throw Error('Essay assessment unavailable');
-        const assessed = await essayGrader.grade(q.text, text, '9', { feedbackV3: true, includeSample: false });
+        const assessed = await essayGrader.grade(q.text, text, '9', { feedbackV3: true, includeSample: false, totalTimeoutMs: 240000 });
         value = { ...assessed, version: assessed.scoring_version, maxima: maxima(q), total: assessed.scores?.total, maximum: Object.values(maxima(q)).reduce((sum, max) => sum + max, 0) };
       } else value = await writing.grade(q, text, writingContentModel);
       return normalise(q, value);

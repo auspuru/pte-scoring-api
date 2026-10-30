@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "07cf4bfb15356f1eb0529c3ac96c0e4564a931c8",
+  "baseCommit": "65caa90433b497a7cc147b9500122809c9bccfef",
   "checkedAt": "2026-10-30",
-  "scope": "Practice navigation separates saved responses from assessment. Exact audited baselines preserve saved Full Mock snapshots and successful grades; the shared exported transcription function is unchanged.",
+  "scope": "Allow background Essay review to finish and assess delivery independently of content coverage. Exact source compatibility retains saved snapshots and all successful grades; native graders, maxima, models and weights are unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -80,7 +80,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "940e500ccad7169994e3637557b3511c37e64489e626bdb803b13056559326f2",
+        "sha256": "3bf5da4bb74c71ceccf68570b9ba64e10766968c14b090363694903ffe84340c",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "a5ad473bfc9b0980fe85f661e2135fd1f571c0c26e0ab5902e60966ce3d6ddc5",
+        "sha256": "02c41a21e77228e9a416f7312fa1159225daba51c3e4e387e127fe709d7fba7f",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {

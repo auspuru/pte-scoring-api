@@ -202,3 +202,14 @@ test('Practice navigation upgrade preserves current production mock snapshots an
  await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
  assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
+
+
+test('Completion recovery retains every previously assessed item and the submitted snapshot',async t=>{
+ let allow=false,calls=new Map();const target=paper.questions.find(c=>c.question.type==='essay').question.id;
+ const f=await fixture(t,{adapters:{assess:async q=>{calls.set(q.id,(calls.get(q.id)||0)+1);return q.id===target&&!allow?{status:'failed',reason:'writing-unavailable'}:full(q);}}});
+ const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/assessment-completion-compatible-sources.json')};
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).assessedCount,64);
+ allow=true;await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
+ assert.deepEqual((await f.state()).assessment.snapshot,original);for(const [id,count]of calls)assert.equal(count,id===target?2:1);
+});

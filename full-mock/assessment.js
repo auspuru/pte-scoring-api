@@ -35,6 +35,7 @@ function stateFor(value) { return { version: VERSION, snapshot: structuredClone(
 // Exact production baselines may adopt these audited transport/recovery fixes.
 // Native graders, models, weights, paper and saved successful grades stay pinned.
 const COMPATIBLE_BASES = [
+  [require('../content/full-mock/assessment-completion-compatible-sources.json'), '7fe217fe37f2b2e2803d911b1de3db15ccb8170f57523502508f2e0b46e2d42d'],
   [require('../content/full-mock/navigation-compatible-sources.json'), '348f9fb6beac5e43e1cc1d58ff4125414a44864799bd53354d6c194a375e6749'],
   [require('../content/full-mock/access-compatible-sources.json'), '275016a6cdf793dbd6ef7a0750bc10294a601d87ab8e4e0faa74418ea2419556'],
   [require('../content/full-mock/media-compatible-sources.json'), '50f715d2da0f112e96756269018adcbb9b642701f361d31958f2fa990947d88b']
@@ -48,6 +49,10 @@ function compatibleTransportUpgrade(saved, current) {
   // Its exported transcription function is byte-for-byte unchanged.
   if (before['speaking-lab.js']?.sha256 === '76cd004fe38a26819d0621a985a12c439daaeaebaeda6f58b92e4120c40a7cb1'
     && after['speaking-lab.js']?.sha256 === '759f6aa54529eb5979aae0bb87b4663fabcf9ea0da3b3c61ecbf7972fadaf479') allowed.add('speaking-lab.js');
+  // This exact revision changes only assessment completion options: independent
+  // delivery evidence and the background Essay time budget. Retain saved marks.
+  if (before['full-mock/adapters.js']?.sha256 === '940e500ccad7169994e3637557b3511c37e64489e626bdb803b13056559326f2'
+    && after['full-mock/adapters.js']?.sha256 === '3bf5da4bb74c71ceccf68570b9ba64e10766968c14b090363694903ffe84340c') allowed.add('full-mock/adapters.js');
   if (Object.keys(before).sort().join() !== Object.keys(after).sort().join()
     || Object.keys(before).some(name => !allowed.has(name) && digest(before[name]) !== digest(after[name]))) return false;
   return digest({ ...saved, scoringSources:current.scoringSources }) === digest(current);

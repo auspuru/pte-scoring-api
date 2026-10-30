@@ -93,7 +93,7 @@ test('SWT, Essay and SST consume the shared native graders and retain their indi
   const judged = { content_score:4, grammar_score:2, vocabulary_score:2, cohesion:'strong', summary_assessment:summary,
     grammar_annotations:[], vocabulary_annotations:[], consistency_reviewed:true, assessment_model:'claude-sonnet-4-6' };
   const service = adapters.createAdapters({ swtGrader:async (source, text) => { assert.equal(source, question); assert.equal(text, fixture.summary); return judged; },
-    essayGrader:{ grade:async (prompt, text, mode, options) => { assert.equal(prompt, q('essay').text); assert.equal(text, q('essay').sample); assert.equal(mode, '9'); assert.equal(options.includeSample, false); return { scores:{ content:5, form:2, grammar:2, vocabulary:2, spelling:2, linguistic:4, coherence:4, total:21 }, scoring_version:'shared-essay', scoreGate:{ status:'valid' } }; } },
+    essayGrader:{ grade:async (prompt, text, mode, options) => { assert.equal(prompt, q('essay').text); assert.equal(text, q('essay').sample); assert.equal(mode, '9'); assert.equal(options.includeSample, false); assert.equal(options.totalTimeoutMs,240000); return { scores:{ content:5, form:2, grammar:2, vocabulary:2, spelling:2, linguistic:4, coherence:4, total:21 }, scoring_version:'shared-essay', scoreGate:{ status:'valid' } }; } },
     writingContentModel:async () => ({ scores:{ content:4, form:2, grammar:2, vocabulary:2, spelling:2 }, formInvalid:false, formReason:'',
       feedback:Object.fromEntries(['content','form','grammar','vocabulary','spelling'].map(key => [key, 'Clear and appropriate.'])), strengths:['Relevant summary'], improvements:[], errors:[] }) });
   assert.equal((await service.assess(question, response([fixture.summary]))).total, 9);
@@ -157,4 +157,18 @@ test('Provider snapshots contain only concrete safe metadata and freeze their ow
   assert.throws(() => { saved.weighting.profiles.writing.weights.essay = 100; }, TypeError);
   const unsafe = assessment.configuration(); unsafe.essay.apiKey = 'secret'; assert.throws(() => assessment.snapshot(unsafe), /metadata/);
   const state = complete(); assert.equal(state.assessment.snapshotHash, digest(state.assessment.snapshot));
+});
+
+
+test('A short RS recording can receive independent delivery marks despite low reference coverage',async()=>{
+ const question={...q('rs'),text:'The new library opens early on weekdays.'},transcript='The library opens each morning today.';
+ const delivery=require('../speaking-delivery');
+ assert.equal(delivery.deliveryEvidence(question,transcript,3).sufficient,false);
+ const service=adapters.createAdapters({transcribe:async()=>transcript,assessDelivery:async(recording,options)=>{
+  const evidence=delivery.deliveryEvidence(question,transcript,3,options);
+  return {deliveryEvidence:evidence,pronunciation:{score:evidence.sufficient?3:null},fluency:{score:evidence.sufficient?4:null}};
+ }});
+ const r=await service.assess(question,{...response(),segments:[{}]},{recording:{}});
+ assert.equal(r.status,'assessed');assert.equal(r.scores.pronunciation,3);assert.equal(r.scores.fluency,4);
+ assert(r.scores.content>0&&r.scores.content<r.maxima.content);
 });
