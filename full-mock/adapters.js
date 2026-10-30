@@ -75,7 +75,9 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         const marked = asq.scoreTranscript(q, transcript);
         return { ...result(q, marked.scores, { nativeVersion: marked.version }), stages };
       }
-      const content = await stage('content', () => gradeSpeaking(q, transcript, speakingContentModel), value => value && Number.isInteger(value.total) && value.total >= 0 && value.total <= maxima(q).content
+      const contentModel = q.type === 'di' && stages.content?.status === 'failed' && typeof speakingContentModel === 'function'
+        ? (prompt, context) => speakingContentModel(prompt, { ...context, recoveryReview: true }) : speakingContentModel;
+      const content = await stage('content', () => gradeSpeaking(q, transcript, contentModel), value => value && Number.isInteger(value.total) && value.total >= 0 && value.total <= maxima(q).content
         && value.maximum === maxima(q).content && !value.score_provisional && !value.needs_semantic_review
         && (['ra','rs'].includes(q.type) || value.scoringMode === 'ai' && value.contentStatus === 'assessed'));
       if (!content) return failed('content-unavailable');
@@ -84,7 +86,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         const traits = { ...(stages.delivery?.traits || {}) }; let raw, error;
         stages.delivery = { status: 'running', attemptedRun: run, traits, uncertain: true };
         await checkpoint(stages);
-        try { raw = await assessDelivery(recording, { question: q, transcript, transcribe: async () => transcript }); }
+        try { raw = await assessDelivery(recording, { question: q, transcript, transcribe: async () => transcript, contentIndependent: true }); }
         catch (caught) { error = caught; }
         for (const key of ['pronunciation','fluency']) {
           const trait = raw?.[key];
@@ -109,7 +111,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
       if (q.type === 'swt') value = await writing.gradeUnifiedSwt(q, text, swtGrader);
       else if (q.type === 'essay') {
         if (!essayGrader) throw Error('Essay assessment unavailable');
-        const assessed = await essayGrader.grade(q.text, text, '9', { feedbackV3: true, includeSample: false });
+        const assessed = await essayGrader.grade(q.text, text, '9', { feedbackV3: true, includeSample: false, totalTimeoutMs: 240000 });
         value = { ...assessed, version: assessed.scoring_version, maxima: maxima(q), total: assessed.scores?.total, maximum: Object.values(maxima(q)).reduce((sum, max) => sum + max, 0) };
       } else value = await writing.grade(q, text, writingContentModel);
       return normalise(q, value);

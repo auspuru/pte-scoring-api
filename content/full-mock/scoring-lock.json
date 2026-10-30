@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "a03958c4e57307a0d6e68f84042308c2302d1016",
+  "baseCommit": "f3fdea752897cfcffee56bcc92948e418a9c7673",
   "checkedAt": "2026-10-30",
-  "scope": "Add administrator submission, error and delayed-report alerts across mock tests. Preserve exact audited Full Mock source baselines, successful grades, provider configuration, native grading and weighting.",
+  "scope": "Complete background Essay review, independent delivery evidence and explicit DI review after invalid output. Preserve mock alerts, exact submitted source snapshots and successful grades; native validators, maxima and weights remain unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -80,7 +80,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "940e500ccad7169994e3637557b3511c37e64489e626bdb803b13056559326f2",
+        "sha256": "41132b2eee6c0fd9402b6f6ee3831118f951fc48547037f8f2412f63fe280e76",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "624e40b54c59e647b209c8cd43901a8863af1dade302f98a3bdbfedfe948ab16",
+        "sha256": "6c477989d636c89136276a80180a75e29033859804668d4ce9e8836a35018891",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
