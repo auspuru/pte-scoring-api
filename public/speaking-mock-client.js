@@ -45,6 +45,7 @@
     function shell(html){imageViewer.close();host.innerHTML=html;images.bindFallback(host);host.onclick=click;host.onchange=e=>{if(e.target.id==='sm-check-heard'&&check){check.confirmed=!!e.target.checked;checkControls();}else reportChange(e);};host.onkeydown=reportKeydown;host.oninput=e=>{if(e.target.id==='sm-volume'&&prompt)prompt.volume=Number(e.target.value);};}
     function protectedMode(){env.PortalExamMode?.set(OWNER,a?.status==='active',host,{onEvent:event=>{if(a)api('/attempts/'+a.id+'/integrity',{events:[event]}).catch(()=>{});},onLock:()=>{stopPrompt();startCue.cancel();rsCue=null;played='';if(recorder?.state==='recording')recorder.stop();},onResume:()=>{if(a)refresh().catch(e=>message(e.message));}});}
     async function open(options={}){
+      if(check)release();
       if(owner&&owner!==identity())reset();stopPolling();owner=identity();if(!owner)return;host=doc.getElementById('speakingMockPane');const ticket=++serial;
       shell('<p role="status">Loading speaking mocks…</p>');
       try{const values=await Promise.all([api('/catalog'),api('/attempts')]);if(!valid(ticket))return;catalog=values[0];hub(values[1],options);}
@@ -100,12 +101,12 @@
       const audio=new env.Audio(active.url);active.audio=audio;
       audio.onended=()=>{if(check!==active||active.audio!==audio||!valid(active.ticket))return;active.played=true;doc.getElementById('sm-check-status').textContent='If you heard your voice clearly, confirm below to begin.';checkControls();};
       audio.onerror=()=>{if(check===active)message('The sample could not play. Check your headset connection and record another sample.');};
-      try{await audio.play();if(check===active)doc.getElementById('sm-check-status').textContent='Playing your sample…';}catch{if(check===active)message('Playback was blocked. Select Play my sample again.');}checkControls();
+      try{await audio.play();if(check===active){message('');doc.getElementById('sm-check-status').textContent='Playing your sample…';}}catch{if(check===active)message('Playback was blocked. Select Play my sample again.');}checkControls();
     }
     async function beginMock(){
       if(busy||!check?.blob?.size||!check.played||!check.confirmed)return;
       const {paperId,reattemptId}=check;startCue.unlock();busy=true;checkControls();const ticket=serial;
-      try{const ready=await env.PortalExamMode.prepare(OWNER,host);if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}
+      try{const ready=await env.PortalExamMode.prepare(OWNER,host,{immediate:true});if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}
         const id=env.crypto.randomUUID();a=await api(reattemptId?'/attempts/'+reattemptId+'/reattempt':'/attempts',reattemptId?{id}:{id,paperId});if(!valid(ticket))return;stopCheck();stopPolling();selected=null;capture=null;recordingPromise=null;played='';await begin();
       }catch(error){message(error.message||'Microphone access is required to start the speaking mock.');env.PortalExamMode?.set(OWNER,false,host);release();}
       finally{busy=false;checkControls();}
@@ -113,7 +114,7 @@
     async function resume(id){
       if(busy)return;startCue.unlock();busy=true;const ticket=serial;
       try{const saved=await api('/attempts/'+id);if(!valid(ticket))return;
-        if(saved.status==='active'){const ready=await env.PortalExamMode.prepare(OWNER,host);if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}}
+        if(saved.status==='active'){const ready=await env.PortalExamMode.prepare(OWNER,host,{immediate:true});if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}}
         a=saved;selected=null;reportFilter='all';reportSection='overview';responsePane='feedback';reviewSignature='';
         if(a.status==='active'){const blob=await pending('get',key(a.id,a.index));if(blob){done.add(key(a.id,a.index));await upload(blob,a.id,a.index);}await begin();}else{startCue.close();results();}
       }catch(error){message(error.message);env.PortalExamMode?.set(OWNER,false,host);}
@@ -143,12 +144,12 @@
       const ticket=serial;promptFinished.delete(clipKey);
       audio.onended=()=>{if(!valid(ticket)||!a||key(a.id,a.index)!==clipKey||prompt!==audio)return;promptFinished.add(clipKey);stopPrompt();if(a.timing.playbackDriven){flow.ended=true;finishPrompt();}else tick();};
       audio.onerror=()=>{const node=doc.getElementById('sm-play');if(node)node.hidden=false;message('The prompt audio could not load. Select Play remaining audio to retry.');};
-      try{await audio.play();}catch{const node=doc.getElementById('sm-play');if(node)node.hidden=false;message('Audio was blocked. Select Play remaining audio to continue.');}
+      try{await audio.play();if(valid(ticket)&&prompt===audio){const node=doc.getElementById('sm-play');if(node)node.hidden=true;}}catch{const node=doc.getElementById('sm-play');if(node)node.hidden=false;message('Audio was blocked. Select Play remaining audio to continue.');}
     }
     async function finishPrompt(){
       const active=flow;if(!active||active.finishing||!a||!a.timing.playbackDriven||a.timing.prepAt!=null)return;
       active.finishing=true;const id=a.id,index=a.index,ticket=serial;
-      try{const saved=await api('/attempts/'+id+'/playback',{index});if(!valid(ticket)||flow!==active||a?.id!==id||a.index!==index)return;a=saved;active.prepUntil=localNow()+a.question.preparation*1000;message('');tick();}
+      try{const saved=await api('/attempts/'+id+'/playback',{index});if(!valid(ticket)||flow!==active||a?.id!==id||a.index!==index)return;a=saved;active.prepUntil=localNow()+a.question.preparation*1000;const button=doc.getElementById('sm-play');if(button){button.hidden=true;button.textContent='Play remaining audio';}message('');tick();}
       catch(error){if(valid(ticket)&&flow===active){message(error.message+' Select Continue after audio to retry.');const button=doc.getElementById('sm-play');if(button){button.textContent='Continue after audio';button.hidden=false;}}}
       finally{active.finishing=false;}
     }
@@ -219,11 +220,11 @@
       else if(current<t.endsAt){stopPrompt();text='Recording';startRecording();}
       else{if(recorder?.state==='recording')recorder.stop();text=done.has(captureKey)?'Completed':'Recording period completed';}
       const status=doc.getElementById('sm-record-status');if(status&&status.textContent!==text)status.textContent=text;
-      const began=q.type==='rs'?(capture?.key===captureKey?capture.startedAt:Math.max(current,t.recordingAt)):t.recordingAt;
+      const began=q.type==='rs'||t.playbackDriven?(capture?.key===captureKey?capture.startedAt:current):t.recordingAt;
       const bar=doc.getElementById('sm-record-bar');if(bar)bar.style.width=(completed?100:Math.max(0,Math.min(100,(current-began)/(q.seconds*10))))+'%';
       const audioStatus=doc.getElementById('sm-audio-status');if(audioStatus)audioStatus.textContent=t.playbackDriven?(flow&&localNow()<flow.leadUntil?'Beginning in '+clock((flow.leadUntil-localNow())/1000):flow?.ended?'Completed':prompt?.paused?'Select Play remaining audio':'Playing'):current<t.audioAt?'Beginning shortly':current<t.prepAt||q.type==='rs'&&!promptFinished.has(captureKey)?'Playing':'Completed';
       const preparation=doc.getElementById('sm-preparation-status');if(preparation)preparation.textContent=text.startsWith('Preparation time:')?text:'';
-      const audioBar=doc.getElementById('sm-audio-bar');if(audioBar)audioBar.style.width=Math.max(0,Math.min(100,(current-t.audioAt)/(q.audioSeconds*10)))+'%';
+      const audioBar=doc.getElementById('sm-audio-bar');if(audioBar)audioBar.style.width=(t.playbackDriven?(flow?.ended?100:Math.max(0,Math.min(100,(prompt?.currentTime||0)/(q.audioSeconds||1)*100))):Math.max(0,Math.min(100,(current-t.audioAt)/(q.audioSeconds*10))))+'%';
       if(analyser&&recorder?.state==='recording'){
         const data=new Uint8Array(analyser.fftSize);analyser.getByteTimeDomainData(data);const level=Math.sqrt(data.reduce((sum,n)=>sum+((n-128)/128)**2,0)/data.length);
         if(level>.015){heard=true;silence=0;}else if(heard){silence||=current;if(current-silence>=3000)recorder.stop();}

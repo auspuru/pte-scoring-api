@@ -22,6 +22,7 @@ for(const mobile of [false,true])test('Speaking mock Chrome '+(mobile?'mobile':'
  await page.setRequestInterception(true);page.on('request',request=>request.url().startsWith('http://127.0.0.1:')||request.url().startsWith('blob:')||request.url().startsWith('data:')?request.continue():request.abort());
  const click=async selector=>{await page.$eval(selector,node=>node.scrollIntoView({block:'center'}));if(mobile)await page.tap(selector);else await page.click(selector);};
  const advance=async ms=>{offset+=ms;await page.evaluate(ms=>window.__mockOffset+=ms,ms);};
+ try{
  await page.goto('http://127.0.0.1:'+server.address().port);await page.waitForSelector('[data-sm="start"]');await click('[data-sm="start"]');
  await page.waitForSelector('#sm-check-record');assert.equal(created,0);assert.equal(uploads,0);assert(await page.$eval('#sm-check-begin',node=>node.disabled));
  await click('#sm-check-record');await page.waitForFunction(()=>!document.getElementById('sm-check-play').disabled);assert.equal(created,0);assert.equal(uploads,0);
@@ -37,4 +38,5 @@ for(const mobile of [false,true])test('Speaking mock Chrome '+(mobile?'mobile':'
  await advance(1100);await page.waitForFunction(()=>window.__examStarts===1);assert.equal(await page.evaluate(()=>window.__promptPlays),1);
  await click('#sm-next');await until(async()=>!!(await service.store.get('alice',attempt.id)).responses[index]?.recording,'Speaking response was not saved.');assert.equal(uploads,1);
  assert.deepEqual(dialogs,[]);assert.deepEqual(errors,[]);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+ }catch(error){t.diagnostic('Screen: '+await page.$eval('body',node=>node.innerText.slice(-2000)));t.diagnostic('Requests: created='+created+' uploads='+uploads+'; page errors='+errors.join('; '));throw error;}
 });
