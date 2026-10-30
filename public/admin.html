@@ -751,7 +751,10 @@ async function openPortalAsUser(username) {
     // UI under that path (index.html on Railway is practice.html with all the
     // student features). Using /index instead of /practice.html matches the URL
     // students already use.
-    window.open('/index?impersonate=' + encodeURIComponent(d.token), '_blank');
+    const destination = '/index?impersonate=' + encodeURIComponent(d.token);
+    // Browsers can block a new tab after the asynchronous token request.
+    // Keep the authorised student view reachable in the current tab.
+    if (!window.open(destination, '_blank')) window.location.assign(destination);
   } catch (e) {
     toast('Network error: ' + e.message);
   }
