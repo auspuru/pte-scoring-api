@@ -7,7 +7,7 @@ async function recoverLatest(options){
  const {username,operation,attemptId,kind,questionTypes,practiceStore,mockStore,callModel,transcribe,logger=console,now=Date.now}=options;
  if(!require('./speaking-access').allowed(username)||!operation||operation.length>120)throw Error('Invalid content repair scope.');
  const reassess=options.reassess===true;
- if(reassess&&(username!=='mahabir1'||kind!=='mock'||!Number.isFinite(options.startedBefore)||!Array.isArray(questionTypes)||questionTypes.some(type=>!['di','rl','sgd','rts'].includes(type))))throw Error('Invalid reassessment scope.');
+ if(reassess&&(!['mahabir1','sukhpal'].includes(username)||kind!=='mock'||!Number.isFinite(options.startedBefore)||!Array.isArray(questionTypes)||questionTypes.some(type=>!['di','rl','sgd','rts'].includes(type))))throw Error('Invalid reassessment scope.');
  const lists=await Promise.all([practiceStore.list(username),mockStore.list(username)]);
  const completed=lists.flat().find(a=>a.contentRecovery?.operation===operation);
  if(completed){logger.info('[speaking-content-recovery]',JSON.stringify({operation,attemptId:completed.id,status:'already-run'}));return completed.contentRecovery;}
