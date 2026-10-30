@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "73bde1b698f4bc98878e9283dcdeb3df685ad3d8",
+  "baseCommit": "b5820a6093874cc89330b8d7994d8c4aeed657ef",
   "checkedAt": "2026-10-30",
-  "scope": "Bounded durable recovery of known failed assessment stages, with backoff, leases and escalation. Saved snapshots, successful grades, native graders and provider configuration are retained.",
+  "scope": "Use GPT 6.1 Sol for content in all new mocks, retaining the Visual Academy rubric, Azure delivery, native maxima and weights. Frozen older full mocks retain concrete providers, completed stages and bounded automatic recovery.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,11 +96,11 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "b065adc791b200039da8246436a325b26d775b34aa2320f00e15a1e11a06d3d9",
+        "sha256": "712ad21afc2c0bf6530cc721bb7f2bbeb2a5796cb1ed85119f62d79af2466147",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
-        "sha256": "0cf1281b915115ecfd7a355f4058b0336181d2ba4eb0127f7cad2b801274889e",
+        "sha256": "d85b73b2572bff1ef78354a49daf0521fff84bdf14b5d0ff25ef5503d231c5ba",
         "version": null
       },
       "full-mock/blueprint.js": {
@@ -148,6 +148,14 @@
         "sha256": "52f605df6952c3de6894dd9f5357a4a97f5c84c19be93581af7ea3a8f69ef6ac",
         "version": null
       },
+      "mock-content-assessment.js": {
+        "sha256": "f418438dd65ac47a81ee93faf62dbae5e5c7d7aa92c0ee4e30cb0d8eaa984253",
+        "version": null
+      },
+      "mock-content-provider.js": {
+        "sha256": "3efa737c0e2a8ae047bd24b0c140f6cc2c67e2329cb3184950ef38bb1f5e8492",
+        "version": null
+      },
       "public/essay-scoring.js": {
         "sha256": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
         "version": "essay-unified-2.6"
@@ -165,7 +173,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "a952f788eb10c493a3614796bf5b5d8f9af985a51f23e6ffb681e6cd22886459",
+        "sha256": "937a9f1e0cf80786c104e3d73302ca93d9dd31a0fa39698193ae3f887ea25491",
         "version": null
       },
       "situation-content-policy.js": {

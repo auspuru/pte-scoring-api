@@ -102,7 +102,7 @@ function present(a) {
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation } : {}) }));
   return result;
 }
-function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, overallGrader = null, onMockError = async()=>{}, speakingAllowed = require('./speaking-access').allowed }) {
+function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, mockGraders = null, overallGrader = null, onMockError = async()=>{}, speakingAllowed = require('./speaking-access').allowed }) {
   const router = express.Router(), store = createStore(pool, directory), pending = new Map();
   const reviewer = overall.createReviewer({ store, callModel:overallGrader });
   const retryableSwt = (result,question) => !!(swtGrader && question?.type === 'swt' && result
@@ -141,8 +141,9 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
           if (retryableResult(result,current.questions[index],current)) result = null;
           if (!result) {
             const question = current.questions[index];
-            if (question.type === 'essay' && essayGrader) {
-              const unified = await essayGrader.grade(question.text, current.answers[index], '9', {feedbackV3:require('./essay-feedback-rollout').enabledFor(uid),includeSample:false});
+            const graders = current.kind === 'mock' && mockGraders ? mockGraders : {callModel,essayGrader,swtGrader};
+            if (question.type === 'essay' && graders.essayGrader) {
+              const unified = await graders.essayGrader.grade(question.text, current.answers[index], '9', {feedbackV3:require('./essay-feedback-rollout').enabledFor(uid),includeSample:false});
               result = {
                 ...require('./public/essay-feedback').scope(unified,{attemptId:a.id+'_'+index}),
                 version: unified.scoring_version || essayPolicy.VERSION,
@@ -153,10 +154,10 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
                 gated: unified.scoreGate?.status && unified.scoreGate.status !== 'valid',
                 reasons: unified.scoreGate?.reason ? [unified.scoreGate.reason] : []
               };
-            } else if (question.type === 'swt' && swtGrader) {
-              result = await scoring.gradeUnifiedSwt(question,current.answers[index],swtGrader);
+            } else if (question.type === 'swt' && graders.swtGrader) {
+              result = await scoring.gradeUnifiedSwt(question,current.answers[index],graders.swtGrader);
             } else {
-              result = await scoring.grade(question, current.answers[index], callModel);
+              result = await scoring.grade(question, current.answers[index], graders.callModel);
             }
           }
           const updated = await store.update(uid, a.id, value => {

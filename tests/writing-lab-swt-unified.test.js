@@ -50,3 +50,22 @@ test('Writing Mock SWT submissions share the standalone grader and persist one c
  const retry=await fetch(base+'/attempts/'+id+'/score/0',{method:'POST',headers,body:'{}'});assert.equal(retry.status,200);
  const repaired=await retry.json();assert.equal(calls,2);assert.equal(repaired.score_provisional,false);assert.equal(repaired.scores.content,3);
 });
+test('Sectional mocks select their content graders without changing individual practice or repeating saved marks',async t=>{
+ const dir=await fs.mkdtemp(path.join(os.tmpdir(),'mock-content-routing-'));
+ const app=express();app.use(express.json());let mockCalls=0,practiceCalls=0;
+ const {store}=installWritingLab(app,{directory:dir,verifyToken:()=> 'tester',getAccount:async()=>({}),
+  swtGrader:async()=>{practiceCalls++;return judgment();},
+  mockGraders:{swtGrader:async()=>{mockCalls++;return {...judgment(),assessment_model:'gpt-6.1-sol'};}}});
+ const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+ t.after(async()=>{await new Promise(resolve=>server.close(resolve));await fs.rm(dir,{recursive:true,force:true});});
+ const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab',headers={'Content-Type':'application/json','x-session-token':'tester'};
+ for(const kind of ['mock','swt']){
+  const id=randomUUID();await fetch(base+'/attempts',{method:'POST',headers,body:JSON.stringify({id,testId:'writing-mock-1'})});
+  await store.update('tester',id,a=>{a.kind=kind;a.status='submitted';a.questions[0]={...a.questions[0],...q};a.completed[0]=Date.now();a.answers[0]=fixture.summary;return a;});
+  for(let i=0;i<2;i++){
+   const response=await fetch(base+'/attempts/'+id+'/score/0',{method:'POST',headers,body:'{}'});assert.equal(response.status,200);
+   assert.equal((await response.json()).scoring_model,kind==='mock'?'gpt-6.1-sol':'claude-sonnet-4-6');
+  }
+ }
+ assert.equal(mockCalls,1);assert.equal(practiceCalls,1);
+});
