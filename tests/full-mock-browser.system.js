@@ -82,6 +82,8 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
   await page.click('[data-fm="sample"]'); await page.waitForSelector('#fm-sample audio');
   await page.click('#fm-sample audio', { offset:{ x:20, y:25 } });
   await page.waitForFunction(() => document.querySelector('#fm-sample audio').currentTime > 0);
+  assert(await page.$eval('#fm-begin', node => node.disabled));
+  await page.waitForFunction(() => !document.getElementById('fm-heard').disabled);
   await page.click('#fm-heard'); await page.waitForFunction(() => !document.getElementById('fm-begin').disabled); await page.click('#fm-begin');
   await page.waitForFunction(() => document.fullscreenElement === document.documentElement);
   await page.waitForSelector('[data-fm="skip"]'); await page.click('[data-fm="skip"]');

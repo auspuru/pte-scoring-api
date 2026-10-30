@@ -71,6 +71,7 @@ async function fixture(t, type = 'intro') {
   async function step(ms) { now += ms; for (const fn of [...intervals.values()]) fn(); for (const [key, value] of [...timeouts]) if (value.at <= now) { timeouts.delete(key); value.fn(); } await settle(); }
   async function resume() { await client.open({ attemptId: id }); await click('[data-fm="resume"]'); }
   return { id, env, document, client, pending, click, step, resume, recorders, tracks, audio, requests, service,
+    playSample: () => { const sample = document.querySelector('#fm-sample audio'); assert(sample); sample.onplay(); sample.onended(); },
     state: async () => (await service.store.get('alice', id)).state,
     input: text => { const target = document.getElementById('fm-text'); target.value = text; document.getElementById('fullMockPane').oninput({ target }); },
     offline: value => { offline = value; }, intercept: value => { interceptor = value; }, defer: value => { deferStop = value; },
@@ -98,6 +99,10 @@ test('Equipment check requires a recorded local sample and sound confirmation be
   const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
   assert(f.document.getElementById('fm-begin').disabled);
   await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio'));
+  assert(f.document.getElementById('fm-heard').disabled);
+  const sample = f.document.querySelector('#fm-sample audio'); sample.onplay();
+  assert(f.document.getElementById('fm-heard').disabled, 'Confirmation waits for the complete sample playback');
+  sample.onended();
   const target = f.document.getElementById('fm-heard'); target.checked = true; f.document.getElementById('fullMockPane').onchange({ target });
   assert.equal(f.document.getElementById('fm-begin').disabled, false);
   await f.click('[data-fm="begin"]'); assert.match(f.document.querySelector('.fm-exam-header').textContent, /Not scored/);
@@ -107,10 +112,86 @@ test('Equipment check requires a recorded local sample and sound confirmation be
 test('Fullscreen is requested before an attempt starts, and cancelling it keeps the start button available', async t => {
   const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
   await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio'));
+  f.playSample();
   const target=f.document.getElementById('fm-heard');target.checked=true;f.document.getElementById('fullMockPane').onchange({target});
   let calls=0;f.env.PortalExamMode.prepare=async (owner,pane,options)=>{calls++;assert.equal(owner,'full-mock');assert.equal(options.immediate,true);assert.equal(f.requests.filter(r=>r.route==='/api/full-mocks/attempts'&&r.init.method==='POST').length,0);return false;};
   await f.click('[data-fm="begin"]');assert.equal(calls,1);assert.equal(f.document.getElementById('fm-begin').disabled,false);
   assert.equal(f.requests.filter(r=>r.route==='/api/full-mocks/attempts'&&r.init.method==='POST').length,0);
+});
+test('Rerecording resets playback confirmation and requires sound in the new headset sample', async t => {
+  const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
+  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
+  const target = f.document.getElementById('fm-heard'); target.checked = true; f.document.getElementById('fullMockPane').onchange({ target });
+  assert.equal(f.document.getElementById('fm-begin').disabled, false);
+  f.env.AudioContext.prototype.createAnalyser = () => ({ fftSize:512, getByteTimeDomainData: values => values.fill(128) });
+  // The existing analyser belongs to the first microphone connection. Reconnect
+  // to a silent device to ensure old microphone evidence cannot approve it.
+  f.tracks[0].readyState = 'ended';
+  await f.click('[data-fm="sample"]');
+  assert.equal(target.checked, false); assert(target.disabled); assert(f.document.getElementById('fm-begin').disabled);
+  await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
+  target.checked = true; f.document.getElementById('fullMockPane').onchange({ target });
+  assert(f.document.getElementById('fm-begin').disabled);
+  assert.match(f.document.getElementById('fm-notice').textContent, /No clear sound/);
+  await f.click('[data-fm="begin"]');
+  assert.equal(f.requests.filter(r => r.route === '/api/full-mocks/attempts' && r.init.method === 'POST').length, 0);
+});
+test('A headset recording permission error can retry without starting the full mock', async t => {
+  const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
+  const access = f.env.navigator.mediaDevices.getUserMedia;
+  f.env.navigator.mediaDevices.getUserMedia = async () => { throw Error('Microphone permission denied.'); };
+  await f.click('[data-fm="sample"]'); assert.match(f.document.getElementById('fm-notice').textContent, /permission denied/);
+  assert.equal(f.document.getElementById('fm-sample-button').disabled, false);
+  assert(f.document.getElementById('fm-begin').disabled);
+  f.env.navigator.mediaDevices.getUserMedia = access;
+  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
+  assert.equal(f.document.getElementById('fm-heard').disabled, false);
+  assert.equal(f.requests.filter(r => r.init.method === 'PUT' || r.route === '/api/full-mocks/attempts' && r.init.method === 'POST').length, 0);
+});
+test('A failed headset sample playback cannot approve the equipment check', async t => {
+  const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
+  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio'));
+  const playback = f.document.querySelector('#fm-sample audio'); playback.onplay(); playback.onerror();
+  assert(f.document.getElementById('fm-heard').disabled); assert(f.document.getElementById('fm-begin').disabled);
+  assert.match(f.document.getElementById('fm-notice').textContent, /could not play/);
+  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
+  assert.equal(f.document.getElementById('fm-heard').disabled, false);
+});
+test('Back cancels a headset recording, releases the microphone and ignores late sample events', async t => {
+  const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
+  f.defer(true); await f.click('[data-fm="sample"]'); const sample = f.recorders[0];
+  await f.click('[data-fm="reload"]'); sample.deliver(); await settle();
+  assert.equal(sample.state, 'inactive'); assert.equal(f.tracks[0].readyState, 'ended');
+  assert.equal(f.document.querySelector('#fm-sample audio'), null); assert(f.document.querySelector('[data-fm="setup"]'));
+  assert.equal(f.requests.filter(r => r.route === '/api/full-mocks/attempts' && r.init.method === 'POST').length, 0);
+});
+test('Changing headset confirmation during a pending start cannot create duplicate attempts', async t => {
+  const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
+  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
+  const target = f.document.getElementById('fm-heard'); target.checked = true; f.document.getElementById('fullMockPane').onchange({ target });
+  let release, starts = 0;
+  f.env.PortalExamMode.prepare = async () => { starts++; return new Promise(resolve => { release = () => resolve(false); }); };
+  const starting = f.click('[data-fm="begin"]'); await until(() => release);
+  assert(target.disabled); assert(f.document.getElementById('fm-check-back').disabled);
+  target.checked = true; f.document.getElementById('fullMockPane').onchange({ target });
+  await f.click('[data-fm="begin"]'); assert.equal(starts, 1);
+  release(); await starting;
+  assert.equal(f.document.getElementById('fm-begin').disabled, false);
+  assert.equal(f.requests.filter(r => r.route === '/api/full-mocks/attempts' && r.init.method === 'POST').length, 0);
+});
+test('The full mock displays the prompt lead-in and the task preparation countdown separately from the start tone', async t => {
+  const f = await fixture(t, 'rl'); await f.resume();
+  const initial = await f.state();
+  assert.match(f.document.getElementById('fm-audio-status').textContent, /Audio begins in 0:03/);
+  assert.match(f.document.getElementById('fm-record-status').textContent, /Audio begins in 0:03/);
+  await f.step(initial.current.promptEndsAt - f.now());
+  assert.equal(f.document.getElementById('fm-record-status').textContent, 'Preparation time: 0:10');
+  assert.equal(f.document.getElementById('fm-time').textContent, '0:10');
+  assert.equal(f.recorders.some(r => r.state === 'recording'), false);
+  await f.step(9000); assert.equal(f.document.getElementById('fm-record-status').textContent, 'Preparation time: 0:01');
+  assert.equal(f.recorders.some(r => r.state === 'recording'), false);
+  await f.step(1000); assert.equal(f.document.getElementById('fm-record-status').textContent, 'Get ready');
+  await f.step(300); assert.equal(f.document.getElementById('fm-record-status').textContent, 'Recording');
 });
 test('Next and Skip advance directly without confirmation, and double clicks cannot skip a question', async t => {
   const f=await fixture(t);f.env.confirm=()=>{throw Error('Unexpected confirmation');};await f.resume();
