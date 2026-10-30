@@ -12531,7 +12531,7 @@ function ensureSpeakingRuntimeLoaded() {
   if (window.SpeakingPractice) return Promise.resolve(window.SpeakingPractice);
   if (speakingRuntimeLoadPromise) return speakingRuntimeLoadPromise;
 
-  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-9b9e2fef39ca', 'speaking practice'))
+  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-77c243c41325', 'speaking practice'))
     .then(() => {
       if (!window.SpeakingPractice) throw new Error('Speaking practice did not initialise.');
       return window.SpeakingPractice;

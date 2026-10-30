@@ -261,6 +261,13 @@
       const evidenceNote=evidence.coverage!==null&&evidence.coverage!==undefined&&Number.isFinite(Number(evidence.coverage))
         ? '<div class="speaking-delivery-summary"><span>Matched <strong>'+esc(evidence.matchedWords)+' / '+esc(evidence.referenceWords)+' words</strong></span><span>Audio <strong>'+esc(evidence.durationSeconds)+'s</strong></span></div>'
         : (Number.isFinite(Number(evidence.spokenWords))?'<div class="speaking-delivery-summary"><span>Spoken words <strong>'+esc(evidence.spokenWords)+'</strong></span><span>Audio <strong>'+esc(evidence.durationSeconds)+'s</strong></span></div>':'');
+      const serviceUnavailable=/unavailable|not configured|assessment is needed/i.test(r.deliveryStatus||'');
+      const insufficientSpeech=evidence.sufficient===false&&!serviceUnavailable&&!r.deliveryFailureTraits?.length;
+      const unavailableTitle=r.deliveryFailureTraits?.length?'Some audio feedback could not be verified':insufficientSpeech?'Not enough speech for a reliable delivery score':'Audio assessment unavailable';
+      const unavailableMessage=insufficientSpeech?(r.deliveryStatus||'The saved recording does not contain enough speech to assess pronunciation and oral fluency reliably.')
+        :catalog.deliveryAssessmentAvailable===false?'Your recording and content feedback are saved. Please contact your teacher to restore audio assessment.'
+        :'We could not complete pronunciation and oral fluency assessment. Your recording and content feedback are saved. You can retry this recording without recording again.';
+      const retryDelivery=!insufficientSpeech&&attempt?.recording&&catalog.deliveryAssessmentAvailable!==false?'<button class="portal-button" data-speaking-action="submit">Retry audio assessment</button>':'';
       const deliveryStatus=staleDelivery
         ? '<div class="speaking-delivery-callout"><div><strong>Delivery scoring has been recalibrated</strong><p>Update this saved recording to use the current pronunciation and oral-fluency method.</p></div><button class="portal-button" data-speaking-action="submit">Update audio score</button></div>'
         : deliveryReady
@@ -275,7 +282,7 @@
             +'</div>'
             +(pronunciationCurrent.words?.length?'<div class="speaking-practice-words"><h4>Words worth practising</h4><div class="speaking-word-diff">'+pronunciationCurrent.words.map(w=>'<span class="replacement">'+esc(w.word)+(Number.isFinite(Number(w.accuracy))?' · '+esc(Math.round(Number(w.accuracy)))+'/100':'')+'</span>').join('')+'</div></div>':'')
             +'</details>'
-          : '<div class="speaking-delivery-callout speaking-delivery-insufficient"><div><strong>'+(r.deliveryFailureTraits?.length?'Some audio feedback could not be verified':'Not enough speech for a reliable delivery score')+'</strong><p>'+esc(r.deliveryStatus||'Pronunciation and oral fluency are withheld when the response is too short or incomplete to assess reliably.')+'</p></div></div>'+evidenceNote;
+          : '<div class="speaking-delivery-callout'+(insufficientSpeech?' speaking-delivery-insufficient':'')+'"><div><strong>'+esc(unavailableTitle)+'</strong><p>'+esc(unavailableMessage)+'</p></div>'+retryDelivery+'</div>'+(!serviceUnavailable?evidenceNote:'');
       const contentFallback=contentPending
         ? '<div class="speaking-delivery-callout speaking-content-fallback"><div><strong>Content review pending</strong><p>The semantic reviewer could not complete this assessment. Your transcript and audio feedback are retained; retry content review without re-recording.</p></div><button class="portal-button" data-speaking-action="submit">Retry content review</button></div>'
         : '';

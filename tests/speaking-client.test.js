@@ -45,6 +45,41 @@ function harness({includePredictions=false,audioCue=false}={}) {
     click:data=>host.onclick({target:{closest:()=>({dataset:data,disabled:false})}})};
 }
 async function flush(){for(let i=0;i<10;i++)await new Promise(resolve=>setImmediate(resolve));}
+async function deliveryReport(h,result){
+ await h.controller.open('rts');await h.click({speakingQuestion:bank.questions.find(q=>q.type==='rts').id});
+ const a=[...h.attempts.values()][0];Object.assign(a,{status:'submitted',transcript:'A saved response explaining the technical problem and asking for an extension.',recording:{mime:'audio/webm',data:Buffer.alloc(300).toString('base64')},result:{total:6,maximum:6,overview:'Content assessed.',strengths:[],improvements:[],scoringMode:'ai',deliveryProvider:'azure-speech-pronunciation',deliveryVersion:'test-delivery',...result}});
+ await h.click({speakingAttempt:a.id});return a;
+}
+test('An audio service failure never blames speech length, even with stale insufficient evidence',async()=>{
+ for(const evidence of [undefined,{sufficient:false,spokenWords:2,durationSeconds:1}]){
+  const h=harness();const a=await deliveryReport(h,{deliveryStatus:'Azure audio assessment temporarily unavailable',deliveryEvidence:evidence});
+  assert.match(h.host.innerHTML,/Audio assessment unavailable/);assert.match(h.host.innerHTML,/Retry audio assessment/);
+  assert.doesNotMatch(h.host.innerHTML,/Not enough speech|Spoken words|Audio <strong>/);
+  assert.match(h.host.innerHTML,/Your recording and content feedback are saved/);assert.equal(a.result.total,6);
+  h.controller.reset();
+ }
+});
+test('Only explicit insufficient audio evidence displays the speech-length message',async()=>{
+ const h=harness();await deliveryReport(h,{deliveryEvidence:{sufficient:false,spokenWords:2,durationSeconds:1},deliveryStatus:'Not enough speech for a reliable estimate.'});
+ assert.match(h.host.innerHTML,/Not enough speech/);assert.doesNotMatch(h.host.innerHTML,/Retry audio assessment/);h.controller.reset();
+ const unknown=harness();await deliveryReport(unknown,{});assert.match(unknown.host.innerHTML,/Audio assessment unavailable/);assert.doesNotMatch(unknown.host.innerHTML,/Not enough speech/);unknown.controller.reset();
+});
+test('Retry audio assessment reuses the saved attempt and recording without new capture or upload',async()=>{
+ const h=harness(),a=await deliveryReport(h,{deliveryStatus:'Azure audio assessment temporarily unavailable'}),originalRecording=JSON.stringify(a.recording),recorders=h.recorders.length,request=h.env.fetch;
+ const writes=h.requests.filter(r=>r.body).length;
+ h.env.fetch=async(url,options={})=>{
+  if(url.endsWith('/'+a.id+'/submit')){
+   h.requests.push({url,body:options.body});
+   a.result={...a.result,deliveryStatus:'Audio assessed',pronunciation:{score:4,maximum:5},fluency:{score:5,maximum:5}};
+   return {ok:true,json:async()=>present(a)};
+  }
+  return request(url,options);
+ };
+ await h.click({speakingAction:'submit'});
+ assert.equal(h.attempts.size,1);assert.equal(h.recorders.length,recorders);assert.equal(JSON.stringify(a.recording),originalRecording);assert.equal(a.result.total,6);
+ assert.equal(h.requests.filter(r=>r.body).length,writes+1);assert.equal(h.requests.filter(r=>r.url.endsWith('/'+a.id+'/recording')&&r.body).length,0);
+ assert.match(h.host.innerHTML,/Audio assessed/);assert.doesNotMatch(h.host.innerHTML,/Audio assessment unavailable|Not enough speech/);h.controller.reset();
+});
 test('Describe Image practice uses a matching clear file and retains the saved original as fallback',async()=>{
  const h=harness({includePredictions:true});await h.controller.open('di');await h.click({speakingQuestion:'di-pred-3000137'});
  const entry=require('../di-image-display').manifest.entries['di-pred-3000137'];assert(h.host.innerHTML.includes('src="'+entry.displayImageUrl+'"'));assert(h.host.innerHTML.includes('data-original-image="'+entry.originalImageUrl+'"'));
