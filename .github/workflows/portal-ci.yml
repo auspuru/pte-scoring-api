@@ -41,6 +41,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: full-mock-validation
-          path: .cache/full-mock-validation.json
+          path: |
+            .cache/full-mock-validation.json
+            .cache/essay-guide-*.png
           include-hidden-files: true
           if-no-files-found: error

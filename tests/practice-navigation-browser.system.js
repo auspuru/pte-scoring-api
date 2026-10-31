@@ -3,6 +3,11 @@ const test=require('node:test'),assert=require('node:assert/strict'),express=req
 const puppeteer=require('puppeteer');
 const root=path.resolve(__dirname,'..');
 const {fixture:authFixture}=require('./helpers/auth-server');
+async function essayGuideScreenshot(page,width,state){
+ if(!process.env.CI)return;
+ const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});
+ await page.screenshot({path:path.join(root,'.cache','essay-guide-'+width+'-'+state+'.png')});
+}
 for(const width of [1363,390,320])test('Essay guide: combined page, inline approaches, clock, ownership and mock isolation at '+width+'px',{timeout:90000},async t=>{
  const f=await authFixture(t),username='essay-guide-browser',password='Synthetic-pass-123';
  for(const name of [username,'essay-guide-other'])assert.equal((await f.request('/api/auth/register',{username:name,password,email:name+'@example.test'})).body.success,true);
@@ -19,14 +24,18 @@ for(const width of [1363,390,320])test('Essay guide: combined page, inline appro
  assert.equal(await page.$$eval('#essay-guide [role=tab]',els=>els.length),0);
  assert.equal(await page.$$eval('[data-guide-explanation]:not([hidden])',els=>els.length),0);
  assert.equal(await page.evaluate(()=>practiceState.timerStartedAt),null);
+ await essayGuideScreenshot(page,width,'prompt');
  for(const choice of ['0','1','own']){
   await page.locator('[data-guide-choice="'+choice+'"]').click();
   const inline=await page.$eval('[data-guide-choice="'+choice+'"]',button=>{const panel=document.getElementById(button.getAttribute('aria-controls'));return {adjacent:button.nextElementSibling===panel,shown:!panel.hidden,withinCard:panel.parentElement===button.parentElement,expanded:button.getAttribute('aria-expanded')};});
   assert.deepEqual(inline,{adjacent:true,shown:true,withinCard:true,expanded:'true'});
   assert.equal(await page.$$eval('[data-guide-explanation]:not([hidden])',els=>els.length),1);
+  if(choice==='0')await essayGuideScreenshot(page,width,'approach');
  }
  await page.type('#essay-guide-own','A private teaching note, separate from the essay.');
+ assert.equal(await page.evaluate(()=>practiceState.timerStartedAt),null,'The optional teaching note does not start the essay clock');
  assert.equal(await page.$eval('#essay-guide',e=>e.scrollWidth<=e.clientWidth+1),true);
+ assert.equal(await page.$eval('.essay-guide-footer',e=>{const r=e.getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight;}),true);
  assert.equal(await page.$$eval('#essay-guide button',els=>els.every(e=>e.getBoundingClientRect().height>=44)),true);
  await page.keyboard.press('Escape');await page.waitForSelector('#essay-guide',{hidden:true});
  assert.equal(await page.evaluate(()=>practiceState.writeStep),1,'Closing does not start writing or mark the guide as seen');
