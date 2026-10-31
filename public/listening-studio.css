@@ -152,3 +152,15 @@ body.dark #writingLabScreen .listening-studio{color:#20334e}
 
 #writingLabScreen.listening-mode #lab{scroll-padding-bottom:90px}
 #writingLabScreen .listening-studio input:focus,#writingLabScreen .listening-studio textarea:focus,#writingLabScreen .listening-studio button:focus{scroll-margin-block:100px}
+
+/* Let media controls wrap within narrow phone viewports. The volume label,
+   slider and replay action must not impose their combined minimum width. */
+#writingLabScreen .listening-studio .audio-panel .meta,
+#writingLabScreen .listening-studio .audio-panel .audio-meta {
+  min-width:0;flex-wrap:wrap;
+}
+@media(max-width:400px){
+  #writingLabScreen .listening-studio .audio-panel {grid-template-columns:minmax(0,1fr)}
+  #writingLabScreen .listening-studio .audio-panel :is(.audio-meta,progress,.meta,#audio-start) {grid-column:1;grid-row:auto;min-width:0}
+  #writingLabScreen .listening-studio .audio-panel #audio-start {max-width:none;justify-self:start}
+}

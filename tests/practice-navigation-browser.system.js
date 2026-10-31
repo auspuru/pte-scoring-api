@@ -41,8 +41,8 @@ for(const width of [1363,390,320])test('NAV-05/06/08/11/12: Listening queue, dra
  await page.click('[data-practice-move="-1"]');await page.waitForFunction(()=>document.getElementById('answer')?.value==='A retained summary draft for lecture eight.');
  assert.equal(f.attempts.size,2);assert.equal(f.historyReads(),1);
  await page.evaluate(()=>{document.getElementById('answer').style.minHeight='1800px';window.scrollTo(0,document.body.scrollHeight);});
- const geometry=await page.evaluate(()=>{const dock=document.querySelector('.practice-question-dock'),r=dock.getBoundingClientRect();return {top:r.top,bottom:r.bottom,viewport:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth+1};});
- assert(geometry.top>=-1&&geometry.bottom<=geometry.viewport,'Question controls remain in the viewport');assert.equal(geometry.overflow,false);
+ const geometry=await page.evaluate(()=>{const dock=document.querySelector('.practice-question-dock'),r=dock.getBoundingClientRect();return {top:r.top,bottom:r.bottom,viewport:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth+1,overflowNodes:[...document.querySelectorAll('body *')].filter(n=>{const b=n.getBoundingClientRect();return b.width>0&&(b.right>innerWidth+1||b.left< -1);}).slice(0,10).map(n=>({tag:n.tagName,id:n.id,className:n.className,width:n.getBoundingClientRect().width,right:n.getBoundingClientRect().right}))};});
+ assert(geometry.top>=-1&&geometry.bottom<=geometry.viewport,'Question controls remain in the viewport');assert.equal(geometry.overflow,false,JSON.stringify(geometry));
  await page.click('.practice-question-dock [data-tab="sst"]');await page.waitForSelector('#studio-search');
  assert.equal(await page.$eval('#studio-search',node=>node.value),'8');
  assert.equal(await page.$$eval('[data-listening-open]:not([hidden])',nodes=>nodes.length),3);
