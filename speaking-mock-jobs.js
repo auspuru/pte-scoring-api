@@ -47,9 +47,9 @@ function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,c
       const delay=[600000,1800000,7200000,21600000][cycles];
       if(delay===undefined||Number(row.updated_at)+delay>now())continue;
       const held=Object.entries(row.data.stages||{}).filter(([,stage])=>stage.status==='needs_attention');
-      if(!held.length||held.some(([,stage])=>require('./mock-recovery-policy').failure({status:stage.code||stage.failure,uncertain:stage.failure==='uncertain_provider_outcome'}).blocked))continue;
+      if(!held.length||held.some(([name,stage])=>require('./mock-recovery-policy').failure({status:stage.code||stage.failure,code:stage.detail?.code,uncertain:stage.failure==='uncertain_provider_outcome'}).blocked||(name==='azure'&&row.data.patch?.azure?.deliveryEvidence?.sufficient===false)))continue;
       // Remote retries must be justified by a confirmed retryable receipt.
-      if(held.some(([name])=>name==='academy')&&(row.data.remoteFailures||[]).some(f=>!f.retryable&&![429,500,502,503,504].includes(Number(f.code||f.status))))continue;
+      if(held.some(([name])=>name==='academy')&&(row.data.remoteFailures||[]).some(f=>f.uncertain||f.code==='uncertain_provider_outcome'||!f.retryable&&![429,500,502,503,504].includes(Number(f.code||f.status))))continue;
       try{await repair(uid,a.id,{jobId:row.id,stages:held.map(([name])=>name),operation:'automatic:'+cycles,acknowledgeUncertain:false});}
       catch(error){if(error.status!==409)console.warn('[speaking-jobs] Deferred recovery will resume.');}
     }
