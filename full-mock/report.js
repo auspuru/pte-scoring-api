@@ -36,7 +36,7 @@ const pendingMedia = state => state.responses.reduce((n, response) => n + respon
 function reasonFor(job, trusted, recovering = false) {
   if (!trusted) return { code:'not-assessed', label:'Assessment pending', action:'Your saved response has not received a verified assessment.' };
   const code = job.result?.reason || job.reason || 'not-assessed';
-  if (['late-recording','interrupted-recording','recording-integrity','recording-decode','recording-duration'].includes(code)) return { code, label:'Teacher review required', action:'The recording needs review before marks can be confirmed. Its saved evidence is retained.' };
+  if (['late-recording','interrupted-recording','recording-integrity','recording-decode','recording-duration'].includes(code)) return { code, label:'Recording needs recovery', action:'Keep the original recording device online so pending audio can finish uploading. A score needs a usable recording; the saved evidence is retained.' };
   if (['recording-not-ready','missing-recording'].includes(code)) return { code, label:'Recording pending', action:'Keep the recording device online and retry pending saves. Missing audio is not scored as zero.' };
   if (job.status === 'failed' && recovering) return {code:'assessment-pending',label:'Assessment pending',action:'Your response is saved. Feedback is being prepared automatically.'};
   if (job.status === 'failed') return { code:'assessment-unavailable', label:'Assessment interrupted', action:'Retry assessment to request the incomplete stages again. Completed stages are retained.' };
@@ -115,7 +115,7 @@ function buildReport(paper, state, at = Date.now()) {
     possible:result.groups[point.type].possible, path:'#/' + GUIDANCE[point.type][0] }));
   const assessmentStatus = statusFor(state, result);
   return { ...result, ...metadata(paper, state, at), version:VERSION, aggregationVersion:result.version, assessmentStatus,
-    retryAvailable:!result.ready && assessmentStatus !== 'processing' && assessmentStatus !== 'version-mismatch' && items.some(item => item.status !== 'assessed' && item.assessment.label !== 'Teacher review required'),
+    retryAvailable:!result.ready && assessmentStatus !== 'processing' && assessmentStatus !== 'version-mismatch' && items.some(item => item.status !== 'assessed' && item.assessment.label !== 'Recording needs recovery'),
     recoveredEvidenceCount:state.recoveries.length, groups, items, priorities, impactFeedback,
     interpretation:{ label:'Provisional', calibration:'Not yet calibrated', description:'These are IPT practice indices out of 90. They are not official Pearson scores or predictions of an exam result.',
       overall:'Overall is calculated directly from task contributions, independently of the four skill indices. Its range preserves three weights published as <1%; it is not an exam-score confidence interval.',

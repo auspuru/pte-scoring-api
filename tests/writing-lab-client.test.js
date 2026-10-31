@@ -661,20 +661,20 @@ test('NAV-16: A queued Writing save is never dispatched under a replacement sess
  const first=h.hooks.saveAnswer(false);await flush();const queued=h.hooks.saveAnswer(false);session='new';release();await Promise.all([first,queued]);assert.equal(h.requests.length,1);assert.doesNotMatch(h.nodes.get('save-status').textContent,/Connection issue/);
 });
 
-test('Newly completed Writing and Listening mocks refresh pending score priorities without reopening or extra reads',async()=>{
+test('Writing and Listening reports poll background results without making browser assessment requests',async()=>{
  for(const module of ['writing','listening']){
   const h=harness(),a=attempt();a.status='submitted';a.module=module;
   const q={id:'saved-question',type:module==='writing'?'essay':'wfd',title:'Saved task',text:'one two',sample:'Sample response.'};
   a.questions=[q];a.answers=['one'];a.results=[null];a.completed=[{}];a.index=0;
   a.impactFeedback={status:'pending',profiles:[]};
   const maximum=report.maximumFor(q),native={total:Math.floor(maximum/2),maximum,maxima:{content:maximum},scores:{content:Math.floor(maximum/2)},feedback:{content:'Check the saved response.'},improvements:[],errors:[]};
-  h.context.fetch=async(url,options={})=>{h.requests.push({url});return {ok:true,json:async()=>structuredClone(native)};};
-  h.hooks.set(a);h.hooks.renderResults();await flush();
+  h.context.fetch=async(url,options={})=>{h.requests.push({url});return {ok:true,json:async()=>({...structuredClone(a),results:[native]})};};
+  h.hooks.set(a);h.hooks.renderResults();await h.hooks.refreshOverall(false);await flush();
   assert.equal(h.hooks.current().impactFeedback.status,'complete');
   assert.match(h.nodes.get('lab').innerHTML,/Practise next, in this order/);
   assert(!h.nodes.get('lab').innerHTML.includes('is waiting for verified assessments'));
-  assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,1);
-  assert.equal(h.requests.filter(r=>!r.url.includes('/score/')).length,0);
+  assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,0);
+  assert.equal(h.requests.filter(r=>!r.url.includes('/score/')).length,1);
  }
 });
 

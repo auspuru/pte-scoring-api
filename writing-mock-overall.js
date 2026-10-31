@@ -98,7 +98,7 @@ function view(a) {
   }
   return { status:'processing' };
 }
-function createReviewer({ store, callModel }) {
+function createReviewer({ store, callModel, now:clock=Date.now }) {
   const pending = new Map(), queue = [];
   let running = false;
   function drain() {
@@ -114,15 +114,16 @@ function createReviewer({ store, callModel }) {
     const task = new Promise((resolve,reject) => queue.push(async () => {
       let job, hash;
       try {
-        const lease = randomUUID(), now = Date.now();
+        const lease = randomUUID(), now = clock();
         const current = await store.update(uid, a.id, value => {
           if (!eligible(value)) return value;
           hash = fingerprint(value);
           const old = value.overallFeedback;
           if (old?.fingerprint === hash && (old.status === 'complete'
             || (old.status === 'processing' && old.expiresAt > now)
-            || (old.status === 'unavailable' && (!retry || now - old.failedAt < 30000)))) return value;
-          value.overallFeedback = { status:'processing', fingerprint:hash, lease, expiresAt:now + 180000 };
+            || (old.status === 'unavailable' && (old.recovery ? ['held','exhausted'].includes(old.recovery.status)||old.recovery.nextAt>now&&(!retry||now-old.failedAt<30000) : (!retry || now-old.failedAt<30000))))) return value;
+          if(old?.fingerprint===hash&&old.status==='processing'){value.overallFeedback={...old,status:'unavailable',failedAt:now,recovery:{status:'held',uncertain:true,code:'uncertain_provider_outcome'}};return value;}
+          value.overallFeedback = { status:'processing', fingerprint:hash, lease, attempts:old?.fingerprint===hash?(old.attempts||0)+1:1, expiresAt:now + 180000 };
           return value;
         });
         if (current?.overallFeedback?.lease !== lease) return resolve(view(current));
@@ -131,7 +132,7 @@ function createReviewer({ store, callModel }) {
           : normalize(current, await callModel(current));
         const saved = await store.update(uid,a.id,value => {
           if (value?.overallFeedback?.lease === job && fingerprint(value) === hash)
-            value.overallFeedback = { status:'complete', fingerprint:hash, result, completedAt:Date.now() };
+            value.overallFeedback = { status:'complete', fingerprint:hash, result, completedAt:clock() };
           return value;
         });
         if (saved?.overallFeedback?.status === 'complete' && saved.overallFeedback.fingerprint === hash)
@@ -139,7 +140,7 @@ function createReviewer({ store, callModel }) {
         resolve(view(saved));
       } catch (error) {
         if (job) await store.update(uid,a.id,value => {
-          if (value?.overallFeedback?.lease === job) value.overallFeedback = { status:'unavailable', fingerprint:hash, failedAt:Date.now() };
+          if (value?.overallFeedback?.lease === job) value.overallFeedback = { status:'unavailable', fingerprint:hash, failedAt:clock(), attempts:value.overallFeedback.attempts, recovery:require('./mock-recovery-policy').retryState(error,value.overallFeedback.attempts,clock()) };
           return value;
         }).catch(() => {});
         reject(error);
@@ -148,6 +149,6 @@ function createReviewer({ store, callModel }) {
     pending.set(key, task); drain();
     return task;
   }
-  return { ensure };
+  return { ensure, wait:()=>Promise.allSettled([...pending.values()]) };
 }
 module.exports = { VERSION, NAME, eligible, entries, excerpts, fingerprint, request, response, normalize, view, createReviewer };

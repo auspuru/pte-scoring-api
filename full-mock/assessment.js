@@ -45,6 +45,7 @@ function stateFor(value) { return { version: VERSION, snapshot: structuredClone(
 // Exact production baselines may adopt these audited transport/recovery fixes.
 // Native graders, models, weights, paper and saved successful grades stay pinned.
 const COMPATIBLE_BASES = [
+  [require('../content/full-mock/unattended-recovery-compatible-sources.json'), '3206f5b41431719469205fab45e5ac5447b3b4ddcc4a470e437b1af6cdfb46c2'],
   [require('../content/full-mock/practice-queue-compatible-sources.json'), 'a5f44654e3b334187b9a39b6ad87d34d8372a045c55c74e635cca1bd1c035771'],
   [require('../content/full-mock/tester-guide-compatible-sources.json'), '8fe1413d7881be3a14a0835747cc8bd86c4c09ed2e97c0d6bcd358f4109367e3'],
   [require('../content/full-mock/content-provider-compatible-sources.json'), '9b13a955f7ab351a65742fe33c14b8a33f6b53bcfa6d16547c62cd478f359b11'],
@@ -99,14 +100,24 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Reviewed recovery scheduling/failure metadata only. Project these exact
+  // transport revisions before comparing frozen native scoring dependencies.
+  const recoveryBaseline=require('../content/full-mock/unattended-recovery-compatible-sources.json');
+  const recoveryPins={'server.js':'aaefe394b205162a28edac3a6d2de2aaa2effe771dea9e79ed7e933b49269684','full-mock/adapters.js':'03c75d443499754f79bb413d7259a5e3d1256bb2662e96a1251876a040767ed7','public/writing-lab-report.js':'a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236'};
+  if(digest(recoveryBaseline)==='3206f5b41431719469205fab45e5ac5447b3b4ddcc4a470e437b1af6cdfb46c2'&&Object.entries(recoveryPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of Object.keys(recoveryPins))sources.files[file]=structuredClone(recoveryBaseline.files[file]);
+    current={...current,scoringSources:sources};
+  }
+
   // Reviewed queue/UI changes only; native Reading scoring and clocks are
   // unchanged. Project this exact source revision before legacy comparisons.
-  if(current.scoringSources.files['public/reading-practice.js']?.sha256==='002b102f1b879cc979538f85b3cdffcecb05bcf6097206ea9bfb74873f8b357b') {
+  if(digest(saved.scoringSources)!==digest(recoveryBaseline)&&current.scoringSources.files['public/reading-practice.js']?.sha256==='002b102f1b879cc979538f85b3cdffcecb05bcf6097206ea9bfb74873f8b357b') {
     const sources=structuredClone(current.scoringSources);
     sources.files['public/reading-practice.js'].sha256='b3dab5bb17ec4028c6ea80e447fb0cf316fd7582badcfbc466279eeb9913d862';
     current={...current,scoringSources:sources};
   }
-  const feedbackOnly=['85e89a7ca24556fc4b2d579d179492d67c66d995e5bc6c7e2f8635b18121e20e','a5f44654e3b334187b9a39b6ad87d34d8372a045c55c74e635cca1bd1c035771'].includes(digest(saved.scoringSources));
+  const feedbackOnly=['3206f5b41431719469205fab45e5ac5447b3b4ddcc4a470e437b1af6cdfb46c2','85e89a7ca24556fc4b2d579d179492d67c66d995e5bc6c7e2f8635b18121e20e','a5f44654e3b334187b9a39b6ad87d34d8372a045c55c74e635cca1bd1c035771'].includes(digest(saved.scoringSources));
   if(!feedbackOnly)current={...current,scoringSources:practiceModeSources(current.scoringSources)};
   const practiceModeOnly=digest(saved.scoringSources)==='f4e704c74e86c0e43d31c4c4167c3bc637540737ba08de68ba0fa79fd46baaf4';
   // This baseline already contains the latest account transport. Older baselines
@@ -158,11 +169,11 @@ function recoverableUploadDelay(job, response) {
   return job?.status === 'pending' && job.reason === 'late-recording' && segments.length === 1
     && !segments[0].lateActivation && segments[0].finished && segments[0].chunkCount > 0;
 }
-const RECOVERY_DELAYS = [30000, 120000];
+const RECOVERY_DELAYS = require('../mock-recovery-policy').DELAYS;
 const RECOVERY_REASONS = new Set(['transcription-unavailable','content-unavailable','delivery-unavailable','writing-unavailable']);
 function canRecover(job) {
   return job?.status === 'failed' && RECOVERY_REASONS.has(job.result?.reason || job.reason)
-    && !Object.values(job.stages || {}).some(stage => stage.uncertain);
+    && !Object.values(job.stages || {}).some(stage => stage.uncertain || stage.recoveryBlocked);
 }
 function scheduleRecovery(assessment, at) {
   const recovery = assessment.recovery;
@@ -306,7 +317,8 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
       for (const row of await store.assessmentQueue(now())) {
         if (jobs.size >= concurrency) break;
         try {
-          if (row.status === 'needs-attention') { if (!await resumeAutomatically(row.uid, row.id)) await wakeMedia(row.uid, row.id); }
+          if (row.status === 'not-requested') await request(row.uid,row.id);
+          else if (row.status === 'needs-attention') { if (!await resumeAutomatically(row.uid, row.id)) await wakeMedia(row.uid, row.id); }
           else queue(row.uid, row.id);
         } catch (error) {
           if (!recoveryErrors.has(row.id)) {

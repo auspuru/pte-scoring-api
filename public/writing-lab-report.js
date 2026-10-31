@@ -26,7 +26,7 @@
       const q = questions[i], r = results[i], maximum = maximumFor(q);
       const group = groups[q.type] ||= { type: q.type, label: labels[q.type], count: 0, marked: 0, total: 0, maximum: 0 };
       group.count++; group.maximum += maximum;
-      if (r && r.maximum === maximum && score90(r.total, maximum) !== null && (!weighted || !needsReview(r,q))) { group.marked++; group.total += r.total; }
+      if (r && r.maximum === maximum && score90(r.total, maximum) !== null && (attempt.kind!=='mock' || !needsReview(r,q))) { group.marked++; group.total += r.total; }
     }
     const byType = Object.values(groups).map(g => ({ ...g, score90: g.marked === g.count ? score90(g.total, g.maximum) : null }));
     const total = byType.reduce((sum, g) => sum + g.total, 0), maximum = byType.reduce((sum, g) => sum + g.maximum, 0);

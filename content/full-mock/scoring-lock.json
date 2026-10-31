@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "515408356f3eafe96bb153d7ee10a87b3e2bc61e",
+  "baseCommit": "ac64864fc1e392c6df223277646e2a6785dd4e14",
   "checkedAt": "2026-10-31",
-  "scope": "Practice navigation queues and account cleanup only; native Reading scorer is byte-identical. Exact compatibility baseline retains existing mock snapshots and confirmed grades.",
+  "scope": "Unattended recovery scheduling, durable leases, failure metadata and provisional publication gate only. Native grader/model/weight/timing code is unchanged and exact prior snapshot compatibility is tested.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -80,7 +80,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "41132b2eee6c0fd9402b6f6ee3831118f951fc48547037f8f2412f63fe280e76",
+        "sha256": "03c75d443499754f79bb413d7259a5e3d1256bb2662e96a1251876a040767ed7",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "710edb30f44777e05faa544d62899c660a2c2a890d738d924fe5e9d3d2a9f9bf",
+        "sha256": "5abeaaf400b172c603d838e435cdc50bdb65b548926a7513837e7968e6b83a2f",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -120,7 +120,7 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "d9b4cbc38f90c5f0f24e5076c2937cac6592b045e69b49b9be01996d7fc552d2",
+        "sha256": "0df84833cf6bca8ceb037e51ad58c4290464594d8300ae216462aba35ca9ee53",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
@@ -132,7 +132,7 @@
         "version": "full-mock-session-2026-10-29.2"
       },
       "full-mock/store.js": {
-        "sha256": "dd93668cd632c448216ee4bc4f495c4763ade4bed2ffb1d66491caf4963a14a6",
+        "sha256": "782446e10075c72055b9ecd94328052e3d92f63c5bb637f1a05c0671a23babe9",
         "version": null
       },
       "gpt-speaking-delivery.js": {
@@ -169,11 +169,11 @@
         "version": null
       },
       "public/writing-lab-report.js": {
-        "sha256": "9df6a755fddf4342731462708d84d0e9100a37fb99d4c29fe9e3decb76d88b69",
+        "sha256": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
         "version": null
       },
       "server.js": {
-        "sha256": "6343f2feba3d4ec580508e43771d9c0acbc74837aae84ec5dd1dff4dfd24a222",
+        "sha256": "aaefe394b205162a28edac3a6d2de2aaa2effe771dea9e79ed7e933b49269684",
         "version": null
       },
       "situation-content-policy.js": {
