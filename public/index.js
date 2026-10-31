@@ -850,6 +850,7 @@ function exitImpersonation() {
 window.exitImpersonation = exitImpersonation;
 
 function signOut() {
+  globalThis.EssayGuide?.close();
   authFlowRevision++;window.PortalAuthBoot?.cancel?.();
   savePortalEssayDraft();
   resetWritingLabFrame();
@@ -12776,6 +12777,7 @@ async function refreshSpeakingAccess(uid) {
 }
 function canUseSpeaking(){return speakingAccessUser===currentUserId && speakingAccessEnabled;}
 function switchSection(section, options = {}) {
+  globalThis.EssayGuide?.close();
   if(String(section).startsWith('speaking-')&&!canUseSpeaking())section='dashboard';
   if (window.PortalExamMode?.isActive()) {
     portalWorkspace?.activate(section, { history:'replace', focus:false });
@@ -13476,6 +13478,7 @@ const PRACTICE_RUBRIC = [
 const PRACTICE_MAX_TOTAL = 26;
 
 function openPractice(defaultToWelcome = false, options = {}) {
+  globalThis.EssayGuide?.close();
   savePortalEssayDraft();
   const refreshed = refreshPracticeHistory();
   portalWorkspace.activate('practice', options);
@@ -13520,7 +13523,7 @@ function practiceCurrentEssay() {
   archivePracticeDraftForUndo('Previous essay draft archived.');
   
   practiceState.view = 'write';
-  practiceState.writeStep = 2;
+  practiceState.writeStep = 1;
   practiceState.promptExpanded = true;
   practiceState.questionSource = 'library';
   practiceState.selectedQuestionId = e.id;
@@ -13533,6 +13536,7 @@ function practiceCurrentEssay() {
   resetPracticeTimer();
   renderPracticeMain();
   openPractice(false);
+  startExamSimulator();
 }
 
 function closePractice() {
@@ -13848,6 +13852,7 @@ function backToEssayQuestions() {
   document.getElementById('practiceQuestionSearch')?.focus();
 }
 function renderPracticeMain() {
+  globalThis.EssayGuide?.close();
   const c = document.getElementById('practiceContent');
   if (practiceState.view === 'welcome') c.innerHTML = welcomeView();
   else if (practiceState.view === 'write') c.innerHTML = writeView();
@@ -13911,15 +13916,31 @@ function startNewPractice() {
 }
 
 function startExamSimulator() {
+  if (practiceState.writeStep !== 1) return;
   if (!practiceState.questionText || practiceState.questionText.trim().length < 10) {
     toast('Please pick a question or enter your own custom prompt first.', true);
     return;
   }
-  practiceState.writeStep = 2;
-  practiceState.promptExpanded = true;
-  practiceState.essayText = ''; // start fresh
-  resetPracticeTimer();
-  renderPracticeMain();
+  const owner = currentUserId, token = sessionToken, prompt = practiceState.questionText, questionId = practiceState.selectedQuestionId;
+  const isCurrent = () => !!owner && currentUserId === owner && sessionToken === token && practiceState.view === 'write' && practiceState.writeStep === 1 && practiceState.questionText === prompt && practiceState.selectedQuestionId === questionId && portalWorkspace?.current() === 'practice' && !window.PortalExamMode?.isActive();
+  const begin = () => {
+    if (!isCurrent()) return;
+    practiceState.writeStep = 2;
+    practiceState.promptExpanded = true;
+    practiceState.essayText = ''; // start fresh
+    resetPracticeTimer();
+    renderPracticeMain();
+    document.getElementById('practiceEssayInput')?.focus();
+  };
+  if (window.EssayGuide?.shouldShow(owner, prompt) && window.EssayGuide.open({owner, prompt, title:practiceState.questionTitle, isCurrent, onContinue:begin})) return;
+  begin();
+}
+
+function openPracticeEssayGuide() {
+  const owner = currentUserId, token = sessionToken, prompt = practiceState.questionText, questionId = practiceState.selectedQuestionId;
+  const isCurrent = () => !!owner && currentUserId === owner && sessionToken === token && practiceState.view === 'write' && practiceState.writeStep === 2 && practiceState.questionText === prompt && practiceState.selectedQuestionId === questionId && portalWorkspace?.current() === 'practice' && !window.PortalExamMode?.isActive();
+  // Reopening only reads teaching guidance. It never resets the editor or its clock.
+  window.EssayGuide?.open({owner, prompt, title:practiceState.questionTitle, mode:'resume', isCurrent, onContinue:()=>document.getElementById('practiceEssayInput')?.focus()});
 }
 
 function resetPracticeSetup() {
@@ -14006,6 +14027,7 @@ function writeView() {
               ${escapeHtml(practiceState.questionTitle || 'Custom Writing Prompt')}
             </div>
           </div>
+          <button type="button" class="essay-guide-help" id="practiceEssayGuideBtn" onclick="openPracticeEssayGuide()">Understand this question</button>
           <button class="simulator-toggle-prompt-btn" onclick="togglePracticePrompt()" style="background: transparent; border: 1px solid var(--line-soft); border-radius: 8px; padding: 8px 14px; font-size: 12.5px; font-weight: 600; color: var(--ink-soft); cursor: pointer; transition: var(--transition);">
             ${practiceState.promptExpanded ? '👁️ Hide Question' : '👁️ Show Question'}
           </button>

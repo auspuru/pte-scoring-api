@@ -3,6 +3,64 @@ const test=require('node:test'),assert=require('node:assert/strict'),express=req
 const puppeteer=require('puppeteer');
 const root=path.resolve(__dirname,'..');
 const {fixture:authFixture}=require('./helpers/auth-server');
+for(const width of [1363,390,320])test('Essay guide: combined page, inline approaches, clock, ownership and mock isolation at '+width+'px',{timeout:90000},async t=>{
+ const f=await authFixture(t),username='essay-guide-browser',password='Synthetic-pass-123';
+ for(const name of [username,'essay-guide-other'])assert.equal((await f.request('/api/auth/register',{username:name,password,email:name+'@example.test'})).body.success,true);
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const page=await browser.newPage();await page.setViewport({width,height:900});const errors=[],assessmentCalls=[];
+ page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.method()==='POST'&&/\/(?:grade|score)(?:\/|$)/.test(new URL(r.url()).pathname))assessmentCalls.push(r.url());});
+ async function login(name){await page.type('#loginUsername',name);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));}
+ async function prepare(prompt){await page.evaluate(()=>{switchSection('practice');startNewPractice();setQuestionSource('custom');});await page.type('#practiceCustomPrompt',prompt);}
+ const prompt=require('../content/writing-lab.json').predictionEssays[0].text;
+ await page.goto(f.base);await login(username);await prepare(prompt);
+ await page.click('#practiceTimerToggle');await page.locator('#practiceStartBtn').click();await page.waitForSelector('#essay-guide[open]');
+ assert.equal(await page.$eval('[data-guide-prompt]',e=>e.textContent),prompt);
+ assert.equal(await page.evaluate(()=>document.activeElement.id),'essay-guide-title');
+ assert.equal(await page.$$eval('#essay-guide [role=tab]',els=>els.length),0);
+ assert.equal(await page.$$eval('[data-guide-explanation]:not([hidden])',els=>els.length),0);
+ assert.equal(await page.evaluate(()=>practiceState.timerStartedAt),null);
+ for(const choice of ['0','1','own']){
+  await page.locator('[data-guide-choice="'+choice+'"]').click();
+  const inline=await page.$eval('[data-guide-choice="'+choice+'"]',button=>{const panel=document.getElementById(button.getAttribute('aria-controls'));return {adjacent:button.nextElementSibling===panel,shown:!panel.hidden,withinCard:panel.parentElement===button.parentElement,expanded:button.getAttribute('aria-expanded')};});
+  assert.deepEqual(inline,{adjacent:true,shown:true,withinCard:true,expanded:'true'});
+  assert.equal(await page.$$eval('[data-guide-explanation]:not([hidden])',els=>els.length),1);
+ }
+ await page.type('#essay-guide-own','A private teaching note, separate from the essay.');
+ assert.equal(await page.$eval('#essay-guide',e=>e.scrollWidth<=e.clientWidth+1),true);
+ assert.equal(await page.$$eval('#essay-guide button',els=>els.every(e=>e.getBoundingClientRect().height>=44)),true);
+ await page.keyboard.press('Escape');await page.waitForSelector('#essay-guide',{hidden:true});
+ assert.equal(await page.evaluate(()=>practiceState.writeStep),1,'Closing does not start writing or mark the guide as seen');
+ await page.locator('#practiceStartBtn').click();await page.waitForSelector('#essay-guide[open]');
+ await page.locator('.essay-guide-skip').click();await page.waitForSelector('#practiceEssayInput');
+ assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),'');assert.equal(await page.evaluate(()=>practiceState.timerStartedAt),null);
+ assert.equal(await page.evaluate(()=>document.activeElement.id),'practiceEssayInput');
+ const draft='Television helps me relax after a demanding workday.';await page.type('#practiceEssayInput',draft);
+ const started=await page.evaluate(()=>practiceState.timerStartedAt);assert(started>0);
+ await page.locator('#practiceEssayGuideBtn').click();await page.waitForSelector('#essay-guide[open]');
+ assert.equal(await page.$eval('#essay-guide [data-guide-auto]',e=>e.checked),true);
+ await page.locator('.essay-guide-primary').click();
+ assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),draft);assert.equal(await page.evaluate(()=>practiceState.timerStartedAt),started);
+ await page.waitForFunction(()=>document.getElementById('practiceDraftStatus')?.dataset.state==='saved');
+ await page.reload();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),draft);
+ assert.equal(await page.evaluate(()=>practiceState.timerStartedAt),started);
+ // The same completed guide is remembered only for this account and wording.
+ await prepare(prompt);await page.locator('#practiceStartBtn').click();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$('#essay-guide'),null);
+ const nextPrompt=require('../content/writing-lab.json').predictionEssays[1].text;
+ await prepare(nextPrompt);await page.locator('#practiceStartBtn').click();await page.waitForSelector('#essay-guide[open]');
+ await page.evaluate(()=>{window.__oldGuideButton=document.querySelector('.essay-guide-primary');signOut();window.__oldGuideButton.click();});
+ await page.waitForSelector('#loginSubmitBtn');assert.equal(await page.$('#essay-guide'),null);
+ await page.$eval('#loginUsername',e=>e.value='');await page.$eval('#loginPassword',e=>e.value='');await login('essay-guide-other');await prepare(prompt);
+ await page.locator('#practiceStartBtn').click();await page.waitForSelector('#essay-guide[open]');
+ assert.equal(await page.$eval('#essay-guide-own',e=>e.value),'');
+ await page.click('[data-guide-auto]');await page.locator('.essay-guide-primary').click();await page.waitForSelector('#practiceEssayInput');
+ await prepare(nextPrompt);await page.locator('#practiceStartBtn').click();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$('#essay-guide'),null);
+ await prepare('Discuss a new custom topic using relevant examples.');await page.locator('#practiceStartBtn').click();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$('#essay-guide'),null);
+ await page.locator('#practiceEssayGuideBtn').click();await page.waitForSelector('#essay-guide[open]');assert.equal(await page.$eval('#essay-guide',e=>e.textContent.includes('not been reviewed for this exact question')),true);
+ await page.evaluate(()=>switchSection('writing-mocks'));await page.waitForFunction(()=>document.body.dataset.section==='writing-mocks');assert.equal(await page.$('#essay-guide'),null);
+ await page.evaluate(()=>openPracticeEssayGuide());assert.equal(await page.$('#essay-guide'),null,'No practice guidance can open in a timed mock workspace');
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+ assert.deepEqual(errors,[]);assert.deepEqual(assessmentCalls,[]);
+});
 for(const width of [1363,390,320])test('Progress opens exact saved responses and Next Steps is retired at '+width+'px',{timeout:90000},async t=>{
  const f=await authFixture(t),username='progress-browser';
  const registration=await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:'progress@example.test'});
