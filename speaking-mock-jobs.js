@@ -6,6 +6,13 @@ const VERSION='progressive-speaking-v1';
 const complete=a=>report.summarize({...a,status:'submitted'}).azure.status==='assessed';
 const identity=(a,index)=>hash({version:VERSION,id:a.id,index,recording:a.responses[index].recording.hash,question:a.questions[index],profile:a.assessmentProfile?.diBackend||'academy'});
 const missing=(a,i)=>{const result=report.questionResult({...a,status:'submitted'},a.questions[i],a.responses[i],i,'azure');return !result.excluded&&result.total===null;};
+// Retain only bounded diagnostic codes, never model prose or learner answers.
+function contentRejection(value,question){
+  const safe=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,80}$/.test(v)?v:undefined;
+  return {code:safe(value?.contentReviewIssue)||safe(value?.contentStatus)||'invalid-content',
+    ...(safe(value?.scoringMode)?{mode:value.scoringMode}:{}),
+    ...(question?{questionId:safe(question.id)||'unavailable',questionType:safe(question.type)||'unavailable',questionHash:hash(question),sourceFacts:Array.isArray(question.facts)?question.facts.length:0}:{})};
+}
 function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,callModel,gradeResponse,academyClient=academy.createAcademyClient(),includeLegacy=true,now=Date.now}={}){
   const jobs=createJobs({pool,directory:path.join(directory,'answer-jobs'),table:'speaking_answer_jobs',now});let cursor='',sweeping=false,sweeper;
   const worker=createWorker({store:jobs,now,concurrency:3,onSettled:row=>publish(row.owner,row.group_id),run:async ctx=>{
@@ -34,7 +41,7 @@ function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,c
         }catch(error){await ctx.save(data=>{const attempts=(data.stages.academy?.attempts||0)+1;data.stages.academy={status:attempts>=5||[400,401,403,409].includes(error.status)?'needs_attention':'retry_wait',attempts,failure:'academy_transport',code:error.status||503,nextAt:now()+Math.min(60000,5000*attempts)};});}
       })());
     }else{
-      if(!report.validContent(q,response().content))tasks.push(stage(ctx,'content',()=>scoring.grade(q,text,callModel,{academyDescribeImage:true}),{now,valid:v=>report.validContent(q,v),accept:(data,v)=>{if(report.validContent(q,v))data.patch.content=v;}}));
+      if(!report.validContent(q,response().content))tasks.push(stage(ctx,'content',()=>scoring.grade(q,text,callModel,{academyDescribeImage:true}),{now,valid:v=>report.validContent(q,v),accept:(data,v)=>{if(report.validContent(q,v)){data.patch.content=v;delete data.contentRejection;}else data.contentRejection=contentRejection(v);}}));
     }
     if(!contentGated()&&report.deliveryTraits(response(),'azure').missing.length)tasks.push(stage(ctx,'azure',()=>assessAzure(recording,{question:q,transcript:text,transcribe,contentIndependent:true,chunkCache:ctx.data.azureChunks||{},checkpointChunk:(key,value)=>ctx.save(data=>{data.azureChunks||={};data.azureChunks[key]={...data.azureChunks[key],...value};})}),{now,accept:(data,v)=>retain(data,'azure',v),valid:()=>!report.deliveryTraits(response(),'azure').missing.length}));
     await Promise.allSettled(tasks);
@@ -77,6 +84,6 @@ async function repair(uid,id,{jobId,stage:stageName,stages:stageNames,operation,
     return{status:held?'delayed':'preparing',ready:false,accountedFor,total:a.questionCount,delayed:held||now()-(a.finishedAt||now())>600000};
   }
   async function sweep(){if(sweeping)return;sweeping=true;try{const rows=await store.scanForScoring(cursor);cursor=rows.length?rows.at(-1).data.id:'';for(const {username,data}of rows){if(!includeLegacy&&data.assessmentProfile?.mode!=='progressive-v1')continue;let a=data;if(a.status==='active'&&now()>=a.deadline)a=await store.update(username,a.id,current=>{if(current.status==='active'&&now()>=current.deadline){current.status='submitted';current.finishedAt=now();current.grading={status:'pending'};}return current;});if(a.assessment?.status!=='ready')await ensure(username,a);}}finally{sweeping=false;}}
-  return{ensure,hydrate,status,publish,jobs,recover:sweep,repair,async diagnostics(uid,id){const a=await store.get(uid,id,{omitMockAudio:true});if(!a)return null;return{attemptId:id,...await status(uid,a),jobs:(await jobs.list(uid,id)).map(r=>({id:r.id,index:r.data.index,status:r.status,...(r.data.assessmentExclusion?{exclusion:{note:r.data.assessmentExclusion.note,operation:r.data.assessmentExclusion.operation}}:{}),updatedAt:Number(r.updated_at),stages:Object.fromEntries(Object.entries(r.data.stages||{}).map(([name,s])=>[name,{status:s.status,attempts:s.attempts||0,code:s.failure||null,...(s.detail?{detail:s.detail}:{})}])),remoteFailures:r.data.remoteFailures||[]}))};},async start(){await jobs.initialise();await worker.start();await sweep();sweeper=setInterval(()=>sweep().catch(()=>console.warn('[speaking-jobs] recovery scan will resume')),15000);sweeper.unref?.();},async stop(){clearInterval(sweeper);await worker.stop();},wait:worker.wait};
+  return{ensure,hydrate,status,publish,jobs,recover:sweep,repair,async diagnostics(uid,id){const a=await store.get(uid,id,{omitMockAudio:true});if(!a)return null;return{attemptId:id,...await status(uid,a),jobs:(await jobs.list(uid,id)).map(r=>({id:r.id,index:r.data.index,status:r.status,...(r.data.assessmentExclusion?{exclusion:{note:r.data.assessmentExclusion.note,operation:r.data.assessmentExclusion.operation}}:{}),updatedAt:Number(r.updated_at),stages:Object.fromEntries(Object.entries(r.data.stages||{}).map(([name,s])=>[name,{status:s.status,attempts:s.attempts||0,code:s.failure||null,...(s.detail?{detail:s.detail}:name==='content'&&r.data.contentRejection?{detail:contentRejection({contentReviewIssue:r.data.contentRejection.code,scoringMode:r.data.contentRejection.mode},a.questions[r.data.index])}:{})}])),remoteFailures:r.data.remoteFailures||[]}))};},async start(){await jobs.initialise();await worker.start();await sweep();sweeper=setInterval(()=>sweep().catch(()=>console.warn('[speaking-jobs] recovery scan will resume')),15000);sweeper.unref?.();},async stop(){clearInterval(sweeper);await worker.stop();},wait:worker.wait};
 }
 module.exports={VERSION,complete,identity,createMockJobs};
