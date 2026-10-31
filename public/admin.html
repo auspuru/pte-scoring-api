@@ -105,12 +105,12 @@ h1 { font-family: var(--font-d); font-size: 1.8rem; color: var(--ink); margin-bo
   font-size: 0.95rem; font-family: var(--font); margin-bottom: 16px; background: var(--bg); color: var(--ink);
 }
 .auth-card input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
-.auth-card button {
+.auth-card > button:not(.theme-toggle) {
   width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none;
   border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 700; cursor: pointer;
   font-family: var(--font); transition: background 0.2s ease;
 }
-.auth-card button:hover { background: var(--accent-dark); }
+.auth-card > button:not(.theme-toggle):hover { background: var(--accent-dark); }
 .auth-error {
   color: var(--red); font-size: 0.85rem; margin-bottom: 12px; display: none;
   background: var(--red-light); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(239, 68, 68, 0.2);
@@ -380,7 +380,7 @@ tr:hover td { background: var(--surface-dim); }
 }
 .user-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.user-controls .search-input{width:180px}.btn-danger{color:var(--red);border-color:rgba(239,68,68,.3)}.btn-danger:disabled{opacity:.45;cursor:not-allowed}
 </style>
-<link rel="stylesheet" href="/admin-liquid-glass.css?v=20260928-admin-a11y">
+<link rel="stylesheet" href="/admin-liquid-glass.css?v=20261031-admin-login">
 </head>
 <body>
 <script>
@@ -401,7 +401,7 @@ tr:hover td { background: var(--surface-dim); }
 <div class="ambient-glow-blob admin-glow admin-glow-c" aria-hidden="true"></div>
 
 <div class="auth-card" id="authCard">
-  <button class="theme-toggle" onclick="toggleTheme()" style="position: absolute; top: 20px; right: 20px;" title="Toggle theme" aria-label="Toggle theme">☀️</button>
+  <div class="admin-auth-header">
   <div class="admin-brand-lockup">
     <img class="admin-brand-logo" src="/assets/ipt-brisbane-logo.webp?v=20260924-logo" alt="IELTS and PTE Tutorial Brisbane logo" width="54" height="54">
     <div class="admin-brand-copy">
@@ -409,10 +409,17 @@ tr:hover td { background: var(--surface-dim); }
       <h2>Admin sign in</h2>
     </div>
   </div>
+  <button type="button" class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">☀️</button>
+  </div>
   <p class="admin-auth-copy">Authorized staff only. Use the server-configured admin key to continue.</p>
   <div class="auth-error" id="authError" role="alert"></div>
   <label class="admin-field-label" for="adminKeyInput">Admin key</label>
-  <input type="password" id="adminKeyInput" placeholder="Enter admin key" autocomplete="current-password" aria-describedby="authError" onkeydown="if(event.key==='Enter')adminLogin()">
+  <div class="admin-key-field">
+    <input type="password" id="adminKeyInput" placeholder="Enter admin key" autocomplete="current-password" aria-describedby="authError" onkeydown="if(event.key==='Enter')adminLogin()">
+    <button type="button" class="admin-key-toggle" onclick="toggleAdminKeyVisibility()" aria-label="Show admin key" aria-pressed="false" aria-controls="adminKeyInput" title="Show admin key">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="admin-key-slash" d="m3 3 18 18"/></svg>
+    </button>
+  </div>
   <button onclick="adminLogin()">Sign In</button>
 </div>
 
@@ -1304,6 +1311,16 @@ async function deletePassage(id) {
 const savedKey=sessionStorage.getItem('adminKey');
 if(savedKey){document.getElementById('adminKeyInput').value=savedKey;adminLogin({silent:true});}
 
+function toggleAdminKeyVisibility() {
+  const input = document.getElementById('adminKeyInput');
+  const button = document.querySelector('.admin-key-toggle');
+  const visible = input.type === 'password';
+  input.type = visible ? 'text' : 'password';
+  button.setAttribute('aria-pressed', String(visible));
+  button.setAttribute('aria-label', visible ? 'Hide admin key' : 'Show admin key');
+  button.title = visible ? 'Hide admin key' : 'Show admin key';
+}
+
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light-mode');
   localStorage.setItem('pte_theme', isLight ? 'light' : 'dark');
@@ -1314,6 +1331,7 @@ function updateThemeToggles() {
   document.querySelectorAll('.theme-toggle').forEach(btn => {
     btn.innerHTML = isLight ? '🌙' : '☀️';
     btn.title = isLight ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+    btn.setAttribute('aria-label', btn.title);
   });
 }
 document.addEventListener('DOMContentLoaded', updateThemeToggles);

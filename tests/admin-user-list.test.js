@@ -32,7 +32,7 @@ test('admin presentation uses IPT branding without changing authorization',()=>{
   const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
   const interventions=fs.readFileSync(path.join(root,'public','admin-interventions.js'),'utf8');
 
-  assert.match(html,/\/admin-liquid-glass\.css\?v=20260928-admin-a11y/);
+  assert.match(html,/\/admin-liquid-glass\.css\?v=20261031-admin-login/);
   assert.match(html,/ipt-brisbane-logo\.webp/);
   assert.match(html,/aria-label="Search users"/);
   assert.match(html,/class="admin-table-scroll"/);
