@@ -100,15 +100,16 @@
     })), ...(writing.listeningMocks || []).map((m,i)=>({...m,engine:'writing',module:'listening',mode:'sectional',number:i+1})),
       ...(writing.speakingMocks||[]).map((m,i)=>({...m,engine:'speaking',module:'speaking',mode:'sectional',number:i+1}))];
   }
-  function filterMocks(items, { mode = 'sectional', module = 'all', search = '' } = {}) {
+  function filterMocks(items, { mode = 'sectional', module = 'all', search = '', attempt = 'all' } = {}, progress = {}) {
     const query = search.trim().toLowerCase();
     return items.filter(m => m.mode === mode && (module === 'all' || module === m.module)
+      && (attempt === 'all' || (attempt === 'attempted') === ['Done','In progress'].includes(progress[m.id]?.status))
       && (!query || [m.title,m.description,m.scope,m.searchText].filter(Boolean).join(' ').toLowerCase().includes(query)))
       .sort((a,b) => a.module.localeCompare(b.module) || a.number - b.number);
   }
   function createController({ document: doc, navigate, launchReading, launchWriting, launchSpeaking, canAccessSpeaking=()=>true, getSessionToken=()=>'', fetch: get = fetch, getProgress = async () => ({}) }) {
     let data, loading, page = 0, progress = { practice: {}, mocks: {} };
-    const filters = { mode: 'sectional', module: 'all', search: '' };
+    const filters = { mode: 'sectional', module: 'all', search: '', attempt: 'all' };
     let pageSize = 12;
     async function load() {
       if (data) return data;
@@ -158,7 +159,7 @@
     function renderList() {
       const board = doc.getElementById('catalogue-board');
       if (!board || !data) return;
-      const items = filterMocks(data.mocks.filter(m=>m.module!=='speaking'||canAccessSpeaking()), filters), pages = Math.max(1, Math.ceil(items.length / pageSize));
+      const items = filterMocks(data.mocks.filter(m=>m.module!=='speaking'||canAccessSpeaking()), filters, progress.mocks), pages = Math.max(1, Math.ceil(items.length / pageSize));
       page = Math.min(page, pages - 1);
       const shown = items.slice(page * pageSize, (page + 1) * pageSize);
       board.innerHTML = shown.map(m => {
@@ -188,10 +189,11 @@
       }
       host.innerHTML = '<div class="catalogue-heading"><span class="mock-catalogue-shell-kicker">Timed practice</span><h2>Mock Tests</h2><p>Choose a practice or sectional mock, continue an unfinished attempt, or review your saved test history.</p></div>'
         + '<div class="catalogue-modes" role="group" aria-label="Mock type">' + [['practice','Practice Mock'],['sectional','Sectional Mock']].map(([id,label]) => '<button type="button" data-catalogue-mode="' + id + '" aria-pressed="' + (filters.mode === id) + '">' + label + '</button>').join('') + '<button type="button" data-full-mock-preview hidden>Full Mock</button></div>'
-        + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search tests" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option>' + (canAccessSpeaking()?'<option value="speaking">Speaking</option>':'') + '<option value="reading">Reading</option><option value="writing">Writing</option><option value="listening">Listening</option></select></label></div>'
+        + '<p class="catalogue-description" id="catalogue-description"></p><div class="catalogue-toolbar"><label>Find a test<input id="catalogue-search" type="search" placeholder="Search tests" value="' + esc(filters.search) + '"></label><label>Module<select id="catalogue-module"><option value="all">All modules</option>' + (canAccessSpeaking()?'<option value="speaking">Speaking</option>':'') + '<option value="reading">Reading</option><option value="writing">Writing</option><option value="listening">Listening</option></select></label><label>Attempt status<select id="catalogue-attempt"><option value="all">All mocks</option><option value="attempted">Attempted</option><option value="unattempted">Unattempted</option></select></label></div>'
         + '<div class="catalogue-saved"><span>Saved mock attempts</span>' + (canAccessSpeaking()?'<button type="button" data-mock-history="speaking">Speaking</button>':'') + '<button type="button" data-mock-history="reading">Reading</button><button type="button" data-mock-history="writing">Writing</button><button type="button" data-mock-history="listening">Listening</button></div>'
         + '<p id="catalogue-count" role="status"></p><div class="mock-catalogue-grid" id="catalogue-board"></div><p id="catalogue-empty" class="catalogue-empty" hidden></p><div class="catalogue-pagination" id="catalogue-pagination"><button type="button" class="portal-button" id="catalogue-prev" data-catalogue-page="-1">Previous</button><span id="catalogue-page"></span><button type="button" class="portal-button" id="catalogue-next" data-catalogue-page="1">Next</button></div>';
       doc.getElementById('catalogue-module').value = filters.module;
+      doc.getElementById('catalogue-attempt').value = filters.attempt;
       host.onclick = e => {
         const b = e.target.closest('button'); if (!b || b.disabled) return;
         if (b.dataset.fullMockPreview !== undefined) { navigate('full-mock'); return; }
@@ -206,6 +208,7 @@
       host.oninput = e => { if (e.target.id === 'catalogue-search') { filters.search = e.target.value; page = 0; renderList(); } };
       host.onchange = e => {
         if (e.target.id === 'catalogue-module') filters.module = e.target.value;
+        if (e.target.id === 'catalogue-attempt') filters.attempt = e.target.value;
         page = 0; renderList();
       };
       renderList();

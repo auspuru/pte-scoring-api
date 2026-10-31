@@ -55,6 +55,15 @@ for(const width of [1363,390,320])test('Progress opens exact saved responses and
  assert.equal(await page.$eval('.practice-banner.writing h3 img',e=>e.complete&&e.naturalWidth>0),true);
  assert.deepEqual(assessmentCalls,[],'Reviewing a saved SWT response does not re-assess it');
  assert.deepEqual(planReads,[],'The retired feature does not fetch assigned plans in the background');
+ await navigate('nav-mock-tests');await page.waitForSelector('#catalogue-attempt');
+ await page.select('#catalogue-attempt','attempted');
+ await page.waitForFunction(()=>!document.getElementById('catalogue-empty').hidden);
+ assert.equal(await page.$$eval('[data-mock-id]',nodes=>nodes.length),0);
+ await page.select('#catalogue-attempt','unattempted');
+ await page.waitForFunction(()=>document.querySelectorAll('[data-mock-id]').length>0);
+ await page.select('#catalogue-module','writing');
+ assert.equal(await page.$$eval('#catalogue-board .mock-catalogue-card',nodes=>nodes.every(n=>n.classList.contains('writing'))),true);
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
  assert.deepEqual(errors,[]);
  } catch(error) {
   console.error('Progress browser state',JSON.stringify(await page.evaluate(()=>({section:document.body.dataset.section,hash:location.hash,menu:document.body.classList.contains('portal-menu-open'),targets:[...document.querySelectorAll('#nav-progress,#portalMenuToggle,a[data-step-start]')].map(e=>{const r=e.getBoundingClientRect(),style=getComputedStyle(e);return {tag:e.tagName,id:e.id,step:e.dataset.stepStart,x:r.x,y:r.y,width:r.width,height:r.height,display:style.display,visibility:style.visibility};})})).catch(()=>({unavailable:true}))));
