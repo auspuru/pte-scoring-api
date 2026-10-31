@@ -12501,7 +12501,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-exam-player.js?v=20261001-exam-focus', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=sha256-98e9c23a186f', 'reading review'],
-      ['reading-practice.js?v=sha256-b3dab5bb17ec', 'reading practice']
+      ['reading-practice.js?v=sha256-002b102f1b87', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
     // downloads overlap. Initialise the practice client only after all succeed.
@@ -12532,7 +12532,7 @@ function ensureSpeakingRuntimeLoaded() {
   if (window.SpeakingPractice) return Promise.resolve(window.SpeakingPractice);
   if (speakingRuntimeLoadPromise) return speakingRuntimeLoadPromise;
 
-  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-d5f11907c71f', 'speaking practice'))
+  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-b704f6030a1b', 'speaking practice'))
     .then(() => {
       if (!window.SpeakingPractice) throw new Error('Speaking practice did not initialise.');
       return window.SpeakingPractice;
@@ -12564,7 +12564,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-1194b2051797', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-66f2d0e435f4', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -12837,8 +12837,13 @@ function launchAssignedQuestion(item) {
   }
   if (item.engine === 'swt') {
     switchSection('swt');
-    const id = Number(item.passageId || item.questionId);
-    if (Number.isFinite(id)) setTimeout(() => { if (typeof loadPassage === 'function') loadPassage(id); }, 0);
+    const owner=currentUserId, ownerToken=sessionToken, stableId=String(item.passageId || item.questionId || '');
+    setTimeout(() => {
+      if(currentUserId!==owner||sessionToken!==ownerToken||portalWorkspace?.current()!=='swt')return;
+      const position=passages.findIndex(p=>String(p.id)===stableId);
+      if(position<0){toast('This assigned passage is no longer available. Choose a passage from the question list.',true);return;}
+      loadPassage(position+1);
+    }, 0);
     return;
   }
   if (item.route) switchSection(item.route);
@@ -13870,12 +13875,12 @@ function essayReviewPending(id) {
 }
 function essayQuestionNavigation() {
   if(!['write','loading','results'].includes(practiceState.view)||(practiceState.view!=='results'&&practiceState.questionSource!=='library'))return '';
-  const questions=practiceState.questionQueue?.length?practiceState.questionQueue.map(id=>essays.find(e=>e.id===id)).filter(Boolean):essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId));
-  return `<nav class="speaking-actions" aria-label="Practice questions"><button class="btn" onclick="moveEssayQuestion(-1)" ${index<=0?'disabled':''}>← Back</button><span>${index<0?'Choose a question':'Question '+(index+1)+' of '+questions.length}</span><button class="btn" onclick="moveEssayQuestion(1)" ${index>=questions.length-1?'disabled':''}>Next →</button></nav>`;
+  const questions=Array.isArray(practiceState.questionQueue)?practiceState.questionQueue.map(id=>essays.find(e=>e.id===id)).filter(Boolean):essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId));
+  return `<nav class="speaking-actions" aria-label="Practice questions"><button class="btn" onclick="moveEssayQuestion(-1)" ${index<=0?'disabled':''}>← Back</button><span>${index<0?'Choose a question':'Question '+(index+1)+' of '+questions.length}</span><button class="btn" onclick="moveEssayQuestion(1)" ${index<0||index>=questions.length-1?'disabled':''}>Next →</button></nav>`;
 }
 function moveEssayQuestion(direction) {
-  const questions=practiceState.questionQueue?.length?practiceState.questionQueue.map(id=>essays.find(e=>e.id===id)).filter(Boolean):essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId)),target=questions[index+direction];
-  if(!target)return;
+  const questions=Array.isArray(practiceState.questionQueue)?practiceState.questionQueue.map(id=>essays.find(e=>e.id===id)).filter(Boolean):essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId)),target=questions[index+direction];
+  if(index<0||!target)return;
   const ta=document.getElementById('practiceEssayInput');if(ta&&practiceState.view==='write')practiceState.essayText=ta.value;
   if(!saveEssayQuestionDraft()){toast('Could not save your draft. Please keep this question open.',true);return;}
   stopPracticeTimer();stopLoadingMessages();

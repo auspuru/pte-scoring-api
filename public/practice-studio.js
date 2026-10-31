@@ -55,5 +55,12 @@
     dock.classList.add('practice-question-dock');
     content.insertBefore(dock,content.firstChild);
   }
-  return { navigation, heading, wrap, install, focusQuestion, pinNavigation };
+  // An absent or stale selection must never turn a saved response into a new
+  // whole-bank session. Preserve explicit empty selections and stable ordering.
+  function selectedQueue(items, ids, selectedId, key = 'id') {
+    if (!Array.isArray(ids) || !ids.includes(selectedId)) return [];
+    const byId = new Map(items.map(item => [item[key], item]));
+    return [...new Set(ids)].map(id => byId.get(id)).filter(Boolean);
+  }
+  return { navigation, heading, wrap, install, focusQuestion, pinNavigation, selectedQueue };
 });

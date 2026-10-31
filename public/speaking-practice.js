@@ -184,12 +184,12 @@
       node.innerHTML=playbackUrl?'<audio controls src="'+playbackUrl+'" aria-label="Your recorded response"></audio><a class="portal-button" href="'+playbackUrl+'" download="'+attempt.questionId+'-response.'+(attempt.recording?.mime==='audio/mp4'?'mp4':attempt.recording?.mime==='audio/wav'?'wav':attempt.recording?.mime==='audio/mpeg'?'mp3':'webm')+'">Download for teacher review</a>':attempt.recording?'Your recording is saved. Loading playback…':'';
     }
     function navigationQuestions() {
-      const type=attempt.question.type,filtered=filterQuestions(catalog.questions,type,libraryFilters.get(type));
-      return filtered.some(q=>q.id===attempt.questionId)?filtered:catalog.questions.filter(q=>q.type===type);
+      const type=attempt.question.type;
+      return studio.selectedQueue(catalog.questions.filter(q=>q.type===type),libraryFilters.get(type)?.queue,attempt.questionId);
     }
     function questionNavigation() {
       const questions=navigationQuestions(),index=questions.findIndex(q=>q.id===attempt.questionId);
-      return '<nav class="speaking-actions" aria-label="Practice questions"><button class="portal-button" data-speaking-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><span>Question '+(index+1)+' of '+questions.length+'</span><button class="portal-button" data-speaking-move="1" '+(index>=questions.length-1?'disabled':'')+'>'+'Next →'+'</button><button class="portal-button" data-speaking-action="list">My questions</button></nav>';
+      return '<nav class="speaking-actions" aria-label="Practice questions"><button class="portal-button" data-speaking-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><button class="portal-button" data-speaking-action="list">Question list</button><span>'+(index<0?'Open the question list to select a queue':'Question '+(index+1)+' of '+questions.length)+'</span><button class="portal-button" data-speaking-move="1" '+(index<0||index>=questions.length-1?'disabled':'')+'>'+'Next →'+'</button></nav>';
     }
     async function prepareNavigation() {
       if(recorder?.state==='recording') {
@@ -205,7 +205,7 @@
     async function moveQuestion(direction) {
       if(navigationPending||busy||uploadBlob||phase==='saving'){message('Wait for your response to save before changing questions.');return;}
       const questions=navigationQuestions(),index=questions.findIndex(q=>q.id===attempt.questionId),target=questions[index+direction];
-      if(!target)return;
+      if(index<0||!target)return;
       navigationPending=true;refreshControls();const user=owner;
       try {
         if(!await prepareNavigation()||identity()!==user||owner!==user)return;
@@ -385,7 +385,7 @@
       for(const button of host?.querySelectorAll?.('[data-speaking-move], [data-speaking-action="list"]')||[]){
         const questions=navigationQuestions(),index=questions.findIndex(q=>q.id===attempt.questionId);
         const direction=Number(button.dataset.speakingMove);
-        button.disabled=busy||navigationPending||!!uploadBlob||phase==='saving'||(button.dataset.speakingMove!==undefined&&(index+direction<0||index+direction>=questions.length));
+        button.disabled=busy||navigationPending||!!uploadBlob||phase==='saving'||(button.dataset.speakingMove!==undefined&&(index<0||index+direction<0||index+direction>=questions.length));
       }
       if(finish){finish.hidden=phase!=='recording';finish.disabled=busy;}
       if(retrySave)retrySave.hidden=!(uploadBlob&&!attempt?.recording&&!busy);
@@ -568,7 +568,7 @@
       if(d.speakingPage!==undefined&&!attempt){filters().page=Number(d.speakingPage)||0;renderLibraryList();return;}
       if(d.speakingAction==='clear-filters'&&!attempt){libraryFilters.delete(activeType);return library();}
       if(d.speakingMove!==undefined)return moveQuestion(Number(d.speakingMove));
-      if(d.speakingQuestion){Object.assign(filters(),{selectedId:d.speakingQuestion,scrollTop:host.scrollTop||0});return start(d.speakingQuestion);}if(d.speakingAttempt)return resume(d.speakingAttempt);
+      if(d.speakingQuestion){Object.assign(filters(),{...(!attempt?{queue:filterQuestions(catalog.questions,activeType,filters()).map(q=>q.id)}:{}),selectedId:d.speakingQuestion,scrollTop:host.scrollTop||0});return start(d.speakingQuestion);}if(d.speakingAttempt)return resume(d.speakingAttempt);
       const action=d.speakingAction;
       if(action==='zoom-image')return imageViewer.open(doc.getElementById('speaking-image-dialog'),attempt?.question);
       if(action==='practice'){leave();env.switchSection('practice-hub');return;}

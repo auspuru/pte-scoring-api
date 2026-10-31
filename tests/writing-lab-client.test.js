@@ -72,7 +72,7 @@ function harness({ audioReadyState = 4, protectedMode = false, portal = false, s
       if(context.replyOnce) {context.reply=null;context.replyOnce=false;}
       return {ok:true,json:async()=>value}; }
   };
-  context.window={MockReportUI:require('../public/mock-report-ui'),WritingLabReport:report,PteEstimateDisplay:{render:(reading,writing)=>'<div class="test-estimate">'+writing+'<small> / 90</small></div>'},parent:{postMessage(){}},events:{},addEventListener(name,fn){listen(this.events,name,fn);},scrollTo(){}};
+  context.window={PracticeStudio:require('../public/practice-studio'),MockReportUI:require('../public/mock-report-ui'),WritingLabReport:report,PteEstimateDisplay:{render:(reading,writing)=>'<div class="test-estimate">'+writing+'<small> / 90</small></div>'},parent:{postMessage(){}},events:{},addEventListener(name,fn){listen(this.events,name,fn);},scrollTo(){}};
   if(studioMode){context.window.ListeningStudio=require('../public/listening-studio');context.window.ListeningTasks=require('../public/listening-tasks');}
   const recovery = require('../public/grading-request');
   context.window.GradingRequest = { request: (url, options, extra) => recovery.request(url, options,
@@ -479,7 +479,7 @@ test('SST Back and Next preserve drafts and resume existing neighbouring attempt
     else value=second;
     return {ok:true,json:async()=>structuredClone(value)};
   };
-  open(h,first);h.nodes.get('answer').value='Keep my first response';
+  open(h,first);h.hooks.setContext({type:'sst',queue:bank.spoken.map(q=>q.id)});h.nodes.get('answer').value='Keep my first response';
   await h.hooks.movePractice(1,{disabled:false,isConnected:false});
   assert.equal(first.answers[0],'Keep my first response');assert.equal(h.hooks.current().id,'second');
   assert.equal(h.nodes.get('answer').value,'Saved second response');
@@ -689,4 +689,14 @@ test('Writing narrative refresh recomputes score priorities in place from curren
  assert.equal(h.hooks.current().impactFeedback.status,'complete');
  assert.match(h.nodes.get('score-impact-feedback').innerHTML,/earned all available marks/);
  assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,0);
+});
+
+test('Listening saved feedback never navigates from an empty or wrong-task selection',async()=>{
+ for(const context of [{type:'sst',queue:[]},{type:'sst',queue:['other']},{type:'wfd',queue:['one','two']}]){
+  const h=harness({studioMode:true}),base=attempt(0),questions=['one','two'].map(id=>({...bank.spoken[0],id,type:'sst'}));
+  h.hooks.setCatalog({mocks:[],spoken:questions,dictation:[]});
+  open(h,{...base,id:'saved-one',testId:'one',kind:'sst',mode:'practice',status:'submitted',questions:[questions[0]],index:0,answers:['Saved summary'],revisions:[1],completed:[1],results:[null],playback:[null]});
+  const reads=h.requests.length;h.hooks.setContext(context);await h.hooks.movePractice(1,{disabled:false});
+  assert.equal(h.hooks.current().id,'saved-one');assert.equal(h.requests.length,reads);
+ }
 });

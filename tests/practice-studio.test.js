@@ -99,3 +99,9 @@ test('Shared UI and deferred practice runtimes are fingerprinted and loaded in d
   assert(html.indexOf('practice-catalogue.js?')<html.indexOf('practice-studio.js?'));
   assert(html.indexOf('practice-studio.js?')<html.indexOf('index.min.js?'));
 });
+
+test('Saved navigation preserves empty, stale and stable ordered selections',()=>{
+ const {selectedQueue}=require('../public/practice-studio'),items=[{id:'a'},{id:'b'},{id:'c'}];
+ for(const ids of [undefined,null,[],['b'],['removed']])assert.deepEqual(selectedQueue(items,ids,'a'),[]);
+ assert.deepEqual(selectedQueue(items,['c','removed','a','c'],'a').map(q=>q.id),['c','a']);
+});

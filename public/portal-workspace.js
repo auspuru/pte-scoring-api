@@ -198,7 +198,7 @@
         ready = true;
         onNavigate(routeFromHash(win.location.hash), { ...requestFromHash(win.location.hash,win.history.state,getUserId()), history: 'replace', focus: false });
       },
-      reset() { win.PortalExamMode?.reset(); win.ReadingPractice?.reset(); win.SpeakingPractice?.reset(); win.SpeakingMock?.reset(); win.FullMock?.reset(); ready = false; current = null; closeMenu(); },
+      reset() { win.PortalExamMode?.reset(); win.ReadingPractice?.reset(); win.SpeakingPractice?.reset(); win.SpeakingMock?.reset(); win.FullMock?.reset(); win.WritingLab?.reset?.(); ready = false; current = null; closeMenu(); },
       closeMenu
     };
   }
