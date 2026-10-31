@@ -297,3 +297,10 @@ test('NAV-09: Back and Forward restore question changes inside the same task onc
  assert.equal(opened.length,before+1);assert.equal(opened.at(-1).attemptId,'a8');assert(opened.at(-1).navigation);
  h.win.location.hash='#/reading-dropdown?question=18&attempt=a18';h.events.popstate();assert.equal(opened.at(-1).attemptId,'a18');
 });
+
+
+test('NAV-16: Browser list context cannot cross account boundaries',()=>{
+ const {requestFromHash}=require('../public/portal-workspace'),hash='#/reading-dropdown?view=list',context={query:'Private saved search',queue:['8','18']},state={practice:{hash,owner:'alice',context}};
+ assert.deepEqual(requestFromHash(hash,state,'alice').readingRequest.context,context);
+ assert.equal(requestFromHash(hash,state,'bob').readingRequest.context,undefined);
+});

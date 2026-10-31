@@ -51,13 +51,13 @@
     const query=Object.entries(values).filter(([,v])=>v!=null&&v!=='').map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
     return '#/'+routes[section].path+(query?'?'+query:'');
   }
-  function requestFromHash(hash, state) {
+  function requestFromHash(hash, state, owner) {
     const section=routeFromHash(hash),route=routes[section],params={};
     for(const part of String(hash).split('?').slice(1).join('?').split('&')){
       const i=part.indexOf('=');if(i<0)continue;
       try{params[part.slice(0,i)]=decodeURIComponent(part.slice(i+1));}catch{/* Invalid links open the task list. */}
     }
-    const context=state?.practice?.hash===hash?state.practice.context:undefined;
+    const context=state?.practice?.hash===hash&&(owner===undefined||state.practice.owner===owner)?state.practice.context:undefined;
     const isPractice=route.readingLibrary||route.speakingType||(route.labTab&&!['mocks','history'].includes(route.labTab));
     const request={navigation:true,library:params.view==='list'||!!(isPractice&&!params.question&&!params.attempt),context,...(params.attempt?{attemptId:params.attempt}:{}),...(params.mode?{mode:params.mode==='practice'?'practice':'exam'}:{})};
     const options={routeHash:hash};
@@ -69,13 +69,13 @@
 
   // Keep the existing task nodes alive: switching sections must never rebuild
   // an editor, lose a selection, stop an assessment or reset a running timer.
-  function createController({ document: doc, window: win, onNavigate }) {
+  function createController({ document: doc, window: win, onNavigate, getUserId=()=>String(win.currentUserId||'').trim().toLowerCase() }) {
     let current = null;
     let ready = false;
     let lastRoutedHash = null;
     win.PortalQuestionNavigation={update(detail={}){
       if(!ready||!current||win.PortalExamMode?.isActive())return;
-      const hash=questionHash(current,detail),state={practice:{hash,context:detail.context||null}};
+      const hash=questionHash(current,detail),state={practice:{hash,owner:getUserId(),context:detail.context||null}};
       win.history[hash===win.location.hash?'replaceState':'pushState'](state,'',hash);
       lastRoutedHash=hash;
     }};
@@ -165,7 +165,7 @@
       const section = routeFromHash(win.location.hash);
       if (section !== current || lastRoutedHash!==win.location.hash) {
         lastRoutedHash=win.location.hash;
-        onNavigate(section, { ...requestFromHash(win.location.hash,win.history.state), history: 'none' });
+        onNavigate(section, { ...requestFromHash(win.location.hash,win.history.state,getUserId()), history: 'none' });
       }
     }
     win.addEventListener('popstate', handleRoute);
@@ -196,7 +196,7 @@
       current: () => current,
       start() {
         ready = true;
-        onNavigate(routeFromHash(win.location.hash), { ...requestFromHash(win.location.hash,win.history.state), history: 'replace', focus: false });
+        onNavigate(routeFromHash(win.location.hash), { ...requestFromHash(win.location.hash,win.history.state,getUserId()), history: 'replace', focus: false });
       },
       reset() { win.PortalExamMode?.reset(); win.ReadingPractice?.reset(); win.SpeakingPractice?.reset(); win.SpeakingMock?.reset(); win.FullMock?.reset(); ready = false; current = null; closeMenu(); },
       closeMenu

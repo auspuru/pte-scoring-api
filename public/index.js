@@ -12775,7 +12775,7 @@ async function getPortalCatalogueProgress() {
 
 function initialisePortalWorkspace() {
   if (portalWorkspace) return;
-  portalWorkspace = PortalWorkspace.createController({ document, window, onNavigate: switchSection });
+  portalWorkspace = PortalWorkspace.createController({ document, window, onNavigate: switchSection, getUserId:()=>String(currentUserId||'').trim().toLowerCase() });
   portalCatalogue = PracticeCatalogue.createController({
     document, navigate: switchSection, canAccessSpeaking:canUseSpeaking, getSessionToken:()=>sessionToken,
     launchSpeaking: paperId => switchSection('speaking-run', {mockRequest:{paperId}}),
