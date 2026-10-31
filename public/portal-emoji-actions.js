@@ -59,6 +59,7 @@
     [/reading blanks|reading multiple answers|reorder paragraphs|reading single answer|drag\s*&\s*drop/i, 'reading'],
     [/summari[sz]e written text|\bswt\b/i, 'swt'],
     [/write essay|\bessay\b/i, 'essay'],
+    [/\bwriting\b/i, 'essay'],
     [/\bgrammar\b/i, 'grammar'],
     [/\bpronunciation\b/i, 'pronunciation'],
     [/\bfluency\b/i, 'fluency'],
