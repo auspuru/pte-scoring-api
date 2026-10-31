@@ -15,6 +15,17 @@ const media = require('../full-mock/recording');
 const { installFullMock } = require('../full-mock/api');
 const paper = loadPaper();
 const accessBase = require('../content/full-mock/access-compatible-sources.json');
+test('Feedback-only upgrade resumes the current production baseline with every confirmed mark and snapshot intact',async t=>{
+  const f=await fixture(t),baseline=require('../content/full-mock/feedback-compatible-sources.json');
+  const original={...structuredClone(f.engine.snapshot),scoringSources:baseline};
+  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+  await f.engine.request('alice',f.id);await f.engine.drain();
+  assert.equal((await f.engine.results('alice',f.id)).ready,true);
+  assert.deepEqual((await f.state()).assessment.snapshot,original);
+  const before=structuredClone((await f.state()).assessment.items);
+  await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();
+  assert.deepEqual((await f.state()).assessment.items,before);
+});
 test('The content-model rollout keeps old full mocks on their pinned providers and uses GPT for new mocks',async t=>{
   let currentCalls=0,oldCalls=0;
   const legacy=require('../full-mock/assessment').legacyConfiguration({ESSAY_SCORING_PROVIDER:'openai'});

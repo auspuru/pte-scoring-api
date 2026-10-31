@@ -27,7 +27,7 @@ async function fixture(t, mobile) {
     } } } });
   await service.store.initialise();
   app.use(express.static(path.join(root, 'public'), { index:false }));
-  app.get('/', (req, res) => res.type('html').send('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/portal-workspace.css"><link rel="stylesheet" href="/full-mock.css"><link rel="stylesheet" href="/mock-report-ui.css"></head><body style="margin:0"><main id="appShell"><section id="fullMockPane" class="pane active"></section></main><script>window.currentUserId="alice";sessionStorage.setItem("pte_session_token","alice");</script><script src="/portal-exam-mode.js"></script><script src="/mock-report-ui.js"></script><script src="/full-mock-report.js"></script><script src="/full-mock-client.js"></script><script>FullMock.open();</script></body></html>'));
+  app.get('/', (req, res) => res.type('html').send('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/portal-workspace.css"><link rel="stylesheet" href="/full-mock.css"><link rel="stylesheet" href="/mock-report-ui.css"></head><body style="margin:0"><main id="appShell"><section id="fullMockPane" class="pane active"></section></main><script>window.currentUserId="alice";sessionStorage.setItem("pte_session_token","alice");</script><script src="/portal-exam-mode.js"></script><script src="/mock-impact-feedback.js"></script><script src="/mock-report-ui.js"></script><script src="/full-mock-report.js"></script><script src="/full-mock-client.js"></script><script>FullMock.open();</script></body></html>'));
   const server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
   let browser;
   db.onClose(async () => { await browser?.close(); await service.stop(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); await fs.rm(directory, { recursive:true, force:true }); });
@@ -134,6 +134,12 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
   assert(!await page.$eval('.fm-report-header',node=>/preview/i.test(node.textContent)));
   assert.equal(await page.$('.fm-method,.fm-interpretation'), null);
   assert(await page.$('.ipr-score-report .ipr-logo'), 'Score report is missing the IPT logo');
+  await page.click('[data-mock-tab="feedback"]');
+  await page.waitForSelector('[data-mock-panel="feedback"]:not([hidden]) .ipr-impact-feedback');
+  assert.equal(await page.$$eval('[data-impact-profile]',nodes=>nodes.length),5);
+  await clickControl(page,'[data-impact-profile="writing"] > summary');
+  assert(await page.$eval('[data-impact-profile="writing"]',node=>node.open));
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Feedback overflows viewport');
   await page.click('[data-mock-tab="analysis"]');
   await page.waitForSelector('[data-mock-panel="analysis"]:not([hidden])');
   await f.service.assessor.drain(); const result = await f.service.assessor.results('alice', attemptId), saved = await f.state();

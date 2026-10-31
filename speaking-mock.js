@@ -30,9 +30,11 @@ function present(a,now=Date.now(),{completeOnly=false,progress}={}){
   const submitted=a.status==='submitted';
   const hasExclusions=a.questions.some((q,i)=>speakingReport.exclusionFor(a,q,i));
   const savedContent=!hasExclusions&&a.combinedOverall?.status==='assessed'&&a.combinedOverall.sourceFingerprint===combined.fingerprint(a)?a.combinedOverall.content:null;
+  const currentReport=submitted?speakingReport.summarize(a):null;
   return {serverNow:now,id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
     reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,...(completeOnly?{resultsReady:true,resultStatus:{status:'ready',ready:true}}:{}),grading:a.grading,overall:null,overallAzure:a.overallAzure||null,combinedOverall:null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,
-    speakingReport:submitted?speakingReport.summarize(a):null,
+    speakingReport:currentReport,
+    impactFeedback:submitted?require('./mock-feedback').speaking(a,currentReport.azure):null,
     overallFeedback:submitted&&savedContent?{summary:savedContent.summary,strengths:savedContent.strengths||[],nextSteps:savedContent.nextSteps||[]}:null,
     combinedComparisons:null,providerComparisonStatus:null,integrity:a.integrity,
     ...(a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],submitted),timing:timing(a,now)}:{}),

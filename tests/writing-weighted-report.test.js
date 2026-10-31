@@ -82,6 +82,8 @@ test('Opening saved attempts updates detail and history without regrading or ove
   const history=await (await fetch(base+'/attempts',{headers})).json();
   assert.equal(detail.report.score90,69);assert.equal(history[0].score90,69);
   assert.deepEqual(history[0].weighting,detail.report.weighting);assert.equal(calls,0);
+  assert.equal(detail.impactFeedback.status,'complete');assert.equal(detail.impactFeedback.profiles[0].key,'writing');
+  assert(detail.impactFeedback.priorities.length>0);
   assert.deepEqual((await store.get('tester',attempt.id)).results,results);
   // A provisional SST must be repairable, rather than permanently reused by
   // the score route while blocking the new overall calculation.

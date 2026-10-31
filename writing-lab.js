@@ -92,6 +92,7 @@ function reconcile(a, now = Date.now()) {
 function present(a) {
   const result = { ...a, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results, a) : null };
   result.overallFeedback = overall.view(a);
+  result.impactFeedback = require('./mock-feedback').lab(a, result.report || undefined);
   if (a.status !== 'submitted') result.results = a.questions.map(() => null);
   result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes, timeGroup:q.timeGroup,
     ...(listeningScoring.TYPES.has(q.type) ? {maximum:listeningScoring.maximum(q)} : {}),

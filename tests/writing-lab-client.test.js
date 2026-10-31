@@ -660,3 +660,33 @@ test('NAV-16: A queued Writing save is never dispatched under a replacement sess
  let release;h.context.fetch=async(url,options)=>{h.requests.push({url,options});await new Promise(resolve=>release=resolve);return {ok:true,json:async()=>({...structuredClone(a),serverNow:100000})};};
  const first=h.hooks.saveAnswer(false);await flush();const queued=h.hooks.saveAnswer(false);session='new';release();await Promise.all([first,queued]);assert.equal(h.requests.length,1);assert.doesNotMatch(h.nodes.get('save-status').textContent,/Connection issue/);
 });
+
+test('Newly completed Writing and Listening mocks refresh pending score priorities without reopening or extra reads',async()=>{
+ for(const module of ['writing','listening']){
+  const h=harness(),a=attempt();a.status='submitted';a.module=module;
+  const q={id:'saved-question',type:module==='writing'?'essay':'wfd',title:'Saved task',text:'one two',sample:'Sample response.'};
+  a.questions=[q];a.answers=['one'];a.results=[null];a.completed=[{}];a.index=0;
+  a.impactFeedback={status:'pending',profiles:[]};
+  const maximum=report.maximumFor(q),native={total:Math.floor(maximum/2),maximum,maxima:{content:maximum},scores:{content:Math.floor(maximum/2)},feedback:{content:'Check the saved response.'},improvements:[],errors:[]};
+  h.context.fetch=async(url,options={})=>{h.requests.push({url});return {ok:true,json:async()=>structuredClone(native)};};
+  h.hooks.set(a);h.hooks.renderResults();await flush();
+  assert.equal(h.hooks.current().impactFeedback.status,'complete');
+  assert.match(h.nodes.get('lab').innerHTML,/Practise next, in this order/);
+  assert(!h.nodes.get('lab').innerHTML.includes('is waiting for verified assessments'));
+  assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,1);
+  assert.equal(h.requests.filter(r=>!r.url.includes('/score/')).length,0);
+ }
+});
+
+test('Writing narrative refresh recomputes score priorities in place from current verified marks',async()=>{
+ const h=harness(),a=attempt();a.status='submitted';a.module='writing';a.questions=structuredClone(bank.mocks[0].questions);
+ a.results=a.questions.map(q=>({total:report.maximumFor(q),maximum:report.maximumFor(q)}));
+ h.hooks.set(a);h.hooks.renderResults();
+ assert(h.nodes.has('score-impact-feedback'),[...h.nodes.keys()].join(','));
+ a.impactFeedback={status:'pending',profiles:[]};
+ h.context.reply={...a,overallFeedback:{status:'complete',summary:'Finished',strengths:[],nextSteps:[],coverage:[],questionCount:a.questions.length},impactFeedback:{status:'pending',profiles:[]}};
+ await h.hooks.refreshOverall(false);
+ assert.equal(h.hooks.current().impactFeedback.status,'complete');
+ assert.match(h.nodes.get('score-impact-feedback').innerHTML,/earned all available marks/);
+ assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,0);
+});
