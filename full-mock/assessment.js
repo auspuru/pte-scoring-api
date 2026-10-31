@@ -53,7 +53,8 @@ const COMPATIBLE_BASES = [
   [require('../content/full-mock/access-compatible-sources.json'), '275016a6cdf793dbd6ef7a0750bc10294a601d87ab8e4e0faa74418ea2419556'],
   [require('../content/full-mock/media-compatible-sources.json'), '50f715d2da0f112e96756269018adcbb9b642701f361d31958f2fa990947d88b'],
   [require('../content/full-mock/account-compatible-sources.json'), 'c79dfc773e68390d473d08bf4e37544cb549bbf5d4e383b2245fc35dc7532e41'],
-  [require('../content/full-mock/alerts-compatible-sources.json'), '7fe217fe37f2b2e2803d911b1de3db15ccb8170f57523502508f2e0b46e2d42d']
+  [require('../content/full-mock/alerts-compatible-sources.json'), '7fe217fe37f2b2e2803d911b1de3db15ccb8170f57523502508f2e0b46e2d42d'],
+  [require('../content/full-mock/question-content-compatible-sources.json'), '97cebe2ecb2d51a2da15d0aea1004dbd33d7ab1c79ded0174afbc38893fbb458']
 ];
 // This projection is used only to finish frozen attempts with their OLD
 // adapters/configuration. It cannot turn a Claude grade into a GPT grade.
@@ -90,10 +91,16 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
-  current={...current,scoringSources:accountSources(current.scoringSources)};
+  // This baseline already contains the latest account transport. Older baselines
+  // still use the exact account projection below; no scorer or model is relaxed.
+  const questionContentBase = COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/question-content-compatible-sources.json'));
+  const contentOnly = digest(questionContentBase[0]) === questionContentBase[1] && digest(saved.scoringSources) === questionContentBase[1];
+  if (!contentOnly) current={...current,scoringSources:accountSources(current.scoringSources)};
   const accountBase=COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/account-compatible-sources.json'));
   const [practice,practiceHash]=COMPATIBLE_BASES[0];
-  if(digest(accountBase[0])===accountBase[1]&&digest(saved.scoringSources)===accountBase[1]){
+  if(contentOnly){
+    // Only the frozen paper loader and the worker's paper lookup changed.
+  }else if(digest(accountBase[0])===accountBase[1]&&digest(saved.scoringSources)===accountBase[1]){
     // This exact account-only upgrade keeps all native sources and saved marks.
   }else if(digest(practice)===practiceHash&&digest(saved.scoringSources)===practiceHash){
     const sources=structuredClone(current.scoringSources);
@@ -111,6 +118,10 @@ function compatibleTransportUpgrade(saved, current) {
   if(baseline.files['server.js'].sha256==='14980c74f5a99b1ef65b656550a790b2469c5ed86cd0c4c2e1eff3c590768d8e'
     && current.scoringSources.files['server.js'].sha256===ALERT_SERVER_SHA256)allowed.add('server.js');
   const before = baseline.files, after = current.scoringSources.files;
+  // Allow exactly the versioned content-loader revision. Native graders, the
+  // saved paper hash, its maxima, configuration and successful marks stay pinned.
+  if (before['full-mock/paper.js']?.sha256 === '042f2b4cc8c48b359f8514804c22f9717d81c9c381429a8645df53fb659a0ce7'
+    && after['full-mock/paper.js']?.sha256 === 'b2d7c30ef08994db7e01aa71a644243ebe66a1b0d10a0590099d03c8f72de8e6') allowed.add('full-mock/paper.js');
   // Only the audited practice-navigation revision may change this shared file.
   // Its exported transcription function is byte-for-byte unchanged.
   if (before['speaking-lab.js']?.sha256 === '76cd004fe38a26819d0621a985a12c439daaeaebaeda6f58b92e4120c40a7cb1'
@@ -147,13 +158,20 @@ function scheduleRecovery(assessment, at) {
 }
 function createEngine({ store, adapters = createAdapters(), providerConfiguration = configuration(), legacyAdapters, legacyProviderConfiguration,
   now = Date.now, assemble = media.assemble, concurrency = 2, paper = loadPaper() } = {}) {
-  const currentSnapshot = snapshot(providerConfiguration, undefined, paper), currentHash = digest(currentSnapshot), jobs = new Map(); let sweep, closing = false, recovering = false; const recoveryErrors = new Set();
-  const legacySnapshot = legacyAdapters && legacyProviderConfiguration ? snapshot(legacyProviderConfiguration,undefined,paper) : null;
+  const currentSnapshot = snapshot(providerConfiguration, undefined, paper), jobs = new Map(); let sweep, closing = false, recovering = false; const recoveryErrors = new Set();
+  // New attempts use the active paper. In-flight attempts continue against the
+  // explicitly retained frozen paper, rather than adopting replacement questions.
+  const trustedPapers = new Map([paper, loadPaper('full-mock-1', 1)].map(value => [digest(value), value]));
+  const trustedSnapshots = new Map([...trustedPapers].map(([paperHash, value]) => {
+    const current = paperHash === currentSnapshot.paperHash ? currentSnapshot : snapshot(providerConfiguration, undefined, value);
+    return [paperHash, { current, hash: digest(current),
+      legacy: legacyAdapters && legacyProviderConfiguration ? snapshot(legacyProviderConfiguration, undefined, value) : null }];
+  }));
   function validate(state) {
-    const saved = state.assessment;
-    if (saved && digest(saved.snapshot) === saved.snapshotHash && saved.version === VERSION && saved.snapshot.paperHash === state.paperHash) {
-      if (saved.snapshotHash === currentHash || compatibleTransportUpgrade(saved.snapshot,currentSnapshot)) return adapters;
-      if (legacySnapshot && compatibleTransportUpgrade(saved.snapshot,legacySnapshot)) return legacyAdapters;
+    const saved = state.assessment, trusted = trustedSnapshots.get(state.paperHash);
+    if (trusted && saved && digest(saved.snapshot) === saved.snapshotHash && saved.version === VERSION && saved.snapshot.paperHash === state.paperHash) {
+      if (saved.snapshotHash === trusted.hash || compatibleTransportUpgrade(saved.snapshot,trusted.current)) return adapters;
+      if (trusted.legacy && compatibleTransportUpgrade(saved.snapshot,trusted.legacy)) return legacyAdapters;
     }
     throw fail('This attempt uses a different assessment version. Its saved answers and results are retained.', 409);
   }
@@ -161,7 +179,9 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     const saved = await store.get(uid, id); if (!saved) throw fail('Attempt not found.', 404);
     const state = await store.update(uid, id, state => {
       if (state.status !== 'submitted') throw fail('Submit the test before requesting assessment.');
-      state.assessment ||= stateFor(currentSnapshot); validate(state);
+      const trusted = trustedSnapshots.get(state.paperHash);
+      if (!state.assessment && trusted) state.assessment = stateFor(trusted.current);
+      validate(state);
       if (state.assessment.status === 'processing' || state.assessment.status === 'complete' && aggregate(saved.paper, state).ready) return state;
       if (state.assessment.run && !retry) return state;
       state.assessment.recovery ||= { version:1, retries:0 };
