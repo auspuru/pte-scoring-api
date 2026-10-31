@@ -391,3 +391,46 @@ test('The portal route and lazy loader include the player with fresh immutable c
   assert(html.includes('id="fullMockPane"'));
   assert.equal(require('../public/portal-workspace').routeFromHash('#/full-mock'), 'full-mock');
 });
+
+for (const final of [false, true]) test('A lost ' + (final ? 'submission' : 'Next') + ' acknowledgement recovers the saved server state without submitting twice', async t => {
+  const f = await fixture(t, 'wfd');
+  if (final) await f.service.store.update('alice', f.id, state => {
+    while (state.index < 65) session.next(state, paper, {itemToken:state.current.token, skip:true}, f.now());
+    return state;
+  });
+  await f.resume();
+  const index = (await f.state()).index;
+  f.input('This exact response must survive a lost acknowledgement.'); await settle();
+  let lost = false;
+  f.intercept(async (route, init, send) => {
+    const reply = await send();
+    if (route.endsWith('/next') && !lost) { lost = true; throw Error('Connection closed after the server accepted the answer'); }
+    return reply;
+  });
+  await f.click('[data-fm="next"]');
+  const saved = await f.state();
+  assert.deepEqual(saved.responses[index].answer, ['This exact response must survive a lost acknowledgement.']);
+  assert(saved.responses[index].sealed);
+  await f.step(1500);
+  await until(() => final ? !!f.document.getElementById('fm-report-overview') : f.document.getElementById('fm-text')?.value === '');
+  assert.equal(f.requests.filter(r => r.route.endsWith('/next')).length, 1);
+  assert.equal((await f.state()).status, final ? 'submitted' : 'active');
+});
+
+test('A failed answer save blocks Next and keeps the exact draft available for a deliberate retry', async t => {
+  const f = await fixture(t, 'swt'); await f.resume();
+  const index = (await f.state()).index;
+  let fail = true;
+  f.intercept(async (route, init, send) => {
+    if (fail && route.endsWith('/draft')) throw Error('Temporary save failure');
+    return send();
+  });
+  f.input('Retain my original answer during a failed save.'); await settle();
+  await f.click('[data-fm="next"]');
+  assert.equal((await f.state()).index, index);
+  assert.equal(f.document.getElementById('fm-text').value, 'Retain my original answer during a failed save.');
+  assert.equal(f.requests.filter(r => r.route.endsWith('/next')).length, 0);
+  fail = false; await f.click('[data-fm="next"]');
+  assert.equal((await f.state()).index, index + 1);
+  assert.deepEqual((await f.state()).responses[index].answer, ['Retain my original answer during a failed save.']);
+});
