@@ -1121,13 +1121,10 @@ const JsonStorage = {
 // v19.10: Pick the active storage backend. Postgres when DATABASE_URL is set,
 // JSON file otherwise. Every consumer (AuthAPI, route handlers) uses StorageAPI
 // — they don't need to know which backend is active.
-let jsonProgressWrite = Promise.resolve();
 for (const name of ['setUserData', 'saveProgress']) {
   const operation = JsonStorage[name];
   JsonStorage[name] = function (...args) {
-    const result = jsonProgressWrite.then(() => operation.apply(this, args));
-    jsonProgressWrite = result.catch(() => {});
-    return result;
+    return serialAccountMutation(() => operation.apply(this, args));
   };
 }
 
@@ -2012,6 +2009,12 @@ const AuthAPI = {
     return { account: data.accounts[uid] || null, progress: data.users[uid] || null };
   }
 };
+
+// File-backed profile and credential updates share one read/modify/write queue.
+// A sign-out save must not collide with or overwrite the next sign-in/reset.
+if(!USE_POSTGRES)for(const name of ['login','changePassword','resetPassword','deleteUser','deleteUsers']){
+  const operation=AuthAPI[name];AuthAPI[name]=function(...args){return serialAccountMutation(()=>operation.apply(this,args));};
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════════════════════════

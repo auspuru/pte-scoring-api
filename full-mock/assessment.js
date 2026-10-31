@@ -66,7 +66,7 @@ const CONTENT_WIRING_HASHES = {
 };
 function accountSources(current) {
   const [baseline,expected]=COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/account-compatible-sources.json'));
-  if(digest(baseline)!==expected||current.files['server.js']?.sha256!=='4a8d963d0c1927870f63c90a4259277b0e6ccdde70a9c77a57e9877bbdf66371')return current;
+  if(digest(baseline)!==expected||current.files['server.js']?.sha256!=='6343f2feba3d4ec580508e43771d9c0acbc74837aae84ec5dd1dff4dfd24a222')return current;
   const projected=structuredClone(current);projected.files['server.js']=structuredClone(baseline.files['server.js']);return projected;
 }
 function transportSources(current) {

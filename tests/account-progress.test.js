@@ -140,7 +140,7 @@ test('Answer deltas preserve concurrent answers and fit the unload keepalive bud
 const serverSource = fs.readFileSync(require.resolve('../server'), 'utf8');
 function backend() {
   let data = { users: {}, global: { totalAttempts: 0 } };
-  const context = { AccountProgress: P, canonicalUserId: essaySync.canonicalUserId, mergeDeleted: essaySync.mergeDeleted, mergeHistory: essaySync.mergeHistory,
+  const context = { serialAccountMutation:require('../account-security').createSerialQueue(), AccountProgress: P, canonicalUserId: essaySync.canonicalUserId, mergeDeleted: essaySync.mergeDeleted, mergeHistory: essaySync.mergeHistory,
     fs: { readFile: async () => JSON.stringify(data) }, STORAGE_FILE: 'test-only', safeWriteJSON: async (_, value) => { await Promise.resolve(); data = clone(value); } };
   vm.createContext(context);
   const start = serverSource.indexOf('const JsonStorage = {'), end = serverSource.indexOf('const StorageAPI =', start);
