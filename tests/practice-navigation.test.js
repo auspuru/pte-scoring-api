@@ -53,12 +53,3 @@ test('Essay navigation leaves a pending review attached to its question and Back
  ctx.practiceState.view='results';ctx.backToEssayQuestions();assert.equal(ctx.practiceState.view,'write');assert.equal(ctx.practiceState.writeStep,1);
  assert.match(source,/onclick="backToEssayQuestions\(\)">← Back to essays/);
 });
-
-
-test('SWT assignments resolve stable IDs after priority ordering and retain the current question for unavailable IDs',()=>{
- const loaded=[],notices=[],ctx={passages:[{id:910498},{id:1}],switchSection(){},setSwtPracticeMode(){},showSwtScreen(){},loadPassage:id=>loaded.push(id),toast:text=>notices.push(text)};
- vm.createContext(ctx);vm.runInContext(source.slice(source.indexOf('function launchAssignedQuestion('),source.indexOf('let speakingAccessUser')),ctx);
- ctx.launchAssignedQuestion({engine:'swt',passageId:1});assert.deepEqual(loaded,[2]);
- ctx.launchAssignedQuestion({engine:'swt',passageId:910498});assert.deepEqual(loaded,[2,1]);
- ctx.launchAssignedQuestion({engine:'swt',passageId:'missing'});assert.deepEqual(loaded,[2,1]);assert.equal(notices.length,1);
-});

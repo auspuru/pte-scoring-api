@@ -15,7 +15,6 @@
   const routes = Object.freeze({
     dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home', eyebrow: 'Your practice workspace', context: '' },
     progress: { pane:'progressPane',nav:'nav-progress',title:'My Progress',path:'progress',eyebrow:'Your activity',context:'' },
-    'next-steps': { pane:'nextStepsPane',nav:'nav-next-steps',title:'My Next Steps',path:'next-steps',eyebrow:'Guided practice',context:'Teacher-assigned and IPT Assistant study plans' },
     'practice-hub': { pane: 'practiceHubPane', nav: 'nav-practice-hub', title: 'Practice', path: 'practice', eyebrow: 'Individual questions', context: '' },
     'mock-tests': { pane: 'mockTestsPane', nav: 'nav-mock-tests', title: 'Mock Tests', path: 'mock-tests', eyebrow: 'Timed tests', context: '' },
     'speaking-mocks': {pane:'mockTestsPane',nav:'nav-mock-tests',catalogueModule:'speaking',title:'Speaking mocks',path:'speaking-mocks',eyebrow:'Mock Tests · Speaking',context:''},
@@ -42,6 +41,7 @@
 
   function routeFromHash(hash) {
     const path = String(hash || '').replace(/^#\/?/, '').split(/[?\/]/)[0];
+    if (path === 'next-steps') return 'progress';
     if (path === 'test-centre') return 'mock-tests';
     return Object.keys(routes).find(key => routes[key].path === path) || (Object.hasOwn(routes, path) ? path : 'dashboard');
   }
@@ -60,7 +60,8 @@
     const context=state?.practice?.hash===hash&&(owner===undefined||state.practice.owner===owner)?state.practice.context:undefined;
     const isPractice=route.readingLibrary||route.speakingType||(route.labTab&&!['mocks','history'].includes(route.labTab));
     const request={navigation:true,library:params.view==='list'||!!(isPractice&&!params.question&&!params.attempt),context,...(params.attempt?{attemptId:params.attempt}:{}),...(params.mode?{mode:params.mode==='practice'?'practice':'exam'}:{})};
-    const options={routeHash:hash};
+    const retired = /^#\/?next-steps(?:[?\/]|$)/.test(String(hash));
+    const options={routeHash:retired ? '#/'+routes.progress.path : hash};
     if(route.readingLibrary)options.readingRequest={...request,...(params.question?{practiceUid:params.question}:{})};
     if(route.speakingType)options.speakingRequest={...request,...(params.mode?{mode:params.mode==='untimed'?'untimed':'timed'}:{}),...(params.question?{questionId:params.question}:{})};
     if(route.labTab)options.labRequest={...request,...(params.question?{testId:params.question}:{})};
@@ -101,6 +102,7 @@
         if (current && ready) win.history.replaceState(null, '', '#/' + routes[current].path);
         return current;
       }
+      if (section === 'next-steps') section = 'progress';
       if (!Object.hasOwn(routes, section)) section = 'dashboard';
       const changed = current !== section;
       if (changed && routes[current]?.pane === 'speakingPane') win.SpeakingPractice?.leave();
@@ -167,7 +169,7 @@
       const section = routeFromHash(win.location.hash);
       if (section !== current || lastRoutedHash!==win.location.hash) {
         lastRoutedHash=win.location.hash;
-        onNavigate(section, { ...requestFromHash(win.location.hash,win.history.state,getUserId()), history: 'none' });
+        onNavigate(section, { ...requestFromHash(win.location.hash,win.history.state,getUserId()), history: /^#\/?next-steps(?:[?\/]|$)/.test(win.location.hash) ? 'replace' : 'none' });
       }
     }
     win.addEventListener('popstate', handleRoute);

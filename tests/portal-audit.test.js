@@ -44,9 +44,8 @@ test('portal accessibility and delivery audit stays clean',()=>{
     assert.match(html,new RegExp('id="'+id+'"[^>]*aria-label="'+label+'"'));
   }
   assert.match(html,/<button[^>]+practice-shortcut-link[^>]*>Practise this question/);
-  assert.match(html,/My Next Steps/);
-  assert(html.indexOf('id="portalResume"') < html.indexOf('id="nextStepsDashboardCard"'));
-  assert(html.indexOf('id="nextStepsDashboardCard"') < html.indexOf('id="todayPlanCard"'));
+  assert.doesNotMatch(html,/My Next Steps|nextStepsDashboardCard|nextStepsPane/);
+  assert(html.indexOf('id="portalResume"') < html.indexOf('id="todayPlanCard"'));
   assert.match(html,/index\.min\.js/);
   assert(html.indexOf('auth-boot.js')<html.indexOf('index.min.js'));
   assert.match(html,/\/ipt-tokens\.css/);
@@ -57,7 +56,7 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.doesNotMatch(html,/<link[^>]+portal-writing-motion\.css/,'Writing motion CSS stays off the first-load path');
   assert.match(html,/\/portal-writing-motion\.js\?v=20260929-native-cursor/);
   assert.match(html,/\/portal-shell\.js\?v=[^"\s]+/);
-  assert.match(html,/\/portal-liquid-glass\.css\?v=20260928-layoutfix-final/);
+  assert.match(html,/\/portal-liquid-glass\.css\?v=20261031-retire-next-steps/);
   assert(html.indexOf('/interventions.css') < html.indexOf('/ipt-tokens.css'),'IPT tokens load after legacy feature styles');
   assert(html.indexOf('/ipt-tokens.css') < html.indexOf('/portal-liquid-glass.css'),'Liquid Glass loads after tokens');
   assert(html.indexOf('/portal-liquid-glass.css') < html.indexOf('/portal-home-practice.css'),'Home and Practice styles load after the shell');
@@ -111,12 +110,12 @@ test('portal accessibility and delivery audit stays clean',()=>{
   assert.match(portalShell,/portal-insights\.css\?v=20260929-assistant-ux2/);
   assert.match(portalShell,/portal-vocab-library\.css\?v=20260928-layoutfix-final/);
   assert.match(portalShell,/addEventListener\('error', \(\) => link\.remove\(\), \{ once: true \}\)/,'failed lazy presentation styles must be retryable');
-  assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'next-steps', 'progress'\]\)/);
+  assert.match(portalShell,/new Set\(\['mock-tests', 'writing-mocks', 'progress'\]\)/);
   assert.match(portalShell,/new Set\(\['vocab', 'library'\]\)/);
   assert.match(html,/\/personal-ai-assistant\.js\?v=\d+/);
   assert.doesNotMatch(html,/<script[^>]+interventions-client\.js/,'Next Steps stays off the initial dashboard load');
-  assert.match(portal,/ensureInterventionsRuntimeLoaded/);
-  assert.match(portal,/\/interventions-client\.js\?v=\d+/);
+  assert.doesNotMatch(portal,/ensureInterventionsRuntimeLoaded|scheduleInterventionRefresh/);
+  assert.doesNotMatch(portal,/interventions-client\.js/);
   assert.doesNotMatch(html,/<script[^>]+student-progress\.js/,'Progress stays off the initial dashboard load');
   assert.match(portal,/ensureStudentProgressRuntimeLoaded/);
   assert.match(personalAssistant,/\/api\/interventions\/screen-help/,'assistant should answer from the current portal screen');
