@@ -27,10 +27,12 @@ test('Question selection preserves native graders, models, weights and timing; f
   // Standalone practice transport can evolve; Full Mock imports only this
   // frozen transcription function from the shared source file.
   assert.equal(hash(require('../speaking-lab').transcribeRecording.toString()),'6779768323a86f2488ac0621c8dd7f0949ca1348bdf0c23a98d10f64eaa84f4a');
+  assert.equal(hash(require('../public/reading-practice').score.toString()),'3998d5c54514d46ffbfddf893667574bee7a06b729f01a1da4a74248962f629b');
+  assert.deepEqual(after.files['public/reading-practice.js'],require('../content/full-mock/scoring-lock.json').snapshot.files['public/reading-practice.js']);
   // Report-only feedback has its own exact lock and behavioral regressions.
   assert.deepEqual(after.files['full-mock/report.js'],require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/report.js']);
   for (const file of Object.keys(before.files)) {
-    if (!['full-mock/paper.js', 'full-mock/assessment.js', 'full-mock/report.js', 'speaking-lab.js'].includes(file)) assert.deepEqual(after.files[file], before.files[file], file);
+    if (!['full-mock/paper.js', 'full-mock/assessment.js', 'full-mock/report.js', 'speaking-lab.js', 'public/reading-practice.js'].includes(file)) assert.deepEqual(after.files[file], before.files[file], file);
   }
 });
 

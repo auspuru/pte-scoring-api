@@ -45,6 +45,7 @@ function stateFor(value) { return { version: VERSION, snapshot: structuredClone(
 // Exact production baselines may adopt these audited transport/recovery fixes.
 // Native graders, models, weights, paper and saved successful grades stay pinned.
 const COMPATIBLE_BASES = [
+  [require('../content/full-mock/practice-queue-compatible-sources.json'), 'a5f44654e3b334187b9a39b6ad87d34d8372a045c55c74e635cca1bd1c035771'],
   [require('../content/full-mock/tester-guide-compatible-sources.json'), '8fe1413d7881be3a14a0835747cc8bd86c4c09ed2e97c0d6bcd358f4109367e3'],
   [require('../content/full-mock/content-provider-compatible-sources.json'), '9b13a955f7ab351a65742fe33c14b8a33f6b53bcfa6d16547c62cd478f359b11'],
   [require('../content/full-mock/automatic-recovery-compatible-sources.json'), 'f49a6e3c4385918f9e83820c330518e13fb0e3eb202fb1ae1dbe9e847108a4ef'],
@@ -89,7 +90,7 @@ function transportSources(current) {
   // Practice-only changes share source files with the frozen mock dependency
   // manifest. The native Reading scorer and transcription function are unchanged.
   // Only this reviewed pair of exact source revisions may project to the old pins.
-  const [practice,practiceHash]=COMPATIBLE_BASES[0];
+  const [practice,practiceHash]=COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/tester-guide-compatible-sources.json'));
   if(digest(practice)===practiceHash &&
     files['public/reading-practice.js']?.sha256==='b3dab5bb17ec4028c6ea80e447fb0cf316fd7582badcfbc466279eeb9913d862' &&
     files['speaking-lab.js']?.sha256==='15e7b543c49ab8e290b5f430a6e9ebd5e7c46da3b147311a62d562ce10a13150') {
@@ -98,7 +99,14 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
-  const feedbackOnly=digest(saved.scoringSources)==='85e89a7ca24556fc4b2d579d179492d67c66d995e5bc6c7e2f8635b18121e20e';
+  // Reviewed queue/UI changes only; native Reading scoring and clocks are
+  // unchanged. Project this exact source revision before legacy comparisons.
+  if(current.scoringSources.files['public/reading-practice.js']?.sha256==='002b102f1b879cc979538f85b3cdffcecb05bcf6097206ea9bfb74873f8b357b') {
+    const sources=structuredClone(current.scoringSources);
+    sources.files['public/reading-practice.js'].sha256='b3dab5bb17ec4028c6ea80e447fb0cf316fd7582badcfbc466279eeb9913d862';
+    current={...current,scoringSources:sources};
+  }
+  const feedbackOnly=['85e89a7ca24556fc4b2d579d179492d67c66d995e5bc6c7e2f8635b18121e20e','a5f44654e3b334187b9a39b6ad87d34d8372a045c55c74e635cca1bd1c035771'].includes(digest(saved.scoringSources));
   if(!feedbackOnly)current={...current,scoringSources:practiceModeSources(current.scoringSources)};
   const practiceModeOnly=digest(saved.scoringSources)==='f4e704c74e86c0e43d31c4c4167c3bc637540737ba08de68ba0fa79fd46baaf4';
   // This baseline already contains the latest account transport. Older baselines
@@ -107,7 +115,7 @@ function compatibleTransportUpgrade(saved, current) {
   const contentOnly = feedbackOnly || digest(questionContentBase[0]) === questionContentBase[1] && digest(saved.scoringSources) === questionContentBase[1];
   if (!contentOnly && !practiceModeOnly) current={...current,scoringSources:accountSources(current.scoringSources)};
   const accountBase=COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/account-compatible-sources.json'));
-  const [practice,practiceHash]=COMPATIBLE_BASES[0];
+  const [practice,practiceHash]=COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/tester-guide-compatible-sources.json'));
   if(contentOnly||practiceModeOnly){
     // Only the frozen paper loader and the worker's paper lookup changed.
   }else if(digest(accountBase[0])===accountBase[1]&&digest(saved.scoringSources)===accountBase[1]){

@@ -95,7 +95,7 @@
   function practiceQueue(s=state.session) {
     const items=practiceLibraries().find(l=>l.id===s?.questions?.[0]?.type)?.questions||[];
     const ids=s?.practiceContext?.queue;
-    return Array.isArray(ids)&&ids.includes(s.practiceUid)?ids.map(id=>items.find(q=>q.uid===id)).filter(Boolean):items;
+    return studio.selectedQueue(items,ids,s?.practiceUid,'uid');
   }
   function questionChanged(s=state.session) {
     if(!s?.practiceUid)return;
@@ -462,7 +462,7 @@
       ${mock.isAudio(q)?audioHTML(q):''}
       <fieldset ${review?'disabled':''}><legend class="sr-only">Your answer</legend>${questionHTML(q,a)}</fieldset>
       ${review?explanation(q,a):''}
-      <div class="reading-actions">${s.practiceUid?'<button class="portal-button" data-action="home">Question list</button><span>Selection '+(navigationIndex+1)+' of '+libraryQuestions.length+'</span>':''}<button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done&&review&&s.practiceUid?'<button class="portal-button" data-action="retry-question">Retry this question</button>':''}${!s.done?'<button class="portal-button" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`;
+      <div class="reading-actions">${s.practiceUid?'<button class="portal-button" data-action="home">Question list</button><span>Selection '+(navigationIndex+1)+' of '+libraryQuestions.length+'</span>':''}<button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done&&review&&s.practiceUid?'<button class="portal-button" data-action="retry-question">Retry this question</button>':''}${!s.done?'<button class="portal-button" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex<0||navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`;
     host.innerHTML=s.practiceUid?studio.wrap(practiceSkill(q.type),practiceRoute(q.type),content):content;
     questionChanged(s);
   }
@@ -864,7 +864,7 @@
     if(d.action==='retry-swt'&&q.type==='swt')return gradeSwt(q);
     if(d.move!==undefined&&s.practiceUid){
       const items=practiceQueue(s),index=items.findIndex(item=>item.uid===s.practiceUid),target=items[index+Number(d.move)];
-      if(!target||starting)return;if(!persist())return;cancelAudio();libraryView=s.practiceContext?{...s.practiceContext,selectedUid:target.uid}:null;
+      if(index<0||!target||starting)return;if(!persist())return;cancelAudio();libraryView=s.practiceContext?{...s.practiceContext,selectedUid:target.uid}:null;
       const saved=[...(state.drafts||[]),...state.history].filter(item=>item.practiceUid===target.uid).sort((a,b)=>b.startedAt-a.startedAt)[0];
       if(saved){if(!s.done)state.drafts=[s,...(state.drafts||[]).filter(item=>item.id!==s.id)];state.drafts=state.drafts.filter(item=>item.id!==saved.id);state.session=JSON.parse(JSON.stringify(saved));if(libraryView)state.session.practiceContext={...libraryView};libraryView=null;repairSession(state.session);selectedWord='';activeSince=Date.now();persist();renderSession();resumeSwtAssessments();return;}
       return start('practice',target.uid);

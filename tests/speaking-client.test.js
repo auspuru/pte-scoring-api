@@ -143,12 +143,12 @@ test('Read Aloud opens directly in timed preparation with Skip preparation as th
   assert.equal(h.nodes.get('speaking-upload-retry').hidden,true);
   assert.equal(h.nodes.get('speaking-finish').hidden,true);
   assert.doesNotMatch(h.host.innerHTML,/Stop recording|Confirm what you said|Audio file under 3 MB|Save transcript/);
-  assert.match(h.host.innerHTML,/My questions/);
+  assert.match(h.host.innerHTML,/Question list/);
   await h.click({speakingAction:'skip'});assert.equal(h.recorders[0].state,'recording');
   assert.equal(h.nodes.get('speaking-skip').hidden,true);
   h.tick(40001);await flush();
   assert.equal(h.recorders[0].state,'inactive');assert.equal([...h.attempts.values()][0].status,'submitted');
-  assert.match(h.host.innerHTML,/Your result/);assert.match(h.host.innerHTML,/Sample response/);assert.match(h.host.innerHTML,/My questions/);
+  assert.match(h.host.innerHTML,/Your result/);assert.match(h.host.innerHTML,/Sample response/);assert.match(h.host.innerHTML,/Question list/);
 });
 
 test('Submit response ends recording early, saves the audio and starts scoring immediately',async()=>{
@@ -497,4 +497,13 @@ test('Mode-specific navigation does not resume a timed attempt as untimed, and p
 test('A failed RTS prompt keeps recording stopped and exposes a retry action',async()=>{
  const h=harness(),request=h.env.fetch;h.env.fetch=(url,opts)=>url.endsWith('/prompt')?Promise.resolve({ok:false}):request(url,opts);
  await h.controller.open('rts');await h.click({speakingQuestion:'rts-original-20261024-03'});assert.equal(h.recorders.length,0);assert.equal(h.nodes.get('speaking-record').hidden,false);assert.match(h.nodes.get('speaking-notice').textContent,/prompt.*retry/i);h.controller.reset();
+});
+
+test('Speaking direct saved response retains feedback with navigation disabled until a list selection exists',async()=>{
+ const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});
+ const a=[...h.attempts.values()][0];h.controller.reset();
+ await h.controller.open('ra',null,{attemptId:a.id,navigation:true});
+ const writes=h.requests.filter(r=>r.body).length;
+ await h.click({speakingMove:'1'});assert.equal(h.attempts.size,1);assert.equal(h.requests.filter(r=>r.body).length,writes);
+ assert.match(h.host.innerHTML,/Open the question list to select a queue/);h.controller.reset();
 });

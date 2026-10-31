@@ -987,3 +987,15 @@ test('NAV-09: A copied Reading question link opens a list without creating an at
  await h.ctx.ReadingPractice.open({libraryId:'dropdown',practiceUid:items[4].uid,navigation:true});
  assert.equal(snapshot(h).session,null);assert.match(h.host.innerHTML,/Find a question/);
 });
+
+test('Reading saved responses with empty or stale context cannot jump into the bank',async()=>{
+ for(const queue of [null,[],['unavailable']]){
+  const h=client();await h.ctx.ReadingPractice.open({libraryId:'dropdown'});
+  const items=h.ctx.PracticeCatalogue.readingLibraries(bank).find(l=>l.id==='dropdown').questions;
+  await h.click({practiceUid:items[4].uid});
+  const saved=snapshot(h);saved.session.practiceContext={id:'dropdown',queue};
+  h.values.set(storageKey('first'),JSON.stringify(saved));h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open({libraryId:'dropdown'});
+  await h.click({move:'1'});assert.equal(snapshot(h).session.practiceUid,items[4].uid);
+  assert.match(h.host.innerHTML,/data-move="1" disabled/);
+ }
+});

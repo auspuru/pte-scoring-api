@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "934f54d4529b31391d1d0a8db06037d1a681780e",
+  "baseCommit": "515408356f3eafe96bb153d7ee10a87b3e2bc61e",
   "checkedAt": "2026-10-31",
-  "scope": "Contribution-based feedback only; saved marks, native graders, providers and task weights remain unchanged. Exact compatibility baseline preserves pending attempts.",
+  "scope": "Practice navigation queues and account cleanup only; native Reading scorer is byte-identical. Exact compatibility baseline retains existing mock snapshots and confirmed grades.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "7fb66107448bd6e4ffa7a98c7790d0f506c25b346c9000ed06b066205467aa36",
+        "sha256": "710edb30f44777e05faa544d62899c660a2c2a890d738d924fe5e9d3d2a9f9bf",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -165,7 +165,7 @@
         "version": null
       },
       "public/reading-practice.js": {
-        "sha256": "b3dab5bb17ec4028c6ea80e447fb0cf316fd7582badcfbc466279eeb9913d862",
+        "sha256": "002b102f1b879cc979538f85b3cdffcecb05bcf6097206ea9bfb74873f8b357b",
         "version": null
       },
       "public/writing-lab-report.js": {
