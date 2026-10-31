@@ -67,7 +67,7 @@ test('practice and mock APIs preserve old prompt/audio snapshots and grade each 
     const audio=await fetch(base+a.question.audioUrl);assert.equal(audio.status,200);assert.match(audio.headers.get('content-type'),/audio\/mpeg/);assert.equal(hash(Buffer.from(await audio.arrayBuffer())),prompts.audioEntry(q).audioSha256);
   }
   const textOnly=items.find(q=>q.id==='rts-original-20261024-04'),textAttempt=await api('/api/speaking','/attempts',{id:crypto.randomUUID(),questionId:textOnly.id});
-  assert.equal(textAttempt.question.text,textOnly.text);assert.equal(textAttempt.question.audioUrl,undefined);
+  assert.equal(textAttempt.question.text,textOnly.text);assert.equal(textAttempt.question.audioUrl,'/api/speaking/attempts/'+textAttempt.id+'/prompt');
   const oldId=crypto.randomUUID(),oldQ=prompts.legacy.questions['rts-1'];
   await practice.store.update('alice',oldId,()=>({id:oldId,questionId:oldQ.id,status:'draft',startedAt:1,revision:0,transcript:'Could you explain which evidence needs improvement and how I can revise my assignment?'}));
   const previous=await api('/api/speaking','/attempts/'+oldId);assert.equal(previous.question.text,oldQ.text);assert(!previous.question.audioUrl.includes('prompt='));

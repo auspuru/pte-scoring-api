@@ -304,3 +304,10 @@ test('NAV-16: Browser list context cannot cross account boundaries',()=>{
  assert.deepEqual(requestFromHash(hash,state,'alice').readingRequest.context,context);
  assert.equal(requestFromHash(hash,state,'bob').readingRequest.context,undefined);
 });
+
+
+test('Speaking deep links preserve timed and untimed modes without changing Listening modes',()=>{
+ const {questionHash,requestFromHash}=require('../public/portal-workspace');
+ for(const mode of ['timed','untimed'])assert.equal(requestFromHash(questionHash('speaking-rts',{question:'rts-1',mode})).speakingRequest.mode,mode);
+ assert.equal(requestFromHash(questionHash('spoken-text',{question:'sst-1',mode:'practice'})).labRequest.mode,'practice');
+});

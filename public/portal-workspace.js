@@ -62,7 +62,7 @@
     const request={navigation:true,library:params.view==='list'||!!(isPractice&&!params.question&&!params.attempt),context,...(params.attempt?{attemptId:params.attempt}:{}),...(params.mode?{mode:params.mode==='practice'?'practice':'exam'}:{})};
     const options={routeHash:hash};
     if(route.readingLibrary)options.readingRequest={...request,...(params.question?{practiceUid:params.question}:{})};
-    if(route.speakingType)options.speakingRequest={...request,...(params.question?{questionId:params.question}:{})};
+    if(route.speakingType)options.speakingRequest={...request,...(params.mode?{mode:params.mode==='untimed'?'untimed':'timed'}:{}),...(params.question?{questionId:params.question}:{})};
     if(route.labTab)options.labRequest={...request,...(params.question?{testId:params.question}:{})};
     return options;
   }

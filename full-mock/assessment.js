@@ -54,6 +54,7 @@ const COMPATIBLE_BASES = [
   [require('../content/full-mock/media-compatible-sources.json'), '50f715d2da0f112e96756269018adcbb9b642701f361d31958f2fa990947d88b'],
   [require('../content/full-mock/account-compatible-sources.json'), 'c79dfc773e68390d473d08bf4e37544cb549bbf5d4e383b2245fc35dc7532e41'],
   [require('../content/full-mock/alerts-compatible-sources.json'), '7fe217fe37f2b2e2803d911b1de3db15ccb8170f57523502508f2e0b46e2d42d'],
+  [require('../content/full-mock/practice-mode-compatible-sources.json'), 'f4e704c74e86c0e43d31c4c4167c3bc637540737ba08de68ba0fa79fd46baaf4'],
   [require('../content/full-mock/question-content-compatible-sources.json'), '97cebe2ecb2d51a2da15d0aea1004dbd33d7ab1c79ded0174afbc38893fbb458']
 ];
 // This projection is used only to finish frozen attempts with their OLD
@@ -65,6 +66,11 @@ const CONTENT_WIRING_HASHES = {
   'mock-content-provider.js':'3efa737c0e2a8ae047bd24b0c140f6cc2c67e2329cb3184950ef38bb1f5e8492',
   'mock-content-assessment.js':'f418438dd65ac47a81ee93faf62dbae5e5c7d7aa92c0ee4e30cb0d8eaa984253'
 };
+function practiceModeSources(current) {
+  const baseline=require('../content/full-mock/practice-mode-compatible-sources.json');
+  if(digest(baseline)!=='f4e704c74e86c0e43d31c4c4167c3bc637540737ba08de68ba0fa79fd46baaf4'||current.files['speaking-lab.js']?.sha256!=='973a90665f61eb44041e8132cc825c9a42d39be971701b3cbe3867c1d8c41308')return current;
+  const projected=structuredClone(current);projected.files['speaking-lab.js']=structuredClone(baseline.files['speaking-lab.js']);return projected;
+}
 function accountSources(current) {
   const [baseline,expected]=COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/account-compatible-sources.json'));
   if(digest(baseline)!==expected||current.files['server.js']?.sha256!=='6343f2feba3d4ec580508e43771d9c0acbc74837aae84ec5dd1dff4dfd24a222')return current;
@@ -91,14 +97,16 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  current={...current,scoringSources:practiceModeSources(current.scoringSources)};
+  const practiceModeOnly=digest(saved.scoringSources)==='f4e704c74e86c0e43d31c4c4167c3bc637540737ba08de68ba0fa79fd46baaf4';
   // This baseline already contains the latest account transport. Older baselines
   // still use the exact account projection below; no scorer or model is relaxed.
   const questionContentBase = COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/question-content-compatible-sources.json'));
   const contentOnly = digest(questionContentBase[0]) === questionContentBase[1] && digest(saved.scoringSources) === questionContentBase[1];
-  if (!contentOnly) current={...current,scoringSources:accountSources(current.scoringSources)};
+  if (!contentOnly && !practiceModeOnly) current={...current,scoringSources:accountSources(current.scoringSources)};
   const accountBase=COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/account-compatible-sources.json'));
   const [practice,practiceHash]=COMPATIBLE_BASES[0];
-  if(contentOnly){
+  if(contentOnly||practiceModeOnly){
     // Only the frozen paper loader and the worker's paper lookup changed.
   }else if(digest(accountBase[0])===accountBase[1]&&digest(saved.scoringSources)===accountBase[1]){
     // This exact account-only upgrade keeps all native sources and saved marks.

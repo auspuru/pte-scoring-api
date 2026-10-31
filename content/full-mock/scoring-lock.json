@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "d2ceb8fc2475c452973f78b30399ea2a1152cab1",
+  "baseCommit": "76e26ffc61214f16146fd25f5510d289bc10b90c",
   "checkedAt": "2026-10-31",
-  "scope": "Prediction question replacement only: versioned paper selection and retained-attempt compatibility. All native graders, models, weights, timing, UI and navigation sources unchanged.",
+  "scope": "Standalone Speaking timed and untimed practice and saved RTS prompt narration. Exact compatibility pins preserve all native graders, saved Full Mock marks, provider settings and question snapshots.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "b017488cf132d4c0970fe456fe2fe591a0a13b753800f14f22bca36e2d937c5c",
+        "sha256": "22a3c9809f20cbc62bd1aeeaa6b87901267d5b2e326e07e0464f0016cd875891",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -189,7 +189,7 @@
         "version": null
       },
       "speaking-lab.js": {
-        "sha256": "15e7b543c49ab8e290b5f430a6e9ebd5e7c46da3b147311a62d562ce10a13150",
+        "sha256": "973a90665f61eb44041e8132cc825c9a42d39be971701b3cbe3867c1d8c41308",
         "version": null
       },
       "speaking-scoring.js": {

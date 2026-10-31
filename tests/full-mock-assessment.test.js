@@ -313,3 +313,13 @@ test('Account recovery upgrade preserves the exact previous production snapshot 
  await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal(calls,65);assert.deepEqual((await f.state()).assessment.items,complete);
  assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
+
+
+test('Standalone speaking modes preserve current Full Mock snapshots and every confirmed grade',async t=>{
+ let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
+ const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/practice-mode-compatible-sources.json')};
+ const source=require('../speaking-lab').transcribeRecording.toString();assert.equal(require('node:crypto').createHash('sha256').update(source).digest('hex'),'6779768323a86f2488ac0621c8dd7f0949ca1348bdf0c23a98d10f64eaa84f4a');
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);const marked=structuredClone((await f.state()).assessment.items);
+ await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal(calls,65);assert.deepEqual((await f.state()).assessment.items,marked);assert.deepEqual((await f.state()).assessment.snapshot,original);
+});
