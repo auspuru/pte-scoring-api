@@ -24,6 +24,27 @@ test('New mock DI jobs use the selected GPT reviewer with the Academy rubric and
  await jobs.ensure('student',saved);await jobs.wait();assert.equal(contentCalls,1);assert.equal(azureCalls,1);
 });
 const recording=()=>({hash:crypto.randomBytes(32).toString('hex'),data:Buffer.alloc(200,7).toString('base64'),mime:'audio/webm'});
+test('Rejected DI content keeps a safe diagnostic across restart without changing saved audio, transcript or Azure',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-content-diagnostic-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
+ const store=createStore(null,directory,{table:'speaking_mock_attempts'}),a=fixture(),i=a.questions.findIndex(q=>q.type==='di');
+ a.assessmentProfile.diBackend='portal-gpt';a.questions[i]={id:'diagnostic-di',type:'di',title:'Travel',facts:['Trips increased.']};
+ a.responses[i]={recording:recording(),transcript:'Trips increased.',transcriptionStatus:'assessed',azure:delivery()};await store.update('student',a.id,()=>a);
+ let at=1000,calls=0,ready=false;
+ const make=()=>createMockJobs({directory,store,now:()=>at,transcribe:()=>assert.fail('Reuse transcript'),assessAzure:()=>assert.fail('Reuse Azure'),callModel:async()=>{
+  calls++;
+  if(!ready)return {judgment:{score:null,relevance:'source-limited',accuracy:'unverifiable',scoreImpact:null,requiredEvidence:null,inaccuracy:null,otherEvidence:[]},reason:'PRIVATE_MODEL_PROSE',nextStep:'PRIVATE_MODEL_PROSE'};
+  return {judgment:{score:6,relevance:'image-specific',accuracy:'accurate',scoreImpact:null,requiredEvidence:{quote:'Trips increased.',factIndices:[0],kind:'relationship'},inaccuracy:null,otherEvidence:[]},reason:'The relationship is clear.',nextStep:'Keep the relationship.'};
+ }});
+ let jobs=make();await jobs.ensure('student',a);await jobs.wait();
+ let d=await jobs.diagnostics('student',a.id);assert.deepEqual(d.jobs[0].stages.content.detail,{code:'source-limited',mode:'ai'});
+ assert.equal(d.ready,false);assert(!JSON.stringify(d).includes('PRIVATE_MODEL_PROSE'));assert(!JSON.stringify(d).includes(a.responses[i].transcript));
+ await jobs.stop();jobs=make();t.after(()=>jobs.stop());d=await jobs.diagnostics('student',a.id);assert.equal(d.jobs[0].stages.content.detail.code,'source-limited');
+ assert.deepEqual((await store.get('student',a.id)).responses[i],a.responses[i]);
+ ready=true;at+=16000;await jobs.wait();const saved=await store.get('student',a.id);
+ assert.equal(saved.assessment.status,'ready');assert.equal(calls,2);assert.equal(saved.responses[i].content.total,6);
+ for(const key of ['recording','transcript','transcriptionStatus','azure'])assert.deepEqual(saved.responses[i][key],a.responses[i][key]);
+ assert.equal((await jobs.jobs.list('student',a.id))[0].data.contentRejection,undefined);
+});
 test('an answer starts scoring at upload; no report or reference leaks before both reports are ready',async t=>{
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-bg-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
   let release,started;const scoringStarted=new Promise(r=>started=r),gate=new Promise(r=>release=r),app=express();app.use(express.json());let calls=0;
