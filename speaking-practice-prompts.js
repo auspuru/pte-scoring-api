@@ -1,10 +1,10 @@
 'use strict';
-const fs=require('node:fs/promises'),path=require('node:path'),{createHash,randomUUID}=require('node:crypto'),{execFile}=require('node:child_process'),{promisify}=require('node:util');
-const run=promisify(execFile),VERSION='rts-practice-narration-2026-10-31.1';
+const fs=require('node:fs/promises'),path=require('node:path'),{createHash,randomUUID}=require('node:crypto');
+const VERSION='rts-practice-local-narration-2026-10-31.1';
 // Only a saved server-side question reaches this renderer. No client text or
 // shell interpolation can become a narration command or a cache pathname.
 function createPromptNarrator(directory,{render=async(text,file)=>{
- await run(path.join(__dirname,'.edge-tts/bin/edge-tts'),['--voice','en-AU-NatashaNeural','--rate=+0%','--text',text,'--write-media',file],{timeout:60000,maxBuffer:1024*1024});
+ const bytes=await require('./writing-lab-audio').createLocalNarration({input:text,speed:1});await fs.writeFile(file,bytes);
 }}={}){
  const pending=new Map();let active=0;
  return async question=>{

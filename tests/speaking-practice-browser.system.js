@@ -22,3 +22,10 @@ for(const width of [1365,390])test('Speaking practice '+width+'px: real RTS play
  const previousBytes=await page.evaluate(()=>__bytes);await page.waitForFunction(bytes=>__bytes>bytes+100,{},previousBytes);await page.evaluate(()=>__offset+=40001);await until(async()=>(await service.store.list('fixture')).filter(a=>a.recording).length===2,'Timed response did not stop and save');
  const attempts=await service.store.list('fixture');assert.equal(attempts.length,2);assert.deepEqual(attempts.map(a=>a.practiceMode).sort(),['timed','untimed']);assert.deepEqual(errors,[]);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
 });
+
+
+test('Local RTS narration produces playable audio without an external speech service',{timeout:20000},async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'rts-local-audio-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
+ const {createPromptNarrator}=require('../speaking-practice-prompts'),file=await createPromptNarrator(directory)({type:'rts',text:'Please ask your tutor for help with your assignment.'});
+ const {stdout}=await run('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',file]);assert(Number(stdout)>1);await run('ffmpeg',['-v','error','-i',file,'-f','null','-']);
+});
