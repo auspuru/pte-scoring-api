@@ -1,0 +1,206 @@
+{
+  "version": "di-image-reference-2026-10-27.1",
+  "entries": {
+    "di-pred-3000137": {
+      "academyId": "3000137",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "ede267351b791246f361a2c34c4ba1fddf4aca54aa0d02a0192ce6e626cd8578"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000137.png",
+      "mapping": {
+        "title": "India Land Use",
+        "category": "map",
+        "facts": [
+          "The map shows different types of land use across India.",
+          "The legend identifies arable land, forests, plantations, non-agricultural land, scrub and grass, and unproductive land.",
+          "The land-use patterns vary across the country."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "India Land Use",
+          "description": "The map shows different types of land use across India. The legend identifies arable land, forests, plantations, non-agricultural land, scrub and grass, and unproductive land. The land-use patterns vary across the country."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "6c66a1eaba5435423982785c7a46500e2588966ebe1fa862da0afe3d2eb8e63d",
+      "sample": "The given image provides the detailed information about india land use. The map shows different types of land use across India. The legend identifies arable land, forests, plantations, non-agricultural land, scrub and grass, and unproductive land. The land-use patterns vary across the country."
+    },
+    "di-pred-3000885": {
+      "academyId": "3000885",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "227997cba862b13d7ba6b59944041549118be86aa9ffe796fa7f71f7ae4294cf"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000885.png",
+      "mapping": {
+        "title": "Honey Production",
+        "category": "map",
+        "facts": [
+          "The map shows honey production as percentages of national production by state in Mexico.",
+          "Northern, central and southern zones are labelled.",
+          "Some southern and eastern states have higher shares than many northern states."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "Honey Production",
+          "description": "The map shows honey production as percentages of national production by state in Mexico. Northern, central and southern zones are labelled. Some southern and eastern states have higher shares than many northern states."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "651faa7708f09554c7f1cdb87ffa4038e1cba5bec3c5c3554886780db54094f4",
+      "sample": "The given image provides the detailed information about honey production. The map shows honey production as percentages of national production by state in Mexico. Northern, central and southern zones are labelled. Some southern and eastern states have higher shares than many northern states."
+    },
+    "di-pred-3000589": {
+      "academyId": "3000589",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "7f12d20a28e574fceab4fa8d22165b77fb6465cf4ca1ea7398e4d612ad0f30c1"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000589.png",
+      "mapping": {
+        "title": "Climate Zones",
+        "category": "map",
+        "facts": [
+          "The map shows climate zones across Australia based on temperature and humidity.",
+          "The north includes hot and humid areas, while the south includes temperate areas.",
+          "Cool temperate conditions are shown in the far southeast and Tasmania."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "Climate Zones",
+          "description": "The map shows climate zones across Australia based on temperature and humidity. The north includes hot and humid areas, while the south includes temperate areas. Cool temperate conditions are shown in the far southeast and Tasmania."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "570f0ab6b153f1c30c84860981081978d5b6a84ba0befc5c6906b8ece47acb2f",
+      "sample": "The given image provides the detailed information about climate zones. The map shows climate zones across Australia based on temperature and humidity. The north includes hot and humid areas, while the south includes temperate areas. Cool temperate conditions are shown in the far southeast and Tasmania."
+    },
+    "di-pred-3000580": {
+      "academyId": "3000580",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "9104ab00b491ae9a9d11964ccf135294dca2651bf75ec7a878810b9210b948f8"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000580.png",
+      "mapping": {
+        "title": "Population Density",
+        "category": "map",
+        "facts": [
+          "The map shows Australian population density in June 2010.",
+          "Density is highest in several coastal regions, particularly in the east and southeast.",
+          "Most of the interior has a low population density."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "Population Density",
+          "description": "The map shows Australian population density in June 2010. Density is highest in several coastal regions, particularly in the east and southeast. Most of the interior has a low population density."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "6c39d118063a4b529a06b156506f5f8e3ee467e13cb355b29d33208dcafedc38",
+      "sample": "The given image provides the detailed information about population density. The map shows Australian population density in June 2010. Density is highest in several coastal regions, particularly in the east and southeast. Most of the interior has a low population density."
+    },
+    "di-pred-3000365": {
+      "academyId": "3000365",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "7b6d96f5dc5aeb3e14c7f3d1d5441d47665e2a3e62348bef2d25a2f5f8799fa3"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3000365.png",
+      "mapping": {
+        "title": "Population Density",
+        "category": "map",
+        "facts": [
+          "The world map shows geographical differences in population density.",
+          "Dense concentrations appear in parts of Asia and Europe.",
+          "Large areas of northern regions, deserts and central Australia are less densely populated."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "Population Density",
+          "description": "The world map shows geographical differences in population density. Dense concentrations appear in parts of Asia and Europe. Large areas of northern regions, deserts and central Australia are less densely populated."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "9cc660e0283ef7284062606c13cd4fcd5a8907d69be8a9e808911d2b881fd55b",
+      "sample": "The given image provides the detailed information about population density. The world map shows geographical differences in population density. Dense concentrations appear in parts of Asia and Europe. Large areas of northern regions, deserts and central Australia are less densely populated."
+    },
+    "di-pred-3001398": {
+      "academyId": "3001398",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "62af7d2ed3b2c143993010481e93dde77fb726417f09867e88f02bb94b3c4ee4"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3001398.png",
+      "mapping": {
+        "title": "Australian Birth Trends",
+        "category": "bar",
+        "facts": [
+          "The grouped horizontal bars compare Australian population by foreign country of birth in 2013, 2018 and 2023.",
+          "India shows the largest increase and the largest 2023 population among the countries displayed.",
+          "China is also a large group, while countries such as Brazil and Colombia have smaller totals."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Australian Birth Trends",
+          "description": "The grouped horizontal bars compare Australian population by foreign country of birth in 2013, 2018 and 2023. India shows the largest increase and the largest 2023 population among the countries displayed. China is also a large group, while countries such as Brazil and Colombia have smaller totals."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "eb881087a12ed53b40fb32e5410d4e44538629fee37867be85fdabcc8c710ff1",
+      "sample": "The given image provides the detailed information about australian birth trends. The grouped horizontal bars compare Australian population by foreign country of birth in 2013, 2018 and 2023. India shows the largest increase and the largest 2023 population among the countries displayed. China is also a large group, while countries such as Brazil and Colombia have smaller totals."
+    },
+    "di-pred-3001061": {
+      "academyId": "3001061",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "9c2789e3ba2ceee4fade30e3e3519eaf3a8917f122078a586ce0b87e1fc9f3d9"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3001061.png",
+      "mapping": {
+        "title": "Taxation by Countries",
+        "category": "bar",
+        "facts": [
+          "The horizontal bar chart compares payroll and superannuation taxation by country.",
+          "Australia and Austria both show 16.6 percent at the top.",
+          "Denmark appears lower in the ranking, and a weighted average is also shown.",
+          "Several other country labels are not readable in the supplied image."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Taxation by Countries",
+          "description": "The horizontal bar chart compares payroll and superannuation taxation by country. Australia and Austria both show 16.6 percent at the top. Denmark appears lower in the ranking, and a weighted average is also shown. Several other country labels are not readable in the supplied image."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "89f5095cf74a053a169a3baba8f5ec2d8bffb9790fa5dc65cee2094eadd784ba",
+      "sample": "The given image provides the detailed information about taxation by countries. The horizontal bar chart compares payroll and superannuation taxation by country. Australia and Austria both show 16.6 percent at the top. Denmark appears lower in the ranking, and a weighted average is also shown. Several other country labels are not readable in the supplied image."
+    },
+    "di-pred-3001369": {
+      "academyId": "3001369",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "992f76e4787c5c7eac7259494c12b6184b2107b21bd0f2e66115e9a14fd38c1b"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/3001369.png",
+      "mapping": {
+        "title": "Influenced English",
+        "category": "pie",
+        "facts": [
+          "The supplied image shows a three-dimensional pie chart with several slices.",
+          "There are three large slices and several smaller slices.",
+          "No readable category labels, legend or numerical values are visible, so exact proportions cannot be stated."
+        ],
+        "visual": {
+          "kind": "pie",
+          "title": "Influenced English",
+          "description": "The supplied image shows a three-dimensional pie chart with several slices. There are three large slices and several smaller slices. No readable category labels, legend or numerical values are visible, so exact proportions cannot be stated."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "36a757f1aff8be382398b356a947a953f87eccaafe08c5b182f00d064d233376",
+      "sample": "The given image provides the detailed information about influenced english. The supplied image shows a three-dimensional pie chart with several slices. There are three large slices and several smaller slices. No readable category labels, legend or numerical values are visible, so exact proportions cannot be stated."
+    }
+  }
+}

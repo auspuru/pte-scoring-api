@@ -111,7 +111,10 @@ test('Prediction keys, image mappings and recordings stay bound to their display
     }
     if (candidate.image) {
       const source = speaking.questions.find(s => s.id === q.sourceId);
-      assert.deepEqual(q.imageReference, source.imageReference);
+      assert.equal(q.imageReference.version,'di-image-reference-2026-10-27.1'); // Immutable paper retains its authored reference version.
+      assert.equal(q.imageReference.mappingHash,source.imageReference.mappingHash);
+      assert.equal(q.imageReference.questionId,source.id);
+      assert.deepEqual(q.imageReference.source,source.imageReference.source);
       assert.deepEqual(q.facts, source.facts);
       assert.equal(candidate.image.sha256, source.imageReference.source.sha256);
       assert(fs.readFileSync(path.join(root, candidate.image.path)).equals(fs.readFileSync(path.join(root, 'public', source.imageUrl))));

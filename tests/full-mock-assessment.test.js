@@ -363,3 +363,18 @@ test('A saved submission resumes assessment after a crash before the first job w
  assert((await f.store.assessmentQueue()).some(row=>row.id===f.id&&row.status==='not-requested'));
  await f.engine.recover();await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
 });
+
+test('DI practice reference rollout completes the exact deployed Full Mock snapshot without replacing confirmed marks',async t=>{
+ let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
+ const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/di-reference-compatible-sources.json')};
+ const source=require('../speaking-lab').transcribeRecording.toString();assert.equal(require('node:crypto').createHash('sha256').update(source).digest('hex'),'6779768323a86f2488ac0621c8dd7f0949ca1348bdf0c23a98d10f64eaa84f4a');
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);const marked=structuredClone((await f.state()).assessment.items);
+ await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal(calls,65);assert.deepEqual((await f.state()).assessment.items,marked);assert.deepEqual((await f.state()).assessment.snapshot,original);
+});
+for(const changed of ['model','native-source'])test('DI reference compatibility rejects a changed '+changed,async t=>{
+ const f=await fixture(t),original={...structuredClone(f.engine.snapshot),scoringSources:structuredClone(require('../content/full-mock/di-reference-compatible-sources.json'))};
+ if(changed==='model')original.configuration.speakingContent.model='another-model';else original.scoringSources.files['speaking-scoring.js'].sha256='0'.repeat(64);
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await assert.rejects(f.engine.request('alice',f.id),error=>error.status===409);assert.deepEqual((await f.state()).assessment.snapshot,original);
+});

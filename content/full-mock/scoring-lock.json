@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "ac64864fc1e392c6df223277646e2a6785dd4e14",
-  "checkedAt": "2026-10-31",
-  "scope": "Unattended recovery scheduling, durable leases, failure metadata and provisional publication gate only. Native grader/model/weight/timing code is unchanged and exact prior snapshot compatibility is tested.",
+  "baseCommit": "d4b9f49441fb6eabb421fd10cfda93b98e8415de",
+  "checkedAt": "2026-11-01",
+  "scope": "DI practice catalogue eligibility and saved-reference preservation only. Exact source compatibility retains frozen Full Mock providers, marks, papers and native scoring.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "92081f2a5b909e20fc08e2ed7fc9201985d984ebaf636a14cbac474e43994ff7",
+        "sha256": "2b5913f4dfa1ab1c3efb0248fd43074a0afd79e73e0eb943314fcff067c1a73a",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -189,7 +189,7 @@
         "version": null
       },
       "speaking-lab.js": {
-        "sha256": "973a90665f61eb44041e8132cc825c9a42d39be971701b3cbe3867c1d8c41308",
+        "sha256": "e145fd88f91c38823251827571279c0762a76ce0bed6ddc8f9d020dfbf745de5",
         "version": null
       },
       "speaking-scoring.js": {
