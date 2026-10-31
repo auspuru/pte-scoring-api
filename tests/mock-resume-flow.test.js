@@ -20,9 +20,10 @@ test('Home resume is activity-aware and can reopen exact Reading or Writing atte
   assert.match(portal, /Continue your last activity/);
 });
 
-test('Writing mocks explain forward-only navigation once and confirm only final submission', () => {
+test('Writing mocks explain forward-only navigation once and submit Next without routine dialogs', () => {
   assert.match(writingClient, /Next locks each answer and you cannot return to an earlier question/);
-  assert.match(writingClient, /attempt\.kind==='mock' && final && !await confirmAction/);
+  assert.doesNotMatch(writingClient, /attempt\.kind==='mock' && final && !await confirmAction/);
+  assert.match(writingClient,/unanswered&&attempt\.kind!=='mock'&&!await confirmAction/);
   assert.doesNotMatch(writingClient, /final\?'Finish this attempt\?':'Submit this answer\?'/);
   assert.match(writingClient, /Leave this attempt\?/);
 });

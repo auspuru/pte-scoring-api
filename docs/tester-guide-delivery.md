@@ -16,6 +16,9 @@ The guide is the acceptance scope. It is not a list of 261 missing features. Exi
 - NAV-11/12: Question changes focus a meaningful heading. Practice navigation moves above long passages and feedback into a compact sticky dock, with 44px controls, wrapping and separate mock restrictions.
 - DI-06: New standalone DI assessments use the same pinned Visual Academy content adapter and validation contract as mocks. Confirmed historical content remains reusable. An unverified Academy result is unavailable/provisional and can be retried without replacing independent delivery evidence.
 
+- MOCK-06: Writing and Listening sectional Next and final submission no longer show routine confirmation dialogs. Double-clicks share one save.
+- NAV-16: Queued Writing saves retain their original session identity and cannot dispatch under a replacement session or overwrite its save status.
+
 ## Verification
 
 New regressions cover filtered Reading queues, the Listening queue 8/18/28, draft restoration, mode-specific badges, cached adjacent history, copied links, same-task Back/Forward and standalone/mock DI parity. The browser system suite adds the real Listening client at 1363px, 390px and 320px, using disposable accounts and injected services.

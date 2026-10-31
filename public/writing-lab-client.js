@@ -74,7 +74,7 @@
     if(!['practice','exam'].includes(mode)||attempt?.kind==='mock')return;
     const current=attempt?.mode||listeningMode;if(current===mode)return;
     if(attempt&&['active','ready'].includes(attempt.status)&&!await confirmAction('Switch practice mode?','Your current attempt stays saved. The other mode has its own response, clock and playback allowance.','Switch mode'))return;
-    const testId=attempt?.testId;writeDraft();await saveAnswer(false);if(saveConflict)return;
+    const testId=attempt?.testId;writeDraft();await saveAnswer(false);try{await saving;}catch{notify('Your answer has not saved. Retry before changing mode.');return;}if(saveConflict)return;
     stopAudio();listeningMode=mode;storage.put('ipt-listening-mode:'+username,mode);
     if(testId){rememberContext(attempt.kind);return openPracticeId(testId,button);}
     return hub(view);
@@ -348,15 +348,16 @@
   }
   function saveAnswer(next) {
     if(!attempt || attempt.status!=='active' || saveConflict) return Promise.resolve();
-    const id=attempt.id,index=attempt.index,editor=document.getElementById('answer');
+    const id=attempt.id,index=attempt.index,editor=document.getElementById('answer'),saveUser=username,saveToken=token();
     if(!editor) return Promise.resolve();
     const body={index,text:editor.value,revision:++attempt.revisions[index],next,notes:document.getElementById('notes')?.value || '',
       ...(audioAttempt===questionKey()?{playback:{position:audio?.currentTime||0,finished:audioFinished,plays:attempt.playback?.[index]?.plays||0}}:{})};
     writeDraft();
     const task=saving.catch(()=>{}).then(async()=>{
+      if(token()!==saveToken||username!==saveUser)return;
       if(saveConflict && attempt?.id===id) return;
       const value=await api('/attempts/'+id+'/answer',body);
-      if(attempt?.id!==id) return;
+      if(attempt?.id!==id||username!==saveUser||token()!==saveToken) return;
       if(value.index!==index || value.status==='submitted') {
         setAttempt(value); moving=false; showAttempt();
         if(value.status==='submitted'&&typeof window!=='undefined'&&typeof window.CustomEvent==='function')window.dispatchEvent(new window.CustomEvent('pte:attempt-completed',{detail:{engine:'writing-lab',testId:value.testId}}));
@@ -381,6 +382,7 @@
     });
     saving=task;
     return task.catch(e=>{
+      if(attempt?.id!==id||username!==saveUser||token()!==saveToken)return;
       const status=document.getElementById('save-status');
       if(status) status.textContent='Connection issue · answer kept on this device. Reconnecting…';
       if(next) throw e;
@@ -390,11 +392,9 @@
     if(moving || saveConflict || !attempt || attempt.status!=='active') return;
     const originalId=attempt.id, originalIndex=attempt.index;
     const text=document.getElementById('answer').value;
-    const final=attempt.index===attempt.questions.length-1;
     const currentQuestion=attempt.questions[attempt.index],parsed=listeningTasks?.isObjective(currentQuestion)?listeningTasks.parse(text):null;
     const unanswered=parsed?!parsed.some(value=>typeof value==='string'?value.trim():Number.isInteger(value)):!text.trim();
-    if(unanswered&&!(attempt.kind==='mock'&&final)&&!await confirmAction('Submit without an answer?','Your saved response will be submitted as unanswered.','Submit unanswered'))return;
-    if(attempt.kind==='mock' && final && !await confirmAction('Finish this attempt?',(text.trim()?'Your final answer will be locked. ':'Your final answer is blank and will receive zero marks. ')+'You can review scores and feedback after submission.','Finish & submit')) return;
+    if(unanswered&&attempt.kind!=='mock'&&!await confirmAction('Submit without an answer?','Your saved response will be submitted as unanswered.','Submit unanswered'))return;
     // The timer may have advanced the question while the dialog was open.
     if(!attempt || attempt.status!=='active' || attempt.id!==originalId || attempt.index!==originalIndex) return;
     moving=true; clearTimeout(saveTimer);

@@ -649,3 +649,14 @@ test('NAV-05/08: Listening Next uses queue 8/18/28 and shares history across adj
  await h.hooks.movePractice(-1,{disabled:false});assert.equal(h.hooks.current().testId,'18');
  assert.equal(h.requests.filter(r=>r.url.endsWith('/attempts')).length,1);assert(!h.requests.some(r=>r.options?.method==='POST'));assert.equal(h.hooks.getContext().page,2);
 });
+
+test('MOCK-06: Double-clicking the final Writing Next sends one saved submission without a routine dialog',async()=>{
+ const h=harness(),a=attempt(6);open(h,a);h.nodes.get('answer').value='A final dictated response';
+ let saves=0,release;h.context.fetch=async(url,options)=>{if(url.endsWith('/answer')){saves++;const body=JSON.parse(options.body);a.answers[body.index]=body.text;a.revisions[body.index]=body.revision;await new Promise(resolve=>release=resolve);}return {ok:true,json:async()=>({...structuredClone(a),serverNow:100000})};};
+ const first=h.nodes.get('next').onclick(),second=h.nodes.get('next').onclick();await flush();assert.equal(saves,1);assert.equal(h.nodes.get('confirm-dialog').open,undefined);release();await Promise.all([first,second]);assert.equal(h.nodes.get('answer').value,'A final dictated response');
+});
+test('NAV-16: A queued Writing save is never dispatched under a replacement session',async()=>{
+ const h=harness(),a=attempt(0);let session='old';h.context.sessionStorage.getItem=key=>key==='pte_session_token'?session:null;open(h,a);
+ let release;h.context.fetch=async(url,options)=>{h.requests.push({url,options});await new Promise(resolve=>release=resolve);return {ok:true,json:async()=>({...structuredClone(a),serverNow:100000})};};
+ const first=h.hooks.saveAnswer(false);await flush();const queued=h.hooks.saveAnswer(false);session='new';release();await Promise.all([first,queued]);assert.equal(h.requests.length,1);assert.doesNotMatch(h.nodes.get('save-status').textContent,/Connection issue/);
+});

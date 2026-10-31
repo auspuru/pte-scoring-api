@@ -516,7 +516,7 @@
       "status": "Not run",
       "evidence": [],
       "limitation": null,
-      "implementation": "Existing implementation; acceptance required",
+      "implementation": "Updated in this release",
       "relatedSuites": [
         "tests/practice-navigation.test.js",
         "tests/reading-practice.test.js",
@@ -1593,7 +1593,7 @@
       "status": "Not run",
       "evidence": [],
       "limitation": null,
-      "implementation": "Existing implementation; acceptance required",
+      "implementation": "Updated in this release",
       "relatedSuites": [
         "tests/protected-mock-integrity.test.js",
         "tests/mock-resume-flow.test.js"
