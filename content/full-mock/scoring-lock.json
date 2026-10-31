@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "b5820a6093874cc89330b8d7994d8c4aeed657ef",
-  "checkedAt": "2026-10-30",
-  "scope": "Use GPT 6.1 Sol for content in all new mocks, retaining the Visual Academy rubric, Azure delivery, native maxima and weights. Frozen older full mocks retain concrete providers, completed stages and bounded automatic recovery.",
+  "baseCommit": "b92c5ba935fa41755d2211991dd2d3755c274b01",
+  "checkedAt": "2026-10-31",
+  "scope": "Practice navigation and standalone DI Academy parity. Frozen Full Mock native graders, transcription, providers, successful stages and saved snapshots are preserved under exact source compatibility pins.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "712ad21afc2c0bf6530cc721bb7f2bbeb2a5796cb1ed85119f62d79af2466147",
+        "sha256": "a9285b3246b26fff8e122b2cd194365256f4c5371299d2f78fd7f7652b15e40c",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -165,7 +165,7 @@
         "version": null
       },
       "public/reading-practice.js": {
-        "sha256": "4e80ba9501ba1d63fa7191ff263179b5bc15cef49e41c082ccb36ec2fead5d8d",
+        "sha256": "b3dab5bb17ec4028c6ea80e447fb0cf316fd7582badcfbc466279eeb9913d862",
         "version": null
       },
       "public/writing-lab-report.js": {
@@ -189,7 +189,7 @@
         "version": null
       },
       "speaking-lab.js": {
-        "sha256": "759f6aa54529eb5979aae0bb87b4663fabcf9ea0da3b3c61ecbf7972fadaf479",
+        "sha256": "15e7b543c49ab8e290b5f430a6e9ebd5e7c46da3b147311a62d562ce10a13150",
         "version": null
       },
       "speaking-scoring.js": {

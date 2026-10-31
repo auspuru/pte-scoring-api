@@ -454,3 +454,16 @@ test('A background assessment cannot delay Next or replace the next question',as
  assert.match(h.host.innerHTML,/Question 2 of/);assert.equal(h.attempts.size,2);assert.equal(h.requests.filter(r=>r.url.endsWith('/submit')).length,1);
  finish();await flush();assert.match(h.host.innerHTML,/Question 2 of/);h.controller.reset();
 });
+
+test('NAV-08: Adjacent Speaking moves reuse one account-scoped history index',async()=>{
+ const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});
+ const reads=()=>h.requests.filter(r=>r.url==='/api/speaking/attempts'&&!r.body).length,before=reads();
+ await h.click({speakingMove:'1'});await h.click({speakingMove:'1'});assert.equal(reads(),before);
+ const count=h.attempts.size;await h.click({speakingMove:'-1'});assert.equal(h.attempts.size,count);assert.match(h.host.innerHTML,/<h2>Question 2<\/h2>/);
+ h.controller.reset();
+});
+test('NAV-09: Opening a copied Speaking question link never creates an attempt or opens the microphone',async()=>{
+ const h=harness();await h.controller.open('ra','ra-1',{navigation:true});
+ assert.equal(h.attempts.size,0);assert.equal(h.recorders.length,0);assert.match(h.host.innerHTML,/Start question/);
+ assert(!h.requests.some(r=>r.body));h.controller.reset();
+});

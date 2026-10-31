@@ -3,6 +3,7 @@ const express=require('express'),path=require('node:path'),fs=require('node:fs/p
 const bank=require('./content/speaking-bank'),scoring=require('./speaking-scoring'),delivery=require('./speaking-delivery');
 const {createStore}=require('./writing-lab-store');
 const describeFeedback=require('./describe-image-feedback');
+const describeAcademy=require('./describe-image-academy');
 const rtsPrompts=require('./rts-prompts');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 const hasPrompt=q=>['rs','rl','sgd','rts'].includes(q.type)&&!(q.type==='rts'&&q.audioPrompt===false);
@@ -115,8 +116,8 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
     }a.status='submitted';return a;});
     a=await store.update(uid,id,async a=>{
       const q=attemptQuestion(a);
-      if(!a.result || a.result.scoringMode==='local') {
-        const previous=a.result,next=await scoring.grade(q,a.transcript,callModel);
+      if(!a.result || a.result.scoringMode==='local' || (q.type==='di'&&a.result.contentPolicyVersion===describeAcademy.VERSION&&describeAcademy.needsReview(a.result))) {
+        const previous=a.result,next=await scoring.grade(q,a.transcript,callModel,{academyDescribeImage:true});
         if(!previous || next.scoringMode!=='local'||next.version!==previous.version) {
           // Content retries must retain the independent assessment of the same audio.
           const savedDelivery={};

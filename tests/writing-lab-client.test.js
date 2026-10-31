@@ -78,7 +78,7 @@ function harness({ audioReadyState = 4, protectedMode = false, portal = false, s
   context.window.GradingRequest = { request: (url, options, extra) => recovery.request(url, options,
     { ...extra, fetch: context.fetch, wait: async () => {} }) };
   vm.createContext(context);
-  const instrumented=client.replace('  if(!inPortal) boot();',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},start,edit,recordInterruption,flushIntegrity,hub,handleRequest,showAttempt,tick,writeDraft,renderResults,overallHTML,refreshOverall,saveAnswer,resume,reattempt,movePractice,suspend,boot}; return;`);
+  const instrumented=client.replace('  if(!inPortal) boot();',`  window.testApi={set(value){username='tester';setAttempt(value);},current:()=>attempt,setCatalog(value){catalog=value;username='tester';},start,edit,recordInterruption,flushIntegrity,hub,handleRequest,showAttempt,tick,writeDraft,renderResults,overallHTML,refreshOverall,saveAnswer,resume,reattempt,movePractice,suspend,boot,api,setContext(value){practiceContext=value;view=value.type;},getContext:()=>practiceContext}; return;`);
   vm.runInContext(instrumented,context);
   if(protectedMode)context.window.PortalExamMode=createController(document,context.window);
   const hooks=context.window.testApi;
@@ -635,4 +635,28 @@ test('Writing results retain the saved overall and feedback without exposing cal
  assert.match(html,/data-mock-tab="answers"/);assert.match(html,/data-mock-tab="feedback"/);
  assert(h.nodes.get('overall-feedback').innerHTML.includes('Overall writing feedback'));
  assert.equal(h.requests.filter(r=>r.url.includes('/score/')).length,0);
+});
+
+test('NAV-05/08: Listening Next uses queue 8/18/28 and shares history across adjacent moves',async()=>{
+ const h=harness({studioMode:true}),base=attempt(0),questions=['8','18','28'].map(id=>({...bank.spoken[0],id,type:'sst',minutes:10}));
+ h.hooks.setCatalog({mocks:[],spoken:questions,dictation:[]});
+ const make=id=>({...base,id:'attempt-'+id,testId:id,kind:'sst',mode:'practice',status:'ready',questions:[questions.find(q=>q.id===id)],index:0,answers:[''],revisions:[0],completed:[null],results:[null],playback:[null],deadline:null,serverNow:100000});
+ const all=questions.map(q=>make(q.id));h.context.fetch=async(url,options={})=>{h.requests.push({url,options});return {ok:true,json:async()=>structuredClone(url.endsWith('/attempts')?all:all.find(a=>url.endsWith('/'+a.id)))};};
+ open(h,make('8'));h.hooks.setContext({type:'sst',queue:['8','18','28'],search:'8',page:2});
+ await h.hooks.movePractice(1,{disabled:false});assert.equal(h.hooks.current().testId,'18');
+ await h.hooks.movePractice(1,{disabled:false});assert.equal(h.hooks.current().testId,'28');
+ await h.hooks.movePractice(1,{disabled:false});assert.equal(h.hooks.current().testId,'28');
+ await h.hooks.movePractice(-1,{disabled:false});assert.equal(h.hooks.current().testId,'18');
+ assert.equal(h.requests.filter(r=>r.url.endsWith('/attempts')).length,1);assert(!h.requests.some(r=>r.options?.method==='POST'));assert.equal(h.hooks.getContext().page,2);
+});
+
+test('MOCK-06: Double-clicking the final Writing Next sends one saved submission without a routine dialog',async()=>{
+ const h=harness(),a=attempt(6);open(h,a);h.nodes.get('answer').value='A final dictated response';
+ let saves=0,release;h.context.fetch=async(url,options)=>{if(url.endsWith('/answer')){saves++;const body=JSON.parse(options.body);a.answers[body.index]=body.text;a.revisions[body.index]=body.revision;await new Promise(resolve=>release=resolve);}return {ok:true,json:async()=>({...structuredClone(a),serverNow:100000})};};
+ const first=h.nodes.get('next').onclick(),second=h.nodes.get('next').onclick();await flush();assert.equal(saves,1);assert.equal(h.nodes.get('confirm-dialog').open,undefined);release();await Promise.all([first,second]);assert.equal(h.nodes.get('answer').value,'A final dictated response');
+});
+test('NAV-16: A queued Writing save is never dispatched under a replacement session',async()=>{
+ const h=harness(),a=attempt(0);let session='old';h.context.sessionStorage.getItem=key=>key==='pte_session_token'?session:null;open(h,a);
+ let release;h.context.fetch=async(url,options)=>{h.requests.push({url,options});await new Promise(resolve=>release=resolve);return {ok:true,json:async()=>({...structuredClone(a),serverNow:100000})};};
+ const first=h.hooks.saveAnswer(false);await flush();const queued=h.hooks.saveAnswer(false);session='new';release();await Promise.all([first,queued]);assert.equal(h.requests.length,1);assert.doesNotMatch(h.nodes.get('save-status').textContent,/Connection issue/);
 });

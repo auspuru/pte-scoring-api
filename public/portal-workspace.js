@@ -46,11 +46,39 @@
     return Object.keys(routes).find(key => routes[key].path === path) || (Object.hasOwn(routes, path) ? path : 'dashboard');
   }
 
+  function questionHash(section, detail={}) {
+    const values={question:detail.question,attempt:detail.attempt,mode:detail.mode,view:detail.library?'list':null};
+    const query=Object.entries(values).filter(([,v])=>v!=null&&v!=='').map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+    return '#/'+routes[section].path+(query?'?'+query:'');
+  }
+  function requestFromHash(hash, state, owner) {
+    const section=routeFromHash(hash),route=routes[section],params={};
+    for(const part of String(hash).split('?').slice(1).join('?').split('&')){
+      const i=part.indexOf('=');if(i<0)continue;
+      try{params[part.slice(0,i)]=decodeURIComponent(part.slice(i+1));}catch{/* Invalid links open the task list. */}
+    }
+    const context=state?.practice?.hash===hash&&(owner===undefined||state.practice.owner===owner)?state.practice.context:undefined;
+    const isPractice=route.readingLibrary||route.speakingType||(route.labTab&&!['mocks','history'].includes(route.labTab));
+    const request={navigation:true,library:params.view==='list'||!!(isPractice&&!params.question&&!params.attempt),context,...(params.attempt?{attemptId:params.attempt}:{}),...(params.mode?{mode:params.mode==='practice'?'practice':'exam'}:{})};
+    const options={routeHash:hash};
+    if(route.readingLibrary)options.readingRequest={...request,...(params.question?{practiceUid:params.question}:{})};
+    if(route.speakingType)options.speakingRequest={...request,...(params.question?{questionId:params.question}:{})};
+    if(route.labTab)options.labRequest={...request,...(params.question?{testId:params.question}:{})};
+    return options;
+  }
+
   // Keep the existing task nodes alive: switching sections must never rebuild
   // an editor, lose a selection, stop an assessment or reset a running timer.
-  function createController({ document: doc, window: win, onNavigate }) {
+  function createController({ document: doc, window: win, onNavigate, getUserId=()=>String(win.currentUserId||'').trim().toLowerCase() }) {
     let current = null;
     let ready = false;
+    let lastRoutedHash = null;
+    win.PortalQuestionNavigation={update(detail={}){
+      if(!ready||!current||win.PortalExamMode?.isActive())return;
+      const hash=questionHash(current,detail),state={practice:{hash,owner:getUserId(),context:detail.context||null}};
+      win.history[hash===win.location.hash?'replaceState':'pushState'](state,'',hash);
+      lastRoutedHash=hash;
+    }};
     const container = doc.querySelector('.panes-container');
     ['practiceScreen', 'vocabScreen', 'writingLabScreen'].forEach(id => {
       const pane = doc.getElementById(id);
@@ -114,15 +142,20 @@
         const button = doc.getElementById(id);
         if (button) button.style.display = section === 'library' ? '' : 'none';
       });
-      if (activePaneId === 'readingPane') win.ReadingPractice?.open({ mockOnly: section === 'reading', ...options.readingRequest, ...(route.readingLibrary ? { libraryId: route.readingLibrary } : {}) });
-      if (route.speakingType) win.SpeakingPractice?.open(route.speakingType, options.speakingRequest?.questionId);
-      closeMenu();
       if (ready && options.history !== 'none') {
-        const hash = '#/' + routes[section].path;
+        const hash = options.routeHash || '#/' + routes[section].path;
         if (win.location.hash !== hash) {
           win.history[options.history === 'replace' ? 'replaceState' : 'pushState'](null, '', hash);
         }
       }
+      if (activePaneId === 'readingPane') win.ReadingPractice?.open({ mockOnly: section === 'reading', ...options.readingRequest, ...(route.readingLibrary ? { libraryId: route.readingLibrary } : {}) });
+      if (route.speakingType) {
+        const request=options.speakingRequest;
+        if(request?.navigation)win.SpeakingPractice?.open(route.speakingType,request.questionId,request);
+        else win.SpeakingPractice?.open(route.speakingType,request?.questionId);
+      }
+      closeMenu();
+      lastRoutedHash=win.location.hash;
       if (changed && ready && options.focus !== false && heading) heading.focus({ preventScroll: true });
       return section;
     }
@@ -130,7 +163,10 @@
     function handleRoute() {
       if (!ready) return;
       const section = routeFromHash(win.location.hash);
-      if (section !== current) onNavigate(section, { history: 'none' });
+      if (section !== current || lastRoutedHash!==win.location.hash) {
+        lastRoutedHash=win.location.hash;
+        onNavigate(section, { ...requestFromHash(win.location.hash,win.history.state,getUserId()), history: 'none' });
+      }
     }
     win.addEventListener('popstate', handleRoute);
     win.addEventListener('hashchange', handleRoute);
@@ -160,7 +196,7 @@
       current: () => current,
       start() {
         ready = true;
-        onNavigate(routeFromHash(win.location.hash), { history: 'replace', focus: false });
+        onNavigate(routeFromHash(win.location.hash), { ...requestFromHash(win.location.hash,win.history.state,getUserId()), history: 'replace', focus: false });
       },
       reset() { win.PortalExamMode?.reset(); win.ReadingPractice?.reset(); win.SpeakingPractice?.reset(); win.SpeakingMock?.reset(); win.FullMock?.reset(); ready = false; current = null; closeMenu(); },
       closeMenu
@@ -220,5 +256,5 @@
     return { read, write, remove };
   }
 
-  return { routes, routeFromHash, createController, createDraftStore };
+  return { routes, routeFromHash, questionHash, requestFromHash, createController, createDraftStore };
 });

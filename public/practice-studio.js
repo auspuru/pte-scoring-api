@@ -41,5 +41,19 @@
       switcher.querySelector?.('summary')?.focus();
     });
   }
-  return { navigation, heading, wrap, install };
+  function focusQuestion(host, selector='[data-question-heading], h2, h1') {
+    const heading=host?.querySelector?.(selector);
+    if(!heading)return;
+    heading.setAttribute('tabindex','-1');
+    heading.focus({preventScroll:true});
+    heading.scrollIntoView?.({block:'start',behavior:'instant'});
+  }
+  function pinNavigation(host, selector) {
+    const dock=host?.querySelector?.(selector);
+    const content=host?.querySelector?.('.studio-center, .practice-studio-content')||host;
+    if(!dock||!content?.insertBefore)return;
+    dock.classList.add('practice-question-dock');
+    content.insertBefore(dock,content.firstChild);
+  }
+  return { navigation, heading, wrap, install, focusQuestion, pinNavigation };
 });

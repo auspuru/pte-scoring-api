@@ -45,6 +45,7 @@ function stateFor(value) { return { version: VERSION, snapshot: structuredClone(
 // Exact production baselines may adopt these audited transport/recovery fixes.
 // Native graders, models, weights, paper and saved successful grades stay pinned.
 const COMPATIBLE_BASES = [
+  [require('../content/full-mock/tester-guide-compatible-sources.json'), '8fe1413d7881be3a14a0835747cc8bd86c4c09ed2e97c0d6bcd358f4109367e3'],
   [require('../content/full-mock/content-provider-compatible-sources.json'), '9b13a955f7ab351a65742fe33c14b8a33f6b53bcfa6d16547c62cd478f359b11'],
   [require('../content/full-mock/automatic-recovery-compatible-sources.json'), 'f49a6e3c4385918f9e83820c330518e13fb0e3eb202fb1ae1dbe9e847108a4ef'],
   [require('../content/full-mock/assessment-completion-compatible-sources.json'), 'ddaf791fda201c7b3424f6dc298472fd646d623a8b4bd8b104d8eea998b712d0'],
@@ -63,18 +64,35 @@ const CONTENT_WIRING_HASHES = {
   'mock-content-assessment.js':'f418438dd65ac47a81ee93faf62dbae5e5c7d7aa92c0ee4e30cb0d8eaa984253'
 };
 function transportSources(current) {
-  const files = current.files, baseline = COMPATIBLE_BASES[0][0];
-  if (digest(baseline) !== COMPATIBLE_BASES[0][1]
+  const files = current.files, [baseline,baselineHash] = COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/content-provider-compatible-sources.json'));
+  if (digest(baseline) !== baselineHash
     || Object.entries(CONTENT_WIRING_HASHES).some(([name,sha]) => files[name]?.sha256 !== sha)) return current;
   const projected = structuredClone(current);
   for (const name of Object.keys(CONTENT_WIRING_HASHES)) {
     if (baseline.files[name]) projected.files[name] = structuredClone(baseline.files[name]);
     else delete projected.files[name];
   }
+  // Practice-only changes share source files with the frozen mock dependency
+  // manifest. The native Reading scorer and transcription function are unchanged.
+  // Only this reviewed pair of exact source revisions may project to the old pins.
+  const [practice,practiceHash]=COMPATIBLE_BASES[0];
+  if(digest(practice)===practiceHash &&
+    files['public/reading-practice.js']?.sha256==='b3dab5bb17ec4028c6ea80e447fb0cf316fd7582badcfbc466279eeb9913d862' &&
+    files['speaking-lab.js']?.sha256==='15e7b543c49ab8e290b5f430a6e9ebd5e7c46da3b147311a62d562ce10a13150') {
+    for(const name of ['public/reading-practice.js','speaking-lab.js'])projected.files[name]=structuredClone(practice.files[name]);
+  }
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
-  current = {...current,scoringSources:transportSources(current.scoringSources)};
+  const [practice,practiceHash]=COMPATIBLE_BASES[0];
+  if(digest(practice)===practiceHash&&digest(saved.scoringSources)===practiceHash){
+    const sources=structuredClone(current.scoringSources);
+    if(sources.files['public/reading-practice.js']?.sha256==='b3dab5bb17ec4028c6ea80e447fb0cf316fd7582badcfbc466279eeb9913d862'&&
+      sources.files['speaking-lab.js']?.sha256==='15e7b543c49ab8e290b5f430a6e9ebd5e7c46da3b147311a62d562ce10a13150'){
+      for(const name of ['public/reading-practice.js','speaking-lab.js'])sources.files[name]=structuredClone(practice.files[name]);
+    }
+    current={...current,scoringSources:sources};
+  }else current = {...current,scoringSources:transportSources(current.scoringSources)};
   const baseline = COMPATIBLE_BASES.find(([value, hash]) => digest(value) === hash && digest(saved.scoringSources) === hash)?.[0];
   if (!baseline) return false;
   const allowed = new Set(['full-mock/access.js','full-mock/api.js','full-mock/assessment.js','full-mock/recording.js','full-mock/store.js','full-mock/report.js']);

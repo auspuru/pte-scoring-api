@@ -278,3 +278,29 @@ test('An assigned Essay question opens the matching existing essay in practice m
   assert.equal(calls.saved, 1);
   assert.equal(calls.practised, 1);
 });
+
+test('NAV-09: Exact question links round-trip stable IDs, mode and browser list context',()=>{
+ const {questionHash,requestFromHash}=require('../public/portal-workspace');
+ const hash=questionHash('reading-dropdown',{question:'v1:reading/8',attempt:'saved-a'}),context={queue:['v1:reading/8','v1:reading/18'],query:'Bird',page:2};
+ const options=requestFromHash(hash,{practice:{hash,context}});
+ assert.equal(options.readingRequest.practiceUid,'v1:reading/8');assert.equal(options.readingRequest.attemptId,'saved-a');assert.deepEqual(options.readingRequest.context,context);assert(options.readingRequest.navigation);
+ const listening=requestFromHash(questionHash('spoken-text',{question:'sst-18',mode:'exam'}));
+ assert.equal(listening.labRequest.testId,'sst-18');assert.equal(listening.labRequest.mode,'exam');
+ assert.equal(requestFromHash('#/speaking-ra?question=ra-8').speakingRequest.questionId,'ra-8');
+ assert.equal(requestFromHash('#/reading-dropdown?view=list').readingRequest.library,true);
+ assert.equal(requestFromHash(hash,{practice:{hash:'another-account-route',context}}).readingRequest.context,undefined);
+});
+test('NAV-09: Back and Forward restore question changes inside the same task once, without creating a new attempt',()=>{
+ const h=harness(),opened=[];h.win.ReadingPractice={open:r=>opened.push(r),leave(){}};h.controller.start();
+ h.controller.activate('reading-dropdown');h.win.PortalQuestionNavigation.update({question:'8',attempt:'a8'});h.win.PortalQuestionNavigation.update({question:'18',attempt:'a18'});
+ const before=opened.length;h.win.location.hash='#/reading-dropdown?question=8&attempt=a8';h.events.popstate();h.events.hashchange();
+ assert.equal(opened.length,before+1);assert.equal(opened.at(-1).attemptId,'a8');assert(opened.at(-1).navigation);
+ h.win.location.hash='#/reading-dropdown?question=18&attempt=a18';h.events.popstate();assert.equal(opened.at(-1).attemptId,'a18');
+});
+
+
+test('NAV-16: Browser list context cannot cross account boundaries',()=>{
+ const {requestFromHash}=require('../public/portal-workspace'),hash='#/reading-dropdown?view=list',context={query:'Private saved search',queue:['8','18']},state={practice:{hash,owner:'alice',context}};
+ assert.deepEqual(requestFromHash(hash,state,'alice').readingRequest.context,context);
+ assert.equal(requestFromHash(hash,state,'bob').readingRequest.context,undefined);
+});
