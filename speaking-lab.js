@@ -5,6 +5,7 @@ const {createStore}=require('./writing-lab-store');
 const describeFeedback=require('./describe-image-feedback');
 const describeAcademy=require('./describe-image-academy');
 const rtsPrompts=require('./rts-prompts');
+const diReferences=require('./di-practice-references');
 const {createPromptNarrator}=require('./speaking-practice-prompts');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 const hasPrompt=q=>['rs','rl','sgd','rts'].includes(q.type)&&!(q.type==='rts'&&q.audioPrompt===false);
@@ -24,7 +25,7 @@ function present(a) {
     assessment:a.assessment||null,
     transcribed:!!a.transcription,result:azureResult(a),question:shown};
 }
-function attemptQuestion(a){return rtsPrompts.forAttempt(a,bank.questions.find(q=>q.id===a.questionId));}
+function attemptQuestion(a){return diReferences.forAttempt(a,rtsPrompts.forAttempt(a,bank.questions.find(q=>q.id===a.questionId)));}
 function azureResult(a){
   const source=scoring.resultForClient(a.result,a.transcript||'');if(!source)return null;
   const cached=source.deliveryComparisons?.azure;
@@ -88,14 +89,14 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
   if(assessDelivery===delivery.assessRecording)console.info('[speaking-delivery-config]',JSON.stringify(delivery.configurationSummary()));
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>{res.set('Cache-Control','no-store');res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved work is safe; please retry.'});});
   const get=(uid,id)=>practiceAssessments.get(uid,id);
-  router.get('/catalog',(_,res)=>res.json({version:bank.version,contentVersion:scoring.VERSION,describeFeedbackVersion:describeFeedback.VERSION,source:bank.source,transcriptionAvailable,deliveryAssessment:deliveryAssessmentAvailable?'audio':'teacher',deliveryAssessmentAvailable,deliveryVersion:delivery.VERSION,deliveryVersions:Object.fromEntries([...new Set(bank.questions.map(q=>q.type))].map(type=>[type,delivery.VERSION])),deliveryProvider:'azure',types:bank.types,questions:bank.questions.map(q=>({id:q.id,type:q.type,title:q.title,seconds:q.seconds,preparation:q.preparation,...(q.topic?{topic:q.topic}:{}),...(q.predictionSource?.sourceId?{predictionSource:{sourceId:q.predictionSource.sourceId,provider:q.predictionSource.provider,week:q.predictionSource.week,weekly:q.predictionSource.weekly,monthly:q.predictionSource.monthly,priority:q.predictionSource.priority}}:{}),...(q.type==='di'?{imageCategory:q.imageCategory||q.visual?.kind||'unclassified'}:{})}))}));
+  router.get('/catalog',(_,res)=>res.json({version:bank.version,contentVersion:scoring.VERSION,describeFeedbackVersion:describeFeedback.VERSION,source:bank.source,transcriptionAvailable,deliveryAssessment:deliveryAssessmentAvailable?'audio':'teacher',deliveryAssessmentAvailable,deliveryVersion:delivery.VERSION,deliveryVersions:Object.fromEntries([...new Set(bank.questions.map(q=>q.type))].map(type=>[type,delivery.VERSION])),deliveryProvider:'azure',types:bank.types,questions:bank.questions.filter(diReferences.available).map(q=>({id:q.id,type:q.type,title:q.title,seconds:q.seconds,preparation:q.preparation,...(q.topic?{topic:q.topic}:{}),...(q.predictionSource?.sourceId?{predictionSource:{sourceId:q.predictionSource.sourceId,provider:q.predictionSource.provider,week:q.predictionSource.week,weekly:q.predictionSource.weekly,monthly:q.predictionSource.monthly,priority:q.predictionSource.priority}}:{}),...(q.type==='di'?{imageCategory:q.imageCategory||q.visual?.kind||'unclassified'}:{})}))}));
   router.use(async(req,res,next)=>{try{const uid=verifyToken(req.headers['x-session-token']||'');const account=uid&&await getAccount(uid);if(!account||account.blocked)return res.status(401).json({error:'Please sign in to your practice account.'});req.speakingUser=uid;res.set('Cache-Control','no-store');next();}catch{res.status(503).json({error:'Your account could not be checked. Please retry.'});}});
   const limiter=require('express-rate-limit')({windowMs:600000,max:40,keyGenerator:req=>req.speakingUser,standardHeaders:true,legacyHeaders:false,message:{error:'Please wait before starting another speaking action.'}});
   router.get('/attempts',wrap(async(req,res)=>{const entries=await store.list(req.speakingUser);res.json(entries.map(a=>({id:a.id,questionId:a.questionId,title:bank.questions.find(q=>q.id===a.questionId)?.title,type:bank.questions.find(q=>q.id===a.questionId)?.type,status:a.status,practiceMode:a.practiceMode||'timed',assessment:a.assessment||null,startedAt:a.startedAt,result:a.result?{total:a.result.scoringMode==='local'?null:a.result.total,maximum:a.result.maximum,scoringMode:a.result.scoringMode,score_provisional:a.result.scoringMode==='local'||a.result.score_provisional===true}:null})));}));
   router.post('/attempts',limiter,wrap(async(req,res)=>{
     const q=bank.questions.find(q=>q.id===req.body?.questionId);if(!q)throw fail('Question not found.',404);
     const practiceMode=req.body.practiceMode??'timed';if(!['timed','untimed'].includes(practiceMode))throw fail('Choose timed or untimed practice.');
-    const a=await store.update(req.speakingUser,req.body.id,old=>{if(old&&(old.questionId!==q.id||(req.body.practiceMode!==undefined&&(old.practiceMode||'timed')!==practiceMode)))throw fail('This attempt belongs to another question or practice mode.',409);return old||{id:req.body.id,questionId:q.id,practiceMode,...(q.type==='rts'?{questionSnapshot:structuredClone(q)}:{}),status:'draft',startedAt:Date.now(),transcript:'',revision:0};});res.json(present(a));
+    const a=await store.update(req.speakingUser,req.body.id,old=>{if(old&&(old.questionId!==q.id||(req.body.practiceMode!==undefined&&(old.practiceMode||'timed')!==practiceMode)))throw fail('This attempt belongs to another question or practice mode.',409);if(!old&&!diReferences.available(q))throw fail('This image is awaiting a clearer source. Please choose another question.',422);return old||{id:req.body.id,questionId:q.id,practiceMode,...(['rts','di'].includes(q.type)?{questionSnapshot:structuredClone(q)}:{}),status:'draft',startedAt:Date.now(),transcript:'',revision:0};});res.json(present(a));
   }));
   router.get('/attempts/:id/prompt',limiter,wrap(async(req,res)=>{const a=await get(req.speakingUser,req.params.id),q=attemptQuestion(a);if(q.type!=='rts')throw fail('Situation audio not found.',404);const file=await narratePrompt(q);res.type('audio/mpeg').set('X-Content-Type-Options','nosniff').sendFile(path.resolve(file));}));
   router.get('/attempts/:id',wrap(async(req,res)=>{const a=await get(req.speakingUser,req.params.id);res.json(present(a));if(a.assessment?.status!=='pending')queueAzure(req.speakingUser,a);}));

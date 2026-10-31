@@ -1,6 +1,6 @@
 {
-  "version": "di-image-reference-2026-10-27.1",
-  "verifiedAt": "2026-10-27",
+  "version": "di-image-reference-2026-11-01.1",
+  "verifiedAt": "2026-11-01",
   "sourceRepository": "auspuru/Describe",
   "entries": {
     "di-1": {
@@ -274,17 +274,32 @@
         "facts": [
           "The map shows different types of land use across India.",
           "The legend identifies arable land, forests, plantations, non-agricultural land, scrub and grass, and unproductive land.",
-          "The land-use patterns vary across the country."
+          "Yellow arable land is widespread across the northern plains and interspersed with other uses through central and southern India.",
+          "Dark-green forests are prominent in the northeast, across parts of central India, and along stretches of the western peninsula.",
+          "Pale orange or beige unproductive land covers large areas in the far north and northwest.",
+          "Pink scrub and grass appears in scattered patches, especially in western and southern areas. Bright green denotes plantations and brown denotes non-agricultural land.",
+          "The map has a categorical legend, with no numerical land areas, percentages or numerical scale."
         ],
         "visual": {
           "kind": "map",
           "title": "India Land Use",
-          "description": "The map shows different types of land use across India. The legend identifies arable land, forests, plantations, non-agricultural land, scrub and grass, and unproductive land. The land-use patterns vary across the country."
+          "description": "The map shows different types of land use across India. The legend identifies arable land, forests, plantations, non-agricultural land, scrub and grass, and unproductive land. Yellow arable land is widespread across the northern plains and interspersed with other uses through central and southern India. Dark-green forests are prominent in the northeast, across parts of central India, and along stretches of the western peninsula. Pale orange or beige unproductive land covers large areas in the far north and northwest. Pink scrub and grass appears in scattered patches, especially in western and southern areas. Bright green denotes plantations and brown denotes non-agricultural land. The map has a categorical legend, with no numerical land areas, percentages or numerical scale."
         },
-        "optionalFactIndices": []
+        "optionalFactIndices": [
+          3,
+          4,
+          5,
+          6
+        ]
       },
-      "mappingHash": "6c66a1eaba5435423982785c7a46500e2588966ebe1fa862da0afe3d2eb8e63d",
-      "sample": "The given image provides the detailed information about india land use. The map shows different types of land use across India. The legend identifies arable land, forests, plantations, non-agricultural land, scrub and grass, and unproductive land. The land-use patterns vary across the country."
+      "mappingHash": "9c69e9b951c909bccb0ff3d3f857d8f25a3a8e7a9b4458fad3ed7cff65ab1545",
+      "sample": "The given image provides the detailed information about land use in India. Yellow arable land is widespread across the northern plains and appears throughout the peninsula. Dark-green forests are prominent in the northeast and parts of central India. Pale orange unproductive land occupies large northern and northwestern areas, while scrub and grass appears in scattered patches. Overall, land use varies across the country; the map gives categories rather than numerical percentages.",
+      "referenceReview": {
+        "status": "assistant-reviewed",
+        "date": "2026-11-01",
+        "basis": "Original supplied image and source-bound display legend; no new image or inferred exact quantities.",
+        "sourceSha256": "ede267351b791246f361a2c34c4ba1fddf4aca54aa0d02a0192ce6e626cd8578"
+      }
     },
     "di-pred-3000186": {
       "academyId": "3000186",
@@ -393,22 +408,32 @@
       },
       "portalImageUrl": "/assets/di-predictions-20260930/3000365.png",
       "mapping": {
-        "title": "Population Density",
+        "title": "World Population Density",
         "category": "map",
         "facts": [
-          "The world map shows geographical differences in population density.",
-          "Dense concentrations appear in parts of Asia and Europe.",
-          "Large areas of northern regions, deserts and central Australia are less densely populated."
+          "The world map shows geographical differences in population density, measured in people per square kilometre.",
+          "The legend separates fewer than 2, 2–10, 11–40, 41–100, 101–500, and more than 500 people per square kilometre.",
+          "Dense concentrations appear in parts of Asia and Europe, with extensive high-density areas in South and East Asia.",
+          "Large northern regions, deserts and central Australia are less densely populated.",
+          "The legend progresses from grey and green for lower density through orange and red to magenta for the highest band. It provides density bands, not exact national populations."
         ],
         "visual": {
           "kind": "map",
-          "title": "Population Density",
-          "description": "The world map shows geographical differences in population density. Dense concentrations appear in parts of Asia and Europe. Large areas of northern regions, deserts and central Australia are less densely populated."
+          "title": "World Population Density",
+          "description": "The world map shows geographical differences in population density, measured in people per square kilometre. The legend separates fewer than 2, 2–10, 11–40, 41–100, 101–500, and more than 500 people per square kilometre. Dense concentrations appear in parts of Asia and Europe, with extensive high-density areas in South and East Asia. Large northern regions, deserts and central Australia are less densely populated. The legend progresses from grey and green for lower density through orange and red to magenta for the highest band. It provides density bands, not exact national populations."
         },
-        "optionalFactIndices": []
+        "optionalFactIndices": [
+          4
+        ]
       },
-      "mappingHash": "9cc660e0283ef7284062606c13cd4fcd5a8907d69be8a9e808911d2b881fd55b",
-      "sample": "The given image provides the detailed information about population density. The world map shows geographical differences in population density. Dense concentrations appear in parts of Asia and Europe. Large areas of northern regions, deserts and central Australia are less densely populated."
+      "mappingHash": "4ce72d9eea8e8aeca337f70fa2b1ef683de63b26877e86f07a079865f0fbce5e",
+      "sample": "The given image provides the detailed information about world population density. The legend shows six density bands measured in people per square kilometre, ranging from fewer than two to more than five hundred. Dense concentrations occur in parts of Asia and Europe, particularly South and East Asia. Large northern regions, deserts and central Australia have lower densities. Overall, population is distributed unevenly across the world.",
+      "referenceReview": {
+        "status": "assistant-reviewed",
+        "date": "2026-11-01",
+        "basis": "Original supplied image and source-bound display legend; no new image or inferred exact quantities.",
+        "sourceSha256": "7b6d96f5dc5aeb3e14c7f3d1d5441d47665e2a3e62348bef2d25a2f5f8799fa3"
+      }
     },
     "di-pred-3000370": {
       "academyId": "3000370",
@@ -884,22 +909,33 @@
       },
       "portalImageUrl": "/assets/di-predictions-20260930/3000580.png",
       "mapping": {
-        "title": "Population Density",
+        "title": "Australian Population Density",
         "category": "map",
         "facts": [
-          "The map shows Australian population density in June 2010.",
-          "Density is highest in several coastal regions, particularly in the east and southeast.",
-          "Most of the interior has a low population density."
+          "The map shows Australian population density in June 2010, measured in people per square kilometre.",
+          "The legend has five bands: less than 0.1, 0.1 to 1, 1 to 10, 10 to 100, and 100 or more people per square kilometre.",
+          "The interior is largely in the lowest-density bands, while denser areas are concentrated around parts of the coast, especially the east and southeast.",
+          "Pale yellow marks the lowest band and red marks the highest. The map provides density bands, not exact city populations.",
+          "The printed distance scale runs from 0 to 1000 kilometres; that distance scale is separate from the population-density legend."
         ],
         "visual": {
           "kind": "map",
-          "title": "Population Density",
-          "description": "The map shows Australian population density in June 2010. Density is highest in several coastal regions, particularly in the east and southeast. Most of the interior has a low population density."
+          "title": "Australian Population Density",
+          "description": "The map shows Australian population density in June 2010, measured in people per square kilometre. The legend has five bands: less than 0.1, 0.1 to 1, 1 to 10, 10 to 100, and 100 or more people per square kilometre. The interior is largely in the lowest-density bands, while denser areas are concentrated around parts of the coast, especially the east and southeast. Pale yellow marks the lowest band and red marks the highest. The map provides density bands, not exact city populations. The printed distance scale runs from 0 to 1000 kilometres; that distance scale is separate from the population-density legend."
         },
-        "optionalFactIndices": []
+        "optionalFactIndices": [
+          3,
+          4
+        ]
       },
-      "mappingHash": "6c39d118063a4b529a06b156506f5f8e3ee467e13cb355b29d33208dcafedc38",
-      "sample": "The given image provides the detailed information about population density. The map shows Australian population density in June 2010. Density is highest in several coastal regions, particularly in the east and southeast. Most of the interior has a low population density."
+      "mappingHash": "6c7b4d9036f2bd4ed865682998e5997c896e9172856aea0a196677bb7531e6e0",
+      "sample": "The given image provides the detailed information about Australian population density in June 2010. Density is measured in people per square kilometre, with five bands from fewer than 0.1 to 100 or more. Much of the interior is sparsely populated. Higher-density areas are concentrated near the coast, especially in the east and southeast. Overall, the coastal regions are more densely populated than the interior.",
+      "referenceReview": {
+        "status": "assistant-reviewed",
+        "date": "2026-11-01",
+        "basis": "Original supplied image and source-bound display legend; no new image or inferred exact quantities.",
+        "sourceSha256": "9104ab00b491ae9a9d11964ccf135294dca2651bf75ec7a878810b9210b948f8"
+      }
     },
     "di-pred-3000586": {
       "academyId": "3000586",
@@ -1019,19 +1055,29 @@
         "title": "Climate Zones",
         "category": "map",
         "facts": [
-          "The map shows climate zones across Australia based on temperature and humidity.",
-          "The north includes hot and humid areas, while the south includes temperate areas.",
-          "Cool temperate conditions are shown in the far southeast and Tasmania."
+          "The map shows Australian climate zones based on temperature and humidity.",
+          "The six legend categories are hot humid; warm humid; hot dry summer, warm winter; hot dry summer, cold winter; temperate; and cool temperate.",
+          "Hot humid conditions in red occupy the far north; orange and yellow dry-climate regions cover broad inland areas.",
+          "Green temperate regions occur along parts of the southern and eastern coasts; blue cool temperate areas appear in the far southeast and Tasmania.",
+          "The legend also shows warm humid conditions in pink. The map is categorical and has no numerical rainfall or temperature values."
         ],
         "visual": {
           "kind": "map",
           "title": "Climate Zones",
-          "description": "The map shows climate zones across Australia based on temperature and humidity. The north includes hot and humid areas, while the south includes temperate areas. Cool temperate conditions are shown in the far southeast and Tasmania."
+          "description": "The map shows Australian climate zones based on temperature and humidity. The six legend categories are hot humid; warm humid; hot dry summer, warm winter; hot dry summer, cold winter; temperate; and cool temperate. Hot humid conditions in red occupy the far north; orange and yellow dry-climate regions cover broad inland areas. Green temperate regions occur along parts of the southern and eastern coasts; blue cool temperate areas appear in the far southeast and Tasmania. The legend also shows warm humid conditions in pink. The map is categorical and has no numerical rainfall or temperature values."
         },
-        "optionalFactIndices": []
+        "optionalFactIndices": [
+          4
+        ]
       },
-      "mappingHash": "570f0ab6b153f1c30c84860981081978d5b6a84ba0befc5c6906b8ece47acb2f",
-      "sample": "The given image provides the detailed information about climate zones. The map shows climate zones across Australia based on temperature and humidity. The north includes hot and humid areas, while the south includes temperate areas. Cool temperate conditions are shown in the far southeast and Tasmania."
+      "mappingHash": "a53c7fdb8cbf8a45c02c26f41844b796351a9003953af295612dca9f68442296",
+      "sample": "The given image provides the detailed information about climate zones in Australia. The legend distinguishes six climates based on temperature and humidity. The far north is hot and humid, while dry climates cover much of the interior. Temperate conditions occur along parts of the southern and eastern coasts, and cool temperate areas appear in the far southeast and Tasmania. Overall, the map shows a strong regional contrast rather than numerical temperatures.",
+      "referenceReview": {
+        "status": "assistant-reviewed",
+        "date": "2026-11-01",
+        "basis": "Original supplied image and source-bound display legend; no new image or inferred exact quantities.",
+        "sourceSha256": "7f12d20a28e574fceab4fa8d22165b77fb6465cf4ca1ea7398e4d612ad0f30c1"
+      }
     },
     "di-pred-3000594": {
       "academyId": "3000594",
@@ -1476,19 +1522,30 @@
         "title": "Honey Production",
         "category": "map",
         "facts": [
-          "The map shows honey production as percentages of national production by state in Mexico.",
-          "Northern, central and southern zones are labelled.",
-          "Some southern and eastern states have higher shares than many northern states."
+          "The map shows honey production by Mexican state as percentages of national production, not percentages of land area.",
+          "The legend has four bands: 0–1 percent, 1–3 percent, 3–10 percent and 10–16.38 percent, progressing from pale cream to dark brown.",
+          "Northern states are mostly in the two lower bands, while several central, southern and eastern states have higher shares.",
+          "Dark-brown areas in the central-southern part of the map and the eastern peninsula represent the highest 10–16.38 percent band.",
+          "Northern, central and southern zones are labelled. Individual states are not named on the supplied map, so exact state names or exact values within a band are not supplied."
         ],
         "visual": {
           "kind": "map",
           "title": "Honey Production",
-          "description": "The map shows honey production as percentages of national production by state in Mexico. Northern, central and southern zones are labelled. Some southern and eastern states have higher shares than many northern states."
+          "description": "The map shows honey production by Mexican state as percentages of national production, not percentages of land area. The legend has four bands: 0–1 percent, 1–3 percent, 3–10 percent and 10–16.38 percent, progressing from pale cream to dark brown. Northern states are mostly in the two lower bands, while several central, southern and eastern states have higher shares. Dark-brown areas in the central-southern part of the map and the eastern peninsula represent the highest 10–16.38 percent band. Northern, central and southern zones are labelled. Individual states are not named on the supplied map, so exact state names or exact values within a band are not supplied."
         },
-        "optionalFactIndices": []
+        "optionalFactIndices": [
+          3,
+          4
+        ]
       },
-      "mappingHash": "651faa7708f09554c7f1cdb87ffa4038e1cba5bec3c5c3554886780db54094f4",
-      "sample": "The given image provides the detailed information about honey production. The map shows honey production as percentages of national production by state in Mexico. Northern, central and southern zones are labelled. Some southern and eastern states have higher shares than many northern states."
+      "mappingHash": "748d33a7ee4c49c61a1ba1faeb6b22b77f904da656e7e49efe5639210795eeb2",
+      "sample": "The given image provides the detailed information about honey production by state in Mexico. The map groups states into four bands, from zero to one percent up to ten to 16.38 percent of national production. Most northern states have lower shares. Several central, southern and eastern states contribute more, with dark-brown areas showing the highest band. Overall, production is unevenly distributed, and the colours show ranges rather than exact values for each state.",
+      "referenceReview": {
+        "status": "assistant-reviewed",
+        "date": "2026-11-01",
+        "basis": "Original supplied image and source-bound display legend; no new image or inferred exact quantities.",
+        "sourceSha256": "227997cba862b13d7ba6b59944041549118be86aa9ffe796fa7f71f7ae4294cf"
+      }
     },
     "di-pred-3001061": {
       "academyId": "3001061",
@@ -1514,7 +1571,12 @@
         "optionalFactIndices": []
       },
       "mappingHash": "89f5095cf74a053a169a3baba8f5ec2d8bffb9790fa5dc65cee2094eadd784ba",
-      "sample": "The given image provides the detailed information about taxation by countries. The horizontal bar chart compares payroll and superannuation taxation by country. Australia and Austria both show 16.6 percent at the top. Denmark appears lower in the ranking, and a weighted average is also shown. Several other country labels are not readable in the supplied image."
+      "sample": "The given image provides the detailed information about taxation by countries. The horizontal bar chart compares payroll and superannuation taxation by country. Australia and Austria both show 16.6 percent at the top. Denmark appears lower in the ranking, and a weighted average is also shown. Several other country labels are not readable in the supplied image.",
+      "assessmentAvailability": {
+        "status": "needs-clearer-source",
+        "reason": "Several country labels are unreadable and most bar values are absent.",
+        "sourceSha256": "9c2789e3ba2ceee4fade30e3e3519eaf3a8917f122078a586ce0b87e1fc9f3d9"
+      }
     },
     "di-pred-3001078": {
       "academyId": "3001078",
@@ -1614,7 +1676,12 @@
         "optionalFactIndices": []
       },
       "mappingHash": "36a757f1aff8be382398b356a947a953f87eccaafe08c5b182f00d064d233376",
-      "sample": "The given image provides the detailed information about influenced english. The supplied image shows a three-dimensional pie chart with several slices. There are three large slices and several smaller slices. No readable category labels, legend or numerical values are visible, so exact proportions cannot be stated."
+      "sample": "The given image provides the detailed information about influenced english. The supplied image shows a three-dimensional pie chart with several slices. There are three large slices and several smaller slices. No readable category labels, legend or numerical values are visible, so exact proportions cannot be stated.",
+      "assessmentAvailability": {
+        "status": "needs-clearer-source",
+        "reason": "The supplied pie chart has no readable category labels, legend or numerical values.",
+        "sourceSha256": "992f76e4787c5c7eac7259494c12b6184b2107b21bd0f2e66115e9a14fd38c1b"
+      }
     },
     "di-pred-3001386": {
       "academyId": "3001386",
@@ -1675,22 +1742,33 @@
       },
       "portalImageUrl": "/assets/di-predictions-20260930/3001398.png",
       "mapping": {
-        "title": "Australian Birth Trends",
+        "title": "Australia’s Population by Foreign Country of Birth",
         "category": "bar",
         "facts": [
-          "The grouped horizontal bars compare Australian population by foreign country of birth in 2013, 2018 and 2023.",
-          "India shows the largest increase and the largest 2023 population among the countries displayed.",
-          "China is also a large group, while countries such as Brazil and Colombia have smaller totals."
+          "The grouped horizontal bars compare Australian residents by foreign country of birth in 2013, 2018 and 2023. They do not show annual births or birth rates.",
+          "The countries shown are India, China, Nepal, Philippines, Vietnam, Pakistan, Thailand, Sri Lanka, Colombia and Brazil.",
+          "India has the largest increase between 2013 and 2023 and the largest 2023 population among the displayed countries. China is another large group and is larger than India in 2013.",
+          "Orange represents 2013, red 2018 and black 2023. Most displayed groups increase across the period; the source does not print exact values on the bars.",
+          "The horizontal scale is a population count marked from zero to approximately 800000. Approximate readings must not be treated as exact printed values."
         ],
         "visual": {
           "kind": "bar",
-          "title": "Australian Birth Trends",
-          "description": "The grouped horizontal bars compare Australian population by foreign country of birth in 2013, 2018 and 2023. India shows the largest increase and the largest 2023 population among the countries displayed. China is also a large group, while countries such as Brazil and Colombia have smaller totals."
+          "title": "Australia’s Population by Foreign Country of Birth",
+          "description": "The grouped horizontal bars compare Australian residents by foreign country of birth in 2013, 2018 and 2023. They do not show annual births or birth rates. The countries shown are India, China, Nepal, Philippines, Vietnam, Pakistan, Thailand, Sri Lanka, Colombia and Brazil. India has the largest increase between 2013 and 2023 and the largest 2023 population among the displayed countries. China is another large group and is larger than India in 2013. Orange represents 2013, red 2018 and black 2023. Most displayed groups increase across the period; the source does not print exact values on the bars. The horizontal scale is a population count marked from zero to approximately 800000. Approximate readings must not be treated as exact printed values."
         },
-        "optionalFactIndices": []
+        "optionalFactIndices": [
+          3,
+          4
+        ]
       },
-      "mappingHash": "eb881087a12ed53b40fb32e5410d4e44538629fee37867be85fdabcc8c710ff1",
-      "sample": "The given image provides the detailed information about australian birth trends. The grouped horizontal bars compare Australian population by foreign country of birth in 2013, 2018 and 2023. India shows the largest increase and the largest 2023 population among the countries displayed. China is also a large group, while countries such as Brazil and Colombia have smaller totals."
+      "mappingHash": "900510d12ab3034d174141160a7566b60b642d18e917bb0ab165dad8c0602b6b",
+      "sample": "The given image provides the detailed information about Australia’s population by foreign country of birth in 2013, 2018 and 2023. India shows the largest increase and has the highest population in 2023 among the countries displayed. China is another major group, while Brazil and Colombia have smaller totals. Overall, most displayed groups increase over time. These bars describe resident populations by birthplace, rather than annual birth rates.",
+      "referenceReview": {
+        "status": "assistant-reviewed",
+        "date": "2026-11-01",
+        "basis": "Original supplied image and source-bound display legend; no new image or inferred exact quantities.",
+        "sourceSha256": "62af7d2ed3b2c143993010481e93dde77fb726417f09867e88f02bb94b3c4ee4"
+      }
     },
     "di-pred-3001403": {
       "academyId": "3001403",
