@@ -53,3 +53,25 @@ test('AUTH-01/03/04: real login, keyboard double-submit and expired-session draf
  await page.evaluate(()=>switchSection('swt'));await page.click('[data-swt-mode="summary"]');await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'');
  await page.evaluate(()=>signOut());await page.type('#loginUsername','browser-alice');await page.type('#loginPassword','Password123');await page.click('#loginSubmitBtn');await workspace('original account recovery');await page.evaluate(()=>switchSection('swt'));await page.click('[data-swt-mode="summary"]');await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'A recoverable first-account summary.');
 });
+
+test('Staff recovery inspects one owned attempt and retries only its missing content',{timeout:60000},async t=>{
+ const f=await fixture(t),username='recovery-browser';await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:'recovery@example.test'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const page=await browser.newPage();await page.setViewport({width:390,height:900});
+ const id='006d4971-2ad3-4f14-8e2a-0ea3ed450bdd',path='/api/admin/speaking-mocks/'+username+'/'+id+'/scoring',repairs=[];let queued=false;
+ await page.setRequestInterception(true);page.on('request',async req=>{
+  const pathname=new URL(req.url()).pathname;
+  if(pathname===path)return req.respond({status:200,contentType:'application/json',body:JSON.stringify({attemptId:id,status:queued?'ready':'delayed',ready:queued,accountedFor:queued?27:26,total:27,jobs:queued?[]:[{id:'job',index:19,status:'needs_attention',stages:{content:{status:'needs_attention',code:'validation'},azure:{status:'ready'}}}]})});
+  if(pathname===path+'/retry'){repairs.push(JSON.parse(req.postData()));queued=true;return req.respond({status:200,contentType:'application/json',body:JSON.stringify({status:'queued',jobId:'job'})});}
+  await req.continue();
+ });
+ await page.goto(f.base+'/admin');await page.type('#adminKeyInput','isolated-auth-test-admin');await page.click('#authCard > button');await page.waitForSelector('#dashboard',{visible:true});
+ await page.type('[aria-label="Search users"]',username);
+ const view=await page.$('button[onclick="viewUser(\''+username+'\')"]');await view.click();
+ await page.waitForSelector('[data-mock-attempt]',{visible:true});await page.type('[data-mock-attempt]',id);await page.click('[data-mock-inspect]');await page.waitForSelector('[data-mock-stage="content"]');
+ assert.equal(await page.$$eval('[data-mock-stage]',els=>els.length),1);await page.click('[data-mock-stage="content"]');
+ await page.waitForFunction(()=>document.querySelector('[data-mock-notice]')?.textContent.includes('Recovery queued'));
+ assert.equal(repairs.length,1);assert.equal(repairs[0].stage,'content');assert.equal(repairs[0].acknowledgeUncertain,false);
+ await page.click('[data-mock-inspect]');await page.waitForFunction(()=>document.querySelector('[data-mock-notice]')?.textContent.includes('complete report is ready'));
+ assert.equal(await page.$$eval('[data-mock-stage]',els=>els.length),0);
+});
