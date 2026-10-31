@@ -33,6 +33,28 @@
   };
   const valid=g=>g&&g.complete===true&&Number.isFinite(g.earned)&&Number.isFinite(g.possible)
     &&g.possible>0&&g.earned>=0&&g.earned<=g.possible;
+  function evidence(result, answer) {
+    const issue = (Array.isArray(result?.feedbackIssues)?result.feedbackIssues:[]).find(row => row.affectsScore === true && row.evidence?.essayQuote && answer.includes(row.evidence.essayQuote));
+    const error = (Array.isArray(result?.errors)?result.errors:[]).find(row => row.phrase && answer.includes(row.phrase));
+    const trait=result?.gated?null:Object.keys(result?.scores||{}).filter(key=>Number.isFinite(result.maxima?.[key])&&result.maxima[key]>0&&result.scores[key]<result.maxima[key]&&typeof result.feedback?.[key]==='string').sort((a,b)=>result.scores[a]/result.maxima[a]-result.scores[b]/result.maxima[b])[0];
+    return { advice:clean(issue?.suggestedChange || (trait&&result.feedback[trait]) || result?.improvements?.[0] || error?.explanation || result?.feedback?.content),
+      strength:clean(result?.strengths?.[0]), quote:clean(issue?.evidence?.essayQuote || error?.phrase) };
+  }
+  function forLab(a, summary, needsReview, relatedProfiles={}) {
+    if (a.status !== 'submitted' || a.kind !== 'mock') return null;
+    const key = a.module === 'listening' ? 'listening' : 'writing';
+    const groups = summary.byType.map(g => ({ type:g.type,label:g.label,count:g.count,earned:g.total,possible:g.maximum,
+      complete:g.marked === g.count && !a.questions.some((q,i) => q.type === g.type && needsReview(a.results?.[i],q)) }));
+    // Listening pools native points. Explain the actual displayed result.
+    const weights = summary.weighting ? Object.fromEntries(summary.byType.map(g => [g.type,g.weight]))
+      : Object.fromEntries(groups.map(g => [g.type,g.possible]));
+    const items = a.questions.map((q,i) => {
+      const r = a.results?.[i], g = groups.find(g => g.type === q.type);
+      return {type:q.type,number:i+1,status:g.complete?'assessed':'pending',total:r?.total,maximum:r?.maximum,
+        ...evidence(r,String(a.answers?.[i] || ''))};
+    });
+    return build({scope:key,groups,profiles:{[key]:{weights}},relatedProfiles,items});
+  }
   function build({groups=[],profiles={},items=[],scope='full',relatedProfiles={}}={}){
     const byType=new Map(groups.map(g=>[g.type,g]));
     const routing=Object.keys(relatedProfiles).length?relatedProfiles:profiles;
@@ -41,7 +63,7 @@
       const examples=items.filter(item=>item.type===g.type&&item.status==='assessed'&&Number.isFinite(item.total)&&item.maximum>0&&item.total>=0&&item.total<=item.maximum
         &&(strength?item.total/item.maximum>=.8:item.total<item.maximum)).slice(0,2).map(item=>({
           number:item.number,earned:item.total,possible:item.maximum,
-          observation:clean(strength?item.strength:item.advice),quote:clean(item.quote)
+          observation:clean(strength?item.strength:item.advice),quote:strength?'':clean(item.quote)
         }));
       const label=clean(g.label)||g.type;
       return {type:g.type,label,skills:related,
@@ -77,5 +99,5 @@
         :'Priorities explain this sectional result. Related skills show where these tasks also contribute; they are not full-test skill scores.',
       profiles:sections,priorities:primary?.priorities||[]};
   }
-  return {VERSION,GUIDANCE,build,valid};
+  return {VERSION,GUIDANCE,build,valid,evidence,forLab};
 });

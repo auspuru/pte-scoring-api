@@ -28,7 +28,9 @@ can be opened individually.
 
 Existing submitted attempts receive the new score-priority summary on every
 normal report read, without a migration, regrading or paid summary request.
-Reading computes the same summary from the saved local/cloud review. Historical
+Reading computes the same summary from the saved local/cloud review. Writing
+and Listening recompute it from the latest verified results as assessments
+finish, so an initially pending summary updates without reopening the mock. Historical
 answers, recordings, saved feedback and scores remain intact. Legacy Speaking
 priority advice is retained in storage but replaced in the displayed summary.
 

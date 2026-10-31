@@ -114,3 +114,20 @@ test('Existing Full Mock reports refresh feedback without regrading or mutating 
   for(const job of Object.values(state.assessment.items))job.snapshotHash=state.assessment.snapshotHash;
   assert.equal(reports.buildReport(paper,state).priorities[0].type,'di');
 });
+
+test('Strength examples never present a saved correction quotation as evidence of success',()=>{
+  const feedback=impact.build({groups:[group('essay',85)],profiles:{writing:{weights:{essay:31}}},items:[{type:'essay',number:1,status:'assessed',total:85,maximum:100,strength:'Relevant argument.',quote:'An actual error.'}]});
+  assert.equal(feedback.profiles[0].strengths[0].examples[0].quote,'');
+  assert.equal(feedback.profiles[0].priorities[0].examples[0].quote,'An actual error.');
+});
+
+test('Real RA and RS numeric error counts cannot break saved Speaking reports or history',()=>{
+  const scoring=require('../speaking-scoring'),{present}=require('../speaking-mock');
+  for(const type of ['ra','rs']){
+    const q={id:'saved-'+type,type,text:'one two three four',title:'Saved question'},content=scoring.exact(q,'one two three');
+    assert.equal(typeof content.errors,'number');assert(content.errors>0);
+    const a={id:'saved-attempt',status:'submitted',questions:[q],index:1,questionCount:1,responses:[{recording:{hash:'saved'},transcript:'one two three',content,azure:{status:'assessed',pronunciation:{score:5},fluency:{score:5}}}]};
+    const before=JSON.stringify(a),projection=present(a);
+    assert.equal(projection.impactFeedback.status,'complete');assert.equal(JSON.stringify(a),before);
+  }
+});
