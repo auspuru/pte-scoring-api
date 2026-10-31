@@ -62,26 +62,28 @@
   }
   function create({document:doc,identity,navigate,launch}){
     ensureAssistantPresentation(doc);
-    let plans=[],loading=null,owner='',helpTask='swt',helpProblem='',helpPlanProblem='',helpResult=null,helpHistory=[],helpNotice='',helpBusy=false,trainer=null;
+    let plans=[],loading=null,owner='',loadSerial=0,openSerial=0,loadError='',helpTask='swt',helpProblem='',helpPlanProblem='',helpResult=null,helpHistory=[],helpNotice='',helpBusy=false,trainer=null;
     function auth(){
       const value=identity?.()||{};
       return {uid:String(value.uid||'').trim().toLowerCase(),token:value.token||''};
     }
     async function api(path,body){
-      const {token}=auth();
+      const {uid,token}=auth();
       const response=await fetch('/api/interventions'+path,{method:body===undefined?'GET':'POST',cache:'no-store',
         headers:{'Content-Type':'application/json','x-session-token':token},body:body===undefined?undefined:JSON.stringify(body),
         signal:AbortSignal.timeout(20000)});
       let data={}; try{data=await response.json();}catch(_){}
+      if(auth().uid!==uid||auth().token!==token)throw Error('Account changed. Reopen My Next Steps.');
       if(!response.ok)throw Error(data.error||'Your improvement plan could not be updated.');
       return data;
     }
     async function load(force=false){
       const id=auth().uid;if(!id)return [];
       if(!force&&loading&&owner===id)return loading;
-      owner=id;
-      loading=api('').then(data=>{if(owner===id)plans=Array.isArray(data.plans)?data.plans:[];return plans;}).finally(()=>{loading=null;});
-      return loading;
+      if(owner!==id)plans=[];
+      owner=id;const ticket=++loadSerial;
+      const request=api('').then(data=>{if(owner===id&&ticket===loadSerial)plans=Array.isArray(data.plans)?data.plans:[];return plans;}).finally(()=>{if(loading===request)loading=null;});
+      loading=request;return request;
     }
     const active=()=>plans.filter(p=>!['mastered','archived'].includes(p.status));
     const doneCount=p=>(p.items||[]).filter(i=>i.status==='completed').length;
@@ -97,15 +99,15 @@
         const label=item.completionSource==='attempt_sync'?'Completed automatically':item.kind==='video'?'Watched':item.kind==='instruction'?'Reviewed':'Completed';
         return '<span class="next-step-done">'+label+'</span>';
       }
-      if(item.kind==='video')return '<button type="button" class="portal-button" data-step-start="'+esc(item.id)+'">Watch</button><button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark watched</button>';
-      if(item.kind==='instruction')return (item.url?'<button type="button" class="portal-button" data-step-start="'+esc(item.id)+'">Open resource</button>':'')+'<button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark reviewed</button>';
+      if(item.kind==='video')return '<a class="portal-button" href="'+esc(item.url)+'" target="_blank" rel="noopener noreferrer" data-step-start="'+esc(item.id)+'">Watch</a><button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark watched</button>';
+      if(item.kind==='instruction')return (item.url?'<a class="portal-button" href="'+esc(item.url)+'" target="_blank" rel="noopener noreferrer" data-step-start="'+esc(item.id)+'">Open resource</a>':'')+'<button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark reviewed</button>';
       if(item.kind==='practice_set'){
         const count=item.attemptProgress?.count||0,target=item.minimumAttempts||1;
         return '<button type="button" class="portal-button primary" data-practice-set>'+((count||item.status==='started')?'Continue practice':'Start practice')+'</button><span class="next-step-sync-note">'+count+'/'+target+' submitted · syncs automatically</span>';
       }
       if(item.kind==='question')return '<button type="button" class="portal-button primary" data-step-start="'+esc(item.id)+'">'+(item.status==='started'?'Open again':'Start question')+'</button><span class="next-step-sync-note">Completion syncs after you submit it</span>';
       if(item.kind==='practice')return '<span class="next-step-sync-note">This older practice step needs a real activity. Refresh the plan or ask your teacher to update it.</span>';
-      return (item.url?'<button type="button" class="portal-button" data-step-start="'+esc(item.id)+'">Open link</button>':'')+'<button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark reviewed</button>';
+      return (item.url?'<a class="portal-button" href="'+esc(item.url)+'" target="_blank" rel="noopener noreferrer" data-step-start="'+esc(item.id)+'">Open link</a>':'')+'<button type="button" class="portal-button primary" data-step-complete="'+esc(item.id)+'">Mark reviewed</button>';
     }
     function card(plan){
       const required=requiredCount(plan),complete=requiredDone(plan),percent=required?Math.round(complete/required*100):100;
@@ -289,7 +291,8 @@
       const host=doc.getElementById('nextStepsPane');if(!host)return;
       const current=active().slice(0,3),completed=plans.filter(p=>p.status==='mastered');
       host.innerHTML='<div class="next-steps-shell"><div class="next-steps-heading"><div><p class="portal-eyebrow">Your current focus</p><h2>My Next Steps</h2><p>Work through assigned actions. Exact portal questions complete automatically after you submit a qualifying new attempt.</p></div><span class="next-step-count">'+current.length+' active</span></div>'
-        +(current.length?'<div class="next-step-plan-list">'+current.map(card).join('')+'</div>':'<div class="next-step-empty"><span class="material-symbols-outlined">task_alt</span><h3>No assigned next steps right now</h3><p>Keep practising normally. For help with the page you are working on, open the floating AI Assistant.</p><button type="button" class="portal-button primary" data-next-practice>Go to Practice</button></div>')
+        +(loadError?'<div role="alert" class="progress-notice">'+esc(loadError)+' <button type="button" class="portal-button" data-next-retry>Retry</button></div>':'')
+        +(current.length?'<div class="next-step-plan-list">'+current.map(card).join('')+'</div>':loadError?'':'<div class="next-step-empty"><span class="material-symbols-outlined">task_alt</span><h3>No assigned next steps right now</h3><p>Keep practising normally. For help with the page you are working on, open the floating AI Assistant.</p><button type="button" class="portal-button primary" data-next-practice>Go to Practice</button></div>')
         +(completed.length?'<details class="next-step-history"><summary>Completed plans <span>'+completed.length+'</span></summary><div class="next-step-plan-list completed">'+completed.slice(0,12).map(card).join('')+'</div></details>':'')+'</div>';
       host.onclick=handleClick;
       host.oninput=e=>{if(e.target.matches?.('[data-beta-problem]'))helpProblem=e.target.value;};
@@ -315,13 +318,14 @@
       else alert(message);
     }
     async function handleClick(e){
+      if(e.target.closest('[data-next-retry]'))return open();
       const trainerButton=e.target.closest('[data-swt-trainer]');
       if(trainerButton){const planEl=trainerButton.closest('[data-plan-id]'),itemEl=trainerButton.closest('[data-item-id]');const plan=plans.find(p=>p.id===planEl?.dataset.planId),item=plan?.items?.find(i=>i.id===itemEl?.dataset.itemId);if(plan&&item)await openTrainer(plan,item);return;}
       const practiceSetButton=e.target.closest('[data-practice-set]');
       if(practiceSetButton){
         const planEl=practiceSetButton.closest('[data-plan-id]'),itemEl=practiceSetButton.closest('[data-item-id]');
         const plan=plans.find(p=>p.id===planEl?.dataset.planId),item=plan?.items?.find(i=>i.id===itemEl?.dataset.itemId);
-        if(plan&&item){await action(plan.id,item.id,'start');navigate(item.route||'practice-hub');}
+        if(plan&&item){const updated=await action(plan.id,item.id,'start');if(updated)navigate(item.route||'practice-hub');}
         return;
       }
       const quick=e.target.closest('[data-beta-prompt]');
@@ -347,9 +351,10 @@
       const plan=plans.find(p=>p.id===planEl?.dataset.planId),item=plan?.items?.find(i=>i.id===itemEl?.dataset.itemId);
       if(!plan||!item)return;
       if(start){
+        // Native anchors open resources in the original click, avoiding popup blocking after an async write.
+        if(item.url&&item.kind!=='question'){action(plan.id,item.id,'start');return;}
         const updated=await action(plan.id,item.id,'start');if(!updated)return;
         const next=updated.items.find(i=>i.id===item.id)||item;
-        if(next.url&&next.kind!=='question'){window.open(next.url,'_blank','noopener');return;}
         if(next.kind==='question'){launch?.(next,updated);return;}
       }
       if(complete)await action(plan.id,item.id,'complete');
@@ -370,10 +375,17 @@
       try{await load(true);renderDashboard();if(doc.body.dataset.section==='next-steps')render();const unread=active().find(p=>p.notificationUnread);if(showPopup&&unread)popup(unread);return plans;}
       catch(e){renderDashboard();return [];}
     }
-    async function open(){await load(true);render();renderDashboard();}
+    async function open(){
+      const user=auth(),ticket=++openSerial;loadError='';
+      const host=doc.getElementById('nextStepsPane');
+      if(host)host.innerHTML='<p role="status">Loading My Next Steps…</p>';
+      try{await load(true);}catch(e){if(ticket===openSerial&&auth().uid===user.uid&&auth().token===user.token)loadError=e.message||'My Next Steps could not load. Your plans are saved.';}
+      if(ticket!==openSerial||auth().uid!==user.uid||auth().token!==user.token)return;
+      render();renderDashboard();
+    }
     const completionListener=()=>{if(!auth().uid)return;refresh({showPopup:false});globalThis.setTimeout?.(()=>refresh({showPopup:false}),1200);};
     globalThis.addEventListener?.('pte:attempt-completed',completionListener);
-    function reset(){plans=[];owner='';loading=null;helpResult=null;helpProblem='';trainer=null;doc.getElementById('swtHighlightTrainer')?.remove();const host=doc.getElementById('nextStepsPane');if(host)host.replaceChildren();const dash=doc.getElementById('nextStepsDashboardCard');if(dash){dash.hidden=true;dash.replaceChildren();}doc.getElementById('nextStepNotification')?.remove();}
+    function reset(){plans=[];owner='';loading=null;loadSerial++;openSerial++;loadError='';helpResult=null;helpProblem='';trainer=null;doc.getElementById('swtHighlightTrainer')?.remove();const host=doc.getElementById('nextStepsPane');if(host)host.replaceChildren();const dash=doc.getElementById('nextStepsDashboardCard');if(dash){dash.hidden=true;dash.replaceChildren();}doc.getElementById('nextStepNotification')?.remove();}
     return {open,refresh,reset,plans:()=>plans.slice()};
   }
   return {create};

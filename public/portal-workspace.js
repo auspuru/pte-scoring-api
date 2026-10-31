@@ -64,6 +64,8 @@
     if(route.readingLibrary)options.readingRequest={...request,...(params.question?{practiceUid:params.question}:{})};
     if(route.speakingType)options.speakingRequest={...request,...(params.mode?{mode:params.mode==='untimed'?'untimed':'timed'}:{}),...(params.question?{questionId:params.question}:{})};
     if(route.labTab)options.labRequest={...request,...(params.question?{testId:params.question}:{})};
+    if(section==='practice'&&params.attempt)options.essayRequest={attemptId:params.attempt};
+    if(section==='swt'&&params.question)options.swtRequest={passageId:params.question,timestamp:params.attempt,draft:!params.attempt};
     return options;
   }
 

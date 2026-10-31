@@ -2,6 +2,61 @@
 const test=require('node:test'),assert=require('node:assert/strict'),express=require('express'),path=require('node:path');
 const puppeteer=require('puppeteer');
 const root=path.resolve(__dirname,'..');
+const {fixture:authFixture}=require('./helpers/auth-server');
+for(const width of [1363,390])test('Progress opens exact saved responses and Next Steps launches stable SWT questions and resources at '+width+'px',{timeout:90000},async t=>{
+ const f=await authFixture(t),username='progress-browser';
+ const registration=await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:'progress@example.test'});
+ assert.equal(registration.body.success,true);
+ const passages=(await f.request('/api/passages')).body;
+ const passage=(Array.isArray(passages)?passages:passages.passages)[0];
+ const older={text:'Older saved summary response for exact historical feedback.',timestamp:'2026-10-01T10:00:00.000Z',overall_score:65,trait_scores:{content:2,form:1,grammar:2,vocabulary:2},content_details:{},feedback:'Older saved feedback'};
+ const latest={...older,text:'Latest saved summary response must not replace the older response.',timestamp:'2026-10-03T10:00:00.000Z',overall_score:80};
+ const history={[passage.id]:[latest,older]};
+ const synced=await f.request('/api/sync/'+username,{history,scores:{[passage.id]:{...latest,__text:latest.text,__timestamp:latest.timestamp}},practiceHistory:[{id:'saved-essay',date:Date.parse('2026-10-02T10:00:00.000Z'),questionTitle:'Saved essay question',questionText:'Discuss the topic.',essayText:'The exact saved essay response.',wordCount:220,scores:{total:20}}]},registration.body.token);
+ assert.equal(synced.body.success,true);
+ const assigned=await f.request('/api/admin/interventions/'+username,{title:'SWT navigation plan',items:[{id:'assigned-swt',kind:'question',title:'Assigned SWT',engine:'swt',route:'swt',questionId:String(passage.id),requireNewAttempt:true},{id:'lesson',kind:'video',title:'SWT resource',url:f.base+'/fixture-resource'}]},null,true);
+ assert.equal(assigned.status,200);
+ await f.request('/api/interventions/'+assigned.body.plan.id+'/notification-read',{},registration.body.token);
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const page=await browser.newPage();await page.setViewport({width,height:900});const errors=[],assessmentCalls=[];
+ page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.method()==='POST'&&/\/(?:grade|score)(?:\/|$)/.test(new URL(r.url()).pathname))assessmentCalls.push(new URL(r.url()).pathname);});
+ try {
+ await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword','Synthetic-pass-123');await page.locator('#loginSubmitBtn').click();
+ await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&location.hash==='#/home');
+ async function navigate(id){
+  if(width<640&&!await page.$eval('body',e=>e.classList.contains('portal-menu-open'))){
+   const hit=await page.$eval('#portalMenuToggle',e=>{const r=e.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('button')?.id;});
+   assert.equal(hit,'portalMenuToggle','The visible Menu control must receive the pointer');
+   await page.locator('#portalMenuToggle').click();
+   await page.waitForFunction(()=>document.body.classList.contains('portal-menu-open'),{timeout:5000});
+  }
+  await page.locator('#'+id).click();
+ }
+ await navigate('nav-progress');await page.waitForSelector('[data-progress-attempt="2"]');
+ assert.equal(await page.$eval('#progressPane h3',e=>e.textContent),'Recently attempted questions');
+ assert.equal(await page.$eval('[data-progress-attempt="1"]',e=>e.textContent.includes('Saved essay question')),true);
+ assert.equal(await page.$eval('#progressPane',e=>e.textContent.includes('Task trends')),false);
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+ await page.locator('[data-progress-attempt="2"]').click();
+ await page.waitForFunction(()=>document.getElementById('swtResultsScreen')?.classList.contains('active'));
+ assert.equal(await page.$eval('#swtResultsScreen',(e,text)=>e.textContent.includes(text),older.text),true);
+ assert.equal(await page.$eval('#swtResultsScreen',(e,text)=>e.textContent.includes(text),latest.text),false);
+ await page.reload();await page.waitForFunction(()=>document.getElementById('swtResultsScreen')?.classList.contains('active'));
+ assert.equal(await page.$eval('#swtResultsScreen',(e,text)=>e.textContent.includes(text),older.text),true);
+ await navigate('nav-next-steps');await page.waitForSelector('[data-step-start="assigned-swt"]');
+ await page.locator('[data-step-start="assigned-swt"]').click();await page.waitForFunction(id=>document.body.dataset.section==='swt'&&document.getElementById('swtPracticeScreen')?.classList.contains('active')&&String(swtPassageAt(currentPassageId)?.id)===String(id),{},passage.id);
+ assert.equal(await page.evaluate(()=>swtPassageAt(currentPassageId)?.id),passage.id,'The selected stable question opens even when the client reorders passages');
+ await navigate('nav-next-steps');await page.waitForSelector('a[data-step-start="lesson"]');
+ const [resource]=await Promise.all([browser.waitForTarget(target=>target.url()===f.base+'/fixture-resource'),page.locator('a[data-step-start="lesson"]').click()]);await (await resource.page()).close();
+ await navigate('nav-practice-hub');await page.waitForFunction(()=>{const image=document.querySelector('.practice-banner.writing h3 [data-emoji="essay"] img');return image?.complete&&image.naturalWidth>0;});
+ assert.equal(await page.$eval('.practice-banner.writing h3 img',e=>e.complete&&e.naturalWidth>0),true);
+ assert.deepEqual(assessmentCalls,[],'Reviewing a saved SWT response does not re-assess it');
+ assert.deepEqual(errors,[]);
+ } catch(error) {
+  console.error('Progress browser state',JSON.stringify(await page.evaluate(()=>({section:document.body.dataset.section,hash:location.hash,menu:document.body.classList.contains('portal-menu-open'),targets:[...document.querySelectorAll('#nav-progress,#portalMenuToggle,a[data-step-start]')].map(e=>{const r=e.getBoundingClientRect(),style=getComputedStyle(e);return {tag:e.tagName,id:e.id,step:e.dataset.stepStart,x:r.x,y:r.y,width:r.width,height:r.height,display:style.display,visibility:style.visibility};})})).catch(()=>({unavailable:true}))));
+  throw error;
+ }
+});
 async function fixture(t,width){
  const app=express();app.use(express.json());const attempts=new Map();let historyReads=0,failSave=false;
  const questions=Array.from({length:30},(_,i)=>({id:'sst-'+(i+1),type:'sst',title:'Lecture '+(i+1),minutes:10,audioUrl:'/fixture.mp3'}));
