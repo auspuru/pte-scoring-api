@@ -32,7 +32,7 @@ test('Question selection preserves native graders, models, weights and timing; f
   // Report-only feedback has its own exact lock and behavioral regressions.
   assert.deepEqual(after.files['full-mock/report.js'],require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/report.js']);
   for (const file of Object.keys(before.files)) {
-    if (!['full-mock/paper.js', 'full-mock/assessment.js', 'full-mock/report.js', 'speaking-lab.js', 'public/reading-practice.js'].includes(file)) assert.deepEqual(after.files[file], before.files[file], file);
+    if (!['full-mock/paper.js', 'full-mock/assessment.js', 'full-mock/report.js', 'full-mock/adapters.js', 'full-mock/store.js', 'server.js', 'public/writing-lab-report.js', 'speaking-lab.js', 'public/reading-practice.js'].includes(file)) assert.deepEqual(after.files[file], before.files[file], file);
   }
 });
 

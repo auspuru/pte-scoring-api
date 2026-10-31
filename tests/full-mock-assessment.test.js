@@ -286,14 +286,14 @@ test('Automatic recovery survives restart and competing workers, reuses saved st
  await replacements[0].recover();await replacements[0].drain();assert.equal(calls.get(target),2);
 });
 
-test('Persistent failures stop after two automatic retries and remain visible to the admin watchdog',async t=>{
+test('Persistent failures back off through the finite unattended recovery window and remain visible on exhaustion',async t=>{
  let at=1000,calls=0;const target=paper.questions[0].question.id;
  const f=await fixture(t,{now:()=>at,adapters:{assess:async q=>{if(q.id!==target)return full(q);calls++;return{status:'failed',reason:'content-unavailable'};}}});
  await f.engine.request('alice',f.id);await f.engine.drain();
- for(const delay of [30000,120000]){const s=await f.state();assert.equal(s.assessment.recovery.nextAt,at+delay);at+=delay;await f.engine.recover();await f.engine.drain();}
- const held=await f.state();assert.equal(calls,3);assert.equal(held.assessment.recovery.status,'exhausted');assert.equal(held.assessment.status,'needs-attention');
+ for(const delay of require('../mock-recovery-policy').DELAYS){const s=await f.state();assert.equal(s.assessment.recovery.nextAt,at+delay);at+=delay;await f.engine.recover();await f.engine.drain();}
+ const held=await f.state();assert.equal(calls,9);assert.equal(held.assessment.recovery.status,'exhausted');assert.equal(held.assessment.status,'needs-attention');
  assert.equal(require('../mock-test-alert-sources').snapshot('full',held,{paper}).held,true);
- at+=3600000;await f.engine.recover();await f.engine.drain();assert.equal(calls,3);assert.equal((await f.engine.results('alice',f.id)).assessedCount,64);
+ at+=3600000;await f.engine.recover();await f.engine.drain();assert.equal(calls,9);assert.equal((await f.engine.results('alice',f.id)).assessedCount,64);
 });
 
 test('Automatic recovery skips uncertain requests and old held attempts while processing safe failures',async t=>{
@@ -306,6 +306,7 @@ test('Automatic recovery skips uncertain requests and old held attempts while pr
  }}});
  await f.engine.request('alice',f.id);await f.engine.drain();at+=30000;available=true;await f.engine.recover();await f.engine.drain();
  const state=await f.state();assert.equal(calls.get(uncertain),1);assert.equal(calls.get(safe),2);assert.equal(state.assessment.recovery.status,'held');
+ await assert.rejects(f.engine.request('alice',f.id,{retry:true}),{status:409});assert.equal(require('../full-mock/report').buildReport(paper,await f.state()).retryAvailable,false);assert.equal(calls.get(uncertain),1);
  await f.store.update('alice',f.id,state=>{delete state.assessment.recovery;return state;});
  at+=3600000;await f.engine.recover();await f.engine.drain();assert.equal(calls.get(uncertain),1);
 });
@@ -344,4 +345,21 @@ test('Standalone speaking modes preserve current Full Mock snapshots and every c
  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
  await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);const marked=structuredClone((await f.state()).assessment.items);
  await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal(calls,65);assert.deepEqual((await f.state()).assessment.items,marked);assert.deepEqual((await f.state()).assessment.snapshot,original);
+});
+
+test('Unattended recovery accepts the exact deployed snapshot and preserves its confirmed marks',async t=>{
+ const f=await fixture(t),original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/unattended-recovery-compatible-sources.json')};
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await f.engine.recover();await f.engine.drain();
+ assert.equal((await f.engine.results('alice',f.id)).ready,true);
+ const before=await f.state();assert.deepEqual(before.assessment.snapshot,original);
+ await f.engine.recover();await f.engine.drain();assert.deepEqual((await f.state()).assessment.items,before.assessment.items);
+});
+
+test('A saved submission resumes assessment after a crash before the first job was requested',async t=>{
+ const f=await fixture(t);
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(f.engine.snapshot);return state;});
+ assert.equal((await f.state()).assessment.status,'not-requested');
+ assert((await f.store.assessmentQueue()).some(row=>row.id===f.id&&row.status==='not-requested'));
+ await f.engine.recover();await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
 });

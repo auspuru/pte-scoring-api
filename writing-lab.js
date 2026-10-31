@@ -90,7 +90,8 @@ function reconcile(a, now = Date.now()) {
   return a;
 }
 function present(a) {
-  const result = { ...a, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results, a) : null };
+  const {assessmentRecovery,...visible}=a;
+  const result = { ...visible, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results, a) : null };
   result.overallFeedback = overall.view(a);
   result.impactFeedback = require('./mock-feedback').lab(a, result.report || undefined);
   if (a.status !== 'submitted') result.results = a.questions.map(() => null);
@@ -103,13 +104,14 @@ function present(a) {
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation } : {}) }));
   return result;
 }
-function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, mockGraders = null, overallGrader = null, onMockError = async()=>{}, speakingAllowed = require('./speaking-access').allowed }) {
+function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, mockGraders = null, overallGrader = null, onMockError = async()=>{}, speakingAllowed = require('./speaking-access').allowed, now = Date.now }) {
   const router = express.Router(), store = createStore(pool, directory), pending = new Map();
-  const reviewer = overall.createReviewer({ store, callModel:overallGrader });
+  const reviewer = overall.createReviewer({ store, callModel:overallGrader, now });
   const retryableSwt = (result,question) => !!(swtGrader && question?.type === 'swt' && result
     && (result.score_provisional === true || result.needs_semantic_review === true));
-  const retryableResult = (result,question,attempt) => retryableSwt(result,question)
+  const retryableResult = (result,question,attempt) => (attempt?.kind==='mock' && !!result && (result.score_provisional===true || result.needs_semantic_review===true)) || retryableSwt(result,question)
     || (report.isWritingMock(attempt) && report.needsReview(result,question));
+  const recovery = require('./writing-lab-recovery').createRecovery({store,now,isConfirmed:(a,i)=>!!a.results[i]&&!retryableResult(a.results[i],a.questions[i],a)});
   // A submitted answer is immutable. Assess outside the answer-save transaction,
   // and share the same job with the results page to avoid duplicate model calls.
   const queue = [], failedAt = new Map();
@@ -131,6 +133,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
         return;
       }
       queue.push(async () => {
+        let receipt;
         try {
           // Reload after waiting in the queue: a review request may have saved it.
           const current = await store.update(uid, a.id, value => {
@@ -141,6 +144,10 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
           let result = current.results[index];
           if (retryableResult(result,current.questions[index],current)) result = null;
           if (!result) {
+            if(current.kind==='mock'){
+              receipt=await recovery.claim(uid,a.id,index);
+              if(!receipt){const saved=await store.get(uid,a.id);if(saved?.results[index]&&!retryableResult(saved.results[index],saved.questions[index],saved))return resolve(saved.results[index]);throw Object.assign(Error('Assessment will continue automatically.'),{status:503,retryable:false});}
+            }
             const question = current.questions[index];
             const graders = current.kind === 'mock' && mockGraders ? mockGraders : {callModel,essayGrader,swtGrader};
             if (question.type === 'essay' && graders.essayGrader) {
@@ -161,13 +168,15 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
               result = await scoring.grade(question, current.answers[index], graders.callModel);
             }
           }
-          const updated = await store.update(uid, a.id, value => {
+          const updated = receipt ? await recovery.save(uid,a.id,index,receipt,result) : await store.update(uid, a.id, value => {
             if (!value) throw bad('Attempt not found.', 404);
             if (!value.results[index] || retryableResult(value.results[index],value.questions[index],value)) value.results[index] = result;
             return value;
           });
-          failedAt.delete(key); resolve(updated.results[index]);
-        } catch (error) { failedAt.set(key, Date.now()); reject(error); }
+          failedAt.delete(key);
+          if(updated.status==='submitted'&&updated.questions.every((q,i)=>updated.results[i]&&!retryableResult(updated.results[i],q,updated)))void reviewer.ensure(uid,updated).catch(()=>{});
+          resolve(updated.results[index]);
+        } catch (error) { if(receipt)await recovery.fail(uid,a.id,index,receipt,error).catch(()=>{}); failedAt.set(key, now()); reject(error); }
         finally { pending.delete(key); }
       });
     });
@@ -184,10 +193,12 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     return task;
   }
   function assessSubmitted(uid, a) {
-    reviewer.ensure(uid,a).catch(error => console.warn('[writing-mock-overall]', error.message));
+    if(a.questions.every((q,i)=>a.results[i]&&!retryableResult(a.results[i],q,a)))reviewer.ensure(uid,a).catch(()=>console.warn('[writing-mock-overall] Saved feedback will recover automatically.'));
     a.questions.forEach((q, index) => {
       const key = uid + ':' + a.id + ':' + index;
-      if (a.completed[index] && !a.results[index] && Date.now() - (failedAt.get(key) || 0) > 60000)
+      const saved=a.assessmentRecovery?.[index];
+      if(saved&&(['held','exhausted'].includes(saved.status)||saved.nextAt>now()||saved.status==='calling'&&saved.expiresAt>now()))return;
+      if (a.completed[index] && (!a.results[index] || a.results[index].score_provisional===true || a.results[index].needs_semantic_review===true) && now() - (failedAt.get(key) || -Infinity) > 30000)
         assess(uid, a, index).catch(error => console.warn('[writing-lab] background assessment', error.message));
     });
   }
@@ -332,6 +343,18 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     res.set('Cache-Control','no-store'); res.json(feedback || {status:'processing'});
   }));
   app.use('/api/writing-lab', router);
-  return { store };
+  let recoveryTimer, recoveryTask, stopped=false, cursor='';
+  function recover(){
+    if(stopped)return Promise.resolve();if(recoveryTask)return recoveryTask;
+    recoveryTask=(async()=>{
+      const rows=await store.scanForScoring(cursor,20,{since:now()-14*86400000});cursor=rows.length?rows.at(-1).data.id:'';
+      for(const row of rows){if(stopped)break;try{let a=row.data;if(a.kind!=='mock')continue;
+        if(a.status==='active'&&a.deadline!=null&&now()>=a.deadline)a=await store.update(row.username,a.id,value=>reconcile(value,now()));
+        assessSubmitted(row.username,a);
+      }catch{console.warn('[writing-lab] Saved mock recovery will be checked again.');}}
+    })().finally(()=>{recoveryTask=null;});return recoveryTask;
+  }
+  const waitForJobs=async()=>{await Promise.allSettled([...pending.values()]);await reviewer.wait();};
+  return { store, recover, waitForJobs, async start(){if(recoveryTimer)return;stopped=false;recoveryTimer=setInterval(()=>recover().catch(()=>console.warn('[writing-lab] Background recovery will resume.')),15000);recoveryTimer.unref?.();await recover().catch(()=>console.warn('[writing-lab] Background recovery will resume.'));}, async stop(){stopped=true;clearInterval(recoveryTimer);recoveryTimer=null;await recoveryTask?.catch(()=>{});await waitForJobs();} };
 }
 module.exports = { installWritingLab, advance, reconcile, present, predictionMocks };

@@ -60,7 +60,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
       let value, error;
       try { value = await call(); if (!verify(value)) throw Error('Unverified provider output'); }
       catch (caught) { error = caught; }
-      stages[name] = error ? { status: 'failed', attemptedRun: run, uncertain: !!error.uncertain } : { status: 'complete', attemptedRun: run, value };
+      stages[name] = error ? { status: 'failed', attemptedRun: run, uncertain: require('../mock-recovery-policy').failure(error).uncertain, failureCode:require('../mock-recovery-policy').failure(error).code, recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked } : { status: 'complete', attemptedRun: run, value };
       await checkpoint(stages);
       return error ? null : value;
     }
@@ -95,7 +95,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
               descriptor:typeof trait.descriptor === 'string' ? trait.descriptor.slice(0, 2000) : '', coaching:typeof trait.coaching === 'string' ? trait.coaching.slice(0, 3000) : '',
               words:Array.isArray(trait.words) ? trait.words.filter(word => word && typeof word.word === 'string').slice(0, 20).map(word => ({ word:word.word.slice(0, 200), errorType:String(word.errorType || '').slice(0, 80) })) : [] };
         }
-        stages.delivery = { status: Object.keys(traits).length === 2 ? 'complete' : 'partial', attemptedRun: run, traits, uncertain: !!error?.uncertain };
+        stages.delivery = { status: Object.keys(traits).length === 2 ? 'complete' : 'partial', attemptedRun: run, traits, uncertain: error ? require('../mock-recovery-policy').failure(error).uncertain : false, ...(error?{failureCode:require('../mock-recovery-policy').failure(error).code,recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked}:{}) };
         await checkpoint(stages);
       }
       if (stages.delivery?.status !== 'complete') return failed('delivery-unavailable');

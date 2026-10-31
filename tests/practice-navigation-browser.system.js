@@ -123,3 +123,15 @@ for(const width of [1363,390,320])test('Listening save failure blocks Next and e
  assert.equal(await page.$eval('[data-practice-move="-1"]',n=>n.disabled),true);
  assert.equal(await page.$eval('#answer',n=>n.value),'Keep this answer through a connection failure.');assert.equal(f.attempts.size,1);
 });
+
+for(const width of [1363,390])test('A submitted Listening mock publishes background results without a retry click at '+width+'px',{timeout:30000},async t=>{
+ const f=await fixture(t,width),{page}=f,id='background-listening';
+ const a={id,kind:'mock',module:'listening',title:'Background listening recovery',status:'submitted',startedAt:Date.now(),index:0,questions:[{id:'saved-wfd',type:'wfd',text:'The original sentence remains saved.',title:'Saved dictation',sample:'The original sentence remains saved.',minutes:2,audioUrl:'/fixture.mp3'}],answers:['The original sentence remains saved.'],completed:[{reason:'Submitted'}],results:[null],playback:[null],deadline:null,serverNow:Date.now()};
+ f.attempts.set(id,a);const assessmentRequests=[];page.on('request',r=>{if(r.method()==='POST'&&r.url().includes('/score/'))assessmentRequests.push(r.url());});
+ await page.evaluate(id=>window.WritingLab.open({attemptId:id,tab:'mocks',module:'listening',requestId:'background-fixture'}),id);
+ await page.waitForFunction(()=>document.getElementById('scoring-status')?.textContent.includes('automatically'));
+ a.results=[{total:5,maximum:5,maxima:{spelling:5},scores:{spelling:5},feedback:{content:'All original words are correct.'},strengths:[],improvements:[],errors:[]}];
+ await page.waitForFunction(()=>document.querySelector('.score-total')?.textContent.startsWith('90'),{timeout:12000});
+ assert.equal(await page.$eval('.results',e=>e.textContent.includes('The original sentence remains saved.')),true);
+ assert.deepEqual(assessmentRequests,[]);
+});

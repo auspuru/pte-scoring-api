@@ -132,6 +132,7 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
       const value = await fn(existing);
       if (value) {
         await fs.mkdir(dir, { recursive: true });
+        if(table==='writing_lab_attempts')await fs.writeFile(path.join(dir,'owner'),uid,{mode:0o600});
         const tmp = file + '.' + randomUUID() + '.tmp';
         await fs.writeFile(tmp, JSON.stringify(value), { mode: 0o600 });
         await fs.rename(tmp, file);
@@ -174,8 +175,14 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
     const row=(await pool.query(`SELECT data->'questions'->($3::int) AS question,data->'responses'->($3::int) AS response,data->'assessmentProfile' AS profile FROM ${table} WHERE username=$1 AND id=$2`,[uid,id,index])).rows[0];return row||null;
   }
   // Cursor scanning prevents a slow/held attempt from starving later mocks.
-  async function scanForScoring(cursor='',limit=20){
-    await initialise();if(table!=='speaking_mock_attempts')return[];
+  async function scanForScoring(cursor='',limit=20,{since=0}={}){
+    await initialise();
+    if(table==='writing_lab_attempts'){
+      if(pool)return(await pool.query(`SELECT username,data FROM writing_lab_attempts WHERE id::text>$1 AND data->>'kind'='mock' AND data->>'status' IN ('active','submitted') AND CASE WHEN jsonb_typeof(data->'startedAt')='number' THEN (data->>'startedAt')::numeric ELSE 0 END >= $3 ORDER BY id LIMIT $2`,[cursor,limit,since])).rows;
+      const rows=[];for(const dir of await fs.readdir(directory,{withFileTypes:true})){if(!dir.isDirectory())continue;let uid;try{uid=await fs.readFile(path.join(directory,dir.name,'owner'),'utf8');}catch(e){if(e.code==='ENOENT')continue;throw e;}if(createHash('sha256').update(uid).digest('hex')!==dir.name)continue;for(const name of await fs.readdir(path.join(directory,dir.name))){if(!name.endsWith('.json')||name.slice(0,-5)<=cursor)continue;const a=JSON.parse(await fs.readFile(path.join(directory,dir.name,name),'utf8'));if(a.kind==='mock'&&Number(a.startedAt||0)>=since&&['active','submitted'].includes(a.status))rows.push({username:uid,data:a});}}
+      return rows.sort((a,b)=>a.data.id.localeCompare(b.data.id)).slice(0,limit);
+    }
+    if(table!=='speaking_mock_attempts')return[];
     if(pool)return(await pool.query(`SELECT username,${mockResultsProjection} AS data FROM ${table} WHERE id::text>$1 AND data->>'status' IN ('active','submitted') AND COALESCE(data->'assessment'->>'status','')<>'ready' AND (data->'assessmentProfile'->>'mode'='progressive-v1' OR data->'grading'->>'status' IN ('pending','processing')) ORDER BY id LIMIT $2`,[cursor,limit])).rows;
     const values=[];for(const dir of await fs.readdir(directory,{withFileTypes:true})){if(!dir.isDirectory())continue;for(const f of await fs.readdir(path.join(directory,dir.name))){if(!f.endsWith('.json')||f.slice(0,-5)<=cursor)continue;const a=JSON.parse(await fs.readFile(path.join(directory,dir.name,f),'utf8'));if(a.assessmentProfile?.owner&&a.grading?.status!=='complete')values.push({username:a.assessmentProfile.owner,data:a});}}
     return values.sort((a,b)=>a.data.id.localeCompare(b.data.id)).slice(0,limit);

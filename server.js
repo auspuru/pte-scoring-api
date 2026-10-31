@@ -6429,7 +6429,7 @@ const speakingMock = require('./speaking-mock').installSpeakingMock(app, {
   pool:pgPool,directory:path.join(DATA_DIR,'speaking-mock'),
   verifyToken:token=>verifySessionToken(token)||verifyImpersonationToken(token),
   getAccount:getPracticeAccount,callModel:mockContent.speaking,contentModel:mockContent.configuration.model,
-  backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'
+  backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING!=='false'
 });
 const speakingAlertTransport=require('./speaking-alert-mailer').createAlertMailer({nodemailer});
 async function writingContentModel(prompt) {
@@ -6578,6 +6578,7 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
     await Promise.all([speakingLab.store.initialise(), writingLab.store.initialise(), speakingMock.store.initialise(), fullMock.store.initialise()]);
     await speakingMock.start();
     fullMock.start();
+    await writingLab.start();
     await speakingAlerts.start();
     await mockTestAlerts.start();
     await academyAzure.start();
@@ -6661,6 +6662,7 @@ installGracefulShutdown(httpServer, {
     await academyAzure.stop();
     await speakingMock.stop();
     await fullMock.stop();
+    await writingLab.stop();
     if (browserStarting) await browserStarting.catch(() => {});
     await Promise.all([
       browserInstance ? browserInstance.close() : Promise.resolve(),

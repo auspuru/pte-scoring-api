@@ -587,7 +587,7 @@
   }
   const retryableSwt = index => attempt?.questions[index]?.type==='swt'
     && (attempt.results[index]?.score_provisional===true || attempt.results[index]?.needs_semantic_review===true);
-  const retryableAssessment = index => retryableSwt(index) || (report.isWritingMock(attempt) && report.needsReview(attempt.results[index],attempt.questions[index]));
+  const retryableAssessment = index => retryableSwt(index) || (attempt?.kind==='mock' && report.needsReview(attempt.results[index],attempt.questions[index]));
   const writingOverview = () => attempt?.kind==='mock' && attempt.module!=='listening'
     && attempt.questions.every(q=>['swt','essay','sst','wfd'].includes(q.type));
   function overallHTML() {
@@ -600,26 +600,30 @@
         '<h3>Focus on next</h3><ol>'+points(feedback.nextSteps)+'</ol><details><summary>Review of all '+feedback.questionCount+' questions'+(feedback.unansweredCount?' · '+feedback.unansweredCount+' unanswered':'')+'</summary>'+feedback.coverage.map(q=>'<div><h3><a href="#review-'+q.index+'">Q'+(q.index+1)+'. '+esc(q.title)+'</a>'+(q.status==='unanswered'?' · Unanswered':'')+'</h3><p>'+esc(q.observation)+'</p>'+(q.quote?'<blockquote>'+esc(q.quote)+'</blockquote>':'')+'</div>').join('')+'</details>';
     } else {
       const unavailable=feedback?.status==='unavailable';
-      content='<p class="muted" role="status">'+(unavailable?'Overall feedback could not be completed. Your answers and individual assessments are saved.':'Preparing feedback for the complete mock, including every submitted or unanswered question…')+'</p>'+((unavailable||overallPollCount>=36)?'<button class="secondary" id="retry-overall-feedback">'+(unavailable?'Retry overall feedback':'Check feedback again')+'</button>':'');
+      content='<p class="muted" role="status">'+(unavailable?'Overall feedback is delayed. Your answers are saved; recovery continues automatically when possible.':'Preparing feedback for the complete mock, including every submitted or unanswered question…')+'</p>'+((unavailable||overallPollCount>=36)?'<button class="secondary" id="retry-overall-feedback">'+(unavailable?'Retry overall feedback':'Check feedback again')+'</button>':'');
     }
     return '<article class="review-card overall-feedback" aria-labelledby="writing-overall-title"><h2 id="writing-overall-title">Overall writing feedback</h2>'+content+'</article>';
   }
   function bindOverall() {
     clearTimeout(overallTimer);
     document.getElementById('retry-overall-feedback')?.addEventListener('click',()=>refreshOverall(true));
-    if(!writingOverview() || attempt.overallFeedback?.status==='complete' || attempt.overallFeedback?.status==='unavailable')return;
+    if(attempt?.kind!=='mock' || attempt.status!=='submitted' || (report.summarize(attempt.questions,attempt.results,attempt).complete && (!writingOverview() || attempt.overallFeedback?.status==='complete')))return;
     if(overallPollId!==attempt.id){overallPollId=attempt.id;overallPollCount=0;}
-    if(overallPollCount<36)overallTimer=setTimeout(()=>refreshOverall(false),5000);
+    overallTimer=setTimeout(()=>refreshOverall(false),overallPollCount<36?5000:30000);
   }
   async function refreshOverall(retry) {
-    if(!workspaceVisible || !writingOverview() || attempt.status!=='submitted' || overallPending.has(attempt.id))return;
+    if(!workspaceVisible || attempt?.kind!=='mock' || attempt.status!=='submitted' || overallPending.has(attempt.id))return;
     const id=attempt.id, serial=navigationSerial, ownerToken=token();
     overallPending.add(id); overallPollCount++;
     const button=document.getElementById('retry-overall-feedback');if(button)button.disabled=true;
     try {
       const value=await api('/attempts/'+id+(retry?'/overall-feedback':''),retry?{}:undefined);
       if(attempt?.id!==id || navigationSerial!==serial || token()!==ownerToken || !workspaceVisible)return;
+      const validResults=!retry&&Array.isArray(value.results)&&value.results.length===attempt.questions.length;
+      const changed=validResults&&JSON.stringify(attempt.results)!==JSON.stringify(value.results);
+      if(validResults)attempt.results=value.results;
       attempt.overallFeedback=retry?value:value.overallFeedback;
+      if(changed)renderResults();
       if(retry)overallPollCount=0;
     } catch(e) {
       if(attempt?.id===id && navigationSerial===serial && token()===ownerToken)attempt.overallFeedback={status:'unavailable'};
@@ -662,7 +666,8 @@
     questionChanged();
     const overallTarget=document.getElementById('overall-feedback');
     if(overallTarget){overallTarget.innerHTML=overallHTML();bindOverall();}
-    if(attempt.questions.some((q,i)=>retryableAssessment(i)) && !grading.has(attempt.id)) {
+    if(attempt.kind==='mock'&&!scored){const status=document.getElementById('scoring-status');if(status)status.textContent='Preparing your results. Your answers are saved and assessment continues automatically. You may leave and return later.';}
+    else if(attempt.questions.some((q,i)=>retryableAssessment(i)) && !grading.has(attempt.id)) {
       const status=document.getElementById('scoring-status');
       if(status) status.innerHTML='Some assessments need review. <button class="secondary" id="retry-scores">Request a complete assessment</button>';
       document.getElementById('retry-scores')?.addEventListener('click',scoreRemaining);

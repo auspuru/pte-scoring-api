@@ -94,7 +94,8 @@ test('Objective interfaces use native controls, preserve answers and display rea
 test('Each complete listening paper saves, resumes, locks answers and returns all eight feedback groups',async t=>{
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'listening-mock-'));
   const app=express();app.use(express.json());let modelCalls=0;
-  const {store}=installWritingLab(app,{directory,verifyToken:key=>key==='tester'?'tester':null,getAccount:async()=>({}),callModel:async()=>{modelCalls++;throw Error('Use local summary fallback in test');}});
+  const service=installWritingLab(app,{directory,verifyToken:key=>key==='tester'?'tester':null,getAccount:async()=>({}),callModel:async()=>{modelCalls++;return{scores:{content:4,form:2,grammar:2,vocabulary:2,spelling:2},formInvalid:false,feedback:{content:'Relevant',form:'Valid',grammar:'Clear',vocabulary:'Appropriate',spelling:'Correct'},strengths:['Relevant summary'],improvements:[],errors:[]};}});
+  const {store}=service;
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
   t.after(async()=>{await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
   const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab',headers={'Content-Type':'application/json','x-session-token':'tester'};
@@ -109,13 +110,13 @@ test('Each complete listening paper saves, resumes, locks answers and returns al
       if(i===3){const resumed=await request('/attempts/'+id);assert.equal(resumed.deadline,deadline);assert.equal(resumed.answers[3],correct(m.questions[3]));assert(resumed.playback[3].finished);}
     }
     assert.equal(a.status,'submitted');
-    for(let i=0;i<m.questions.length;i++)if(!a.results[i]||i===1)await request('/attempts/'+id+'/score/'+i,{});
+    await service.recover();await service.waitForJobs();
     a=await request('/attempts/'+id);assert(a.report.complete);assert.equal(a.report.byType.length,8);
     for(const group of a.report.byType.filter(g=>g.type!=='sst'))assert.equal(group.total,group.maximum,group.type);
     const saved=a.answers[1];a=await request('/attempts/'+id+'/answer',{index:1,text:'tamper',revision:2,next:true});assert.equal(a.answers[1],saved);
     assert.equal((await store.list('tester')).find(row=>row.id===id).module,'listening');
   }
-  assert.equal(modelCalls,6,'Only the three SST responses can call the existing model scorer (two bounded attempts each).');
+  assert.equal(modelCalls,3,'Each confirmed SST assessment is called once; objective answers never call the model.');
 });
 test('Missing-word narration omits the answer and appends a real audible cue',async t=>{
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'listening-cue-'));

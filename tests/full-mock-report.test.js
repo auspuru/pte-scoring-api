@@ -49,7 +49,7 @@ test('Incomplete, stale and review-only assessments keep affected indices pendin
   report = reports.buildReport(paper, state); assert.equal(report.items[0].transcript, ''); assert.equal(report.items[0].feedback.criteria.length, 0);
   first.inputHash = inputHash(state.responses[1]); first.status = 'pending'; first.reason = 'late-recording'; delete first.result;
   job.status = 'assessed'; delete job.reason;
-  report = reports.buildReport(paper, state); assert.equal(report.items[0].assessment.label, 'Teacher review required'); assert.equal(report.retryAvailable, false);
+  report = reports.buildReport(paper, state); assert.equal(report.items[0].assessment.label, 'Recording needs recovery'); assert.equal(report.retryAvailable, false);
 });
 test('Practice priorities use verified native fractions, and late recovered text remains separate from the scored answer', () => {
   const state = complete(), candidate = paper.questions.find(row => row.question.type === 'essay'), index = paper.questions.indexOf(candidate) + 1, response = state.responses[index];

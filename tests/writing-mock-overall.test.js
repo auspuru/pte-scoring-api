@@ -13,7 +13,7 @@ const bank = require('../content/writing-lab.json');
 function attempt() {
   const questions = structuredClone(bank.mocks[0].questions);
   return { id:randomUUID(), kind:'mock', module:'writing', title:'Saved mock', status:'submitted', questions,
-    answers:questions.map(q => q.sample), results:questions.map(() => ({ total:0, feedback:'OLD FEEDBACK NEVER SENT' })),
+    answers:questions.map(q => q.sample), results:questions.map(q => ({ total:0, maximum:require('../public/writing-lab-report').maximumFor(q), feedback:'OLD FEEDBACK NEVER SENT' })),
     completed:questions.map(() => ({reason:'Submitted'})), deadline:null, index:6 };
 }
 function feedback(a) {
@@ -67,7 +67,7 @@ test('Saved mock review is deduplicated, persists across reloads and is independ
   assert.equal(view.status,'complete');assert.equal(view.coverage.length,7);assert.equal(view.fingerprint,undefined);
   assert.deepEqual(saved.results,a.results);
   await reviewer.ensure('tester',saved);assert.equal(calls,1);
-  saved.results[0].total=8;assert.equal(overall.view(saved).status,'complete');
+  saved.results[0].total=8;assert.equal(overall.view(saved).status,'processing','Changed confirmed marks invalidate contribution-based feedback');
   saved.answers[0]+=' Changed answer.';assert.equal(overall.view(saved).status,'processing');
   saved.status='active';assert.equal(present(saved).overallFeedback,null);
 });
@@ -81,7 +81,7 @@ test('All blank and legacy three-question mocks are fully accounted for without 
   assert.equal(overall.eligible({...a,module:'listening'}),false);
   assert.equal(overall.eligible({...a,kind:'sst'}),false);
 });
-test('Failed providers stay unavailable without automatic paid retries; explicit retry can recover', async t => {
+test('Failed feedback waits through its persisted cooldown; a deliberate retry respects the minimum delay', async t => {
   const {store}=await setup(t),a=attempt();let calls=0;
   await store.update('tester',a.id,()=>a);
   const reviewer=overall.createReviewer({store,callModel:async current=>{if(++calls===1)throw Error('Provider unavailable');return feedback(current);}});

@@ -77,3 +77,27 @@ test('an old GPT-only hold is retired and saved Azure marks publish without eith
   await jobs.jobs.enqueue({id:jobId,owner:'student',groupId:a.id,inputHash:hash({recording:record.hash,question:a.questions[i]}),data:{index:i,recordingHash:record.hash,questionHash:hash(a.questions[i]),patch:{azure:delivery()},stages:{gpt:{status:'needs_attention',failure:'uncertain_provider_outcome'},azure:{status:'ready'}}}});
   const row=await jobs.jobs.claim();await jobs.jobs.save(row,row.data,{status:'needs_attention'});await jobs.ensure('student',a);await jobs.wait();const saved=await store.get('student',a.id);assert.equal(saved.assessment.status,'ready');assert.equal(calls,0);assert.equal((await jobs.jobs.get('student',jobId)).data.stages.gpt.status,'retired');assert.equal(report.summarize(saved).openai,undefined);
 });
+
+test('A held transient Speaking stage recovers after cooldown without an administrator or repeated confirmed work',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'automatic-speaking-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
+ const store=createStore(null,directory,{table:'speaking_mock_attempts'}),a=fixture(),i=a.questions.findIndex(q=>q.type==='rs'),record=recording();
+ a.responses[i]={recording:record,transcript:'A previously transcribed response.',content:{total:3,maximum:3,scoringMode:'ai'}};await store.update('student',a.id,()=>a);
+ let at=1000,calls=0;const make=()=>createMockJobs({directory,store,now:()=>at,assessAzure:async()=>{calls++;return delivery();},transcribe:()=>assert.fail('Reuse transcript'),callModel:()=>assert.fail('Reuse confirmed content')});
+ let jobs=make();const jobId=require('../speaking-mock-jobs').identity(a,i),hash=require('../scoring-jobs').hash;
+ await jobs.jobs.enqueue({id:jobId,owner:'student',groupId:a.id,inputHash:hash({recording:record.hash,question:a.questions[i]}),data:{index:i,recordingHash:record.hash,questionHash:hash(a.questions[i]),patch:{...a.responses[i]},stages:{azure:{status:'needs_attention',failure:503,attempts:3}}}});
+ const row=await jobs.jobs.claim();await jobs.jobs.save(row,row.data,{status:'needs_attention'});await jobs.ensure('student',a);await jobs.wait();assert.equal(calls,0);await jobs.stop();
+ at+=600001;jobs=make();t.after(()=>jobs.stop());await jobs.recover();await jobs.wait();
+ const result=await store.get('student',a.id);assert.equal(result.assessment.status,'ready');assert.equal(calls,1);assert.deepEqual(result.responses[i].content,a.responses[i].content);
+ await jobs.recover();await jobs.wait();assert.equal(calls,1);
+});
+
+for(const mode of ['billing','insufficient-audio'])test('Delayed Speaking recovery does not repeat a held '+mode+' assessment',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'held-speaking-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
+ const store=createStore(null,directory,{table:'speaking_mock_attempts'}),a=fixture(),i=a.questions.findIndex(q=>q.type==='rs'),record=recording();
+ a.responses[i]={recording:record,transcript:'Saved transcript.',content:{total:3,maximum:3,scoringMode:'ai'}};await store.update('student',a.id,()=>a);let at=1000,calls=0;
+ const jobs=createMockJobs({directory,store,now:()=>at,assessAzure:async()=>{calls++;return delivery();}});t.after(()=>jobs.stop());const jobId=require('../speaking-mock-jobs').identity(a,i),hash=require('../scoring-jobs').hash;
+ const azure=mode==='insufficient-audio'?{deliveryEvidence:{sufficient:false}}:undefined;
+ await jobs.jobs.enqueue({id:jobId,owner:'student',groupId:a.id,inputHash:hash({recording:record.hash,question:a.questions[i]}),data:{index:i,recordingHash:record.hash,questionHash:hash(a.questions[i]),patch:{...a.responses[i],...(azure?{azure}:{})},stages:{azure:{status:'needs_attention',failure:mode==='billing'?429:'validation',...(mode==='billing'?{detail:{code:'insufficient_quota'}}:{}),attempts:3}}}});
+ const row=await jobs.jobs.claim();await jobs.jobs.save(row,row.data,{status:'needs_attention'});at+=600001;
+ await jobs.ensure('student',a);await jobs.wait();assert.equal(calls,0);assert.equal((await jobs.jobs.get('student',jobId)).status,'needs_attention');
+});
