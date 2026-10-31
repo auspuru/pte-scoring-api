@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "762c6c1ba1949320c118b5530b3567ace8e927ac",
+  "baseCommit": "d2ceb8fc2475c452973f78b30399ea2a1152cab1",
   "checkedAt": "2026-10-31",
-  "scope": "Account access and single-use recovery. Frozen Full Mock graders, providers, marks and snapshots retain exact source compatibility pins.",
+  "scope": "Prediction question replacement only: versioned paper selection and retained-attempt compatibility. All native graders, models, weights, timing, UI and navigation sources unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "4c1dd54a158e7bc2000ef3599ba6912902a7583e83c06b88abca00ce6a289270",
+        "sha256": "b017488cf132d4c0970fe456fe2fe591a0a13b753800f14f22bca36e2d937c5c",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -108,7 +108,7 @@
         "version": null
       },
       "full-mock/paper.js": {
-        "sha256": "042f2b4cc8c48b359f8514804c22f9717d81c9c381429a8645df53fb659a0ce7",
+        "sha256": "b2d7c30ef08994db7e01aa71a644243ebe66a1b0d10a0590099d03c8f72de8e6",
         "version": null
       },
       "full-mock/profiles.js": {

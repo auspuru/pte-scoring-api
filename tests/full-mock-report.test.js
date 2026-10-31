@@ -118,7 +118,8 @@ test('Student reports show results and coaching without exposing calculation det
   assert(document.querySelector('[data-fm="retry"]').hasAttribute('hidden'));
   for (const markup of [renderer.page(report), renderer.history([reports.summary(paper, complete())]), ...report.items.map(renderer.review)]) {
     assert(!markup.includes(marker));
-    assert(!/How to read this report|native marks|Index policy|Overall uses|mark fractions|holistic|separate point deductions/i.test(markup));
+    // A prediction passage may use "holistic" as ordinary subject vocabulary.
+    assert(!/How to read this report|native marks|Index policy|Overall uses|mark fractions|holistic (?:score|scoring|estimate|assessment|mark)|separate point deductions/i.test(markup));
   }
 });
 

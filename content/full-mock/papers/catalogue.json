@@ -11,6 +11,18 @@
       "scoredQuestionCount": 65,
       "taskTypeCount": 22,
       "file": "content/full-mock/papers/full-mock-1.v1.json"
+    },
+    {
+      "id": "full-mock-1",
+      "version": 2,
+      "sha256": "c76c0ea41112ed9d3b2ec12782fb05c6c26c0f9a4ed323ed26bde715cff0bbf2",
+      "title": "IPT Brisbane — Full Mock 1",
+      "status": "frozen-draft",
+      "available": false,
+      "scoredQuestionCount": 65,
+      "taskTypeCount": 22,
+      "file": "content/full-mock/papers/full-mock-1.v2.json"
     }
-  ]
+  ],
+  "activeVersion": 2
 }

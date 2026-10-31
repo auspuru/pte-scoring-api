@@ -10,7 +10,8 @@ const { definition, candidates } = require('../full-mock/authoring');
 const { duplicates, auditCandidate, keyIssues } = require('../full-mock/audit');
 const { digest, putImmutable, validatePaper, catalogue, loadPaper, assertReleased, snapshotForAttempt, questionForPlayer } = require('../full-mock/paper');
 const root = path.resolve(__dirname, '..');
-const paper = loadPaper();
+// This suite retains the original paper's authoring and media regression checks.
+const paper = loadPaper('full-mock-1', 1);
 
 test('Frozen Full Mock 1 has all 65 questions and 22 types in exam order, plus an unscored introduction', () => {
   assert.equal(paper.questions.length, 65);
@@ -133,7 +134,7 @@ test('Snapshot edits, missing media and altered recording bytes are detected', t
 test('Changing live authoring data cannot rewrite a saved paper', () => {
   const { items } = require('../content/full-mock/original-items');
   const old = items[0].text, expected = digest(paper);
-  try { items[0].text = 'An edited live authoring question.'; assert.equal(digest(loadPaper()), expected); }
+  try { items[0].text = 'An edited live authoring question.'; assert.equal(digest(loadPaper('full-mock-1', 1)), expected); }
   finally { items[0].text = old; }
   assert.equal(definition().length, 65);
   assert.equal(candidates().length, 65);

@@ -34,7 +34,7 @@ function metadata(paper, sha256) {
 }
 function validatePaper(paper, { root = ROOT } = {}) {
   const issues = [];
-  if (paper.schemaVersion !== 1 || paper.blueprintVersion !== blueprintVersion || paper.id !== 'full-mock-1' || paper.version !== 1 || paper.status !== 'frozen-draft') issues.push('Unsupported frozen paper contract.');
+  if (paper.schemaVersion !== 1 || paper.blueprintVersion !== blueprintVersion || paper.id !== 'full-mock-1' || ![1, 2].includes(paper.version) || paper.status !== 'frozen-draft') issues.push('Unsupported frozen paper contract.');
   if (!Array.isArray(paper.questions)) return ['Missing paper questions.'];
   issues.push(...validateSelection(paper.questions));
   if (paper.introduction?.scored !== false || paper.introduction?.type !== 'intro' || paper.introduction?.preparationSeconds !== 25 || paper.introduction?.responseSeconds !== 30) issues.push('Invalid unscored introduction.');
@@ -109,13 +109,14 @@ function catalogue({ root = ROOT } = {}) {
   return index.papers.map(({ id, version, sha256, title, status, scoredQuestionCount, taskTypeCount }) =>
     ({ id, version, sha256, title, status, scoredQuestionCount, taskTypeCount, available: false }));
 }
-function loadPaper(id = 'full-mock-1', version = 1, { root = ROOT } = {}) {
-  if (id !== 'full-mock-1' || version !== 1) throw Error('Unknown frozen paper.');
+function loadPaper(id = 'full-mock-1', version, { root = ROOT } = {}) {
   const index = JSON.parse(readAsset(root, DIRECTORY + '/catalogue.json'));
+  version ??= index.activeVersion ?? 1;
+  if (id !== 'full-mock-1' || ![1, 2].includes(version)) throw Error('Unknown frozen paper.');
   const entry = index.papers?.find(item => item.id === id && item.version === version);
-  if (!entry || entry.file !== DIRECTORY + '/full-mock-1.v1.json') throw Error('Unknown frozen paper.');
+  if (!entry || entry.file !== DIRECTORY + '/full-mock-1.v' + version + '.json') throw Error('Unknown frozen paper.');
   const paper = JSON.parse(readAsset(root, entry.file));
-  if (digest(paper) !== entry.sha256) throw Error('Frozen paper digest mismatch.');
+  if (paper.id !== id || paper.version !== version || digest(paper) !== entry.sha256) throw Error('Frozen paper digest mismatch.');
   const issues = validatePaper(paper, { root });
   if (issues.length) throw Error(issues.join('\n'));
   return deepFreeze(paper);
