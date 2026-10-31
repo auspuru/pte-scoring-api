@@ -53,9 +53,14 @@
     const original=legacyOverview(session,total,labels,model,view);
     if(session.practiceUid)return original;
     const ready=!total.pending&&total.percent!=null,value=total.percent;
-    const feedback=model.filter(item=>['review','unanswered','excluded'].includes(item.status)).slice(0,3).map(item=>'<article class="reading-card"><h3>'+escape(labels[item.q.type])+'</h3><p>'+escape(item.q.reasoning?.correct||'Compare your response with the correct answer and review the saved explanation.')+'</p><button type="button" class="portal-button" data-review-type="'+escape(item.q.type)+'">Review answers</button></article>').join('')||'<p class="ipr-empty">Open an answer to compare your response with its explanation.</p>';
+    const feedback='<p class="ipr-empty">Open an answer to compare your response with its explanation.</p>';
     const groups=total.rows.map(row=>({type:row.type,count:row.count-row.excluded,marked:row.count-row.excluded-row.pending,total:row.earned,maximum:row.gradedPossible,complete:!row.pending,status:row.excluded===row.count?'unavailable':undefined}));
-    return '<div data-reading-hero>'+layout.hero({title:session.name||'Reading mock',at:session.startedAt,duration:Math.max(1,Math.round((session.finishedAt-session.startedAt)/60000))+' min',count:session.questions.length,overall:value,unit:'%',scoreLabel:'Reading accuracy',skills:[{name:'Reading',value,maximum:100,unit:'%'}],status:ready?'Completed':'Assessing'})+layout.contributions({section:'reading',groups})+'</div><div data-reading-analysis>'+original+'</div><div data-reading-feedback>'+feedback+'</div>';
+    const impactGroups=groups.filter(g=>g.count>0).map(g=>({...g,label:labels[g.type]||g.type,earned:g.total,possible:g.maximum,complete:g.complete&&g.marked===g.count}));
+    const scoreFeedback=layout.impact.build({scope:'reading',groups:impactGroups,
+      profiles:{reading:{weights:Object.fromEntries(impactGroups.map(g=>[g.type,g.possible]))}},relatedProfiles:layout.contributionProfiles,
+      items:model.filter(item=>!['excluded','pending'].includes(item.status)).map(item=>({type:item.q.type,number:item.index+1,status:'assessed',
+        total:item.points.earned,maximum:item.points.possible,advice:item.q.reasoning?.correct}))});
+    return '<div data-reading-hero>'+layout.hero({title:session.name||'Reading mock',at:session.startedAt,duration:Math.max(1,Math.round((session.finishedAt-session.startedAt)/60000))+' min',count:session.questions.length,overall:value,unit:'%',scoreLabel:'Reading accuracy',skills:[{name:'Reading',value,maximum:100,unit:'%'}],status:ready?'Completed':'Assessing'})+layout.contributions({section:'reading',groups})+'</div><div data-reading-analysis>'+original+'</div><div data-reading-feedback>'+layout.impactFeedback(scoreFeedback)+feedback+'</div>';
   }
   const list = values => values.length ? '<ol>' + values.map(value => '<li>' + escape(value) + '</li>').join('') + '</ol>' : '<p class="reading-unanswered">Not answered</p>';
   const paragraph = text => '<p class="reading-review-text">' + escape(text) + '</p>';

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "76e26ffc61214f16146fd25f5510d289bc10b90c",
+  "baseCommit": "934f54d4529b31391d1d0a8db06037d1a681780e",
   "checkedAt": "2026-10-31",
-  "scope": "Standalone Speaking timed and untimed practice and saved RTS prompt narration. Exact compatibility pins preserve all native graders, saved Full Mock marks, provider settings and question snapshots.",
+  "scope": "Contribution-based feedback only; saved marks, native graders, providers and task weights remain unchanged. Exact compatibility baseline preserves pending attempts.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "22a3c9809f20cbc62bd1aeeaa6b87901267d5b2e326e07e0464f0016cd875891",
+        "sha256": "7fb66107448bd6e4ffa7a98c7790d0f506c25b346c9000ed06b066205467aa36",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -120,7 +120,7 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "73910bc92329f92520f29fc49c6a164fc3748b2f2745c377e27667a510fd1839",
+        "sha256": "d9b4cbc38f90c5f0f24e5076c2937cac6592b045e69b49b9be01996d7fc552d2",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {

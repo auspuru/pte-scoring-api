@@ -3,6 +3,7 @@ const { TASKS } = require('./blueprint');
 const { aggregate, inputHash } = require('./aggregation');
 const { questionForPlayer } = require('./paper');
 const { fail, hash } = require('./store');
+const impact = require('../public/mock-impact-feedback');
 const VERSION = 'full-mock-report-2026-10-29.1';
 const GUIDANCE = {
   ra: ['speaking-ra', 'Read a short passage aloud, then compare the recording with the text for omissions and replacements.'],
@@ -102,14 +103,20 @@ function buildReport(paper, state, at = Date.now()) {
   });
   const groups = TASKS.map(task => ({ type:task.type, label:task.label, section:task.section, skills:[...task.skills], ...result.groups[task.type],
     assessedCount:items.filter(item => item.type === task.type && item.status === 'assessed').length }));
-  // Rank only complete, verified task types by their native fraction. A missing
-  // assessment never becomes a zero, a weakness, or a practice recommendation.
-  const priorities = groups.filter(group => group.complete && group.earned < group.possible).sort((a, b) => a.earned / a.possible - b.earned / b.possible).slice(0, 3)
-    .map(group => ({ type:group.type, label:group.label, earned:group.earned, possible:group.possible, instruction:GUIDANCE[group.type][1], path:'#/' + GUIDANCE[group.type][0] }));
+  const sourceProfiles = state.assessment?.snapshot?.weighting?.profiles || require('./profiles').PROFILES;
+  const impactFeedback = impact.build({ groups, profiles:sourceProfiles, items:items.map(item => {
+    const responseText = item.transcript || (Array.isArray(item.answer) ? item.answer.join(' ') : '');
+    const issue = item.feedback.issues.find(issue => issue.affectsScore && issue.evidence && responseText.includes(issue.evidence));
+    const criterion=item.feedback.gated?null:item.feedback.criteria.filter(row=>row.earned<row.maximum && row.feedback && !/^Review this criterion/.test(row.feedback)).sort((a,b)=>a.earned/a.maximum-b.earned/b.maximum)[0];
+    return { type:item.type, number:item.number, status:item.status, total:item.total, maximum:item.maximum,
+      advice:issue?.suggestedChange || criterion?.feedback || item.feedback.improvements[0], strength:item.feedback.strengths[0], quote:issue?.evidence };
+  }) });
+  const priorities = impactFeedback.priorities.map(point => ({ ...point, earned:result.groups[point.type].earned,
+    possible:result.groups[point.type].possible, path:'#/' + GUIDANCE[point.type][0] }));
   const assessmentStatus = statusFor(state, result);
   return { ...result, ...metadata(paper, state, at), version:VERSION, aggregationVersion:result.version, assessmentStatus,
     retryAvailable:!result.ready && assessmentStatus !== 'processing' && assessmentStatus !== 'version-mismatch' && items.some(item => item.status !== 'assessed' && item.assessment.label !== 'Teacher review required'),
-    recoveredEvidenceCount:state.recoveries.length, groups, items, priorities,
+    recoveredEvidenceCount:state.recoveries.length, groups, items, priorities, impactFeedback,
     interpretation:{ label:'Provisional', calibration:'Not yet calibrated', description:'These are IPT practice indices out of 90. They are not official Pearson scores or predictions of an exam result.',
       overall:'Overall is calculated directly from task contributions, independently of the four skill indices. Its range preserves three weights published as <1%; it is not an exam-score confidence interval.',
       incomplete:'The report is complete only when all 65 scored responses have verified assessments. Required missing assessments keep the affected indices pending.' } };

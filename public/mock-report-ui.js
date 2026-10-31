@@ -1,8 +1,8 @@
 (function(root,factory){
-  const api=factory();
+  const api=factory(typeof module==='object'&&module.exports?require('./mock-impact-feedback'):root.MockImpactFeedback);
   if(typeof module==='object'&&module.exports)module.exports=api;
   else {root.MockReportUI=api;api.install(root);}
-})(typeof globalThis==='undefined'?this:globalThis,function(){
+})(typeof globalThis==='undefined'?this:globalThis,function(impact){
   'use strict';
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const names={score:'Score report',answers:'Answers',analysis:'Analysis',feedback:'Feedback'};
@@ -55,6 +55,11 @@
     const tasks=rows.flatMap(row=>row.tasks.map(task=>'<tr><th scope="row">'+esc(task.label)+'</th><td>'+row.label+'</td><td>'+amount(task)+' / '+number(task.maximum)+' pts</td></tr>')).join('');
     return '<section class="ipr-contributions">'+title+'<p class="ipr-contribution-note">IPT practice contribution points from this mock’s tasks.</p><div class="ipr-contribution-grid">'+cards+'</div><details class="ipr-contribution-details"><summary>View contributing tasks</summary><div class="ipr-contribution-table"><table><thead><tr><th scope="col">Task</th><th scope="col">Skill</th><th scope="col">Contribution</th></tr></thead><tbody>'+tasks+'</tbody></table></div></details></section>';
   }
+  function impactFeedback(value){
+    if(!value)return '';
+    const points=(rows,strength=false)=>rows.length?'<'+(strength?'ul':'ol')+'>'+rows.map(row=>'<li><strong>'+esc(row.label)+'</strong><p>'+esc(row.reason)+'</p>'+(row.skills?.length?'<p class="ipr-empty">Related skills: '+esc(row.skills.join(', '))+'</p>':'')+'<p>'+esc(row.instruction)+'</p>'+(row.examples||[]).map(example=>'<details><summary>Question '+esc(example.number)+' · '+esc(example.earned)+'/'+esc(example.possible)+' marks</summary>'+(example.observation?'<p>'+esc(example.observation)+'</p>':'')+(example.quote?'<blockquote>'+esc(example.quote)+'</blockquote>':'')+'</details>').join('')+'</li>').join('')+'</'+(strength?'ul':'ol')+'>':'';
+    return '<section class="ipr-impact-feedback fm-card review-card" aria-label="Score-based feedback"><h2>Your score priorities</h2><p>'+esc(value.notice)+'</p>'+(value.profiles||[]).map((profile,index)=>{const body='<p>'+esc(profile.summary)+'</p>'+(profile.strengths?.length?'<h4>What supported your result</h4>'+points(profile.strengths,true):'')+(profile.priorities?.length?'<h4>'+ (profile.ordered?'Practise next, in this order':'Main areas to practise')+'</h4>'+points(profile.priorities):'');return index===0?'<article data-impact-profile="'+esc(profile.key)+'"><h3>'+esc(profile.label)+'</h3>'+body+'</article>':'<details data-impact-profile="'+esc(profile.key)+'"><summary>'+esc(profile.label)+(profile.status==='pending'?' · Assessment pending':' · Strengths and priorities')+'</summary>'+body+'</details>';}).join('')+'</section>';
+  }
   function frame({key,title,meta='',actions='',score='',answers='',analysis='',feedback='',status=''}={}){
     return '<section class="ipt-mock-report" data-mock-key="'+esc(key)+'"><header class="ipr-heading"><div><p class="ipr-eyebrow">IPT Brisbane · Mock report</p><h1>'+esc(title)+'</h1>'+(meta?'<p class="ipr-subtitle">'+esc(meta)+'</p>':'')+'</div><div class="ipr-actions">'+actions+'</div></header><nav class="ipr-tabs" role="tablist" aria-label="Mock report sections">'+Object.entries(names).map(([value,label])=>'<button type="button" role="tab" id="'+esc(key)+'-tab-'+value+'" data-mock-tab="'+value+'" aria-controls="'+esc(key)+'-'+value+'" aria-selected="'+(value==='score')+'" tabindex="'+(value==='score'?0:-1)+'">'+label+'</button>').join('')+'</nav>'+(status?'<div class="ipr-report-status" role="status">'+status+'</div>':'')+Object.entries({score,answers,analysis,feedback}).map(([value,content])=>'<section class="ipr-panel" id="'+esc(key)+'-'+value+'" role="tabpanel" aria-labelledby="'+esc(key)+'-tab-'+value+'" data-mock-panel="'+value+'"'+(value==='score'?'':' hidden')+'>'+(content||'<p class="ipr-empty">'+(value==='feedback'?'Open an answer to review its saved feedback.':'No '+names[value].toLowerCase()+' is available yet.')+'</p>')+'</section>').join('')+'</section>';
   }
@@ -104,5 +109,5 @@
     if(env.MutationObserver)new env.MutationObserver(records=>{if(records.some(record=>record.target.closest?.('.reading-results-view,.ipt-mock-report,[data-reading-recent-results]')||[...record.addedNodes].some(node=>node.nodeType===1&&(node.matches?.('.reading-results-view,.ipt-mock-report,[data-reading-recent-results]')||node.querySelector?.('.reading-results-view,.ipt-mock-report,[data-reading-recent-results]')))))schedule();}).observe(doc.documentElement,{childList:true,subtree:true});
     if(doc.readyState==='loading')doc.addEventListener('DOMContentLoaded',update,{once:true});else update();
   }
-  return {esc,number,date,identity,logo,hero,traits,contributionProfiles,skillContributions,contributions,frame,historyCard,sectionFor,sectionTabs,activate,enhanceReading,install};
+  return {esc,number,date,identity,logo,hero,traits,contributionProfiles,skillContributions,contributions,impact,impactFeedback,frame,historyCard,sectionFor,sectionTabs,activate,enhanceReading,install};
 });

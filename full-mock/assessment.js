@@ -55,7 +55,8 @@ const COMPATIBLE_BASES = [
   [require('../content/full-mock/account-compatible-sources.json'), 'c79dfc773e68390d473d08bf4e37544cb549bbf5d4e383b2245fc35dc7532e41'],
   [require('../content/full-mock/alerts-compatible-sources.json'), '7fe217fe37f2b2e2803d911b1de3db15ccb8170f57523502508f2e0b46e2d42d'],
   [require('../content/full-mock/practice-mode-compatible-sources.json'), 'f4e704c74e86c0e43d31c4c4167c3bc637540737ba08de68ba0fa79fd46baaf4'],
-  [require('../content/full-mock/question-content-compatible-sources.json'), '97cebe2ecb2d51a2da15d0aea1004dbd33d7ab1c79ded0174afbc38893fbb458']
+  [require('../content/full-mock/question-content-compatible-sources.json'), '97cebe2ecb2d51a2da15d0aea1004dbd33d7ab1c79ded0174afbc38893fbb458'],
+  [require('../content/full-mock/feedback-compatible-sources.json'), '85e89a7ca24556fc4b2d579d179492d67c66d995e5bc6c7e2f8635b18121e20e']
 ];
 // This projection is used only to finish frozen attempts with their OLD
 // adapters/configuration. It cannot turn a Claude grade into a GPT grade.
@@ -97,12 +98,13 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
-  current={...current,scoringSources:practiceModeSources(current.scoringSources)};
+  const feedbackOnly=digest(saved.scoringSources)==='85e89a7ca24556fc4b2d579d179492d67c66d995e5bc6c7e2f8635b18121e20e';
+  if(!feedbackOnly)current={...current,scoringSources:practiceModeSources(current.scoringSources)};
   const practiceModeOnly=digest(saved.scoringSources)==='f4e704c74e86c0e43d31c4c4167c3bc637540737ba08de68ba0fa79fd46baaf4';
   // This baseline already contains the latest account transport. Older baselines
   // still use the exact account projection below; no scorer or model is relaxed.
   const questionContentBase = COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/question-content-compatible-sources.json'));
-  const contentOnly = digest(questionContentBase[0]) === questionContentBase[1] && digest(saved.scoringSources) === questionContentBase[1];
+  const contentOnly = feedbackOnly || digest(questionContentBase[0]) === questionContentBase[1] && digest(saved.scoringSources) === questionContentBase[1];
   if (!contentOnly && !practiceModeOnly) current={...current,scoringSources:accountSources(current.scoringSources)};
   const accountBase=COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/account-compatible-sources.json'));
   const [practice,practiceHash]=COMPATIBLE_BASES[0];

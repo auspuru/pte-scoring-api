@@ -640,7 +640,7 @@
       resultsHTML='<section class="results">'+layout.frame({key:'lab-'+attempt.id,title:attempt.title,actions:'<button class="secondary" data-tab="history">My attempts</button>',
         score:layout.hero({title:attempt.title,user:username,at:attempt.startedAt,count:attempt.questions.length,overall:scored?summary.score90:null,skills:[{name:skill,value:scored?summary.score90:null}],status:scored?'Completed':'Assessing'})+layout.contributions({section:skill.toLowerCase(),groups:summary.byType.map(group=>({...group,complete:group.marked===group.count&&!attempt.questions.some((q,index)=>q.type===group.type&&report.needsReview(attempt.results[index],q))}))}),
         answers:taskFilters+attempt.questions.map((q,i)=>reviewCard(q,i)).join(''),analysis,
-        feedback:'<div id="overall-feedback"></div>'+feedback+(feedback?'':'<p class="ipr-empty">Open an answer to review its saved feedback.</p>'),
+        feedback:layout.impactFeedback(attempt.impactFeedback)+'<div id="overall-feedback"></div>'+feedback+(feedback?'':'<p class="ipr-empty">Open an answer to review its saved feedback.</p>'),
         status:'<div id="scoring-status" class="scoring-status"></div>'})+'</section>';
     }
     const listeningOnly=attempt.module==='listening'||(attempt.kind!=='mock'&&practiceTypes.includes(attempt.kind));setListeningStyle(listeningOnly);

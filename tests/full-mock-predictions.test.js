@@ -19,7 +19,7 @@ const previous = loadPaper('full-mock-1', 1), paper = loadPaper();
 const root = path.resolve(__dirname, '..');
 const changedTypes = new Set(['ra', 'rs', 'di', 'swt', 'essay', 'dropdown', 'wordbank', 'sst', 'wfd']);
 
-test('Question selection preserves native graders, models, weights, timing and Full Mock report sources', () => {
+test('Question selection preserves native graders, models, weights and timing; feedback is separately audited', () => {
   const before = require('../content/full-mock/question-content-compatible-sources.json');
   const after = require('../full-mock/audit').scoringSnapshot(root);
   assert.equal(digest(before), '97cebe2ecb2d51a2da15d0aea1004dbd33d7ab1c79ded0174afbc38893fbb458');
@@ -27,8 +27,10 @@ test('Question selection preserves native graders, models, weights, timing and F
   // Standalone practice transport can evolve; Full Mock imports only this
   // frozen transcription function from the shared source file.
   assert.equal(hash(require('../speaking-lab').transcribeRecording.toString()),'6779768323a86f2488ac0621c8dd7f0949ca1348bdf0c23a98d10f64eaa84f4a');
+  // Report-only feedback has its own exact lock and behavioral regressions.
+  assert.deepEqual(after.files['full-mock/report.js'],require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/report.js']);
   for (const file of Object.keys(before.files)) {
-    if (!['full-mock/paper.js', 'full-mock/assessment.js', 'speaking-lab.js'].includes(file)) assert.deepEqual(after.files[file], before.files[file], file);
+    if (!['full-mock/paper.js', 'full-mock/assessment.js', 'full-mock/report.js', 'speaking-lab.js'].includes(file)) assert.deepEqual(after.files[file], before.files[file], file);
   }
 });
 

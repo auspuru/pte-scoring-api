@@ -12500,7 +12500,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-mock-tools.js?v=20261001-mock-input2', 'reading mock tools'],
       ['reading-exam-player.js?v=20261001-exam-focus', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
-      ['reading-review.js?v=sha256-42319d886b27', 'reading review'],
+      ['reading-review.js?v=sha256-98e9c23a186f', 'reading review'],
       ['reading-practice.js?v=sha256-b3dab5bb17ec', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
@@ -12548,13 +12548,13 @@ function ensureSpeakingRuntimeLoaded() {
 let speakingMockRuntimeLoadPromise=null;
 function ensureSpeakingMockRuntimeLoaded() {
   if(window.SpeakingMock)return Promise.resolve(window.SpeakingMock);
-  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-6b95a70fa500','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
+  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-d52a51456d34','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
   return speakingMockRuntimeLoadPromise;
 }
 let fullMockRuntimeLoadPromise = null;
 function ensureFullMockRuntimeLoaded() {
   if (window.FullMock) return Promise.resolve(window.FullMock);
-  if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-a18b36870be8', 'full mock report')
+  if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-27bc6560cffe', 'full mock report')
     .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-4dd616723879', 'full mock'))
     .then(() => { if (!window.FullMock) throw Error('Full mock did not load.'); return window.FullMock; })
     .catch(error => { fullMockRuntimeLoadPromise = null; throw error; });
@@ -12564,7 +12564,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-6b748e0fdea7', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-e9270c5611cd', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
