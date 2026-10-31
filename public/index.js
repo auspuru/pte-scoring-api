@@ -854,7 +854,6 @@ function signOut() {
   savePortalEssayDraft();
   resetWritingLabFrame();
   window.SpeakingPractice?.reset();
-  studentInterventionsController?.reset();
   window.ReadingPractice?.leave();
   captureAccountProgress();
   flushPendingSyncOnExit();
@@ -984,7 +983,6 @@ async function enterApp(uid) {
   updateDashboard();
   restorePortalEssayDraft(true);
   portalWorkspace.start();
-  scheduleInterventionRefresh({ showPopup: true });
   checkAIStatus();
   removeAdminPortalEntry();
 
@@ -12463,8 +12461,6 @@ let readingRuntimeLoadPromise = null;
 let speakingRuntimeLoadPromise = null;
 let writingLabRuntimeLoadPromise = null;
 let studentProgressRuntimeLoadPromise = null;
-let interventionsRuntimeLoadPromise = null;
-let interventionRefreshTimer = null;
 
 function loadDeferredScript(src, key) {
   const existing = document.querySelector('script[data-deferred-module="' + key + '"]');
@@ -12589,51 +12585,6 @@ function ensureStudentProgressRuntimeLoaded() {
       throw error;
     });
   return studentProgressRuntimeLoadPromise;
-}
-
-function ensureInterventionsRuntimeLoaded() {
-  if (window.StudentInterventions?.create) return Promise.resolve(window.StudentInterventions);
-  if (interventionsRuntimeLoadPromise) return interventionsRuntimeLoadPromise;
-  interventionsRuntimeLoadPromise = loadDeferredScript('/interventions-client.js?v=10', 'student interventions')
-    .then(() => {
-      if (!window.StudentInterventions?.create) throw new Error('Next Steps did not initialise.');
-      return window.StudentInterventions;
-    })
-    .catch(error => {
-      interventionsRuntimeLoadPromise = null;
-      throw error;
-    });
-  return interventionsRuntimeLoadPromise;
-}
-
-async function ensureStudentInterventionsController() {
-  if (studentInterventionsController) return studentInterventionsController;
-  const module = await ensureInterventionsRuntimeLoaded();
-  if (!studentInterventionsController) {
-    studentInterventionsController = module.create({
-      document,
-      identity: () => ({ uid: currentUserId, token: sessionToken }),
-      navigate: switchSection,
-      launch: launchAssignedQuestion
-    });
-  }
-  return studentInterventionsController;
-}
-
-function scheduleInterventionRefresh(options = {}) {
-  clearTimeout(interventionRefreshTimer);
-  const owner = canonicalClientUserId(currentUserId);
-  if (!owner || !sessionToken) return;
-  interventionRefreshTimer = setTimeout(() => {
-    const run = () => ensureStudentInterventionsController()
-      .then(controller => {
-        if (owner !== canonicalClientUserId(currentUserId) || !sessionToken) return;
-        if (portalWorkspace?.current() === 'dashboard') controller?.refresh(options);
-      })
-      .catch(() => {});
-    if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(run, { timeout: 1200 });
-    else run();
-  }, options.showPopup ? 900 : 500);
 }
 
 let portalCatalogueProgressCache = { uid:'', at:0, value:null };
@@ -12784,7 +12735,7 @@ function initialisePortalWorkspace() {
     launchWriting: testId => switchSection(testId.startsWith('listening-mock-')?'listening-run':'writing-run', { labRequest: { testId } }),
     getProgress: getPortalCatalogueProgress
   });
-  // Progress, Writing Lab and Next Steps are loaded only when needed so the
+  // Progress and Writing Lab are loaded only when needed so the
   // dashboard can become interactive without parsing feature-specific clients.
   // Writing Lab is mounted directly in this document; navigation uses switchSection().
   // Access to storage can be denied by browser privacy settings.
@@ -12811,40 +12762,6 @@ async function openWritingLab(tab = 'mocks', options = {}) {
 
 function resetWritingLabFrame() {
   window.WritingLab?.reset?.();
-}
-
-function launchAssignedQuestion(item) {
-  if (!item) return;
-  if (item.engine === 'speaking') {
-    switchSection(item.route || 'practice-hub', { speakingRequest: { questionId: item.questionId } });
-    return;
-  }
-  if (item.engine === 'reading') {
-    switchSection(item.route || 'practice-hub', { readingRequest: { practiceUid: item.questionId } });
-    return;
-  }
-  if (item.engine === 'writing-lab') {
-    switchSection(item.route || 'spoken-text', { labRequest: { testId: item.testId || item.questionId } });
-    return;
-  }
-  if (item.engine === 'essay') {
-    const essay = essays.find(e => String(e.id) === String(item.questionId));
-    if (!essay) { toast('This assigned essay question is no longer available.', true); return; }
-    currentId = essay.id;
-    if (typeof saveAll === 'function') saveAll();
-    practiceCurrentEssay();
-    return;
-  }
-  if (item.engine === 'swt') {
-    switchSection('swt');
-    const position = passages.findIndex(p => String(p.id) === String(item.passageId || item.questionId)) + 1;
-    if (!position) { toast('This assigned SWT question is no longer available.', true); return; }
-    setSwtPracticeMode('summary');
-    loadPassage(position);
-    showSwtScreen('swtPracticeScreen');
-    return;
-  }
-  if (item.route) switchSection(item.route);
 }
 
 let speakingAccessUser = '', speakingAccessEnabled = false;
@@ -12930,20 +12847,6 @@ function switchSection(section, options = {}) {
 
   if (active === 'progress') openStudentProgress();
   if (active === 'swt' && options.swtRequest) openSavedSwtResponse(options.swtRequest);
-  if (active === 'next-steps') {
-    const host = document.getElementById('nextStepsPane');
-    if (host && !host.children.length) host.innerHTML = '<div class="dash-card" role="status">Preparing My Next Steps…</div>';
-    ensureStudentInterventionsController()
-      .then(controller => { if (portalWorkspace.current() === active) controller?.open(); })
-      .catch(error => {
-        if (portalWorkspace.current() !== active) return;
-        if (host) {
-          host.innerHTML = '<div class="dash-card" role="alert">My Next Steps could not load. Your plans are saved. <button type="button" class="portal-button" data-next-steps-retry>Retry</button></div>';
-          host.querySelector('[data-next-steps-retry]')?.addEventListener('click', () => switchSection(active, {history:'replace'}), {once:true});
-        }
-        toast(error.message || 'My Next Steps could not load.', true);
-      });
-  }
   if (active === 'practice-hub') portalCatalogue.openPractice();
   if(activeRoute?.speakingMock)ensureSpeakingMockRuntimeLoaded().then(mock=>{if(portalWorkspace.current()===active)mock.open({...options.mockRequest,history:activeRoute.mockHistory});}).catch(error=>{const host=document.getElementById('speakingMockPane');if(host)host.innerHTML='<p role="alert">Speaking mock could not load. Return to Mock Tests and retry.</p>';toast(error.message,true);});
   if (activeRoute?.fullMock) ensureFullMockRuntimeLoaded().then(mock => { if (portalWorkspace.current() === active) mock.open(options.mockRequest || {}); }).catch(error => { const host = document.getElementById('fullMockPane'); if (host) host.innerHTML = '<p role="alert">Full Mock could not load. Return to Mock Tests and retry.</p>'; toast(error.message, true); });
@@ -12951,14 +12854,12 @@ function switchSection(section, options = {}) {
   if (active === 'dashboard') {
     updateDashboard();
     updatePortalResume();
-    scheduleInterventionRefresh({ showPopup: false });
   }
   // SWT's current passage, results tab and editor node stay intact.
 }
 
 
 let studentProgressController;
-let studentInterventionsController = null;
 function openSavedSwtResponse(entry) {
   const position = passages.findIndex(p => String(p.id) === String(entry.passageId));
   if (position < 0) { toast('This saved SWT passage is no longer available.', true); return; }

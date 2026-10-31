@@ -90,9 +90,9 @@ test('The practice URL opens the hub while essay and legacy mock links retain th
   assert.equal(routeFromHash('#/writing-mocks'), 'writing-mocks');
 });
 
-test('Speaking routes and My Next Steps remain addressable and assigned speaking questions open directly', () => {
+test('Speaking routes remain addressable and retired Next Steps opens My Progress', () => {
   assert.equal(routeFromHash('#/speaking-ra'), 'speaking-ra');
-  assert.equal(routeFromHash('#/next-steps'), 'next-steps');
+  assert.equal(routeFromHash('#/next-steps'), 'progress');
   const h = harness(), opened = [];
   h.win.SpeakingPractice = { open: (...args) => opened.push(args), leave() {}, reset() {} };
   h.controller.start();
@@ -102,8 +102,9 @@ test('Speaking routes and My Next Steps remain addressable and assigned speaking
   assert.deepEqual(opened.at(-1), ['ra', 'ra-assigned']);
   assert.equal(h.nodes.get('nav-practice-hub').attrs['aria-current'], 'page');
   h.controller.activate('next-steps');
-  assert.equal(h.nodes.get('nextStepsPane').hidden, false);
-  assert.equal(h.nodes.get('nav-next-steps').attrs['aria-current'], 'page');
+  assert.equal(h.controller.current(), 'progress');
+  assert.equal(h.nodes.get('progressPane').hidden, false);
+  assert.equal(h.nodes.get('nav-progress').attrs['aria-current'], 'page');
 });
 
 test('Every Reading and Listening library opens the requested type without starting a mock', () => {
@@ -260,25 +261,6 @@ test('A save scheduled by one account cannot write its draft under the next acco
   assert.equal(status.textContent, 'Draft saved on this device');
 });
 
-
-test('An assigned Essay question opens the matching existing essay in practice mode', () => {
-  const calls = { saved: 0, practised: 0 };
-  const ctx = {
-    essays: [{ id:'essay-2', question:'Discuss public transport.', title:'Transport' }],
-    currentId: null,
-    saveAll() { calls.saved++; },
-    practiceCurrentEssay() { calls.practised++; },
-    toast() { throw Error('Assigned essay should exist'); },
-    switchSection() {},
-    setTimeout(fn) { fn(); }
-  };
-  vm.createContext(ctx);
-  vm.runInContext(fn('launchAssignedQuestion'), ctx);
-  ctx.launchAssignedQuestion({ engine:'essay', questionId:'essay-2' });
-  assert.equal(ctx.currentId, 'essay-2');
-  assert.equal(calls.saved, 1);
-  assert.equal(calls.practised, 1);
-});
 
 test('NAV-09: Exact question links round-trip stable IDs, mode and browser list context',()=>{
  const {questionHash,requestFromHash}=require('../public/portal-workspace');

@@ -58,30 +58,12 @@ test('SWT review shows the selected historical response, not the newest answer o
  assert.equal(shown[0][0].feedback,'Older feedback');assert.equal(shown[0][3],older.text);assert.equal(ctx.currentPassageId,1);assert.equal(screens[0],'swtResultsScreen');
  assert.equal(data.history[910498][0].text,latest.text);
 });
-test('Assigned SWT uses stable IDs to resolve the current visual position',()=>{
- const positions=[],screens=[];
- const ctx={passages:[{id:910498},{id:1}],switchSection(){},setSwtPracticeMode(){},loadPassage:p=>positions.push(p),showSwtScreen:s=>screens.push(s),toast:()=>assert.fail('Existing assigned question must open')};
- vm.createContext(ctx);vm.runInContext(functions('launchAssignedQuestion','let speakingAccessUser'),ctx);
- ctx.launchAssignedQuestion({engine:'swt',questionId:'910498'});assert.deepEqual(positions,[1]);assert.deepEqual(screens,['swtPracticeScreen']);
-});
-function nextStepsContext(fetcher){
- const {document}=parseHTML('<html><head></head><body data-section="next-steps"><div id="nextStepsPane"></div><div id="nextStepsDashboardCard"></div></body></html>');
- const ctx={document,fetch:fetcher,AbortSignal,toast(){},addEventListener(){}};ctx.window=ctx;vm.createContext(ctx);vm.runInContext(read('interventions-client.js'),ctx);return ctx;
-}
-test('Next Steps retries failed loading and uses native resource links without waiting to open a popup',async()=>{
- const plan={id:'plan',status:'not_started',title:'Review SWT',items:[{id:'video',kind:'video',title:'SWT lesson',url:'https://example.test/lesson',status:'not_started'}]};
- let failed=true;
- const ctx=nextStepsContext(async()=>({ok:!failed,json:async()=>failed?{error:'Temporary connection issue'}:{plans:[plan]}}));
- const controller=ctx.StudentInterventions.create({document:ctx.document,identity:()=>({uid:'alice',token:'session'}),navigate(){},launch(){}});
- await controller.open();const host=ctx.document.getElementById('nextStepsPane');assert.ok(host.querySelector('[data-next-retry]'));assert.doesNotMatch(host.textContent,/No assigned next steps/);
- failed=false;await host.onclick({target:host.querySelector('[data-next-retry]')});
- const resource=host.querySelector('[data-step-start]');assert.equal(resource.tagName,'A');assert.equal(resource.getAttribute('href'),'https://example.test/lesson');assert.equal(resource.getAttribute('target'),'_blank');assert.match(resource.getAttribute('rel'),/noopener/);
- assert.equal(host.querySelector('[data-next-retry]'),null);
-});
-test('Next Steps cannot render a delayed plan from another signed-in account',async()=>{
- let resolve,user={uid:'alice',token:'alice-token'};
- const ctx=nextStepsContext(()=>new Promise(r=>resolve=r));const controller=ctx.StudentInterventions.create({document:ctx.document,identity:()=>user,navigate(){},launch(){}});
- const opening=controller.open();user={uid:'bob',token:'bob-token'};controller.reset();
- resolve({ok:true,json:async()=>({plans:[{id:'private-alice-plan',status:'not_started',title:'Alice private plan',items:[]}]})});await opening;
- assert.deepEqual(Array.from(controller.plans()),[]);assert.doesNotMatch(ctx.document.body.textContent,/Alice private plan/);
+test('My Next Steps has no student or admin entry points or background loader',()=>{
+ const html=read('index.html'),admin=read('admin.html');
+ assert.doesNotMatch(html,/nav-next-steps|nextStepsPane|nextStepsDashboardCard/);
+ assert.doesNotMatch(portal,/StudentInterventions|scheduleInterventionRefresh|interventions-client|launchAssignedQuestion/);
+ assert.doesNotMatch(admin,/admin-interventions\.js/);
+ assert.equal(workspace.routeFromHash('#/next-steps'),'progress');
+ assert.equal(workspace.requestFromHash('#/next-steps?plan=old').routeHash,'#/progress');
+ assert.match(portal,/api\/interventions\/swt-selection\/practice/,'Standalone SWT phrase practice remains available');
 });

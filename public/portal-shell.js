@@ -14,7 +14,7 @@
     {
       key: 'insights',
       href: '/portal-insights.css?v=20260929-assistant-ux2',
-      sections: new Set(['mock-tests', 'writing-mocks', 'next-steps', 'progress'])
+      sections: new Set(['mock-tests', 'writing-mocks', 'progress'])
     },
     {
       key: 'vocab-library',

@@ -213,7 +213,6 @@ body.dark #portalSidebar .nav-item:not(.active):hover {
   color: var(--ipt-blue-600);
   transition: transform var(--ipt-motion-standard) var(--ipt-spring), color var(--ipt-motion-fast) ease;
 }
-#portalSidebar #nav-next-steps .nav-icon { color: var(--ipt-red-600); }
 #portalSidebar .nav-item.active .nav-icon { transform: scale(1.07); }
 #portalSidebar .nav-group + .nav-group { border-top-color: rgba(32, 80, 128, .10); }
 #portalSidebar .nav-group-label {
@@ -335,7 +334,6 @@ body.dark .dashboard-welcome h2 { color: var(--ipt-ink) !important; }
 .portal-resume {
   border-left: 3px solid var(--ipt-blue-600) !important;
 }
-#nextStepsDashboardCard,
 .next-step-dashboard {
   --accent: var(--ipt-red-600);
 }
