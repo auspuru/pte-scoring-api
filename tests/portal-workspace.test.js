@@ -178,6 +178,17 @@ test('An active mock blocks portal routes, browser history and menu controls unt
   active=true; h.controller.reset(); assert.equal(active,false);
 });
 
+test('A pointer-opened mobile menu survives temporary focus loss and still closes when focus leaves',()=>{
+  const h=harness();h.controller.start();
+  const menu=h.nodes.get('portalMenuToggle');menu.focus();menu.handlers.click({detail:1});
+  assert(h.doc.body.classList.contains('portal-menu-open'));
+  assert.equal(h.doc.activeElement,menu);
+  h.doc.activeElement=h.doc.body;h.nodes.get('portalSidebar').handlers.focusout({relatedTarget:null});
+  assert(h.doc.body.classList.contains('portal-menu-open'));
+  h.doc.activeElement=h.nodes.get('pageTitle');h.nodes.get('portalSidebar').handlers.focusout({relatedTarget:h.doc.activeElement});
+  assert(!h.doc.body.classList.contains('portal-menu-open'));
+});
+
 function storage() {
   const values = new Map();
   return { values, getItem: key => values.get(key) || null, setItem: (key, val) => values.set(key, val), removeItem: key => values.delete(key) };

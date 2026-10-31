@@ -176,17 +176,20 @@
       if (event.key === 'Escape') closeMenu(true);
     });
     const menu = doc.getElementById('portalMenuToggle');
-    if (menu) menu.addEventListener('click', () => {
+    if (menu) menu.addEventListener('click', (event = {}) => {
       if (win.PortalExamMode?.isActive()) return;
       const open = !doc.body.classList.contains('portal-menu-open');
       doc.body.classList.toggle('portal-menu-open', open);
       menu.setAttribute('aria-expanded', String(open));
-      if (open) doc.getElementById('portalSidebar')?.querySelector('[aria-current="page"]')?.focus();
+      // Keep pointer focus on the toggle; keyboard activation enters the menu.
+      if (open && !event.detail) doc.getElementById('portalSidebar')?.querySelector('[aria-current="page"]')?.focus();
     });
     const dismiss = doc.getElementById('portalMenuBackdrop');
     if (dismiss) dismiss.addEventListener('click', () => closeMenu(true));
     const sidebar = doc.getElementById('portalSidebar');
-    if (sidebar) sidebar.addEventListener('focusout', () => {
+    if (sidebar) sidebar.addEventListener('focusout', event => {
+      // DOM refreshes and temporary focus loss are not a deliberate Tab out.
+      if (!event?.relatedTarget) return;
       // Wait for the new focus target. Keyboard users can tab out naturally.
       win.setTimeout(() => {
         if (!sidebar.contains(doc.activeElement) && doc.activeElement !== menu) closeMenu();

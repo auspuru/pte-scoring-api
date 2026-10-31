@@ -23,7 +23,15 @@ for(const width of [1363,390])test('Progress opens exact saved responses and Nex
  try {
  await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword','Synthetic-pass-123');await page.locator('#loginSubmitBtn').click();
  await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&location.hash==='#/home');
- async function navigate(id){if(width<640&&!await page.$eval('body',e=>e.classList.contains('portal-menu-open')))await page.locator('#portalMenuToggle').click();await page.locator('#'+id).click();}
+ async function navigate(id){
+  if(width<640&&!await page.$eval('body',e=>e.classList.contains('portal-menu-open'))){
+   const hit=await page.$eval('#portalMenuToggle',e=>{const r=e.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('button')?.id;});
+   assert.equal(hit,'portalMenuToggle','The visible Menu control must receive the pointer');
+   await page.locator('#portalMenuToggle').click();
+   await page.waitForFunction(()=>document.body.classList.contains('portal-menu-open'),{timeout:5000});
+  }
+  await page.locator('#'+id).click();
+ }
  await navigate('nav-progress');await page.waitForSelector('[data-progress-attempt="2"]');
  assert.equal(await page.$eval('#progressPane h3',e=>e.textContent),'Recently attempted questions');
  assert.equal(await page.$eval('[data-progress-attempt="1"]',e=>e.textContent.includes('Saved essay question')),true);
