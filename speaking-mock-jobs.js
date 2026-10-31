@@ -41,7 +41,11 @@ function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,c
         }catch(error){await ctx.save(data=>{const attempts=(data.stages.academy?.attempts||0)+1;data.stages.academy={status:attempts>=5||[400,401,403,409].includes(error.status)?'needs_attention':'retry_wait',attempts,failure:'academy_transport',code:error.status||503,nextAt:now()+Math.min(60000,5000*attempts)};});}
       })());
     }else{
-      if(!report.validContent(q,response().content))tasks.push(stage(ctx,'content',()=>scoring.grade(q,text,callModel,{academyDescribeImage:true}),{now,valid:v=>report.validContent(q,v),accept:(data,v)=>{if(report.validContent(q,v)){data.patch.content=v;delete data.contentRejection;}else data.contentRejection=contentRejection(v);}}));
+      if(!report.validContent(q,response().content))tasks.push(stage(ctx,'content',async()=>{
+        const review=require('./speaking-mock-reference-repair').prepare(q);
+        const value=await scoring.grade(review.question,text,callModel,{academyDescribeImage:true});
+        return review.reference?{...value,reviewReference:review.reference}:value;
+      },{now,valid:v=>report.validContent(q,v),accept:(data,v)=>{if(report.validContent(q,v)){data.patch.content=v;delete data.contentRejection;}else data.contentRejection=contentRejection(v);}}));
     }
     if(!contentGated()&&report.deliveryTraits(response(),'azure').missing.length)tasks.push(stage(ctx,'azure',()=>assessAzure(recording,{question:q,transcript:text,transcribe,contentIndependent:true,chunkCache:ctx.data.azureChunks||{},checkpointChunk:(key,value)=>ctx.save(data=>{data.azureChunks||={};data.azureChunks[key]={...data.azureChunks[key],...value};})}),{now,accept:(data,v)=>retain(data,'azure',v),valid:()=>!report.deliveryTraits(response(),'azure').missing.length}));
     await Promise.allSettled(tasks);
