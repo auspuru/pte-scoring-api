@@ -212,6 +212,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
       if (!state.assessment && trusted) state.assessment = stateFor(trusted.current);
       validate(state);
       if (state.assessment.status === 'processing' || state.assessment.status === 'complete' && aggregate(saved.paper, state).ready) return state;
+      if(retry&&Object.values(state.assessment.items).some(job=>job.status!=='assessed'&&Object.values(job.stages||{}).some(stage=>stage.uncertain)))throw fail('An earlier assessment request must be confirmed before it can be repeated. Your saved responses are retained.',409);
       if (state.assessment.run && !retry) return state;
       state.assessment.recovery ||= { version:1, retries:0 };
       state.assessment.recovery.status = 'armed'; delete state.assessment.recovery.nextAt; delete state.assessment.recovery.automaticRun;

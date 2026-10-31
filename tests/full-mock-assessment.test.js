@@ -306,6 +306,7 @@ test('Automatic recovery skips uncertain requests and old held attempts while pr
  }}});
  await f.engine.request('alice',f.id);await f.engine.drain();at+=30000;available=true;await f.engine.recover();await f.engine.drain();
  const state=await f.state();assert.equal(calls.get(uncertain),1);assert.equal(calls.get(safe),2);assert.equal(state.assessment.recovery.status,'held');
+ await assert.rejects(f.engine.request('alice',f.id,{retry:true}),{status:409});assert.equal(require('../full-mock/report').buildReport(paper,await f.state()).retryAvailable,false);assert.equal(calls.get(uncertain),1);
  await f.store.update('alice',f.id,state=>{delete state.assessment.recovery;return state;});
  at+=3600000;await f.engine.recover();await f.engine.drain();assert.equal(calls.get(uncertain),1);
 });
