@@ -10,7 +10,7 @@
 .home-skill-card>.portal-mini-emoji{width:40px;height:40px;border-radius:13px;margin-right:2px}
 .home-skill-card>.portal-mini-emoji + .home-skill-mark{display:none}
 @media(max-width:760px){.portal-emoji-context-wrap{margin-left:auto}.portal-emoji-context-label{display:none}.portal-emoji-context{width:44px;height:44px;border-radius:15px}}
-@media(max-width:520px){.portal-emoji-context-wrap{position:absolute;right:58px;top:9px}.portal-emoji-context{width:38px;height:38px;padding:5px;border-radius:13px}.portal-mini-emoji{width:28px;height:28px}}
+@media(max-width:520px){.portal-mini-emoji{width:28px;height:28px}}
 
 
 .portal-nav-emoji{
@@ -53,4 +53,12 @@
   .progress-activity h4.portal-label-with-emoji>.portal-mini-emoji{
     width:30px;height:30px;min-width:30px;border-radius:10px;
   }
+}
+
+/* Header actions share real layout space so the icon cannot cover Menu. */
+@media(max-width:640px){
+ .topbar-left{flex:1 1 auto}
+ .topbar-heading{flex:1 1 auto;min-width:0}
+ .topbar-left .portal-emoji-context-wrap{position:static;flex:0 0 auto;margin-left:auto}
+ .topbar-left .portal-emoji-context,.topbar-left .portal-emoji-context[data-emoji="ipt"]{width:44px;height:44px;padding:5px;border-radius:15px}
 }
