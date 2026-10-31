@@ -17,29 +17,29 @@ for(const width of [1363,390])test('Progress opens exact saved responses and Nex
  const assigned=await f.request('/api/admin/interventions/'+username,{title:'SWT navigation plan',items:[{id:'assigned-swt',kind:'question',title:'Assigned SWT',engine:'swt',route:'swt',questionId:String(passage.id),requireNewAttempt:true},{id:'lesson',kind:'video',title:'SWT resource',url:f.base+'/fixture-resource'}]},null,true);
  assert.equal(assigned.status,200);
  await f.request('/api/interventions/'+assigned.body.plan.id+'/notification-read',{},registration.body.token);
- const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(async()=>{if(t.failed){console.error('Progress browser state',JSON.stringify(await page.evaluate(()=>({section:document.body.dataset.section,menu:document.body.classList.contains('portal-menu-open'),targets:[...document.querySelectorAll('#nav-progress,#portalMenuToggle,a[data-step-start]')].map(e=>{const r=e.getBoundingClientRect(),style=getComputedStyle(e);return {tag:e.tagName,id:e.id,step:e.dataset.stepStart,x:r.x,y:r.y,width:r.width,height:r.height,display:style.display,visibility:style.visibility};})})).catch(()=>({unavailable:true}))));}await browser.close();});
  const page=await browser.newPage();await page.setViewport({width,height:900});const errors=[],assessmentCalls=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.method()==='POST'&&/\/(?:grade|score)(?:\/|$)/.test(new URL(r.url()).pathname))assessmentCalls.push(new URL(r.url()).pathname);});
- await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword','Synthetic-pass-123');await page.click('#loginSubmitBtn');
+ await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword','Synthetic-pass-123');await page.locator('#loginSubmitBtn').click();
  await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
- async function navigate(id){if(width<900)await page.click('#portalMenuToggle');await page.click('#'+id);}
+ async function navigate(id){if(width<900)await page.locator('#portalMenuToggle').click();await page.locator('#'+id).click();}
  await navigate('nav-progress');await page.waitForSelector('[data-progress-attempt="2"]');
  assert.equal(await page.$eval('#progressPane h3',e=>e.textContent),'Recently attempted questions');
  assert.equal(await page.$eval('[data-progress-attempt="1"]',e=>e.textContent.includes('Saved essay question')),true);
  assert.equal(await page.$eval('#progressPane',e=>e.textContent.includes('Task trends')),false);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
- await page.click('[data-progress-attempt="2"]');
+ await page.locator('[data-progress-attempt="2"]').click();
  await page.waitForFunction(()=>document.getElementById('swtResultsScreen')?.classList.contains('active'));
  assert.equal(await page.$eval('#swtResultsScreen',(e,text)=>e.textContent.includes(text),older.text),true);
  assert.equal(await page.$eval('#swtResultsScreen',(e,text)=>e.textContent.includes(text),latest.text),false);
  await page.reload();await page.waitForFunction(()=>document.getElementById('swtResultsScreen')?.classList.contains('active'));
  assert.equal(await page.$eval('#swtResultsScreen',(e,text)=>e.textContent.includes(text),older.text),true);
  await navigate('nav-next-steps');await page.waitForSelector('[data-step-start="assigned-swt"]');
- await page.click('[data-step-start="assigned-swt"]');await page.waitForFunction(()=>document.body.dataset.section==='swt'&&document.getElementById('swtPracticeScreen')?.classList.contains('active'));
+ await page.locator('[data-step-start="assigned-swt"]').click();await page.waitForFunction(()=>document.body.dataset.section==='swt'&&document.getElementById('swtPracticeScreen')?.classList.contains('active'));
  assert.equal(await page.evaluate(()=>currentPassageId),1,'Stable assigned ID resolves the current first passage');
  await navigate('nav-next-steps');await page.waitForSelector('a[data-step-start="lesson"]');
- const target=browser.waitForTarget(target=>target.url()===f.base+'/fixture-resource');await page.click('a[data-step-start="lesson"]');const resource=await target;await (await resource.page()).close();
- await navigate('nav-practice-hub');await page.waitForSelector('.practice-banner.writing h3 [data-emoji="essay"]');
+ const [resource]=await Promise.all([browser.waitForTarget(target=>target.url()===f.base+'/fixture-resource'),page.locator('a[data-step-start="lesson"]').click()]);await (await resource.page()).close();
+ await navigate('nav-practice-hub');await page.waitForFunction(()=>{const image=document.querySelector('.practice-banner.writing h3 [data-emoji="essay"] img');return image?.complete&&image.naturalWidth>0;});
  assert.equal(await page.$eval('.practice-banner.writing h3 img',e=>e.complete&&e.naturalWidth>0),true);
  assert.deepEqual(assessmentCalls,[],'Reviewing a saved SWT response does not re-assess it');
  assert.deepEqual(errors,[]);

@@ -377,6 +377,8 @@
     }
     async function open(){
       const user=auth(),ticket=++openSerial;loadError='';
+      const host=doc.getElementById('nextStepsPane');
+      if(host)host.innerHTML='<p role="status">Loading My Next Steps…</p>';
       try{await load(true);}catch(e){if(ticket===openSerial&&auth().uid===user.uid&&auth().token===user.token)loadError=e.message||'My Next Steps could not load. Your plans are saved.';}
       if(ticket!==openSerial||auth().uid!==user.uid||auth().token!==user.token)return;
       render();renderDashboard();
