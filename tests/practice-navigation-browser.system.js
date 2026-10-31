@@ -18,7 +18,7 @@ for(const width of [1363,390,320])test('Essay guide: combined page, inline appro
  async function prepare(prompt){await page.evaluate(()=>{switchSection('practice');startNewPractice();setQuestionSource('custom');});await page.type('#practiceCustomPrompt',prompt);}
  const prompt=require('../content/writing-lab.json').predictionEssays[0].text;
  await page.goto(f.base);await login(username);await prepare(prompt);
- await page.click('#practiceTimerToggle');await page.locator('#practiceStartBtn').click();await page.waitForSelector('#essay-guide[open]');
+ await page.locator('.practice-timer-toggle').click();assert.equal(await page.$eval('#practiceTimerToggle',e=>e.checked),true);await page.locator('#practiceStartBtn').click();await page.waitForSelector('#essay-guide[open]');
  assert.equal(await page.$eval('[data-guide-prompt]',e=>e.textContent),prompt);
  assert.equal(await page.evaluate(()=>document.activeElement.id),'essay-guide-title');
  assert.equal(await page.$$eval('#essay-guide [role=tab]',els=>els.length),0);
