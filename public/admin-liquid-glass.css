@@ -152,7 +152,7 @@ body.light-mode .admin-glow {
 }
 
 .auth-card {
-  width: min(460px, calc(100vw - 32px));
+  width: 100%;
   max-width: 460px;
   margin: clamp(54px, 11vh, 120px) auto;
   padding: 32px;
@@ -164,14 +164,35 @@ body.light-mode .admin-glow {
   box-shadow: var(--shadow);
   -webkit-backdrop-filter: blur(22px) saturate(150%);
   backdrop-filter: blur(22px) saturate(150%);
+  color-scheme: dark;
 }
 
 body.light-mode .auth-card {
   border-color: rgba(255,255,255,.80);
+  color-scheme: light;
 }
 
-.auth-card .admin-brand-lockup {
-  margin-bottom: 28px;
+.admin-auth-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.admin-auth-header .admin-brand-lockup {
+  min-width: 0;
+}
+
+.auth-card .theme-toggle {
+  flex: 0 0 44px;
+  width: 44px;
+  padding: 0;
+}
+
+.auth-card button:focus-visible {
+  outline: 2px solid var(--accent-dark);
+  outline-offset: 3px;
 }
 
 .auth-card h2 {
@@ -214,6 +235,47 @@ body.light-mode .auth-card input {
 .auth-card input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 4px rgba(45,108,165,.16);
+}
+
+.admin-key-field {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.admin-key-field input {
+  margin-bottom: 0;
+  padding-right: 56px;
+}
+
+.admin-key-field input::-ms-reveal {
+  display: none;
+}
+
+.admin-key-toggle {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+}
+
+.admin-key-toggle:hover {
+  background: var(--accent-light);
+  color: var(--ink);
+}
+
+.admin-key-toggle[aria-pressed="false"] .admin-key-slash {
+  display: none;
 }
 
 .auth-card > button:not(.theme-toggle) {
@@ -875,11 +937,6 @@ input[type="checkbox"] {
   .auth-card {
     padding: 24px 18px;
     border-radius: 22px;
-  }
-
-  .auth-card .theme-toggle {
-    top: 14px !important;
-    right: 14px !important;
   }
 
   .admin-brand-logo {
