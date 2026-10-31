@@ -36,7 +36,7 @@ test('Rejected DI content keeps a safe diagnostic across restart without changin
   return {judgment:{score:6,relevance:'image-specific',accuracy:'accurate',scoreImpact:null,requiredEvidence:{quote:'Trips increased.',factIndices:[0],kind:'relationship'},inaccuracy:null,otherEvidence:[]},reason:'The relationship is clear.',nextStep:'Keep the relationship.'};
  }});
  let jobs=make();await jobs.ensure('student',a);await jobs.wait();
- let d=await jobs.diagnostics('student',a.id);assert.deepEqual(d.jobs[0].stages.content.detail,{code:'source-limited',mode:'ai',questionId:'diagnostic-di',questionType:'di',sourceFacts:1});
+ let d=await jobs.diagnostics('student',a.id);assert.deepEqual(d.jobs[0].stages.content.detail,{code:'source-limited',mode:'ai',questionId:'diagnostic-di',questionType:'di',questionHash:require('../scoring-jobs').hash(a.questions[i]),sourceFacts:1});
  assert.equal(d.ready,false);assert(!JSON.stringify(d).includes('PRIVATE_MODEL_PROSE'));assert(!JSON.stringify(d).includes(a.responses[i].transcript));
  await jobs.stop();jobs=make();t.after(()=>jobs.stop());d=await jobs.diagnostics('student',a.id);assert.equal(d.jobs[0].stages.content.detail.code,'source-limited');
  assert.deepEqual((await store.get('student',a.id)).responses[i],a.responses[i]);

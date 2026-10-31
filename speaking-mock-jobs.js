@@ -11,7 +11,7 @@ function contentRejection(value,question){
   const safe=v=>typeof v==='string'&&/^[A-Za-z0-9_-]{1,80}$/.test(v)?v:undefined;
   return {code:safe(value?.contentReviewIssue)||safe(value?.contentStatus)||'invalid-content',
     ...(safe(value?.scoringMode)?{mode:value.scoringMode}:{}),
-    ...(question?{questionId:safe(question.id)||'unavailable',questionType:safe(question.type)||'unavailable',sourceFacts:Array.isArray(question.facts)?question.facts.length:0}:{})};
+    ...(question?{questionId:safe(question.id)||'unavailable',questionType:safe(question.type)||'unavailable',questionHash:hash(question),sourceFacts:Array.isArray(question.facts)?question.facts.length:0}:{})};
 }
 function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,callModel,gradeResponse,academyClient=academy.createAcademyClient(),includeLegacy=true,now=Date.now}={}){
   const jobs=createJobs({pool,directory:path.join(directory,'answer-jobs'),table:'speaking_answer_jobs',now});let cursor='',sweeping=false,sweeper;
