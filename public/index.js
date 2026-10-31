@@ -12500,7 +12500,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-exam-player.js?v=20261001-exam-focus', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=sha256-42319d886b27', 'reading review'],
-      ['reading-practice.js?v=sha256-4e80ba9501ba', 'reading practice']
+      ['reading-practice.js?v=sha256-b3dab5bb17ec', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
     // downloads overlap. Initialise the practice client only after all succeed.
@@ -12531,7 +12531,7 @@ function ensureSpeakingRuntimeLoaded() {
   if (window.SpeakingPractice) return Promise.resolve(window.SpeakingPractice);
   if (speakingRuntimeLoadPromise) return speakingRuntimeLoadPromise;
 
-  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-4c47c43a8fe0', 'speaking practice'))
+  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-7919292f846d', 'speaking practice'))
     .then(() => {
       if (!window.SpeakingPractice) throw new Error('Speaking practice did not initialise.');
       return window.SpeakingPractice;
@@ -12563,7 +12563,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-c258357b2715', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-15d795d63bb2', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -12911,7 +12911,7 @@ function switchSection(section, options = {}) {
   if (needsSpeakingRuntime) {
     ensureSpeakingRuntimeLoaded()
       .then(speaking => {
-        if (portalWorkspace.current() === active) speaking.open(activeRoute.speakingType, options.speakingRequest?.questionId);
+        if (portalWorkspace.current() === active) speaking.open(activeRoute.speakingType, options.speakingRequest?.questionId, options.speakingRequest || {});
       })
       .catch(error => {
         if (portalWorkspace.current() !== active) return;
@@ -13869,17 +13869,19 @@ function essayReviewPending(id) {
 }
 function essayQuestionNavigation() {
   if(!['write','loading','results'].includes(practiceState.view)||(practiceState.view!=='results'&&practiceState.questionSource!=='library'))return '';
-  const questions=essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId));
+  const questions=practiceState.questionQueue?.length?practiceState.questionQueue.map(id=>essays.find(e=>e.id===id)).filter(Boolean):essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId));
   return `<nav class="speaking-actions" aria-label="Practice questions"><button class="btn" onclick="moveEssayQuestion(-1)" ${index<=0?'disabled':''}>← Back</button><span>${index<0?'Choose a question':'Question '+(index+1)+' of '+questions.length}</span><button class="btn" onclick="moveEssayQuestion(1)" ${index>=questions.length-1?'disabled':''}>Next →</button></nav>`;
 }
 function moveEssayQuestion(direction) {
-  const questions=essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId)),target=questions[index+direction];
+  const questions=practiceState.questionQueue?.length?practiceState.questionQueue.map(id=>essays.find(e=>e.id===id)).filter(Boolean):essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId)),target=questions[index+direction];
   if(!target)return;
   const ta=document.getElementById('practiceEssayInput');if(ta&&practiceState.view==='write')practiceState.essayText=ta.value;
   if(!saveEssayQuestionDraft()){toast('Could not save your draft. Please keep this question open.',true);return;}
   stopPracticeTimer();stopLoadingMessages();
+  const context={questionQueue:practiceState.questionQueue,pickerSearch:practiceState.pickerSearch,pickerScroll:practiceState.pickerScroll};
   const saved=(LocalStore.get(getPteStorageKey('essay-question-drafts'))||{})[target.id];
   Object.assign(practiceState,saved||{view:'write',writeStep:1,questionSource:'library',selectedQuestionId:target.id,questionTitle:target.title||'',questionText:target.question,essayText:'',revisionParentId:null,submissionId:null,submissionSignature:'',currentAttempt:null,viewingAttemptId:null,timerStartedAt:null});
+  Object.assign(practiceState,context);
   // After refresh a saved response opens for review; it never submits itself.
   if(practiceState.view==='loading'&&!essayReviewPending(practiceState.submissionId))practiceState.view='write';
   practiceState.timerIntervalId=null;renderPracticeMain();
@@ -13916,6 +13918,7 @@ function renderPracticeMain() {
   // Populate library picker on first render (when on library tab in write view)
   if (practiceState.view === 'write' && practiceState.questionSource === 'library') {
     renderQuestionPicker();
+    const picker=document.getElementById('practiceQuestionPicker');if(picker)picker.scrollTop=practiceState.pickerScroll||0;
   }
   // If we're back on the write view AND a timer was already running, resume the live counter
   if (practiceState.view === 'write' && practiceState.timerEnabled && practiceState.timerStartedAt) {
@@ -14164,7 +14167,7 @@ function setQuestionSource(src) {
 function libraryPickerHTML() {
   return `
     <label class="practice-studio-search" for="practiceQuestionSearch">Find a question</label>
-    <input type="search" class="practice-question-search" id="practiceQuestionSearch" placeholder="Search your essay library…">
+    <input type="search" class="practice-question-search" id="practiceQuestionSearch" placeholder="Search your essay library…" value="${escapeHtml(practiceState.pickerSearch||'')}">
     <div class="practice-question-picker" id="practiceQuestionPicker"></div>
   `;
 }
@@ -14173,6 +14176,7 @@ function renderQuestionPicker() {
   const picker = document.getElementById('practiceQuestionPicker');
   if (!picker) return;
   const q = (document.getElementById('practiceQuestionSearch')?.value || '').toLowerCase().trim();
+  practiceState.pickerSearch=document.getElementById('practiceQuestionSearch')?.value||'';
   // Only show essays that have a question prompt
   let filtered = essays.filter(e => e.question && e.question.trim());
   if (q) {
@@ -14198,6 +14202,8 @@ function renderQuestionPicker() {
 function pickLibraryQuestion(id) {
   const e = essays.find(x => x.id === id);
   if (!e) return;
+  practiceState.questionQueue=essays.filter(x=>x.question?.trim()&&(!practiceState.pickerSearch||[x.title,x.question].join(' ').toLowerCase().includes(practiceState.pickerSearch.toLowerCase()))).map(x=>x.id);
+  practiceState.pickerScroll=document.getElementById('practiceQuestionPicker')?.scrollTop||0;
   practiceState.selectedQuestionId = id;
   practiceState.questionTitle = e.title || '';
   practiceState.questionText = e.question || '';

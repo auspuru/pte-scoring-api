@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
+  "files": {
+    "delivery-rubric.js": {
+      "sha256": "ff0deff2081f49d45387d72be41f8f952938e813ae0399317c601e876a9147b3",
+      "version": "intelligibility-delivery-v5"
+    },
+    "describe-image-academy.js": {
+      "sha256": "209828a9894cdfe2be8546b771fc37d5e85595f4d82417b8fa772c9372aea74e",
+      "version": null
+    },
+    "describe-image-academy/chart-readings.js": {
+      "sha256": "4db9d5ab581a785e9ebdb8af9592a0b6b9734cba39d1a91739342aa03751b2cb",
+      "version": null
+    },
+    "describe-image-academy/content.js": {
+      "sha256": "b65c21c4e259f40fd5601f25986a9f3a822d3900e26dd7ba125a3c71559677e4",
+      "version": null
+    },
+    "describe-image-academy/image-claims.js": {
+      "sha256": "e2aebb389813e6f95bec08013e2f7f78c304079bdf52e9cc345f3a3c8e2b2faa",
+      "version": null
+    },
+    "describe-image-academy/response-selection.js": {
+      "sha256": "d667b0247e271fd3236a4aaa24a7900e6b6337a2ae00f5f3c1399760329f56df",
+      "version": null
+    },
+    "describe-image-academy/review-evidence.js": {
+      "sha256": "70b5568c8e73fc60883232e5615ff2e2ccde56b44924ded5fb6390421a0db58f",
+      "version": null
+    },
+    "describe-image-academy/score-impact.js": {
+      "sha256": "165ebfdea44d159f1f4b0ceb6c7f52a6c17280d242a3c4761559d9301ca8ce75",
+      "version": null
+    },
+    "describe-image-academy/scoring-policy.js": {
+      "sha256": "79f1046717e860d26824f2a883f2bf50138a38ba39e20076197334c4349836c1",
+      "version": null
+    },
+    "describe-image-feedback.js": {
+      "sha256": "9007b443fa29d350ddcac535bb9ded9548a3ee9c63698d53405a892d53ae5f23",
+      "version": null
+    },
+    "describe-image-feedback/scoring-policy.js": {
+      "sha256": "e3ab902ec27dad63aa3deade1da6b1d048376b2625a9e0f138b97356151515ec",
+      "version": null
+    },
+    "di-reference.js": {
+      "sha256": "3699d9f1ef5c01503add68ec7bf5f8e0675b81fc8367da777a2eb05f5239921e",
+      "version": null
+    },
+    "essay-assessment-service.js": {
+      "sha256": "a95f563194088c4fe5d03e7b9b6ca951b1fbb1a84d9a81ececd84e59f5bed02c",
+      "version": null
+    },
+    "essay-evidence.js": {
+      "sha256": "2e28d4904e75e848590de8f37cf182a8d1740dd51cb5200a7c57f4ee8f1c7dc0",
+      "version": null
+    },
+    "essay-judge-format.js": {
+      "sha256": "2b71a72a2272e779130caee01c8fc06b97cae69ff85a96a95a5d8f80bd341b06",
+      "version": null
+    },
+    "essay-openai-format.js": {
+      "sha256": "28cdccc0f9097aab19bffa4a99bfb93bf2e3e61c0a2f33d37dfc73c57bd35285",
+      "version": null
+    },
+    "essay-provider.js": {
+      "sha256": "1d0adabaf1722922942cb7adba2849f76b8539812a858ab21c09926929e717ce",
+      "version": null
+    },
+    "full-mock/access.js": {
+      "sha256": "e0d65c72cf660e5d1b9cf13c5a74c77cc57356f71f19b87f20ed066c3ccb53b3",
+      "version": null
+    },
+    "full-mock/adapters.js": {
+      "sha256": "41132b2eee6c0fd9402b6f6ee3831118f951fc48547037f8f2412f63fe280e76",
+      "version": "full-mock-adapters-2026-10-29.2"
+    },
+    "full-mock/aggregation.js": {
+      "sha256": "10505a5d6bdbf1dd97b8fd7c01a6936f498545b261fe5775790bd2e8dd96adb2",
+      "version": "full-mock-aggregation-2026-10-29.1"
+    },
+    "full-mock/api.js": {
+      "sha256": "323ce54aedb7351e6a2676181f4bced7cf81bea62b75b6f35644c3d3ec455d8c",
+      "version": null
+    },
+    "full-mock/asq-scoring.js": {
+      "sha256": "03af8e89e9af544436e574de97596672398a2bf10540080db0e89317ce2fcf8c",
+      "version": "full-mock-asq-2026-10-28.1"
+    },
+    "full-mock/assessment.js": {
+      "sha256": "712ad21afc2c0bf6530cc721bb7f2bbeb2a5796cb1ed85119f62d79af2466147",
+      "version": "full-mock-assessment-2026-10-29.1"
+    },
+    "full-mock/audit.js": {
+      "sha256": "d85b73b2572bff1ef78354a49daf0521fff84bdf14b5d0ff25ef5503d231c5ba",
+      "version": null
+    },
+    "full-mock/blueprint.js": {
+      "sha256": "ee5f56f160821e6f3bd8ead5a797f4d46114aef0b14b06bbfeabdc6665e0330e",
+      "version": null
+    },
+    "full-mock/paper.js": {
+      "sha256": "042f2b4cc8c48b359f8514804c22f9717d81c9c381429a8645df53fb659a0ce7",
+      "version": null
+    },
+    "full-mock/profiles.js": {
+      "sha256": "8e9659f3d82839a445ec6cb0212d3e7456bb3c4442146a56a0ba721b1994df18",
+      "version": "full-mock-profiles-2026-10-29.1"
+    },
+    "full-mock/recording.js": {
+      "sha256": "480756dcae089f44f6153f6a45ff849a713d8e68b2076df0a4d34a41d9060f63",
+      "version": "full-mock-recording-2026-10-29.2"
+    },
+    "full-mock/report.js": {
+      "sha256": "73910bc92329f92520f29fc49c6a164fc3748b2f2745c377e27667a510fd1839",
+      "version": "full-mock-report-2026-10-29.1"
+    },
+    "full-mock/rubrics.js": {
+      "sha256": "117c51a483f49d5f4127055001698aedc2ddb4004940751b4fe25cf66959e02a",
+      "version": null
+    },
+    "full-mock/session.js": {
+      "sha256": "22adeb3539a01fa1084fd123169139b332917bac4f3b14b656eec828260354bb",
+      "version": "full-mock-session-2026-10-29.2"
+    },
+    "full-mock/store.js": {
+      "sha256": "dd93668cd632c448216ee4bc4f495c4763ade4bed2ffb1d66491caf4963a14a6",
+      "version": null
+    },
+    "gpt-speaking-delivery.js": {
+      "sha256": "cb42317a9cf1b4f34dbdcceeb32ff7df509fe55a449e518b6a312d40142cb580",
+      "version": null,
+      "versionExpression": "'gpt-delivery-2026-10-25.1:' + MODEL"
+    },
+    "listening-scoring.js": {
+      "sha256": "f3ecff70034f0f641248b47a2f457979934bd7ef034f0214dda452988331536c",
+      "version": null
+    },
+    "local-scoring-engine.js": {
+      "sha256": "52f605df6952c3de6894dd9f5357a4a97f5c84c19be93581af7ea3a8f69ef6ac",
+      "version": null
+    },
+    "mock-content-assessment.js": {
+      "sha256": "f418438dd65ac47a81ee93faf62dbae5e5c7d7aa92c0ee4e30cb0d8eaa984253",
+      "version": null
+    },
+    "mock-content-provider.js": {
+      "sha256": "3efa737c0e2a8ae047bd24b0c140f6cc2c67e2329cb3184950ef38bb1f5e8492",
+      "version": null
+    },
+    "public/essay-scoring.js": {
+      "sha256": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
+      "version": "essay-unified-2.6"
+    },
+    "public/reading-mock-tools.js": {
+      "sha256": "ef3a28b80678ee9e9c1b03831dcc87054e65dd8cebc5ee7848b370180ee42588",
+      "version": null
+    },
+    "public/reading-practice.js": {
+      "sha256": "4e80ba9501ba1d63fa7191ff263179b5bc15cef49e41c082ccb36ec2fead5d8d",
+      "version": null
+    },
+    "public/writing-lab-report.js": {
+      "sha256": "9df6a755fddf4342731462708d84d0e9100a37fb99d4c29fe9e3decb76d88b69",
+      "version": null
+    },
+    "server.js": {
+      "sha256": "937a9f1e0cf80786c104e3d73302ca93d9dd31a0fa39698193ae3f887ea25491",
+      "version": null
+    },
+    "situation-content-policy.js": {
+      "sha256": "a38eea55cc0dbec6e6011d59a50b91068bd61e866b6a3103337eb5085e2036fd",
+      "version": "functional-situation-content-2026-10-24.1"
+    },
+    "speaking-delivery.js": {
+      "sha256": "3eff2225f3daa16d85cf45e2fc88acff043e8212397fcb76b7a206092a55be0b",
+      "version": null
+    },
+    "speaking-judge-format.js": {
+      "sha256": "09d30d083c0171ad3aa3a571ea15bc9b16176253733fe1ca8c895e0685fd252c",
+      "version": null
+    },
+    "speaking-lab.js": {
+      "sha256": "759f6aa54529eb5979aae0bb87b4663fabcf9ea0da3b3c61ecbf7972fadaf479",
+      "version": null
+    },
+    "speaking-scoring.js": {
+      "sha256": "0c673372149fe2732f7aa6b950862ea01ce4c6473e5df4a55daf49d2740ca3a2",
+      "version": "speaking-content-2026-10-25.2"
+    },
+    "spoken-summary-policy.js": {
+      "sha256": "469d8543929f1035310868a6153e89424d1fef084e61c0a47e70892a5ae7a2e4",
+      "version": "connected-spoken-summary-2026-10-25.1"
+    },
+    "swt-form-policy.js": {
+      "sha256": "43ffe8755a7b025cbb9ba354fb69058d85d90d716666ed0233a5826c678bb2c2",
+      "version": null
+    },
+    "swt-judge-format.js": {
+      "sha256": "ef669a5e3fc732d4df51923959ee8b93d272fbb7510c85d717bf6bf6a21cf520",
+      "version": null
+    },
+    "swt-judgment-service.js": {
+      "sha256": "345c834b13ce1c94313270442852d71c20598d4e22de8c2fed13639b5d95015b",
+      "version": null
+    },
+    "swt-reference.js": {
+      "sha256": "252823dcc952fa561195591c79e79855d388a8c4f2e39a7b7534d1c74dd36a3a",
+      "version": null
+    },
+    "swt-scoring-policy.js": {
+      "sha256": "d369ae53a42633f4b6acfa49480b563229bac19fad28d6a6a41df59fbb16d81b",
+      "version": "20.3.16"
+    },
+    "writing-lab-scoring.js": {
+      "sha256": "a130307d850613728d40a36634b3aef337ea211a620695cc9e2217f0bbb1fad6",
+      "version": "exam-practice-2026-10-09.1"
+    }
+  }
+}

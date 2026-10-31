@@ -31,7 +31,7 @@ test('Speaking practice is deferred until a speaking route is opened', () => {
 
 test('Speaking deferred-load failure can retry without losing the requested question', () => {
   const js = fs.readFileSync(path.join(root, 'public', 'index.js'), 'utf8');
-  assert.match(js, /speaking\.open\(activeRoute\.speakingType, options\.speakingRequest\?\.questionId\)/);
+  assert.match(js, /speaking\.open\(activeRoute\.speakingType, options\.speakingRequest\?\.questionId, options\.speakingRequest \|\| \{\}\)/);
   assert.match(js, /switchSection\(active, \{ \.\.\.options, history: 'replace' \}\)/);
 });
 

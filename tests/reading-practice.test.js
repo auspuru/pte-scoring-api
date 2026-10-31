@@ -959,3 +959,31 @@ test('Reading library search keeps the question number, title and ID used by the
  assert.match(h.host.innerHTML,/All answers &amp; feedback/);
  assert.match(h.host.innerHTML,/data-studio-route="reading-dropdown" aria-current="page"/);
 });
+
+test('NAV-05/06: Reading retains the selected ordered queue, draft and list context across Next and refresh',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open({libraryId:'dropdown'});
+ const items=h.ctx.PracticeCatalogue.readingLibraries(bank).find(l=>l.id==='dropdown').questions;
+ const chosen=[items[7],items[17],items[27]];
+ await h.click({practiceUid:chosen[0].uid});
+ h.host.onchange({target:{dataset:{answer:'0'},value:chosen[0].answers[0]}});
+ const saved=snapshot(h);saved.session.practiceContext={id:'dropdown',query:'retained search',page:2,queue:chosen.map(q=>q.uid),selectedUid:chosen[0].uid,scrollTop:430};
+ h.values.set(storageKey('first'),JSON.stringify(saved));h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open({libraryId:'dropdown'});
+ await h.click({move:'1'});assert.equal(snapshot(h).session.practiceUid,chosen[1].uid);
+ await h.click({move:'1'});assert.equal(snapshot(h).session.practiceUid,chosen[2].uid);
+ const count=snapshot(h).drafts.length;await h.click({move:'1'});assert.equal(snapshot(h).drafts.length,count);
+ await h.click({move:'-1'});await h.click({move:'-1'});
+ assert.equal(snapshot(h).session.practiceUid,chosen[0].uid);assert.equal(snapshot(h).session.answers[chosen[0].uid][0],chosen[0].answers[0]);
+ await h.click({action:'home'});assert.match(h.host.innerHTML,/value="retained search"/);
+});
+test('NAV-05: Entering a searched Reading list freezes exactly its matching IDs and disables both one-item boundaries',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open({libraryId:'dropdown'});
+ const items=h.ctx.PracticeCatalogue.readingLibraries(bank).find(l=>l.id==='dropdown').questions,target=items[4];
+ h.host.oninput({target:{dataset:{librarySearch:''},value:target.id}});await h.click({practiceUid:target.uid});
+ assert.deepEqual([...snapshot(h).session.practiceContext.queue],Array.from(items.filter(q=>[q.title,q.topic,q.id].join(' ').toLowerCase().includes(target.id.toLowerCase())),q=>q.uid));
+ assert.match(h.host.innerHTML,/data-move="-1" disabled/);assert.match(h.host.innerHTML,/data-move="1" disabled/);
+});
+test('NAV-09: A copied Reading question link opens a list without creating an attempt',async()=>{
+ const h=client(),items=require('../public/practice-catalogue').readingLibraries(bank).find(l=>l.id==='dropdown').questions;
+ await h.ctx.ReadingPractice.open({libraryId:'dropdown',practiceUid:items[4].uid,navigation:true});
+ assert.equal(snapshot(h).session,null);assert.match(h.host.innerHTML,/Find a question/);
+});

@@ -1,0 +1,3196 @@
+{
+  "schemaVersion": 1,
+  "guide": {
+    "libraryFileId": "libfile_766bacf168dc8191887a71b3eb2122c0",
+    "name": "PTE_Scoring_API_Tester_Guide.pdf",
+    "date": "2026-10-30",
+    "sourceCommit": "920065e1e010975396805c9b7c53d2c6935cd54a"
+  },
+  "implementationBase": "b92c5ba935fa41755d2211991dd2d3755c274b01",
+  "interpretation": "Related suites are coverage pointers, not evidence that the entire acceptance scenario passed. Each scenario requires its own environment, steps, result and evidence before changing status.",
+  "checks": [
+    {
+      "id": "AUTH-01",
+      "requirement": "Sign in with valid and invalid credentials, including keyboard submission and two rapid clicks. Expect one authenticated transition or one clear validation error, with no duplicate requests or blank workspace.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/login-assets.test.js",
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "AUTH-02",
+      "requirement": "Register a disposable account; repeat the username and test missing, oversized and malformed fields. Expect deterministic validation and no second account or partial record.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/login-assets.test.js",
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "AUTH-03",
+      "requirement": "Sign out during a draft and then sign in as a different student. Expect private caches, history, recordings, bookmarks and pending callbacks to remain tied to the original account.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/login-assets.test.js",
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "AUTH-04",
+      "requirement": "Expire a session during save, assessment polling and media review. Expect a sign-in action, preserved recoverable work and stopped private polling; no loop of unauthorised requests.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/login-assets.test.js",
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "AUTH-05",
+      "requirement": "Change a password, try a wrong current password and test old-session behaviour. Expect the documented session policy and no false success.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/login-assets.test.js",
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "AUTH-06",
+      "requirement": "Exercise email reset in the mail sink, then reuse and expire its code. Expect one successful reset, safe rejection thereafter and no reset through the deprecated route.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/login-assets.test.js",
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "AUTH-07",
+      "requirement": "Block and delete disposable accounts, then reuse their existing tokens and direct media links. Expect denial at the API as well as the UI.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/login-assets.test.js",
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "AUTH-08",
+      "requirement": "Open private routes without a session and with another student's attempt ID. Expect 401 or 403 or a safe 404, never another student's data or an HTML page represented as JSON success.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/login-assets.test.js",
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "ACC-01",
+      "requirement": "Change each exposed preference, refresh and reopen on another authorised device where the setting is cloud-backed. Expect the correct account's latest setting and no accidental draft replacement.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "ACC-02",
+      "requirement": "Toggle light and dark themes with a modal, result and question open. Expect readable text, visible focus and stable input selection.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "ACC-03",
+      "requirement": "Run manual sync, go offline, make a draft edit and reconnect. Expect honest status, one eventual merge and the exact latest text.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "ACC-04",
+      "requirement": "Reach an AI usage limit or return a rate-limit response in the test environment. Expect a bounded, recoverable message and no invented assessment or success count.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "ACC-05",
+      "requirement": "Export and import disposable account data through exposed controls. Expect valid schema handling, correct ownership and no silent overwrite from a malformed or stale backup.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "UI-01",
+      "requirement": "Open every top-level destination from Home and from a direct route. Expect one selected navigation item, correct heading and no stale pane from the previous destination.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-workspace.test.js",
+        "tests/portal-exam-mode.test.js"
+      ]
+    },
+    {
+      "id": "UI-02",
+      "requirement": "Check empty, one-item and many-item libraries. Expect useful empty text, consistent counters and no enabled action without a valid target.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-workspace.test.js",
+        "tests/portal-exam-mode.test.js"
+      ]
+    },
+    {
+      "id": "UI-03",
+      "requirement": "Test loading and failure of each deferred script. Expect retry or a meaningful error, with the current draft and signed-in state intact.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-workspace.test.js",
+        "tests/portal-exam-mode.test.js"
+      ]
+    },
+    {
+      "id": "UI-04",
+      "requirement": "At desktop, 320 px and 390 px widths, inspect prompt, editor, answer options, feedback and footer. Expect no page-level horizontal overflow or hidden essential controls.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-workspace.test.js",
+        "tests/portal-exam-mode.test.js"
+      ]
+    },
+    {
+      "id": "UI-05",
+      "requirement": "Repeat at 200 percent zoom and with the mobile keyboard open. Expect the response, timer and navigation to remain usable without being covered by the footer or assistant.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-workspace.test.js",
+        "tests/portal-exam-mode.test.js"
+      ]
+    },
+    {
+      "id": "UI-06",
+      "requirement": "Complete the main flows using keyboard only. Expect logical tab order, visible focus, named buttons, labelled form fields and usable dropdown, reorder and modal controls.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-workspace.test.js",
+        "tests/portal-exam-mode.test.js"
+      ]
+    },
+    {
+      "id": "UI-07",
+      "requirement": "With a screen reader, check new question, save error, recording state, timer warning and pending- result announcements. Expect useful announcements without every timer tick overwhelming speech.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-workspace.test.js",
+        "tests/portal-exam-mode.test.js"
+      ]
+    },
+    {
+      "id": "UI-08",
+      "requirement": "Open and close each modal with keyboard and touch. Expect focus to enter, remain within the modal as appropriate and return to the originating control.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-workspace.test.js",
+        "tests/portal-exam-mode.test.js"
+      ]
+    },
+    {
+      "id": "UI-09",
+      "requirement": "Enable reduced motion and dark mode. Expect equivalent function, clear contrast and no flashing or unnecessary motion dependency.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-workspace.test.js",
+        "tests/portal-exam-mode.test.js"
+      ]
+    },
+    {
+      "id": "UI-10",
+      "requirement": "Trigger a generic application error. Expect a safe message and recovery path; no raw exception, provider key, student response or indefinite spinner.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-workspace.test.js",
+        "tests/portal-exam-mode.test.js"
+      ]
+    },
+    {
+      "id": "NAV-01",
+      "requirement": "Record at least five seconds, press Next during recording, return and play the saved answer. Expect the full captured response, one move and the correct attempt identity.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-02",
+      "requirement": "Delay content assessment, save an answer and move to another question. Expect navigation after saving and late feedback only on the original attempt.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-03",
+      "requirement": "From an Essay result choose Back to essays. Expect the Essay question picker and retained response and review history.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-04",
+      "requirement": "Filter Speaking to one item and to a final item such as 13 of 13. Expect correct disabled boundaries before and after submission or control refresh.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-05",
+      "requirement": "Open a queue containing IDs 8, 18 and 28. Expect Next from 8 to 18, Previous back to 8, and no move to unrelated ID 9.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Updated in this release",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-06",
+      "requirement": "Open a question from a search on a later page, then return from answer and feedback. Expect the same query, filters, page, row and scroll position.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Updated in this release",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-07",
+      "requirement": "Complete an exam-style Listening attempt and inspect Practice badges and filters. Expect separate mode-specific status and the correct saved answer in each mode.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Updated in this release",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-08",
+      "requirement": "Inspect routine adjacent navigation on a large account. Expect targeted or cached metadata rather than a full-history download on every move; capture actual request size and latency.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Updated in this release",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-09",
+      "requirement": "Move between two questions, use browser Back and Forward, refresh and reopen a copied link. Expect the exact task, question and mode, with no automatic submission.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Updated in this release",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-10",
+      "requirement": "Open current and earlier HCS and HIW banks and an old assignment link. Expect Listening identity, correct content and a consistent return flow.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Updated in this release",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-11",
+      "requirement": "Activate Next using Enter and inspect focus. Expect the new question heading or another deliberate accessible target, never an unexplained focus loss to the document body.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Updated in this release",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-12",
+      "requirement": "Open long feedback and use a small screen. Expect Previous, Next and Question list to remain reachable without covering response text.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Updated in this release",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-13",
+      "requirement": "Resume a saved recording draft and a pending assessment. Expect playback and the right submit or pending action, with no new assessment POST merely from Resume.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-14",
+      "requirement": "Double-click Next, change filters during a slow save and let an old response arrive late. Expect no skipped question, duplicate attempt or cross-question overwrite.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-15",
+      "requirement": "Fail upload or cloud save and retry. Expect retained text or audio, a visible unsaved state and a single successful recovery without re-recording.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "NAV-16",
+      "requirement": "Switch accounts while requests are in flight. Expect all late private results to be rejected for the newly signed-in account. The 30 October navigation tracker reports NAV-01, NAV-02, NAV-03, NAV-04 and NAV-13 as implemented with specified acceptance still open. NAV-05 through NAV-12 remain planned there. Recheck against the deployed build rather than treating the tracker as a completed live test.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-navigation.test.js",
+        "tests/reading-practice.test.js",
+        "tests/writing-lab-client.test.js",
+        "tests/speaking-client.test.js",
+        "tests/practice-navigation-browser.system.js"
+      ]
+    },
+    {
+      "id": "CAT-01",
+      "requirement": "Search by task title and stable question ID, combine category and status filters, then clear them. Expect correct results, original question numbering and a deliberate new queue only when selection changes.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-catalogue.test.js",
+        "tests/listening-studio.test.js"
+      ]
+    },
+    {
+      "id": "CAT-02",
+      "requirement": "Bookmark and unbookmark a question, reopen the bookmarked list and switch accounts. Expect the right account-scoped bookmark and no change to submitted answers.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-catalogue.test.js",
+        "tests/listening-studio.test.js"
+      ]
+    },
+    {
+      "id": "CAT-03",
+      "requirement": "Inspect Not attempted, Draft, Pending and Attempted filters in each available mode. Expect badges based on the correct latest matching attempt, not another mode's history.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-catalogue.test.js",
+        "tests/listening-studio.test.js"
+      ]
+    },
+    {
+      "id": "CAT-04",
+      "requirement": "Open question previews and allow adjacent metadata to prefetch. Expect no attempt creation, microphone permission request, audio playback or assessment.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-catalogue.test.js",
+        "tests/listening-studio.test.js"
+      ]
+    },
+    {
+      "id": "CAT-05",
+      "requirement": "Try changing the practice task during an unfinished speaking capture. Expect the intended capture-protection action and no lost audio or orphaned recorder.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/practice-catalogue.test.js",
+        "tests/listening-studio.test.js"
+      ]
+    },
+    {
+      "id": "REC-01",
+      "requirement": "Deny microphone permission, disconnect the device, change it and retry. Expect a helpful equipment error and no phantom recording or started mock.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-client.test.js",
+        "tests/speaking-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "REC-02",
+      "requirement": "Record and play the equipment sample. Expect audible playback and the hear-my-voice confirmation to unlock only after the appropriate sample steps.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-client.test.js",
+        "tests/speaking-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "REC-03",
+      "requirement": "Block autoplay and slow the prompt download. Expect a Play or Continue action, correct prompt position and the complete preparation time after playback ends.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-client.test.js",
+        "tests/speaking-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "REC-04",
+      "requirement": "Start each task and measure preparation, cue and recording against real time. Expect no cue recorded into the student's answer and no overlap with the prompt.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-client.test.js",
+        "tests/speaking-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "REC-05",
+      "requirement": "Stop early, reach the task limit and test configured silence termination. Expect one saved final segment, no repeated stop callback and no extra penalty fabricated from duration alone.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-client.test.js",
+        "tests/speaking-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "REC-06",
+      "requirement": "Interrupt or background the browser during recording. Expect protected-mode locking where required, retained recoverable capture and an honest incomplete-audio state.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-client.test.js",
+        "tests/speaking-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "REC-07",
+      "requirement": "Reopen and play a submitted recording on another authorised device. Expect correct ownership, MIME type, duration and complete audio rather than only its first chunk.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-client.test.js",
+        "tests/speaking-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "REC-08",
+      "requirement": "Test desktop Chrome and Edge, macOS Safari, physical iPhone Safari and supported Android Chrome. Record actual codec and permission outcomes; touch emulation does not establish physical microphone support.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-client.test.js",
+        "tests/speaking-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "RA-01",
+      "requirement": "Read the full passage, omit a middle phrase and add unrelated words in separate fixtures. Expect alignment to the correct reference and the expected native content changes without shifting all later matches.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking.test.js"
+      ]
+    },
+    {
+      "id": "RA-02",
+      "requirement": "Use punctuation, contractions, repeated words and a number. Expect consistent token handling, a correct maximum and evidence matching the confirmed transcript.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking.test.js"
+      ]
+    },
+    {
+      "id": "RA-03",
+      "requirement": "Submit clear and genuinely silent recordings. Expect independent audio traits for usable speech and a real zero or explicit no-speech state for verified silence; provider failure remains unavailable.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking.test.js"
+      ]
+    },
+    {
+      "id": "RS-01",
+      "requirement": "Use complete, at-least-half, below-half and almost-empty responses. Expect 3, 2, 1 and 0 respectively under the native matching rule, including exact threshold checks.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking.test.js"
+      ]
+    },
+    {
+      "id": "RS-02",
+      "requirement": "Repeat duplicated words and reorder a phrase. Expect one-to-one ordered matching without inflated credit from repeated tokens.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking.test.js"
+      ]
+    },
+    {
+      "id": "RS-03",
+      "requirement": "Inspect prompt end, cue and recorder opening. Expect the complete sentence, no transcript leak and a single cue before the answer capture.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking.test.js"
+      ]
+    },
+    {
+      "id": "DI-01",
+      "requirement": "Compare a bare label list with a connected description of the same image. Expect content to reflect communicated relationships, not just keyword count.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/describe-image-academy.test.js",
+        "tests/describe-image-feedback.test.js",
+        "tests/di-reference.test.js"
+      ]
+    },
+    {
+      "id": "DI-02",
+      "requirement": "Submit a material wrong unit, reversed main trend, minor harmless slip and explicit correction as separate cases. Expect different impact judgments supported by the actual response.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/describe-image-academy.test.js",
+        "tests/describe-image-feedback.test.js",
+        "tests/di-reference.test.js"
+      ]
+    },
+    {
+      "id": "DI-03",
+      "requirement": "Submit a strong answer without a conclusion or extra calculated total, including one that reaches the time limit. Expect no automatic content ceiling for those omissions alone.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/describe-image-academy.test.js",
+        "tests/describe-image-feedback.test.js",
+        "tests/di-reference.test.js"
+      ]
+    },
+    {
+      "id": "DI-04",
+      "requirement": "Open every new mock image and sample at normal and enlarged size. Expect the correct prediction asset, readable values, matching facts and no sample during the active test.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/describe-image-academy.test.js",
+        "tests/describe-image-feedback.test.js",
+        "tests/di-reference.test.js"
+      ]
+    },
+    {
+      "id": "DI-05",
+      "requirement": "Return fabricated quotations, missing fact references or contradictory score evidence from a test provider. Expect an unconfirmed content state, never a silently accepted full score or keyword fallback.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/describe-image-academy.test.js",
+        "tests/describe-image-feedback.test.js",
+        "tests/di-reference.test.js"
+      ]
+    },
+    {
+      "id": "DI-06",
+      "requirement": "Assess the same authorised image and transcript fixture through standalone practice and new mock paths. Expect the required Academy meaning-first behaviour on both; record any policy or validation difference without changing scores.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Updated in this release",
+      "relatedSuites": [
+        "tests/describe-image-academy.test.js",
+        "tests/describe-image-feedback.test.js",
+        "tests/di-reference.test.js"
+      ]
+    },
+    {
+      "id": "RL-01",
+      "requirement": "Use template-only, keyword, fragment and connected summaries of one lecture. Expect a sensible quality ordering with exact response evidence.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/spoken-summary-policy.test.js"
+      ]
+    },
+    {
+      "id": "RL-02",
+      "requirement": "Compare a harmless secondary slip with a reversed central claim. Expect different content impact and no deduction merely for not reproducing every fact.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/spoken-summary-policy.test.js"
+      ]
+    },
+    {
+      "id": "RL-03",
+      "requirement": "Stall prompt playback near the end. Expect the full ten-second preparation after the real end, then the saved answer limit and one recording.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/spoken-summary-policy.test.js"
+      ]
+    },
+    {
+      "id": "SGD-01",
+      "requirement": "Audit all fifteen current discussions for introductory narration, all turns, three distinct accents or voices, stable speaker mapping, complete audio and correct cache version.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/content-trust.test.js",
+        "tests/spoken-summary-policy.test.js"
+      ]
+    },
+    {
+      "id": "SGD-02",
+      "requirement": "Summarise each speaker's central position and their relationship. Expect credit for the connected account without requiring every detail or named speakers.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/content-trust.test.js",
+        "tests/spoken-summary-policy.test.js"
+      ]
+    },
+    {
+      "id": "SGD-03",
+      "requirement": "Invent consensus in a disagreement discussion and swap an important position. Expect a material content issue grounded in the source, rather than a vocabulary penalty.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/content-trust.test.js",
+        "tests/spoken-summary-policy.test.js"
+      ]
+    },
+    {
+      "id": "SGD-04",
+      "requirement": "Verify the two AI-related topics remain distinct and the conference discussion treats the tutor correctly. Expect no bank, transcript or audio mix-up.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/content-trust.test.js",
+        "tests/spoken-summary-policy.test.js"
+      ]
+    },
+    {
+      "id": "SGD-05",
+      "requirement": "Measure playback, preparation and the full two-minute response. Expect no 40-second cap copied from RL or RTS.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/content-trust.test.js",
+        "tests/spoken-summary-policy.test.js"
+      ]
+    },
+    {
+      "id": "RTS-01",
+      "requirement": "Inspect every authored ending and each narrated version. Expect a named or clear listener and text/audio agreement; preserve the original Tom scenario's purpose.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/rts-prompts.test.js",
+        "tests/situation-content-policy.test.js"
+      ]
+    },
+    {
+      "id": "RTS-02",
+      "requirement": "Give a concise valid alternative solution and an indirect polite request. Expect assessment of communication success rather than sample matching.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/rts-prompts.test.js",
+        "tests/situation-content-policy.test.js"
+      ]
+    },
+    {
+      "id": "RTS-03",
+      "requirement": "Give only a greeting, retell the scenario and address the wrong listener. Expect the actual communication gap to be identified and scored consistently.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/rts-prompts.test.js",
+        "tests/situation-content-policy.test.js"
+      ]
+    },
+    {
+      "id": "RTS-04",
+      "requirement": "Reopen an old attempt and create a reattempt. Expect the old prompt and result to survive; current reattempt logic may refresh known RTS prompts from the current bank as documented.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/rts-prompts.test.js",
+        "tests/situation-content-policy.test.js"
+      ]
+    },
+    {
+      "id": "ASQ-01",
+      "requirement": "Submit the accepted answer, an accepted variant, a wrong answer and an explicit skip. Expect the documented one-point answer policy and Listening routing, with zero for wrong or explicitly unanswered responses.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-asq.test.js"
+      ]
+    },
+    {
+      "id": "ASQ-02",
+      "requirement": "Confirm the correct audio belongs to the current ASQ and that the recording and transcript remain reviewable privately after submission.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-asq.test.js"
+      ]
+    },
+    {
+      "id": "ASQ-03",
+      "requirement": "Supply a contradictory answer containing the correct word, then fail transcription of a saved recording. Expect zero for the verified contradictory answer and pending for unavailable or unreliable transcription; preserve the recording for retry.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-asq.test.js"
+      ]
+    },
+    {
+      "id": "SWT-01",
+      "requirement": "Test 4, 5, 25, 45, 75 and 76 words, two sentences, a fragment and one complex sentence. Expect exact form boundaries and a total gate only for a real failure.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/swt-form-policy.test.js",
+        "tests/swt-scoring-policy.test.js",
+        "tests/swt-selection-trainer.test.js"
+      ]
+    },
+    {
+      "id": "SWT-02",
+      "requirement": "Compare copied but well-selected connected clauses, scattered excerpts and a concise genuine synthesis. Expect evidence-based differentiation without automatic plagiarism or synonym-count deductions.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/swt-form-policy.test.js",
+        "tests/swt-scoring-policy.test.js",
+        "tests/swt-selection-trainer.test.js"
+      ]
+    },
+    {
+      "id": "SWT-03",
+      "requirement": "Use a correct concise answer that omits an optional example and one that omits an essential causal conclusion. Expect different content impact with no forced exhaustive checklist.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/swt-form-policy.test.js",
+        "tests/swt-scoring-policy.test.js",
+        "tests/swt-selection-trainer.test.js"
+      ]
+    },
+    {
+      "id": "SWT-04",
+      "requirement": "Fail the semantic provider or return conflicting review evidence. Expect provisional or pending status, preserved response and no unsupported full content score.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/swt-form-policy.test.js",
+        "tests/swt-scoring-policy.test.js",
+        "tests/swt-selection-trainer.test.js"
+      ]
+    },
+    {
+      "id": "SWT-05",
+      "requirement": "Select multiple exact phrases, remove one and check the highlight exercise. Expect correct passage spans, meaningful selection feedback and no full-summary assessment or mock score from highlight-only work.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/swt-form-policy.test.js",
+        "tests/swt-scoring-policy.test.js",
+        "tests/swt-selection-trainer.test.js"
+      ]
+    },
+    {
+      "id": "SWT-06",
+      "requirement": "Return to a saved response after navigating and refreshing. Expect the exact passage, draft, mode, history and confirmed scores for that account.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/swt-form-policy.test.js",
+        "tests/swt-scoring-policy.test.js",
+        "tests/swt-selection-trainer.test.js"
+      ]
+    },
+    {
+      "id": "SWT-07",
+      "requirement": "Write passage notes, edit the summary and return after refresh or account change. Expect separate account-scoped notes and response text; notes must never be submitted as the answer.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/swt-form-policy.test.js",
+        "tests/swt-scoring-policy.test.js",
+        "tests/swt-selection-trainer.test.js"
+      ]
+    },
+    {
+      "id": "ESS-01",
+      "requirement": "Test 119, 120, 199, 200, 300, 301, 380 and 381 words plus empty, all-capital and non-prose responses. Expect correct form treatment and consistent gate explanations.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-scoring.test.js",
+        "tests/essay-grading-client.test.js"
+      ]
+    },
+    {
+      "id": "ESS-02",
+      "requirement": "Test a stance essay, both-views essay and opinion-plus-alternatives prompt. Expect the correct required components, including alternatives for late-mark penalties.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-scoring.test.js",
+        "tests/essay-grading-client.test.js"
+      ]
+    },
+    {
+      "id": "ESS-03",
+      "requirement": "Submit a clear simple essay with minor slips and an off-topic polished essay. Expect separate language and content judgments; fluency of writing must not conceal missing task fulfilment.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-scoring.test.js",
+        "tests/essay-grading-client.test.js"
+      ]
+    },
+    {
+      "id": "ESS-04",
+      "requirement": "Use the feedback Apply action on one quoted error. Expect only the intended occurrence to change and the original scored attempt to remain available; new text must not retain a stale score as though newly assessed.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-scoring.test.js",
+        "tests/essay-grading-client.test.js"
+      ]
+    },
+    {
+      "id": "ESS-05",
+      "requirement": "Delay two essay reviews and return them in reverse order. Expect each response and feedback to stay with its own submission ID and account.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-scoring.test.js",
+        "tests/essay-grading-client.test.js"
+      ]
+    },
+    {
+      "id": "ESS-06",
+      "requirement": "Review samples at the available vocabulary levels. Expect the student's approved stance, ideas and examples to survive and no claim that the sample guarantees an official band.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-scoring.test.js",
+        "tests/essay-grading-client.test.js"
+      ]
+    },
+    {
+      "id": "ESS-07",
+      "requirement": "Enable, disable and reset the optional practice timer, then compare with a protected mock clock. Expect practice controls to follow their labelled training purpose and never reset a server-owned mock deadline.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-scoring.test.js",
+        "tests/essay-grading-client.test.js"
+      ]
+    },
+    {
+      "id": "ESS-08",
+      "requirement": "Switch between a library prompt and custom prompt while a draft exists. Expect deliberate draft preservation or recovery, correct prompt ownership and no old score presented as an assessment of the new prompt.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-scoring.test.js",
+        "tests/essay-grading-client.test.js"
+      ]
+    },
+    {
+      "id": "SST-01",
+      "requirement": "Test 39, 40, 49, 50, 70, 71, 100 and 101 words plus a wrong-topic response. Expect correct form bands and actual content gating.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/writing-lab-client.test.js",
+        "tests/writing-lab.test.js"
+      ]
+    },
+    {
+      "id": "SST-02",
+      "requirement": "Block autoplay before Start and fail the begin request. Expect no started timer on rejected playback, a paused clip on failed begin and a recoverable retry.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/writing-lab-client.test.js",
+        "tests/writing-lab.test.js"
+      ]
+    },
+    {
+      "id": "SST-03",
+      "requirement": "Compare Practice replay with exam-style single play and resume. Expect the appropriate policy, saved playback position and an unchanged deadline.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/writing-lab-client.test.js",
+        "tests/writing-lab.test.js"
+      ]
+    },
+    {
+      "id": "SST-04",
+      "requirement": "Reattempt a submitted standalone SST. Expect a fresh attempt and clock while the original recording source, response and result remain in history.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/writing-lab-client.test.js",
+        "tests/writing-lab.test.js"
+      ]
+    },
+    {
+      "id": "RDD-01",
+      "requirement": "Select all correct, mixed, wrong and empty answers. Expect the exact per-blank total and no Writing contribution.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/reading-practice.test.js"
+      ]
+    },
+    {
+      "id": "RDD-02",
+      "requirement": "Navigate away, restore, change one selection and review. Expect every answer to return to the same blank with keyboard access and no shifted option labels.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/reading-practice.test.js"
+      ]
+    },
+    {
+      "id": "RMA-01",
+      "requirement": "For a fixture with correct A and C, test A plus C, A only, A plus B and B only. Expect 2, 1, 0 and 0.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/reading-practice.test.js"
+      ]
+    },
+    {
+      "id": "RMA-02",
+      "requirement": "Change and restore multiple selections. Expect independent toggles, stable selection IDs and an instruction that clearly says multiple answers.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/reading-practice.test.js"
+      ]
+    },
+    {
+      "id": "RRO-01",
+      "requirement": "For correct order A B C D, test A B D C. Expect one correct adjacent pair out of three. Test the perfect and reversed orders too.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/reading-practice.test.js"
+      ]
+    },
+    {
+      "id": "RRO-02",
+      "requirement": "Move paragraphs with mouse, touch and keyboard, then restore a saved draft. Expect no duplicate, lost or blank paragraph and the exact saved order.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/reading-practice.test.js"
+      ]
+    },
+    {
+      "id": "RWB-01",
+      "requirement": "Fill correctly, replace a word, remove one and swap two. Expect correct token ownership, stable blank positions and the right per-blank score.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/reading-practice.test.js"
+      ]
+    },
+    {
+      "id": "RWB-02",
+      "requirement": "Use touch and keyboard alternatives at narrow width. Expect the full bank and blanks to remain reachable without accidental page navigation.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/reading-practice.test.js"
+      ]
+    },
+    {
+      "id": "RSA-01",
+      "requirement": "Test correct, wrong and blank responses and change a choice. Expect 1 or 0, exactly one selected option and preserved state on return.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/reading-practice.test.js"
+      ]
+    },
+    {
+      "id": "RSA-02",
+      "requirement": "Review a submitted response. Expect the student's selected option, correct answer and explanation to remain distinguishable.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/reading-practice.test.js"
+      ]
+    },
+    {
+      "id": "LMA-01",
+      "requirement": "Test a two-correct-choice fixture with all, partial, extra and no selections. Expect correct negative marking confined to that question.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/listening-studio.test.js",
+        "tests/listening-mocks.test.js"
+      ]
+    },
+    {
+      "id": "LMA-02",
+      "requirement": "Check audio single-play, hidden source transcript and independent checkbox selection in the timed mode.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/listening-studio.test.js",
+        "tests/listening-mocks.test.js"
+      ]
+    },
+    {
+      "id": "LFI-01",
+      "requirement": "Test exact spellings, a misspelling, empty blanks and allowed variants. Expect the authored key policy, maximum equal to blanks and no whole-response semantic guess.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/listening-studio.test.js"
+      ]
+    },
+    {
+      "id": "LFI-02",
+      "requirement": "Type and tab through blanks during audio and restore after refresh. Expect stable input focus, positions and saved text.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/listening-studio.test.js"
+      ]
+    },
+    {
+      "id": "HCS-01",
+      "requirement": "Select correct, wrong and blank options. Expect 1 or 0 and a contribution to both relevant skill profiles.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/listening-studio.test.js",
+        "tests/reading-practice.test.js"
+      ]
+    },
+    {
+      "id": "HCS-02",
+      "requirement": "Open the earlier bank through an existing teacher assignment. Expect the correct question, saved response, Listening identity and return navigation.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/listening-studio.test.js",
+        "tests/reading-practice.test.js"
+      ]
+    },
+    {
+      "id": "LSA-01",
+      "requirement": "Change from a wrong to correct option before submission. Expect exactly one saved selection and the final answer to be scored.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/listening-studio.test.js"
+      ]
+    },
+    {
+      "id": "LSA-02",
+      "requirement": "Let the shared time expire with a selected and an empty answer. Expect the saved selection and the genuine zero respectively, without a deadline reset.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/listening-studio.test.js"
+      ]
+    },
+    {
+      "id": "SMW-01",
+      "requirement": "Listen independently to the whole clip and its end cue. Expect intact context, a clear missing- word boundary and no leaked answer.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/listening-mocks.test.js"
+      ]
+    },
+    {
+      "id": "SMW-02",
+      "requirement": "Test all response states and review. Expect the correct one-point mark and explanation tied to this clip.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/listening-mocks.test.js"
+      ]
+    },
+    {
+      "id": "HIW-01",
+      "requirement": "Select all actual differences, one valid difference plus a correct word, and only correct words. Expect exact token-based credit and question-level floor zero.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/hiw-audio.test.js",
+        "tests/listening-studio.test.js"
+      ]
+    },
+    {
+      "id": "HIW-02",
+      "requirement": "Toggle repeated-looking words and punctuation-adjacent tokens, then restore the draft. Expect stable token indices rather than all occurrences changing together.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/hiw-audio.test.js",
+        "tests/listening-studio.test.js"
+      ]
+    },
+    {
+      "id": "HIW-03",
+      "requirement": "Compare current and earlier HIW bank routes. Expect the intended audio, transcript, answer indices and consistent Listening controls.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/hiw-audio.test.js",
+        "tests/listening-studio.test.js"
+      ]
+    },
+    {
+      "id": "WFD-01",
+      "requirement": "Test perfect text, an omitted middle word, a misspelling, an insertion, repeated words and a reordered phrase. Expect sequence-aware matching with no cascading penalty from one omission.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/writing-lab.test.js"
+      ]
+    },
+    {
+      "id": "WFD-02",
+      "requirement": "Change only capitalisation and punctuation. Expect the same content mark under the saved token policy.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/writing-lab.test.js"
+      ]
+    },
+    {
+      "id": "WFD-03",
+      "requirement": "Advance through a shared dictation group and refresh. Expect the original shared deadline, distinct sentence playback states and no additional time on Next. SST is specified in section 8. Together with these seven forms it completes the eight Listening task types.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/writing-lab.test.js"
+      ]
+    },
+    {
+      "id": "MOCK-01",
+      "requirement": "Filter by skill, paper kind and search; inspect new, active, pending and submitted attempts. Expect truthful labels, consistent counts and one correct entry action.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/protected-mock-integrity.test.js",
+        "tests/mock-resume-flow.test.js"
+      ]
+    },
+    {
+      "id": "MOCK-02",
+      "requirement": "Test anonymous, blocked, authorised and unauthorised users through UI and direct API. Expect the same effective access policy on both paths.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/protected-mock-integrity.test.js",
+        "tests/mock-resume-flow.test.js"
+      ]
+    },
+    {
+      "id": "MOCK-03",
+      "requirement": "Cancel fullscreen or microphone preflight before starting. Expect no new attempt, consumed question or running new timer.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/protected-mock-integrity.test.js",
+        "tests/mock-resume-flow.test.js"
+      ]
+    },
+    {
+      "id": "MOCK-04",
+      "requirement": "Resume the same attempt twice and try another active tab. Expect the saved clock and the engine's conflict or control-owner rules, never two competing accepted writers.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/protected-mock-integrity.test.js",
+        "tests/mock-resume-flow.test.js"
+      ]
+    },
+    {
+      "id": "MOCK-05",
+      "requirement": "Use Next during audio, preparation and recording where the player permits it. Expect the intended explicit skip or saved response, immediate single forward movement and no extra attempt.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/protected-mock-integrity.test.js",
+        "tests/mock-resume-flow.test.js"
+      ]
+    },
+    {
+      "id": "MOCK-06",
+      "requirement": "Double-click Next and final Submit while saving is slow. Expect one sealed response, one move or submission and visible progress.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/protected-mock-integrity.test.js",
+        "tests/mock-resume-flow.test.js"
+      ]
+    },
+    {
+      "id": "MOCK-07",
+      "requirement": "Fail a save or upload before advancement. Expect the current answer retained with retry; never advance as if an unconfirmed response was saved.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/protected-mock-integrity.test.js",
+        "tests/mock-resume-flow.test.js"
+      ]
+    },
+    {
+      "id": "MOCK-08",
+      "requirement": "Refresh at the start and near the end of an item and shared section. Expect server deadlines and already consumed playback to survive.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/protected-mock-integrity.test.js",
+        "tests/mock-resume-flow.test.js"
+      ]
+    },
+    {
+      "id": "MOCK-09",
+      "requirement": "Exit fullscreen, switch tabs, background the phone and return. Expect the configured lock, stopped inappropriate media and continuing original clock.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/protected-mock-integrity.test.js",
+        "tests/mock-resume-flow.test.js"
+      ]
+    },
+    {
+      "id": "MOCK-10",
+      "requirement": "Try sidebar, browser history, assistant shortcut and an old deep link mid-mock. Expect no escape into an editable portal pane or access to future answers.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/protected-mock-integrity.test.js",
+        "tests/mock-resume-flow.test.js"
+      ]
+    },
+    {
+      "id": "MOCK-11",
+      "requirement": "Submit normally and finish early in separate disposable attempts. Expect clear differences between submitted answers, skipped work and unvisited timed-out items.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/protected-mock-integrity.test.js",
+        "tests/mock-resume-flow.test.js"
+      ]
+    },
+    {
+      "id": "MOCK-12",
+      "requirement": "Reopen a submitted report. Expect no microphone request, no new attempt, normal portal navigation and no automatic paid reassessment.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/protected-mock-integrity.test.js",
+        "tests/mock-resume-flow.test.js"
+      ]
+    },
+    {
+      "id": "SM-01",
+      "requirement": "Verify all three paper inventories, introduction exclusion and question order against the saved paper, including five matching DI assets and samples.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-mock.test.js",
+        "tests/speaking-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "SM-02",
+      "requirement": "Submit a complete paper and monitor saved, queued, assessed and published states. Expect no final overall while required content or Azure delivery is missing.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-mock.test.js",
+        "tests/speaking-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "SM-03",
+      "requirement": "Reattempt and compare with the previous result. Expect independent audio, scores and times, preserved history and no inherited instructor override.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-mock.test.js",
+        "tests/speaking-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "SM-04",
+      "requirement": "Verify the new equipment sample and playback-driven preparation with physical headphones, including a slow SGD prompt and a denied-playback recovery.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-mock.test.js",
+        "tests/speaking-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "SEC-01",
+      "requirement": "Check every published paper's saved inventory, total time, task order and group deadlines. Expect catalogue and player agreement and preserved historical snapshots.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/writing-lab.test.js",
+        "tests/listening-mocks.test.js"
+      ]
+    },
+    {
+      "id": "SEC-02",
+      "requirement": "Let a SWT or Essay item expire and let a shared Listening or Reading group expire. Expect the correct item or group to lock and remaining answers to be accounted for.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/writing-lab.test.js",
+        "tests/listening-mocks.test.js"
+      ]
+    },
+    {
+      "id": "SEC-03",
+      "requirement": "Fail one Writing or Listening assessment. Expect confirmed answers preserved, only missing or invalid work retried and the report's overall-feedback state represented honestly.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/writing-lab.test.js",
+        "tests/listening-mocks.test.js"
+      ]
+    },
+    {
+      "id": "SEC-04",
+      "requirement": "Review an integrated paper. Expect contributions routed by task identity rather than by the screen or section in which it appeared.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/writing-lab.test.js",
+        "tests/listening-mocks.test.js"
+      ]
+    },
+    {
+      "id": "FULL-01",
+      "requirement": "Traverse all 65 items and all 22 forms, plus introduction. Expect exact saved counts, correct controls and no scored introduction.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-api.test.js",
+        "tests/full-mock-session.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/full-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "FULL-02",
+      "requirement": "Verify transitions between every section and task clock, including SST to the shared Listening remainder. Expect no extra time from refresh or Next.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-api.test.js",
+        "tests/full-mock-session.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/full-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "FULL-03",
+      "requirement": "Upload several audio chunks, retry the same chunk and attempt to replace an acknowledged chunk. Expect one intact recording, idempotent retry and rejection of conflicting bytes.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-api.test.js",
+        "tests/full-mock-session.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/full-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "FULL-04",
+      "requirement": "Type offline, refresh, reconnect and recover. Expect the exact recoverable text, original deadline and explicit treatment of anything arriving after sealing.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-api.test.js",
+        "tests/full-mock-session.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/full-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "FULL-05",
+      "requirement": "Race two control claims and two revisions. Expect one accepted controller and safe conflict handling without lost newest text.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-api.test.js",
+        "tests/full-mock-session.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/full-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "FULL-06",
+      "requirement": "Change a paper hash, source hash or assessment input in an isolated fixture. Expect integrity rejection and a held report; no stale score accepted under a changed snapshot.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-api.test.js",
+        "tests/full-mock-session.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/full-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "FULL-07",
+      "requirement": "Reopen an older compatible attempt after a transport-only change. Expect preserved paper and successful stages; unrelated rubric or model changes must not be accepted by a broad compatibility exception.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-api.test.js",
+        "tests/full-mock-session.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/full-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "FULL-08",
+      "requirement": "Review every submitted question, prompt, image and recording. Expect private original media and all 65 accounted-for statuses.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-api.test.js",
+        "tests/full-mock-session.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/full-mock-browser.system.js"
+      ]
+    },
+    {
+      "id": "SCORE-01",
+      "requirement": "Inspect a new mock's saved assessment profile and outgoing test-provider contract. Expect the selected content model, correct task schema and Azure-only active delivery.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-content-provider.test.js",
+        "tests/delivery-rubric.test.js",
+        "tests/speaking-assessment.test.js"
+      ]
+    },
+    {
+      "id": "SCORE-02",
+      "requirement": "Return a refusal, malformed object, out-of-range trait, fabricated quote and contradictory evidence. Expect unconfirmed marks and a safe actionable diagnostic.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-content-provider.test.js",
+        "tests/delivery-rubric.test.js",
+        "tests/speaking-assessment.test.js"
+      ]
+    },
+    {
+      "id": "SCORE-03",
+      "requirement": "Fail Azure after content succeeds, then fail content after Azure succeeds. Expect independent persistence and recovery of only the failed stage.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-content-provider.test.js",
+        "tests/delivery-rubric.test.js",
+        "tests/speaking-assessment.test.js"
+      ]
+    },
+    {
+      "id": "SCORE-04",
+      "requirement": "Compare an older attempt, a new mock and individual practice. Expect their saved or configured provider policy, no silent historical bulk reassessment and no cross-provider cache reuse.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-content-provider.test.js",
+        "tests/delivery-rubric.test.js",
+        "tests/speaking-assessment.test.js"
+      ]
+    },
+    {
+      "id": "SCORE-05",
+      "requirement": "Reopen a complete result repeatedly. Expect no new provider grading request and unchanged confirmed native marks.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-content-provider.test.js",
+        "tests/delivery-rubric.test.js",
+        "tests/speaking-assessment.test.js"
+      ]
+    },
+    {
+      "id": "SCORE-06",
+      "requirement": "Simulate a 401, 429, timeout and verified silence. Expect different technical and learner states, with no zero substituted for an unavailable service.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-content-provider.test.js",
+        "tests/delivery-rubric.test.js",
+        "tests/speaking-assessment.test.js"
+      ]
+    },
+    {
+      "id": "SCORE-07",
+      "requirement": "Test each Azure mapping boundary and a value immediately below it, plus null and non-finite data. Expect the exact independent trait band after the aggregate's one-decimal rounding, with missing input remaining null.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-content-provider.test.js",
+        "tests/delivery-rubric.test.js",
+        "tests/speaking-assessment.test.js"
+      ]
+    },
+    {
+      "id": "SCORE-08",
+      "requirement": "Test the duration and word-count safeguards on both sides of each threshold. Expect withheld traits below the current safeguards and no extra reference-coverage gate in the active content-independent path.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-content-provider.test.js",
+        "tests/delivery-rubric.test.js",
+        "tests/speaking-assessment.test.js"
+      ]
+    },
+    {
+      "id": "GATE-01",
+      "requirement": "Give a clearly irrelevant spoken response with excellent acoustic delivery. Expect zero effective item credit after a confirmed content-zero gate, without deleting original Azure evidence.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-scoring.test.js",
+        "tests/writing-lab.test.js"
+      ]
+    },
+    {
+      "id": "GATE-02",
+      "requirement": "Trigger genuine Content and Form gates for writing tasks. Expect all effective trait marks zero and a reason matching the response.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-scoring.test.js",
+        "tests/writing-lab.test.js"
+      ]
+    },
+    {
+      "id": "GATE-03",
+      "requirement": "Remove a required assessment from an otherwise valid item. Expect pending, never a smaller denominator or a zero that makes the report appear complete.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-scoring.test.js",
+        "tests/writing-lab.test.js"
+      ]
+    },
+    {
+      "id": "GATE-04",
+      "requirement": "Use an explicitly skipped item and an unexplained missing recording. Expect zero for the former and a technical hold for the latter.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-scoring.test.js",
+        "tests/writing-lab.test.js"
+      ]
+    },
+    {
+      "id": "AGG-01",
+      "requirement": "For Speaking, set each task fraction to one, zero and one-half. Expect 90, 10 and 50 respectively, with the 101 weight sum normalised.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-mock-report.test.js",
+        "tests/writing-mock-overall.test.js"
+      ]
+    },
+    {
+      "id": "AGG-02",
+      "requirement": "Vary the number of RS items while keeping its pooled task fraction and all other task fractions unchanged. Expect its task weight not to grow merely because the count changed.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-mock-report.test.js",
+        "tests/writing-mock-overall.test.js"
+      ]
+    },
+    {
+      "id": "AGG-03",
+      "requirement": "For Writing use SWT 15 of 18, Essay 16 of 26, SST 9 of 12 and WFD 27 of 34. Expect 74.1749622926 percent weighted accuracy and 69 of 90 after final rounding, rather than the old pooled conversion of 70.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-mock-report.test.js",
+        "tests/writing-mock-overall.test.js"
+      ]
+    },
+    {
+      "id": "AGG-04",
+      "requirement": "Test a confirmed zero, an invalid maximum, an unsupported type and an incomplete old paper. Expect correct denominator retention, blocking of invalid data and explicit partial coverage.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-mock-report.test.js",
+        "tests/writing-mock-overall.test.js"
+      ]
+    },
+    {
+      "id": "AGG-05",
+      "requirement": "Compare detail, history, Home and My Progress. Expect the same current calculation and no fallback to an archived overall when the current one is pending.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-mock-report.test.js",
+        "tests/writing-mock-overall.test.js"
+      ]
+    },
+    {
+      "id": "PROFILE-01",
+      "requirement": "Change only RS marks and recompute. Expect Listening, Speaking and independent Overall to respond, with Reading and Writing unchanged.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-scoring.test.js"
+      ]
+    },
+    {
+      "id": "PROFILE-02",
+      "requirement": "Repeat with SWT, SST, HCS, HIW and WFD. Expect exactly the skills in the matrix and one Overall task contribution.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-scoring.test.js"
+      ]
+    },
+    {
+      "id": "PROFILE-03",
+      "requirement": "Change RA, ASQ, Dropdown FIB and Listening FIB. Expect Speaking only, Listening only, Reading only and Listening only respectively in their skill profiles.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-scoring.test.js"
+      ]
+    },
+    {
+      "id": "PROFILE-04",
+      "requirement": "Make one required native result missing or stale. Expect the affected profiles pending; the complete report remains held until all 65 are valid.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-scoring.test.js"
+      ]
+    },
+    {
+      "id": "PROFILE-05",
+      "requirement": "Evaluate all corners of the three uncertain Overall weights in a deterministic fixture. Expect the returned range to enclose them and no substituted midpoint.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-scoring.test.js"
+      ]
+    },
+    {
+      "id": "PROFILE-06",
+      "requirement": "Use uneven skill performance. Expect independent Overall to differ where appropriate from the arithmetic average of the four skill displays.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/full-mock-scoring.test.js"
+      ]
+    },
+    {
+      "id": "REPORT-01",
+      "requirement": "Compare a fully scored report, pending report and held report. Expect truthful readiness, saved-answer reassurance and a useful next step rather than a misleading completed score.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-report-ui.test.js",
+        "tests/full-mock-report.test.js",
+        "tests/writing-weighted-report.test.js"
+      ]
+    },
+    {
+      "id": "REPORT-02",
+      "requirement": "Filter to a task, switch tabs and move answers while audio or feedback is loading. Expect selection to remain stable and late responses not to replace another answer.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-report-ui.test.js",
+        "tests/full-mock-report.test.js",
+        "tests/writing-weighted-report.test.js"
+      ]
+    },
+    {
+      "id": "REPORT-03",
+      "requirement": "Play the source and learner audio, open the transcript and zoom DI. Expect the correct private media and samples associated with that saved question snapshot.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-report-ui.test.js",
+        "tests/full-mock-report.test.js",
+        "tests/writing-weighted-report.test.js"
+      ]
+    },
+    {
+      "id": "REPORT-04",
+      "requirement": "Inspect every deduction. Expect a real quotation or supported audio evidence and consistent severity; optional improvements must not be presented as missing mandatory content.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-report-ui.test.js",
+        "tests/full-mock-report.test.js",
+        "tests/writing-weighted-report.test.js"
+      ]
+    },
+    {
+      "id": "REPORT-05",
+      "requirement": "Check Other skill contributions for Speaking, Writing, Reading and Listening sectionals. Expect the matrix routes, correct available contribution maximum and no full untested-skill score.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-report-ui.test.js",
+        "tests/full-mock-report.test.js",
+        "tests/writing-weighted-report.test.js"
+      ]
+    },
+    {
+      "id": "REPORT-06",
+      "requirement": "Hold one contributing answer. Expect Pending or Unavailable in that contribution rather than zero or an invented completed bar.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-report-ui.test.js",
+        "tests/full-mock-report.test.js",
+        "tests/writing-weighted-report.test.js"
+      ]
+    },
+    {
+      "id": "REPORT-07",
+      "requirement": "Reopen old reports and instructor-adjusted reports. Expect legacy data readable, current totals correctly sourced and adjustments disclosed.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-report-ui.test.js",
+        "tests/full-mock-report.test.js",
+        "tests/writing-weighted-report.test.js"
+      ]
+    },
+    {
+      "id": "REPORT-08",
+      "requirement": "Check desktop and mobile long feedback. Expect stable heading hierarchy, readable colours and reachable navigation without re-scoring on tab changes.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-report-ui.test.js",
+        "tests/full-mock-report.test.js",
+        "tests/writing-weighted-report.test.js"
+      ]
+    },
+    {
+      "id": "PROG-01",
+      "requirement": "Submit one response and perform repeated saves, polls and refreshes. Expect one submitted activity, stable trends and no multiplied attempt count.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "PROG-02",
+      "requirement": "Open each Home recent card and Resume after changing task and device. Expect the intended account, question, mode, response and clock.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "PROG-03",
+      "requirement": "Edit a long paragraph while background sync completes. Expect cursor, selection and exact text to stay stable, with no typing lag caused by whole-profile writes on each keystroke.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "PROG-04",
+      "requirement": "Race local draft edits with a stale remote pull and a deletion. Expect the documented newest- field and deletion behaviour, with no resurrected deleted work.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "PROG-05",
+      "requirement": "Use two devices and different domains of the same profile, such as vocabulary and an essay draft. Expect unrelated fields preserved rather than a whole-record overwrite.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "PROG-06",
+      "requirement": "Return unchanged JSON with a different object-key order, then change one real field. Expect no sync loop for the former and the correct compact update for the latter.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "PROG-07",
+      "requirement": "Delete a disposable practice attempt through its supported action and reopen history. Expect ownership checks and consistent local and cloud removal without altering another attempt.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "PROG-08",
+      "requirement": "Check any exposed leaderboard or aggregate view. Expect no credentials, private response text or unexpected student information and no aggregate count built from duplicate saves.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/account-progress.test.js",
+        "tests/portal-responsiveness.test.js"
+      ]
+    },
+    {
+      "id": "BUILD-01",
+      "requirement": "Choose each supported prompt family and inspect its body-paragraph roles. Expect the requested components, including alternatives, both views or examples where required.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-builder-guidance.test.js",
+        "tests/essay-generation-preferences.test.js",
+        "tests/essay-generation-quality.test.js"
+      ]
+    },
+    {
+      "id": "BUILD-02",
+      "requirement": "Select complete agreement, disagreement and partial agreement. Expect a consistent stance throughout the approved plan and generated sample, without a compulsory opposing paragraph for a one- sided stance.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-builder-guidance.test.js",
+        "tests/essay-generation-preferences.test.js",
+        "tests/essay-generation-quality.test.js"
+      ]
+    },
+    {
+      "id": "BUILD-03",
+      "requirement": "Change an approved idea or prompt, then generate. Expect renewed plan validation and no stale approved signature.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-builder-guidance.test.js",
+        "tests/essay-generation-preferences.test.js",
+        "tests/essay-generation-quality.test.js"
+      ]
+    },
+    {
+      "id": "BUILD-04",
+      "requirement": "Use manual ideas only, then suggested ideas only. Expect the chosen source to be honoured and unsupported facts or personal claims to be rejected or identified.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-builder-guidance.test.js",
+        "tests/essay-generation-preferences.test.js",
+        "tests/essay-generation-quality.test.js"
+      ]
+    },
+    {
+      "id": "BUILD-05",
+      "requirement": "Change default and per-essay templates and reset a custom one. Expect the correct scope and no change to already saved scored student responses.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-builder-guidance.test.js",
+        "tests/essay-generation-preferences.test.js",
+        "tests/essay-generation-quality.test.js"
+      ]
+    },
+    {
+      "id": "BUILD-06",
+      "requirement": "Generate a freestyle essay, copy it and save it to the library. Expect the exact result and metadata, one saved entry and no accidental mock submission.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-builder-guidance.test.js",
+        "tests/essay-generation-preferences.test.js",
+        "tests/essay-generation-quality.test.js"
+      ]
+    },
+    {
+      "id": "BUILD-07",
+      "requirement": "Regenerate one sentence or paragraph while another edit is in progress. Expect only the intended current portion to change; reject stale delayed output.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-builder-guidance.test.js",
+        "tests/essay-generation-preferences.test.js",
+        "tests/essay-generation-quality.test.js"
+      ]
+    },
+    {
+      "id": "BUILD-08",
+      "requirement": "Batch-generate selected topics, fail one provider request and cancel. Expect progress per item, no duplicate replacements and completed entries retained.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/essay-builder-guidance.test.js",
+        "tests/essay-generation-preferences.test.js",
+        "tests/essay-generation-quality.test.js"
+      ]
+    },
+    {
+      "id": "LIB-01",
+      "requirement": "Add, edit, select, filter and delete disposable essays. Expect stable IDs, correct selected entry and a deliberate destructive action with safe cancellation.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "LIB-02",
+      "requirement": "Preview a bulk topic import with numbering, blank lines, duplicates and malformed rows. Expect a useful parsed preview before committing and no unreviewed mass creation.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "LIB-03",
+      "requirement": "Export current, selected, written-only and whole-book sets. Expect the correct subset and ordering, readable pages and no missing final paragraph or repeated cover.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "LIB-04",
+      "requirement": "Print and inspect PDF pagination, headings, vocabulary highlights and long titles. Expect no clipped text, blank overflow page or hidden answer.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "LIB-05",
+      "requirement": "Send current, selected and book outputs through the mail sink, including an invalid recipient and failed transport. Expect explicit recipient validation, exact attachments and honest success or failure.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "LIB-06",
+      "requirement": "Import a local essay or account backup and refresh. Expect account ownership, valid data preservation and safe rejection of executable HTML or malformed content.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-audit.test.js"
+      ]
+    },
+    {
+      "id": "VOC-01",
+      "requirement": "Search categories and the master bank, combine level filtering and pagination, then clear search. Expect correct counts, stable words and disabled page boundaries.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/vocab-lazy-load.test.js"
+      ]
+    },
+    {
+      "id": "VOC-02",
+      "requirement": "Load details, play pronunciation and interrupt it by changing words. Expect the selected word's details and no overlapping or stale audio.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/vocab-lazy-load.test.js"
+      ]
+    },
+    {
+      "id": "VOC-03",
+      "requirement": "Mark a word read or learned, flip a flashcard and use its available study controls. Expect the correct saved word state and consistent progress totals after refresh.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/vocab-lazy-load.test.js"
+      ]
+    },
+    {
+      "id": "VOC-04",
+      "requirement": "Check a correct sentence, a misspelling and a semantically wrong use of the target word. Expect local and AI feedback to remain distinguishable, with no fabricated full language assessment.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/vocab-lazy-load.test.js"
+      ]
+    },
+    {
+      "id": "VOC-05",
+      "requirement": "Run each exposed quiz type, submit once, cancel and begin a new quiz. Expect correct answer matching, stable result counts and no duplicate progress from repeated clicks.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/vocab-lazy-load.test.js"
+      ]
+    },
+    {
+      "id": "VOC-06",
+      "requirement": "Fail the master-bank or detail request and recover. Expect Retry with the previous study state preserved, not an empty bank counted as completed.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/vocab-lazy-load.test.js"
+      ]
+    },
+    {
+      "id": "VOC-07",
+      "requirement": "Query a word outside the bank and return unsafe or malformed provider text. Expect safe rendering, honest unavailable state and no script execution.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/vocab-lazy-load.test.js"
+      ]
+    },
+    {
+      "id": "VOC-08",
+      "requirement": "Flip first and last flashcards, mark the selected word and advance. Expect the correct card identity, coherent end or wrap behaviour and no unintended progress for an unseen word.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/vocab-lazy-load.test.js"
+      ]
+    },
+    {
+      "id": "PLAN-01",
+      "requirement": "Assign a module and a custom plan in the test environment. Expect correct student ownership, priority, due date and one new-plan notification.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/interventions.test.js",
+        "tests/ipt-coach.test.js"
+      ]
+    },
+    {
+      "id": "PLAN-02",
+      "requirement": "Open each exact-question link, including an Essay library item and an earlier Listening bank question. Expect the assigned stable ID and correct mode or task.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/interventions.test.js",
+        "tests/ipt-coach.test.js"
+      ]
+    },
+    {
+      "id": "PLAN-03",
+      "requirement": "Complete an assigned practice item, an unrelated item and an older attempt. Expect only qualifying submissions to satisfy the plan, especially when a new attempt is required.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/interventions.test.js",
+        "tests/ipt-coach.test.js"
+      ]
+    },
+    {
+      "id": "PLAN-04",
+      "requirement": "Reach the active-plan limit, submit Ready for review and apply Continue, Master and Archive. Expect explicit valid transitions and preserved review history.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/interventions.test.js",
+        "tests/ipt-coach.test.js"
+      ]
+    },
+    {
+      "id": "PLAN-05",
+      "requirement": "Request assistant help on one question, change the screen and let the old answer arrive. Expect the appropriate scoped response and no cross-account or stale-screen advice.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/interventions.test.js",
+        "tests/ipt-coach.test.js"
+      ]
+    },
+    {
+      "id": "PLAN-06",
+      "requirement": "Ask for a self-help plan with sparse history. Expect limited evidence acknowledged and no fabricated weakness, score or compulsory paid request.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/interventions.test.js",
+        "tests/ipt-coach.test.js"
+      ]
+    },
+    {
+      "id": "PLAN-07",
+      "requirement": "Start every mock type and attempt to open the assistant. Expect it hidden and inert until the protected test ends.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/interventions.test.js",
+        "tests/ipt-coach.test.js"
+      ]
+    },
+    {
+      "id": "PLAN-08",
+      "requirement": "Disable a reviewed guidance note and request new coaching. Expect the note to stop contributing without changing any assessment score or historical response.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/interventions.test.js",
+        "tests/ipt-coach.test.js"
+      ]
+    },
+    {
+      "id": "ADMIN-01",
+      "requirement": "Sign in and out of admin, then call protected admin routes without authority. Expect denial and no private user list or action from a student session.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/admin-user-list.test.js",
+        "tests/speaking-access.test.js"
+      ]
+    },
+    {
+      "id": "ADMIN-02",
+      "requirement": "Search, sort, paginate where present and inspect statistics. Expect totals and selected rows to match the full intended dataset, not a truncated first fetch.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/admin-user-list.test.js",
+        "tests/speaking-access.test.js"
+      ]
+    },
+    {
+      "id": "ADMIN-03",
+      "requirement": "Open a disposable student as user, return and expire the handoff. Expect correct scope, clear impersonation state and no reuse for a different account.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/admin-user-list.test.js",
+        "tests/speaking-access.test.js"
+      ]
+    },
+    {
+      "id": "ADMIN-04",
+      "requirement": "Provide and revoke speaking access, refresh the student session and call the direct speaking API. Expect persistent server enforcement, with unrelated Full Mock permissions unchanged.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/admin-user-list.test.js",
+        "tests/speaking-access.test.js"
+      ]
+    },
+    {
+      "id": "ADMIN-05",
+      "requirement": "Block and unblock a disposable student and reset their password. Expect truthful saved state and no disclosure of existing password or key.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/admin-user-list.test.js",
+        "tests/speaking-access.test.js"
+      ]
+    },
+    {
+      "id": "ADMIN-06",
+      "requirement": "Select users under a filter and delete one or the selected set in an isolated database. Expect exact selection, cancellation support and no deletion of unrelated accounts.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/admin-user-list.test.js",
+        "tests/speaking-access.test.js"
+      ]
+    },
+    {
+      "id": "CONTENT-01",
+      "requirement": "Create and edit a disposable passage with each supported field. Expect validation, stable identity, correct student rendering and matching sample and facts.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/content-trust.test.js"
+      ]
+    },
+    {
+      "id": "CONTENT-02",
+      "requirement": "Run extraction, alter the passage and return a delayed extraction response. Expect stale suggestions rejected and reviewed facts not silently overwritten.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/content-trust.test.js"
+      ]
+    },
+    {
+      "id": "CONTENT-03",
+      "requirement": "Bulk-import and extract several passages with one malformed item. Expect per-item results, no duplicate IDs and no all-or-nothing false success.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/content-trust.test.js"
+      ]
+    },
+    {
+      "id": "CONTENT-04",
+      "requirement": "Delete a disposable passage with an existing test attempt. Expect the documented historical-snapshot behaviour and no orphaned student report.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/content-trust.test.js"
+      ]
+    },
+    {
+      "id": "CONTENT-05",
+      "requirement": "Suggest vocabulary, select a subset, generate details, edit the preview and save. Expect only approved words, valid fields and correct categories.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/content-trust.test.js"
+      ]
+    },
+    {
+      "id": "CONTENT-06",
+      "requirement": "Add duplicates, oversized text and hostile HTML in test content. Expect safe validation and rendering, with no executable markup or damaged bank.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/content-trust.test.js"
+      ]
+    },
+    {
+      "id": "CONTENT-07",
+      "requirement": "Independently audit question metadata, keys, image facts, samples, transcripts, voices, duration, IDs and source provenance. Expect each stimulus and answer to refer to the same authored item.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/content-trust.test.js"
+      ]
+    },
+    {
+      "id": "LEARN-01",
+      "requirement": "Repeatedly save and refresh the same activity. Expect deduplicated snapshots and numerical trends rather than duplicated attempts.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/assistant-learning.test.js"
+      ]
+    },
+    {
+      "id": "LEARN-02",
+      "requirement": "Add, edit and disable a task-specific teaching note. Expect correct coaching scope and no change to scoring prompts, native marks or completed reports.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/assistant-learning.test.js"
+      ]
+    },
+    {
+      "id": "LEARN-03",
+      "requirement": "Inspect small-cohort patterns and sparse recent evidence. Expect the documented thresholds and no claim that a cohort pattern proves an individual student's problem.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/assistant-learning.test.js"
+      ]
+    },
+    {
+      "id": "LEARN-04",
+      "requirement": "Test expiry, storage failure and unauthorised reads. Expect bounded retention, safe access and no failure of the student's normal save or coaching request.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/assistant-learning.test.js"
+      ]
+    },
+    {
+      "id": "ALERT-01",
+      "requirement": "Submit each mock type through the mail sink. Expect one saved-state submission event and no event for a merely opened or unsaved test.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-test-alerts.test.js",
+        "tests/mock-alerts-postgres.system.js"
+      ]
+    },
+    {
+      "id": "ALERT-02",
+      "requirement": "Produce a captured server error and a routine validation or access failure. Expect one safe error event only for the qualifying failure.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-test-alerts.test.js",
+        "tests/mock-alerts-postgres.system.js"
+      ]
+    },
+    {
+      "id": "ALERT-03",
+      "requirement": "Hold a required assessment and pass the ten-minute threshold. Expect one attention event with the exact attempt and missing stage, not a repeated message each minute.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-test-alerts.test.js",
+        "tests/mock-alerts-postgres.system.js"
+      ]
+    },
+    {
+      "id": "ALERT-04",
+      "requirement": "Restart during event persistence and simulate an uncertain mail result. Expect durable receipts and no uncontrolled duplicate email or historical submission flood.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-test-alerts.test.js",
+        "tests/mock-alerts-postgres.system.js"
+      ]
+    },
+    {
+      "id": "ALERT-05",
+      "requirement": "Complete the report just before a queued attention send. Expect readiness rechecked and stale attention suppressed where the contract requires it.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-test-alerts.test.js",
+        "tests/mock-alerts-postgres.system.js"
+      ]
+    },
+    {
+      "id": "ALERT-06",
+      "requirement": "Disconnect fully offline, then reconnect a Reading submission. Expect no impossible immediate offline email claim; notification follows server-observed persistence.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/mock-test-alerts.test.js",
+        "tests/mock-alerts-postgres.system.js"
+      ]
+    },
+    {
+      "id": "INCIDENT-01",
+      "requirement": "Retry a failed stage on a disposable attempt. Expect successful stages reused, one active worker or lease and no repeated paid assessment from report polling.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-incident-recovery.test.js",
+        "tests/full-mock-assessment.test.js"
+      ]
+    },
+    {
+      "id": "INCIDENT-02",
+      "requirement": "Exercise Full Mock transient recovery. Expect at most two automatic passes at the recorded backoffs, approximately 30 seconds and two minutes, with counters surviving restart.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-incident-recovery.test.js",
+        "tests/full-mock-assessment.test.js"
+      ]
+    },
+    {
+      "id": "INCIDENT-03",
+      "requirement": "Return an uncertain provider dispatch, unsupported policy or integrity failure. Expect administrator attention rather than repeated automatic calls or fabricated credit.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-incident-recovery.test.js",
+        "tests/full-mock-assessment.test.js"
+      ]
+    },
+    {
+      "id": "INCIDENT-04",
+      "requirement": "Exclude one faulty recording through an approved test operation. Expect the note, adjusted denominator, preserved original evidence and a report that discloses reduced coverage.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-incident-recovery.test.js",
+        "tests/full-mock-assessment.test.js"
+      ]
+    },
+    {
+      "id": "INCIDENT-05",
+      "requirement": "Apply a permitted recording-bound missing-RS override in an isolated fixture. Expect its attribution, original evidence and use to be visible; a different recording or reattempt must not inherit it.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/speaking-incident-recovery.test.js",
+        "tests/full-mock-assessment.test.js"
+      ]
+    },
+    {
+      "id": "REL-01",
+      "requirement": "Abort save, assessment, catalogue and report requests separately. Expect bounded recovery, retained data and no generic completed result from an HTML fallback.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/service-readiness-http.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/grading-request.test.js"
+      ]
+    },
+    {
+      "id": "REL-02",
+      "requirement": "Restart a worker after one confirmed provider stage and one pending stage. Expect durable state, lease recovery and no duplicate successful call.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/service-readiness-http.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/grading-request.test.js"
+      ]
+    },
+    {
+      "id": "REL-03",
+      "requirement": "Run two workers against one pending attempt. Expect one effective owner and a report based on the same saved input fingerprint.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/service-readiness-http.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/grading-request.test.js"
+      ]
+    },
+    {
+      "id": "REL-04",
+      "requirement": "Make database or file writes fail. Expect no false saved or submitted acknowledgement and no partial replacement of previously confirmed data.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/service-readiness-http.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/grading-request.test.js"
+      ]
+    },
+    {
+      "id": "REL-05",
+      "requirement": "Test stale script and media caches after an asset-version change. Expect matching runtime and audio versions, with no old prompt paired with new facts.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/service-readiness-http.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/grading-request.test.js"
+      ]
+    },
+    {
+      "id": "REL-06",
+      "requirement": "Check private image, audio, chunk and report URLs with another account, expired token, missing token and path traversal. Expect consistent access denial and safe MIME and range handling.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/service-readiness-http.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/grading-request.test.js"
+      ]
+    },
+    {
+      "id": "REL-07",
+      "requirement": "Inject script-like content into a custom prompt, essay, feedback fixture, imported word and admin note. Expect escaped display and no executable HTML.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/service-readiness-http.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/grading-request.test.js"
+      ]
+    },
+    {
+      "id": "REL-08",
+      "requirement": "Inspect logs, errors, alerts, exports and network-visible configuration. Expect no provider key, reset secret, session token or unrelated student content.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/service-readiness-http.test.js",
+        "tests/full-mock-assessment.test.js",
+        "tests/grading-request.test.js"
+      ]
+    },
+    {
+      "id": "PERF-01",
+      "requirement": "Type in SWT and Essay with a large saved account while background sync runs. Record input delay, storage writes and request volume; expect no editor rebuild or text loss.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-responsiveness.test.js",
+        "tests/profile-sync-performance.test.js",
+        "tests/typing-latency.test.js"
+      ]
+    },
+    {
+      "id": "PERF-02",
+      "requirement": "Navigate ten adjacent practice questions under normal and slow network. Record save and next- ready times separately and identify repeated full-history fetches.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-responsiveness.test.js",
+        "tests/profile-sync-performance.test.js",
+        "tests/typing-latency.test.js"
+      ]
+    },
+    {
+      "id": "PERF-03",
+      "requirement": "Open Home, catalogue and Resume concurrently. Expect session-scoped request sharing, bounded metadata caching and correct invalidation after a new attempt.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-responsiveness.test.js",
+        "tests/profile-sync-performance.test.js",
+        "tests/typing-latency.test.js"
+      ]
+    },
+    {
+      "id": "PERF-04",
+      "requirement": "Test the agreed classroom load in staging with bundled audio and fake scoring providers. Expect no cross-account mix-up, quota misuse for static media or lost saves.",
+      "status": "Not run",
+      "evidence": [],
+      "limitation": null,
+      "implementation": "Existing implementation; acceptance required",
+      "relatedSuites": [
+        "tests/portal-responsiveness.test.js",
+        "tests/profile-sync-performance.test.js",
+        "tests/typing-latency.test.js"
+      ]
+    }
+  ]
+}

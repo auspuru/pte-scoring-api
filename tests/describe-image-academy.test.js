@@ -148,3 +148,22 @@ test('Saved mock retry refreshes only old DI content, then reuses it and both co
   assert.deepEqual(saved.responses[0].recording,recording);assert.deepEqual(saved.responses[0].gpt,provider);assert.deepEqual(saved.responses[0].azure,provider);
   await retry();await lab.waitForJobs();assert.equal(calls,1);
 });
+
+test('DI-06: New standalone DI and mocks share the Academy content contract; reopening reuses confirmed marks',async t=>{
+ const express=require('express'),{installSpeakingLab}=require('../speaking-lab');
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'di-practice-parity-')),app=express();app.use(express.json());
+ const question=require('../content/speaking-bank').questions.find(q=>q.type==='di'),transcript=question.facts[0];let calls=0;
+ const provider=async(prompt,context)=>{
+   calls++;assert.equal(context.contentPolicy,academy.VERSION);
+   return {judgment:{score:3,relevance:'image-specific',accuracy:'accurate',scoreImpact:{kind:'relationship',quote:transcript,factIndices:[0],observation:'The response presents one feature without connecting it to the main comparison.',impact:'The relationship between the main features remains unclear.'},requiredEvidence:{quote:transcript,factIndices:[0],kind:'feature'},otherEvidence:[]},reason:'One accurate feature is supplied, with limited connected description.',nextStep:'Connect the main features using an image-specific comparison.'};
+ };
+ const service=installSpeakingLab(app,{directory,verifyToken:key=>key==='test'?'alice':null,getAccount:async()=>({}),callModel:provider});
+ const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+ t.after(async()=>{await service.waitForAssessments();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
+ const base='http://127.0.0.1:'+server.address().port+'/api/speaking',id=crypto.randomUUID();
+ const post=async(path,body)=>{const response=await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json','x-session-token':'test'},body:JSON.stringify(body)});assert.equal(response.status,200);return response.json();};
+ await post('/attempts',{id,questionId:question.id});await post('/attempts/'+id+'/transcript',{text:transcript,revision:0});
+ const practice=await post('/attempts/'+id+'/submit',{}),mock=await scoring.grade(question,transcript,provider,{academyDescribeImage:true});
+ assert.equal(practice.result.total,3);assert.equal(practice.result.total,mock.total);assert.equal(practice.result.contentPolicyVersion,mock.contentPolicyVersion);
+ const before=calls;await post('/attempts/'+id+'/submit',{});assert.equal(calls,before,'Confirmed content must not be graded again.');
+});

@@ -113,3 +113,29 @@
  #swtQuestionNavigation .swt-pager{flex-wrap:wrap}
  #swtQuestionNavigation .swt-pager>span{flex-basis:100%;order:-1;text-align:center}
 }
+
+/* Start the question dock above long passages and feedback, so sticky positioning
+   is effective from the first screen rather than only after reaching the footer. */
+#readingPane .practice-question-dock,
+#speakingPane nav.practice-question-dock,
+#writingLabScreen .studio-focused .practice-question-dock,
+#writingLabScreen .practice-question-dock {
+  position:sticky;top:0;bottom:auto;z-index:35;
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px;
+  margin:0 0 16px;padding:10px 12px;
+  background:var(--bg-card,#fff);color:var(--ink,#173b63);
+  border:1px solid var(--line,#dce4e8);border-radius:10px;
+  box-shadow:0 3px 12px #173b6310;
+}
+.practice-question-dock button {min-height:44px;min-width:44px;white-space:normal}
+#writingLabScreen .studio-question-row {width:100%;text-align:left}
+#readingPane h2,#speakingPane .speaking-heading h2,#writingLabScreen .exam-strip {
+  scroll-margin-top:150px;
+}
+@media(max-width:640px){
+  #readingPane .practice-question-dock,
+  #speakingPane nav.practice-question-dock,
+  #writingLabScreen .studio-focused .practice-question-dock {gap:6px;padding:8px}
+  .practice-question-dock>span {flex-basis:100%;text-align:center;order:-1}
+  .practice-question-dock button {flex:1;min-width:0!important;padding-inline:8px!important}
+}

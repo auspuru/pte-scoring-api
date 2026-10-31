@@ -15,7 +15,7 @@ test('Listening workspace lists all eight task routes and keeps earlier HCS/HIW 
  const mock=studio.wrap('<p>Mock</p>',{type:'sst',mock:true});assert.doesNotMatch(mock,/data-listening-type|data-listening-mode|studio-search/);
 });
 test('Search and status filters preserve question numbers, current state and escaped values',()=>{
- const items=[{id:'one'},{id:'two'},{id:'<unsafe>'}],history=[{testId:'two',status:'submitted',startedAt:4}];
+ const items=[{id:'one'},{id:'two'},{id:'<unsafe>'}],history=[{testId:'two',mode:'practice',status:'submitted',startedAt:4}];
  assert.match(studio.rows({items,history,filter:'done'}),/Question 2/);assert.doesNotMatch(studio.rows({items,history,filter:'done'}),/Question 1/);
  assert.match(studio.rows({items,bookmarks:['<unsafe>'],filter:'bookmarked'}),/data-listening-open="&lt;unsafe&gt;"/);
  assert.doesNotMatch(studio.rows({items,search:'2'}),/Question 1/);assert.match(studio.rows({items,search:'99'}),/No questions match/);
@@ -67,4 +67,17 @@ test('Individual listening API supports all six objective types, saves mode/play
  await request('/attempts',{id:randomUUID(),testId:item.id,mode:'invalid'},400);
  await request('/attempts/'+id+'/answer',{index:0,text:'[]',revision:1,playback:{position:0,finished:false,plays:-1}},400);
  assert.equal((await store.list('tester')).length,8);
+});
+
+test('NAV-07: Listening badges and filters use the selected mode, including legacy timed attempts',()=>{
+ const items=[{id:'8'},{id:'18'},{id:'28'}],history=[
+  {id:'exam8',testId:'8',status:'submitted',mode:'exam',startedAt:'2026-10-31T00:00:00Z'},
+  {id:'practice18',testId:'18',status:'submitted',mode:'practice',startedAt:20},
+  {id:'legacy28',testId:'28',status:'submitted',startedAt:30}];
+ assert.deepEqual(studio.visibleQuestions({items,history,mode:'practice',filter:'done'}).map(r=>r.q.id),['18']);
+ assert.deepEqual(studio.visibleQuestions({items,history,mode:'exam',filter:'done'}).map(r=>r.q.id),['8','28']);
+ assert.deepEqual(studio.visibleQuestions({items,history,mode:'practice',filter:'new'}).map(r=>r.q.id),['8','28']);
+ assert.equal(studio.latest(history,'8','practice'),undefined);
+ assert.equal(studio.latest(history,'28','exam').id,'legacy28');
+ assert.match(studio.rows({items,history,mode:'practice',search:'28'}),/Question 3/);
 });

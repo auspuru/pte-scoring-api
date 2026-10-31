@@ -23,6 +23,7 @@
     let host,catalog,owner='',activeType='',attempt=null,serial=0,visible=false,busy=false,saveQueue=Promise.resolve();
     let phase='idle',deadline=0,clockId,promptAudio,stream,recorder,playbackUrl='',uploadBlob=null,notice='';
     let captureGeneration=0,levelContext,levelTimer,permissionTimer;
+    let historyCache=null,historyRequest=null,historyScope='',focusedQuestion='';
     let comparisonTimer,comparisonBusy=false;
     let assessmentTimer,assessmentPolling=false,navigationPending=false,captureCompletion=null;
     const assessmentRequests=new Map(),contentRetries=new Set(),imageRetries=new Set();
@@ -35,9 +36,21 @@
     const valid=(ticket,user)=>serial===ticket&&identity()===user&&owner===user;
     async function api(url,body,raw=false) {
       const headers={'x-session-token':token()};if(body!==undefined)headers['Content-Type']=raw?body.type.split(';')[0]:'application/json';
+      const requestToken=token(),requestUser=identity();
       const r=await env.fetch('/api/speaking'+url,{method:body===undefined?'GET':'POST',headers,body:body===undefined?undefined:raw?body:JSON.stringify(body),cache:'no-store',signal:AbortSignal.timeout(90000)});
       const data=await r.json().catch(()=>({error:'The connection was interrupted. Please retry.'}));
-      if(!r.ok)throw Error(data.error||'The request could not finish. Please retry.');return data;
+      if(requestToken!==token()||requestUser!==identity())throw Error('Your session changed. Reopen this task.');
+      if(!r.ok)throw Error(data.error||'The request could not finish. Please retry.');
+      if(data?.id&&data?.questionId&&historyCache){historyCache=historyCache.filter(a=>a.id!==data.id);historyCache.push({...data,type:data.question?.type});}
+      return data;
+    }
+    async function loadHistory(refresh=false){
+      const scope=identity()+':'+token();
+      if(scope!==historyScope){historyScope=scope;historyCache=null;historyRequest=null;}
+      if(!refresh&&historyCache)return historyCache;
+      if(historyRequest)return historyRequest;
+      const request=api('/attempts').then(rows=>{if(historyScope!==scope)throw Error('Your session changed.');historyCache=rows;return rows;}).finally(()=>{if(historyRequest===request)historyRequest=null;});
+      historyRequest=request;return request;
     }
     function cacheDraft() {
       const editor=doc.getElementById('speaking-transcript');if(!attempt||attempt.status==='submitted'||!editor)return;
@@ -80,7 +93,7 @@
     function releasePlayback(){if(playbackUrl)env.URL.revokeObjectURL(playbackUrl);playbackUrl='';}
     function reset() {
       stopComparisonPoll();stopAssessmentPoll();
-      cacheDraft();serial++;visible=false;navigationPending=false;assessmentRequests.clear();contentRetries.clear();imageRetries.clear();owner='';attempt=null;activeType='';libraryFilters.clear();clearAudio();pendingUploads.clear();releasePlayback();uploadBlob=null;phase='idle';busy=false;
+      cacheDraft();serial++;visible=false;navigationPending=false;assessmentRequests.clear();contentRetries.clear();imageRetries.clear();owner='';attempt=null;activeType='';libraryFilters.clear();catalog=null;historyCache=null;historyScope='';historyRequest=null;focusedQuestion='';clearAudio();pendingUploads.clear();releasePlayback();uploadBlob=null;phase='idle';busy=false;
       if(host)host.replaceChildren();
     }
     function leave() {
@@ -94,17 +107,27 @@
       images.bindFallback(host);
       host.onclick=click;host.oninput=e=>{if(e.target.id==='speaking-search'){filters().search=e.target.value;filters().page=0;renderLibraryList();}else cacheDraft();};host.onchange=change;
     }
-    async function open(type, questionId) {
+    async function open(type, questionId, request={}) {
       const user=identity();if(!user)return;
+      if(request.navigation&&attempt&&owner===user){if(!await prepareNavigation())return;}
       if(owner&&owner!==user)reset();owner=user;activeType=type;visible=true;host=doc.getElementById('speakingPane');
       const ticket=++serial;
       try{
-        catalog=await api('/catalog');if(!valid(ticket,user)||!visible)return;
+        catalog ||= await api('/catalog');if(!valid(ticket,user)||!visible)return;
+        if(request.context)libraryFilters.set(type,{...request.context});
+        if(request.library){attempt=null;releasePlayback();phase='idle';return library();}
+        if(request.attemptId)return resume(request.attemptId,{capture:false});
         if(!catalog.types[type])return;
         if(questionId){
           const target=catalog.questions.find(q=>String(q.id)===String(questionId)&&q.type===type);
           if(!target){chrome('<h2>'+esc(catalog.types[type].name)+'</h2><p>This assigned question is no longer available.</p><button class="portal-button" data-speaking-action="list">Open question list</button>');return;}
           if(attempt?.questionId===target.id){render();return;}
+          if(request.navigation){
+            const history=await loadHistory();if(!valid(ticket,user)||!visible)return;
+            const saved=history.filter(a=>a.questionId===target.id).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt))[0];
+            if(saved)return resume(saved.id,{capture:false});
+            attempt=null;phase='idle';chrome(studio.heading('Speaking',catalog.types[type].name,target.title||target.id)+'<p>'+esc(target.instruction)+'</p><button class="portal-button primary" data-speaking-question="'+esc(target.id)+'">Start question</button><button class="portal-button" data-speaking-action="list">Question list</button>');return;
+          }
           attempt=null;releasePlayback();phase='idle';await start(target.id);return;
         }
         if(attempt?.question.type===type){render();return;}
@@ -128,7 +151,9 @@
       const categorySelect=type==='di'?'<label>Image type<select id="speaking-image-category"><option value="all">All image types ('+questions.length+')</option>'+Object.entries(imageCategories).map(([key,label])=>'<option value="'+key+'" '+(f.category===key?'selected':'')+'>'+esc(label)+' ('+questions.filter(q=>imageCategory(q)===key).length+')</option>').join('')+'</select></label>':'';
       chrome(studio.heading('Speaking',catalog.types[type].name,'Choose a question, record your response and review your feedback.',questions.length+' questions')+'<p class="speaking-footnote speaking-exam-disclosure">Exam-style mode: selecting a question starts the timed flow and requests microphone access. Your saved recording is automatically processed for transcription and practice scoring when those services are enabled.</p><div class="speaking-library-filters"><label>Find a question<input type="search" id="speaking-search" value="'+esc(f.search)+'" placeholder="Search title or question ID"></label>'+categorySelect+(type==='di'?'<label>Question set<select id="speaking-prediction"><option value="all" '+(f.prediction==='all'||!f.prediction?'selected':'')+'>All questions</option><option value="weekly" '+(f.prediction==='weekly'?'selected':'')+'>Weekly Prediction</option><option value="original" '+(f.prediction==='original'?'selected':'')+'>Original practice</option></select></label>':'')+'<button class="portal-button" data-speaking-action="clear-filters">Clear filters</button></div><p id="speaking-match-count" role="status" aria-live="polite"></p><div id="speaking-library-list" class="speaking-question-list"></div><nav id="speaking-library-pages" class="speaking-actions" aria-label="Question list pages"></nav><details class="speaking-card"><summary>My saved attempts</summary><div id="speaking-history">Loading…</div></details>');
       renderLibraryList();
-      try{const history=await api('/attempts');if(!valid(ticket,user)||attempt||activeType!==type)return;const node=doc.getElementById('speaking-history');if(node)node.innerHTML=history.filter(a=>a.type===type).map(a=>'<article class="speaking-history-row"><div><strong>'+esc(a.title)+'</strong><p>'+esc(new Date(a.startedAt).toLocaleString())+' · '+(a.assessment?.status==='pending'?'Feedback pending':a.assessment?.status==='error'?'Saved — assessment needs retry':a.result?(a.result.scoringMode==='local'||a.result.score_provisional||a.result.total==null?'Content review pending':a.result.total+'/'+a.result.maximum+' content'):a.status==='submitted'?'Feedback pending':'Saved draft')+'</p></div><button class="portal-button" data-speaking-attempt="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join('')||'<p>Your attempts will appear here.</p>';}catch(e){const node=doc.getElementById('speaking-history');if(node)node.textContent=e.message;}
+      env.PortalQuestionNavigation?.update({library:true,context:f});
+      const selected=[...(host.querySelectorAll?.('[data-speaking-question]')||[])].find(b=>b.dataset.speakingQuestion===f.selectedId);selected?.focus({preventScroll:true});host.scrollTop=f.scrollTop||0;
+      try{const history=await loadHistory(true);if(!valid(ticket,user)||attempt||activeType!==type)return;const node=doc.getElementById('speaking-history');if(node)node.innerHTML=history.filter(a=>a.type===type).map(a=>'<article class="speaking-history-row"><div><strong>'+esc(a.title)+'</strong><p>'+esc(new Date(a.startedAt).toLocaleString())+' · '+(a.assessment?.status==='pending'?'Feedback pending':a.assessment?.status==='error'?'Saved — assessment needs retry':a.result?(a.result.scoringMode==='local'||a.result.score_provisional||a.result.total==null?'Content review pending':a.result.total+'/'+a.result.maximum+' content'):a.status==='submitted'?'Feedback pending':'Saved draft')+'</p></div><button class="portal-button" data-speaking-attempt="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join('')||'<p>Your attempts will appear here.</p>';}catch(e){const node=doc.getElementById('speaking-history');if(node)node.textContent=e.message;}
     }
     async function start(questionId) {
       stopComparisonPoll();stopAssessmentPoll();
@@ -136,10 +161,10 @@
       try{const a=await api('/attempts',{id:env.crypto.randomUUID(),questionId});if(!valid(ticket,user))return;clearAudio(needsCue);releasePlayback();uploadBlob=null;attempt=a;phase='idle';notice='';render();shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
       if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
-    async function resume(id) {
+    async function resume(id,{capture=true}={}) {
       stopComparisonPoll();stopAssessmentPoll();
       if(busy)return;if(activeType==='rs')startCue.unlock();busy=true;const ticket=serial,user=owner;let shouldBegin=false;
-      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio(activeType==='rs');releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;phase='idle';notice='';render();if(a.recording){await loadPlayback();if(a.assessment?.status==='pending')pollAssessment();}else shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio(activeType==='rs');releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;phase='idle';notice='';render();if(a.recording){await loadPlayback();if(a.assessment?.status==='pending')pollAssessment();}else shouldBegin=capture;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
       if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function loadPlayback() {
@@ -179,7 +204,7 @@
       try {
         if(!await prepareNavigation()||identity()!==user||owner!==user)return;
         if(activeType==='rs')startCue.unlock();
-        const ticket=serial,history=await api('/attempts');if(!valid(ticket,user))return;
+        const ticket=serial,history=await loadHistory();if(!valid(ticket,user))return;
         const saved=history.filter(a=>a.questionId===target.id).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt))[0];
         if(saved)await resume(saved.id);else await start(target.id);
       }catch(e){message(e.message);}finally{navigationPending=false;refreshControls();}
@@ -205,6 +230,9 @@
       chrome('<div class="speaking-heading"><div><p class="portal-eyebrow">'+esc(q.name)+'</p><h2>Question '+number+'</h2></div>'+(submitted?'<button class="portal-button" data-speaking-action="list">My questions</button>':'')+'</div><p class="speaking-intro">'+esc(q.instruction)+'</p>'
         +(q.text?'<div class="speaking-card speaking-prompt">'+esc(q.text)+'</div>':'')+(q.imageUrl?'<figure class="speaking-question-image"><button type="button" class="speaking-image-button" data-speaking-action="zoom-image" aria-label="Enlarge question image">'+images.image(q,'speaking-image')+'</button><button type="button" class="portal-button" data-speaking-action="zoom-image">Enlarge image</button>'+images.legend(q)+'</figure>':'')
         +examPanel+review+questionNavigation());
+      studio.pinNavigation?.(host,'nav[aria-label="Practice questions"]');
+      env.PortalQuestionNavigation?.update({question:attempt.questionId,attempt:attempt.id,context:filters()});
+      const key=attempt.id+':'+attempt.status;if(focusedQuestion!==key){focusedQuestion=key;studio.focusQuestion?.(host,'.speaking-heading h2');}
       if(attempt.recording){mountPlayback();if(!playbackUrl)loadPlayback().catch(()=>{});}if(attempt.assessment?.status==='pending')pollAssessment();else if(submitted)pollComparison();refreshControls();
     }
     function stopComparisonPoll(){env.clearInterval(comparisonTimer);comparisonTimer=null;}
@@ -513,7 +541,7 @@
       if(d.speakingPage!==undefined&&!attempt){filters().page=Number(d.speakingPage)||0;renderLibraryList();return;}
       if(d.speakingAction==='clear-filters'&&!attempt){libraryFilters.delete(activeType);return library();}
       if(d.speakingMove!==undefined)return moveQuestion(Number(d.speakingMove));
-      if(d.speakingQuestion)return start(d.speakingQuestion);if(d.speakingAttempt)return resume(d.speakingAttempt);
+      if(d.speakingQuestion){Object.assign(filters(),{selectedId:d.speakingQuestion,scrollTop:host.scrollTop||0});return start(d.speakingQuestion);}if(d.speakingAttempt)return resume(d.speakingAttempt);
       const action=d.speakingAction;
       if(action==='zoom-image')return imageViewer.open(doc.getElementById('speaking-image-dialog'),attempt?.question);
       if(action==='practice'){leave();env.switchSection('practice-hub');return;}

@@ -294,3 +294,12 @@ test('The recovery upgrade accepts its exact previous production snapshot withou
  await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
  assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
+
+test('Tester guide practice changes finish the exact previous production Full Mock without changing its saved assessment',async t=>{
+ const fs=require('node:fs'),current=fs.readFileSync(require.resolve('../public/reading-practice'),'utf8');
+ const native=current.slice(current.indexOf('  function score('),current.indexOf('  function diagnostic('));assert.equal(require('node:crypto').createHash('sha256').update(native).digest('hex'),'68827b584c8658ed4d0f9a566952e6980c950928d3bde105d9918fc6381cb13a','Reading native scoring remains byte-for-byte unchanged.');
+ const f=await fixture(t),original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/tester-guide-compatible-sources.json')};
+ const source=require('../speaking-lab').transcribeRecording.toString();assert.equal(require('node:crypto').createHash('sha256').update(source).digest('hex'),'6779768323a86f2488ac0621c8dd7f0949ca1348bdf0c23a98d10f64eaa84f4a');
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);assert.deepEqual((await f.state()).assessment.snapshot,original);
+});

@@ -4,8 +4,19 @@
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const help={sst:'Listen first. Note the topic, two supporting ideas and a conclusion. Connect the ideas in a 50–70 word summary.',wfd:'Listen to the whole sentence, then type exactly what you hear. Check small words, plurals and spelling.',lfi:'Read ahead and type each missing word as you hear it. Use Tab and Shift+Tab to move between blanks. Check spelling.',hiw:'Select words that differ from the recording; select again to undo. Use arrow keys to move between words and Space or Enter to select. Incorrect selections lose points.',hcs:'Choose the summary that captures the main idea and supporting points. A true detail alone may not summarise the whole recording.',lmcma:'Select every option supported by the recording. Incorrect selections lose points, with a minimum of zero for the question.',lmcsa:'Read the question and choose the one option supported by the recording.',smw:'Listen to the context before the beep. Choose the missing word or phrase that best completes the recording.'};
   function questions(catalog,type){return type==='sst'?catalog?.spoken||[]:type==='wfd'?catalog?.dictation||[]:(catalog?.listeningPractice||[]).filter(q=>q.type===type);}
+  const attemptMode=a=>a.mode==='practice'?'practice':'exam';
+  function latest(history,id,mode='practice'){
+    return history.filter(a=>String(a.testId)===String(id)&&attemptMode(a)===mode)
+      .sort((a,b)=>new Date(b.startedAt).getTime()-new Date(a.startedAt).getTime())[0];
+  }
+  function visibleQuestions({items,history=[],bookmarks=[],search='',filter='all',mode='practice'}){
+    const query=search.trim().toLowerCase();
+    return items.map((q,index)=>({q,index,last:latest(history,q.id,mode)})).filter(({q,index,last})=>
+      (!query||[index+1,q.id,q.title,q.topic].join(' ').toLowerCase().includes(query))&&
+      (filter==='all'||filter==='new'&&!last||filter==='draft'&&last&&last.status!=='submitted'||filter==='done'&&last?.status==='submitted'||filter==='bookmarked'&&bookmarks.includes(q.id)));
+  }
   function rows({items,history=[],bookmarks=[],activeId,search='',filter='all',mode='practice',compact=false}){
-    const visible=items.map((q,index)=>({q,index,last:history.filter(a=>a.testId===q.id).sort((a,b)=>b.startedAt-a.startedAt)[0]})).filter(({q,index,last})=>(!search||String(index+1).includes(search.trim()))&&(filter==='all'||filter==='new'&&!last||filter==='done'&&last?.status==='submitted'||filter==='bookmarked'&&bookmarks.includes(q.id)));
+    const visible=visibleQuestions({items,history,bookmarks,search,filter,mode});
     return visible.length?visible.map(({q,index,last})=>'<button type="button" class="studio-question-row '+(q.id===activeId?'is-current':'')+'" data-listening-open="'+esc(q.id)+'"><span class="studio-number">'+(last?.status==='submitted'?'✓':index+1)+'</span><span><b>Question '+(index+1)+'</b>'+(q.prediction?'<em>Prediction</em>':'')+'<small>'+(last?(last.status==='submitted'?'Attempted':'Draft saved'):'Not attempted')+'</small></span>'+(bookmarks.includes(q.id)?'<span class="studio-star">★</span>':'')+'<span class="studio-row-arrow" aria-hidden="true">→</span></button>').join(''):'<p class="studio-empty">No questions match this filter.</p>';
   }
   function wrap(content,{type,mode='practice',mock=false,items=[],history=[],bookmarks=[],activeId,search='',filter='all',library=false}){
@@ -17,5 +28,5 @@
     const aside=mock?'':'<aside class="studio-side" aria-label="Practice tools">'+questionLibrary+'<details class="studio-side-card studio-tip"><summary>Task tips &amp; mode information</summary><p>'+esc(mode==='exam'?'The timer continues while you are away. Listen once, complete your response, then submit.':help[type]||'Focus on the question in front of you.')+'</p><p>'+esc(mode==='practice'?'Practise at your own pace. Pause, replay and take notes. Answers are saved to your account.':'Exam-style practice uses a timed response and single playback. Full sectional mocks are available in Mock Tests.')+'</p></details></aside>';
     return '<div class="listening-studio '+(mock?'studio-mock':'studio-focused')+'">'+nav+'<header class="studio-heading"><div><p>Listening '+(mock?'sectional mock':'practice')+'</p><h1>'+esc(mock?'Listening sectional mock':title)+'</h1>'+(mock?'<span>Stay focused on the current question.</span>':'')+'</div>'+modes+'</header><div class="studio-layout"><div class="studio-center">'+content+'</div>'+aside+'</div></div>';
   }
-  return {tasks,help,questions,rows,wrap};
+  return {tasks,help,questions,rows,wrap,latest,visibleQuestions,attemptMode};
 });
