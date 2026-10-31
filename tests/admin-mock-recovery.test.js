@@ -5,7 +5,7 @@ const id='006d4971-2ad3-4f14-8e2a-0ea3ed450bdd';
 const diagnostic=()=>({attemptId:id,status:'delayed',ready:false,accountedFor:26,total:27,jobs:[{id:'job',index:19,status:'needs_attention',stages:{content:{status:'needs_attention',code:'validation'},azure:{status:'ready'}}}]});
 test('Recovery offers only held stages and blocks uncertain, protected and running work',()=>{
  const j=diagnostic().jobs[0];assert.equal(canRepair(j,'content',j.stages.content),true);
- for(const code of ['uncertain_provider_outcome',401,403,'invalid_api_key'])assert.equal(canRepair(j,'content',{status:'needs_attention',code}),false);
+ for(const code of ['academy_transport','uncertain_provider_outcome',401,403,'invalid_api_key'])assert.equal(canRepair(j,'content',{status:'needs_attention',code}),false);
  assert.equal(canRepair({...j,exclusion:{note:'excluded'}},'content',j.stages.content),false);
  assert.equal(canRepair({...j,status:'running'},'content',j.stages.content),false);
  assert.equal(canRepair(j,'azure',j.stages.azure),false);

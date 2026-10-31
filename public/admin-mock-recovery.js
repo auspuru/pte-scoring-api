@@ -6,7 +6,7 @@
   const stages=new Set(['transcription','content','azure','academy']);
   function canRepair(job,name,value){
     return stages.has(name)&&job.status==='needs_attention'&&!job.exclusion&&value.status==='needs_attention'
-      &&!['uncertain_provider_outcome','insufficient_quota','billing_hard_limit_reached','invalid_api_key'].includes(String(value.code))
+      &&!['academy_transport','uncertain_provider_outcome','insufficient_quota','billing_hard_limit_reached','invalid_api_key'].includes(String(value.code))
       &&![400,401,403,404,409,413,422].includes(Number(value.code))
       &&!(name==='academy'&&(job.remoteFailures||[]).some(f=>f.uncertain||f.code==='uncertain_provider_outcome'||!f.retryable&&![429,500,502,503,504].includes(Number(f.code||f.status))))
       &&!['insufficient_quota','billing_hard_limit_reached','invalid_api_key'].includes(value.detail?.code);
