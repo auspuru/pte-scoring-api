@@ -6,103 +6,239 @@
     "date": "2026-10-30",
     "sourceCommit": "920065e1e010975396805c9b7c53d2c6935cd54a"
   },
-  "implementationBase": "b92c5ba935fa41755d2211991dd2d3755c274b01",
+  "implementationBase": "762c6c1ba1949320c118b5530b3567ace8e927ac",
   "interpretation": "Related suites are coverage pointers, not evidence that the entire acceptance scenario passed. Each scenario requires its own environment, steps, result and evidence before changing status.",
   "checks": [
     {
       "id": "AUTH-01",
       "requirement": "Sign in with valid and invalid credentials, including keyboard submission and two rapid clicks. Expect one authenticated transition or one clear validation error, with no duplicate requests or blank workspace.",
-      "status": "Not run",
-      "evidence": [],
+      "status": "Pass",
+      "evidence": [
+        {
+          "kind": "automated",
+          "date": "2026-10-31",
+          "environment": "Disposable local file-backed server; PostgreSQL and sandboxed Chromium in the required Portal CI release gate",
+          "scope": "Valid/invalid real Chromium sign-in, keyboard submission and rapid duplicate submission; rejected login remains retryable.",
+          "sources": [
+            "tests/auth-browser.system.js",
+            "tests/helpers/auth-acceptance-cases.js",
+            "tests/auth-boot-client.test.js"
+          ],
+          "releaseCondition": "Publish only after the full Portal CI database/browser release gate passes."
+        }
+      ],
       "limitation": null,
-      "implementation": "Existing implementation; acceptance required",
+      "implementation": "Account access/recovery fixes and isolated acceptance coverage",
       "relatedSuites": [
         "tests/login-assets.test.js",
-        "tests/portal-audit.test.js"
+        "tests/portal-audit.test.js",
+        "tests/auth-browser.system.js",
+        "tests/auth-acceptance.test.js",
+        "tests/auth-boot-client.test.js",
+        "tests/account-security.test.js"
       ]
     },
     {
       "id": "AUTH-02",
       "requirement": "Register a disposable account; repeat the username and test missing, oversized and malformed fields. Expect deterministic validation and no second account or partial record.",
-      "status": "Not run",
-      "evidence": [],
+      "status": "Pass",
+      "evidence": [
+        {
+          "kind": "automated",
+          "date": "2026-10-31",
+          "environment": "Disposable local file-backed server; PostgreSQL and sandboxed Chromium in the required Portal CI release gate",
+          "scope": "Disposable registration; missing/malformed/oversized credentials and email; duplicate and concurrent duplicate username requests; one successful creation.",
+          "sources": [
+            "tests/auth-postgres.system.js",
+            "tests/helpers/auth-acceptance-cases.js",
+            "tests/auth-boot-client.test.js"
+          ],
+          "releaseCondition": "Publish only after the full Portal CI database/browser release gate passes."
+        }
+      ],
       "limitation": null,
-      "implementation": "Existing implementation; acceptance required",
+      "implementation": "Account access/recovery fixes and isolated acceptance coverage",
       "relatedSuites": [
         "tests/login-assets.test.js",
-        "tests/portal-audit.test.js"
+        "tests/portal-audit.test.js",
+        "tests/auth-postgres.system.js",
+        "tests/auth-acceptance.test.js",
+        "tests/auth-boot-client.test.js",
+        "tests/account-security.test.js"
       ]
     },
     {
       "id": "AUTH-03",
       "requirement": "Sign out during a draft and then sign in as a different student. Expect private caches, history, recordings, bookmarks and pending callbacks to remain tied to the original account.",
       "status": "Not run",
-      "evidence": [],
-      "limitation": null,
-      "implementation": "Existing implementation; acceptance required",
+      "evidence": [
+        {
+          "kind": "automated",
+          "date": "2026-10-31",
+          "environment": "Disposable local file-backed server; PostgreSQL and sandboxed Chromium in the required Portal CI release gate",
+          "scope": "Chromium SWT draft isolation across expiry, sign-out and two accounts; canceled boot callbacks cannot restore credentials.",
+          "sources": [
+            "tests/auth-browser.system.js",
+            "tests/helpers/auth-acceptance-cases.js",
+            "tests/auth-boot-client.test.js"
+          ],
+          "releaseCondition": "Publish only after the full Portal CI database/browser release gate passes."
+        }
+      ],
+      "limitation": "Remaining: bookmarks, every history/recording cache and pending assessment callbacks across all modules.",
+      "implementation": "Account access/recovery fixes and isolated acceptance coverage",
       "relatedSuites": [
         "tests/login-assets.test.js",
-        "tests/portal-audit.test.js"
+        "tests/portal-audit.test.js",
+        "tests/auth-browser.system.js",
+        "tests/auth-acceptance.test.js",
+        "tests/auth-boot-client.test.js",
+        "tests/account-security.test.js"
       ]
     },
     {
       "id": "AUTH-04",
       "requirement": "Expire a session during save, assessment polling and media review. Expect a sign-in action, preserved recoverable work and stopped private polling; no loop of unauthorised requests.",
       "status": "Not run",
-      "evidence": [],
-      "limitation": null,
-      "implementation": "Existing implementation; acceptance required",
+      "evidence": [
+        {
+          "kind": "automated",
+          "date": "2026-10-31",
+          "environment": "Disposable local file-backed server; PostgreSQL and sandboxed Chromium in the required Portal CI release gate",
+          "scope": "Expired sync tokens safely denied; browser history refresh returns to sign-in and preserves the original SWT draft.",
+          "sources": [
+            "tests/auth-browser.system.js",
+            "tests/helpers/auth-acceptance-cases.js",
+            "tests/auth-boot-client.test.js"
+          ],
+          "releaseCondition": "Publish only after the full Portal CI database/browser release gate passes."
+        }
+      ],
+      "limitation": "Remaining: session expiry during in-flight save, live assessment polling and media review across modules.",
+      "implementation": "Account access/recovery fixes and isolated acceptance coverage",
       "relatedSuites": [
         "tests/login-assets.test.js",
-        "tests/portal-audit.test.js"
+        "tests/portal-audit.test.js",
+        "tests/auth-browser.system.js",
+        "tests/auth-acceptance.test.js",
+        "tests/auth-boot-client.test.js",
+        "tests/account-security.test.js"
       ]
     },
     {
       "id": "AUTH-05",
       "requirement": "Change a password, try a wrong current password and test old-session behaviour. Expect the documented session policy and no false success.",
-      "status": "Not run",
-      "evidence": [],
+      "status": "Pass",
+      "evidence": [
+        {
+          "kind": "automated",
+          "date": "2026-10-31",
+          "environment": "Disposable local file-backed server; PostgreSQL and sandboxed Chromium in the required Portal CI release gate",
+          "scope": "Wrong current password rejected; correct change replaces login credentials; existing session follows the documented retained-session policy.",
+          "sources": [
+            "tests/auth-postgres.system.js",
+            "tests/helpers/auth-acceptance-cases.js",
+            "tests/auth-boot-client.test.js"
+          ],
+          "releaseCondition": "Publish only after the full Portal CI database/browser release gate passes."
+        }
+      ],
       "limitation": null,
-      "implementation": "Existing implementation; acceptance required",
+      "implementation": "Account access/recovery fixes and isolated acceptance coverage",
       "relatedSuites": [
         "tests/login-assets.test.js",
-        "tests/portal-audit.test.js"
+        "tests/portal-audit.test.js",
+        "tests/auth-postgres.system.js",
+        "tests/auth-acceptance.test.js",
+        "tests/auth-boot-client.test.js",
+        "tests/account-security.test.js"
       ]
     },
     {
       "id": "AUTH-06",
       "requirement": "Exercise email reset in the mail sink, then reuse and expire its code. Expect one successful reset, safe rejection thereafter and no reset through the deprecated route.",
-      "status": "Not run",
-      "evidence": [],
+      "status": "Pass",
+      "evidence": [
+        {
+          "kind": "automated",
+          "date": "2026-10-31",
+          "environment": "Disposable local file-backed server; PostgreSQL and sandboxed Chromium in the required Portal CI release gate",
+          "scope": "Real HTTP reset mail captured locally; concurrent completion has one winner; reused, expired and malformed tokens rejected; deprecated reset returns 410.",
+          "sources": [
+            "tests/auth-postgres.system.js",
+            "tests/helpers/auth-acceptance-cases.js",
+            "tests/auth-boot-client.test.js"
+          ],
+          "releaseCondition": "Publish only after the full Portal CI database/browser release gate passes."
+        }
+      ],
       "limitation": null,
-      "implementation": "Existing implementation; acceptance required",
+      "implementation": "Account access/recovery fixes and isolated acceptance coverage",
       "relatedSuites": [
         "tests/login-assets.test.js",
-        "tests/portal-audit.test.js"
+        "tests/portal-audit.test.js",
+        "tests/auth-postgres.system.js",
+        "tests/auth-acceptance.test.js",
+        "tests/auth-boot-client.test.js",
+        "tests/account-security.test.js"
       ]
     },
     {
       "id": "AUTH-07",
       "requirement": "Block and delete disposable accounts, then reuse their existing tokens and direct media links. Expect denial at the API as well as the UI.",
       "status": "Not run",
-      "evidence": [],
-      "limitation": null,
-      "implementation": "Existing implementation; acceptance required",
+      "evidence": [
+        {
+          "kind": "automated",
+          "date": "2026-10-31",
+          "environment": "Disposable local file-backed server; PostgreSQL and sandboxed Chromium in the required Portal CI release gate",
+          "scope": "Blocked/deleted accounts denied profile reads/writes and private Speaking recording links; recreated username does not reactivate old tokens.",
+          "sources": [
+            "tests/auth-postgres.system.js",
+            "tests/helpers/auth-acceptance-cases.js",
+            "tests/auth-boot-client.test.js"
+          ],
+          "releaseCondition": "Publish only after the full Portal CI database/browser release gate passes."
+        }
+      ],
+      "limitation": "Remaining: UI blocking/deletion transition and direct media link checks for every private module.",
+      "implementation": "Account access/recovery fixes and isolated acceptance coverage",
       "relatedSuites": [
         "tests/login-assets.test.js",
-        "tests/portal-audit.test.js"
+        "tests/portal-audit.test.js",
+        "tests/auth-postgres.system.js",
+        "tests/auth-acceptance.test.js",
+        "tests/auth-boot-client.test.js",
+        "tests/account-security.test.js"
       ]
     },
     {
       "id": "AUTH-08",
       "requirement": "Open private routes without a session and with another student's attempt ID. Expect 401 or 403 or a safe 404, never another student's data or an HTML page represented as JSON success.",
       "status": "Not run",
-      "evidence": [],
-      "limitation": null,
-      "implementation": "Existing implementation; acceptance required",
+      "evidence": [
+        {
+          "kind": "automated",
+          "date": "2026-10-31",
+          "environment": "Disposable local file-backed server; PostgreSQL and sandboxed Chromium in the required Portal CI release gate",
+          "scope": "Anonymous/cross-account sync and private recording requests rejected with JSON/API denial; malformed session and anonymous grading denied.",
+          "sources": [
+            "tests/auth-postgres.system.js",
+            "tests/helpers/auth-acceptance-cases.js",
+            "tests/auth-boot-client.test.js"
+          ],
+          "releaseCondition": "Publish only after the full Portal CI database/browser release gate passes."
+        }
+      ],
+      "limitation": "Remaining: exhaustive private-route and cross-student attempt-ID matrix.",
+      "implementation": "Account access/recovery fixes and isolated acceptance coverage",
       "relatedSuites": [
         "tests/login-assets.test.js",
-        "tests/portal-audit.test.js"
+        "tests/portal-audit.test.js",
+        "tests/auth-postgres.system.js",
+        "tests/auth-acceptance.test.js",
+        "tests/auth-boot-client.test.js",
+        "tests/account-security.test.js"
       ]
     },
     {

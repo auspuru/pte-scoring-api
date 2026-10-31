@@ -303,3 +303,13 @@ test('Tester guide practice changes finish the exact previous production Full Mo
  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
  await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
+
+test('Account recovery upgrade preserves the exact previous production snapshot and never regrades completed items',async t=>{
+ let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
+ const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/account-compatible-sources.json')};
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);assert.equal(calls,65);
+ const complete=structuredClone((await f.state()).assessment.items);
+ await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal(calls,65);assert.deepEqual((await f.state()).assessment.items,complete);
+ assert.deepEqual((await f.state()).assessment.snapshot,original);
+});

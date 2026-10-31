@@ -29,6 +29,18 @@ Release evidence must include the full regression suite, offline calibration, pr
 
 ## Remaining acceptance work
 
-Every complete guide scenario still needs its own environment, steps, actual result and evidence in the register. Physical desktop/iPhone/Android microphones and headset playback, screen readers, mobile keyboards, independent listening/editorial review, live provider behaviour, mail-sink end-to-end actions and realistic classroom latency/load require separate execution where the appropriate equipment and isolated services are available. Automated synthetic audio and width checks do not establish physical-device support or Pearson calibration.
+Every complete guide scenario still needs its own environment, steps, actual result and evidence in the register. Physical desktop/iPhone/Android microphones and headset playback, screen readers, mobile keyboards, independent listening/editorial review, live provider behaviour, realistic classroom latency/load require separate execution where the appropriate equipment and isolated services are available. Automated synthetic audio and width checks do not establish physical-device support or Pearson calibration.
 
 Do not describe the entire guide as complete until its acceptance evidence has been recorded. Keep unavailable, failed, skipped and excluded answers distinct throughout testing.
+
+## Account access and recovery batch
+
+Base: 762c6c1ba1949320c118b5530b3567ace8e927ac, 31 October 2026.
+
+Confirmed failures were reproduced before changing the code: reusable reset links, malformed signatures producing server errors, blocked accounts still accessing profile sync, and duplicate boot sign-in requests. A reproduced collision between sign-out profile saves and subsequent sign-in is fixed by sharing one file-backed read/modify/write queue across account and progress mutations. Registration now validates bounded fields and uses an atomic PostgreSQL creation transaction. Blocking/deleting invalidates account caches; private API handlers and direct media requests check active account state. A token issued before a username was recreated is denied.
+
+Reset links expire after 15 minutes and are bound to the current salted credential hash. Completion uses an atomic comparison in PostgreSQL and serialized file-backed writes, so concurrent completions have one winner. Password changes and admin resets invalidate earlier recovery links. Reset URLs use the configured public origin, and request notices do not claim successful delivery. SMTP is replaced by a local outbox in acceptance tests; production mail delivery has not been tested.
+
+Session policy: changing or resetting a password preserves existing signed sessions until their original 30-day expiry. Signing out clears this browser's credentials and invalidates pending sign-in callbacks. Blocking/deletion denies existing sessions immediately in this service process. Session revocation across multiple independently cached service processes is bounded by the five-second account cache; deployment topology was not changed.
+
+The register records scoped automated Pass results for AUTH-01/02/05/06, conditional on the required Portal CI run passing before release. AUTH-03/04/07/08 retain Not run for their complete scenarios and include the subcases already verified plus their remaining coverage. API tests run the real server against disposable storage and a local mail sink. The PostgreSQL version uses an isolated schema; browser tests exercise the built production client. No student data, live mail, or paid scoring providers are used. Exact Full Mock source compatibility tests retain the previous snapshot and all successful marks without reassessment.

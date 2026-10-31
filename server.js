@@ -7,6 +7,8 @@ const fs = require('fs').promises;
 const path = require('path');
 const compression = require('compression');
 const nodemailer = require('nodemailer');
+const AccountSecurity = require('./account-security');
+const serialAccountMutation = AccountSecurity.createSerialQueue();
 const puppeteer = require('puppeteer');
 const { installGracefulShutdown } = require('./graceful-shutdown');
 const { createReadiness } = require('./service-readiness');
@@ -238,6 +240,23 @@ if (rateLimit) {
   app.use('/api/auth/register', authLimiter);
   app.use('/api/auth/email-reset', authLimiter);
 }
+
+// Account state is checked before private handlers, including media and grading.
+// A valid signature alone must not restore a deleted or blocked account.
+app.use('/api',async(req,res,next)=>{
+  const token=req.headers['x-session-token']||req.query.token||'';
+  const sessionUser=verifySessionToken(token),uid=sessionUser||verifyImpersonationToken(token);
+  const grading=['/grade','/essay/grade'].includes(req.path);
+  if(!uid)return grading?res.status(401).json({error:'Please sign in to your practice account.'}):next();
+  try{
+    const account=await getPracticeAccount(uid),parts=AccountSecurity.signedParts(token);
+    const payload=parts?Buffer.from(parts[0],'base64').toString('utf8'):'';
+    const issuedAt=Number(payload.slice(payload.lastIndexOf('|')+1))-(sessionUser?SESSION_TTL_MS:IMPERSONATION_TTL_MS);
+    const createdAt=Date.parse(account?.createdAt||'');
+    if(!account||account.blocked||(Number.isFinite(createdAt)&&issuedAt<createdAt))return res.status(403).set('Cache-Control','no-store').json({error:'Account is unavailable. Please sign in again.'});
+    next();
+  }catch{res.status(503).json({error:'Account verification is temporarily unavailable.'});}
+});
 
 let anthropic = null;
 if (ANTHROPIC_API_KEY && ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
@@ -1102,13 +1121,10 @@ const JsonStorage = {
 // v19.10: Pick the active storage backend. Postgres when DATABASE_URL is set,
 // JSON file otherwise. Every consumer (AuthAPI, route handlers) uses StorageAPI
 // — they don't need to know which backend is active.
-let jsonProgressWrite = Promise.resolve();
 for (const name of ['setUserData', 'saveProgress']) {
   const operation = JsonStorage[name];
   JsonStorage[name] = function (...args) {
-    const result = jsonProgressWrite.then(() => operation.apply(this, args));
-    jsonProgressWrite = result.catch(() => {});
-    return result;
+    return serialAccountMutation(() => operation.apply(this, args));
   };
 }
 
@@ -1721,14 +1737,14 @@ function mintSessionToken(username) {
 }
 // Returns the username if the token is valid and unexpired, else null.
 function verifySessionToken(token) {
-  if (!token || typeof token !== 'string' || token.indexOf('.') < 0) return null;
-  const [b64, sig] = token.split('.');
+  const parts=AccountSecurity.signedParts(token);if(!parts)return null;
+  const [b64,sig]=parts;
   let payload;
   try { payload = Buffer.from(b64, 'base64').toString('utf8'); }
   catch (e) { return null; }
   const expectedSig = crypto.createHmac('sha256', _sessionSecret()).update(payload).digest('hex');
   if (!sig || sig.length !== expectedSig.length) return null;
-  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) return null;
+  if (!AccountSecurity.signatureMatches(sig,expectedSig)) return null;
   const sep = payload.lastIndexOf('|');
   if (sep < 0) return null;
   const username = payload.slice(0, sep);
@@ -1738,37 +1754,47 @@ function verifySessionToken(token) {
 }
 
 
-function mintPasswordResetToken(username,email){
-  const payload=Buffer.from(JSON.stringify({t:'password-reset',username:canonicalUserId(username),email:String(email||'').toLowerCase(),exp:Date.now()+15*60*1000})).toString('base64url');
+function mintPasswordResetToken(username,email,passwordHash){
+  const payload=Buffer.from(JSON.stringify({t:'password-reset',username:canonicalUserId(username),email:String(email||'').toLowerCase(),credentialVersion:AccountSecurity.credentialVersion(passwordHash),exp:Date.now()+15*60*1000})).toString('base64url');
   const sig=crypto.createHmac('sha256',_sessionSecret()).update(payload).digest('hex');
   return payload+'.'+sig;
 }
 function verifyPasswordResetToken(token){
-  if(!token||typeof token!=='string'||!token.includes('.'))return null;
-  const [payload,sig]=token.split('.'),expected=crypto.createHmac('sha256',_sessionSecret()).update(payload).digest('hex');
-  if(!sig||sig.length!==expected.length||!crypto.timingSafeEqual(Buffer.from(sig),Buffer.from(expected)))return null;
-  try{const data=JSON.parse(Buffer.from(payload,'base64url').toString('utf8'));return data.t==='password-reset'&&data.username&&data.exp>Date.now()?data:null;}catch(_){return null;}
+  const parts=AccountSecurity.signedParts(token);if(!parts)return null;
+  const [payload,sig]=parts,expected=crypto.createHmac('sha256',_sessionSecret()).update(payload).digest('hex');
+  if(!AccountSecurity.signatureMatches(sig,expected))return null;
+  try{const data=JSON.parse(Buffer.from(payload,'base64url').toString('utf8'));return data.t==='password-reset'&&data.username&&typeof data.credentialVersion==='string'&&data.exp>Date.now()?data:null;}catch(_){return null;}
 }
 async function recoveryAccount(identifier){
   const raw=String(identifier||'').trim().toLowerCase();if(!raw)return null;
   if(USE_POSTGRES){
-    if(raw.includes('@')){const {rows}=await pgPool.query("SELECT username,data->>'email' AS email FROM user_data WHERE lower(data->>'email')=$1 LIMIT 1",[raw]);return rows[0]||null;}
-    const acct=await PgStorage._getAccount(raw);if(!acct)return null;const data=await StorageAPI.getUserData(raw);return {username:raw,email:String(data?.email||'').trim()};
+    if(raw.includes('@')){const {rows}=await pgPool.query("SELECT a.username,a.password_hash AS \"passwordHash\",a.blocked,u.data->>'email' AS email FROM accounts a JOIN user_data u ON u.username=a.username WHERE lower(u.data->>'email')=$1 LIMIT 1",[raw]);return rows[0]||null;}
+    const acct=await PgStorage._getAccount(raw);if(!acct)return null;const data=await StorageAPI.getUserData(raw);return {username:raw,email:String(data?.email||'').trim(),passwordHash:acct.passwordHash,blocked:acct.blocked};
   }
   const data=await StorageAPI.readData();
-  if(raw.includes('@')){const entry=Object.entries(data.users||{}).find(([,u])=>String(u?.email||'').trim().toLowerCase()===raw);return entry?{username:entry[0],email:entry[1].email}:null;}
-  return data.accounts?.[raw]?{username:raw,email:String(data.users?.[raw]?.email||'').trim()}:null;
+  if(raw.includes('@')){const entry=Object.entries(data.users||{}).find(([,u])=>String(u?.email||'').trim().toLowerCase()===raw);return entry&&data.accounts?.[entry[0]]?{...data.accounts[entry[0]],username:entry[0],email:entry[1].email}:null;}
+  return Object.hasOwn(data.accounts||{},raw)?{...data.accounts[raw],username:raw,email:String(data.users?.[raw]?.email||'').trim()}:null;
 }
-async function forcePassword(username,newPassword){
-  const uid=canonicalUserId(username);
-  if(USE_POSTGRES){const acct=await PgStorage._getAccount(uid);if(!acct)return false;await pgPool.query('UPDATE accounts SET password_hash=$1 WHERE username=$2',[hashPw(newPassword),uid]);return true;}
-  const data=await StorageAPI.readData();if(!data.accounts?.[uid])return false;data.accounts[uid].passwordHash=hashPw(newPassword);await StorageAPI.writeData(data);return true;
+async function forcePassword(username,newPassword,reset){
+  const uid=canonicalUserId(username),nextHash=hashPw(newPassword);
+  if(USE_POSTGRES){
+    const account=await recoveryAccount(uid);
+    if(!account||account.blocked||account.email.toLowerCase()!==reset.email||AccountSecurity.credentialVersion(account.passwordHash)!==reset.credentialVersion)return false;
+    const result=await pgPool.query("UPDATE accounts SET password_hash=$1 WHERE username=$2 AND password_hash=$3 AND blocked=false AND EXISTS (SELECT 1 FROM user_data u WHERE u.username=$2 AND lower(u.data->>'email')=$4) RETURNING username",[nextHash,uid,account.passwordHash,reset.email]);
+    return result.rowCount===1;
+  }
+  return serialAccountMutation(async()=>{
+    const data=await StorageAPI.readData(),account=data.accounts?.[uid];
+    if(!account||account.blocked||String(data.users?.[uid]?.email||'').toLowerCase()!==reset.email||AccountSecurity.credentialVersion(account.passwordHash)!==reset.credentialVersion)return false;
+    account.passwordHash=nextHash;await StorageAPI.writeData(data);return true;
+  });
 }
 
 // Middleware: the request must carry a valid session token whose username
 // matches the :userId route param (case-insensitive). Impersonation tokens are
 // also accepted so the admin "Open as User" flow keeps working.
-function requireSyncAuth(req, res, next) {
+async function requireSyncAuth(req, res, next) {
+  res.set('Cache-Control','no-store');
   const token = req.headers['x-session-token'] || req.query.token || '';
   const target = (req.params.userId || '').toLowerCase().trim();
   let who = verifySessionToken(token);
@@ -1777,6 +1803,7 @@ function requireSyncAuth(req, res, next) {
   if (who.toLowerCase().trim() !== target) {
     return res.status(403).json({ error: 'Token does not match this user' });
   }
+  try{const account=await getPracticeAccount(who);if(!account||account.blocked)return res.status(403).json({error:'Account is unavailable'});}catch{return res.status(503).json({error:'Account verification is temporarily unavailable'});}
   next();
 }
 
@@ -1790,25 +1817,17 @@ const AuthAPI = {
   async register(username, password, secretQ, secretA, email) {
     const uid = username.toLowerCase().trim();
     if (password.length < 8) return { success: false, error: 'Password min 8 chars' };
-    // v19.10: Postgres fast path — single account lookup + single insert.
-    if (USE_POSTGRES) {
-      const existing = await PgStorage._getAccount(uid);
-      if (existing) return { success: false, error: 'Username taken' };
-      await PgStorage._saveAccount({
-        username: uid, passwordHash: hashPw(password),
-        secretQ: secretQ || '', secretAHash: secretA ? hashPw(secretA) : '',
-        createdAt: new Date().toISOString(), lastLogin: null,
-        blocked: false, role: 'user'
-      });
-      // Seed an empty user_data row so subsequent getUserData returns the same
-      // shape JsonStorage would return for a brand-new user.
-      await pgPool.query(
-        `INSERT INTO user_data (username, data) VALUES ($1, $2::jsonb) ON CONFLICT (username) DO NOTHING`,
-        [uid, JSON.stringify({ attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 }, email: email || '' })]
-      );
-      return { success: true, user: { username: uid, role: 'user' } };
+    if(USE_POSTGRES){
+      const client=await pgPool.connect();
+      try{
+        await client.query('BEGIN');
+        const created=await client.query("INSERT INTO accounts (username,password_hash,secret_q,secret_a_hash,created_at,blocked,role) VALUES ($1,$2,$3,$4,NOW(),false,'user') ON CONFLICT (username) DO NOTHING RETURNING username",[uid,hashPw(password),secretQ||'',secretA?hashPw(secretA):'']);
+        if(!created.rowCount){await client.query('ROLLBACK');return{success:false,error:'Username taken'};}
+        await client.query("INSERT INTO user_data (username,data) VALUES ($1,$2::jsonb) ON CONFLICT (username) DO NOTHING",[uid,JSON.stringify({attempted:[],summaries:{},scores:{},history:{},stats:{totalAttempts:0,averageScore:0},email})]);
+        await client.query('COMMIT');invalidatePracticeAccount(uid);return{success:true,user:{username:uid,role:'user'}};
+      }catch(error){await client.query('ROLLBACK').catch(()=>{});throw error;}finally{client.release();}
     }
-    // JSON fallback (unchanged)
+    return serialAccountMutation(async()=>{
     const data = await this.readAccounts();
     if (data.accounts[uid]) return { success: false, error: 'Username taken' };
     data.accounts[uid] = {
@@ -1819,7 +1838,8 @@ const AuthAPI = {
     };
     if (!data.users[uid]) data.users[uid] = { attempted: [], summaries: {}, scores: {}, history: {}, stats: { totalAttempts: 0, averageScore: 0 }, email: email || '' };
     await StorageAPI.writeData(data);
-    return { success: true, user: { username: uid, role: 'user' } };
+    invalidatePracticeAccount(uid);return { success: true, user: { username: uid, role: 'user' } };
+    });
   },
   async login(username, password) {
     const uid = username.toLowerCase().trim();
@@ -1928,7 +1948,7 @@ const AuthAPI = {
     }
     delete data.accounts[uid];
     delete data.users[uid];
-    await StorageAPI.writeData(data);
+    await StorageAPI.writeData(data);invalidatePracticeAccount(uid);
     return { success: true };
   },
   async deleteUsers(usernames) {
@@ -1971,23 +1991,17 @@ const AuthAPI = {
       } else notFound.push(uid);
     });
     await StorageAPI.writeData(data);
-    return { success: true, deleted, notFound };
+    deleted.forEach(invalidatePracticeAccount);return { success: true, deleted, notFound };
   },
-  async blockUser(username, blocked) {
-    const data = await this.readAccounts();
-    const uid = username.toLowerCase().trim();
-    if (!data.accounts[uid]) return { success: false, error: 'User not found' };
-    data.accounts[uid].blocked = blocked;
-    await StorageAPI.writeData(data);
-    return { success: true, blocked };
+  async blockUser(username,blocked){
+    const uid=canonicalUserId(username);if(typeof blocked!=='boolean')return{success:false,error:'Choose blocked or unblocked.'};
+    if(USE_POSTGRES){const r=await pgPool.query('UPDATE accounts SET blocked=$1 WHERE username=$2 RETURNING username',[blocked,uid]);invalidatePracticeAccount(uid);return r.rowCount?{success:true,blocked}:{success:false,error:'User not found'};}
+    return serialAccountMutation(async()=>{const data=await this.readAccounts();if(!data.accounts[uid])return{success:false,error:'User not found'};data.accounts[uid].blocked=blocked;await StorageAPI.writeData(data);invalidatePracticeAccount(uid);return{success:true,blocked};});
   },
-  async adminResetPassword(username, newPw) {
-    const data = await this.readAccounts();
-    const uid = username.toLowerCase().trim();
-    if (!data.accounts[uid]) return { success: false, error: 'User not found' };
-    data.accounts[uid].passwordHash = hashPw(newPw);
-    await StorageAPI.writeData(data);
-    return { success: true };
+  async adminResetPassword(username,newPw){
+    const uid=canonicalUserId(username),error=AccountSecurity.passwordError(newPw);if(error)return{success:false,error};
+    if(USE_POSTGRES){const r=await pgPool.query('UPDATE accounts SET password_hash=$1 WHERE username=$2 RETURNING username',[hashPw(newPw),uid]);return{success:!!r.rowCount};}
+    return serialAccountMutation(async()=>{const data=await this.readAccounts();if(!data.accounts[uid])return{success:false,error:'User not found'};data.accounts[uid].passwordHash=hashPw(newPw);await StorageAPI.writeData(data);return{success:true};});
   },
   async getUserData(username) {
     const data = await this.readAccounts();
@@ -1995,6 +2009,12 @@ const AuthAPI = {
     return { account: data.accounts[uid] || null, progress: data.users[uid] || null };
   }
 };
+
+// File-backed profile and credential updates share one read/modify/write queue.
+// A sign-out save must not collide with or overwrite the next sign-in/reset.
+if(!USE_POSTGRES)for(const name of ['login','changePassword','resetPassword','deleteUser','deleteUsers']){
+  const operation=AuthAPI[name];AuthAPI[name]=function(...args){return serialAccountMutation(()=>operation.apply(this,args));};
+}
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -3512,7 +3532,8 @@ app.post('/api/sync/:userId', requireSyncAuth, async (req, res) => {
 // ═══ AUTH ROUTES ═══
 app.post('/api/auth/register', async (req, res) => {
   try {
-    const { username, password, secretQ, secretA, email } = req.body;
+    const { username, password, secretQ, secretA, email } = req.body||{};
+    const validation=AccountSecurity.credentialsError(username,password,{register:true,email});if(validation)return res.status(400).json({success:false,error:validation});
     if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
     if (password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
     const result = await AuthAPI.register(username, password, secretQ, secretA, email);
@@ -3524,7 +3545,8 @@ app.post('/api/auth/register', async (req, res) => {
 
 app.post('/api/auth/login', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password } = req.body||{};
+    const validation=AccountSecurity.credentialsError(username,password);if(validation)return res.status(400).json({success:false,error:validation});
     if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
     const result = await AuthAPI.login(username, password);
     if (result && result.success) result.token = mintSessionToken(username);
@@ -3541,7 +3563,8 @@ app.post('/api/auth/change-password', async (req, res) => {
     if (typeof oldPassword !== 'string' || typeof newPassword !== 'string') {
       return res.status(400).json({ success: false, error: 'Current and new password are required' });
     }
-    if (newPassword.length < 8) return res.status(400).json({ success: false, error: 'Min 8 chars' });
+    const validation=AccountSecurity.passwordError(newPassword);if(validation)return res.status(400).json({success:false,error:validation});
+    const account=await getPracticeAccount(username);if(!account||account.blocked)return res.status(403).json({success:false,error:'Account is unavailable'});
     const result = await AuthAPI.changePassword(username, oldPassword, newPassword);
     res.status(result.success ? 200 : 400).json(result);
   } catch (e) { res.status(500).json({ success: false, error: 'Password change failed' }); }
@@ -3550,19 +3573,19 @@ app.post('/api/auth/change-password', async (req, res) => {
 app.post('/api/auth/email-reset/request', async (req,res)=>{
   try{
     const target=await recoveryAccount(req.body?.identifier),email=String(target?.email||'').trim();
-    if(target&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)&&mailTransport){
-      const token=mintPasswordResetToken(target.username,email),resetUrl=req.protocol+'://'+req.get('host')+'/?reset='+encodeURIComponent(token);
+    if(target&&!target.blocked&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)&&mailTransport){
+      const token=mintPasswordResetToken(target.username,email,target.passwordHash),resetUrl=AccountSecurity.resetOrigin(req)+'/?reset='+encodeURIComponent(token);
       await mailTransport.sendMail({from:'"IPT Brisbane" <'+GMAIL_USER+'>',to:email,replyTo:GMAIL_USER,subject:'Reset your IPT Brisbane password',text:'Use this link within 15 minutes to reset your password: '+resetUrl,html:'<p>Use the link below within 15 minutes to reset your IPT Brisbane password.</p><p><a href="'+resetUrl+'">Reset password</a></p><p>If you did not request this, you can ignore this email.</p>'});
     }
-  }catch(e){console.warn('[auth-reset] request failed:',e.message);}
+  }catch(e){console.warn('[auth-reset] request failed');}
   res.json({success:true});
 });
 app.post('/api/auth/email-reset/complete', async (req,res)=>{
   try{
-    const data=verifyPasswordResetToken(req.body?.token),newPassword=String(req.body?.newPassword||'');
+    const data=verifyPasswordResetToken(req.body?.token),newPassword=req.body?.newPassword;
     if(!data)return res.status(400).json({success:false,error:'Reset link is invalid or expired.'});
-    if(newPassword.length<8)return res.status(400).json({success:false,error:'Password must be at least 8 characters.'});
-    const ok=await forcePassword(data.username,newPassword);if(!ok)return res.status(400).json({success:false,error:'Account is unavailable.'});
+    const validation=AccountSecurity.passwordError(newPassword);if(validation)return res.status(400).json({success:false,error:validation});
+    const ok=await forcePassword(data.username,newPassword,data);if(!ok)return res.status(400).json({success:false,error:'Account is unavailable.'});
     res.json({success:true});
   }catch(e){res.status(500).json({success:false,error:'Password reset failed.'});}
 });
@@ -3673,16 +3696,17 @@ function mintImpersonationToken(username) {
   return Buffer.from(payload).toString('base64') + '.' + sig;
 }
 function verifyImpersonationToken(token) {
+  if(!ADMIN_KEY)return null;
   // Returns the username if valid, or null.
-  if (!token || typeof token !== 'string' || token.indexOf('.') < 0) return null;
-  const [b64, sig] = token.split('.');
+  const parts=AccountSecurity.signedParts(token);if(!parts)return null;
+  const [b64,sig]=parts;
   let payload;
   try { payload = Buffer.from(b64, 'base64').toString('utf8'); }
   catch (e) { return null; }
   const expectedSig = crypto.createHmac('sha256', _impersonationSecret()).update(payload).digest('hex');
   // Constant-time comparison
   if (sig.length !== expectedSig.length) return null;
-  if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) return null;
+  if (!AccountSecurity.signatureMatches(sig,expectedSig)) return null;
   const sep = payload.lastIndexOf('|');
   if (sep < 0) return null;
   const username = payload.slice(0, sep);
@@ -3719,6 +3743,7 @@ app.get('/api/impersonate/redeem', async (req, res) => {
     if (!username) {
       return res.status(403).json({ error: 'Invalid or expired impersonation token' });
     }
+    const account=await getPracticeAccount(username);if(!account||account.blocked)return res.status(403).json({error:'Account is unavailable'});
     const userData = await StorageAPI.getUserData(username);
     res.json({ success: true, username, data: userData, impersonated: true });
   } catch (e) {
@@ -6360,11 +6385,11 @@ async function getPracticeAccount(uid) {
   const started = Date.now();
   let account;
   if (USE_POSTGRES) {
-    const { rows } = await pgPool.query('SELECT username, blocked, role FROM accounts WHERE username = $1', [uid]);
+    const { rows } = await pgPool.query('SELECT username, blocked, role, created_at FROM accounts WHERE username = $1', [uid]);
     account = rows.length ? {
       username: rows[0].username,
       blocked: !!rows[0].blocked,
-      role: rows[0].role || 'user'
+      role: rows[0].role || 'user',createdAt:rows[0].created_at?.toISOString()||null
     } : null;
   } else {
     account = (await AuthAPI.readAccounts()).accounts[uid] || null;
