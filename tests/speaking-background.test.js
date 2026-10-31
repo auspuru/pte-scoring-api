@@ -32,7 +32,7 @@ test('Rejected DI content keeps a safe diagnostic across restart without changin
  let at=1000,calls=0,ready=false;
  const make=()=>createMockJobs({directory,store,now:()=>at,transcribe:()=>assert.fail('Reuse transcript'),assessAzure:()=>assert.fail('Reuse Azure'),callModel:async()=>{
   calls++;
-  if(!ready)return {judgment:{score:null,relevance:'source-limited',accuracy:'unverifiable',scoreImpact:null,requiredEvidence:null,inaccuracy:null,otherEvidence:[]},reason:'PRIVATE_MODEL_PROSE',nextStep:'PRIVATE_MODEL_PROSE'};
+  if(!ready)return {judgment:{score:null,relevance:'source-limited',accuracy:'unverifiable',scoreImpact:null,requiredEvidence:null,inaccuracy:null,otherEvidence:[{quote:'Trips increased.',factIndices:[],kind:'generic'}]},reason:'PRIVATE_MODEL_PROSE',nextStep:'PRIVATE_MODEL_PROSE'};
   return {judgment:{score:6,relevance:'image-specific',accuracy:'accurate',scoreImpact:null,requiredEvidence:{quote:'Trips increased.',factIndices:[0],kind:'relationship'},inaccuracy:null,otherEvidence:[]},reason:'The relationship is clear.',nextStep:'Keep the relationship.'};
  }});
  let jobs=make();await jobs.ensure('student',a);await jobs.wait();
