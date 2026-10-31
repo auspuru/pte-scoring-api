@@ -12579,7 +12579,7 @@ function ensureWritingLabRuntimeLoaded() {
 function ensureStudentProgressRuntimeLoaded() {
   if (window.StudentProgress?.create) return Promise.resolve(window.StudentProgress);
   if (studentProgressRuntimeLoadPromise) return studentProgressRuntimeLoadPromise;
-  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=sha256-2bf749615512', 'student progress')
+  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=sha256-6fbfebc1af3f', 'student progress')
     .then(() => {
       if (!window.StudentProgress?.create) throw new Error('Progress history did not initialise.');
       return window.StudentProgress;
@@ -12594,7 +12594,7 @@ function ensureStudentProgressRuntimeLoaded() {
 function ensureInterventionsRuntimeLoaded() {
   if (window.StudentInterventions?.create) return Promise.resolve(window.StudentInterventions);
   if (interventionsRuntimeLoadPromise) return interventionsRuntimeLoadPromise;
-  interventionsRuntimeLoadPromise = loadDeferredScript('/interventions-client.js?v=9', 'student interventions')
+  interventionsRuntimeLoadPromise = loadDeferredScript('/interventions-client.js?v=10', 'student interventions')
     .then(() => {
       if (!window.StudentInterventions?.create) throw new Error('Next Steps did not initialise.');
       return window.StudentInterventions;
@@ -12837,8 +12837,11 @@ function launchAssignedQuestion(item) {
   }
   if (item.engine === 'swt') {
     switchSection('swt');
-    const id = Number(item.passageId || item.questionId);
-    if (Number.isFinite(id)) setTimeout(() => { if (typeof loadPassage === 'function') loadPassage(id); }, 0);
+    const position = passages.findIndex(p => String(p.id) === String(item.passageId || item.questionId)) + 1;
+    if (!position) { toast('This assigned SWT question is no longer available.', true); return; }
+    setSwtPracticeMode('summary');
+    loadPassage(position);
+    showSwtScreen('swtPracticeScreen');
     return;
   }
   if (item.route) switchSection(item.route);
@@ -12926,12 +12929,20 @@ function switchSection(section, options = {}) {
   }
 
   if (active === 'progress') openStudentProgress();
+  if (active === 'swt' && options.swtRequest) openSavedSwtResponse(options.swtRequest);
   if (active === 'next-steps') {
     const host = document.getElementById('nextStepsPane');
     if (host && !host.children.length) host.innerHTML = '<div class="dash-card" role="status">Preparing My Next Steps…</div>';
     ensureStudentInterventionsController()
       .then(controller => { if (portalWorkspace.current() === active) controller?.open(); })
-      .catch(error => { if (portalWorkspace.current() === active) toast(error.message || 'My Next Steps could not load.', true); });
+      .catch(error => {
+        if (portalWorkspace.current() !== active) return;
+        if (host) {
+          host.innerHTML = '<div class="dash-card" role="alert">My Next Steps could not load. Your plans are saved. <button type="button" class="portal-button" data-next-steps-retry>Retry</button></div>';
+          host.querySelector('[data-next-steps-retry]')?.addEventListener('click', () => switchSection(active, {history:'replace'}), {once:true});
+        }
+        toast(error.message || 'My Next Steps could not load.', true);
+      });
   }
   if (active === 'practice-hub') portalCatalogue.openPractice();
   if(activeRoute?.speakingMock)ensureSpeakingMockRuntimeLoaded().then(mock=>{if(portalWorkspace.current()===active)mock.open({...options.mockRequest,history:activeRoute.mockHistory});}).catch(error=>{const host=document.getElementById('speakingMockPane');if(host)host.innerHTML='<p role="alert">Speaking mock could not load. Return to Mock Tests and retry.</p>';toast(error.message,true);});
@@ -12948,6 +12959,37 @@ function switchSection(section, options = {}) {
 
 let studentProgressController;
 let studentInterventionsController = null;
+function openSavedSwtResponse(entry) {
+  const position = passages.findIndex(p => String(p.id) === String(entry.passageId));
+  if (position < 0) { toast('This saved SWT passage is no longer available.', true); return; }
+  setSwtPracticeMode('summary');
+  if (entry.draft) { loadPassage(position + 1); showSwtScreen('swtPracticeScreen'); return; }
+  const history = (LocalStore.get(getPteStorageKey('history')) || {})[entry.passageId] || [];
+  const saved = entry.timestamp
+    ? history.find(a => a.timestamp === entry.timestamp && (entry.responseText === undefined || a.text === entry.responseText))
+    : history[entry.attemptIndex];
+  if (!saved || (entry.responseText !== undefined && saved.text !== entry.responseText)) {
+    toast('This saved response is unavailable. Refresh My Progress and try again.', true); return;
+  }
+  const latest = (LocalStore.get(getPteStorageKey('scores')) || {})[entry.passageId];
+  const result = latest?.__timestamp === saved.timestamp && latest.__text === saved.text ? latest : saved;
+  currentPassageId = position + 1;
+  updateResultsNav();
+  showResults({...result,__timestamp:saved.timestamp}, passages[position], result.__spellData || saved.spellData || null, saved.text || '');
+  showSwtScreen('swtResultsScreen');
+}
+
+function reviewSavedPractice(entry) {
+  if (entry.engine === 'essay') {
+    if (entry.draft) return resumePortalEssay();
+    return switchSection('practice', {essayRequest:{attemptId:entry.id},routeHash:PortalWorkspace.questionHash('practice',{attempt:entry.id})});
+  }
+  if (entry.engine === 'swt') return switchSection('swt', {swtRequest:entry,routeHash:PortalWorkspace.questionHash('swt',{question:entry.passageId,attempt:entry.timestamp})});
+  if (entry.engine === 'speaking') return switchSection(entry.route, {speakingRequest:{attemptId:entry.id,navigation:true},routeHash:PortalWorkspace.questionHash(entry.route,{attempt:entry.id})});
+  if (entry.engine === 'reading') return switchSection(entry.route || 'reading', {readingRequest:{attemptId:entry.id},routeHash:PortalWorkspace.questionHash(entry.route || 'reading',{attempt:entry.id})});
+  return switchSection(entry.route || 'writing-history', {labRequest:{attemptId:entry.id},routeHash:PortalWorkspace.questionHash(entry.route || 'writing-history',{attempt:entry.id})});
+}
+
 function openStudentProgress() {
   if (!window.StudentProgress || !window.ReadingPractice) {
     const pane = document.getElementById('progressPane');
@@ -12966,9 +13008,7 @@ function openStudentProgress() {
     document,
     identity: () => ({uid:currentUserId,token:sessionToken}),
     navigate: switchSection,
-    review: entry => entry.engine === 'reading'
-      ? switchSection('reading',{readingRequest:{attemptId:entry.id}})
-      : switchSection('writing-history',{labRequest:{attemptId:entry.id}}),
+    review: reviewSavedPractice,
     loadLocal: async () => {
       const owner = currentUserId, token = sessionToken;
       // My Progress is an observation surface, so always pull the latest cloud
@@ -12996,6 +13036,7 @@ function openStudentProgress() {
         reading,
         swt:progress.history||{},
         swtDrafts:progress.summaries||{},
+        passages:passages.map(p=>({id:p.id,title:p.title})),
         essays:getPracticeHistory(),
         essayDraft:progress.essayDraft||null
       };
@@ -13535,7 +13576,7 @@ const PRACTICE_MAX_TOTAL = 26;
 
 function openPractice(defaultToWelcome = false, options = {}) {
   savePortalEssayDraft();
-  refreshPracticeHistory();
+  const refreshed = refreshPracticeHistory();
   portalWorkspace.activate('practice', options);
   renderPracticeHistory();
   if (defaultToWelcome && !practiceState.essayText && !practiceSubmissionPending) {
@@ -13543,6 +13584,15 @@ function openPractice(defaultToWelcome = false, options = {}) {
   }
   if (defaultToWelcome || !document.getElementById('practiceContent').children.length) renderPracticeMain();
   updatePracticeStats();
+  if (options.essayRequest?.attemptId) {
+    const id = options.essayRequest.attemptId, owner = currentUserId, token = sessionToken;
+    if (getPracticeHistory().some(a=>a.id===id)) viewPracticeAttempt(id);
+    else Promise.resolve(refreshed).then(() => {
+      if (owner !== currentUserId || token !== sessionToken || portalWorkspace.current() !== 'practice') return;
+      if (getPracticeHistory().some(a=>a.id===id)) viewPracticeAttempt(id);
+      else toast('This saved response is unavailable. Refresh My Progress and try again.', true);
+    });
+  }
 }
 
 function archivePracticeDraftForUndo(message='Previous draft archived') {
@@ -15873,7 +15923,9 @@ async function saveAttempt(pid, text, data, spellData){
   const h = LocalStore.get(getPteStorageKey('history')) || {};
   if(!h[pid]) h[pid] = [];
   h[pid].unshift({
+    ...data,
     text, timestamp: ts,
+    spellData: spellData || null,
     overall_score: data.overall_score || 0, band: data.band || 'Band 5',
     trait_scores: data.trait_scores || {}, word_count: data.word_count || 0,
     content_details: data.content_details || {},

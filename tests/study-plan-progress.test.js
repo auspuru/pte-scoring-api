@@ -119,7 +119,7 @@ test('My Progress trends combine normal practice and matching mock task results'
   assert.equal(area('Write From Dictation').count, 3);
   assert.equal(model.practice, 13, 'Practice attempts card remains standalone-practice activity');
   assert.equal(model.complete, 2, 'Mocks remain reviewable in the separate mock section');
-  assert.match(source, /combine normal practice with matching per-task mock results/);
+  assert.equal(model.activity.filter(a=>a.engine==='reading').length,3);
   assert.match(source, /practiceCount/);
   assert.match(source, /mockCount/);
 });
@@ -141,8 +141,8 @@ test('My Progress surfaces recent completed SWT and Essay attempts near the top'
     engine:'essay',title:'Write Essay',route:'practice',at:'2026-09-30T10:06:00.000Z',detail:'Completed · 22/26'
   });
   assert(model.recentWriting.some(item => item.title === 'Summarise Written Text' && /82\/90/.test(item.detail)));
-  assert.match(source, /Recent writing activity/);
-  assert(source.indexOf('Recent writing activity') < source.indexOf('Currently in progress'));
+  assert.equal(model.activity[0].engine,'swt');
+  assert.equal(model.activity[0].passageId,'3');
 });
 
 test('My Progress exposes saved in-progress practice from another device', () => {
@@ -185,8 +185,8 @@ test('My Progress exposes saved in-progress practice from another device', () =>
   assert(model.activePractice.some(item => item.title === 'Summarise Written Text' && /words saved/.test(item.detail)));
   assert(model.activePractice.some(item => item.title === 'Write Essay' && /Essay draft topic/.test(item.detail)));
   assert(model.recent.some(item => item.result && item.result.startsWith('In progress')));
-  assert.match(source, /Currently in progress/);
-  assert.match(source, /In-progress practice is shown as soon as it reaches your account/);
+  assert.equal(model.activity[0].id,'ra-live');
+  assert.equal(model.activity.find(a=>a.engine==='swt').passageId,'7');
 });
 
 test('My Progress includes completed essay practice in recent writing', () => {

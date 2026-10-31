@@ -178,6 +178,7 @@ test('An active mock blocks portal routes, browser history and menu controls unt
   active=true; h.controller.reset(); assert.equal(active,false);
 });
 
+
 function storage() {
   const values = new Map();
   return { values, getItem: key => values.get(key) || null, setItem: (key, val) => values.set(key, val), removeItem: key => values.delete(key) };
