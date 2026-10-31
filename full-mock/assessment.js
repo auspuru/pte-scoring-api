@@ -52,6 +52,7 @@ const COMPATIBLE_BASES = [
   [require('../content/full-mock/navigation-compatible-sources.json'), '348f9fb6beac5e43e1cc1d58ff4125414a44864799bd53354d6c194a375e6749'],
   [require('../content/full-mock/access-compatible-sources.json'), '275016a6cdf793dbd6ef7a0750bc10294a601d87ab8e4e0faa74418ea2419556'],
   [require('../content/full-mock/media-compatible-sources.json'), '50f715d2da0f112e96756269018adcbb9b642701f361d31958f2fa990947d88b'],
+  [require('../content/full-mock/account-compatible-sources.json'), 'c79dfc773e68390d473d08bf4e37544cb549bbf5d4e383b2245fc35dc7532e41'],
   [require('../content/full-mock/alerts-compatible-sources.json'), '7fe217fe37f2b2e2803d911b1de3db15ccb8170f57523502508f2e0b46e2d42d']
 ];
 // This projection is used only to finish frozen attempts with their OLD
@@ -63,6 +64,11 @@ const CONTENT_WIRING_HASHES = {
   'mock-content-provider.js':'3efa737c0e2a8ae047bd24b0c140f6cc2c67e2329cb3184950ef38bb1f5e8492',
   'mock-content-assessment.js':'f418438dd65ac47a81ee93faf62dbae5e5c7d7aa92c0ee4e30cb0d8eaa984253'
 };
+function accountSources(current) {
+  const [baseline,expected]=COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/account-compatible-sources.json'));
+  if(digest(baseline)!==expected||current.files['server.js']?.sha256!=='4a8d963d0c1927870f63c90a4259277b0e6ccdde70a9c77a57e9877bbdf66371')return current;
+  const projected=structuredClone(current);projected.files['server.js']=structuredClone(baseline.files['server.js']);return projected;
+}
 function transportSources(current) {
   const files = current.files, [baseline,baselineHash] = COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/content-provider-compatible-sources.json'));
   if (digest(baseline) !== baselineHash
@@ -84,8 +90,12 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  current={...current,scoringSources:accountSources(current.scoringSources)};
+  const accountBase=COMPATIBLE_BASES.find(([value])=>value===require('../content/full-mock/account-compatible-sources.json'));
   const [practice,practiceHash]=COMPATIBLE_BASES[0];
-  if(digest(practice)===practiceHash&&digest(saved.scoringSources)===practiceHash){
+  if(digest(accountBase[0])===accountBase[1]&&digest(saved.scoringSources)===accountBase[1]){
+    // This exact account-only upgrade keeps all native sources and saved marks.
+  }else if(digest(practice)===practiceHash&&digest(saved.scoringSources)===practiceHash){
     const sources=structuredClone(current.scoringSources);
     if(sources.files['public/reading-practice.js']?.sha256==='b3dab5bb17ec4028c6ea80e447fb0cf316fd7582badcfbc466279eeb9913d862'&&
       sources.files['speaking-lab.js']?.sha256==='15e7b543c49ab8e290b5f430a6e9ebd5e7c46da3b147311a62d562ce10a13150'){

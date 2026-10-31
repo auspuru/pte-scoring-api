@@ -267,7 +267,7 @@ test('slow sync envelope diagnostics record only timing, byte size and compact m
 
 test('practice account status cache is short-lived, minimal and invalidated by account writes', () => {
   assert.match(serverSource, /const PRACTICE_ACCOUNT_CACHE_TTL_MS = 5000/);
-  assert.match(serverSource, /SELECT username, blocked, role FROM accounts WHERE username = \$1/);
+  assert.match(serverSource, /SELECT username, blocked, role, created_at FROM accounts WHERE username = \$1/);
   assert.match(serverSource, /practiceAccountCache\.set\(uid, \{ account, expiresAt: Date\.now\(\) \+ PRACTICE_ACCOUNT_CACHE_TTL_MS \}\)/);
   assert.match(serverSource, /invalidatePracticeAccount\(acct\.username\)/);
   assert.match(serverSource, /invalidatePracticeAccount\(uid\)/);
@@ -307,14 +307,14 @@ test('Railway Postgres prefers the private DATABASE_URL before the public TCP pr
   assert.match(serverSource, /process\.env\.DATABASE_PUBLIC_URL \? 'DATABASE_PUBLIC_URL'/);
 });
 
-test('Both sync and legacy progress routes require the matching account token', () => {
+test('Both sync and legacy progress routes require the matching active account token', async () => {
   for (const method of ['get', 'post']) for (const route of ['sync', 'progress']) assert(serverSource.includes(`app.${method}('/api/${route}/:userId', requireSyncAuth,`));
-  const start = serverSource.indexOf('function requireSyncAuth('), end = serverSource.indexOf('\n}', start) + 2;
-  const ctx = { verifySessionToken: token => token === 'student-token' ? 'student' : null, verifyImpersonationToken: () => null };
+  const start = serverSource.indexOf('async function requireSyncAuth('), end = serverSource.indexOf('\n}', start) + 2;
+  const ctx = { verifySessionToken: token => token === 'student-token' ? 'student' : null, verifyImpersonationToken: () => null, getPracticeAccount: async () => ({blocked:false}) };
   vm.createContext(ctx); vm.runInContext(serverSource.slice(start, end), ctx);
   for (const [token, userId, expected] of [['', 'student', 401], ['student-token', 'other', 403], ['student-token', 'STUDENT', 200]]) {
     let status = 200, passed = false;
-    ctx.requireSyncAuth({ headers: { 'x-session-token': token }, query: {}, params: { userId } }, { status: code => { status = code; return { json() {} }; } }, () => { passed = true; });
+    await ctx.requireSyncAuth({ headers: { 'x-session-token': token }, query: {}, params: { userId } }, { set(){return this;}, status: code => { status = code; return { json() {} }; } }, () => { passed = true; });
     assert.equal(status, expected); assert.equal(passed, expected === 200);
   }
 });

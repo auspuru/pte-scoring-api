@@ -55,10 +55,11 @@ async function waitForServer() {
   throw new Error(`Server did not become ready.\n${serverLog}`);
 }
 
+let calibrationToken='';
 async function grade(passage, text) {
   const res = await fetch(`${base}/api/grade`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', 'x-session-token':calibrationToken },
     body: JSON.stringify({
       text,
       type: 'swt',
@@ -75,6 +76,8 @@ async function main() {
   checkStudentAdminEntryRemoved();
   console.log('PASS  Student-facing admin entry removed');
   await waitForServer();
+  const registration=await fetch(base+'/api/auth/register',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({username:'offline-calibration',password:'Isolated-calibration-123',email:'calibration@example.test'})});
+  const account=await registration.json();assert(registration.ok&&account.success&&account.token,'Disposable calibration account could not sign in');calibrationToken=account.token;
   let failed = false;
   const calibrationPassages = passages.filter(p => p.officialCalibration);
 

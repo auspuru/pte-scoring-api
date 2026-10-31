@@ -1,0 +1,14 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),puppeteer=require('puppeteer'),{fixture}=require('./helpers/auth-server');
+test('AUTH-01/03/04: real login, keyboard double-submit and expired-session draft recovery',{timeout:60000},async t=>{
+ const f=await fixture(t);await f.request('/api/auth/register',{username:'browser-alice',password:'Password123',email:'alice@example.test'});await f.request('/api/auth/register',{username:'browser-bob',password:'Password123',email:'bob@example.test'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());const page=await browser.newPage();let logins=0;page.on('request',r=>{if(r.url().endsWith('/api/auth/login')&&r.method()==='POST')logins++;});
+ await page.goto(f.base);await page.waitForSelector('#loginUsername');await page.type('#loginUsername','browser-alice');await page.type('#loginPassword','Wrong-pass-123');await page.click('#loginSubmitBtn');await page.waitForSelector('#loginError.show');assert.equal(await page.$eval('#loginSubmitBtn',e=>e.disabled),false);await page.$eval('#loginPassword',e=>e.value='');await page.type('#loginPassword','Password123');
+ await page.evaluate(()=>{const form=document.getElementById('loginSubmitForm');form.dispatchEvent(new Event('submit',{cancelable:true}));form.dispatchEvent(new Event('submit',{cancelable:true}));});
+ await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid');assert.equal(logins,2);
+ await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput');await page.type('#summaryInput','A recoverable first-account summary.');
+ await f.clock(31*24*60*60*1000);await page.evaluate(()=>refreshPracticeHistory({force:true}));await page.waitForFunction(()=>document.getElementById('loginScreen')?.style.display==='flex');
+ await f.clock(0);await page.type('#loginUsername','browser-bob');await page.type('#loginPassword','Password123');await page.click('#loginSubmitBtn');await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid');
+ await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput');assert.equal(await page.$eval('#summaryInput',e=>e.value),'');
+ await page.evaluate(()=>signOut());await page.type('#loginUsername','browser-alice');await page.type('#loginPassword','Password123');await page.click('#loginSubmitBtn');await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid');await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput');assert.equal(await page.$eval('#summaryInput',e=>e.value),'A recoverable first-account summary.');
+});

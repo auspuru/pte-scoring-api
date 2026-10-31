@@ -713,7 +713,7 @@ function hideForgotPasswordError() {
 }
 
 async function handleLoginSubmit(ev) {
-  ev.preventDefault();
+  ev.preventDefault();if(document.getElementById('loginSubmitBtn')?.disabled)return;
   const revision = ++authFlowRevision;
   const u = document.getElementById('loginUsername').value.trim();
   const pw = document.getElementById('loginPassword').value;
@@ -727,7 +727,7 @@ async function handleLoginSubmit(ev) {
     const r = await fetch(API_URL+'/api/auth/login',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:u,password:pw})
+      signal:AbortSignal.timeout(20000),body:JSON.stringify({username:u,password:pw})
     });
     d = await r.json().catch(() => null);
     if (revision !== authFlowRevision) return;
@@ -768,7 +768,7 @@ async function handleLoginSubmit(ev) {
 }
 
 async function handleRegisterSubmit(ev) {
-  ev.preventDefault();
+  ev.preventDefault();if(document.getElementById('regSubmitBtn')?.disabled)return;
   const revision = ++authFlowRevision;
   const u = document.getElementById('regUsername').value.trim();
   const email = document.getElementById('regEmail').value.trim();
@@ -798,7 +798,7 @@ async function handleRegisterSubmit(ev) {
     const r = await fetch(API_URL+'/api/auth/register',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username:u,password:pw,secretQ:sq,secretA:sa,email:email})
+      signal:AbortSignal.timeout(20000),body:JSON.stringify({username:u,password:pw,secretQ:sq,secretA:sa,email:email})
     });
     d = await r.json().catch(() => null);
     if (revision !== authFlowRevision) return;
@@ -850,6 +850,7 @@ function exitImpersonation() {
 window.exitImpersonation = exitImpersonation;
 
 function signOut() {
+  authFlowRevision++;window.PortalAuthBoot?.cancel?.();
   savePortalEssayDraft();
   resetWritingLabFrame();
   window.SpeakingPractice?.reset();

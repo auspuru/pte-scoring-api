@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "b92c5ba935fa41755d2211991dd2d3755c274b01",
+  "baseCommit": "762c6c1ba1949320c118b5530b3567ace8e927ac",
   "checkedAt": "2026-10-31",
-  "scope": "Practice navigation and standalone DI Academy parity. Frozen Full Mock native graders, transcription, providers, successful stages and saved snapshots are preserved under exact source compatibility pins.",
+  "scope": "Account access and single-use recovery. Frozen Full Mock graders, providers, marks and snapshots retain exact source compatibility pins.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "a9285b3246b26fff8e122b2cd194365256f4c5371299d2f78fd7f7652b15e40c",
+        "sha256": "374c33988fdbad773ff941e4871d12e99477e0db5a521923e6fb8656a02a0d8b",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -173,7 +173,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "937a9f1e0cf80786c104e3d73302ca93d9dd31a0fa39698193ae3f887ea25491",
+        "sha256": "4a8d963d0c1927870f63c90a4259277b0e6ccdde70a9c77a57e9877bbdf66371",
         "version": null
       },
       "situation-content-policy.js": {
@@ -225,6 +225,5 @@
         "version": "exam-practice-2026-10-09.1"
       }
     }
-  },
-  "integratedMainCommit": "fbbbd390cb69b9f2b06c725d6dffb4001ec1a808"
+  }
 }
