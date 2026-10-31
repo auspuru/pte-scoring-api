@@ -11,7 +11,7 @@ function verify({ env = process.env, run = spawnSync, evidencePath } = {}) {
   testDatabaseUrl(env.FULL_MOCK_TEST_DATABASE_URL);
   const safe = releaseEnvironment(env);
   const regression = verifyRelease({ env:safe, run }); if (regression) return regression;
-  const result = run(process.execPath, ['--test','--test-concurrency=1','tests/full-mock-postgres.system.js','tests/mock-alerts-postgres.system.js','tests/full-mock-browser.system.js','tests/speaking-mock-browser.system.js','tests/practice-navigation-browser.system.js','tests/auth-postgres.system.js','tests/auth-browser.system.js'], { cwd:path.resolve(__dirname, '..'), env:safe, stdio:'inherit' });
+  const result = run(process.execPath, ['--test','--test-concurrency=1','tests/full-mock-postgres.system.js','tests/mock-alerts-postgres.system.js','tests/full-mock-browser.system.js','tests/speaking-mock-browser.system.js','tests/practice-navigation-browser.system.js','tests/auth-postgres.system.js','tests/auth-browser.system.js','tests/speaking-practice-browser.system.js'], { cwd:path.resolve(__dirname, '..'), env:safe, stdio:'inherit' });
   if (result.error) throw Error('The Full Mock system test process could not start.');
   if (result.status !== 0) return Number.isInteger(result.status) && result.status > 0 ? result.status : 1;
   if (JSON.stringify(before) !== JSON.stringify(runtimeContext())) throw Error('Runtime sources changed during verification.');
