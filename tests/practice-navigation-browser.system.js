@@ -49,7 +49,7 @@ for(const width of [1363,390,320])test('Essay guide: combined page, inline appro
  assert.equal(await page.$eval('#essay-guide [data-guide-auto]',e=>e.checked),true);
  await page.locator('.essay-guide-primary').click();
  assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),draft);assert.equal(await page.evaluate(()=>practiceState.timerStartedAt),started);
- await page.waitForFunction(()=>document.getElementById('practiceDraftStatus')?.dataset.state==='saved');
+ await page.waitForFunction((text,at)=>{const saved=portalDraftStore?.read(currentUserId);return saved?.essayText===text&&saved.timerStartedAt===at;},{},draft,started);
  await page.reload();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),draft);
  assert.equal(await page.evaluate(()=>practiceState.timerStartedAt),started);
  // The same completed guide is remembered only for this account and wording.
