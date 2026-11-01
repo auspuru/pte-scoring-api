@@ -6441,6 +6441,7 @@ async function writingContentModel(prompt) {
   return JSON.parse(output.match(/\{[\s\S]*\}/)?.[0] || 'null');
 }
 const fullMock = require('./full-mock/api').installFullMock(app, {
+  requireAdmin,
   pool: pgPool, directory: path.join(DATA_DIR, 'full-mock'),
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: getPracticeAccount,

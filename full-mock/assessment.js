@@ -100,6 +100,21 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Explicit instructor audio exclusions are additive metadata. These exact
+  // revisions preserve every native grader, model, weight and original result.
+  const exclusionBaseline=require('../content/full-mock/audio-exclusion-compatible-sources.json');
+  const exclusionPins={"full-mock/audit.js":"cb14bda7e8a6a1a5ab12a56058ab044dc670f3c42da1084041d5d28c9f79b494","full-mock/aggregation.js":"f4b7a071e74520288d799a7a0477c01be1b603f3d72477ce3434353c356f1863","full-mock/exclusions.js":"28e5e0f7b6ac5897efa49cdc2be05c418dee7034ad5eaef021f38f80d705fafe","full-mock/api.js":"043f78fd660ae2f96c19b42f7d491203555d17904c2a025ba2111f4ac9c6634d","full-mock/report.js":"a85fda2fe0d90a75b044837fcf06f045edba283b0c210fc20827de2234eaaee1","server.js":"f7a1a04a570e13bcac8e158ca6744fb71e14b7986080e1229038c69b6530b742"};
+  if(digest(exclusionBaseline)==='2a399fe767a214a45ca3584fad8b9e7fd03c4dbcb4d53d6f15e66e9b9e446ce1' && Object.entries(exclusionPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)) {
+    const sources=structuredClone(current.scoringSources);
+    for(const file of Object.keys(exclusionPins)) {
+      if(exclusionBaseline.files[file])sources.files[file]=structuredClone(exclusionBaseline.files[file]);
+      else delete sources.files[file];
+    }
+    // Assessment orchestration already permits reviewed transport revisions.
+    sources.files['full-mock/assessment.js']=structuredClone(exclusionBaseline.files['full-mock/assessment.js']);
+    current={...current,scoringSources:sources};
+    if(digest(saved)===digest(current))return true;
+  }
   // Reviewed DI practice catalogue/snapshot changes do not affect a frozen
   // Full Mock grader or its transcription function. Normalize only this exact
   // source pair before the existing historical compatibility projections.
@@ -275,6 +290,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
         const saved = await store.get(uid, id), response = saved.state.responses[position + 1];
         if (!response?.sealed) continue;
         const fingerprint = inputHash(response), previous = saved.state.assessment.items[candidate.id];
+        if (require('./exclusions').validExclusion(saved.state, candidate, response, previous)) continue;
         if (previous?.inputHash === fingerprint && previous.snapshotHash === attemptHash && previous.status === 'assessed') continue;
         if (state.assessment.recovery?.automaticRun === state.assessment.run && previous?.inputHash === fingerprint
           && previous.snapshotHash === attemptHash && previous.status === 'failed' && !canRecover(previous)) continue;
@@ -351,6 +367,6 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
   } }
   function stop() { closing = true; clearInterval(sweep); sweep = null; return drain(); }
   async function drain() { await Promise.allSettled([...jobs.values()]); }
-  return { snapshot: currentSnapshot, request, wakeMedia, results, recover, start, stop, drain, jobs };
+  return { snapshot: currentSnapshot, request, wakeMedia, results, recover, start, stop, drain, jobs, validate };
 }
 module.exports = { VERSION, configuration, legacyConfiguration, snapshot, stateFor, createEngine };

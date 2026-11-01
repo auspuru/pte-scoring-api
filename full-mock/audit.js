@@ -24,7 +24,7 @@ function scoringSnapshot(root) {
   const sources = [...Object.values(RUBRICS).flatMap(rubric => rubric.files), 'full-mock/blueprint.js', 'full-mock/rubrics.js', 'server.js',
     'full-mock/adapters.js', 'full-mock/aggregation.js', 'full-mock/assessment.js', 'full-mock/profiles.js', 'full-mock/recording.js',
     'full-mock/api.js', 'full-mock/access.js', 'full-mock/store.js', 'full-mock/session.js', 'full-mock/paper.js', 'full-mock/audit.js', 'full-mock/report.js', 'speaking-judge-format.js',
-    'mock-content-provider.js', 'mock-content-assessment.js'];
+    'mock-content-provider.js', 'mock-content-assessment.js', 'full-mock/exclusions.js'];
   for (const name of [...new Set(sources)].sort()) {
     const bytes = readAsset(root, name), source = bytes.toString('utf8');
     const key = VERSION_EXPORTS[name];
