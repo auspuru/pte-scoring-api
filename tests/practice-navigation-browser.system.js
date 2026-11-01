@@ -14,9 +14,11 @@ for(const width of [1363,390,320])test('Essay guide: combined page, inline appro
  const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
  const page=await browser.newPage();await page.setViewport({width,height:900});const errors=[],assessmentCalls=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.method()==='POST'&&/\/(?:grade|score)(?:\/|$)/.test(new URL(r.url()).pathname))assessmentCalls.push(r.url());});
- async function login(name){await page.type('#loginUsername',name);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));}
- async function prepare(prompt){await page.evaluate(()=>{switchSection('practice');startNewPractice();setQuestionSource('custom');});await page.type('#practiceCustomPrompt',prompt);}
+ async function ready(){await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));}
+ async function login(name){await page.type('#loginUsername',name);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await ready();}
+ async function prepare(prompt){await ready();await page.evaluate(()=>{switchSection('practice');startNewPractice();setQuestionSource('custom');});await page.type('#practiceCustomPrompt',prompt);}
  const prompt=require('../content/writing-lab.json').predictionEssays[0].text;
+ try {
  await page.goto(f.base);await login(username);await prepare(prompt);
  await page.locator('.practice-timer-toggle').click();assert.equal(await page.$eval('#practiceTimerToggle',e=>e.checked),true);await page.locator('#practiceStartBtn').click();await page.waitForSelector('#essay-guide[open]');
  assert.equal(await page.$eval('[data-guide-prompt]',e=>e.textContent),prompt);
@@ -50,7 +52,7 @@ for(const width of [1363,390,320])test('Essay guide: combined page, inline appro
  await page.locator('.essay-guide-primary').click();
  assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),draft);assert.equal(await page.evaluate(()=>practiceState.timerStartedAt),started);
  await page.waitForFunction((text,at)=>{const saved=portalDraftStore?.read(currentUserId);return saved?.essayText===text&&saved.timerStartedAt===at;},{},draft,started);
- await page.reload();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),draft);
+ await page.reload();await ready();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),draft);
  assert.equal(await page.evaluate(()=>practiceState.timerStartedAt),started);
  // The same completed guide is remembered only for this account and wording.
  await prepare(prompt);await page.locator('#practiceStartBtn').click();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$('#essay-guide'),null);
@@ -69,6 +71,11 @@ for(const width of [1363,390,320])test('Essay guide: combined page, inline appro
  await page.evaluate(()=>openPracticeEssayGuide());assert.equal(await page.$('#essay-guide'),null,'No practice guidance can open in a timed mock workspace');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
  assert.deepEqual(errors,[]);assert.deepEqual(assessmentCalls,[]);
+ } catch(error) {
+  await essayGuideScreenshot(page,width,'failure');
+  console.error('Essay guide browser state',JSON.stringify(await page.evaluate(()=>{const button=document.getElementById('practiceStartBtn'),r=button?.getBoundingClientRect(),hit=r?document.elementFromPoint(r.x+r.width/2,r.y+r.height/2):null;return {section:document.body.dataset.section,step:practiceState.writeStep,view:practiceState.view,owner:currentUserId,veilHidden:document.getElementById('loadingVeil')?.classList.contains('hidden'),dialog:!!document.querySelector('#essay-guide[open]'),editor:!!document.getElementById('practiceEssayInput'),start:r?{x:r.x,y:r.y,width:r.width,height:r.height,disabled:button.disabled}:null,hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className}:null,toast:document.getElementById('toast')?.textContent};})).catch(()=>({unavailable:true}))));
+  throw error;
+ }
 });
 for(const width of [1363,390,320])test('Progress opens exact saved responses and Next Steps is retired at '+width+'px',{timeout:90000},async t=>{
  const f=await authFixture(t),username='progress-browser';

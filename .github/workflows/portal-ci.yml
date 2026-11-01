@@ -39,6 +39,10 @@ jobs:
           sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
           sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install -y ffmpeg espeak python3-venv
       - run: npm ci
+      - name: Verify essay guide browser flow
+        env:
+          FULL_MOCK_TEST_CHROME_PATH: /usr/bin/google-chrome
+        run: node scripts/verify-essay-guide-browser.js
       - name: Verify production release
         env:
           FULL_MOCK_TEST_DATABASE_URL: postgresql://full_mock_test:full_mock_test@127.0.0.1:5432/full_mock_test
