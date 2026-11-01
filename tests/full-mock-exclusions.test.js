@@ -5,7 +5,7 @@ const {loadPaper,digest}=require('../full-mock/paper'),session=require('../full-
 const adapters=require('../full-mock/adapters'),{aggregate,inputHash}=require('../full-mock/aggregation');
 const {createSupport,evidenceHash}=require('../full-mock/exclusions'),{createStore}=require('../full-mock/store');
 const paper=loadPaper(),owner='synthetic-audio-review';
-async function fixture(t,{historical=false}={}){
+async function fixture(t,{historical=false,returnFull=false}={}){
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'full-audio-review-')),store=createStore({directory}),id=randomUUID();
   t.after(()=>fs.rm(directory,{recursive:true,force:true}));
   const state=session.create(id,paper,1000,{preview:true});session.end(state,paper,2000);
@@ -23,7 +23,7 @@ async function fixture(t,{historical=false}={}){
   }
   await store.create(owner,id,paper,()=>state,1000);
   let calls=0;
-  const engine=assessment.createEngine({store,paper,now:()=>3000,adapters:{assess:async()=>{calls++;throw Error('No provider calls allowed.');}}});
+  const engine=assessment.createEngine({store,paper,now:()=>3000,adapters:{assess:async q=>{calls++;if(returnFull)return adapters.result(q,adapters.maxima(q));throw Error('No provider calls allowed.');}}});
   t.after(()=>engine.stop());
   const support=createSupport({store,validate:engine.validate,now:()=>3000});
   const body=()=>({operation:'staff:one-review',questionIds:selected.map(candidate=>candidate.id),evidenceHash:evidenceHash(state),note:'Audio too quiet to assess; excluded at instructor request.',confirmUnusableAudio:true});
@@ -58,6 +58,17 @@ test('Review rejects wrong ownership, stale evidence, active work, completed mar
   await f.store.update(owner,f.id,state=>{state.assessment.status='processing';return state;});
   await assert.rejects(f.support.exclude(owner,f.id,f.body()),{status:409});
   assert.deepEqual((await f.store.get(owner,f.id)).state.responses,f.state.responses);
+});
+test('A later missing-stage worker skips excluded audio and finishes only the other missing assessment',async t=>{
+  const f=await fixture(t,{returnFull:true}),first=paper.questions[0];
+  await f.store.update(owner,f.id,state=>{state.assessment.items[first.id]={...state.assessment.items[first.id],status:'failed',result:{status:'failed',reason:'content-unavailable'},stages:{}};return state;});
+  const before=await f.support.inspect(owner,f.id);
+  const partial=await f.support.exclude(owner,f.id,{...f.body(),evidenceHash:before.evidenceHash});assert.equal(partial.ready,false);
+  const excluded=(await f.store.get(owner,f.id)).state.assessment.exclusions;
+  await f.engine.request(owner,f.id,{retry:true});await f.engine.drain();
+  assert.equal(f.calls(),1);const saved=(await f.store.get(owner,f.id)).state;
+  assert.equal(aggregate(paper,saved).ready,true);assert.deepEqual(saved.assessment.exclusions,excluded);
+  for(const candidate of f.selected)assert.deepEqual(saved.assessment.items[candidate.id],f.state.assessment.items[candidate.id]);
 });
 test('Uncertain requests, missing uploads and changed evidence never become an exclusion',async t=>{
   const f=await fixture(t),candidate=f.selected[0];
