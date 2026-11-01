@@ -53,4 +53,8 @@
 /* A draft notice must not consume taps on the essay controls underneath it. */
 body[data-section="practice"] #toast{pointer-events:none}
 body[data-section="practice"] #toast .toast-undo{pointer-events:auto}
+@media(max-width:640px){
+ body[data-section="practice"] #toast{top:calc(80px + env(safe-area-inset-top));bottom:auto}
+ body[data-section="practice"] #toast:not(.show){transform:translateX(-50%) translateY(calc(-100% - 160px))}
+}
 @media(max-width:480px){.essay-guide-logo{width:54px}.essay-guide-header{padding:14px 16px;gap:10px}.essay-guide-dialog h2{font-size:20px}.essay-guide-body{padding:18px 16px}.essay-guide-footer{padding:10px 16px 14px}.essay-guide-footer .essay-guide-note{margin-bottom:8px;font-size:11px}.essay-guide-question{padding:14px}.essay-guide-choice,.essay-guide-explanation{padding:14px}.essay-guide-actions button{flex:1}.essay-guide-header .essay-guide-eyebrow{display:block;max-height:36px;overflow:auto}}
