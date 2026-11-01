@@ -30,17 +30,31 @@ jobs:
           node-version: 24
           cache: npm
       - name: Install media build tools
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg espeak python3-venv
+        run: |
+          # The hosted Azure mirror can stall before tests start. Keep the
+          # signed Ubuntu archive and bound network retries within the job budget.
+          if [ -f /etc/apt/apt-mirrors.txt ]; then
+            sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/apt-mirrors.txt
+          fi
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 update
+          sudo apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 install -y ffmpeg espeak python3-venv
       - run: npm ci
+      - name: Verify essay guide browser flow
+        env:
+          FULL_MOCK_TEST_CHROME_PATH: /usr/bin/google-chrome
+        run: node scripts/verify-essay-guide-browser.js
       - name: Verify production release
         env:
           FULL_MOCK_TEST_DATABASE_URL: postgresql://full_mock_test:full_mock_test@127.0.0.1:5432/full_mock_test
           FULL_MOCK_TEST_CHROME_PATH: /usr/bin/google-chrome
         run: node scripts/verify-full-mock-systems.js --evidence-out .cache/full-mock-validation.json
       - name: Save Full Mock validation evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: full-mock-validation
-          path: .cache/full-mock-validation.json
+          path: |
+            .cache/full-mock-validation.json
+            .cache/essay-guide-*.png
           include-hidden-files: true
           if-no-files-found: error
