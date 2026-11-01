@@ -2,6 +2,7 @@
 const { TASKS } = require('./blueprint');
 const { digest } = require('./paper');
 const defaults = require('./profiles');
+const { validExclusion } = require('./exclusions');
 const VERSION = 'full-mock-aggregation-2026-10-29.1';
 function inputHash(response) {
   return digest({ token: response.token, sealed: response.sealed, reason: response.reason, answer: response.answer,
@@ -40,14 +41,17 @@ function aggregate(paper, state) {
     const response = state.responses[index + 1], job = state.assessment?.items?.[candidate.id];
     const expectedMaxima = snapshot?.nativeMaxima?.[candidate.id] || maxima(candidate.question);
     const valid = response?.sealed && job?.status === 'assessed' && job.inputHash === inputHash(response) && job.snapshotHash === state.assessment?.snapshotHash && job.result?.version === expectedVersion && nativeValid(job.result, expectedMaxima);
-    return { id: candidate.id, type: candidate.question.type, valid: !!valid, result: valid ? job.result : null, status: valid ? 'assessed' : job?.status === 'failed' ? 'failed' : 'pending' };
+    const excluded = !valid && validExclusion(state, candidate, response, job);
+    return { id: candidate.id, type: candidate.question.type, valid: !!valid, excluded, result: valid ? job.result : null,
+      ...(excluded ? { exclusion:{ reason:'unusable-audio', note:state.assessment.exclusions[candidate.id].note, at:state.assessment.exclusions[candidate.id].at } } : {}),
+      status: valid ? 'assessed' : excluded ? 'excluded' : job?.status === 'failed' ? 'failed' : 'pending' };
   });
   const groups = Object.fromEntries(TASKS.map(task => {
-    const questions = rows.filter(row => row.type === task.type), complete = questions.length === task.count && questions.every(row => row.valid);
-    return [task.type, { count: questions.length, expected: task.count, complete, earned: complete ? questions.reduce((sum, row) => sum + row.result.total, 0) : null, possible: complete ? questions.reduce((sum, row) => sum + row.result.maximum, 0) : null }];
+    const questions = rows.filter(row => row.type === task.type), scored = questions.filter(row => !row.excluded), complete = questions.length === task.count && scored.length > 0 && scored.every(row => row.valid);
+    return [task.type, { count: questions.length, expected: task.count, excludedCount:questions.length - scored.length, complete, earned: complete ? scored.reduce((sum, row) => sum + row.result.total, 0) : null, possible: complete ? scored.reduce((sum, row) => sum + row.result.maximum, 0) : null }];
   }));
   const profiles = Object.fromEntries(Object.entries(configured.profiles).map(([name, profile]) => {
-    const types = Object.keys(profile.weights), missing = rows.filter(row => types.includes(row.type) && !row.valid).map(row => ({ id: row.id, type: row.type, status: row.status }));
+    const types = Object.keys(profile.weights), missing = rows.filter(row => types.includes(row.type) && !row.valid && !row.excluded).map(row => ({ id: row.id, type: row.type, status: row.status }));
     const complete = types.every(type => groups[type].complete);
     const common = { version: profile.version, status: complete ? 'complete' : 'pending', calibrated: false, official: false, practiceIndex: null, practiceIndexRange: null, missing };
     if (!complete) return [name, common];
@@ -60,8 +64,10 @@ function aggregate(paper, state) {
   }));
   return { version: VERSION, assessmentVersion: state.assessment?.version || null, snapshotHash: state.assessment?.snapshotHash || null,
     paperHash: state.paperHash, assessmentType: 'Provisional IPT practice assessment', calibrated: false, official: false,
-    ready: rows.length === 65 && rows.every(row => row.valid), assessedCount: rows.filter(row => row.valid).length, expectedCount: 65,
+    ready: rows.length === 65 && rows.every(row => row.valid || row.excluded) && Object.values(groups).every(group => group.complete),
+    assessedCount: rows.filter(row => row.valid).length, excludedCount:rows.filter(row => row.excluded).length,
+    accountedCount:rows.filter(row => row.valid || row.excluded).length, expectedCount: 65,
     weightingVersion: configured.version, practiceIndexPolicy: configured.practiceIndex, groups, profiles,
-    items: rows.map(({ id, type, valid, status, result }) => ({ id, type, status, ...(valid ? { total: result.total, maximum: result.maximum, scores: result.scores, maxima: result.maxima, version: result.version } : {}) })) };
+    items: rows.map(({ id, type, valid, status, result, exclusion }) => ({ id, type, status, ...(exclusion ? { exclusion } : {}), ...(valid ? { total: result.total, maximum: result.maximum, scores: result.scores, maxima: result.maxima, version: result.version } : {}) })) };
 }
 module.exports = { VERSION, inputHash, nativeValid, bounds, aggregate };

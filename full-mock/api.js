@@ -7,11 +7,19 @@ const { createStore, fail } = require('./store');
 const session = require('./session');
 const reports = require('./report');
 
-function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper(), assessment } = {}) {
+function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper(), assessment, requireAdmin } = {}) {
   const store = createStore({ pool, directory }), router = express.Router();
   const assessor = assessment ? require('./assessment').createEngine({ store, now, paper, ...assessment }) : null;
   let sweep;
   const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(error => res.status(error.status || 503).json({ error: error.status ? error.message : 'This action could not finish. Your saved responses are retained; retry when connected.' }));
+  if (requireAdmin && assessor) {
+    const support = require('./exclusions').createSupport({ store, now, validate:assessor.validate });
+    const admin = express.Router();
+    admin.use(requireAdmin, (req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
+    admin.get('/:username/:id/scoring', wrap(async (req, res) => res.json(await support.inspect(req.params.username, req.params.id))));
+    admin.post('/:username/:id/scoring/exclude-audio', wrap(async (req, res) => res.json(await support.exclude(req.params.username, req.params.id, req.body))));
+    app.use('/api/admin/full-mocks', admin);
+  }
   router.use(wrap(async (req, res, next) => {
     res.set({ 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Cross-Origin-Resource-Policy': 'same-origin' });
     const token = req.headers['x-session-token'] || '', uid = verifyToken(token), account = uid && await getAccount(uid);

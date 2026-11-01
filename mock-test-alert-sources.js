@@ -25,6 +25,13 @@ function snapshot(engine,a,record){
     const items=Object.values(a.assessment?.items||{});
     base.pending=Math.max(0,(record?.paper?.questions?.length||a.questionCount||65)-items.filter(row=>row.status==='assessed').length);
     base.ready=a.assessment?.status==='complete'&&base.pending===0;
+    if(Object.keys(a.assessment?.exclusions||{}).length){
+      try{
+        const result=require('./full-mock/aggregation').aggregate(record.paper,a);
+        base.pending=result.expectedCount-result.accountedCount;
+        base.ready=a.assessment.status==='complete'&&result.ready;
+      }catch{base.pending=Math.max(1,base.pending);base.ready=false;}
+    }
     base.held=a.assessment?.status==='needs-attention';
     const failures=(a.events||[]).filter(row=>['media-failure','microphone-interrupted','local-storage-failure'].includes(row.reason));
     base.mediaError=failures.length>0;base.mediaErrorAt=Math.max(0,...failures.map(row=>Number(row.receivedAt)||0));
@@ -53,11 +60,11 @@ function createSources({pool,speakingStore,writingStore,fullStore,loadReading}){
         const projection=engine==='speaking'?"data-'responses'-'questions'":column;
         const timestamps=engine==='full'?['submittedAt','finishedAt']:['finishedAt'];
         const submittedAt='COALESCE('+timestamps.map(field=>`CASE WHEN jsonb_typeof(${column}->'${field}')='number' THEN (${column}->>'${field}')::numeric END`).join(',')+',0)';
-        const rows=(await pool.query(`SELECT username,${projection} AS value FROM ${table}
+        const rows=(await pool.query(`SELECT username,${projection} AS value${engine==='full'?',paper':''} FROM ${table}
           WHERE id::text>$1 AND ${column}->>'status'='submitted'
           AND ${submittedAt} >= $2
           ORDER BY id LIMIT $3`,[cursor,since,limit])).rows;
-        return{rows:rows.map(row=>({username:row.username,snapshot:snapshot(engine,row.value)})).filter(row=>row.snapshot?.isMock),nextCursor:rows.length===limit?rows.at(-1).value.id:''};
+        return{rows:rows.map(row=>({username:row.username,snapshot:snapshot(engine,row.value,engine==='full'?{paper:row.paper}:undefined)})).filter(row=>row.snapshot?.isMock),nextCursor:rows.length===limit?rows.at(-1).value.id:''};
       }
     };
   }

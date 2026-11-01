@@ -45,11 +45,16 @@ test('Reviewed recovery transport changes keep native graders, models and score 
  source=source.replace("uncertain: require('../mock-recovery-policy').failure(error).uncertain, failureCode:require('../mock-recovery-policy').failure(error).code, recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked",'uncertain: !!error.uncertain');
  source=source.replace("uncertain: error ? require('../mock-recovery-policy').failure(error).uncertain : false, ...(error?{failureCode:require('../mock-recovery-policy').failure(error).code,recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked}:{})",'uncertain: !!error?.uncertain');
  assert.equal(sha(source),baseline.files['full-mock/adapters.js'].sha256);
- source=read('server.js').replace("backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING!=='false'","backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'").replace('    await writingLab.start();\n','').replace('    await writingLab.stop();\n','');
+ source=read('server.js').replace("const fullMock = require('./full-mock/api').installFullMock(app, {\n  requireAdmin,", "const fullMock = require('./full-mock/api').installFullMock(app, {")
+   .replace("backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING!=='false'","backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'").replace('    await writingLab.start();\n','').replace('    await writingLab.stop();\n','');
  assert.equal(sha(source),baseline.files['server.js'].sha256);
  source=read('public/writing-lab-report.js').replace("(attempt.kind!=='mock' || !needsReview(r,q))",'(!weighted || !needsReview(r,q))');
  assert.equal(sha(source),baseline.files['public/writing-lab-report.js'].sha256);
- for(const name of ['full-mock/session.js','full-mock/aggregation.js','full-mock/profiles.js','speaking-scoring.js','speaking-delivery.js','writing-lab-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
+ for(const name of ['full-mock/session.js','full-mock/profiles.js','speaking-scoring.js','speaking-delivery.js','writing-lab-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
+ // Explicit instructor exclusions have separate ownership/integrity and
+ // denominator tests. Their exact source is pinned; native graders and the
+ // original profile weights remain byte-identical above.
+ assert.equal(sha(read('full-mock/aggregation.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/aggregation.js'].sha256);
 });
 
 test('Full Mock failure checkpoints retain auth and uncertainty evidence without inventing marks',async()=>{

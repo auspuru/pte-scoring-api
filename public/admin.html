@@ -810,10 +810,14 @@ function viewUser(username){
         `).join('')+'</div>';
       }
 
-      document.getElementById('detailContent').innerHTML=html+'<div id="mockRecoveryPanel" class="detail-section"></div>';
+      document.getElementById('detailContent').innerHTML=html+'<div id="mockRecoveryPanel" class="detail-section"></div><div id="fullMockRecoveryPanel" class="detail-section"></div>';
       if(hasAccount)AdminMockRecovery.mount(document.getElementById('mockRecoveryPanel'),{username,request:async(path,body)=>{
         const r=await fetch(API+path,{method:body===undefined?'GET':'POST',cache:'no-store',headers:{'x-admin-key':adminKey,'Content-Type':'application/json'},...(body===undefined?{}:{body:JSON.stringify(body)})});
         const value=await r.json();if(!r.ok)throw Error(value.error||'Scoring request failed.');return value;
+      }});
+      if(hasAccount)AdminFullMockRecovery.mount(document.getElementById('fullMockRecoveryPanel'),{username,request:async(path,body)=>{
+        const r=await fetch(API+path,{method:body===undefined?'GET':'POST',cache:'no-store',headers:{'x-admin-key':adminKey,'Content-Type':'application/json'},...(body===undefined?{}:{body:JSON.stringify(body)})});
+        const value=await r.json();if(!r.ok)throw Error(value.error||'Full mock review failed.');return value;
       }});
       document.getElementById('detailModal').classList.add('show');
     });
@@ -1342,6 +1346,7 @@ document.addEventListener('DOMContentLoaded', updateThemeToggles);
 </script>
 <script src="/practice-catalogue.js?v=sha256-31a5fcdba1dd"></script>
 <script src="/admin-learning.js?v=1"></script>
+<script src="/admin-full-mock-recovery.js?v=sha256-69215f96c13c"></script>
 <script src="/admin-mock-recovery.js?v=sha256-e805c5fc3519"></script>
 </body>
 </html>

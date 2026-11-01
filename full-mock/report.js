@@ -44,6 +44,7 @@ function reasonFor(job, trusted, recovering = false) {
   return { code:'not-assessed', label:'Assessment pending', action:'This item is waiting for a verified assessment.' };
 }
 function feedbackFor(q, response, job, marks, trusted, recovering) {
+  if (marks.status === 'excluded') return { overview:marks.exclusion.note + ' This question is excluded from the score calculation; the original recording is retained.', criteria:[], strengths:[], improvements:[], coverage:[], corrections:[], issues:[], changes:[] };
   if (marks.status !== 'assessed') return { overview:reasonFor(job, trusted, recovering).action, criteria:[], strengths:[], improvements:[], coverage:[], corrections:[], issues:[], changes:[] };
   const result = job.result, content = job.stages?.content?.status === 'complete' ? job.stages.content.value : {};
   const native = result.native || {};
@@ -99,7 +100,7 @@ function buildReport(paper, state, at = Date.now()) {
     return { ...marks, number:index + 1, label:task.label, section:task.section, skills:[...task.skills], title:clean(q.title), question, reference,
       answer:structuredClone(response.answer), responseReason:clean(response.reason, 80), transcript:transcription, recordings,
       recovered:state.recoveries.filter(row => row.itemToken === response.token).map(row => ({ answer:structuredClone(row.answer), receivedAt:row.receivedAt, status:'needs-review' })),
-      assessment:marks.status === 'assessed' ? { code:'assessed', label:'Assessed' } : reasonFor(job, trusted, state.assessment?.recovery?.status === 'scheduled'),
+      assessment:marks.status === 'assessed' ? { code:'assessed', label:'Assessed' } : marks.status === 'excluded' ? { code:'unusable-audio', label:'Excluded · unusable audio', action:marks.exclusion.note } : reasonFor(job, trusted, state.assessment?.recovery?.status === 'scheduled'),
       feedback:feedbackFor(q, response, job, marks, trusted, state.assessment?.recovery?.status === 'scheduled'), practice:{ path:'#/' + GUIDANCE[q.type][0], instruction:GUIDANCE[q.type][1] } };
   });
   const groups = TASKS.map(task => ({ type:task.type, label:task.label, section:task.section, skills:[...task.skills], ...result.groups[task.type],
@@ -120,7 +121,7 @@ function buildReport(paper, state, at = Date.now()) {
     recoveredEvidenceCount:state.recoveries.length, groups, items, priorities, impactFeedback,
     interpretation:{ label:'Provisional', calibration:'Not yet calibrated', description:'These are IPT practice indices out of 90. They are not official Pearson scores or predictions of an exam result.',
       overall:'Overall is calculated directly from task contributions, independently of the four skill indices. Its range preserves three weights published as <1%; it is not an exam-score confidence interval.',
-      incomplete:'The report is complete only when all 65 scored responses have verified assessments. Required missing assessments keep the affected indices pending.' } };
+      incomplete:'The report is complete when every response has a verified assessment or an explicit instructor exclusion. Excluded recordings are noted and removed from the scoring denominator. Required missing assessments keep the affected indices pending.' } };
 }
 function reviewItem(paper, state, questionId) {
   if (state.status !== 'submitted') throw fail('Submit the test before reviewing its media.');
