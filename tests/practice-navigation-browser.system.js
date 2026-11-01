@@ -55,7 +55,11 @@ for(const width of [1363,390,320])test('Essay guide: combined page, inline appro
  await page.reload();await ready();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),draft);
  assert.equal(await page.evaluate(()=>practiceState.timerStartedAt),started);
  // The same completed guide is remembered only for this account and wording.
- await prepare(prompt);await page.locator('#practiceStartBtn').click();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$('#essay-guide'),null);
+ await prepare(prompt);
+ await page.$eval('#practiceStartBtn',e=>e.scrollIntoView({block:'nearest',behavior:'instant'}));
+ assert.equal(await page.$eval('#practiceStartBtn',e=>{const r=e.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('button')?.id;}),'practiceStartBtn','The visible Start control receives the tap while the archive notice is shown');
+ await page.locator('#practiceStartBtn').click();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$('#essay-guide'),null);
+ assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),'','Start opens a fresh response without invoking Undo');
  const nextPrompt=require('../content/writing-lab.json').predictionEssays[1].text;
  await prepare(nextPrompt);await page.locator('#practiceStartBtn').click();await page.waitForSelector('#essay-guide[open]');
  await page.evaluate(()=>{window.__oldGuideButton=document.querySelector('.essay-guide-primary');signOut();window.__oldGuideButton.click();});

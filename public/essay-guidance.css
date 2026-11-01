@@ -50,4 +50,7 @@
 .essay-guide-skip{background:#fff;color:#173a71}
 .essay-guide-primary{background:#214d8d;color:#fff;border-color:#214d8d!important}
 .essay-guide-help{min-height:44px;padding:8px 14px;border:1px solid var(--line-soft);border-radius:8px;background:transparent;color:var(--accent);font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+/* A draft notice must not consume taps on the essay controls underneath it. */
+body[data-section="practice"] #toast{pointer-events:none}
+body[data-section="practice"] #toast .toast-undo{pointer-events:auto}
 @media(max-width:480px){.essay-guide-logo{width:54px}.essay-guide-header{padding:14px 16px;gap:10px}.essay-guide-dialog h2{font-size:20px}.essay-guide-body{padding:18px 16px}.essay-guide-footer{padding:10px 16px 14px}.essay-guide-footer .essay-guide-note{margin-bottom:8px;font-size:11px}.essay-guide-question{padding:14px}.essay-guide-choice,.essay-guide-explanation{padding:14px}.essay-guide-actions button{flex:1}.essay-guide-header .essay-guide-eyebrow{display:block;max-height:36px;overflow:auto}}
