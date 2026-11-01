@@ -73,7 +73,14 @@ for(const width of [1363,390,320])test('Essay guide: combined page, inline appro
  assert.deepEqual(errors,[]);assert.deepEqual(assessmentCalls,[]);
  } catch(error) {
   await essayGuideScreenshot(page,width,'failure');
-  console.error('Essay guide browser state',JSON.stringify(await page.evaluate(()=>{const button=document.getElementById('practiceStartBtn'),r=button?.getBoundingClientRect(),hit=r?document.elementFromPoint(r.x+r.width/2,r.y+r.height/2):null;return {section:document.body.dataset.section,step:practiceState.writeStep,view:practiceState.view,owner:currentUserId,veilHidden:document.getElementById('loadingVeil')?.classList.contains('hidden'),dialog:!!document.querySelector('#essay-guide[open]'),editor:!!document.getElementById('practiceEssayInput'),start:r?{x:r.x,y:r.y,width:r.width,height:r.height,disabled:button.disabled}:null,hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className}:null,toast:document.getElementById('toast')?.textContent};})).catch(()=>({unavailable:true}))));
+  const state=await page.evaluate(()=>{
+   const button=document.getElementById('practiceStartBtn'),r=button?.getBoundingClientRect();
+   const hit=r?document.elementFromPoint(r.x+r.width/2,r.y+r.height/2):null;
+   return {section:document.body.dataset.section,step:practiceState.writeStep,view:practiceState.view,owner:currentUserId,
+    veilHidden:document.getElementById('loadingVeil')?.classList.contains('hidden'),dialog:!!document.querySelector('#essay-guide[open]'),editor:!!document.getElementById('practiceEssayInput'),
+    start:r?{x:r.x,y:r.y,width:r.width,height:r.height,disabled:button.disabled}:null,hit:hit?{tag:hit.tagName,id:hit.id,className:hit.className}:null,toast:document.getElementById('toast')?.textContent};
+  }).catch(()=>({unavailable:true}));
+  console.error('Essay guide browser state',JSON.stringify(state));
   throw error;
  }
 });

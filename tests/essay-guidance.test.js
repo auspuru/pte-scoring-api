@@ -96,6 +96,7 @@ test('unreviewed prompts and disabled guidance still enter writing normally',()=
 });
 test('production asset hashes are current and the guide is only wired into standalone practice',()=>{
   const html=fs.readFileSync(path.join(__dirname,'../public/index.html'),'utf8');
+  for(const file of ['tests/practice-navigation-browser.system.js','scripts/verify-essay-guide-browser.js'])assert.doesNotThrow(()=>new vm.Script(fs.readFileSync(path.join(__dirname,'..',file),'utf8')));
   for(const file of ['essay-guidance.js','essay-guidance-data.js','essay-guidance.css','index.js']){
     const hash=crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../public',file))).digest('hex').slice(0,12);
     assert(html.includes((file==='index.js'?'index.min.js?v=source-':file+'?v=')+'sha256-'+hash),file);
