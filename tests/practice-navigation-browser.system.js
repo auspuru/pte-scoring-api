@@ -259,7 +259,7 @@ for(const width of [1363,390,320])test('SWT review: exact corrections, drafts, s
  const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
  const page=await browser.newPage();await page.setViewport({width,height:900});let calls=0;const errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.method()==='POST'&&/\/(?:grade|score)(?:\/|$)/.test(new URL(r.url()).pathname))calls++;});
- await page.goto(f.base);await page.type('#loginUsername',name);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&swtPassageAt(1)!==null&&location.hash==='#/home');
+ await page.goto(f.base);await page.type('#loginUsername',name);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&swtPassageAt(1)!==null&&currentUserId==='swt-review-browser');
  const original='Trees cool cities and improves air quality.';
  async function show(extra={}){await page.evaluate((text,extra)=>{
   switchSection('swt');currentPassageId=1;const p=swtPassageAt(1);
@@ -284,7 +284,7 @@ for(const width of [1363,390,320])test('SWT review: exact corrections, drafts, s
  assert.equal(await page.$eval('#swtGuidanceBody',e=>e.scrollWidth<=e.clientWidth+1),true);
  if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.$eval('#swtReviewLanguage',e=>e.scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:path.join(root,'.cache','swt-review-'+width+'.png')});}
  await page.evaluate(()=>{window.__oldSwtSave=document.querySelector('[data-review-save]');signOut();});await page.waitForSelector('#loginSubmitBtn');
- await page.$eval('#loginUsername',e=>e.value='');await page.$eval('#loginPassword',e=>e.value='');await page.type('#loginUsername','swt-review-other');await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&swtPassageAt(1)!==null&&location.hash==='#/home');
+ await page.$eval('#loginUsername',e=>e.value='');await page.$eval('#loginPassword',e=>e.value='');await page.type('#loginUsername','swt-review-other');await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&swtPassageAt(1)!==null&&currentUserId==='swt-review-other');
  await page.evaluate(()=>window.__oldSwtSave.click());assert.equal(await page.evaluate(()=>Object.values(LocalStore.get(getPteStorageKey('summaries'))||{}).some(x=>x.text==='Trees cool cities and improves air quality.')),false);
  assert.equal(calls,0,'Reviewing, revising and saving do not request an assessment');assert.deepEqual(errors,[]);
 });
