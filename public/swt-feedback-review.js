@@ -93,7 +93,7 @@
         panel.innerHTML='<strong>'+esc(item.kind)+'</strong><h3><s>'+esc(item.phrase)+'</s> → '+esc(item.fix)+'</h3><p>'+esc(item.reason||'Review this suggested correction in context before revising.')+'</p>'+(item.optional?'<p class="swt-help">Optional refinement; no required repair is claimed.</p>':'');
       }
       if(button.hasAttribute('data-review-source')){const source=target.ownerDocument.getElementById('annotatedPassage');source?.closest('details')?.setAttribute('open','');source?.scrollIntoView({block:'center'});source?.focus();}
-      if(button.hasAttribute('data-review-locate')&&original()&&m.quote){const el=original(),start=m.text.indexOf(m.quote);el.innerHTML=esc(m.text.slice(0,start))+'<mark>'+esc(m.quote)+'</mark>'+esc(m.text.slice(start+m.quote.length));el.scrollIntoView({block:'center'});el.focus();}
+      if(button.hasAttribute('data-review-locate')&&original()&&m.quote){target.ownerDocument.getElementById('sbsTabSummary')?.click();const el=original(),start=m.text.indexOf(m.quote);el.innerHTML=esc(m.text.slice(0,start))+'<mark>'+esc(m.quote)+'</mark>'+esc(m.text.slice(start+m.quote.length));el.scrollIntoView({block:'center'});el.focus();}
       if(button.hasAttribute('data-review-edit'))open();
       if(button.hasAttribute('data-review-use')&&m.usable){undo=q('#swtReviewDraft').value;q('#swtReviewDraft').value=m.repair;q('#swtReviewWords').textContent=words(m.repair);q('[data-review-undo]').hidden=false;open();}
       if(button.hasAttribute('data-review-undo')&&undo!==null){q('#swtReviewDraft').value=undo;undo=null;q('#swtReviewWords').textContent=words(q('#swtReviewDraft').value);button.hidden=true;}
