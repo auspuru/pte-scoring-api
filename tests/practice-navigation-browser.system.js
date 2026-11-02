@@ -283,8 +283,9 @@ for(const width of [1363,390,320])test('SWT review: exact corrections, drafts, s
  await show();await page.locator('[data-review-edit]').click();
  assert.equal(await page.$eval('#swtGuidanceBody',e=>e.scrollWidth<=e.clientWidth+1),true);
  if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.$eval('#swtReviewLanguage',e=>e.scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:path.join(root,'.cache','swt-review-'+width+'.png')});}
- await page.evaluate(()=>{window.__oldSwtSave=document.querySelector('[data-review-save]');signOut();});await page.waitForSelector('#loginSubmitBtn');
+ await page.evaluate(()=>{window.__oldSwtSave=document.querySelector('[data-review-save]');signOut();window.__oldSwtSave.click();});await page.waitForSelector('#loginSubmitBtn');
  await page.$eval('#loginUsername',e=>e.value='');await page.$eval('#loginPassword',e=>e.value='');await page.type('#loginUsername','swt-review-other');await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&swtPassageAt(1)!==null&&currentUserId==='swt-review-other');
- await page.evaluate(()=>window.__oldSwtSave.click());assert.equal(await page.evaluate(()=>Object.values(LocalStore.get(getPteStorageKey('summaries'))||{}).some(x=>x.text==='Trees cool cities and improves air quality.')),false);
+ await page.evaluate(()=>window.__oldSwtSave?.click());assert.equal(await page.evaluate(()=>Object.values(LocalStore.get(getPteStorageKey('summaries'))||{}).some(x=>x.text==='Trees cool cities and improves air quality.')),false);
+ assert.equal(await page.$eval('#swtGuidanceBody',(e,text)=>e.textContent.includes(text),original),false,'The new account does not retain the previous response in its feedback DOM');
  assert.equal(calls,0,'Reviewing, revising and saving do not request an assessment');assert.deepEqual(errors,[]);
 });
