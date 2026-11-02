@@ -267,7 +267,7 @@ test('slow sync envelope diagnostics record only timing, byte size and compact m
 
 test('practice account status cache is short-lived, minimal and invalidated by account writes', () => {
   assert.match(serverSource, /const PRACTICE_ACCOUNT_CACHE_TTL_MS = 5000/);
-  assert.match(serverSource, /SELECT username, blocked, role, created_at FROM accounts WHERE username = \$1/);
+  assert.match(serverSource, /SELECT username, blocked, role, created_at, access_starts_on::text AS "accessStartsOn", access_expires_on::text AS "accessExpiresOn" FROM accounts WHERE username = \$1/);
   assert.match(serverSource, /practiceAccountCache\.set\(uid, \{ account, expiresAt: Date\.now\(\) \+ PRACTICE_ACCOUNT_CACHE_TTL_MS \}\)/);
   assert.match(serverSource, /invalidatePracticeAccount\(acct\.username\)/);
   assert.match(serverSource, /invalidatePracticeAccount\(uid\)/);
