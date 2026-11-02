@@ -178,7 +178,7 @@ for(const width of [1363,390,320])test('Progress opens exact saved responses and
   throw error;
  }
 });
-async function fixture(t,width){
+async function fixture(t,width,reportUI=false){
  const app=express();app.use(express.json());const attempts=new Map();let historyReads=0,failSave=false;
  const questions=Array.from({length:30},(_,i)=>({id:'sst-'+(i+1),type:'sst',title:'Lecture '+(i+1),minutes:10,audioUrl:'/fixture.mp3'}));
  app.get('/api/writing-lab/catalog',(_,res)=>res.json({mocks:[],spoken:questions,dictation:[],listeningPractice:[]}));
@@ -197,7 +197,7 @@ async function fixture(t,width){
    res.json({...a,serverNow:Date.now()});
  });
  app.get('/fixture.mp3',(_,res)=>res.sendFile(path.join(root,'content/speaking-audio/rs-1.mp3')));
- app.get('/spoken-text',(_,res)=>res.type('html').send(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/writing-lab-portal.css"><link rel="stylesheet" href="/listening-studio.css"><link rel="stylesheet" href="/question-navigation.css"></head><body><div id="lab" tabindex="-1"></div><div id="notice" role="status"></div><dialog id="confirm-dialog"><h2 id="confirm-title"></h2><p id="confirm-text"></p><button id="confirm-ok">Continue</button><button id="confirm-cancel">Cancel</button></dialog><script>localStorage.setItem('pte_session_token','fixture-only');</script><script src="/practice-catalogue.js"></script><script src="/practice-studio.js"></script><script src="/listening-studio.js"></script><script src="/listening-tasks.js"></script><script src="/writing-lab-report.js"></script><script src="/writing-lab-client.js"></script></body></html>`));
+ app.get('/spoken-text',(_,res)=>res.type('html').send(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/writing-lab-portal.css"><link rel="stylesheet" href="/listening-studio.css"><link rel="stylesheet" href="/question-navigation.css">${reportUI?'<link rel="stylesheet" href="/mock-report-ui.css">':''}</head><body><div id="lab" tabindex="-1"></div><div id="notice" role="status"></div><dialog id="confirm-dialog"><h2 id="confirm-title"></h2><p id="confirm-text"></p><button id="confirm-ok">Continue</button><button id="confirm-cancel">Cancel</button></dialog><script>localStorage.setItem('pte_session_token','fixture-only');</script><script src="/practice-catalogue.js"></script><script src="/practice-studio.js"></script><script src="/listening-studio.js"></script><script src="/listening-tasks.js"></script><script src="/writing-lab-report.js"></script>${reportUI?'<script src="/mock-impact-feedback.js"></script><script src="/swt-mock-feedback.js"></script><script src="/mock-report-ui.js"></script>':''}<script src="/writing-lab-client.js"></script></body></html>`));
  app.use(express.static(path.join(root,'public')));
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
  t.after(async()=>{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));});
@@ -288,4 +288,23 @@ for(const width of [1363,390,320])test('SWT review: exact corrections, drafts, s
  await page.evaluate(()=>window.__oldSwtSave?.click());assert.equal(await page.evaluate(()=>Object.values(LocalStore.get(getPteStorageKey('summaries'))||{}).some(x=>x.text==='Trees cool cities and improves air quality.')),false);
  assert.equal(await page.$eval('#swtGuidanceBody',(e,text)=>e.textContent.includes(text),original),false,'The new account does not retain the previous response in its feedback DOM');
  assert.equal(calls,0,'Reviewing, revising and saving do not request an assessment');assert.deepEqual(errors,[]);
+});
+
+for(const width of [1363,390,320])test('SWT mock feedback: submitted Writing and Full reports are read-only and show exact corrections at '+width+'px',{timeout:45000},async t=>{
+ const f=await fixture(t,width,true),{page}=f,id='swt-mock-feedback-fixture',answer='Trees cool cities and improves air quality.',source='Trees cool cities and improve air quality, but species need careful selection.';
+ const native={version:'saved-fixture',scores:{content:3,form:1,grammar:1,vocabulary:2},maxima:{content:4,form:1,grammar:2,vocabulary:2},total:7,maximum:9,feedback:{content:'Keep the planting caution.',grammar:'Use a plural verb.'},summary_assessment:{next_step:'Add careful species selection.',repair:'Trees cool cities and improve air quality, but species need careful selection.'},errors:[{phrase:'improves',correction:'improve',explanation:'Use the plural verb with trees.',affectsScore:true}],strengths:[],improvements:[],reasons:[]};
+ const attempt={id,kind:'mock',module:'writing',title:'SWT feedback fixture',status:'submitted',startedAt:Date.now(),index:0,questions:[{id:'saved-swt',type:'swt',title:'Trees',text:source,sample:native.summary_assessment.repair,minutes:10}],answers:[answer],completed:[{reason:'Submitted'}],results:[native],playback:[null],deadline:null,serverNow:Date.now(),overallFeedback:{status:'complete',summary:'Saved overall feedback.',strengths:[],nextSteps:[],questionCount:1,unansweredCount:0,coverage:[]}};
+ f.attempts.set(id,attempt);const before=JSON.stringify(attempt),requests=[];page.on('request',r=>{if(r.method()==='POST')requests.push(new URL(r.url()).pathname);});
+ await page.evaluate(id=>window.WritingLab.open({attemptId:id,tab:'mocks',module:'writing',requestId:'swt-mock-fixture'}),id);await page.waitForSelector('.ipt-mock-report');
+ await page.click('[data-mock-tab="answers"]');await page.waitForSelector('#review-0 .swt-mock-feedback');
+ assert.equal(await page.$$eval('#review-0 .swt-mock-section',els=>els.length),3);assert.equal(await page.$('#review-0 textarea,#review-0 input,#review-0 select'),null);
+ await page.click('#review-0 [data-swt-mock-fix]');assert.equal(await page.$eval('#review-0 [data-swt-mock-correction]',e=>e.open),true);assert.match(await page.$eval('#review-0 [data-swt-mock-correction]',e=>e.textContent),/plural verb/);
+ await page.focus('#review-0 [data-swt-mock-fix]');await page.keyboard.press('Enter');assert.equal(await page.$eval('#review-0 .swt-mock-feedback',e=>e.scrollWidth<=e.clientWidth+1),true);
+ const swt=require('../public/swt-mock-feedback'),full=require('../public/full-mock-report');
+ const item={id:'full-swt',number:1,type:'swt',section:'speaking-writing',label:'SWT',title:'Trees',status:'assessed',total:7,maximum:9,scores:native.scores,maxima:native.maxima,assessment:{label:'Assessed'},question:{text:source},reference:{answers:[],acceptedAnswers:[],turns:[],facts:[],sample:native.summary_assessment.repair},answer:[answer],recordings:[],recovered:[],feedback:{swt:swt.project(native,{confirmed:true,answer,source})},practice:{path:'#/swt',instruction:'Practise SWT.'}};
+ const html=full.review(item);await page.evaluate(html=>{const aside=document.createElement('aside');aside.id='full-swt-browser';aside.className='ipt-mock-report';aside.innerHTML=html;document.body.append(aside);},html);
+ assert.equal(await page.$$eval('#full-swt-browser .swt-mock-section',els=>els.length),3);assert.equal(await page.$('#full-swt-browser textarea,#full-swt-browser input,#full-swt-browser select'),null);
+ await page.locator('#full-swt-browser [data-swt-mock-fix]').click();assert.equal(await page.$eval('#full-swt-browser [data-swt-mock-correction]',e=>e.open),true);
+ assert.equal(await page.$eval('#full-swt-browser .swt-mock-feedback',e=>e.scrollWidth<=e.clientWidth+1),true);assert.equal(JSON.stringify(attempt),before);assert.deepEqual(requests,[],'Read-only feedback does not save, submit or reassess the mock');
+ if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.$eval('#full-swt-browser .swt-mock-feedback',e=>e.scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:path.join(root,'.cache','swt-mock-'+width+'.png')});}
 });

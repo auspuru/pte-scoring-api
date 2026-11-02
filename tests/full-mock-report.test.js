@@ -221,3 +221,13 @@ test('Scheduled recovery displays pending feedback without asking the student to
  assert.equal(report.items[0].assessment.label,'Assessment pending');assert.match(report.items[0].feedback.overview,/automatically/);
  state.assessment.recovery.status='exhausted';assert.equal(reports.buildReport(paper,state).retryAvailable,true);
 });
+
+test('SWT report projects validated coaching from saved native results without exposing provider payloads',()=>{
+ const state=complete(),candidate=paper.questions.find(x=>x.question.type==='swt'),index=paper.questions.indexOf(candidate)+1;
+ const response=state.responses[index];response.answer=['Trees cool cities and improves air quality.'];
+ const job=state.assessment.items[candidate.id];job.inputHash=inputHash(response);
+ job.result.native={scores:{content:4,form:1,grammar:2,vocabulary:2},feedback:{content:'Saved content explanation'},summary_assessment:{next_step:'Review the saved recommendation.',repair:'A possible repair uses the saved evidence.'},errors:[{phrase:'improves',correction:'improve',explanation:'Use a plural verb.',affectsScore:false}],apiKey:'SECRET',summary_assessment_private:{credentials:'SECRET'}};
+ const before=JSON.stringify(state),item=reports.buildReport(paper,state).items[index-1];assert.equal(item.feedback.swt.status,'complete');assert.equal(item.feedback.swt.language[0].optional,true);assert(!JSON.stringify(item).includes('SECRET'));assert.equal(JSON.stringify(state),before);
+ const {document}=parseHTML(renderer.review(item));assert.equal(document.querySelectorAll('.swt-mock-section').length,3);assert.equal(document.querySelector('textarea,input,select'),null);
+ job.inputHash='stale';const stale=reports.buildReport(paper,state).items[index-1];assert.equal(stale.feedback.swt,undefined);assert(!renderer.review(stale).includes('Use a plural verb.'));
+});

@@ -1,4 +1,5 @@
 'use strict';
+const swtFeedback = require('../public/swt-mock-feedback');
 const { TASKS } = require('./blueprint');
 const { aggregate, inputHash } = require('./aggregation');
 const { questionForPlayer } = require('./paper');
@@ -62,6 +63,7 @@ function feedbackFor(q, response, job, marks, trusted, recovering) {
   // Only selected student-facing fields leave the server. Provider payloads,
   // dispatch metadata, prompts, credentials and arbitrary nested fields do not.
   return { overview:overview || (result.total === result.maximum ? 'Full native marks awarded.' : 'Compare your response with the reference and the criterion marks below.'),
+    ...(q.type === 'swt' ? {swt:swtFeedback.project(native,{confirmed:trusted,answer:(response.answer||[]).join(' '),source:q.text||'',scores:marks.scores,maxima:marks.maxima,gated})} : {}),
     gated, criteria, strengths:[...new Set([...texts(native.strengths), ...texts(content.strengths)])], improvements:[...new Set(improvements)],
     coverage:(Array.isArray(content.coverage) ? content.coverage : []).slice(0, 30).map(row => ({ point:clean(row.point), status:clean(row.status, 40), evidence:clean(row.evidence), feedback:clean(row.feedback) })),
     corrections:(Array.isArray(native.errors) ? native.errors : []).slice(0, 30).map(row => ({ phrase:clean(row.phrase), correction:clean(row.correction), explanation:clean(row.explanation) })),
