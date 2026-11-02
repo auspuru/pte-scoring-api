@@ -185,6 +185,10 @@ tr:hover td { background: var(--surface-dim); }
 /* Modal */
 .modal { display: none; position: fixed; inset: 0; background: rgba(8, 11, 17, 0.6); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
 .modal.show { display: flex; }
+#accessDatesModal { margin:auto; width:calc(100% - 32px); color:var(--ink); }
+#accessDatesModal::backdrop { background:rgba(8,11,17,0.6); }
+#accessDatesModal label { font-size:0.875rem; text-transform:none; letter-spacing:normal; }
+#accessDatesModal p { color:var(--ink-muted); line-height:1.5; margin-bottom:16px; }
 .modal-box {
   background: var(--surface-dim); border-radius: var(--radius); max-width: 520px; width: 100%;
   max-height: 85vh; overflow-y: auto; box-shadow: var(--shadow); padding: 28px;
@@ -493,6 +497,24 @@ tr:hover td { background: var(--surface-dim); }
   </div>
 </div>
 
+<dialog class="modal-box" id="accessDatesModal" aria-labelledby="accessDatesTitle" aria-describedby="accessDatesHelp">
+  <form id="accessDatesForm">
+    <h3 id="accessDatesTitle">Portal access dates</h3>
+    <p>Account: <strong id="accessDatesUser"></strong></p>
+    <p id="accessDatesHelp">Dates use Brisbane time. Access stays available through the expiry date and ends at midnight. Leave the start date blank for immediate access, or the expiry date blank for no expiry.</p>
+    <label for="accessStartsOn">Start date (optional)</label>
+    <input type="date" id="accessStartsOn" min="1900-01-01" max="9999-12-31">
+    <label for="accessExpiresOn">Expiry date (optional)</label>
+    <input type="date" id="accessExpiresOn" min="1900-01-01" max="9999-12-31">
+    <p>These dates apply to the whole portal. Speaking permissions and blocked status are managed separately.</p>
+    <div class="modal-msg err" id="accessDatesMsg" role="status" hidden></div>
+    <div class="modal-actions">
+      <button type="button" class="btn-sm" id="accessDatesCancel">Cancel</button>
+      <button type="submit" class="btn-sm btn-accent" id="accessDatesSave">Save dates</button>
+    </div>
+  </form>
+</dialog>
+
 <!-- Reset Password Modal -->
 <div class="modal" id="resetModal" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="modal-box">
@@ -669,14 +691,15 @@ function adminLogout(){adminKey='';sessionStorage.removeItem('adminKey');locatio
 
 function renderUsers(users){
   const accountUsers=users.filter(u=>u.hasAccount!==false);
-  const stats={total:users.length,active:accountUsers.filter(u=>!u.blocked).length,blocked:accountUsers.filter(u=>u.blocked).length,attempts:users.reduce((sum,u)=>(sum+(u.stats?.totalAttempts||0)),0)};
+  const stats={total:users.length,active:accountUsers.filter(u=>!u.blocked&&(!u.portalAccess||u.portalAccess.status==='active')).length,blocked:accountUsers.filter(u=>u.blocked).length,attempts:users.reduce((sum,u)=>(sum+(u.stats?.totalAttempts||0)),0)};
   ['Total','Active','Blocked','Attempts'].forEach((k,i)=>document.getElementById('stat'+k).textContent=[stats.total,stats.active,stats.blocked,stats.attempts][i]);
   document.getElementById('usersBody').innerHTML=users.map(u=>{
     const hasAccount=u.hasAccount!==false;
+    const access=u.portalAccess||{},accessStatus=u.blocked?'Blocked':access.status==='expired'?'Expired':access.status==='scheduled'?'Scheduled':'Active';
     const status=hasAccount
-      ? '<span class="badge '+(u.blocked?'blocked':'active')+'">'+(u.blocked?'Blocked':'Active')+'</span>'
+      ? '<span class="badge '+(accessStatus==='Active'?'active':'blocked')+'">'+accessStatus+'</span><div class="data-only-note">'+(access.startsOn?'Starts '+escH(access.startsOn)+'<br>':'')+(access.expiresOn?'Expires '+escH(access.expiresOn):'No expiry')+'</div>'
       : '<span class="badge data-only">Progress only</span><div class="data-only-note">No current login account</div>';
-    const speakingButton='<button class="btn-action" data-speaking-user="'+escH(u.username)+'" data-speaking-enabled="'+(!u.speakingAccess)+'">'+(u.speakingAccess?'Revoke speaking':'Give speaking access')+'</button>';
+    const speakingButton='<button class="btn-action" data-speaking-user="'+escH(u.username)+'" data-speaking-enabled="'+(!u.speakingAccess)+'">'+(u.speakingAccess?'Revoke speaking':'Give speaking access')+'</button><button class="btn-action" data-access-dates-user="'+escH(u.username)+'">Access dates</button>';
     const actions=hasAccount
       ? speakingButton+'<button class="btn-action" onclick="viewUser(\''+escH(u.username)+'\')">View</button><button class="btn-action" onclick="openPortalAsUser(\''+escH(u.username)+'\')">Open as User</button><button class="btn-action" onclick="showResetModal(\''+escH(u.username)+'\')">Reset PW</button><button class="btn-action warn" onclick="toggleBlock(\''+escH(u.username)+'\','+(!u.blocked)+')">'+(u.blocked?'Unblock':'Block')+'</button><button class="btn-action danger" onclick="deleteUser(\''+escH(u.username)+'\')">Delete</button>'
       : '<button class="btn-action" onclick="viewUser(\''+escH(u.username)+'\')">View saved progress</button>';
@@ -685,6 +708,7 @@ function renderUsers(users){
   updateBulkDeleteState();
 }
 document.getElementById('usersBody').addEventListener('click',async event=>{
+  const datesButton=event.target.closest('[data-access-dates-user]');if(datesButton){showAccessDates(datesButton.dataset.accessDatesUser);return;}
   const button=event.target.closest('[data-speaking-user]');if(!button)return;
   const username=button.dataset.speakingUser,enabled=button.dataset.speakingEnabled==='true';
   button.disabled=true;
@@ -693,7 +717,35 @@ document.getElementById('usersBody').addEventListener('click',async event=>{
     const data=await response.json();if(!response.ok || !data.success)throw Error(data.error||'Access could not be updated.');
     const user=allUsers.find(u=>u.username===username);if(user)user.speakingAccess=data.speakingAccess;
     renderUsers(userList());toast('Speaking access '+(enabled?'granted to ':'revoked for ')+username);
+    if(enabled)showAccessDates(username);
   } catch(error) {toast(error.message);button.disabled=false;}
+});
+function showAccessDates(username){
+  const user=allUsers.find(u=>u.username===username);if(!user||user.hasAccount===false)return;
+  const dialog=document.getElementById('accessDatesModal');
+  dialog.dataset.username=username;
+  document.getElementById('accessDatesUser').textContent=username;
+  document.getElementById('accessStartsOn').value=user.portalAccess?.startsOn||'';
+  document.getElementById('accessExpiresOn').value=user.portalAccess?.expiresOn||'';
+  document.getElementById('accessDatesMsg').hidden=true;
+  dialog.showModal();document.getElementById('accessStartsOn').focus();
+}
+document.getElementById('accessDatesCancel').addEventListener('click',()=>document.getElementById('accessDatesModal').close());
+document.getElementById('accessDatesModal').addEventListener('cancel',event=>{if(document.getElementById('accessDatesSave').disabled)event.preventDefault();});
+document.getElementById('accessDatesForm').addEventListener('submit',async event=>{
+  event.preventDefault();const button=document.getElementById('accessDatesSave');if(button.disabled)return;
+  const dialog=document.getElementById('accessDatesModal'),username=dialog.dataset.username;
+  const startsOn=document.getElementById('accessStartsOn').value,expiresOn=document.getElementById('accessExpiresOn').value;
+  const message=document.getElementById('accessDatesMsg');message.hidden=true;
+  if(startsOn&&expiresOn&&expiresOn<startsOn){message.hidden=false;message.textContent='Expiry date must be on or after the start date.';return;}
+  button.disabled=true;document.getElementById('accessDatesCancel').disabled=true;button.textContent='Saving…';
+  try{
+    const response=await fetch(API+'/api/admin/access-dates',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':adminKey},body:JSON.stringify({username,startsOn,expiresOn})});
+    const data=await response.json();if(!response.ok||!data.success)throw Error(data.error||'Access dates could not be saved.');
+    const user=allUsers.find(u=>u.username===username);if(user)user.portalAccess=data.portalAccess;
+    renderUsers(userList());dialog.close();toast('Portal access dates saved for '+username);
+  }catch(error){message.hidden=false;message.textContent=error.message;}
+  finally{button.disabled=false;document.getElementById('accessDatesCancel').disabled=false;button.textContent='Save dates';}
 });
 function userList(){const q=(document.getElementById('userSearch')?.value||'').toLowerCase(),o=document.getElementById('userSort')?.value||'newest';const a=allUsers.filter(u=>(u.username||'').toLowerCase().includes(q));return a.sort((x,y)=>o.startsWith('name')?((x.username||'').localeCompare(y.username||'')*(o==='name-desc'?-1:1)):((((Date.parse(y.createdAt)||0)-(Date.parse(x.createdAt)||0)))*(o==='oldest'?-1:1)));}
 function filterUsers(){renderUsers(userList());} function sortUsers(){renderUsers(userList());} function toggleAllUsers(v){document.querySelectorAll('.user-select:not(:disabled)').forEach(e=>e.checked=v);updateBulkDeleteState();} function updateBulkDeleteState(){const n=document.querySelectorAll('.user-select:checked:not(:disabled)').length,b=document.getElementById('bulkDeleteBtn');b.disabled=!n;b.textContent=n?'Delete selected ('+n+')':'Delete selected';}

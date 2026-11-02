@@ -47,7 +47,11 @@ test('Reviewed recovery transport changes keep native graders, models and score 
  assert.equal(sha(source),baseline.files['full-mock/adapters.js'].sha256);
  source=read('server.js').replace("const fullMock = require('./full-mock/api').installFullMock(app, {\n  requireAdmin,", "const fullMock = require('./full-mock/api').installFullMock(app, {")
    .replace("backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING!=='false'","backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'").replace('    await writingLab.start();\n','').replace('    await writingLab.stop();\n','');
- assert.equal(sha(source),baseline.files['server.js'].sha256);
+ // The reviewed account-date addition changes this shared server, while the
+ // native graders below retain their original hashes. Keep both exact source
+ // revisions pinned; do not exempt arbitrary account or provider source drift.
+ assert.equal(require('../content/full-mock/portal-access-compatible-sources.json').files['server.js'].sha256,'f7a1a04a570e13bcac8e158ca6744fb71e14b7986080e1229038c69b6530b742');
+ assert.equal(sha(source),'46d41b342356759573baf0b731624cf9998f215266794d9e1ecb9e7ac272f804');
  source=read('public/writing-lab-report.js').replace("(attempt.kind!=='mock' || !needsReview(r,q))",'(!weighted || !needsReview(r,q))');
  assert.equal(sha(source),baseline.files['public/writing-lab-report.js'].sha256);
  for(const name of ['full-mock/session.js','full-mock/profiles.js','speaking-scoring.js','speaking-delivery.js','writing-lab-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
