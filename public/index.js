@@ -12556,14 +12556,14 @@ function ensureSpeakingRuntimeLoaded() {
 let speakingMockRuntimeLoadPromise=null;
 function ensureSpeakingMockRuntimeLoaded() {
   if(window.SpeakingMock)return Promise.resolve(window.SpeakingMock);
-  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-d52a51456d34','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
+  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-2095ae51b97e','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
   return speakingMockRuntimeLoadPromise;
 }
 let fullMockRuntimeLoadPromise = null;
 function ensureFullMockRuntimeLoaded() {
   if (window.FullMock) return Promise.resolve(window.FullMock);
   if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-0b4b23dace1d', 'full mock report')
-    .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-4dd616723879', 'full mock'))
+    .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-73bc6cc60f93', 'full mock'))
     .then(() => { if (!window.FullMock) throw Error('Full mock did not load.'); return window.FullMock; })
     .catch(error => { fullMockRuntimeLoadPromise = null; throw error; });
   return fullMockRuntimeLoadPromise;

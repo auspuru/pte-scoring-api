@@ -57,6 +57,7 @@ for(const [number,passages,sentenceStart,imageIds,lectureIds,discussionIds,situa
 }
 function publicQuestion(q,reveal=false){
   return {id:q.id,type:q.type,name:q.name,preparation:q.preparation,seconds:q.seconds,instruction:q.instruction,
+    ...(q.type==='di'?{title:q.title||q.visual?.title||''}:{}),
     ...(['intro','ra','rts'].includes(q.type)?{text:q.text}:{}),
     ...(q.audioSource?(rtsPrompts.publicAudio(q,'/speaking-mock-audio')||{audioUrl:'/speaking-mock-audio/'+q.id+'.mp3?v='+VERSION,audioSeconds:q.audioSeconds}):{}),
     ...(q.imageUrl?{imageUrl:q.imageUrl,...require('../di-image-display').forQuestion(q)}:q.visual?{imageUrl:'/speaking-image/'+q.id+'.svg'}:{}),

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "ff802fdeaebdaa48156f13557a16c12ef954a1e3",
-  "checkedAt": "2026-11-01",
-  "scope": "Explicit instructor exclusions for reviewed unusable ASQ recordings, with input/snapshot/job-bound review metadata. Native graders, models, task weights, sealed answers, original audio and confirmed marks are preserved.",
+  "baseCommit": "28bb9c3d076b85f83c63e42c43655f0b5d5f583d",
+  "checkedAt": "2026-11-02",
+  "scope": "DI title-only player projection and exact-source compatibility for retained Full Mocks. Frozen question snapshots, original images, native graders, models, weights and confirmed marks are preserved.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "3c5dd68f019940acfd917cfe67049038181e58538e288384be893b7e91d1f605",
+        "sha256": "7d32c83d46f60b4e82b39bf339c06bc9a936735cca837020a285641bbbcff483",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -112,7 +112,7 @@
         "version": null
       },
       "full-mock/paper.js": {
-        "sha256": "b2d7c30ef08994db7e01aa71a644243ebe66a1b0d10a0590099d03c8f72de8e6",
+        "sha256": "fd69d2f6e9a54ed460374792cd40b2bacda688a0463a8d42747445ccf485c286",
         "version": null
       },
       "full-mock/profiles.js": {
