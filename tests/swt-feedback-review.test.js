@@ -39,3 +39,12 @@ test('A pending report never renders repair, language judgement or a revision su
  const m=review.model({...data(),score_provisional:true},passage,text),html=review.render(m);
  assert(!html.includes('data-review-use'));assert(!html.includes('data-review-edit'));assert(!html.includes('data-review-save'));assert(html.includes('no confirmed learning judgement'));
 });
+
+
+test('Repeated words use their validated word span and ambiguous historical quotes stay unmarked',()=>{
+ const text='Trees cool cities and cool rivers.';const d=data();
+ d.grammar_details.grammar_annotations=[{phrase:'cool',phrase_span:[5,5],fix:'shade',affects_score:true}];
+ assert.equal(review.model(d,passage,text).annotations[0].start,text.lastIndexOf('cool'));
+ delete d.grammar_details.grammar_annotations[0].phrase_span;
+ assert.equal(review.model(d,passage,text).annotations.length,0);
+});

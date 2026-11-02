@@ -9,6 +9,17 @@
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const words=t=>clean(t).split(/\s+/).filter(Boolean).length;
   function exact(text,quote){quote=clean(quote);return quote&&text.includes(quote)?quote:'';}
+  function location(text,phrase,span){
+    phrase=exact(text,phrase);if(!phrase)return null;
+    if(span!=null){
+      const tokens=[...text.matchAll(/\S+/g)];
+      if(!Array.isArray(span)||span.length!==2||!span.every(Number.isInteger)||span[0]<1||span[1]<span[0]||span[1]>tokens.length)return null;
+      const start=tokens[span[0]-1].index,end=tokens[span[1]-1].index+tokens[span[1]-1][0].length;
+      return text.slice(start,end)===phrase?{start,end}:null;
+    }
+    const start=text.indexOf(phrase);
+    return text.indexOf(phrase,start+1)<0?{start,end:start+phrase.length}:null;
+  }
   function model(data,passage,text){
     text=String(text||'');const state=feedback.build(data),a=data.content_details?.summary_assessment||{};
     const pending=state.provisional||data.ai_feedback_degraded===true;
@@ -16,7 +27,7 @@
     const annotations=[];const claimed=[];
     if(!pending&&valid)for(const raw of [...list(data.grammar_details?.grammar_annotations),...list(data.vocabulary_details?.vocabulary_annotations)]){
       if(!raw||!clean(raw.fix)||!exact(text,raw.phrase))continue;
-      const phrase=exact(text,raw.phrase),start=text.indexOf(phrase),end=start+phrase.length;
+      const phrase=exact(text,raw.phrase),range=location(text,phrase,raw.phrase_span);if(!range)continue;const {start,end}=range;
       if(claimed.some(r=>r.start<end&&r.end>start))continue;
       const optional=raw.affects_score!==true;
       const kind=optional?'Optional style':/spell/i.test(raw.type||'')?'Spelling':list(data.vocabulary_details?.vocabulary_annotations).includes(raw)?'Word choice':'Grammar';
@@ -27,7 +38,7 @@
     const dependency=list(a.missing_dependencies).find(d=>d&&clean(d.missing_context));
     const weakSynthesis=['partial','limited'].includes(a.synthesis?.quality);
     const quote=!pending&&valid?(exact(text,dependency?.effect)||(weakSynthesis?exact(text,a.synthesis?.evidence):'')):'';
-    const sourceQuote=!pending&&valid?exact(String(passage?.text||''),dependency?.missing_context):'';
+    const sourceQuote=!pending&&valid?(exact(String(passage?.text||''),dependency?.missing_context)||(weakSynthesis?exact(String(passage?.text||''),a.synthesis?.sourceQuote):'')):'';
     const contentIssue=!pending&&valid&&(!state.full&&(state.contentGated||Number(data.trait_scores?.content)<Number(data.trait_scores?.content_max||4)||weakSynthesis));
     const action=contentIssue?(clean(a.next_step)||state.priorities[0]?.detail||'Review the main message against the original passage.'):'';
     const why=contentIssue?(clean(dependency?.explanation)||clean(a.synthesis?.explanation)||clean(a.relationship_explanation)):'';
