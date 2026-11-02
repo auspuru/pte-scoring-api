@@ -54,6 +54,34 @@ test('AUTH-01/03/04: real login, keyboard double-submit and expired-session draf
  await page.evaluate(()=>signOut());await page.type('#loginUsername','browser-alice');await page.type('#loginPassword','Password123');await page.click('#loginSubmitBtn');await workspace('original account recovery');await page.evaluate(()=>switchSection('swt'));await page.click('[data-swt-mode="summary"]');await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'A recoverable first-account summary.');
 });
 
+test('SWT practice submits with the signed-in session after login and reload',{timeout:60000},async t=>{
+ const f=await fixture(t);
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ for(const [width,reload] of [[1365,false],[390,true]]){
+  const username='swt-browser-'+width,password='Synthetic-pass-123';
+  await f.request('/api/auth/register',{username,password,email:username+'@example.test'});
+  const page=await browser.newPage();await page.setViewport({width,height:900});
+  await page.goto(f.base);await page.waitForSelector('#loginUsername',{visible:true});
+  await page.type('#loginUsername',username);await page.type('#loginPassword',password);
+  const signedIn=page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().method()==='POST');
+  await page.click('#loginSubmitBtn');const login=await(await signedIn).json();assert.equal(login.success,true);
+  const ready=()=>page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
+  await ready();if(reload){await page.reload();await ready();}
+  await page.evaluate(()=>switchSection('swt'));await page.click('[data-swt-mode="summary"]');await page.waitForSelector('#summaryInput',{visible:true});
+  // Two sentences exercise the real server's deterministic form gate after
+  // authentication, without any external scoring provider or mocked HTTP reply.
+  const text='Bees support plants. Flowers grow.';await page.type('#summaryInput',text);
+  const assessed=page.waitForResponse(r=>r.url().endsWith('/api/grade')&&r.request().method()==='POST');
+  await page.click('#scoreBtn');const response=await assessed;
+  assert.equal(response.status(),200);assert.equal(response.request().headers()['x-session-token']===login.token,true,'SWT transports the same signed session used by login');
+  const grade=await response.json();assert.equal(grade.form_gate_triggered,true);assert.equal(grade.llm_used,false);
+  await page.waitForSelector('#swtResultsScreen.active',{visible:true});
+  assert.equal(await page.evaluate(()=>document.getElementById('appShell').style.display),'grid');
+  assert.equal(await page.evaluate((uid,responseText)=>Object.values(JSON.parse(localStorage.getItem('pte_'+uid+'_history')||'{}')).some(attempts=>attempts.some(a=>a.text===responseText)),username,text),true,'The authenticated response is saved');
+  await page.close();
+ }
+});
+
 test('Staff recovery inspects one owned attempt and retries only its missing content',{timeout:60000},async t=>{
  const f=await fixture(t),username='recovery-browser';await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:'recovery@example.test'});
  const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());

@@ -15736,12 +15736,13 @@ function resetTimer(){
 }
 
 async function requestSwtGrade(payload, timeoutMs = 0, canRetry = () => true) {
+  const token = sessionToken;
   const controller = new AbortController();
   let timer;
   try {
     return await Promise.race([
       GradingRequest.request(API_URL + '/api/grade', { method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: controller.signal }, {
+        headers: { 'Content-Type': 'application/json', 'x-session-token': token }, body: JSON.stringify(payload), signal: controller.signal }, {
         canRetry,
         validate: data => !!data?.trait_scores && ['content', 'form', 'grammar', 'vocabulary'].every(key => Number.isFinite(data.trait_scores[key])),
         isFinal: data => !data.score_provisional && !data.ai_feedback_degraded,
