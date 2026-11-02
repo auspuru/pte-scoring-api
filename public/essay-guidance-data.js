@@ -7,7 +7,7 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
   return {
-  "version": "essay-guide-20261101.1",
+  "version": "essay-guide-20261102.1",
   "guides": [
     {
       "n": 1,
@@ -69,7 +69,26 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce the late-submission policy, state your opinion on mark deductions, and signal that you will suggest other ways to manage lateness.",
+        "body1": {
+          "role": "Explain your opinion on mark deductions",
+          "hints": [
+            "Choose one main reason for your position: fairness between students, accuracy of academic grades, or a distinction between avoidable delay and genuine hardship.",
+            "Explain how the deduction affects that issue. Develop the consequence, then use the illustration to show why it supports your view; stress alone is not a complete explanation."
+          ]
+        },
+        "body2": {
+          "role": "Suggest alternative actions and explain how they work",
+          "hints": [
+            "Propose two practical alternatives, such as a short grace period or approved extension, and a planning meeting for repeated lateness. Say when the university would use each action.",
+            "Explain the mechanism: an extension addresses an unavoidable emergency; planning support addresses repeated poor time management. Show how deadlines remain manageable without relying only on lower marks.",
+            "This paragraph is required under every position, including support for deductions. A smaller or tiered deduction is still a deduction; include genuine alternatives too."
+          ]
+        },
+        "conclusion": "Restate your opinion and briefly bring together the alternatives you explained. If you oppose all deductions, do not finish by recommending a smaller deduction."
+      }
     },
     {
       "n": 2,
@@ -135,7 +154,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": true
+      "personalRequired": true,
+      "organisation": {
+        "introduction": "Introduce television's two claimed functions and state how far you accept each: relaxation and companionship.",
+        "body1": {
+          "role": "Evaluate relaxation",
+          "hints": [
+            "Explain how the chosen kind of programme affects tension or attention. If your support is conditional, name the condition rather than claiming every programme relaxes everyone.",
+            "Connect a genuine experience to this effect; show what the viewing changed rather than merely saying you watched television."
+          ]
+        },
+        "body2": {
+          "role": "Evaluate companionship",
+          "hints": [
+            "Explain whether familiar voices and routines provide a sense of company, and where that benefit stops under your chosen position.",
+            "Use a relevant genuine experience. Limited companionship does not mean no companionship; distinguish temporary comfort from a relationship that provides two-way support."
+          ]
+        },
+        "conclusion": "Answer both claims again and preserve the same degree of agreement. Do not introduce a third function in the conclusion."
+      }
     },
     {
       "n": 3,
@@ -201,7 +238,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": true
+      "personalRequired": true,
+      "organisation": {
+        "introduction": "Introduce studying old plays at high school and state whether you support it, oppose it or favour selective use.",
+        "body1": {
+          "role": "Explain a benefit of studying old plays",
+          "hints": [
+            "Name a learning benefit, such as cultural understanding or expression, and explain how reading or performing a scene develops it.",
+            "Use a genuine experience of studying or encountering a play to demonstrate that benefit. Keep this benefit even if your final view is against compulsory study."
+          ]
+        },
+        "body2": {
+          "role": "Explain a problem and weigh it against the benefit",
+          "hints": [
+            "Explain how unfamiliar language, preparation or workload can make learning difficult. Give a relevant genuine experience.",
+            "Show why the problem is manageable, outweighs the benefit, or calls for selected extracts under your position. Do not replace the required problem with a second benefit."
+          ]
+        },
+        "conclusion": "Summarise the benefit and problem, then confirm whether and under what conditions students should study these works."
+      }
     },
     {
       "n": 4,
@@ -267,7 +322,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Address both the need for suitable study conditions and the claim that combining study with employment is impossible; state how realistic you find them.",
+        "body1": {
+          "role": "Develop your first reason about combining work and study",
+          "hints": [
+            "Explain how the chosen work arrangement affects study time, financial security or the conditions needed to study.",
+            "Use an example with a manageable or demanding workload that fits your position. Distinguish some difficult arrangements from universal impossibility."
+          ]
+        },
+        "body2": {
+          "role": "Develop a distinct second reason or a clear limit",
+          "hints": [
+            "Explain a different effect on energy, concentration or useful skills; do not repeat the first point in different words.",
+            "Show what the example proves about compatibility. For a conditional position, distinguish limited hours from excessive or unpredictable work."
+          ]
+        },
+        "conclusion": "Answer how realistic both statements are. Keep any qualification about hours or work conditions explicit."
+      }
     },
     {
       "n": 5,
@@ -329,7 +402,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce practical and traditional teaching and state whether learning by doing can work well in high schools or colleges.",
+        "body1": {
+          "role": "Explain the first reason or necessary foundation",
+          "hints": [
+            "Explain how the approach helps learners connect an idea with understanding, or why clear explanation is needed before an activity.",
+            "Use a specific classroom or college activity to show learning, not simply enjoyment."
+          ]
+        },
+        "body2": {
+          "role": "Explain a second benefit or a delivery condition",
+          "hints": [
+            "Develop practical skills, supervision, resources or the relationship between theory and practice, according to your chosen approach.",
+            "Explain how this affects whether experiential learning works well. Its usefulness does not require replacing all traditional teaching."
+          ]
+        },
+        "conclusion": "Give a direct judgement about whether experiential learning can work well and retain the conditions or blend of methods you argued for."
+      }
     },
     {
       "n": 6,
@@ -395,7 +486,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce digital-only university purchasing, state your view, and signal that both advantages and disadvantages will be considered.",
+        "body1": {
+          "role": "Explain an advantage of digital materials",
+          "hints": [
+            "Explain how searchability or remote access benefits students using university resources.",
+            "Develop an example of the access or study benefit. This advantage still needs coverage if you favour printed materials."
+          ]
+        },
+        "body2": {
+          "role": "Explain a disadvantage of digital-only purchasing",
+          "hints": [
+            "Explain an access gap, device or connection barrier, or a need that updated print can meet. Show how it affects learners.",
+            "Weigh that drawback against the first paragraph and justify digital-only, print-led or mixed purchasing. Distinguish a library's wider functions from the format of its collection."
+          ]
+        },
+        "conclusion": "Summarise the trade-off and give your final purchasing preference. Avoid declaring all library functions obsolete merely because digital resources are convenient."
+      }
     },
     {
       "n": 7,
@@ -457,7 +566,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce the spending choice and state whether public transport, essential road links or different priorities by area should come first.",
+        "body1": {
+          "role": "Justify the first spending priority",
+          "hints": [
+            "Explain how the proposed investment changes travel, access or car dependence in a specific urban context.",
+            "Connect the benefit to spending priority, not just to the general usefulness of transport."
+          ]
+        },
+        "body2": {
+          "role": "Develop a different reason or a different area's need",
+          "hints": [
+            "Explain a separate consequence, such as emissions, emergency access or missing outer-area links.",
+            "For a partial position, identify where the priority changes. Keeping necessary roads does not by itself mean rejecting public transport priority."
+          ]
+        },
+        "conclusion": "Restate the priority and its scope, using the reasons already developed."
+      }
     },
     {
       "n": 8,
@@ -519,7 +646,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce tourism in a less developed country and state whether its disadvantages are as great as its advantages.",
+        "body1": {
+          "role": "Explain an advantage of tourism",
+          "hints": [
+            "Show how visitor spending, local participation or investment benefits the destination.",
+            "Use an example that connects tourism demand with local income or development; do not just list jobs and revenue."
+          ]
+        },
+        "body2": {
+          "role": "Explain a disadvantage and compare its weight",
+          "hints": [
+            "Show how pollution, construction or weak management creates lasting costs for the destination.",
+            "Explain why these harms are comparable to, smaller than, or dependent on the management of the benefits. Merely mentioning both sides does not answer 'as great as'."
+          ]
+        },
+        "conclusion": "Give the same explicit comparison of the weight of benefits and harms, including any management condition."
+      }
     },
     {
       "n": 9,
@@ -585,7 +730,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": true
+      "personalRequired": true,
+      "organisation": {
+        "introduction": "Introduce formal written exams and state how far you consider them a valid assessment method.",
+        "body1": {
+          "role": "Explain your first reason about validity",
+          "hints": [
+            "Explain what exam conditions or written tasks can show, or what important capability they fail to show under your chosen position.",
+            "Use an example from your genuine experience to connect the assessment method with the learning being assessed."
+          ]
+        },
+        "body2": {
+          "role": "Explain a distinct reason or a limit of written assessment",
+          "hints": [
+            "Develop another feature, such as common criteria, practical performance or time pressure, rather than repeating the first reason.",
+            "Use genuine experience where relevant. Distinguish 'a valid method' from 'the only method'; needing another assessment does not automatically make exams invalid."
+          ]
+        },
+        "conclusion": "Restate the extent of validity and any complementary assessment you have already justified."
+      }
     },
     {
       "n": 10,
@@ -647,7 +810,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce compulsory foreign-language study and state the extent and age or level of any requirement you support.",
+        "body1": {
+          "role": "Explain the first reason for your policy",
+          "hints": [
+            "Explain how compulsory or optional provision affects access, workload or basic learning opportunities.",
+            "Use a relevant example or genuine experience to show why this supports your policy, rather than only showing that languages are useful."
+          ]
+        },
+        "body2": {
+          "role": "Explain a different policy reason or boundary",
+          "hints": [
+            "Develop cultural understanding, staffing, resources or the point at which study should become optional.",
+            "Keep the proposed level of compulsion consistent. If introductory study is compulsory but advanced study is optional, say so explicitly."
+          ]
+        },
+        "conclusion": "Restate whether and how far schools should require language study; no personal story is compulsory when an example meets the instruction."
+      }
     },
     {
       "n": 11,
@@ -705,7 +886,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Choose one most pressing global problem and state why you prioritise it. Signal that you will explain solutions.",
+        "body1": {
+          "role": "Justify why this problem is most pressing",
+          "hints": [
+            "Explain its serious effects and use an urgency criterion such as scale, immediate harm or lasting consequences.",
+            "Develop an example showing why it deserves priority. Do not spend this paragraph listing several unrelated global problems."
+          ]
+        },
+        "body2": {
+          "role": "Explain solutions and who should act",
+          "hints": [
+            "Give two connected, feasible actions for the same chosen problem. Identify what governments and international organisations can each do.",
+            "Explain how each action reduces the cause, exposure or harm described in body 1. A list of slogans is not a developed solution."
+          ]
+        },
+        "conclusion": "Restate the priority problem and summarise the linked solutions without switching to a new priority."
+      }
     },
     {
       "n": 12,
@@ -763,7 +962,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce technology-led longer life and state whether you see it as a blessing, a curse under stated conditions, or a mixed outcome.",
+        "body1": {
+          "role": "Develop your first reason for that judgement",
+          "hints": [
+            "Explain the effect on families, opportunities or public resources using the argument you selected.",
+            "Show how extra years create that effect. Do not assume everyone who lives longer is unhealthy or dependent."
+          ]
+        },
+        "body2": {
+          "role": "Develop a distinct reason or quality-of-life condition",
+          "hints": [
+            "Explain a second effect, such as contribution, care needs or support for healthy extra years.",
+            "Connect it to your overall judgement. Both body paragraphs may support the same judgement; an opposing paragraph is not compulsory."
+          ]
+        },
+        "conclusion": "Confirm your judgement about longer life and retain any condition about health or available care."
+      }
     },
     {
       "n": 13,
@@ -825,7 +1042,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Define the type of parental legal responsibility you mean and state whether it should be automatic, financial, or limited by fault and control.",
+        "body1": {
+          "role": "Explain your first reason for assigning responsibility",
+          "hints": [
+            "Explain compensation, supervision or limits on parental control under your chosen view.",
+            "Use study, an observation or genuine experience to illustrate who could reasonably prevent the conduct or bear its consequences."
+          ]
+        },
+        "body2": {
+          "role": "Explain a second reason or a boundary of responsibility",
+          "hints": [
+            "Distinguish the child's own conduct from a parent's proven fault, and consider age and reasonable control where relevant.",
+            "Show why your proposed responsibility is fair. Present it as your policy view, not an invented statement of current law."
+          ]
+        },
+        "conclusion": "State who should be responsible, for what, and under the same conditions already discussed."
+      }
     },
     {
       "n": 14,
@@ -887,7 +1122,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "State whether building design has positive effects, negative effects or effects that depend on its features; cover both homes and workplaces.",
+        "body1": {
+          "role": "Explain an effect of workplace design",
+          "hints": [
+            "Name a design feature such as lighting, ventilation or layout and explain its effect on comfort or concentration.",
+            "Use an example that links the physical design with daily work; neighbourhood location alone is not a design explanation."
+          ]
+        },
+        "body2": {
+          "role": "Explain an effect of home design",
+          "hints": [
+            "Name a residential feature such as sound insulation, privacy or usable space and show how it affects rest or household activities.",
+            "Link the effect to the positive, negative or mixed judgement. Do not leave homes or workplaces out."
+          ]
+        },
+        "conclusion": "Bring together the effects on living and working and restate how design determines them."
+      }
     },
     {
       "n": 15,
@@ -949,7 +1202,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce mass media's influence and state how strongly it shapes opinions, especially those of teenagers and young people.",
+        "body1": {
+          "role": "Explain the first influence or limit",
+          "hints": [
+            "Show how a media message, advertising, guidance or other influence changes or resists an opinion.",
+            "Use a concrete example involving young people; explain a change in belief rather than simply describing media use."
+          ]
+        },
+        "body2": {
+          "role": "Explain a distinct influence or limiting condition",
+          "hints": [
+            "Develop repeated coverage, direct experience or critical evaluation according to your chosen view.",
+            "Explain what this shows about the degree of media influence. Do not turn the question into only a list of media's good and bad effects."
+          ]
+        },
+        "conclusion": "Restate the degree of influence and the conditions that make it stronger or weaker."
+      }
     },
     {
       "n": 16,
@@ -1007,7 +1278,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Name and briefly describe one invention, what it does and your overall judgement of its impact on society.",
+        "body1": {
+          "role": "Explain a first societal impact of that invention",
+          "hints": [
+            "Describe a useful feature only as far as needed to explain its effect on people, services or daily life.",
+            "Show the chain from the feature to the consequence with a specific example. Keep the same invention throughout."
+          ]
+        },
+        "body2": {
+          "role": "Explain a distinct impact or a limit on its benefits",
+          "hints": [
+            "Develop a different effect, such as access to services, distraction or displaced activities, according to your position.",
+            "Connect it to your overall beneficial or detrimental judgement. A smartphone can improve access to banking; it did not invent banking."
+          ]
+        },
+        "conclusion": "Restate the invention's overall impact and any condition about its use, without introducing a second invention."
+      }
     },
     {
       "n": 17,
@@ -1065,7 +1354,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce employee participation in product or service decisions and signal that you will cover an advantage and a disadvantage.",
+        "body1": {
+          "role": "Explain an advantage of involving workers",
+          "hints": [
+            "Explain how frontline knowledge, involvement or different roles improves decisions or commitment.",
+            "Use a product or service example to show the mechanism; keep the discussion about employees joining decisions."
+          ]
+        },
+        "body2": {
+          "role": "Explain a disadvantage of involving workers",
+          "hints": [
+            "Develop slower coordination, unfairly handled rejection or the cost of evaluating proposals.",
+            "Explain when and why this difficulty occurs. Rejection alone does not inevitably create conflict; poor handling can cause the problem."
+          ]
+        },
+        "conclusion": "Summarise both effects and, if useful, state a brief balanced judgement. A forced agree/disagree position is unnecessary."
+      }
     },
     {
       "n": 18,
@@ -1127,7 +1434,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": true
+      "personalRequired": true,
+      "organisation": {
+        "introduction": "Choose one age-restricted activity, state the minimum age you propose and explain any supervised versus independent stage.",
+        "body1": {
+          "role": "Justify your proposed minimum age",
+          "hints": [
+            "Explain a relevant reason such as responsibility, access to work or participation; connect it to the chosen threshold.",
+            "Use a genuine experience of the activity or age rule to support the judgement. Do not present every person of the same age as equally mature."
+          ]
+        },
+        "body2": {
+          "role": "Explain preparation or safeguards for that same activity",
+          "hints": [
+            "Explain how training, staged restrictions or civic education supports the age proposal rather than switching activities.",
+            "Use relevant genuine experience and explain the policy boundary. Your recommended age is a proposal, not a claim about the law everywhere."
+          ]
+        },
+        "conclusion": "Restate the activity, proposed age and any accompanying conditions; keep the recommendation consistent."
+      }
     },
     {
       "n": 19,
@@ -1185,7 +1510,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "State who should take responsibility for climate change and whether you favour one leading group or distinct shared roles.",
+        "body1": {
+          "role": "Justify the first group's responsibility",
+          "hints": [
+            "Explain the decisions governments or companies control and how changing them can reduce emissions.",
+            "Use an example showing responsibility based on power and capacity rather than simply blaming a group."
+          ]
+        },
+        "body2": {
+          "role": "Explain other roles or how the lead is carried out",
+          "hints": [
+            "Explain how businesses, government oversight or individual choices complement the first paragraph under your chosen position.",
+            "Show how the roles fit together. Shared responsibility does not require equal responsibility when groups have different control."
+          ]
+        },
+        "conclusion": "Restate the allocation of responsibility and the relationship between the groups you discussed."
+      }
     },
     {
       "n": 20,
@@ -1247,7 +1590,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce the disagreement about laws and state how much effect you think laws have on human behaviour.",
+        "body1": {
+          "role": "Explain the first reason for their effect or limitation",
+          "hints": [
+            "Explain deterrence, immediate pressures or credible enforcement using the selected approach.",
+            "Use a concrete example and show why a person would change or continue the behaviour."
+          ]
+        },
+        "body2": {
+          "role": "Explain a distinct reason or supporting condition",
+          "hints": [
+            "Develop shared standards or the role of education and support rather than repeating the first reason.",
+            "Connect the argument to the degree of influence of laws. Continuing crime alone does not prove a law has no effect."
+          ]
+        },
+        "conclusion": "Restate whether laws have substantial, limited or conditional influence and the reason already established."
+      }
     },
     {
       "n": 21,
@@ -1305,7 +1666,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce malls replacing small shops and state whether this change is good, bad or mixed in your view.",
+        "body1": {
+          "role": "Explain the first consequence of the replacement",
+          "hints": [
+            "Explain convenience or a cost to independent businesses, according to the selected position.",
+            "Show how replacing existing shops produces this effect; describing a mall's features alone is insufficient."
+          ]
+        },
+        "body2": {
+          "role": "Explain a distinct consequence or trade-off",
+          "hints": [
+            "Develop accessibility, community contact or lost local options and connect it to your judgement.",
+            "Avoid treating gross mall jobs as automatic net employment growth, or online contact as an automatic replacement for local ties."
+          ]
+        },
+        "conclusion": "Give the same good, bad or qualified judgement about the replacement, not shopping in general."
+      }
     },
     {
       "n": 22,
@@ -1367,7 +1746,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce the shorter-working-week proposal, state your view and specify whether it should cover young workers or the whole workforce.",
+        "body1": {
+          "role": "Explain an advantage and connect it to your chosen coverage",
+          "hints": [
+            "Explain how hours could be shared, training made possible or rest improved for the workers covered by your proposal.",
+            "State the condition needed for that benefit: fewer hours do not automatically create jobs if employers reorganise the same work."
+          ]
+        },
+        "body2": {
+          "role": "Explain a disadvantage and justify the coverage decision",
+          "hints": [
+            "Develop a cost, pay risk, unequal conditions or a coverage problem. Say who bears it and how it affects the policy.",
+            "Explain why young-only coverage, workforce-wide coverage or a phased trial remains preferable despite that drawback. Do not leave the young-versus-all question only implied."
+          ]
+        },
+        "conclusion": "Summarise the advantage and disadvantage and answer explicitly whether the policy should apply to young workers or the whole workforce."
+      }
     },
     {
       "n": 23,
@@ -1447,7 +1844,25 @@
           ]
         }
       ],
-      "personalRequired": true
+      "personalRequired": true,
+      "organisation": {
+        "introduction": "State whether you expect people to work fewer hours in the future than now, including any difference by role.",
+        "body1": {
+          "role": "Explain the first reason for your prediction",
+          "hints": [
+            "Explain whether efficiency gains become shorter hours or more output, and identify the condition behind your prediction.",
+            "Use genuine work experience to illustrate that mechanism; faster tools alone do not prove a shorter working week."
+          ]
+        },
+        "body2": {
+          "role": "Explain a distinct reason or difference between roles",
+          "hints": [
+            "Develop employee preferences, service opening hours or the need for physical presence under your selected position.",
+            "Use genuine experience where relevant and connect it to the future-versus-now prediction rather than only saying fewer hours would be desirable."
+          ]
+        },
+        "conclusion": "Restate your prediction and its scope; do not change from a conditional claim to a universal one."
+      }
     },
     {
       "n": 24,
@@ -1509,7 +1924,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Introduce a maximum-wage policy and state whether you support it, reject it or favour specified limits or exceptions.",
+        "body1": {
+          "role": "Explain a first reason for your wage policy",
+          "hints": [
+            "Show how a cap affects recruitment, incentives or pay differences under the approach chosen.",
+            "Use a relevant explanation or example; a maximum wage does not mean everyone would receive the same wage."
+          ]
+        },
+        "body2": {
+          "role": "Explain a distinct reason or policy boundary",
+          "hints": [
+            "Develop another effect or explain how exceptions would work. If you claim savings benefit other staff, state how that money would be deliberately allocated.",
+            "Keep your argument about a wage ceiling rather than silently substituting a different policy."
+          ]
+        },
+        "conclusion": "Restate the position on a maximum wage and retain any exception or allocation condition already explained."
+      }
     },
     {
       "n": 25,
@@ -1589,7 +2022,25 @@
           ]
         }
       ],
-      "personalRequired": true
+      "personalRequired": true,
+      "organisation": {
+        "introduction": "Introduce fame and privacy and state how far fame should require entertainers or sportspeople to give up privacy.",
+        "body1": {
+          "role": "Explain one privacy boundary or public responsibility",
+          "hints": [
+            "Develop private life, relevant public conduct or voluntary disclosure according to the selected position.",
+            "Support it with coverage or a situation you genuinely observed or experienced; do not invent private effects on a celebrity."
+          ]
+        },
+        "body2": {
+          "role": "Explain a different boundary or a justified exception",
+          "hints": [
+            "Discuss family interests, unrelated private matters or verified public-interest concerns, as your chosen position requires.",
+            "Explain why this information is relevant or intrusive. Public curiosity and public accountability are different justifications."
+          ]
+        },
+        "conclusion": "Restate the extent of any privacy limit and the same boundary between public relevance and private life."
+      }
     },
     {
       "n": 27,
@@ -1647,7 +2098,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "State how important work-life balance is and signal that you will explain why people find it difficult.",
+        "body1": {
+          "role": "Explain why balance is important",
+          "hints": [
+            "Develop a consequence for rest, family responsibilities, relationships or attention rather than simply calling balance essential.",
+            "Use an example showing how time beyond work affects daily life."
+          ]
+        },
+        "body2": {
+          "role": "Explain why balance is difficult to achieve",
+          "hints": [
+            "Explain the causes in the selected approach: long hours, after-hours messages, financial pressure or caring responsibilities.",
+            "Show how those demands reduce control over time. This paragraph answers 'why difficult'; it is not a paragraph disagreeing that balance matters, and a list of solutions cannot replace the causes."
+          ]
+        },
+        "conclusion": "Bring together the importance of balance and the main reasons it is hard to achieve. No new solutions are needed."
+      }
     },
     {
       "n": 28,
@@ -1709,7 +2178,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "State how far life experience teaches more effectively than books or formal education, and define any difference by learning goal.",
+        "body1": {
+          "role": "Explain the first reason in that comparison",
+          "hints": [
+            "Explain what real responsibility or structured teaching enables a person to learn.",
+            "Compare the learning with the alternative in the prompt; do not just claim that experience or books are useful."
+          ]
+        },
+        "body2": {
+          "role": "Explain a distinct reason or a complementary role",
+          "hints": [
+            "Develop learning from consequences, avoiding costly mistakes or applying a theoretical framework.",
+            "Explain why this supports your degree of agreement. An ordinary classroom experiment alone does not show the value of life outside formal learning."
+          ]
+        },
+        "conclusion": "Restate the comparison and any complement between experience and formal learning. Personal experience is optional when relevant reasons satisfy the wording."
+      }
     },
     {
       "n": 29,
@@ -1767,7 +2254,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "State how far AI translation makes learning another language unnecessary, and define the communication needs you mean.",
+        "body1": {
+          "role": "Explain the first use or limitation of translation",
+          "hints": [
+            "Show how tools meet routine needs or how direct language skills improve interaction.",
+            "Use a situation with a clear communication purpose; convenience is not automatically proof that learning has no value."
+          ]
+        },
+        "body2": {
+          "role": "Explain a distinct reason or a different communication need",
+          "hints": [
+            "Develop time commitment, device dependence or participation in longer conversations according to your approach.",
+            "For a qualified position, distinguish short visits from long-term work or community life and connect the distinction to necessity."
+          ]
+        },
+        "conclusion": "Answer whether language learning is unnecessary within the same scope you argued for."
+      }
     },
     {
       "n": 30,
@@ -1839,7 +2344,25 @@
           ]
         }
       ],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "Explain how you interpret the claim about travel and state whether travel is necessary for quality education or only useful in some contexts.",
+        "body1": {
+          "role": "Explain the first reason about necessity",
+          "hints": [
+            "Explain what a purposeful visit adds or how strong learning can happen without it.",
+            "Use an example and connect it to the need for travel, rather than only saying travel is enjoyable or beneficial."
+          ]
+        },
+        "body2": {
+          "role": "Explain a distinct reason or subject-specific boundary",
+          "hints": [
+            "Develop practical judgement, teaching quality or a learning goal that can be met without travelling.",
+            "Distinguish useful from necessary and travel from overseas travel. For partial agreement, identify which goals make the difference."
+          ]
+        },
+        "conclusion": "Restate whether travel is necessary and preserve your subject or purpose qualification."
+      }
     },
     {
       "n": 31,
@@ -1897,7 +2420,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "State where you would prefer to live: city, countryside or a specified city suburb, and connect that choice to your own needs.",
+        "body1": {
+          "role": "Explain your first personal reason",
+          "hints": [
+            "Develop how opportunities or surroundings fit your work, study or leisure priorities.",
+            "Use a relevant reason or genuine experience. You do not have to prove your choice is best for everyone."
+          ]
+        },
+        "body2": {
+          "role": "Explain a different personal reason",
+          "hints": [
+            "Develop transport, local services, community contact or quiet surroundings without repeating the first point.",
+            "Make the link to your daily routine or preferences clear; a suburb should be explained as a particular location choice, not an undefined compromise."
+          ]
+        },
+        "conclusion": "Restate which location is better for you and briefly summarise the two personal reasons."
+      }
     },
     {
       "n": 32,
@@ -1955,7 +2496,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "State how far growing up in the 21st century is harder than in the past and define any context or limit in your comparison.",
+        "body1": {
+          "role": "Compare one aspect of childhood now and before",
+          "hints": [
+            "Explain a current pressure or resource and identify the corresponding earlier situation.",
+            "Show why that comparison makes growing up harder or easier, rather than only describing modern childhood."
+          ]
+        },
+        "body2": {
+          "role": "Make a second distinct now-versus-past comparison",
+          "hints": [
+            "Develop a different pressure, opportunity or support, according to your selected approach.",
+            "Compare the time periods explicitly and retain variation between children rather than claiming a single universal childhood experience."
+          ]
+        },
+        "conclusion": "Restate the degree of difficulty compared with the past, using the two comparisons already explained."
+      }
     },
     {
       "n": 33,
@@ -2021,7 +2580,25 @@
         }
       ],
       "aliases": [],
-      "personalRequired": false
+      "personalRequired": false,
+      "organisation": {
+        "introduction": "State your view on funding historic restoration instead of modern housing and signal the advantage and disadvantage you will weigh.",
+        "body1": {
+          "role": "Explain an advantage of restoring historic buildings",
+          "hints": [
+            "Explain cultural, historical or practical value and show how restoration preserves it.",
+            "This advantage must be covered even if you prioritise housing; a selective conversion argument should state when it is feasible."
+          ]
+        },
+        "body2": {
+          "role": "Explain the disadvantage and housing trade-off",
+          "hints": [
+            "Show how restoration costs use resources that could help meet housing needs, or when the benefit does not justify the expense.",
+            "Weigh that opportunity cost against the first paragraph and connect it to your funding stance. Do not discuss preservation without the competing housing use."
+          ]
+        },
+        "conclusion": "Summarise both effects and restate which spending priority or selective policy you support. An example can meet the evidence instruction without a personal story."
+      }
     }
   ]
 };
