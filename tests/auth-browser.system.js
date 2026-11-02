@@ -60,7 +60,8 @@ test('SWT practice submits with the signed-in session after login and reload',{t
  for(const [width,reload] of [[1365,false],[390,true]]){
   const username='swt-browser-'+width,password='Synthetic-pass-123';
   await f.request('/api/auth/register',{username,password,email:username+'@example.test'});
-  const page=await browser.newPage();await page.setViewport({width,height:900});
+  const context=await browser.createBrowserContext();
+  const page=await context.newPage();await page.setViewport({width,height:900});
   await page.goto(f.base);await page.waitForSelector('#loginUsername',{visible:true});
   await page.type('#loginUsername',username);await page.type('#loginPassword',password);
   const signedIn=page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().method()==='POST');
@@ -78,7 +79,7 @@ test('SWT practice submits with the signed-in session after login and reload',{t
   await page.waitForSelector('#swtResultsScreen.active',{visible:true});
   assert.equal(await page.evaluate(()=>document.getElementById('appShell').style.display),'grid');
   assert.equal(await page.evaluate((uid,responseText)=>Object.values(JSON.parse(localStorage.getItem('pte_'+uid+'_history')||'{}')).some(attempts=>attempts.some(a=>a.text===responseText)),username,text),true,'The authenticated response is saved');
-  await page.close();
+  await context.close();
  }
 });
 
