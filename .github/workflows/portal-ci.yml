@@ -56,5 +56,7 @@ jobs:
           path: |
             .cache/full-mock-validation.json
             .cache/essay-guide-*.png
+            .cache/swt-review-*.png
+            public/index.min.js
           include-hidden-files: true
           if-no-files-found: error
