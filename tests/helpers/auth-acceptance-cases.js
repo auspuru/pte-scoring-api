@@ -16,7 +16,7 @@ async function acceptance(t,f){
    assert.equal((await f.request(route,{...setting,username:'missing-login'},null,true)).status,404);
    const updated=await f.request(route,setting,null,true);assert.equal(updated.status,200);assert.equal(updated.body.portalAccess.status,'scheduled');
    assert.equal((await f.request('/api/auth/login',account(username))).body.code,'PORTAL_ACCESS_SCHEDULED');
-   for(const path of ['/api/sync/'+username,'/api/auth/check/'+username,'/api/speaking-access','/api/full-mock/catalog'])assert.equal((await f.request(path,undefined,student.token)).status,403,path);
+   for(const path of ['/api/sync/'+username,'/api/auth/check/'+username,'/api/speaking-access','/api/full-mocks/catalog'])assert.equal((await f.request(path,undefined,student.token)).status,403,path);
    assert.equal((await f.request('/api/grade',{text:'A saved response'},student.token)).status,403);
    assert.equal((await f.request('/api/essay/grade',{essay:'A saved response'},student.token)).status,403);
    await f.clock(Date.parse(day(1)+'T00:00:00+10:00')-Date.now()+1000);

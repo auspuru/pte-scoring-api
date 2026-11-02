@@ -104,7 +104,7 @@ function compatibleTransportUpgrade(saved, current) {
   // reviewed server revision may project to the immediately preceding sources.
   const accessDateBaseline=require('../content/full-mock/portal-access-compatible-sources.json');
   if(digest(accessDateBaseline)==='715019270d27e1e59160b5b94728b481fe176a94863f60d40d80eb1fc705730b'
-    &&current.scoringSources.files['server.js']?.sha256==='5e147c5713d8ca2f4c863c63a0170f89d3c0befdc3444fe26658834514c14985'){
+    &&current.scoringSources.files['server.js']?.sha256==='045f22095439a1d950a717cc58c9b657852d93df904121041d6f65824fc7ef32'){
     const sources=structuredClone(current.scoringSources);
     sources.files['server.js']=structuredClone(accessDateBaseline.files['server.js']);
     current={...current,scoringSources:sources};

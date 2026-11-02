@@ -547,11 +547,11 @@ async function pgMigrateFromJsonIfNeeded() {
     await client.query('BEGIN');
     for (const [uid, acct] of Object.entries(accounts)) {
       await client.query(
-        `INSERT INTO accounts (username, password_hash, secret_q, secret_a_hash, created_at, last_login, blocked, role)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (username) DO NOTHING`,
+        `INSERT INTO accounts (username, password_hash, secret_q, secret_a_hash, created_at, last_login, blocked, role, access_starts_on, access_expires_on)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::date,$10::date) ON CONFLICT (username) DO NOTHING`,
         [uid, acct.passwordHash || '', acct.secretQ || '', acct.secretAHash || '',
          acct.createdAt || new Date().toISOString(), acct.lastLogin || null,
-         !!acct.blocked, acct.role || 'user']
+         !!acct.blocked, acct.role || 'user', acct.accessStartsOn || null, acct.accessExpiresOn || null]
       );
       importedAccounts++;
     }
@@ -604,10 +604,10 @@ async function pgMergeLegacyAccountsOnce() {
       const uid = canonicalUserId(rawUid);
       if (!uid || !acct) continue;
       const result = await client.query(
-        `INSERT INTO accounts (username,password_hash,secret_q,secret_a_hash,created_at,last_login,blocked,role)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) ON CONFLICT (username) DO NOTHING`,
+        `INSERT INTO accounts (username,password_hash,secret_q,secret_a_hash,created_at,last_login,blocked,role,access_starts_on,access_expires_on)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9::date,$10::date) ON CONFLICT (username) DO NOTHING`,
         [uid, acct.passwordHash || '', acct.secretQ || '', acct.secretAHash || '',
-         acct.createdAt || new Date().toISOString(), acct.lastLogin || null, !!acct.blocked, acct.role || 'user']
+         acct.createdAt || new Date().toISOString(), acct.lastLogin || null, !!acct.blocked, acct.role || 'user', acct.accessStartsOn || null, acct.accessExpiresOn || null]
       );
       accountsAdded += result.rowCount || 0;
     }
