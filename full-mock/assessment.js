@@ -100,6 +100,21 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Explicit final-RS instructor exclusion changes support/report metadata only.
+  // Project only these reviewed revisions; every native grader stays pinned.
+  const instructorBaseline=require('../content/full-mock/instructor-delivery-compatible-sources.json');
+  const instructorPins={"full-mock/api.js":"62e6070977272f8048a7d1775d5027347e797e231283f2f682445a39bab86807","full-mock/aggregation.js":"beff601c82209621acc5c3cf887e262872af57358abd101958249420f44a390a","full-mock/exclusions.js":"70b5eddcffe990db57e91b363263d58ed5cc8741bd050656cd40a00727217b30","full-mock/report.js":"9b72b59d3acd64c1152987a03fc78150547dc2a8a42a85773b5e8c70d61ec683"};
+  if(digest(instructorBaseline)==='2e52b3e9138572c77b25dce4449226743d670ddef70de98e91d7ede4f2b6ec94'&&Object.entries(instructorPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of Object.keys(instructorPins))sources.files[file]=structuredClone(instructorBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)==='2e52b3e9138572c77b25dce4449226743d670ddef70de98e91d7ede4f2b6ec94'){
+      const before=instructorBaseline.files,after=sources.files;
+      if(Object.keys(before).sort().join()!==Object.keys(after).sort().join()
+        ||Object.keys(before).some(name=>name!=='full-mock/assessment.js'&&digest(before[name])!==digest(after[name])))return false;
+      return digest({...saved,scoringSources:sources})===digest(current);
+    }
+  }
   // Exact display-only SWT projection: preserve every old scorer, model,
   // frozen paper and successful grade while permitting the reviewed report.
   const swtBaseline=require('../content/full-mock/swt-report-compatible-sources.json');

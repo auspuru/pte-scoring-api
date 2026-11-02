@@ -146,3 +146,28 @@ test('Staff recovery inspects one owned attempt and retries only its missing con
  await page.click('[data-mock-inspect]');await page.waitForFunction(()=>document.querySelector('[data-mock-notice]')?.textContent.includes('complete report is ready'));
  assert.equal(await page.$$eval('[data-mock-stage]',els=>els.length),0);
 });
+test('Staff releases the final failed Repeat Sentence with one explicit exclusion on mobile and desktop',{timeout:60000},async t=>{
+ const f=await fixture(t),username='rs-release-browser';await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:'rs-release@example.test'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ for(const width of [390,1440]){
+  const page=await browser.newPage();await page.setViewport({width,height:900});const errors=[];page.on('pageerror',error=>errors.push(error.message));
+  const id='006d4971-2ad3-4f14-8e2a-0ea3ed450bdd',route='/api/admin/full-mocks/'+username+'/'+id+'/scoring',posts=[];let released=false;
+  await page.setRequestInterception(true);page.on('request',async req=>{
+   const pathname=new URL(req.url()).pathname;
+   if(pathname===route||pathname===route+'/exclude-delivery'){
+    if(req.method()==='POST'){posts.push(JSON.parse(req.postData()));released=true;}
+    return req.respond({status:200,contentType:'application/json',body:JSON.stringify({owner:username,attemptId:id,ready:released,assessedCount:64,excludedCount:released?1:0,accountedFor:released?65:64,total:65,recovery:{status:released?'complete':'scheduled'},evidenceHash:'a'.repeat(64),responsesHash:'unchanged-responses',confirmedHash:'unchanged-64-marks',questions:released?[]:[{id:'saved-rs-16',number:16,type:'rs',status:'failed',eligible:false,deliveryEligible:true,reason:'delivery-unavailable'}]})});
+   }
+   await req.continue();
+  });
+  await page.goto(f.base+'/admin');if(await page.$eval('#dashboard',e=>getComputedStyle(e).display==='none')){await page.type('#adminKeyInput','isolated-auth-test-admin');await page.click('#authCard > button');}
+  await page.waitForSelector('#dashboard',{visible:true});await page.type('[aria-label="Search users"]',username);await page.click('button[onclick="viewUser(\''+username+'\')"]');
+  await page.waitForSelector('[data-full-attempt]',{visible:true});await page.type('[data-full-attempt]',id);await page.click('[data-full-inspect]');await page.waitForSelector('[data-full-exclude-delivery]',{visible:true});
+  assert.match(await page.$eval('[data-full-exclude-delivery]',e=>e.textContent),/Question 16/);assert.equal(await page.$('[data-full-reviewed]'),null);
+  await page.click('[data-full-exclude-delivery]');assert.equal(posts.length,0,'An explicit instructor confirmation is required');
+  await page.click('[data-full-instructor-confirm]');await page.focus('[data-full-exclude-delivery]');await page.keyboard.press('Enter');await page.waitForFunction(()=>document.querySelector('[data-full-notice]')?.textContent.startsWith('Result ready.'));
+  assert.equal(posts.length,1);assert.deepEqual(posts[0].questionIds,['saved-rs-16']);assert.equal(posts[0].confirmInstructorExclusion,true);assert.equal(posts[0].confirmUnusableAudio,undefined);
+  assert.match(await page.$eval('[data-full-diagnostics]',e=>e.textContent),/64 assessed · 1 excluded · 65\/65 accounted for/);assert.match(await page.$eval('[data-full-notice]',e=>e.textContent),/completed marks are unchanged/);
+  assert.equal(await page.$eval('#fullMockRecoveryPanel',e=>e.scrollWidth<=e.clientWidth+1),true);assert.deepEqual(errors,[]);await page.close();
+ }
+});
