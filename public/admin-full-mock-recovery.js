@@ -10,11 +10,12 @@
     const path=id=>'/api/admin/full-mocks/'+encodeURIComponent(username)+'/'+encodeURIComponent(id)+'/scoring';
     function lock(value){busy=value;input.disabled=value;host.querySelectorAll('button').forEach(button=>button.disabled=value);}
     function paint(){
-      const d=diagnostic,eligible=d.questions.filter(row=>row.eligible);
+      const d=diagnostic,eligible=d.questions.filter(row=>row.eligible),held=d.questions.find(row=>row.deliveryEligible);
       details.innerHTML='<p><strong>'+esc(d.assessedCount)+' assessed · '+esc(d.excludedCount)+' excluded · '+esc(d.accountedFor)+'/'+esc(d.total)+' accounted for</strong></p>'
         +(d.busy?'<p>Assessment work is active. Inspect again when it has settled.</p>':d.recovery.status==='scheduled'?'<p>Automatic recovery is scheduled. An explicit audio exclusion replaces recovery only for the selected recordings.</p>':'')
         +d.questions.map(row=>'<p>'+(row.eligible&&!d.busy?'<label><input type="checkbox" data-full-question value="'+esc(row.id)+'"> ':'')+'Q'+esc(row.number)+' · '+esc(row.type)+' · '+esc(row.status)+(row.reason?' · '+esc(row.reason):'')+(row.exclusion?' · '+esc(row.exclusion.note):'')+(row.eligible&&!d.busy?'</label>':'')+'</p>').join('')
-        +(eligible.length&&!d.busy?'<label>Exclusion note<textarea data-full-note rows="3">Recording too quiet to assess. Excluded at instructor request; the original recording is retained.</textarea></label><label><input type="checkbox" data-full-reviewed> I reviewed the selected saved recordings and confirm the audio is unusable.</label><button type="button" class="btn-sm" data-full-exclude>Exclude selected unusable recordings</button>':'');
+        +(eligible.length&&!d.busy?'<label>Exclusion note<textarea data-full-note rows="3">Recording too quiet to assess. Excluded at instructor request; the original recording is retained.</textarea></label><label><input type="checkbox" data-full-reviewed> I reviewed the selected saved recordings and confirm the audio is unusable.</label><button type="button" class="btn-sm" data-full-exclude>Exclude selected unusable recordings</button>':'')
+        +(held&&!d.busy?'<h5>Final Repeat Sentence delivery assessment</h5><p>Only Question '+esc(held.number)+' will be excluded. Its recording and completed stages stay saved. The other 64 assessments are retained.</p><label>Instructor exclusion note<textarea data-full-delivery-note rows="3">Excluded at instructor request because the delivery assessment could not be completed. The saved response and completed assessment stages are retained.</textarea></label><label><input type="checkbox" data-full-instructor-confirm> I confirm the instructor requested exclusion of Question '+esc(held.number)+'.</label><button type="button" class="btn-sm" data-full-exclude-delivery>Exclude Question '+esc(held.number)+' and release report</button>':'');
     }
     async function inspect(){
       if(busy)return;const id=input.value.trim();
@@ -26,16 +27,18 @@
     input.oninput=()=>{diagnostic=null;operation=null;details.innerHTML='';notice.textContent='';};
     host.querySelector('[data-full-inspect]').onclick=inspect;
     details.onclick=async event=>{
-      if(!event.target.closest('[data-full-exclude]')||busy||!diagnostic)return;
-      const questionIds=[...details.querySelectorAll('[data-full-question]:checked')].map(input=>input.value),note=details.querySelector('[data-full-note]').value.trim();
-      if(!questionIds.length||note.length<10||!details.querySelector('[data-full-reviewed]').checked){notice.textContent='Select the exact recordings, add a note and confirm the audio review.';return;}
-      const before=diagnostic,key=JSON.stringify({evidenceHash:before.evidenceHash,questionIds,note});
+      const delivery=!!event.target.closest('[data-full-exclude-delivery]');
+      if((!delivery&&!event.target.closest('[data-full-exclude]'))||busy||!diagnostic)return;
+      const held=diagnostic.questions.find(row=>row.deliveryEligible);
+      const questionIds=delivery?(held?[held.id]:[]):[...details.querySelectorAll('[data-full-question]:checked')].map(input=>input.value),note=details.querySelector(delivery?'[data-full-delivery-note]':'[data-full-note]').value.trim();
+      if(!questionIds.length||note.length<10||!details.querySelector(delivery?'[data-full-instructor-confirm]':'[data-full-reviewed]').checked){notice.textContent=delivery?'Confirm the exact instructor-requested question exclusion and add a note.':'Select the exact recordings, add a note and confirm the audio review.';return;}
+      const before=diagnostic,key=JSON.stringify({evidenceHash:before.evidenceHash,questionIds,note,delivery});
       if(!operation||operation.key!==key)operation={key,id:'staff:'+operationId()};
       lock(true);notice.textContent='Saving the selected exclusions…';
       try{
-        const value=await request(path(before.attemptId)+'/exclude-audio',{operation:operation.id,evidenceHash:before.evidenceHash,questionIds,note,confirmUnusableAudio:true});
+        const value=await request(path(before.attemptId)+(delivery?'/exclude-delivery':'/exclude-audio'),{operation:operation.id,evidenceHash:before.evidenceHash,questionIds,note,...(delivery?{confirmInstructorExclusion:true}:{confirmUnusableAudio:true})});
         if(value.owner!==username||value.attemptId!==before.attemptId||value.responsesHash!==before.responsesHash||value.confirmedHash!==before.confirmedHash)throw Error('The retained evidence requires verification. Inspect the saved record.');
-        diagnostic=value;paint();notice.textContent=value.ready?'Result ready. Selected unusable recordings are excluded; original recordings and completed marks are unchanged.':'Exclusions saved. Other missing assessments remain pending.';
+        diagnostic=value;paint();notice.textContent=value.ready?(delivery?'Result ready. The selected Repeat Sentence is excluded at instructor request; saved responses and completed marks are unchanged.':'Result ready. Selected unusable recordings are excluded; original recordings and completed marks are unchanged.'):'Exclusions saved. Other missing assessments remain pending.';
       }catch(error){notice.textContent=error.message;}finally{lock(false);}
     };
     return {inspect};

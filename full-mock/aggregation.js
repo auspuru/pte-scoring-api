@@ -43,7 +43,7 @@ function aggregate(paper, state) {
     const valid = response?.sealed && job?.status === 'assessed' && job.inputHash === inputHash(response) && job.snapshotHash === state.assessment?.snapshotHash && job.result?.version === expectedVersion && nativeValid(job.result, expectedMaxima);
     const excluded = !valid && validExclusion(state, candidate, response, job);
     return { id: candidate.id, type: candidate.question.type, valid: !!valid, excluded, result: valid ? job.result : null,
-      ...(excluded ? { exclusion:{ reason:'unusable-audio', note:state.assessment.exclusions[candidate.id].note, at:state.assessment.exclusions[candidate.id].at } } : {}),
+      ...(excluded ? { exclusion:{ reason:state.assessment.exclusions[candidate.id].reason, note:state.assessment.exclusions[candidate.id].note, at:state.assessment.exclusions[candidate.id].at } } : {}),
       status: valid ? 'assessed' : excluded ? 'excluded' : job?.status === 'failed' ? 'failed' : 'pending' };
   });
   const groups = Object.fromEntries(TASKS.map(task => {

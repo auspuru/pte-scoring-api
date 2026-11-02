@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "416d4ece8df9ea71bb02ea1bbda40c0abc05c58b",
+  "baseCommit": "10a34f1837752fb17c320c4b48a9f6a0388031ae",
   "checkedAt": "2026-11-02",
-  "scope": "Read-only SWT report projection with exact-source compatibility for portal access dates. Native graders, models, weights, clocks, frozen papers, answers and confirmed marks are preserved.",
+  "scope": "Explicit instructor exclusion of one final failed RS delivery assessment with retained response and marks. Exact source compatibility preserves frozen papers, native graders, models, weights and existing assessments.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -84,11 +84,11 @@
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
-        "sha256": "f4b7a071e74520288d799a7a0477c01be1b603f3d72477ce3434353c356f1863",
+        "sha256": "beff601c82209621acc5c3cf887e262872af57358abd101958249420f44a390a",
         "version": "full-mock-aggregation-2026-10-29.1"
       },
       "full-mock/api.js": {
-        "sha256": "043f78fd660ae2f96c19b42f7d491203555d17904c2a025ba2111f4ac9c6634d",
+        "sha256": "62e6070977272f8048a7d1775d5027347e797e231283f2f682445a39bab86807",
         "version": null
       },
       "full-mock/asq-scoring.js": {
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "2a4b99e147b23634a31776148fccae52bbc691651e9f13928afa8b9c25399499",
+        "sha256": "b8dc71be58b9c13a353569bcf947d4c72dd3ec4df2fe2b051d9e28873ad318b9",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -108,7 +108,7 @@
         "version": null
       },
       "full-mock/exclusions.js": {
-        "sha256": "28e5e0f7b6ac5897efa49cdc2be05c418dee7034ad5eaef021f38f80d705fafe",
+        "sha256": "70b5eddcffe990db57e91b363263d58ed5cc8741bd050656cd40a00727217b30",
         "version": null
       },
       "full-mock/paper.js": {
@@ -124,7 +124,7 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "edfa78b2080259f118e37b4da059037330e68043f73999e915c777740d27309e",
+        "sha256": "9b72b59d3acd64c1152987a03fc78150547dc2a8a42a85773b5e8c70d61ec683",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {

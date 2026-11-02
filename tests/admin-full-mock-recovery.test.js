@@ -25,3 +25,15 @@ test('Active assessment work has no exclusion action and successful publication 
   await host.querySelector('[data-full-diagnostics]').onclick({target:host.querySelector('[data-full-exclude]')});
   assert.match(host.querySelector('[data-full-notice]').textContent,/Result ready/);
 });
+test('Final RS release requires instructor confirmation and retains its exact operation after an interrupted response',async()=>{
+ const {document}=parseHTML('<html><body><div id="host"></div></body></html>'),host=document.getElementById('host'),requests=[];
+ const value={...diagnostic(),assessedCount:64,accountedFor:64,questions:[{id:'rs-final',number:16,type:'rs',status:'failed',eligible:false,deliveryEligible:true,reason:'delivery-unavailable'}]};
+ let completed=false;
+ const ui=mount(host,{username:'student',operationId:()=> 'rs-operation',request:async(path,body)=>{requests.push({path,body});if(!body)return value;if(!completed)throw Error('Lost response');return {...value,ready:true,excludedCount:1,accountedFor:65,questions:[]};}});
+ host.querySelector('[data-full-attempt]').value=id;await ui.inspect();const details=host.querySelector('[data-full-diagnostics]'),button=host.querySelector('[data-full-exclude-delivery]');
+ assert.match(button.textContent,/Question 16/);assert.equal(host.querySelector('[data-full-reviewed]'),null);assert.doesNotMatch(details.textContent,/audio is unusable/);
+ await details.onclick({target:button});assert.equal(requests.length,1);host.querySelector('[data-full-instructor-confirm]').checked=true;
+ await details.onclick({target:button});completed=true;await details.onclick({target:button});
+ assert.deepEqual(requests[1],requests[2]);assert.equal(requests[1].path,'/api/admin/full-mocks/student/'+id+'/scoring/exclude-delivery');assert.deepEqual(requests[1].body.questionIds,['rs-final']);assert.equal(requests[1].body.confirmInstructorExclusion,true);assert.equal(requests[1].body.confirmUnusableAudio,undefined);
+ assert.match(host.querySelector('[data-full-notice]').textContent,/Result ready/);assert.match(host.querySelector('[data-full-notice]').textContent,/completed marks are unchanged/);
+});
