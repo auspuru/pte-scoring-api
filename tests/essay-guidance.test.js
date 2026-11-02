@@ -50,6 +50,34 @@ test('one-page markup puts each explanation immediately after its own button and
   assert(!guide.bodyHTML('<img src=x>',null).includes('<img'));
   assert.match(html,/selecting an approach does not affect your marks/);
 });
+test('all 96 reviewed approaches and own approaches explain four task-specific paragraph roles',()=>{
+  for(const q of data.guides){
+    for(const a of [undefined,...q.approaches]){
+      const html=guide.organisationHTML(q,a);
+      assert.deepEqual([...html.matchAll(/data-guide-paragraph="(\d)"/g)].map(m=>Number(m[1])),[1,2,3,4]);
+      const visible=html.replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"');
+      assert(visible.includes(q.organisation.body1.role));
+      assert(visible.includes(q.organisation.body2.role));
+      assert(q.organisation.body1.hints.length>=2&&q.organisation.body2.hints.length>=2);
+    }
+  }
+  const q=data.guides.find(q=>q.n===1);
+  for(const a of q.approaches){
+    const html=guide.organisationHTML(q,a);
+    assert.match(html,/Explain your opinion on mark deductions/);
+    assert.match(html,/Suggest alternative actions and explain how they work/);
+    assert.match(html,/required under every position/);
+    assert.match(html,/smaller or tiered deduction is still a deduction/);
+    assert.match(html,/extension addresses an unavoidable emergency/);
+  }
+  const work=guide.organisationHTML(data.guides.find(q=>q.n===27));
+  assert.match(work,/Explain why balance is important/);assert.match(work,/Explain why balance is difficult/);
+  assert.match(work,/not a paragraph disagreeing/);
+  const scope=guide.organisationHTML(data.guides.find(q=>q.n===22));
+  assert.match(scope,/advantage and connect it to your chosen coverage/);
+  assert.match(scope,/disadvantage and justify the coverage decision/);
+  assert.doesNotMatch(guide.bodyHTML(q.prompt,q),/loses half the marks/);
+});
 test('seen and auto-show preferences are bound to account, exact prompt and version; unavailable storage is safe',()=>{
   const values=new Map(),storage={getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)};
   const controller=guide.createController({storage}),q=data.guides[0].prompt;

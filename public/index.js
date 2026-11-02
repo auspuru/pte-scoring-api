@@ -2517,7 +2517,7 @@ const TYPE_EXPLANATIONS = {
     bp1: 'Give reason 1 and reason 2 for YOUR stance on the practice. Add a simple everyday example after each.',
     bp2: 'Give alternative action 1 and alternative action 2 — real things that could be done INSTEAD — with a short example of how each helps.',
     concl: 'Repeat your stance, then name the alternative you think is best.',
-    trap: 'Forgetting the alternatives loses half the marks. Body 2 must give real "instead" actions, not more opinions.'
+    trap: 'Alternative actions are required whatever your opinion. Explain how they work; a smaller deduction is still a deduction, so include genuine alternatives such as extensions or planning support.'
   },
   importance_reasons: {
     ask: 'The question asks HOW IMPORTANT something is, and WHY it is hard to achieve. Your job: show it matters, then show the obstacles.',
@@ -2575,6 +2575,17 @@ function buildQuestionExplanationHtml(e, activeType, typeCfg) {
       concl: cfg.conclusionRole || 'summarise your answer clearly',
       trap: ''
     };
+  }
+
+  // Reviewed wording supplies task-specific paragraph roles for the guide only.
+  // Keep manual type overrides and all generation/scoring paths unchanged.
+  const reviewedGuide = !e?.manualQuestionTypeOverride && window.EssayGuide?.lookup(e?.question);
+  if (reviewedGuide?.organisation) {
+    const plan = reviewedGuide.organisation;
+    ex = {ask:reviewedGuide.meaning, intro:plan.introduction,
+      bp1:plan.body1.role + '. ' + plan.body1.hints.join(' '),
+      bp2:plan.body2.role + '. ' + plan.body2.hints.join(' '),
+      concl:plan.conclusion, trap:reviewedGuide.pitfall};
   }
 
   // Slot in detected options where the type is built around named options.

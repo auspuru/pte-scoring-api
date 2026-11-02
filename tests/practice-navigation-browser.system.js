@@ -75,6 +75,25 @@ for(const width of [1363,390,320])test('Essay guide: combined page, inline appro
  await prepare(nextPrompt);await page.locator('#practiceStartBtn').click();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$('#essay-guide'),null);
  await prepare('Discuss a new custom topic using relevant examples.');await page.locator('#practiceStartBtn').click();await page.waitForSelector('#practiceEssayInput');assert.equal(await page.$('#essay-guide'),null);
  await page.locator('#practiceEssayGuideBtn').click();await page.waitForSelector('#essay-guide[open]');assert.equal(await page.$eval('#essay-guide',e=>e.textContent.includes('not been reviewed for this exact question')),true);
+ await page.keyboard.press('Escape');
+ // A multi-part question must retain alternatives under every stance, including an own approach.
+ const deductions=require('../public/essay-guidance-data').guides.find(q=>q.n===1);
+ await prepare(deductions.prompt);await page.locator('#practiceStartBtn').click();await page.waitForSelector('#practiceEssayInput');
+ await page.locator('#practiceEssayGuideBtn').click();await page.waitForSelector('#essay-guide[open]');
+ for(const choice of ['0','1','2','own']){
+  await page.locator('[data-guide-choice="'+choice+'"]').click();
+  assert.deepEqual(await page.$$eval('#essay-guide-route-'+choice+' [data-guide-paragraph]',els=>els.map(e=>Number(e.dataset.guideParagraph))),[1,2,3,4]);
+  const text=await page.$eval('#essay-guide-route-'+choice,e=>e.textContent);
+  assert.match(text,/Explain your opinion on mark deductions/);
+  assert.match(text,/Suggest alternative actions and explain how they work/);
+  assert.match(text,/required under every position/);
+  assert.equal(await page.$eval('#essay-guide',e=>e.scrollWidth<=e.clientWidth+1),true);
+  if(choice==='1'){
+   await page.$eval('#essay-guide-route-1 [data-guide-paragraph="3"]',e=>e.scrollIntoView({block:'start',behavior:'instant'}));
+   await essayGuideScreenshot(page,width,'deductions-body-hints');
+  }
+ }
+ assert.equal(await page.evaluate(()=>practiceState.timerStartedAt),null);
  await page.evaluate(()=>switchSection('writing-mocks'));await page.waitForFunction(()=>document.body.dataset.section==='writing-mocks');assert.equal(await page.$('#essay-guide'),null);
  await page.evaluate(()=>openPracticeEssayGuide());assert.equal(await page.$('#essay-guide'),null,'No practice guidance can open in a timed mock workspace');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);

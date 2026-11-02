@@ -37,6 +37,13 @@
 .essay-guide-explanation{padding:18px;border-top:1px solid #d4dfed;background:#f9fbff}
 .essay-guide-explanation[hidden]{display:none}
 .essay-guide-reason{margin-top:18px}
+.essay-guide-organisation{margin-top:20px}
+.essay-guide-paragraph{margin-top:16px;padding:16px;background:#fff;border:1px solid #dce3ec;border-radius:9px}
+.essay-guide-paragraph>.essay-guide-eyebrow{display:block;margin-bottom:6px}
+.essay-guide-paragraph p:last-child{margin-bottom:0}
+.essay-guide-development{margin:12px 0;padding-left:21px}
+.essay-guide-development li+li{margin-top:8px}
+.essay-guide-paragraph .essay-guide-illustration{margin-top:14px;background:#f1f5fb}
 .essay-guide-illustration{background:#fff;border-left:3px solid #879fc2;border-radius:6px;padding:12px 14px}
 .essay-guide-dialog details{border-top:1px solid #dce3ec;padding-top:8px}
 .essay-guide-dialog summary{cursor:pointer;color:#173a71;font-weight:600;min-height:44px;padding:9px 0}
