@@ -20,3 +20,12 @@ File storage records a verified owner marker on Writing attempt updates. Legacy 
 ## Regression gates
 
 `tests/unattended-mock-recovery.test.js` covers durable leases, cooldown/restart, uncertainty/auth/billing holds, unchanged confirmed marks and the exact reviewed transport-only source differences. Full Mock tests cover interrupted initial requests, finite retries and old snapshot compatibility. Speaking tests cover deferred automatic repairs and reuse of confirmed work. PostgreSQL systems test competing claims across independent pools. Browser systems verify a pending sectional report updates without a retry click or browser scoring POST. Final-head Portal CI and its current evidence artifact are required for release.
+
+
+## Full Mock: automatic final-question publication
+
+User-authorized policy, 2 November 2026: after the existing eight persisted backoffs are exhausted, a validated Full Mock with exactly 64 assessed questions and one confirmed failed provider stage may publish automatically with that question visibly excluded. No administrator click is required. Answers, audio, successful stages, native marks, frozen snapshots and provider receipts are retained. The remaining assessed questions of that task supply the existing denominator; no missing mark is invented. At least one assessed question of the same task must remain, so a sole Essay/SST cannot be removed.
+
+The worker finalizes inside its existing owner-bound transaction; startup also scans already exhausted attempts once per policy version. A deterministic evidence-bound exclusion records the policy, question, retry budget, operation, timestamp and before/after evidence hashes. Repeated scans and competing workers cannot create another exclusion or paid call. A held review is persisted to prevent repeated queue scans; an explicit safe retry clears it. Existing unmanaged/held attempts are not armed automatically.
+
+Uncertain or running requests, invalid credentials/billing, blocked/permanent failures, absent failure provenance, incomplete recordings, invalid snapshots, multiple missing questions and existing exclusions stay held. This exception applies to Full Mock only. The existing backoffs end with a 24-hour delay and are not shortened. Other mock recovery contracts are unchanged. Tests use synthetic attempts/providers and disposable storage only.

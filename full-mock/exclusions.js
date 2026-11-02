@@ -3,11 +3,18 @@ const { digest } = require('./paper');
 const { fail } = require('./store');
 const VERSION = 'full-mock-audio-exclusion-2026-11-01.1';
 const DELIVERY_VERSION = 'full-mock-instructor-delivery-exclusion-2026-11-02.1';
+const AUTOMATIC_VERSION = 'full-mock-final-question-release-2026-11-02.1';
+const automaticRetries = require('../mock-recovery-policy').DELAYS.length;
+const spoken = new Set(['ra','rs','di','rl','asq','sgd','rts']);
+const failedStage = {'transcription-unavailable':'transcription','content-unavailable':'content','delivery-unavailable':'delivery','writing-unavailable':'writing'};
 const inputHash = response => require('./aggregation').inputHash(response);
+const automaticOperation = (state,candidate,response,job) => 'automatic-final:'+digest({attempt:state.id,question:candidate.id,input:inputHash(response),snapshot:state.assessment.snapshotHash,job:digest(job)}).slice(0,40);
 function validExclusion(state, candidate, response, job) {
   const value = state.assessment?.exclusions?.[candidate.id];
-  const supported = value && (value.version === VERSION && value.reason === 'unusable-audio' && candidate.question.type === 'asq'
-    || value.version === DELIVERY_VERSION && value.reason === 'instructor-delivery-exclusion' && candidate.question.type === 'rs');
+  const supported = value && response && job && (value.version === VERSION && value.reason === 'unusable-audio' && candidate.question.type === 'asq'
+    || value.version === DELIVERY_VERSION && value.reason === 'instructor-delivery-exclusion' && candidate.question.type === 'rs'
+    || value.version === AUTOMATIC_VERSION && value.reason === 'automatic-recovery-exhausted' && value.retries === automaticRetries
+      && value.operation === automaticOperation(state,candidate,response,job));
   return !!supported
     && response?.sealed && job?.status === 'failed' && value.inputHash === inputHash(response)
     && value.snapshotHash === state.assessment.snapshotHash && value.previousJobHash === digest(job)
@@ -21,7 +28,7 @@ function deliveryEligible(state, paper, candidate, response, job) {
     || job.stages?.delivery?.status !== 'partial' || job.stages.delivery.uncertain || job.stages.delivery.recoveryBlocked
     || !response.segments.some(segment => !segment.cancelled && segment.chunkCount > 0)
     || !response.segments.filter(segment => !segment.cancelled && segment.chunkCount !== 0).every(segment => segment.finished
-      && Object.keys(segment.chunks).length === segment.chunkCount && Object.values(segment.chunks).every(chunk => chunk.stored))
+      && Object.keys(segment.chunks||{}).length === segment.chunkCount && Object.values(segment.chunks).every(chunk => chunk.stored))
     || validExclusion(state, candidate, response, job)) return false;
   const result = require('./aggregation').aggregate(paper, state);
   // An instructor can release the final held RS only. This cannot remove a
@@ -32,6 +39,41 @@ function evidenceHash(state) {
   return digest({ paperHash:state.paperHash, snapshotHash:state.assessment?.snapshotHash,
     responses:state.responses.map(inputHash), items:state.assessment?.items || {}, exclusions:state.assessment?.exclusions || {} });
 }
+// Called only inside a validated, owner-bound store transaction. The worker may
+// finish its own lease; a scanner must never release another worker's lease.
+function releaseExhausted(state,paper,at,{leaseId}={}) {
+  const a=state.assessment,r=a?.recovery;
+  if(state.status!=='submitted'||a?.status!=='needs-attention'||r?.status!=='exhausted'
+    ||a.lease?.expiresAt>at&&a.lease.id!==leaseId)return false;
+  const before=evidenceHash(state);
+  if(r.finalQuestionReview?.version===AUTOMATIC_VERSION&&r.finalQuestionReview.evidenceHash===before)return false;
+  const hold=code=>{r.finalQuestionReview={version:AUTOMATIC_VERSION,status:'held',code,evidenceHash:before,at};return false;};
+  if(r.version!==1||r.retries!==automaticRetries)return hold('budget-not-verified');
+  const result=require('./aggregation').aggregate(paper,state);
+  if(paper.questions.length!==65||result.assessedCount!==64||result.excludedCount!==0)return hold('multiple-or-incomplete-items');
+  const row=result.items.find(item=>item.status!=='assessed'),candidate=paper.questions.find(item=>item.id===row?.id);
+  const index=paper.questions.indexOf(candidate),response=state.responses[index+1],job=a.items[candidate?.id];
+  if(!candidate||!response?.sealed||job?.status!=='failed'||job.inputHash!==inputHash(response)||job.snapshotHash!==a.snapshotHash)return hold('unverified-input');
+  const type=candidate.question.type,reason=job.result?.reason||job.reason,stageName=failedStage[reason],stage=job.stages?.[stageName];
+  if(!stageName||!(spoken.has(type)?stageName!=='writing'&&(type!=='asq'||stageName==='transcription'):['swt','essay','sst'].includes(type)&&stageName==='writing'))return hold('unsupported-failure');
+  if(!['failed','partial'].includes(stage?.status)||stage.uncertain!==false||stage.status==='failed'&&stage.failureCode==null
+    ||Object.values(job.stages||{}).some(value=>!value||value.status==='running'||value.uncertain||value.recoveryBlocked
+      ||value.failureCode!=null&&require('../mock-recovery-policy').failure({status:value.failureCode}).blocked))return hold('uncertain-or-blocked-stage');
+  if(spoken.has(type)){
+    const segments=(Array.isArray(response.segments)?response.segments:[]).filter(value=>!value.cancelled&&value.chunkCount!==0);
+    if(!segments.length||!segments.every(segment=>segment.finished&&segment.chunkCount>0&&Object.keys(segment.chunks||{}).length===segment.chunkCount
+      &&Object.values(segment.chunks||{}).every(chunk=>chunk?.stored)))return hold('incomplete-recording');
+  }
+  if(!result.items.some(item=>item.type===type&&item.status==='assessed'))return hold('whole-task-exclusion');
+  const operation=automaticOperation(state,candidate,response,job);
+  a.exclusions||={};a.exclusions[candidate.id]={version:AUTOMATIC_VERSION,reason:'automatic-recovery-exhausted',operation,at,retries:r.retries,
+    note:'This question was excluded automatically because its assessment could not be completed after automatic recovery was exhausted. The saved response and completed assessment stages are retained.',
+    inputHash:inputHash(response),snapshotHash:a.snapshotHash,previousJobHash:digest(job)};
+  a.exclusionOperations||={};a.exclusionOperations[operation]={requestHash:digest({version:AUTOMATIC_VERSION,question:candidate.id,evidence:before}),at,beforeEvidenceHash:before,afterEvidenceHash:evidenceHash(state),questionIds:[candidate.id],automatic:true};
+  a.status='complete';a.finishedAt=at;r.status='complete';delete r.nextAt;
+  r.finalQuestionReview={version:AUTOMATIC_VERSION,status:'released',operation,questionId:candidate.id,evidenceHash:evidenceHash(state),at};
+  return true;
+}
 function eligible(state, candidate, response, job) {
   return candidate.question.type === 'asq' && response?.sealed && job?.status === 'failed'
     && job.inputHash === inputHash(response) && job.snapshotHash === state.assessment?.snapshotHash
@@ -39,7 +81,7 @@ function eligible(state, candidate, response, job) {
     && job.stages?.transcription?.status === 'failed' && !job.stages.transcription.uncertain
     && response.segments.some(segment => !segment.cancelled && segment.chunkCount > 0)
     && response.segments.filter(segment => !segment.cancelled && segment.chunkCount !== 0).every(segment => segment.finished
-      && Object.keys(segment.chunks).length === segment.chunkCount && Object.values(segment.chunks).every(chunk => chunk.stored))
+      && Object.keys(segment.chunks||{}).length === segment.chunkCount && Object.values(segment.chunks).every(chunk => chunk.stored))
     && !validExclusion(state, candidate, response, job);
 }
 function createSupport({ store, validate, now = Date.now }) {
@@ -114,4 +156,4 @@ function createSupport({ store, validate, now = Date.now }) {
   }
   return { inspect, exclude:(owner,id,body)=>exclude(owner,id,body), excludeDelivery:(owner,id,body)=>exclude(owner,id,body,'delivery') };
 }
-module.exports = { VERSION, DELIVERY_VERSION, validExclusion, evidenceHash, eligible, deliveryEligible, createSupport };
+module.exports = { VERSION, DELIVERY_VERSION, AUTOMATIC_VERSION, validExclusion, evidenceHash, releaseExhausted, eligible, deliveryEligible, createSupport };

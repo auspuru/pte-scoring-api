@@ -102,7 +102,7 @@ function buildReport(paper, state, at = Date.now()) {
     return { ...marks, number:index + 1, label:task.label, section:task.section, skills:[...task.skills], title:clean(q.title), question, reference,
       answer:structuredClone(response.answer), responseReason:clean(response.reason, 80), transcript:transcription, recordings,
       recovered:state.recoveries.filter(row => row.itemToken === response.token).map(row => ({ answer:structuredClone(row.answer), receivedAt:row.receivedAt, status:'needs-review' })),
-      assessment:marks.status === 'assessed' ? { code:'assessed', label:'Assessed' } : marks.status === 'excluded' ? { code:marks.exclusion.reason, label:marks.exclusion.reason === 'instructor-delivery-exclusion' ? 'Excluded · instructor request' : 'Excluded · unusable audio', action:marks.exclusion.note } : reasonFor(job, trusted, state.assessment?.recovery?.status === 'scheduled'),
+      assessment:marks.status === 'assessed' ? { code:'assessed', label:'Assessed' } : marks.status === 'excluded' ? { code:marks.exclusion.reason, label:marks.exclusion.reason === 'automatic-recovery-exhausted' ? 'Excluded · assessment unavailable' : marks.exclusion.reason === 'instructor-delivery-exclusion' ? 'Excluded · instructor request' : 'Excluded · unusable audio', action:marks.exclusion.note } : reasonFor(job, trusted, state.assessment?.recovery?.status === 'scheduled'),
       feedback:feedbackFor(q, response, job, marks, trusted, state.assessment?.recovery?.status === 'scheduled'), practice:{ path:'#/' + GUIDANCE[q.type][0], instruction:GUIDANCE[q.type][1] } };
   });
   const groups = TASKS.map(task => ({ type:task.type, label:task.label, section:task.section, skills:[...task.skills], ...result.groups[task.type],
