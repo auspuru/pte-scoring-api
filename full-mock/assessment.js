@@ -103,13 +103,28 @@ function compatibleTransportUpgrade(saved, current) {
   // Exact display-only SWT projection: preserve every old scorer, model,
   // frozen paper and successful grade while permitting the reviewed report.
   const swtBaseline=require('../content/full-mock/swt-report-compatible-sources.json');
-  if(digest(swtBaseline)==='715019270d27e1e59160b5b94728b481fe176a94863f60d40d80eb1fc705730b'
+  if(digest(swtBaseline)==='c1e09ab7a00a95a17f6333180c8d85383775863ae0ebb0729d6f9802fc2800bc'
     &&current.scoringSources.files['full-mock/report.js']?.sha256==='edfa78b2080259f118e37b4da059037330e68043f73999e915c777740d27309e'){
     const sources=structuredClone(current.scoringSources);
     sources.files['full-mock/report.js']=structuredClone(swtBaseline.files['full-mock/report.js']);
     current={...current,scoringSources:sources};
-    if(digest(saved.scoringSources)==='715019270d27e1e59160b5b94728b481fe176a94863f60d40d80eb1fc705730b'){
+    if(digest(saved.scoringSources)==='c1e09ab7a00a95a17f6333180c8d85383775863ae0ebb0729d6f9802fc2800bc'){
       const before=swtBaseline.files,after=sources.files;
+      if(Object.keys(before).sort().join()!==Object.keys(after).sort().join()
+        ||Object.keys(before).some(name=>name!=='full-mock/assessment.js'&&digest(before[name])!==digest(after[name])))return false;
+      return digest({...saved,scoringSources:sources})===digest(current);
+    }
+  }
+  // Portal dates change account eligibility, not saved mock grades. Only this
+  // reviewed server revision may project to the immediately preceding sources.
+  const accessDateBaseline=require('../content/full-mock/portal-access-compatible-sources.json');
+  if(digest(accessDateBaseline)==='715019270d27e1e59160b5b94728b481fe176a94863f60d40d80eb1fc705730b'
+    &&current.scoringSources.files['server.js']?.sha256==='045f22095439a1d950a717cc58c9b657852d93df904121041d6f65824fc7ef32'){
+    const sources=structuredClone(current.scoringSources);
+    sources.files['server.js']=structuredClone(accessDateBaseline.files['server.js']);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)==='715019270d27e1e59160b5b94728b481fe176a94863f60d40d80eb1fc705730b'){
+      const before=accessDateBaseline.files,after=sources.files;
       if(Object.keys(before).sort().join()!==Object.keys(after).sort().join()
         ||Object.keys(before).some(name=>name!=='full-mock/assessment.js'&&digest(before[name])!==digest(after[name])))return false;
       return digest({...saved,scoringSources:sources})===digest(current);

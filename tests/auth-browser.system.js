@@ -1,5 +1,34 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),puppeteer=require('puppeteer'),{fixture}=require('./helpers/auth-server');
+test('Admins can set and extend portal access dates when granting access on desktop and mobile',{timeout:60000},async t=>{
+ const f=await fixture(t),browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const errors=[];
+ for(const width of [390,1440]){
+  const page=await browser.newPage();page.on('pageerror',error=>errors.push(error.message));
+  const username='access-browser-'+width,password='Synthetic-pass-123';await f.request('/api/auth/register',{username,password,email:username+'@example.test'});
+  await page.setViewport({width,height:900});await page.goto(f.base+'/admin');
+  if(await page.$eval('#dashboard',e=>getComputedStyle(e).display==='none')){await page.type('#adminKeyInput','isolated-auth-test-admin');await page.click('#authCard > button');}
+  await page.waitForSelector('#dashboard',{visible:true});await page.type('[aria-label="Search users"]',username);
+  await page.click('[data-speaking-user="'+username+'"]');await page.waitForSelector('#accessDatesModal[open]',{visible:true});
+  assert.equal(await page.$eval('#accessDatesUser',e=>e.textContent),username);
+  assert.equal(await page.$eval('#accessStartsOn',e=>e.value),'');assert.equal(await page.$eval('#accessExpiresOn',e=>e.value),'');
+  const box=await page.$eval('#accessDatesModal',e=>{const r=e.getBoundingClientRect();return{left:r.left,right:r.right,inside:e.scrollWidth<=e.clientWidth,active:e.contains(document.activeElement)};});
+  assert.ok(box.left>=0&&box.right<=width&&box.inside&&box.active,'Accessible date dialog fits '+width+'px');
+  assert.match(await page.$eval('#accessDatesHelp',e=>e.textContent),/Brisbane/);
+  await page.$eval('#accessExpiresOn',e=>e.value='2000-01-01');
+  const saved=page.waitForResponse(r=>r.url().endsWith('/api/admin/access-dates')&&r.request().method()==='POST');await page.click('#accessDatesSave');assert.equal((await saved).status(),200);
+  await page.waitForFunction(()=>!document.getElementById('accessDatesModal').open);
+  assert.equal((await f.request('/api/auth/login',{username,password})).body.code,'PORTAL_ACCESS_EXPIRED');
+  await page.reload();await page.waitForSelector('[data-access-dates-user="'+username+'"]');
+  assert.match(await page.$eval('[data-access-dates-user="'+username+'"]',e=>e.closest('tr').textContent),/Expired.*Expires 2000-01-01/s);
+  await page.click('[data-access-dates-user="'+username+'"]');assert.equal(await page.$eval('#accessExpiresOn',e=>e.value),'2000-01-01');
+  await page.$eval('#accessExpiresOn',e=>e.value='');await page.click('#accessDatesSave');await page.waitForFunction(()=>!document.getElementById('accessDatesModal').open);
+  assert.equal((await f.request('/api/auth/login',{username,password})).body.success,true,'Clearing expiry renews access');
+  await page.click('[data-access-dates-user="'+username+'"]');await page.keyboard.press('Escape');assert.equal(await page.$eval('#accessDatesModal',e=>e.open),false);
+  await page.close();
+ }
+ assert.deepEqual(errors,[]);
+});
 test('Admin sign-in controls remain separate and usable in both themes at mobile and desktop sizes',{timeout:60000},async t=>{
  const f=await fixture(t);
  const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});
