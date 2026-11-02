@@ -7,3 +7,5 @@
 .fm-preview-tools{display:flex;justify-content:flex-end;margin-bottom:8px}
 
 .fm-task-summary summary{font-size:20px;line-height:1.5}.fm-task-summary[open] summary{margin-bottom:20px}.fm-report-actions:has(#fm-report-media-status[hidden]):not(:has(button:not([hidden]))):has(#fm-notice:empty){display:none}.fm-report-status{color:#526680;font-size:14px}.fm-report-overview>.fm-muted{margin:12px 0 24px}.fm-score-card p{margin:14px 0 0}.fm-shell #fm-notice:empty{display:none}
+
+.fm-image-title{margin:0 0 16px;font-size:1.25rem;line-height:1.4;font-weight:700;overflow-wrap:anywhere}

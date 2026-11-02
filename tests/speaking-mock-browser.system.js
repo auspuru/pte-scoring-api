@@ -39,6 +39,14 @@ for(const mobile of [false,true])test('Speaking mock Chrome '+(mobile?'mobile':'
  await page.waitForFunction(()=>window.__examBytes>100);
  await click('#sm-next');await until(async()=>!!(await service.store.get('alice',attempt.id)).responses[index]?.recording,'Speaking response was not saved.');assert.equal(uploads,1);
  await page.waitForFunction(item=>document.querySelector('.sm-exam-header')?.textContent.includes('Item '+item+' of'),{},index+2);
+ const imageIndex=attempt.questions.findIndex(q=>q.type==='di'),image=attempt.questions[imageIndex];
+ await service.store.update('alice',attempt.id,a=>{a.index=imageIndex;delete a.questionStartedAt;delete a.questionTimingVersion;return a;});
+ await page.evaluate(()=>SpeakingMock.open({history:true}));await page.waitForSelector('[data-sm="resume"]');await click('[data-sm="resume"]');
+ await page.waitForSelector('.sm-image-title',{visible:true});assert.equal(await page.$eval('.sm-image-title',node=>node.textContent),image.title);
+ assert.equal(await page.$eval('.sm-exam-image img',node=>node.alt),image.title);
+ assert(await page.evaluate(()=>document.querySelector('.sm-image-title').getBoundingClientRect().bottom<=document.querySelector('.sm-exam-image').getBoundingClientRect().top),'Image title is above the image');
+ await click('.sm-image-enlarge');await page.waitForSelector('#sm-image-dialog[open]');
+ assert.equal(await page.$eval('#sm-image-dialog h3',node=>node.textContent),image.title);await click('[data-image-action="close"]');
  await page.evaluate(()=>{
    SpeakingMock.reset();
    PortalExamMode.set('speaking-mock',false,document.getElementById('speakingMockPane'));

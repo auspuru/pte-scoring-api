@@ -100,6 +100,21 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // This exact player projection adds only the saved DI title. Normalize it
+  // before the older transport projections; graders and frozen papers stay pinned.
+  const titleBaseline=require('../content/full-mock/image-title-compatible-sources.json');
+  if(digest(titleBaseline)==='1cac95ab20ebb7e900f07792220c85370ad11efa999eff0c52d3b7cada8f931f'
+    &&current.scoringSources.files['full-mock/paper.js']?.sha256==='fd69d2f6e9a54ed460374792cd40b2bacda688a0463a8d42747445ccf485c286'){
+    const sources=structuredClone(current.scoringSources);
+    sources.files['full-mock/paper.js']=structuredClone(titleBaseline.files['full-mock/paper.js']);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)==='1cac95ab20ebb7e900f07792220c85370ad11efa999eff0c52d3b7cada8f931f'){
+      const before=titleBaseline.files,after=sources.files;
+      if(Object.keys(before).sort().join()!==Object.keys(after).sort().join()
+        ||Object.keys(before).some(name=>name!=='full-mock/assessment.js'&&digest(before[name])!==digest(after[name])))return false;
+      return digest({...saved,scoringSources:sources})===digest(current);
+    }
+  }
   // Explicit instructor audio exclusions are additive metadata. These exact
   // revisions preserve every native grader, model, weight and original result.
   const exclusionBaseline=require('../content/full-mock/audio-exclusion-compatible-sources.json');

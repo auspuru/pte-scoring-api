@@ -139,6 +139,7 @@ function questionForPlayer(candidate) {
     ...(q.minutes != null ? { minutes: q.minutes } : {}), ...(q.timeGroup ? { timeGroup: q.timeGroup } : {}),
     ...(q.startCueMs != null ? { startCueMs: q.startCueMs } : {}), ...(q.silenceTimeoutSeconds ? { silenceTimeoutSeconds: q.silenceTimeoutSeconds } : {}) };
   if (['ra', 'rts', 'swt', 'essay'].includes(q.type)) result.text = q.text;
+  if (q.type === 'di') result.title = q.title || q.visual?.title || '';
   if (['dropdown', 'wordbank', 'mcma', 'mcsa', 'lfi', 'hiw'].includes(q.type)) result.passage = q.passage;
   for (const key of ['options', 'bank', 'choices', 'prompt']) if (q[key] != null) result[key] = structuredClone(q[key]);
   if (Array.isArray(q.items)) result.items = q.items.map(({ key, text }) => ({ key, text }));

@@ -11,7 +11,7 @@
   const reports = typeof module === 'object' && module.exports ? require('./full-mock-report') : globalThis.FullMockReport;
   function renderQuestion(q, answer = []) {
     const values = Array.isArray(answer) ? answer : [];
-    if (speech(q.type)) return (q.text ? '<p class="fm-passage">' + esc(q.text) + '</p>' : '') + (q.image ? '<img id="fm-image" class="fm-image" width="730" height="500" alt="Visual for this Describe Image question">' : '')
+    if (speech(q.type)) return (q.text ? '<p class="fm-passage">' + esc(q.text) + '</p>' : '') + (q.type === 'di' && q.title ? '<h2 class="fm-image-title">' + esc(q.title) + '</h2>' : '') + (q.image ? '<img id="fm-image" class="fm-image" width="730" height="500" alt="'+esc(q.title||'Visual for this Describe Image question')+'">' : '')
       + '<div class="fm-record-status" id="fm-record-status" role="status" aria-live="polite">Preparing</div><meter id="fm-level" min="0" max="1" value="0" aria-label="Microphone input level"></meter>';
     if (['swt', 'essay', 'sst', 'wfd'].includes(q.type)) return (q.text ? '<div class="fm-passage">' + esc(q.text).replace(/\n/g, '<br>') + '</div>' : '')
       + '<label class="fm-editor-label" for="fm-text">Your response</label><textarea id="fm-text" data-fm-text maxlength="12000" spellcheck="false" autocomplete="off" rows="10">' + esc(values[0] || '') + '</textarea><p id="fm-word-count">' + words(values[0]) + ' words</p>';

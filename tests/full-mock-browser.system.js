@@ -105,6 +105,11 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
       assert.equal((await f.state()).current.endsAt,saved.current.endsAt);
     }
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Page overflow at ' + q.type);
+    if(q.type==='di'){
+      assert.equal(await page.$eval('.fm-image-title',node=>node.textContent),q.title);
+      assert.equal(await page.$eval('#fm-image',node=>node.alt),q.title);
+      assert(await page.evaluate(()=>document.querySelector('.fm-image-title').getBoundingClientRect().bottom<=document.getElementById('fm-image').getBoundingClientRect().top),'Image title is above the image');
+    }
     if (q.type === 'dropdown') { readingDeadline ||= saved.current.endsAt; assert.equal(saved.current.endsAt, readingDeadline); }
     if (['lmcma','lfi','hcs','lmcsa','smw','hiw','wfd'].includes(q.type)) { listeningDeadline ||= saved.current.endsAt; assert.equal(saved.current.endsAt, listeningDeadline); }
     if (adapters.SPOKEN.has(q.type)) {

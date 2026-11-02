@@ -78,7 +78,7 @@ test('Player projections hide answer keys, references, transcripts, provenance a
     if (!['ra', 'rts', 'swt', 'essay'].includes(q.type)) assert.equal(view.text, undefined, q.type);
     if (['ra', 'rts', 'swt', 'essay'].includes(q.type)) assert.equal(view.text, q.text);
     assert.equal(view.name, TASKS.find(task => task.type === q.type).label);
-    assert.equal(view.title, undefined);
+    assert.equal(view.title, q.type === 'di' ? q.title : undefined);
     if (q.type === 'asq') { assert.equal(view.seconds, 10); assert.equal(view.startCueMs, 0); assert.equal(view.preparation, 0); }
   }
   assert.equal(catalogue()[0].available, false);
