@@ -17,6 +17,13 @@ test('Historical quotes are verified; optional and unclassified suggestions stay
  const input=raw();input.summary_assessment.missing_dependencies[0].effect='invented learner quote';input.summary_assessment.missing_dependencies[0].missing_context='invented source quote';input.errors.push({phrase:'Trees',correction:'Urban trees',affectsScore:false});input.errors.push({phrase:'cities',correction:'urban areas'});
  const v=swt.project(input,{confirmed:true,answer,source});assert.equal(v.content.quote,'');assert.equal(v.content.sourceQuote,'');assert.equal(v.language[1].optional,true);assert.equal(v.language[2].optional,false);assert.equal(v.language[2].required,false);
 });
+test('Saved deletions remain actionable while missing replacements are excluded',()=>{
+ const response='Trees cool cities and improve air quality, actually.';
+ const input=raw();input.errors=[{phrase:', actually',correction:'',explanation:'Remove the unnecessary aside.',affectsScore:true},{phrase:'Trees',explanation:'No replacement was saved.'}];
+ const before=JSON.stringify(input),v=swt.project(input,{confirmed:true,answer:response,source});
+ assert.equal(v.language.length,1);assert.equal(v.language[0].fix,'');assert.equal(v.language[0].reason,'Remove the unnecessary aside.');
+ const html=swt.render(v,response,'deletion');assert.match(html,/, actually → Delete this text/);assert.match(html,/Remove the unnecessary aside/);assert.match(html,/data-swt-mock-fix="0"/);assert(!html.includes('No exact language correction'));assert.equal(JSON.stringify(input),before);
+});
 test('Read-only report renderer escapes content and exposes no edit or submission controls',()=>{
  const input=raw();input.summary_assessment.repair='<script>bad()</script>';const html=swt.render(swt.project(input,{confirmed:true,answer,source}),answer,'fixture');
  assert(html.includes('&lt;script&gt;'));assert(!html.includes('<script>'));assert(!/<(?:input|textarea|select|form)\b/.test(html));assert(!/data-review-save|data-review-use|data-reattempt/.test(html));assert(html.includes('data-swt-mock-fix'));assert(html.includes('Grammar & spelling'));assert(html.includes('Form'));

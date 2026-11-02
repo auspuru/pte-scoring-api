@@ -15,7 +15,7 @@
   const dependency=Array.isArray(a.missing_dependencies)?a.missing_dependencies.find(x=>text(x?.missing_context)):null;
   const language=[];
   if(valid!==false&&!gated)for(const item of Array.isArray(raw.errors)?raw.errors:[]){
-   const phrase=quote(answer,item?.phrase),fix=text(item?.correction);if(!phrase||!fix||language.some(x=>x.phrase===phrase&&x.fix===fix))continue;
+   const phrase=quote(answer,item?.phrase),fix=text(item?.correction);if(!phrase||typeof item?.correction!=='string'||language.some(x=>x.phrase===phrase&&x.fix===fix))continue;
    language.push({phrase,fix,reason:text(item.explanation),optional:item.affectsScore===false,required:item.affectsScore===true});
   }
   return {version:1,status:'complete',content:{overview:valid===false?'':text(raw.feedback?.content||raw.overallVerdict||raw.overview),
@@ -31,7 +31,7 @@
   const id='swt-mock-'+String(key).replace(/[^a-zA-Z0-9_-]/g,'-');
   const section=(n,title,body)=>'<section class="swt-mock-section"><h4><span>'+n+'</span>'+title+'</h4><div>'+body+'</div></section>';
   if(pending)return '<div class="swt-mock-feedback" data-swt-mock-feedback>'+section(1,'Content & meaning','<p>Feedback is being prepared. Your submitted response is saved; no learning judgement is available yet.</p>')+section(2,'Grammar & spelling','<p>Language feedback is not ready yet.</p>')+section(3,'Form','<p>Assessment is incomplete. Keep your saved response; an assessment delay does not indicate a writing error.</p>')+'</div>';
-  const c=data.content||{},form=data.form||{},language=(data.language||[]).filter(x=>quote(answer,x.phrase)&&text(x.fix));
+  const c=data.content||{},form=data.form||{},language=(data.language||[]).filter(x=>quote(answer,x.phrase)&&typeof x.fix==='string');
   let content=(c.overview?'<p>'+esc(c.overview)+'</p>':'<p>Review the saved feedback alongside the original passage.</p>')+(c.action?'<h5>Your priority</h5><p>'+esc(c.action)+'</p>':'')+
    (quote(answer,c.quote)?'<div class="swt-mock-evidence"><strong>You wrote</strong><q>'+esc(c.quote)+'</q></div>':'')+
    (c.sourceQuote?'<div class="swt-mock-evidence"><strong>The passage says</strong><q>'+esc(c.sourceQuote)+'</q></div>':'')+
@@ -41,7 +41,7 @@
   let annotated='',at=0;const located=[];
   for(let i=0;i<language.length;i++){const x=language[i],start=answer.indexOf(x.phrase);if(start<0||answer.indexOf(x.phrase,start+1)>=0||located.some(v=>v.start<start+x.phrase.length&&v.end>start))continue;located.push({start,end:start+x.phrase.length,index:i});}
   for(const x of located.sort((a,b)=>a.start-b.start)){const issue=language[x.index];annotated+=esc(answer.slice(at,x.start))+'<button type="button" class="swt-mock-word'+(issue.optional?' optional':'')+'" data-swt-mock-fix="'+x.index+'" aria-expanded="false" aria-controls="'+id+'-fix-'+x.index+'">'+esc(issue.phrase)+'</button>';at=x.end;}annotated+=esc(answer.slice(at));
-  const corrections=language.map((x,i)=>'<details id="'+id+'-fix-'+i+'" data-swt-mock-correction="'+i+'"><summary>'+esc(x.phrase)+' → '+esc(x.fix)+'</summary><p><strong>'+(x.optional?'Optional refinement':x.required?'Correction':'Saved language suggestion')+'</strong></p><p>'+esc(x.reason||'Review this suggestion in context before your next practice attempt.')+'</p></details>').join('');
+  const corrections=language.map((x,i)=>'<details id="'+id+'-fix-'+i+'" data-swt-mock-correction="'+i+'"><summary>'+esc(x.phrase)+' → '+esc(text(x.fix)||'Delete this text')+'</summary><p><strong>'+(x.optional?'Optional refinement':x.required?'Correction':'Saved language suggestion')+'</strong></p><p>'+esc(x.reason||'Review this suggestion in context before your next practice attempt.')+'</p></details>').join('');
   const grammar=(form.valid===false?'<p>Fix the sentence requirements first. Separate language feedback is not available for this response.</p>':
    '<p class="swt-mock-muted">'+(language.length?'Select an underlined phrase or expand a correction to see the reason.':'No exact language correction is available in this saved assessment.')+'</p><div class="swt-mock-answer">'+annotated+'</div>'+corrections);
   const count=String(answer).trim().split(/\s+/).filter(Boolean).length;
