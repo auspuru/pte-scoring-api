@@ -45,6 +45,7 @@ test('SWT uses one request, prevents duplicate submissions and displays the retu
   await h.ctx.scoreSummary();
   assert.equal(h.requests.length, 1);
   assert.equal(h.requests[0].url, '/api/grade');
+  assert.equal(h.requests[0].options.headers['x-session-token'], 'token');
   h.requests[0].reply(result()); await pending;
   assert.equal(h.results[0][0].overall_score, 90);
   assert.deepEqual(h.results[0][2], { errors: [], count: 0 });
@@ -60,6 +61,8 @@ test('Provisional SWT scoring recovers before one final attempt is displayed and
   for (let i = 0; i < 20 && h.requests.length < 2; i++) await new Promise(resolve => setImmediate(resolve));
   assert.equal(h.requests.length, 2); assert.equal(h.saved.length, 0); assert.equal(h.results.length, 0);
   assert.equal(h.requests[1].options.body, h.requests[0].options.body);
+  assert.equal(h.requests[0].options.headers['x-session-token'], 'token');
+  assert.equal(h.requests[1].options.headers['x-session-token'], 'token');
   assert.equal(h.button.disabled, true);
   h.requests[1].reply(result()); await pending;
   assert.equal(h.saved.length, 1); assert.equal(h.results.length, 1);
@@ -88,6 +91,27 @@ test('An explicitly limited grading request remains abortable', async () => {
   const pending = h.ctx.requestSwtGrade({ text: summary }, 15);
   await assert.rejects(pending, /took too long.*summary is safe/);
   assert.equal(h.requests[0].options.signal.aborted, true);
+});
+
+test('An expired SWT session stops without retrying and preserves the response for sign-in', async () => {
+  const h = harness(), text = h.input.value;
+  const pending = h.ctx.scoreSummary();
+  h.requests[0].reply({ error: 'Please sign in to your practice account.' }, 401);
+  await pending;
+  assert.equal(h.requests.length, 1);
+  assert.equal(h.requests[0].options.headers['x-session-token'], 'token');
+  assert.equal(h.input.value, text); assert.equal(h.saved.length, 0); assert.equal(h.results.length, 0);
+  assert.match(h.notices[0], /sign in/); assert.equal(h.button.disabled, false);
+});
+
+test('SWT recovery cannot carry an outgoing response into a new account session', async () => {
+  const h = harness(), pending = h.ctx.scoreSummary();
+  h.ctx.currentUserId = 'other'; h.ctx.sessionToken = 'other-token';
+  h.requests[0].reply({ error: 'Temporarily unavailable' }, 503);
+  await pending;
+  assert.equal(h.requests.length, 1);
+  assert.equal(h.requests[0].options.headers['x-session-token'], 'token');
+  assert.equal(h.saved.length, 0); assert.equal(h.results.length, 0); assert.equal(h.notices.length, 0);
 });
 
 test('Normal submission keeps waiting for the reviewed result without scheduling a browser cutoff', async () => {
@@ -131,6 +155,7 @@ test('Retry assessment resubmits the displayed response while preserving an edit
   h.input.value = 'A new unfinished draft.';
   const pending = h.ctx.retrySwtAssessment();
   assert.equal(JSON.parse(h.requests[0].options.body).text, summary);
+  assert.equal(h.requests[0].options.headers['x-session-token'], 'token');
   h.requests[0].reply(result()); await pending;
   assert.equal(h.input.value, 'A new unfinished draft.');
   h.ctx.currentUserId = 'another-student';
