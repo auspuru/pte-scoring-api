@@ -47,3 +47,7 @@ test('A confirmed zero is assessed, while changed native source pins never recei
  const j=f.state.assessment.items[f.selected.id],a=require('../full-mock/adapters');j.status='assessed';j.result=a.result(f.selected.question,Object.fromEntries(Object.keys(a.maxima(f.selected.question)).map(k=>[k,0])));
  assert.equal(aggregate(paper,f.state).assessedCount,65);assert.equal(releaseExhausted(f.state,paper,3000),false);assert.equal(j.result.total,0);assert.equal(f.state.assessment.exclusions,undefined);
 });
+for(const [type,stageName,reason] of [['asq','transcription','transcription-unavailable'],['di','content','content-unavailable'],['swt','writing','writing-unavailable']])test('One confirmed '+type+' provider failure releases with its own retained task sample',()=>{
+ const f=make(paper,{type}),j=f.state.assessment.items[f.selected.id];j.result={status:'failed',reason};j.stages={[stageName]:{status:'failed',failureCode:503,uncertain:false}};
+ const before=digest({responses:f.state.responses,items:f.state.assessment.items});assert.equal(releaseExhausted(f.state,paper,3000),true);assert.equal(aggregate(paper,f.state).ready,true);assert.equal(digest({responses:f.state.responses,items:f.state.assessment.items}),before);
+});
