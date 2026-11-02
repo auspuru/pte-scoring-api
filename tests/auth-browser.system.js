@@ -91,12 +91,25 @@ test('SWT practice submits with the signed-in session after login and reload',{t
   await f.request('/api/auth/register',{username,password,email:username+'@example.test'});
   const context=await browser.createBrowserContext();
   const page=await context.newPage();await page.setViewport({width,height:900});
+  const receipts={};await page.exposeFunction('__swtTestReceipt',(route,body)=>{receipts[route]=body;});
+  // Observe actual JSON in the browser instead of retrieving a response body
+  // from CDP after auth-boot reloads the document. Keep the receipt in Node
+  // across both the automatic login reload and the explicit mobile reload.
+  await page.evaluateOnNewDocument(()=>{
+   const original=window.fetch;
+   window.fetch=async function(...args){
+    const response=await original.apply(this,args),path=new URL(args[0] instanceof Request?args[0].url:String(args[0]),location.href).pathname;
+    if(['/api/auth/login','/api/grade'].includes(path))await window.__swtTestReceipt(path,await response.clone().json());
+    return response;
+   };
+  });
   await page.goto(f.base);await page.waitForSelector('#loginUsername',{visible:true});
   await page.type('#loginUsername',username);await page.type('#loginPassword',password);
   const signedIn=page.waitForResponse(r=>r.url().endsWith('/api/auth/login')&&r.request().method()==='POST');
-  await page.click('#loginSubmitBtn');const login=await(await signedIn).json();assert.equal(login.success,true);
+  await page.click('#loginSubmitBtn');assert.equal((await signedIn).status(),200);
   const ready=()=>page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
-  await ready();if(reload){await page.reload();await ready();}
+  await ready();const login=receipts['/api/auth/login'];assert.equal(login.success,true);
+  if(reload){await page.reload();await ready();}
   await page.evaluate(()=>switchSection('swt'));await page.click('[data-swt-mode="summary"]');await page.waitForSelector('#summaryInput',{visible:true});
   // Two sentences exercise the real server's deterministic form gate after
   // authentication, without any external scoring provider or mocked HTTP reply.
@@ -104,8 +117,8 @@ test('SWT practice submits with the signed-in session after login and reload',{t
   const assessed=page.waitForResponse(r=>r.url().endsWith('/api/grade')&&r.request().method()==='POST');
   await page.click('#scoreBtn');const response=await assessed;
   assert.equal(response.status(),200);assert.equal(response.request().headers()['x-session-token']===login.token,true,'SWT transports the same signed session used by login');
-  const grade=await response.json();assert.equal(grade.form_gate_triggered,true);assert.equal(grade.llm_used,false);
   await page.waitForSelector('#swtResultsScreen.active',{visible:true});
+  const grade=receipts['/api/grade'];assert.equal(grade.form_gate_triggered,true);assert.equal(grade.llm_used,false);
   assert.equal(await page.evaluate(()=>document.getElementById('appShell').style.display),'grid');
   assert.equal(await page.evaluate((uid,responseText)=>Object.values(JSON.parse(localStorage.getItem('pte_'+uid+'_history')||'{}')).some(attempts=>attempts.some(a=>a.text===responseText)),username,text),true,'The authenticated response is saved');
   await context.close();
