@@ -175,9 +175,11 @@ function createStore({ pool, directory }) {
           state->'assessment'->>'status'='needs-attention' AND (
             (state#>>'{assessment,recovery,status}'='scheduled' AND
               CASE WHEN jsonb_typeof(state#>'{assessment,recovery,nextAt}')='number' THEN (state#>>'{assessment,recovery,nextAt}')::numeric <= $1 ELSE false END)
+            OR (state#>>'{assessment,recovery,status}'='exhausted' AND
+              (state#>>'{assessment,recovery,finalQuestionReview,version}') IS DISTINCT FROM $2)
             OR EXISTS (SELECT 1 FROM jsonb_each(state->'assessment'->'items') AS job
               WHERE job.value->>'status'='pending' AND job.value->>'reason'='late-recording'))))
-      ORDER BY (state->'assessment'->>'status'='processing') DESC,updated_at LIMIT 100`, [at])).rows.map(row => ({ uid:row.username, id:row.id, status:row.status }));
+      ORDER BY (state->'assessment'->>'status'='processing') DESC,updated_at LIMIT 100`, [at,require('./exclusions').AUTOMATIC_VERSION])).rows.map(row => ({ uid:row.username, id:row.id, status:row.status }));
     const rows = [];
     for (const dir of await fs.readdir(directory, { withFileTypes: true })) {
       if (!dir.isDirectory()) continue;
@@ -190,7 +192,8 @@ function createStore({ pool, directory }) {
         const processing = assessment?.status === 'processing' && !(assessment.lease?.expiresAt > at);
         const due = assessment?.recovery?.status === 'scheduled' && Number.isFinite(assessment.recovery.nextAt) && assessment.recovery.nextAt <= at;
         const lateMedia = Object.values(assessment?.items || {}).some(job => job.status === 'pending' && job.reason === 'late-recording');
-        if (saved?.value.status === 'submitted' && (unrequested || processing || assessment?.status === 'needs-attention' && (due || lateMedia)))
+        const exhausted=assessment?.recovery?.status==='exhausted'&&assessment.recovery.finalQuestionReview?.version!==require('./exclusions').AUTOMATIC_VERSION;
+        if (saved?.value.status === 'submitted' && (unrequested || processing || assessment?.status === 'needs-attention' && (due || lateMedia || exhausted)))
           rows.push({ uid:index.value.owner, id, status:assessment.status });
       }
     }

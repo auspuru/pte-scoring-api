@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "10a34f1837752fb17c320c4b48a9f6a0388031ae",
+  "baseCommit": "4871c83f30ad2014cc4063dc29adeeb41f0e0646",
   "checkedAt": "2026-11-02",
-  "scope": "Explicit instructor exclusion of one final failed RS delivery assessment with retained response and marks. Exact source compatibility preserves frozen papers, native graders, models, weights and existing assessments.",
+  "scope": "Automatic publication after eight recovery retries only for one confirmed failed provider assessment, with retained evidence and another assessed question of the same task. Uncertain, blocked, incomplete and multiple failures remain held. Exact source compatibility preserves frozen papers, graders, models and marks.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "b8dc71be58b9c13a353569bcf947d4c72dd3ec4df2fe2b051d9e28873ad318b9",
+        "sha256": "defd557b360e55a7f1c80a75b6234cd1ae2d303aae3619ed87dcafecd1bedd87",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -108,7 +108,7 @@
         "version": null
       },
       "full-mock/exclusions.js": {
-        "sha256": "70b5eddcffe990db57e91b363263d58ed5cc8741bd050656cd40a00727217b30",
+        "sha256": "ba95a1cff0e1eb6a9b4404a969f7753cc41d325289b4f6066182be0e3675827f",
         "version": null
       },
       "full-mock/paper.js": {
@@ -124,7 +124,7 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "9b72b59d3acd64c1152987a03fc78150547dc2a8a42a85773b5e8c70d61ec683",
+        "sha256": "40c4de49dabcf6b9e0271e94d38a1d077cd03e1e16f20244cbce9d923bafa962",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
@@ -136,7 +136,7 @@
         "version": "full-mock-session-2026-10-29.2"
       },
       "full-mock/store.js": {
-        "sha256": "782446e10075c72055b9ecd94328052e3d92f63c5bb637f1a05c0671a23babe9",
+        "sha256": "611a7d3e714b256a1ed9a253d234f2f439d64aabb79b1eccafb0599c57577c47",
         "version": null
       },
       "gpt-speaking-delivery.js": {

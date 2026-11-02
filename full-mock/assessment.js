@@ -100,6 +100,22 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Only these reviewed recovery/publication changes may project to the exact
+  // preceding sources. Native scores, models, weights and frozen papers stay pinned.
+  const automaticBaseline=require('../content/full-mock/automatic-final-question-compatible-sources.json');
+  const automaticPins={"full-mock/store.js":"611a7d3e714b256a1ed9a253d234f2f439d64aabb79b1eccafb0599c57577c47","full-mock/exclusions.js":"ba95a1cff0e1eb6a9b4404a969f7753cc41d325289b4f6066182be0e3675827f","full-mock/report.js":"40c4de49dabcf6b9e0271e94d38a1d077cd03e1e16f20244cbce9d923bafa962"};
+  if(digest(automaticBaseline)==='e0cf7ab9c7b9b26b0bbbd7e00be93b62cc9a47558928e546a838130d95853f39'&&Object.entries(automaticPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of Object.keys(automaticPins))sources.files[file]=structuredClone(automaticBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)==='e0cf7ab9c7b9b26b0bbbd7e00be93b62cc9a47558928e546a838130d95853f39'){
+      const before=automaticBaseline.files,after=sources.files;
+      if(Object.keys(before).sort().join()!==Object.keys(after).sort().join()
+        ||Object.keys(before).some(name=>name!=='full-mock/assessment.js'&&digest(before[name])!==digest(after[name])))return false;
+      return digest({...saved,scoringSources:sources})===digest(current);
+    }
+  }
+
   // Explicit final-RS instructor exclusion changes support/report metadata only.
   // Project only these reviewed revisions; every native grader stays pinned.
   const instructorBaseline=require('../content/full-mock/instructor-delivery-compatible-sources.json');
@@ -306,6 +322,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
       if (state.assessment.run && !retry) return state;
       state.assessment.recovery ||= { version:1, retries:0 };
       state.assessment.recovery.status = 'armed'; delete state.assessment.recovery.nextAt; delete state.assessment.recovery.automaticRun;
+      delete state.assessment.recovery.finalQuestionReview;
       state.assessment.status = 'processing'; state.assessment.run++; state.assessment.requestedAt = now(); return state;
     });
     if (state.assessment.status === 'processing') queue(uid, id);
@@ -378,7 +395,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     }
     try {
       await Promise.all([itemWorker(), itemWorker()]);
-      state = await save(current => { current.assessment.status = aggregate(savedPaper, current).ready ? 'complete' : closing ? 'processing' : 'needs-attention'; if (!closing) { current.assessment.finishedAt = now(); scheduleRecovery(current.assessment, now()); } });
+      state = await save(current => { current.assessment.status = aggregate(savedPaper, current).ready ? 'complete' : closing ? 'processing' : 'needs-attention'; if (!closing) { current.assessment.finishedAt = now(); scheduleRecovery(current.assessment, now()); require('./exclusions').releaseExhausted(current,savedPaper,now(),{leaseId:lease}); } });
       await store.update(uid, id, current => { if (current.assessment.lease?.id === lease) delete current.assessment.lease; return current; });
       const result = aggregate(savedPaper, state);
       console.info('[full-mock-assessment]', JSON.stringify({ uid, id, status:state.assessment.status, assessedCount:result.assessedCount, pendingReasons:[...new Set(Object.values(state.assessment.items).filter(item => item.status !== 'assessed').map(item => item.result?.reason || item.reason || item.status))] }));
@@ -390,8 +407,12 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     return aggregate(record.paper, record.state);
   }
   async function resumeAutomatically(uid, id) {
+    const record=await store.get(uid,id);if(!record)return false;
     const state = await store.update(uid, id, state => {
       const a = state.assessment, r = a?.recovery;
+      if(state.status==='submitted'&&a?.status==='needs-attention'&&r?.status==='exhausted'){
+        validate(state);require('./exclusions').releaseExhausted(state,record.paper,now());return state;
+      }
       if (state.status !== 'submitted' || a?.status !== 'needs-attention' || r?.status !== 'scheduled'
         || !Number.isFinite(r.nextAt) || r.nextAt > now() || r.retries >= RECOVERY_DELAYS.length) return state;
       validate(state);

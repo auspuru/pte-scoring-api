@@ -93,3 +93,20 @@ test('PostgreSQL: scheduled recovery is durable, waits for its deadline and has 
  await Promise.all(engines.map(e=>e.recover()));await Promise.all(engines.map(e=>e.drain()));
  assert.equal((await engines[0].results('alice',id)).ready,true);for(const [key,count]of calls)assert.equal(count,key===target?2:1);
 });
+
+test('PostgreSQL: competing restart workers publish the final exhausted question once without providers or changed evidence',async t=>{
+ const db=await database(t),stores=[createStore({pool:db.first}),createStore({pool:db.pool()})];await Promise.all(stores.map(s=>s.initialise()));
+ const {state,selected}=require('./helpers/full-mock-final-question').make(paper,{historical:true}),owner='synthetic-final-release';
+ await stores[0].create(owner,state.id,paper,()=>state,1000);let calls=0;
+ const engines=stores.map(store=>createEngine({store,paper,now:()=>3000,adapters:{assess:async()=>{calls++;throw Error('No provider call');}}}));t.after(()=>Promise.all(engines.map(e=>e.stop())));
+ await Promise.all(engines.map(e=>e.recover()));await Promise.all(engines.map(e=>e.drain()));
+ const saved=(await stores[1].get(owner,state.id)).state,result=require('../full-mock/aggregation').aggregate(paper,saved);
+ assert.equal(result.ready,true);assert.equal(result.excludedCount,1);assert.equal(result.assessedCount,64);assert.equal(calls,0);
+ assert.deepEqual(saved.responses,state.responses);assert.deepEqual(saved.assessment.items,state.assessment.items);assert.deepEqual(saved.assessment.snapshot,state.assessment.snapshot);
+ assert.equal(Object.keys(saved.assessment.exclusionOperations).length,1);assert.equal(saved.assessment.recovery.finalQuestionReview.questionId,selected.id);
+ assert.equal((await stores[0].assessmentQueue(3000)).length,0);assert.equal(await stores[1].get('wrong-owner',state.id),null);
+ // Ineligible exhausted rows are reviewed and removed from this policy's queue.
+ const held=require('./helpers/full-mock-final-question').make(paper);held.state.assessment.items[held.selected.id].stages.delivery.uncertain=true;
+ await stores[0].create('synthetic-held-release',held.state.id,paper,()=>held.state,1000);await engines[0].recover();
+ assert.equal((await stores[1].get('synthetic-held-release',held.state.id)).state.assessment.recovery.finalQuestionReview.status,'held');assert.equal((await stores[1].assessmentQueue(3000)).length,0);
+});
