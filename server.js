@@ -8,6 +8,7 @@ const path = require('path');
 const compression = require('compression');
 const nodemailer = require('nodemailer');
 const AccountSecurity = require('./account-security');
+const PortalAccess = require('./portal-access');
 const serialAccountMutation = AccountSecurity.createSerialQueue();
 const puppeteer = require('puppeteer');
 const { installGracefulShutdown } = require('./graceful-shutdown');
@@ -254,6 +255,8 @@ app.use('/api',async(req,res,next)=>{
     const issuedAt=Number(payload.slice(payload.lastIndexOf('|')+1))-(sessionUser?SESSION_TTL_MS:IMPERSONATION_TTL_MS);
     const createdAt=Date.parse(account?.createdAt||'');
     if(!account||account.blocked||(Number.isFinite(createdAt)&&issuedAt<createdAt))return res.status(403).set('Cache-Control','no-store').json({error:'Account is unavailable. Please sign in again.'});
+    const accessDenied=PortalAccess.denial(account);
+    if(accessDenied)return res.status(403).set('Cache-Control','no-store').json(accessDenied);
     next();
   }catch{res.status(503).json({error:'Account verification is temporarily unavailable.'});}
 });
@@ -439,6 +442,8 @@ async function pgInitSchema() {
       blocked        BOOLEAN DEFAULT FALSE,
       role           TEXT DEFAULT 'user'
     );
+    ALTER TABLE accounts ADD COLUMN IF NOT EXISTS access_starts_on DATE;
+    ALTER TABLE accounts ADD COLUMN IF NOT EXISTS access_expires_on DATE;
     CREATE TABLE IF NOT EXISTS user_data (
       username       TEXT PRIMARY KEY,
       data           JSONB NOT NULL DEFAULT '{}'::jsonb,
@@ -713,7 +718,7 @@ function invalidatePracticeAccount(uid) {
 // All methods are async and use parameterised queries (no SQL injection risk).
 const PgStorage = {
   async _allAccounts() {
-    const { rows } = await pgPool.query('SELECT * FROM accounts');
+    const { rows } = await pgPool.query('SELECT *, access_starts_on::text AS "accessStartsOn", access_expires_on::text AS "accessExpiresOn" FROM accounts');
     const out = {};
     for (const r of rows) {
       out[r.username] = {
@@ -721,7 +726,7 @@ const PgStorage = {
         secretQ: r.secret_q, secretAHash: r.secret_a_hash,
         createdAt: r.created_at ? r.created_at.toISOString() : null,
         lastLogin: r.last_login ? r.last_login.toISOString() : null,
-        blocked: r.blocked, role: r.role || 'user'
+        blocked: r.blocked, role: r.role || 'user', accessStartsOn:r.accessStartsOn, accessExpiresOn:r.accessExpiresOn
       };
     }
     return out;
@@ -733,7 +738,7 @@ const PgStorage = {
     return out;
   },
   async _getAccount(uid) {
-    const { rows } = await pgPool.query('SELECT * FROM accounts WHERE username = $1', [uid]);
+    const { rows } = await pgPool.query('SELECT *, access_starts_on::text AS "accessStartsOn", access_expires_on::text AS "accessExpiresOn" FROM accounts WHERE username = $1', [uid]);
     if (!rows.length) return null;
     const r = rows[0];
     return {
@@ -741,7 +746,7 @@ const PgStorage = {
       secretQ: r.secret_q, secretAHash: r.secret_a_hash,
       createdAt: r.created_at ? r.created_at.toISOString() : null,
       lastLogin: r.last_login ? r.last_login.toISOString() : null,
-      blocked: r.blocked, role: r.role || 'user'
+      blocked: r.blocked, role: r.role || 'user', accessStartsOn:r.accessStartsOn, accessExpiresOn:r.accessExpiresOn
     };
   },
   async _saveAccount(acct) {
@@ -1849,6 +1854,7 @@ const AuthAPI = {
       if (acct.blocked) return { success: false, error: 'Account blocked. Contact admin.' };
       const v = verifyPw(password, acct.passwordHash);
       if (!v.ok) return { success: false, error: 'Wrong password' };
+      const accessDenied=PortalAccess.denial(acct);if(accessDenied)return{success:false,...accessDenied};
       // v19.17: upgrade legacy sha256 hashes to scrypt on successful login.
       if (v.needsUpgrade) {
         try { await pgPool.query('UPDATE accounts SET password_hash = $1 WHERE username = $2', [hashPw(password), uid]); }
@@ -1864,6 +1870,7 @@ const AuthAPI = {
     if (acct.blocked) return { success: false, error: 'Account blocked. Contact admin.' };
     const v = verifyPw(password, acct.passwordHash);
     if (!v.ok) return { success: false, error: 'Wrong password' };
+    const accessDenied=PortalAccess.denial(acct);if(accessDenied)return{success:false,...accessDenied};
     if (v.needsUpgrade) acct.passwordHash = hashPw(password);
     acct.lastLogin = new Date().toISOString();
     await StorageAPI.writeData(data);
@@ -1925,6 +1932,7 @@ const AuthAPI = {
         createdAt: a?.createdAt || null,
         lastLogin: a?.lastLogin || null,
         blocked: !!a?.blocked,
+        portalAccess: PortalAccess.state(a),
         role: a?.role || (a ? 'user' : 'progress_only'),
         stats: {
           ...base,
@@ -1992,6 +2000,22 @@ const AuthAPI = {
     });
     await StorageAPI.writeData(data);
     deleted.forEach(invalidatePracticeAccount);return { success: true, deleted, notFound };
+  },
+  async setAccessDates(username,dates){
+    const uid=canonicalUserId(username);
+    if(USE_POSTGRES){
+      const result=await pgPool.query('UPDATE accounts SET access_starts_on=$1::date, access_expires_on=$2::date WHERE username=$3 RETURNING username',[dates.accessStartsOn,dates.accessExpiresOn,uid]);
+      if(!result.rowCount)return{success:false,error:'Login account not found.'};
+      invalidatePracticeAccount(uid);
+      return{success:true,username:uid,portalAccess:PortalAccess.state(dates)};
+    }
+    return serialAccountMutation(async()=>{
+      const data=await this.readAccounts(),account=data.accounts[uid];
+      if(!account)return{success:false,error:'Login account not found.'};
+      Object.assign(account,dates);
+      await StorageAPI.writeData(data);invalidatePracticeAccount(uid);
+      return{success:true,username:uid,portalAccess:PortalAccess.state(account)};
+    });
   },
   async blockUser(username,blocked){
     const uid=canonicalUserId(username);if(typeof blocked!=='boolean')return{success:false,error:'Choose blocked or unblocked.'};
@@ -3645,6 +3669,15 @@ app.get('/api/admin/users', requireAdmin, async (req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
   try { res.json(await speakingAccess.decorate(await AuthAPI.listUsers())); }
   catch (e) { res.status(500).json({ error: 'Failed to list users' }); }
+});
+
+app.post('/api/admin/access-dates', requireAdmin, async (req,res)=>{
+  res.set('Cache-Control','no-store');
+  const {username,startsOn,expiresOn}=req.body||{};
+  if(typeof username!=='string'||!username.trim()||username.length>100)return res.status(400).json({error:'Provide a username.'});
+  let dates;try{dates=PortalAccess.validate(startsOn,expiresOn);}catch(error){return res.status(400).json({error:error.message});}
+  try{const result=await AuthAPI.setAccessDates(username,dates);res.status(result.success?200:404).json(result);}
+  catch{res.status(503).json({error:'Access dates could not be saved. Please retry.'});}
 });
 
 app.post('/api/admin/delete-user', requireAdmin, async (req, res) => {
@@ -6385,11 +6418,12 @@ async function getPracticeAccount(uid) {
   const started = Date.now();
   let account;
   if (USE_POSTGRES) {
-    const { rows } = await pgPool.query('SELECT username, blocked, role, created_at FROM accounts WHERE username = $1', [uid]);
+    const { rows } = await pgPool.query('SELECT username, blocked, role, created_at, access_starts_on::text AS "accessStartsOn", access_expires_on::text AS "accessExpiresOn" FROM accounts WHERE username = $1', [uid]);
     account = rows.length ? {
       username: rows[0].username,
       blocked: !!rows[0].blocked,
-      role: rows[0].role || 'user',createdAt:rows[0].created_at?.toISOString()||null
+      role: rows[0].role || 'user',createdAt:rows[0].created_at?.toISOString()||null,
+      accessStartsOn:rows[0].accessStartsOn,accessExpiresOn:rows[0].accessExpiresOn
     } : null;
   } else {
     account = (await AuthAPI.readAccounts()).accounts[uid] || null;
