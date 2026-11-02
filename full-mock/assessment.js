@@ -100,6 +100,21 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Exact display-only SWT projection: preserve every old scorer, model,
+  // frozen paper and successful grade while permitting the reviewed report.
+  const swtBaseline=require('../content/full-mock/swt-report-compatible-sources.json');
+  if(digest(swtBaseline)==='715019270d27e1e59160b5b94728b481fe176a94863f60d40d80eb1fc705730b'
+    &&current.scoringSources.files['full-mock/report.js']?.sha256==='edfa78b2080259f118e37b4da059037330e68043f73999e915c777740d27309e'){
+    const sources=structuredClone(current.scoringSources);
+    sources.files['full-mock/report.js']=structuredClone(swtBaseline.files['full-mock/report.js']);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)==='715019270d27e1e59160b5b94728b481fe176a94863f60d40d80eb1fc705730b'){
+      const before=swtBaseline.files,after=sources.files;
+      if(Object.keys(before).sort().join()!==Object.keys(after).sort().join()
+        ||Object.keys(before).some(name=>name!=='full-mock/assessment.js'&&digest(before[name])!==digest(after[name])))return false;
+      return digest({...saved,scoringSources:sources})===digest(current);
+    }
+  }
   // This exact player projection adds only the saved DI title. Normalize it
   // before the older transport projections; graders and frozen papers stay pinned.
   const titleBaseline=require('../content/full-mock/image-title-compatible-sources.json');

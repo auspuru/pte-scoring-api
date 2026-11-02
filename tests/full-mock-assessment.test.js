@@ -394,3 +394,18 @@ for(const changed of ['model','native-source'])test('DI reference compatibility 
  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
  await assert.rejects(f.engine.request('alice',f.id),error=>error.status===409);assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
+
+test('SWT report projection upgrade completes the exact previous snapshot and retains all confirmed grades',async t=>{
+ let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
+ const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/swt-report-compatible-sources.json')};
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
+ const marked=structuredClone((await f.state()).assessment.items);
+ await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal(calls,65);assert.deepEqual((await f.state()).assessment.items,marked);assert.deepEqual((await f.state()).assessment.snapshot,original);
+});
+for(const changed of ['model','native-source','report-source'])test('SWT report compatibility rejects a changed '+changed,async t=>{
+ const f=await fixture(t),original={...structuredClone(f.engine.snapshot),scoringSources:structuredClone(require('../content/full-mock/swt-report-compatible-sources.json'))};
+ if(changed==='model')original.configuration.swt.model='another-model';else original.scoringSources.files[changed==='report-source'?'full-mock/report.js':'speaking-scoring.js'].sha256='0'.repeat(64);
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await assert.rejects(f.engine.request('alice',f.id),error=>error.status===409);assert.deepEqual((await f.state()).assessment.snapshot,original);
+});

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "28bb9c3d076b85f83c63e42c43655f0b5d5f583d",
+  "baseCommit": "b3c33b05d187c424814402864c0ac50d3077eb47",
   "checkedAt": "2026-11-02",
-  "scope": "DI title-only player projection and exact-source compatibility for retained Full Mocks. Frozen question snapshots, original images, native graders, models, weights and confirmed marks are preserved.",
+  "scope": "Read-only SWT report projection and exact-source compatibility. Native graders, models, weights, clocks, frozen papers, answers and confirmed marks are preserved.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "7d32c83d46f60b4e82b39bf339c06bc9a936735cca837020a285641bbbcff483",
+        "sha256": "ae53de4d6f8658753bf67db483addc38e49ffbdd278a8b42c939661942a81067",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -124,7 +124,7 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "a85fda2fe0d90a75b044837fcf06f045edba283b0c210fc20827de2234eaaee1",
+        "sha256": "edfa78b2080259f118e37b4da059037330e68043f73999e915c777740d27309e",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
