@@ -15940,7 +15940,7 @@ function showResults(data, passage, spellData, submittedText){
   }
   const heroSummaryEl = document.getElementById('heroSummary');
   if (heroSummaryEl) heroSummaryEl.textContent = buildResultSummary(data, traits);
-  renderSwtGuidance(data);
+
   const previousRubric = data.scoring_version && data.scoring_version !== '20.3.6';
   const rubricNotice = document.getElementById('swtRubricNotice');
   if (rubricNotice) {
@@ -15993,6 +15993,7 @@ function showResults(data, passage, spellData, submittedText){
   renderAnnotatedPassage(passage);
   renderSwtKeyPhrases(passage);
   renderTraitBreakdown(data, traits);
+  renderSwtFeedbackReview(data, passage, submittedText);
 
   const sampleEl = document.getElementById('sampleAnswerText');
   const sampleNotes = document.getElementById('sampleAnswerNotes');
@@ -16041,6 +16042,27 @@ function renderSwtGuidance(data){
     ? '<details class="swt-refinements"><summary>Optional refinements (' + feedback.optional.length + ')</summary><ul>' +
       feedback.optional.map(item => '<li><span>“' + escapeHtml(item.phrase) + '” → “' + escapeHtml(item.fix) + '”</span>' +
       (item.reason ? '<p>' + escapeHtml(item.reason) + '</p>' : '') + '</li>').join('') + '</ul></details>' : '');
+}
+function renderSwtFeedbackReview(data, passage, submittedText){
+  const target = document.getElementById('swtGuidanceBody');
+  if (!target) return;
+  const submission = swtResultSubmission;
+  const isCurrent = () => swtResultSubmission === submission && submission
+    && submission.ownerId === canonicalClientUserId(currentUserId) && submission.token === sessionToken
+    && swtPassageStorageId() === passage.id
+    && document.getElementById('swtPane')?.classList.contains('active')
+    && document.getElementById('swtResultsScreen')?.classList.contains('active');
+  SwtFeedbackReview.mount(target, data, passage, submittedText, { isCurrent,
+    saveDraft(text){
+      if (!isCurrent()) return false;
+      const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
+      summaries[passage.id] = { text, timestamp: new Date().toISOString(), score: summaries[passage.id]?.score || 0 };
+      const saved = LocalStore.set(getPteStorageKey('summaries'), summaries);
+      queueSync({ localSaved: saved });
+      return saved;
+    },
+    continueWriting(){ if (isCurrent()) backToPractice(); }
+  });
 }
 function compareSwtSample(){
   switchSbsView('sample');
@@ -16112,7 +16134,7 @@ function renderAnnotatedSubmission(data, passage, spellData, submittedText){
       if (assessment.relationships_clear === true && !(assessment.missing_dependencies || []).length) {
         items.push({ cls: 'good', icon: '✓', text: 'The selected ideas connect clearly.' });
       } else if (assessment.relationships_clear === false || (assessment.missing_dependencies || []).length) {
-        items.push({ cls: 'warn', icon: '!', text: 'A connection needs attention. See your next step above.' });
+        items.push({ cls: 'warn', icon: '!', text: 'A connection needs attention. See Content & meaning below.' });
       }
     }
     fb.innerHTML = items.map(it => '<div class="ann-fb-item ' + it.cls + '"><span class="fb-icon">' +
