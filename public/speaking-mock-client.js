@@ -6,6 +6,7 @@
   function createController(env,{getUserId=()=>env.currentUserId||''}={}){
     const doc=env.document,OWNER='speaking-mock',memory=new Map(),done=new Set(),urls=new Map(),promptFinished=new Set(),startCue=cues.create(env),imageViewer=images.create(env);let rsCue,check,checkTimer,flow,serverOffset=0;
     let host,catalog,a,owner='',serial=0,busy=false,ending=false,stream,recorder,capture,recordingPromise,prompt,played='',timer,poller,pollBusy=false,pollUntil=0,pollFailures=0,nextPollAt=0,resultVersion=0,notice='',selected=null,reportFilter='all',reviewSignature='',reviewAudioTicket=0,reportSection='overview',reportProvider='azure',responsePane='feedback',context,analyser,silence=0,heard=false;
+    let volume=1;try{const saved=env.localStorage?.getItem('ipt-exam-volume');if(saved!=null&&Number.isFinite(Number(saved)))volume=Math.max(0,Math.min(1,Number(saved)));}catch{}
     const localNow=()=>env.Date?.now?.()||Date.now(),now=()=>localNow()+serverOffset,identity=()=>String(getUserId()||'').trim().toLowerCase();
     const valid=ticket=>ticket===serial&&identity()===owner;
     const key=(id,index)=>owner+':'+id+':'+index;
@@ -42,7 +43,7 @@
     function release(){stopCheck();flow=null;imageViewer.close();stopTimer();stopPrompt();startCue.close();rsCue=null;if(recorder?.state==='recording')recorder.stop();stream?.getTracks().forEach(t=>t.stop());stream=null;analyser=null;context?.close?.().catch(()=>{});context=null;}
     function leave(){stopPolling();release();serial++;}
     function reset(){leave();a=null;owner='';selected=null;reportFilter='all';reportSection='overview';reportProvider='azure';responsePane='feedback';reviewSignature='';for(const url of urls.values())env.URL.revokeObjectURL(url);urls.clear();host?.replaceChildren();}
-    function shell(html){imageViewer.close();host.innerHTML=html;images.bindFallback(host);host.onclick=click;host.onchange=e=>{if(e.target.id==='sm-check-heard'&&check){check.confirmed=!!e.target.checked;checkControls();}else reportChange(e);};host.onkeydown=reportKeydown;host.oninput=e=>{if(e.target.id==='sm-volume'&&prompt)prompt.volume=Number(e.target.value);};}
+    function shell(html){imageViewer.close();host.innerHTML=html;images.bindFallback(host);host.onclick=click;host.onchange=e=>{if(e.target.id==='sm-check-heard'&&check){check.confirmed=!!e.target.checked;checkControls();}else reportChange(e);};host.onkeydown=reportKeydown;host.oninput=e=>{if(e.target.id==='sm-volume'){volume=Math.max(0,Math.min(1,Number(e.target.value)));if(prompt)prompt.volume=volume;if(check?.audio)check.audio.volume=volume;try{env.localStorage?.setItem('ipt-exam-volume',String(volume));}catch{}}};}
     function protectedMode(){env.PortalExamMode?.set(OWNER,a?.status==='active',host,{onEvent:event=>{if(a)api('/attempts/'+a.id+'/integrity',{events:[event]}).catch(()=>{});},onLock:()=>{stopPrompt();startCue.cancel();rsCue=null;played='';if(recorder?.state==='recording')recorder.stop();},onResume:()=>{if(a)refresh().catch(e=>message(e.message));}});}
     async function open(options={}){
       if(check)release();
@@ -74,11 +75,11 @@
     }
     function start(paperId,reattemptId){
       if(busy)return;release();check={paperId,reattemptId,ticket:serial,confirmed:false,played:false};
-      shell('<section class="sm-equipment"><p class="ipr-eyebrow">Before you begin</p><h1>Check your microphone and headphones</h1><p>Record a few words, play them through your headset, then confirm you can hear your voice clearly. The test starts after this check.</p><label class="sm-check-meter">Microphone level<meter id="sm-check-level" min="0" max="1" value="0"></meter></label><div class="sm-check-actions"><button type="button" class="portal-button" id="sm-check-record" data-sm="check-record">Record a 3-second sample</button><button type="button" class="portal-button" id="sm-check-play" data-sm="check-play" disabled>Play my sample</button></div><p id="sm-check-status" role="status">Your sample stays on this device.</p><label class="sm-check-confirm"><input type="checkbox" id="sm-check-heard" disabled> I can hear my recorded voice clearly.</label><p id="sm-notice" role="status"></p><div class="sm-check-actions"><button type="button" class="portal-button" data-sm="reload">Back</button><button type="button" class="portal-button primary" id="sm-check-begin" data-sm="check-begin" disabled>Begin speaking mock</button></div></section>');
+      shell('<section class="sm-equipment"><p class="ipr-eyebrow">Before you begin</p><h1>Check your microphone and headphones</h1><p>Record a few words, play them through your headset, then confirm you can hear your voice clearly. The test starts after this check.</p><label class="sm-check-meter">Microphone level<meter id="sm-check-level" min="0" max="1" value="0"></meter></label><label class="sm-volume">Volume <input id="sm-volume" aria-label="Mock volume" type="range" min="0" max="1" step="0.05" value="'+volume+'"></label><div class="sm-check-actions"><button type="button" class="portal-button" id="sm-check-record" data-sm="check-record">Record a 10-second sample</button><button type="button" class="portal-button" id="sm-check-play" data-sm="check-play" disabled>Play my sample</button></div><p id="sm-check-status" role="status">Your sample stays on this device.</p><label class="sm-check-confirm"><input type="checkbox" id="sm-check-heard" disabled> I can hear my recorded voice clearly.</label><p id="sm-notice" role="status"></p><div class="sm-check-actions"><button type="button" class="portal-button" data-sm="reload">Back</button><button type="button" class="portal-button primary" id="sm-check-begin" data-sm="check-begin" disabled>Begin speaking mock</button></div></section>');
       checkTimer=env.setInterval(()=>{
         if(!check)return;
         if(analyser){const values=new Uint8Array(analyser.fftSize);analyser.getByteTimeDomainData(values);const level=Math.sqrt(values.reduce((sum,n)=>sum+((n-128)/128)**2,0)/values.length);const meter=doc.getElementById('sm-check-level');if(meter)meter.value=Math.min(1,level*5);}
-        if(check.recorder?.state==='recording'&&localNow()-check.startedAt>=3000)check.recorder.stop();
+        if(check.recorder?.state==='recording'&&localNow()-check.startedAt>=10000)check.recorder.stop();
       },100);
     }
     async function recordCheck(){
@@ -91,14 +92,14 @@
         recorded.ondataavailable=event=>{if(event.data?.size)chunks.push(event.data);};
         recorded.onstop=()=>{if(check!==active||!valid(active.ticket))return;active.blob=new env.Blob(chunks,{type:recorded.mimeType||type||'audio/webm'});if(active.blob.size)active.url=env.URL.createObjectURL(active.blob);doc.getElementById('sm-check-status').textContent=active.blob.size?'Sample recorded. Play it through your headset.':'No sample was captured. Check the microphone and record again.';checkControls();};
         recorded.onerror=()=>{if(check===active){message('The sample could not be recorded. Check your microphone and try again.');if(recorded.state==='recording')recorded.stop();}};
-        active.startedAt=localNow();recorded.start();doc.getElementById('sm-check-status').textContent='Say a few words now…';message('');
+        active.startedAt=localNow();recorded.start();doc.getElementById('sm-check-status').textContent='Speak clearly for 10 seconds…';message('');
       }catch(error){if(check===active)message(error.message||'Allow microphone access, then record the sample again.');}
       finally{busy=false;checkControls();}
     }
     async function playCheck(){
       const active=check;if(!active?.url||active.recorder?.state==='recording')return;
       active.audio?.pause();active.played=false;active.confirmed=false;const heard=doc.getElementById('sm-check-heard');if(heard)heard.checked=false;
-      const audio=new env.Audio(active.url);active.audio=audio;
+      const audio=new env.Audio(active.url);active.audio=audio;audio.volume=volume;
       audio.onended=()=>{if(check!==active||active.audio!==audio||!valid(active.ticket))return;active.played=true;doc.getElementById('sm-check-status').textContent='If you heard your voice clearly, confirm below to begin.';checkControls();};
       audio.onerror=()=>{if(check===active)message('The sample could not play. Check your headset connection and record another sample.');};
       try{await audio.play();if(check===active){message('');doc.getElementById('sm-check-status').textContent='Playing your sample…';}}catch{if(check===active)message('Playback was blocked. Select Play my sample again.');}checkControls();
@@ -128,18 +129,18 @@
     }
     function renderExam(){
       const q=a.question;
-      shell('<div class="sm-exam"><header class="sm-exam-header"><strong>IPT Brisbane · Speaking</strong><div><span id="sm-time">'+clock((a.deadline-now())/1000)+'</span><span>Item '+(a.index+1)+' of '+a.totalItems+'</span></div></header>'
+      shell('<div class="sm-exam"><header class="sm-exam-header"><strong>IPT Brisbane · Speaking</strong><div><span><small id="sm-clock-label">This question</small> <span id="sm-time"></span></span><span>Item '+(a.index+1)+' of '+a.totalItems+'</span><label class="sm-volume">Volume <input id="sm-volume" aria-label="Mock volume" type="range" min="0" max="1" step="0.05" value="'+volume+'"></label></div></header>'
         +'<main class="sm-exam-main"><p class="sm-instructions">'+esc(q.instruction)+'</p><div class="sm-question '+(q.type==='di'?'sm-visual':'')+'">'
         +'<div class="sm-stimulus">'+(q.type==='di'&&q.title?'<h2 class="sm-image-title">'+esc(q.title)+'</h2>':'')+(q.text?'<p class="sm-passage">'+esc(q.text)+'</p>':'')+(q.imageUrl?'<button type="button" class="sm-exam-image" data-sm="zoom-image" aria-label="Enlarge question image">'+images.image(q)+'</button><button type="button" class="portal-button sm-image-enlarge" data-sm="zoom-image">Enlarge image</button>'+images.legend(q):'')+'</div>'
-        +'<div class="sm-controls">'+(q.audioUrl?'<section class="sm-audio-panel" aria-label="Prompt audio"><div>Status: <span id="sm-audio-status">Beginning shortly</span></div><label class="sm-volume">Volume <input id="sm-volume" aria-label="Prompt volume" type="range" min="0" max="1" step="0.1" value="1"></label><div class="sm-bar"><span id="sm-audio-bar"></span></div></section>':'')
+        +'<div class="sm-controls">'+(q.audioUrl?'<section class="sm-audio-panel" aria-label="Prompt audio"><div>Status: <span id="sm-audio-status">Beginning shortly</span></div><div class="sm-bar"><span id="sm-audio-bar"></span></div></section>':'')
         +'<section class="sm-record-panel" aria-label="Recorded answer"><strong>Recorded Answer</strong><p>Current Status:</p><div id="sm-preparation-status" role="status"></div><div id="sm-record-status" role="status" aria-live="polite">Beginning shortly</div><div class="sm-bar"><span id="sm-record-bar"></span></div></section></div></div>'
         +'<p id="sm-notice" role="status">'+esc(notice)+'</p><button class="portal-button" data-sm="play" id="sm-play" hidden>Play remaining audio</button><button class="portal-button" data-sm="upload" id="sm-upload" hidden>Retry saving recording</button></main>'
         +'<footer class="sm-exam-footer"><span>'+esc(q.type==='intro'?'Personal Introduction · Not scored':labels[q.type])+'</span><button type="button" class="sm-next" data-sm="next" id="sm-next">Next <span aria-hidden="true">➜</span></button></footer><dialog id="sm-image-dialog" class="sm-image-dialog" aria-label="Full-size question image"></dialog></div>');
     }
-    function beep(){try{if(!context)return;const tone=context.createOscillator(),gain=context.createGain();tone.frequency.value=1000;gain.gain.value=.07;tone.connect(gain);gain.connect(context.destination);tone.start();tone.stop(context.currentTime+.12);}catch{}}
+    function beep(){try{if(!context)return;const tone=context.createOscillator(),gain=context.createGain();tone.frequency.value=1000;gain.gain.value=.07*volume;tone.connect(gain);gain.connect(context.destination);tone.start();tone.stop(context.currentTime+.12);}catch{}}
     async function playPrompt(){
       if(!a?.question.audioUrl||env.PortalExamMode?.isLocked(OWNER))return;
-      const clipKey=key(a.id,a.index);played=clipKey;stopPrompt();prompt=new env.Audio(a.question.audioUrl);
+      const clipKey=key(a.id,a.index);played=clipKey;stopPrompt();prompt=new env.Audio(a.question.audioUrl);prompt.volume=volume;
       const audio=prompt;audio.currentTime=flow?.fresh?0:Math.max(0,(now()-a.timing.audioAt)/1000);
       const ticket=serial;promptFinished.delete(clipKey);
       audio.onended=()=>{if(!valid(ticket)||!a||key(a.id,a.index)!==clipKey||prompt!==audio)return;promptFinished.add(clipKey);stopPrompt();if(a.timing.playbackDriven){flow.ended=true;finishPrompt();}else tick();};
@@ -185,7 +186,6 @@
     }
     function tick(){
       if(!a||a.status!=='active')return;
-      const time=doc.getElementById('sm-time');if(time)time.textContent=clock((a.deadline-now())/1000);
       if(now()>=a.deadline)return finishAtDeadline();
       if(env.PortalExamMode?.isLocked(OWNER))return;
       const t=a.timing,current=now(),q=a.question,captureKey=key(a.id,a.index);
@@ -198,7 +198,7 @@
         else if(t.prepAt==null)text='Preparing your response…';
         else if((flow?.prepUntil!=null&&localNow()<flow.prepUntil)||current<t.cueAt)text='Preparation time: '+clock(Math.max((flow?.prepUntil||0)-localNow(),t.cueAt-current)/1000);
         else if(q.type==='rs'){
-          if(rsCue?.key!==captureKey){const pending={key:captureKey,ready:false};rsCue=pending;startCue.play(captureKey,()=>{if(rsCue===pending)pending.ready=true;});}
+          if(rsCue?.key!==captureKey){const pending={key:captureKey,ready:false};rsCue=pending;startCue.play(captureKey,()=>{if(rsCue===pending)pending.ready=true;},volume);}
           if(!rsCue.ready||current<t.recordingAt)text='Get ready';
           else if(!capture||capture.key!==captureKey||current<capture.endsAt){text='Recording';startRecording();}
           else{if(recorder?.state==='recording')recorder.stop();text=done.has(captureKey)?'Completed':'Recording period completed';}
@@ -210,7 +210,7 @@
         if(!promptFinished.has(captureKey)){
           text='Listening';if(played!==captureKey)playPrompt();
         }else{
-          if(rsCue?.key!==captureKey){const pending={key:captureKey,ready:false};rsCue=pending;startCue.play(captureKey,()=>{if(rsCue===pending)pending.ready=true;});}
+          if(rsCue?.key!==captureKey){const pending={key:captureKey,ready:false};rsCue=pending;startCue.play(captureKey,()=>{if(rsCue===pending)pending.ready=true;},volume);}
           if(!rsCue.ready||current<t.recordingAt)text='Get ready';
           else if(!capture||capture.key!==captureKey||current<capture.endsAt){text='Recording';startRecording();}
           else{if(recorder?.state==='recording')recorder.stop();text=done.has(captureKey)?'Completed':'Recording period completed';}
@@ -219,6 +219,14 @@
       else if(current<t.recordingAt){stopPrompt();text='Beginning in '+clock((t.recordingAt-current)/1000);}
       else if(current<t.endsAt){stopPrompt();text='Recording';startRecording();}
       else{if(recorder?.state==='recording')recorder.stop();text=done.has(captureKey)?'Completed':'Recording period completed';}
+      const time=doc.getElementById('sm-time'),clockLabel=doc.getElementById('sm-clock-label');
+      let left=0,label='Response';
+      if(completed){label='Completed';}
+      else if(text==='Listening'){label='Audio prompt';left=Number.isFinite(prompt?.duration)?Math.max(0,prompt.duration-prompt.currentTime):q.audioSeconds||0;}
+      else if(current<t.audioAt){label='Starting';left=(t.audioAt-current)/1000;}
+      else if(t.prepAt==null||current<t.cueAt||flow?.prepUntil>localNow()){label='Preparation';left=t.prepAt==null?q.preparation:Math.max((flow?.prepUntil||0)-localNow(),t.cueAt-current)/1000;}
+      else {label=text==='Get ready'?'Get ready':'Recording';left=((capture?.key===captureKey?capture.endsAt:t.endsAt)-current)/1000;}
+      if(time)time.textContent=clock(left);if(clockLabel)clockLabel.textContent=label;
       const status=doc.getElementById('sm-record-status');if(status&&status.textContent!==text)status.textContent=text;
       const began=q.type==='rs'||t.playbackDriven?(capture?.key===captureKey?capture.startedAt:current):t.recordingAt;
       const bar=doc.getElementById('sm-record-bar');if(bar)bar.style.width=(completed?100:Math.max(0,Math.min(100,(current-began)/(q.seconds*10))))+'%';

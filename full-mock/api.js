@@ -7,7 +7,7 @@ const { createStore, fail } = require('./store');
 const session = require('./session');
 const reports = require('./report');
 
-function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper(), papers = registeredPapers({ activeOnly: true }), assessment, requireAdmin } = {}) {
+function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper(), papers = registeredPapers({ activeOnly: true }), sectionTransitions = true, assessment, requireAdmin } = {}) {
   const selectedPapers = new Map(papers.map(value => [value.id, value]));
   selectedPapers.set(paper.id, paper);
   const store = createStore({ pool, directory }), router = express.Router();
@@ -79,13 +79,14 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     if (!selected) throw fail('Unknown full mock.', 400);
     if (!available(req.fullMock, selected)) throw fail('This full mock is not available for student attempts yet.', 403);
     if (req.body?.checks?.microphone !== true || req.body?.checks?.playback !== true) throw fail('Complete the microphone and playback checks first.', 400);
-    const make = (id, at) => session.create(id, selected, at, { preview: selected.status !== 'released' && req.fullMock.preview, assessmentSnapshot: assessor?.snapshotFor(selected) });
+    const make = (id, at) => session.create(id, selected, at, { preview: selected.status !== 'released' && req.fullMock.preview, assessmentSnapshot: assessor?.snapshotFor(selected), sectionTransitions });
     let record = await store.create(req.fullMock.uid, req.body.id, selected, make, now());
     record = await read(req.fullMock.uid, record.state.id, req.fullMock);
     if (record.state.status === 'submitted' && record.state.id !== req.body.id) record = await store.create(req.fullMock.uid, req.body.id, selected, make, now());
     res.json(view(record));
   }));
   router.get('/attempts/:id', wrap(async (req, res) => res.json(view(await read(req.fullMock.uid, req.params.id, req.fullMock)))));
+  router.post('/attempts/:id/begin-section', wrap(async (req, res) => res.json(view(await change(req, (state, savedPaper) => session.beginSection(state, savedPaper, req.body?.transitionId, now()))))));
   router.post('/attempts/:id/assessment', wrap(async (req, res) => {
     if (!assessor) throw fail('Assessment is not enabled.', 503);
     await read(req.fullMock.uid, req.params.id, req.fullMock);

@@ -187,3 +187,11 @@ test('FIB grammar classification is case-insensitive and context-aware for ambig
   assert.equal(fibQuality.classifyFor({passage:'Insurance provides financial [[1]] after accidents.'},0,'support'),'noun');
   assert.equal(fibQuality.classifyFor({passage:'Learners receive [[1]] that matches their needs.'},0,'support'),'noun');
 });
+
+test('Changing mock volume updates queued speech without replaying the recording',()=>{
+ const h=speakerHarness();h.speaker.setVolume(0.3);
+ h.speaker.play('volume','First speaker explains the claim. Second speaker supplies the correction.',{variant:'two-speakers'});
+ assert.equal(h.utterances[0].volume,0.3);h.speaker.setVolume(0.6);
+ assert.equal(h.utterances[0].volume,0.6);assert.equal(h.utterances.length,1);
+ h.utterances[0].onstart();h.utterances[0].onend();assert.equal(h.utterances[1].volume,0.6);
+});

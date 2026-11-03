@@ -28,9 +28,10 @@ async function fixture(t, options = {}) {
     const result = await request('/attempts', { id: randomUUID(), paperId: 'full-mock-1', checks: { microphone: true, playback: true } });
     assert.equal(result.status, 200);
     control = { pageId: randomUUID(), controlToken: randomUUID(), recoveryToken: randomUUID() };
-    const claimed = await request('/attempts/' + result.body.id + '/claim', control); assert.equal(claimed.status, 200); return claimed.body;
+    const claimed = await request('/attempts/' + result.body.id + '/claim', control); assert.equal(claimed.status, 200);
+    return claimed.body.transition ? (await request('/attempts/' + result.body.id + '/begin-section', {transitionId:claimed.body.transition.id})).body : claimed.body;
   }
-  async function until(a, type) { while (a.question?.type !== type) { const r = await request('/attempts/' + a.id + '/next', { itemToken: a.current.token, skip: true }); assert.equal(r.status, 200); a = r.body; } return a; }
+  async function until(a, type) { while (a.question?.type !== type) { if (a.transition) { a = (await request('/attempts/' + a.id + '/begin-section',{transitionId:a.transition.id})).body; continue; } const r = await request('/attempts/' + a.id + '/next', { itemToken: a.current.token, skip: true }); assert.equal(r.status, 200); a = r.body; } return a; }
   return { directory, roles, service, request, start, until, time: value => { now = value; }, now: () => now };
 }
 test('Only authorised previews start; accounts, draft media and future questions remain isolated', async t => {
@@ -111,6 +112,7 @@ test('All 66 items submit forward-only, with every task form saved and no invent
   const f = await fixture(t); let a = await f.start(); const paper = loadPaper();
   const seen = new Set();
   while (a.status === 'active') {
+    if (a.transition) { const value = await f.request('/attempts/' + a.id + '/begin-section', {transitionId:a.transition.id}); assert.equal(value.status,200); a=value.body; continue; }
     const token = a.current.token, q = a.index ? paper.questions[a.index - 1].question : { type: 'intro' }; seen.add(q.type);
     if (!speech(q.type)) {
       const answer = ['swt', 'essay', 'sst', 'wfd'].includes(q.type) ? [q.sample] : q.answers || [q.answer];
@@ -123,8 +125,8 @@ test('All 66 items submit forward-only, with every task form saved and no invent
   const saved = await f.service.store.get('alice', a.id); assert(saved.state.responses.every(response => response.sealed));
   assert.equal((await f.request('/attempts/' + a.id + '/draft', { itemToken: saved.state.responses[1].token, sequence: 999, answer: ['changed'] })).status, 409);
 });
-test('A background reconciliation submits an expired closed-browser attempt without a client clock', async t => {
-  const f = await fixture(t), a = await f.start(); f.time(f.now() + 8 * 60 * 60 * 1000);
+test('A background reconciliation submits an expired legacy attempt without a client clock', async t => {
+  const f = await fixture(t, {sectionTransitions:false}), a = await f.start(); f.time(f.now() + 8 * 60 * 60 * 1000);
   await f.service.reconcileAll();
   const saved = await f.service.store.get('alice', a.id); assert.equal(saved.state.status, 'submitted'); assert.equal(saved.state.responses.length, 66);
 });

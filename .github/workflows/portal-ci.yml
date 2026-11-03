@@ -58,6 +58,7 @@ jobs:
             .cache/essay-guide-*.png
             .cache/swt-review-*.png
             .cache/swt-mock-*.png
+            .cache/full-mock-flow-*.png
             public/index.min.js
           include-hidden-files: true
           if-no-files-found: error

@@ -100,6 +100,17 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Reviewed exam-flow/volume transport only. Old saved attempts retain their
+  // question clocks, canonical papers, native graders and confirmed marks.
+  const flowBaseline = require('../content/full-mock/exam-flow-compatible-sources.json');
+  const flowPins = {"full-mock/api.js": "06285adb9e42f4623d2378cfe1e67b6807e01124cfe0cf2900f64cb925f9c134", "full-mock/session.js": "bbfcaf22b86e780a7351136b6f7b8f1bc6404109e62260c1ecd957aff3a88a50", "full-mock/store.js": "0726a6228d628ca13dee22ae39d4efb27f6b889c32c9d28bd21c8d035a768630", "public/reading-mock-tools.js": "09f39d17f156b62a05a7a86677c21671cd8833bd00e4f03b7851353b0039a1ae", "public/reading-practice.js": "19241f159f7c5d08b6775f5a9ca7a643976faf67c341e8b2beba33e5f8a9d22a"};
+  if (digest(flowBaseline) === 'cb2c5f11942309a543e5983e26c3fc284e8d62f2b348c09aa1eee37b00f9b7cb'
+    && Object.entries(flowPins).every(([file, sha]) => current.scoringSources.files[file]?.sha256 === sha)) {
+    const sources = structuredClone(current.scoringSources);
+    for (const file of [...Object.keys(flowPins), 'full-mock/assessment.js']) sources.files[file] = structuredClone(flowBaseline.files[file]);
+    current = { ...current, scoringSources: sources };
+    if (digest(saved.scoringSources) === digest(flowBaseline)) return digest(saved) === digest(current);
+  }
   // Registry/selected-paper wiring only. Project the exact reviewed revisions
   // before the retained historical compatibility chain; native graders do not change.
   const multiBaseline = require('../content/full-mock/multi-paper-compatible-sources.json');
