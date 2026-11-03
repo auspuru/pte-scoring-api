@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "4871c83f30ad2014cc4063dc29adeeb41f0e0646",
+  "baseCommit": "3a5f57485b4818f278b3ea6f915a697c2fa495ca",
   "checkedAt": "2026-11-02",
-  "scope": "Automatic publication after eight recovery retries only for one confirmed failed provider assessment, with retained evidence and another assessed question of the same task. Uncertain, blocked, incomplete and multiple failures remain held. Exact source compatibility preserves frozen papers, graders, models and marks.",
+  "scope": "Two additional selectable Full Mocks and exact registry/selected-paper assessment wiring. Native graders, models, weights, timing and historical papers remain unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -88,7 +88,7 @@
         "version": "full-mock-aggregation-2026-10-29.1"
       },
       "full-mock/api.js": {
-        "sha256": "62e6070977272f8048a7d1775d5027347e797e231283f2f682445a39bab86807",
+        "sha256": "f5e15c09db0973bd722c716e701e97101025fb8ce25f200c118bcbd97b372208",
         "version": null
       },
       "full-mock/asq-scoring.js": {
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "defd557b360e55a7f1c80a75b6234cd1ae2d303aae3619ed87dcafecd1bedd87",
+        "sha256": "ee4e88370023d630a605021b6a6e5aaad032d6edca41eb0be8fd59b649f27a21",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -112,7 +112,7 @@
         "version": null
       },
       "full-mock/paper.js": {
-        "sha256": "fd69d2f6e9a54ed460374792cd40b2bacda688a0463a8d42747445ccf485c286",
+        "sha256": "b0135ccb3cfae07eca84a94a71a8d295b9df4a6c7523e64310c9f129b105724c",
         "version": null
       },
       "full-mock/profiles.js": {

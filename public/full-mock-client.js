@@ -131,7 +131,7 @@
           if (history.some(row => row.id === options.attemptId && row.status === 'submitted')) { await resume(options.attemptId, 'submitted'); return; }
           shell('<h1>Continue your full mock</h1><p>Your saved timer continues while you reconnect.</p><button class="portal-button primary" data-fm="resume" data-id="' + esc(options.attemptId) + '">Continue</button><p id="fm-notice" role="status"></p>'); return;
         }
-        shell('<header class="fm-hub-header"><span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><h1>Full Mock 1</h1><p>A continuous test covering Speaking, Writing, Reading and Listening.</p></header>'
+        shell('<header class="fm-hub-header"><span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><h1>Full Mock Tests</h1><p>A continuous test covering Speaking, Writing, Reading and Listening.</p></header>'
           + (catalog.available ? catalog.papers.map(paper => '<article class="fm-card"><span class="fm-badge">Full Mock</span><h2>' + esc(paper.title) + '</h2><p>65 scored questions · 22 task types · unscored introduction</p><p>Use headphones and a working microphone. Audio plays once, answers save as you work, and you cannot return to earlier questions.</p><button type="button" class="portal-button primary" data-fm="setup" data-paper="' + esc(paper.id) + '">Check equipment</button></article>').join('') : '<p>Full mocks are being prepared. Your sectional mocks remain available.</p>')
           + '<h2>Saved attempts</h2>' + reports.history(history) + '<p id="fm-notice" role="status"></p>');
       } catch (error) { if (valid(ticket)) { shell('<h1>Full Mock</h1><p id="fm-notice" role="alert"></p><button class="portal-button" data-fm="reload">Retry</button>'); notice(error.message, true); } }

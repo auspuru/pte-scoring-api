@@ -34,7 +34,7 @@ function metadata(paper, sha256) {
 }
 function validatePaper(paper, { root = ROOT } = {}) {
   const issues = [];
-  if (paper.schemaVersion !== 1 || paper.blueprintVersion !== blueprintVersion || paper.id !== 'full-mock-1' || ![1, 2].includes(paper.version) || paper.status !== 'frozen-draft') issues.push('Unsupported frozen paper contract.');
+  if (paper.schemaVersion !== 1 || paper.blueprintVersion !== blueprintVersion || !/^full-mock-[1-9]\d*$/.test(paper.id) || !Number.isSafeInteger(paper.version) || paper.version < 1 || paper.status !== 'frozen-draft') issues.push('Unsupported frozen paper contract.');
   if (!Array.isArray(paper.questions)) return ['Missing paper questions.'];
   issues.push(...validateSelection(paper.questions));
   if (paper.introduction?.scored !== false || paper.introduction?.type !== 'intro' || paper.introduction?.preparationSeconds !== 25 || paper.introduction?.responseSeconds !== 30) issues.push('Invalid unscored introduction.');
@@ -111,15 +111,27 @@ function catalogue({ root = ROOT } = {}) {
 }
 function loadPaper(id = 'full-mock-1', version, { root = ROOT } = {}) {
   const index = JSON.parse(readAsset(root, DIRECTORY + '/catalogue.json'));
-  version ??= index.activeVersion ?? 1;
-  if (id !== 'full-mock-1' || ![1, 2].includes(version)) throw Error('Unknown frozen paper.');
+  version ??= index.activeVersions?.[id] ?? (id === 'full-mock-1' ? index.activeVersion ?? 1 : undefined);
+  if (!/^full-mock-[1-9]\d*$/.test(id) || !Number.isSafeInteger(version) || version < 1) throw Error('Unknown frozen paper.');
   const entry = index.papers?.find(item => item.id === id && item.version === version);
-  if (!entry || entry.file !== DIRECTORY + '/full-mock-1.v' + version + '.json') throw Error('Unknown frozen paper.');
+  if (!entry || entry.file !== DIRECTORY + '/' + id + '.v' + version + '.json') throw Error('Unknown frozen paper.');
   const paper = JSON.parse(readAsset(root, entry.file));
   if (paper.id !== id || paper.version !== version || digest(paper) !== entry.sha256) throw Error('Frozen paper digest mismatch.');
   const issues = validatePaper(paper, { root });
   if (issues.length) throw Error(issues.join('\n'));
   return deepFreeze(paper);
+}
+function registeredPapers({ root = ROOT, activeOnly = false } = {}) {
+  const index = JSON.parse(readAsset(root, DIRECTORY + '/catalogue.json'));
+  if (index.schemaVersion !== 1 || !Array.isArray(index.papers)) throw Error('Invalid frozen paper catalogue.');
+  const ids = new Set();
+  return index.papers.filter(entry => {
+    const key = entry.id + '@' + entry.version;
+    if (ids.has(key)) throw Error('Duplicate frozen paper registration.');
+    ids.add(key);
+    const active = index.activeVersions?.[entry.id] ?? (entry.id === 'full-mock-1' ? index.activeVersion ?? 1 : undefined);
+    return !activeOnly || entry.version === active;
+  }).map(entry => loadPaper(entry.id, entry.version, { root }));
 }
 function assertReleased(paper) {
   if (paper.editorial?.studentReleaseApproved !== true || paper.status !== 'released') throw Error('This frozen draft is not available for student attempts.');
@@ -148,4 +160,4 @@ function questionForPlayer(candidate) {
   if (candidate.image) result.image = { id: candidate.image.sha256, width: 730, height: 500 };
   return result;
 }
-module.exports = { canonical, digest, deepFreeze, putImmutable, validatePaper, freezePaper, catalogue, loadPaper, assertReleased, snapshotForAttempt, questionForPlayer };
+module.exports = { canonical, digest, deepFreeze, putImmutable, validatePaper, freezePaper, catalogue, loadPaper, registeredPapers, assertReleased, snapshotForAttempt, questionForPlayer };

@@ -2,12 +2,14 @@
 const express = require('express');
 const path = require('node:path');
 const fs = require('node:fs/promises');
-const { loadPaper, digest, assertReleased } = require('./paper');
+const { loadPaper, registeredPapers, digest, assertReleased } = require('./paper');
 const { createStore, fail } = require('./store');
 const session = require('./session');
 const reports = require('./report');
 
-function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper(), assessment, requireAdmin } = {}) {
+function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper(), papers = registeredPapers({ activeOnly: true }), assessment, requireAdmin } = {}) {
+  const selectedPapers = new Map(papers.map(value => [value.id, value]));
+  selectedPapers.set(paper.id, paper);
   const store = createStore({ pool, directory }), router = express.Router();
   const assessor = assessment ? require('./assessment').createEngine({ store, now, paper, ...assessment }) : null;
   let sweep;
@@ -31,7 +33,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
   }));
   router.use(require('express-rate-limit')({ windowMs: 60000, max: 360, keyGenerator: req => req.fullMock.uid,
     standardHeaders: true, legacyHeaders: false, message: { error: 'Please wait briefly before retrying.' } }));
-  function available(context) { if (context.preview) return true; try { assertReleased(paper); return true; } catch { return false; } }
+  function available(context, selected = paper) { if (context.preview) return true; try { assertReleased(selected); return true; } catch { return false; } }
   async function settle(record, uid) {
     if (assessor && record.state.status === 'submitted') {
       try {
@@ -58,8 +60,11 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     });
     return settle(record, req.fullMock.uid);
   }
-  router.get('/catalog', wrap(async (req, res) => res.json({ available: available(req.fullMock), preview: paper.status !== 'released',
-    papers: available(req.fullMock) ? [{ id: paper.id, version: paper.version, title: paper.title, questionCount: 65, taskTypeCount: 22, preview: paper.status !== 'released' }] : [] })));
+  router.get('/catalog', wrap(async (req, res) => {
+    const visible = [...selectedPapers.values()].filter(value => available(req.fullMock, value));
+    res.json({ available: visible.length > 0, preview: visible.some(value => value.status !== 'released'),
+      papers: visible.map(value => ({ id: value.id, version: value.version, title: value.title, questionCount: value.questions.length, taskTypeCount: 22, preview: value.status !== 'released' })) });
+  }));
   router.get('/attempts', wrap(async (req, res) => {
     const saved = (await store.list(req.fullMock.uid)).filter(state => !state.preview || req.fullMock.preview).sort((a, b) => b.createdAt - a.createdAt);
     const rows = [];
@@ -70,12 +75,14 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     res.json(rows);
   }));
   router.post('/attempts', wrap(async (req, res) => {
-    if (!available(req.fullMock)) throw fail('Full Mock 1 is not available for student attempts yet.', 403);
-    if (req.body?.paperId !== paper.id || req.body?.checks?.microphone !== true || req.body?.checks?.playback !== true) throw fail('Complete the microphone and playback checks first.', 400);
-    const make = (id, at) => session.create(id, paper, at, { preview: paper.status !== 'released' && req.fullMock.preview, assessmentSnapshot: assessor?.snapshot });
-    let record = await store.create(req.fullMock.uid, req.body.id, paper, make, now());
+    const selected = selectedPapers.get(req.body?.paperId);
+    if (!selected) throw fail('Unknown full mock.', 400);
+    if (!available(req.fullMock, selected)) throw fail('This full mock is not available for student attempts yet.', 403);
+    if (req.body?.checks?.microphone !== true || req.body?.checks?.playback !== true) throw fail('Complete the microphone and playback checks first.', 400);
+    const make = (id, at) => session.create(id, selected, at, { preview: selected.status !== 'released' && req.fullMock.preview, assessmentSnapshot: assessor?.snapshotFor(selected) });
+    let record = await store.create(req.fullMock.uid, req.body.id, selected, make, now());
     record = await read(req.fullMock.uid, record.state.id, req.fullMock);
-    if (record.state.status === 'submitted' && record.state.id !== req.body.id) record = await store.create(req.fullMock.uid, req.body.id, paper, make, now());
+    if (record.state.status === 'submitted' && record.state.id !== req.body.id) record = await store.create(req.fullMock.uid, req.body.id, selected, make, now());
     res.json(view(record));
   }));
   router.get('/attempts/:id', wrap(async (req, res) => res.json(view(await read(req.fullMock.uid, req.params.id, req.fullMock)))));

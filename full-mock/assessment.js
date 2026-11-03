@@ -1,7 +1,7 @@
 'use strict';
 const { randomUUID } = require('node:crypto');
 const { scoringSnapshot } = require('./audit');
-const { digest, deepFreeze, loadPaper } = require('./paper');
+const { digest, deepFreeze, loadPaper, registeredPapers } = require('./paper');
 const { aggregate, inputHash, nativeValid } = require('./aggregation');
 const { SPOKEN, createAdapters, maxima, VERSION: adapterVersion } = require('./adapters');
 const { fail } = require('./store');
@@ -100,6 +100,17 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Registry/selected-paper wiring only. Project the exact reviewed revisions
+  // before the retained historical compatibility chain; native graders do not change.
+  const multiBaseline = require('../content/full-mock/multi-paper-compatible-sources.json');
+  const multiPins = { 'full-mock/paper.js': 'b0135ccb3cfae07eca84a94a71a8d295b9df4a6c7523e64310c9f129b105724c', 'full-mock/api.js': 'f5e15c09db0973bd722c716e701e97101025fb8ce25f200c118bcbd97b372208' };
+  if (digest(multiBaseline) === '453923d43a08b881e3110faa002dd371ebd9b1d3152e051938e95f7eb492bcdc'
+    && Object.entries(multiPins).every(([file, sha]) => current.scoringSources.files[file]?.sha256 === sha)) {
+    const sources = structuredClone(current.scoringSources);
+    for (const file of [...Object.keys(multiPins), 'full-mock/assessment.js']) sources.files[file] = structuredClone(multiBaseline.files[file]);
+    current = { ...current, scoringSources: sources };
+    if (digest(saved.scoringSources) === digest(multiBaseline)) return digest(saved) === digest(current);
+  }
   // Only these reviewed recovery/publication changes may project to the exact
   // preceding sources. Native scores, models, weights and frozen papers stay pinned.
   const automaticBaseline=require('../content/full-mock/automatic-final-question-compatible-sources.json');
@@ -296,7 +307,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
   const currentSnapshot = snapshot(providerConfiguration, undefined, paper), jobs = new Map(); let sweep, closing = false, recovering = false; const recoveryErrors = new Set();
   // New attempts use the active paper. In-flight attempts continue against the
   // explicitly retained frozen paper, rather than adopting replacement questions.
-  const trustedPapers = new Map([paper, loadPaper('full-mock-1', 1)].map(value => [digest(value), value]));
+  const trustedPapers = new Map([...registeredPapers(), paper].map(value => [digest(value), value]));
   const trustedSnapshots = new Map([...trustedPapers].map(([paperHash, value]) => {
     const current = paperHash === currentSnapshot.paperHash ? currentSnapshot : snapshot(providerConfiguration, undefined, value);
     return [paperHash, { current, hash: digest(current),
@@ -448,6 +459,11 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
   } }
   function stop() { closing = true; clearInterval(sweep); sweep = null; return drain(); }
   async function drain() { await Promise.allSettled([...jobs.values()]); }
-  return { snapshot: currentSnapshot, request, wakeMedia, results, recover, start, stop, drain, jobs, validate };
+  function snapshotFor(selected) {
+    const trusted = trustedSnapshots.get(digest(selected));
+    if (!trusted) throw fail('Unknown frozen assessment paper.', 409);
+    return trusted.current;
+  }
+  return { snapshot: currentSnapshot, snapshotFor, request, wakeMedia, results, recover, start, stop, drain, jobs, validate };
 }
 module.exports = { VERSION, configuration, legacyConfiguration, snapshot, stateFor, createEngine };

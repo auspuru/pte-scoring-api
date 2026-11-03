@@ -1,11 +1,14 @@
 'use strict';
 const path = require('node:path');
 const { execFileSync } = require('node:child_process');
-const { loadPaper, digest } = require('../full-mock/paper');
+const { loadPaper, registeredPapers, digest } = require('../full-mock/paper');
 function validate({ probe = false } = {}) {
   const paper = loadPaper();
-  if (probe) for (const candidate of paper.questions.filter(candidate => candidate.audio)) {
+  const papers = registeredPapers(), probed = new Set();
+  if (probe) for (const candidate of papers.flatMap(paper => paper.questions).filter(candidate => candidate.audio)) {
     const audio = candidate.audio;
+    if (probed.has(audio.path)) continue;
+    probed.add(audio.path);
     const file = path.resolve(__dirname, '..', audio.path);
     const seconds = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1:nk=1', file], { encoding: 'utf8', timeout: 10000 }));
     if (!Number.isFinite(seconds) || Math.abs(seconds - audio.entry.seconds) > 0.02) throw Error('Measured recording duration differs: ' + candidate.id);
@@ -13,7 +16,8 @@ function validate({ probe = false } = {}) {
   }
   return { id: paper.id, version: paper.version, sha256: digest(paper), questions: paper.questions.length,
     types: new Set(paper.questions.map(candidate => candidate.question.type)).size, assets: paper.assets.length,
-    status: paper.status, studentAvailable: false, humanListeningReview: paper.editorial.humanListeningReview };
+    status: paper.status, studentAvailable: false, humanListeningReview: paper.editorial.humanListeningReview,
+    registeredPapers: papers.map(value => ({ id: value.id, version: value.version, sha256: digest(value), questions: value.questions.length })) };
 }
 if (require.main === module) {
   try { if (process.argv.slice(2).some(arg => arg !== '--probe')) throw Error('Usage: validate-full-mock-1.js [--probe]'); console.log(validate({ probe: process.argv.includes('--probe') })); }
