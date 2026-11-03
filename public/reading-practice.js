@@ -107,7 +107,6 @@
   const practiceLibraries = () => catalogue ? catalogue.readingLibraries(bank) : bank.practiceLibraries;
   const isReadingPracticeMockId = id => /^reading-practice-mock-(?:[1-9]|1[0-5])$/.test(String(id || ''));
   let reviewView = { id: null, filter: 'all', type: 'all' };
-  let recentResultsOpen = false;
   const pendingGrades = new Map();
   const initialState = () => ({ session: null, history: [], drafts: [], practiceResults: {} });
   let lastSnapshot = null;
@@ -171,7 +170,7 @@
   }
   function reset() {
     document.removeEventListener?.('visibilitychange', visibilityChanged);
-    clearInterval(interval); interval = null; recentResultsOpen = false; generation++; owner = ''; state = null; selectedWord = ''; activeSince = 0;
+    clearInterval(interval); interval = null; generation++; owner = ''; state = null; selectedWord = ''; activeSince = 0;
     lastSnapshot = null;
     starting = false; pendingGrades.clear(); cancelAudio(); setExamMode(false); selectedParagraph = {}; examNotice = null;
     requestSerial++; libraryView=null; focusedQuestion=''; reviewView={id:null,filter:'all',type:'all'};
@@ -361,20 +360,21 @@
   }
   function home() {
     if (starting && !viewingQuestion) return;
-    const priorRecent = host?.querySelector?.('[data-reading-recent-results]');
-    if (priorRecent) recentResultsOpen = !!priorRecent.open;
     leave(); libraryView=null;
-    const recent=state.history.map((r,i)=>({r,i})).filter(({r})=>!r.practiceUid);
-    const drafts=(state.drafts||[]).map((r,i)=>({r,i})).filter(({r})=>!r.practiceUid);
-
-    host.innerHTML=`<button class="portal-button" data-action="mock-home">← Mock Tests</button><div class="reading-home-heading"><div><h2>Reading mock attempts</h2></div><div class="reading-sound-inline"><button class="portal-button" data-action="soundcheck"><span aria-hidden="true">♫</span> Check sound</button><span data-sound-status role="status"></span></div></div>
-      ${state.session&&!state.session.practiceUid?`<div class="portal-resume reading-resume"><div><strong>${escape(state.session.name)}</strong><p>${state.session.done?'Your answers and feedback are ready.':state.session.practiceUid?'Your practice answer is saved.':Number.isFinite(state.session.pausedRemainingSeconds)?'Your answers are saved. The timer is paused until you continue.':state.session.deadline==null?'Saved with the previous untimed format. Start a new practice mock for the 23-minute timer.':'Your answers are saved.'}</p></div><button class="portal-button" data-action="resume">${state.session.done?'Review result':'Continue session'} <span aria-hidden="true">→</span></button></div>`:''}
+    const date = value => Number.isFinite(Number(value)) && Number(value)>0
+      ? new Intl.DateTimeFormat('en-AU',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Australia/Brisbane'}).format(new Date(Number(value)))+' AEST'
+      : 'Date unavailable';
+    const recent=state.history.map((r,i)=>({r,i})).filter(({r})=>!r.practiceUid && r.done);
+    if(state.session?.done&&!state.session.practiceUid&&!recent.some(({r})=>r.id===state.session.id))recent.push({r:state.session,i:null});
+    recent.sort((a,b)=>(Number(b.r.finishedAt)||0)-(Number(a.r.finishedAt)||0));
+    const drafts=(state.drafts||[]).map((r,i)=>({r,i})).filter(({r})=>!r.practiceUid&&!r.done);
+    const current=state.session&&!state.session.practiceUid&&!state.session.done?state.session:null;
+    const resultRow=({r,i},position)=>`<li class="reading-attempt-row ${position===0?'reading-attempt-latest':''}" data-saved-mock="${escape(r.id)}"><div class="reading-attempt-copy"><span class="reading-attempt-status">${position===0?'Latest completed mock':'Completed'}</span><h3>${escape(r.name)}</h3><p>Completed ${escape(date(r.finishedAt))}</p><p>${r.questions.length} questions${r.pending?' · Assessment pending':''}</p></div><div class="reading-attempt-result"><strong>${r.earned}/${r.possible}</strong><span>graded points</span><button class="portal-button" ${i===null?'data-action="resume"':`data-history="${i}"`} aria-label="View result: ${escape(r.name)}, ${escape(date(r.finishedAt))}">View result →</button></div></li>`;
+    host.innerHTML=`<button class="portal-button" data-action="mock-home">← Mock Tests</button><div class="reading-home-heading"><div><h2>Reading mock attempts</h2><p>Completed mocks are listed newest first. Open a result to see your answers and feedback.</p></div><div class="reading-sound-inline"><button class="portal-button" data-action="soundcheck"><span aria-hidden="true">♫</span> Check sound</button><span data-sound-status role="status"></span></div></div>
       <p data-start-status role="status" aria-live="polite"></p>
-      <div class="reading-home-details"><details class="reading-home-help"><summary>Before you start</summary><p>Mocks require fullscreen. Leaving the test window locks the questions and records an interruption. The timer continues while you are away.</p></details>
-      ${drafts.length?`<details class="reading-home-help"><summary>Other saved sessions <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>Question ${r.index+1}</span></div><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:''}
-      <details class="reading-home-help" data-reading-recent-results ${recentResultsOpen?'open':''}><summary>Recent results <span>${recent.length}</span></summary>${recent.length?`<ul class="reading-history">${recent.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${escape(new Date(r.finishedAt).toLocaleDateString())} · ${r.earned}/${r.possible} graded points${r.pending?' · SWT awaiting assessment':''}</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul>`:'<p>Finish a mock to see your results here.</p>'}</details></div>`;
-    const recentDetails = host?.querySelector?.('[data-reading-recent-results]');
-    recentDetails?.addEventListener?.('toggle', () => { recentResultsOpen = !!recentDetails.open; });
+      <section class="reading-attempt-section" aria-labelledby="reading-completed-title"><h3 id="reading-completed-title">Completed mocks <span>(${recent.length})</span></h3><p class="reading-attempt-timezone">Dates and times are shown in Brisbane time (AEST).</p>${recent.length?`<ul class="reading-attempt-list" data-reading-recent-results>${recent.map(resultRow).join('')}</ul>`:'<p>No completed mocks yet. Your results will appear here after submission.</p>'}</section>
+      ${current||drafts.length?`<section class="reading-attempt-section" aria-labelledby="reading-progress-title"><h3 id="reading-progress-title">In progress</h3><ul class="reading-attempt-list">${current?`<li class="reading-attempt-row"><div class="reading-attempt-copy"><span class="reading-attempt-status">Not submitted</span><h3>${escape(current.name)}</h3><p>Question ${current.index+1} of ${current.questions.length}${Number.isFinite(current.pausedRemainingSeconds)?' · Timer paused':current.deadline==null?' · Saved with the previous untimed format':''}</p></div><button class="portal-button" data-action="resume" aria-label="Continue mock: ${escape(current.name)}">Continue mock →</button></li>`:''}${drafts.map(({r,i})=>`<li class="reading-attempt-row"><div class="reading-attempt-copy"><span class="reading-attempt-status">Not submitted</span><h3>${escape(r.name)}</h3><p>Question ${r.index+1} of ${r.questions.length}</p></div><button class="portal-button" data-draft="${i}" aria-label="Continue mock: ${escape(r.name)}">Continue mock →</button></li>`).join('')}</ul></section>`:''}
+      <details class="reading-home-help"><summary>Before you start</summary><p>Mocks require fullscreen. Leaving the test window locks the questions and records an interruption. The timer continues while you are away.</p></details>`;
   }
   function seenBefore(q) {
     if (!q) return false;

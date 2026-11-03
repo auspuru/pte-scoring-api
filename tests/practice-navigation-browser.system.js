@@ -319,3 +319,29 @@ for(const width of [1363,390,320])test('SWT mock feedback: submitted Writing and
  assert.equal(await page.$eval('#full-swt-browser .swt-mock-feedback',e=>e.scrollWidth<=e.clientWidth+1),true);assert.equal(JSON.stringify(attempt),before);assert.deepEqual(requests,[],'Read-only feedback does not save, submit or reassess the mock');
  if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.$eval('#full-swt-browser .swt-mock-feedback',e=>e.scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:path.join(root,'.cache','swt-mock-'+width+'.png')});}
 });
+
+for(const width of [1363,390,320])test('Reading mock history: newest result is visible and exact review links work at '+width+'px',{timeout:90000},async t=>{
+ const f=await authFixture(t),username='reading-history-browser',password='Synthetic-pass-123';
+ const registration=await f.request('/api/auth/register',{username,password,email:username+'@example.test'});assert.equal(registration.body.success,true);
+ const tools=require('../public/reading-mock-tools'),bank=require('../public/reading-bank.json');
+ const questions=tools.prepareQuestions(bank.sets[0].questions,'history-fixture');
+ const base={mode:'practice-reading-5',formatVersion:bank.version,questions,index:0,answers:{},assessments:{},audioStates:{},times:{},flags:[],checked:[],done:true,startedAt:Date.parse('2026-09-30T01:00:00Z'),finishedAt:Date.parse('2026-09-30T01:23:00Z'),deadline:null};
+ const old={...base,id:'older-result',name:'Reading Practice Mock 5'},latest={...base,id:'latest-result',mode:'sectional-1',name:'Integrated Reading & Listening Sectional Mock 1',startedAt:Date.parse('2026-11-02T22:37:00Z'),finishedAt:Date.parse('2026-11-02T23:30:00Z')};
+ const saved={session:old,history:[old,latest],drafts:[{...base,id:'unfinished',name:'Reading Practice Mock 2',done:false,deadline:null}],practiceResults:{}};
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const page=await browser.newPage();await page.setViewport({width,height:950});await page.emulateTimezone('UTC');const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();
+ await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
+ await page.evaluate(({username,saved})=>localStorage.setItem('ipt_reading_v1:'+username,JSON.stringify(saved)),{username,saved});
+ await page.locator('#nav-mock-tests').click();await page.waitForSelector('[data-mock-history="reading"]');await page.locator('[data-mock-history="reading"]').click();
+ await page.waitForSelector('[data-saved-mock="latest-result"]');
+ assert.deepEqual(await page.$$eval('[data-saved-mock]',nodes=>nodes.map(n=>n.dataset.savedMock)),['latest-result','older-result']);
+ assert(await page.$eval('[data-saved-mock="latest-result"]',n=>n.textContent.includes('Latest completed mock')&&n.textContent.includes('3 Nov 2026')&&n.textContent.includes('AEST')));
+ assert(await page.$eval('[data-saved-mock="latest-result"] button',n=>{const r=n.getBoundingClientRect();return r.height>=44&&r.top>=0&&r.bottom<=innerHeight;}));
+ assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'History overflows at '+width);
+ if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','reading-history-'+width+'.png'),fullPage:true});}
+ await page.locator('[data-saved-mock="latest-result"] button').click();await page.waitForSelector('.reading-report');
+ assert(await page.$eval('#readingPane',n=>n.textContent.includes('Integrated Reading & Listening Sectional Mock 1')));
+ await page.getByRole('button',{name:'← Back to attempts',exact:true}).click();await page.locator('[data-saved-mock="older-result"] button').click();await page.waitForSelector('.reading-report');
+ assert(await page.$eval('#readingPane',n=>n.textContent.includes('Reading Practice Mock 5')));assert.deepEqual(errors,[]);
+});

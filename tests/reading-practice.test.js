@@ -49,7 +49,7 @@ test('Reading UI saves an answer, restores it, and removes it when another accou
  h.host.onchange({target:{dataset:{answer:'0'},value:'Calm'}});
  assert.match(h.values.get(storageKey('first')),/Calm/);
  h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();assert.match(h.host.innerHTML,/option selected value="Calm"/);
- h.ctx.currentUserId='second';await h.ctx.ReadingPractice.open();assert.doesNotMatch(h.host.innerHTML,/data-answer/);assert.doesNotMatch(h.host.innerHTML,/Continue session/);
+ h.ctx.currentUserId='second';await h.ctx.ReadingPractice.open();assert.doesNotMatch(h.host.innerHTML,/data-answer/);assert.doesNotMatch(h.host.innerHTML,/Continue mock/);
 });
 test('Reading UI completes an expired mock once and retains its review in history',async()=>{
  const h=client();await h.ctx.ReadingPractice.open();h.click({start:'mock'});
@@ -236,7 +236,7 @@ test('Exam Next skips unanswered parts and parks the remaining time on exit',asy
  clock.add(30000);h.click({action:'exam-next'});assert.equal(saved().session.index,1);assert.deepEqual(saved().session.answers,{});
  h.click({question:'0'});h.click({move:'-1'});h.click({action:'check'});assert.equal(saved().session.index,1);assert.equal(saved().session.checked.length,0);
  h.click({action:'exam-exit'});h.click({action:'exam-confirm'});
- const parked=saved().session;assert.equal(parked.deadline,null);assert.equal(parked.pausedRemainingSeconds,Math.ceil((deadline-clock.now)/1000));assert.match(h.host.innerHTML,/Continue session/);
+ const parked=saved().session;assert.equal(parked.deadline,null);assert.equal(parked.pausedRemainingSeconds,Math.ceil((deadline-clock.now)/1000));assert.match(h.host.innerHTML,/Continue mock/);
  clock.add(5*60000);h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
  const resumed=saved().session;assert.equal(resumed.index,1);assert.equal(resumed.deadline,clock.now+parked.pausedRemainingSeconds*1000);assert.match(h.host.innerHTML,/Question 2 of 16/);
 });
@@ -322,7 +322,7 @@ test('Existing saved sectionals retain their original questions and deadline aft
  old.session.formatVersion=2;old.session.deadline=old.session.startedAt+25*60000;
  h.values.set(key,JSON.stringify(old));h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
  const saved=JSON.parse(h.values.get(key));assert.equal(saved.session.questions.length,15);assert.equal(saved.session.deadline,old.session.deadline);
- h.click({action:'exam-exit'});h.click({action:'exam-confirm'});assert.match(h.host.innerHTML,/Continue session/);
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});assert.match(h.host.innerHTML,/Continue mock/);
 });
 
 test('Clicking a selected single answer again clears it without changing any other answers',async()=>{
@@ -504,7 +504,7 @@ test('Reading home parks the current stage and no audio can start until Resume',
  const before=snapshot(h).session;h.click({action:'exam-exit'});h.click({action:'exam-confirm'});const parked=snapshot(h).session;
  assert.equal(parked.stageIndex,2);assert.equal(parked.deadline,null);assert(Number.isFinite(parked.pausedRemainingSeconds));
  clock.set(before.deadline+15*60000);h.timers.at(-1)();let s=snapshot(h).session;
- assert.equal(s.stageIndex,2);assert.equal(s.done,false);assert.equal(audio.utterances.length,0);assert.match(h.host.innerHTML,/Continue session/);
+ assert.equal(s.stageIndex,2);assert.equal(s.done,false);assert.equal(audio.utterances.length,0);assert.match(h.host.innerHTML,/Continue mock/);
  h.click({action:'resume'});s=snapshot(h).session;assert.equal(s.stageIndex,2);assert.equal(s.deadline,clock.now+parked.pausedRemainingSeconds*1000);assert.match(h.host.innerHTML,/data-exam-player/);
 });
 
@@ -698,7 +698,7 @@ test('Switching task libraries parks a running mock until the student resumes it
  assert.match(h.host.innerHTML,/Reading Multiple Answers/);assert.doesNotMatch(h.host.innerHTML,/data-start=/);
  assert.equal(parked.id,before.id);assert.equal(parked.deadline,null);assert(Number.isFinite(parked.pausedRemainingSeconds));
  await h.ctx.ReadingPractice.open({history:true});assert.equal(snapshot(h).session.deadline,null);
- assert.match(h.host.innerHTML,/Reading mock attempts/);assert.match(h.host.innerHTML,/Continue session/);
+ assert.match(h.host.innerHTML,/Reading mock attempts/);assert.match(h.host.innerHTML,/Continue mock/);
 });
 
 test('Feedback filters distinguish partial, blank, pending and excluded answers without changing their points',()=>{
@@ -901,11 +901,11 @@ test('Practice Back and Next traverse the task library and restore an answered d
 });
 
 
-test('Reading sync rerenders preserve Recent results expansion and completed practice keeps navigation', () => {
+test('Reading results remain visible and completed practice keeps navigation', () => {
  const source=fs.readFileSync(require.resolve('../public/reading-practice'),'utf8');
  assert.match(source,/data-reading-recent-results/);
- assert.match(source,/recentResultsOpen/);
- assert.match(source,/addEventListener\?\.\('toggle'/);
+ assert.doesNotMatch(source,/recentResultsOpen/);
+ assert.match(source,/Completed mocks/);
  assert.match(source,/reading-review-navigation/);
  assert.match(source,/Time mode: Untimed/);
  assert.match(source,/data-move="-1"/);
@@ -998,4 +998,14 @@ test('Reading saved responses with empty or stale context cannot jump into the b
   await h.click({move:'1'});assert.equal(snapshot(h).session.practiceUid,items[4].uid);
   assert.match(h.host.innerHTML,/data-move="1" disabled/);
  }
+});
+
+test('Reading history highlights the newest completion, retains original indices and uses Brisbane dates',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'practice'});await h.click({action:'submit'});
+ const base=snapshot(h).session,old={...base,id:'old-history',name:'Reading Practice Mock 5',finishedAt:Date.parse('2026-09-30T01:00:00Z')},latest={...base,id:'latest-history',name:'Integrated Reading & Listening Sectional Mock 1',finishedAt:Date.parse('2026-11-02T23:30:00Z')};
+ const saved={session:old,history:[old,{...base,id:'question',practiceUid:'private-question'},latest],drafts:[{...base,id:'draft',done:false,name:'Reading Practice Mock 2',index:0}],practiceResults:{}};
+ h.values.set(storageKey('first'),JSON.stringify(saved));h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open({history:true});
+ const html=h.host.innerHTML;assert(html.indexOf('latest-history')<html.indexOf('old-history'));assert.match(html,/Latest completed mock/);assert.match(html,/3 Nov 2026/);assert.match(html,/AEST/);assert.match(html,/data-history="2"/);assert.doesNotMatch(html,/data-history="1"/);assert.match(html,/Continue mock/);assert.doesNotMatch(html,/Review result/);assert.doesNotMatch(html,/<details[^>]*data-reading-recent-results/);
+ const before=snapshot(h);await h.click({history:'2'});assert.match(h.host.innerHTML,/Integrated Reading &amp; Listening Sectional Mock 1/);assert.deepEqual(snapshot(h).history,before.history);
+ await h.click({action:'home'});await h.click({history:'0'});assert.match(h.host.innerHTML,/Reading Practice Mock 5/);
 });
