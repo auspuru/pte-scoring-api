@@ -12874,23 +12874,50 @@ function switchSection(section, options = {}) {
 
 let studentProgressController;
 function openSavedSwtResponse(entry) {
+  const owner = currentUserId, token = sessionToken;
+  const generation = openSavedSwtResponse.generation = (openSavedSwtResponse.generation || 0) + 1;
+  const same = () => owner === currentUserId && token === sessionToken
+    && generation === openSavedSwtResponse.generation && portalWorkspace.current() === 'swt';
   const position = passages.findIndex(p => String(p.id) === String(entry.passageId));
   if (position < 0) { toast('This saved SWT passage is no longer available.', true); return; }
   setSwtPracticeMode('summary');
   if (entry.draft) { loadPassage(position + 1); showSwtScreen('swtPracticeScreen'); return; }
-  const history = (LocalStore.get(getPteStorageKey('history')) || {})[entry.passageId] || [];
-  const saved = entry.timestamp
-    ? history.find(a => a.timestamp === entry.timestamp && (entry.responseText === undefined || a.text === entry.responseText))
-    : history[entry.attemptIndex];
-  if (!saved || (entry.responseText !== undefined && saved.text !== entry.responseText)) {
-    toast('This saved response is unavailable. Refresh My Progress and try again.', true); return;
-  }
-  const latest = (LocalStore.get(getPteStorageKey('scores')) || {})[entry.passageId];
-  const result = latest?.__timestamp === saved.timestamp && latest.__text === saved.text ? latest : saved;
-  currentPassageId = position + 1;
-  updateResultsNav();
-  showResults({...result,__timestamp:saved.timestamp}, passages[position], result.__spellData || saved.spellData || null, saved.text || '');
-  showSwtScreen('swtResultsScreen');
+  const resolve = () => {
+    // Use the same owner-bound, reconciled snapshot as My Progress. Cloud
+    // history may be retained in memory when browser storage is unavailable.
+    const progress = localAccountProgress(owner), history = progress.history?.[entry.passageId] || [];
+    const matches = entry.timestamp != null
+      ? history.filter(a => String(a.timestamp) === String(entry.timestamp)
+        && (entry.responseText === undefined || a.text === entry.responseText))
+      : [history[entry.attemptIndex]].filter(Boolean);
+    if (matches.length !== 1) return null;
+    const saved = matches[0];
+    if (entry.responseText !== undefined && saved.text !== entry.responseText) return null;
+    const latest = progress.scores?.[entry.passageId];
+    const result = latest && String(latest.__timestamp) === String(saved.timestamp) && latest.__text === saved.text ? latest : saved;
+    return {saved,result};
+  };
+  const render = record => {
+    if (!same()) return;
+    const {saved,result} = record;
+    currentPassageId = position + 1;
+    loadStoredData();
+    populatePassageDropdowns();
+    updateResultsNav();
+    showResults({...result,__timestamp:saved.timestamp}, passages[position], result.__spellData || saved.spellData || null, saved.text || '');
+    showSwtScreen('swtResultsScreen');
+  };
+  const record = resolve();
+  if (record) { render(record); return; }
+  toast('Loading your saved SWT response…');
+  return refreshPracticeHistory({force:true}).then(() => {
+    if (!same()) return;
+    const refreshed = resolve();
+    if (refreshed) render(refreshed);
+    else toast('This saved response could not be loaded. Return to My Progress and refresh to try again.', true);
+  }).catch(() => {
+    if (same()) toast('This saved response could not be loaded. Return to My Progress and refresh to try again.', true);
+  });
 }
 
 function reviewSavedPractice(entry) {
@@ -15285,7 +15312,7 @@ function jumpToResultsPassage(target) {
   const select2 = document.getElementById('resPassageSelect');
   if (select2) select2.value = target;
   
-  const scores = LocalStore.get(getPteStorageKey('scores')) || {};
+  const scores = localAccountProgress().scores || {};
   const p = swtPassageAt(target);
   if (!p) return;
   
@@ -15302,10 +15329,9 @@ function jumpToResultsPassage(target) {
 }
 
 function loadStoredData(){
-  const att = LocalStore.get(getPteStorageKey('attempted')) || [];
-  att.forEach(id => attempted.add(id));
-  const h = LocalStore.get(getPteStorageKey('history')) || {};
-  Object.keys(h).forEach(id => { if(h[id] && h[id].length) attempted.add(parseInt(id)); });
+  const progress = localAccountProgress();
+  const ids = new Set([...(progress.attempted || []).map(String), ...Object.keys(progress.history || {}).filter(id => progress.history[id]?.length)]);
+  passages.forEach(p => { if (ids.has(String(p.id))) attempted.add(p.id); });
 }
 
 
@@ -16694,10 +16720,10 @@ function backToPractice(){
 function navResultsPassage(delta){
   const positions = swtNavigationPositions(activeResFilter), index = positions.indexOf(currentPassageId), target = positions[index + delta];
   if(index < 0 || target == null) return;
-  const scores = LocalStore.get(getPteStorageKey('scores')) || {};
+  const scores = localAccountProgress().scores || {};
   const p = swtPassageAt(target);
   if(!p) return;
-  if(scores[target] && typeof scores[target].overall_score === 'number'){
+  if(scores[p.id] && typeof scores[p.id].overall_score === 'number'){
     currentPassageId = target;
     updateResultsNav();
     showResults(scores[p.id], p, scores[p.id].__spellData || null, scores[p.id].__text || '');
