@@ -1,0 +1,55 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),puppeteer=require('puppeteer'),{fixture}=require('./helpers/auth-server');
+for(const width of [1363,390,320])test('Practice choices are usable before slow metadata arrives at '+width+'px',{timeout:45000},async t=>{
+ const f=await fixture(t),username='practice-loading-'+width,password='Synthetic-pass-123';
+ await f.request('/api/auth/register',{username,password,email:username+'@example.test'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const page=await browser.newPage();await page.setViewport({width,height:900});await page.setCacheEnabled(false);
+ await page.goto(f.base);await page.waitForSelector('#loginUsername',{visible:true});await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.click('#loginSubmitBtn');
+ await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
+ const held=[];let released=false;await page.setRequestInterception(true);
+ page.on('request',request=>{const path=new URL(request.url()).pathname;if(!released&&(path.endsWith('/reading-bank.json')||['/api/writing-lab/catalog','/api/writing-lab/attempts','/api/speaking/catalog','/api/speaking/attempts','/api/speaking-mocks/attempts'].includes(path))){held.push(request);return;}request.continue().catch(()=>{});});
+ const initial=await page.evaluate(()=>{
+  portalCatalogueProgressCache={uid:'',at:0,value:null};portalWritingAttemptsCache=null;
+  const start=performance.now();switchSection('practice-hub');
+  return{elapsed:performance.now()-start,choices:document.querySelectorAll('#practiceHubPane [data-practice-route]').length,text:document.getElementById('practiceHubPane').textContent};
+ });
+ assert(initial.choices>=15,'All permitted task choices exist synchronously');assert.doesNotMatch(initial.text,/Loading practice choices/);
+ await page.locator('#practiceHubPane .practice-banner.reading summary').click();
+ await page.focus('[data-practice-route="reading-dropdown"]');await page.evaluate(()=>window.__practiceButton=document.querySelector('[data-practice-route="reading-dropdown"]'));
+ assert(held.length>=2,'The menu is usable while catalogue and history requests are stalled');
+ released=true;await Promise.allSettled(held.map(request=>request.continue()));
+ await page.waitForFunction(()=>document.querySelector('[data-practice-route="reading-dropdown"] .practice-task-count')?.textContent.includes('questions'));
+ assert.equal(await page.evaluate(()=>window.__practiceButton===document.querySelector('[data-practice-route="reading-dropdown"]')),true);
+ assert.equal(await page.$eval('#practiceHubPane .practice-banner.reading',e=>e.open),true);
+ assert.equal(await page.evaluate(()=>document.activeElement===window.__practiceButton),true);
+ console.log('Practice choices '+width+'px: '+Math.round(initial.elapsed)+'ms before metadata');
+});
+for(const width of [1363,390,320])test('SWT opens directly with unobstructed passage and summary at '+width+'px',{timeout:45000},async t=>{
+ const f=await fixture(t),username='swt-layout-'+width,password='Synthetic-pass-123';await f.request('/api/auth/register',{username,password,email:username+'@example.test'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const page=await browser.newPage();await page.setViewport({width,height:900});await page.goto(f.base);await page.waitForSelector('#loginUsername',{visible:true});await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.click('#loginSubmitBtn');
+ await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
+ await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput',{visible:true});
+ const layout=await page.evaluate(()=>{const nav=document.getElementById('swtQuestionNavigation'),grid=document.getElementById('swtPracticeGrid');return{position:getComputedStyle(nav).position,bottom:nav.getBoundingClientRect().bottom,gridTop:grid.getBoundingClientRect().top,highlight:!!document.querySelector('[data-swt-mode="highlight"],#swtHighlightPane'),overflow:document.documentElement.scrollWidth>innerWidth+1};});
+ assert.equal(layout.position,'static');assert(layout.bottom<=layout.gridTop+1,'Navigation cannot cover the passage or editor');assert.equal(layout.highlight,false);assert.equal(layout.overflow,false);
+ await page.evaluate(()=>setSwtPracticeMode('highlight'));assert.equal(await page.evaluate(()=>swtPracticeMode),'summary');
+ await page.type('#summaryInput','A preserved summary draft for the first passage.');
+ await page.locator('#navNext').click();await page.waitForFunction(()=>document.getElementById('navCurrent').textContent==='02');await page.locator('#navPrev').click();await page.waitForFunction(()=>document.getElementById('summaryInput').value==='A preserved summary draft for the first passage.');
+ await page.$eval('#swtQuestionNavigation',e=>e.scrollIntoView({block:'start',behavior:'instant'}));
+ const fs=require('node:fs/promises'),path=require('node:path');await fs.mkdir(path.resolve(__dirname,'../.cache'),{recursive:true});await page.screenshot({path:path.resolve(__dirname,'../.cache/swt-practice-'+width+'.png')});
+});
+for(const width of [1363,390,320])test('My Progress shows cached saved work before slow cloud requests at '+width+'px',{timeout:45000},async t=>{
+ const f=await fixture(t),username='progress-fast-'+width,password='Synthetic-pass-123';const login=(await f.request('/api/auth/register',{username,password,email:username+'@example.test'})).body;
+ const passage=(await f.request('/api/passages')).body.passages[0],timestamp=1700000000000;
+ await f.request('/api/sync/'+username,{history:{[passage.id]:[{text:'A cached summary.',timestamp,overall_score:80,trait_scores:{content:3,form:1,grammar:2,vocabulary:2}}]}},login.token);
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const page=await browser.newPage();await page.setViewport({width,height:900});await page.goto(f.base);await page.waitForSelector('#loginUsername',{visible:true});await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.click('#loginSubmitBtn');
+ await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
+ let released=false;const held=[];await page.setRequestInterception(true);page.on('request',r=>{const p=new URL(r.url()).pathname;if(!released&&(['/api/writing-lab/attempts','/api/speaking/attempts','/api/sync/'+username].includes(p)||p.endsWith('/reading-practice.js'))){held.push(r);return;}r.continue().catch(()=>{});});
+ await page.evaluate(()=>switchSection('progress'));await page.waitForSelector('#progressPane [data-progress-attempt]',{visible:true,timeout:3000});
+ assert((await page.$eval('#progressPane',e=>e.textContent)).includes(passage.title));assert(held.length>0);
+ const fs=require('node:fs/promises'),path=require('node:path');await fs.mkdir(path.resolve(__dirname,'../.cache'),{recursive:true});await page.screenshot({path:path.resolve(__dirname,'../.cache/progress-fast-'+width+'.png')});
+ released=true;await Promise.allSettled(held.map(r=>r.continue()));await page.waitForFunction(()=>!document.getElementById('progressPane').textContent.includes('Refreshing saved activity'));
+ assert.equal(await page.$('#progressPane .progress-notice'),null);
+});

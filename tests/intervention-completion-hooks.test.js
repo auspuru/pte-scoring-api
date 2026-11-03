@@ -60,11 +60,11 @@ test('real practice sets never render a manual complete button',()=>{
   assert.match(client,/older practice step needs a real activity/i);
 });
 
-test('SWT practice asks students to choose Full Summary or Highlight Key Phrases mode',()=>{
+test('SWT opens directly in summary mode; the separate legacy trainer remains isolated',()=>{
   const html=source('public/index.html'),client=source('public/index.js'),trainerClient=source('public/interventions-client.js');
-  assert.match(html,/How do you want to practise\?/);
-  assert.match(html,/Full Summary Mode/);
-  assert.match(html,/Highlight Key Phrases Mode/);
+  assert.doesNotMatch(html,/swtModeChooser|Highlight Key Phrases Mode|data-swt-mode/);
+  assert.match(client,/let swtPracticeMode = 'summary'/);
+  assert.match(client,/if\(mode!=='summary'\) return/);
   assert.match(client,/setSwtPracticeMode/);
   assert.match(client,/swt-selection\/practice/);
   assert.match(client,/captureSwtHighlightSelection/);

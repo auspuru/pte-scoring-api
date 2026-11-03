@@ -172,34 +172,39 @@ function model(data,writing,speaking=[]){
  ].sort((a,b)=>stamp(b.at)-stamp(a.at));
  return {activity,mocks,groups,areas,weakest,recent,recentWriting,activePractice,practice:groups.reduce((n,g)=>n+g.count,0),complete:mocks.filter(a=>a.done).length,active:mocks.filter(a=>!a.done).length,days:days.size};
 }
-function create({document:doc,identity,loadLocal,navigate,review,fetch:get=fetch}){
- let serial=0,current=null,currentOwner=null,visibleCount=20;
+function create({document:doc,identity,loadLocal,refreshLocal,navigate,review,fetch:get=fetch}){
+ let serial=0,current=null,currentOwner=null,visibleCount=20,cache=null;
  const host=()=>doc.getElementById('progressPane');
- function paint(local,writing,speaking,error){
+ function paint(local,writing,speaking,error,pending=false){
+  const focused=doc.activeElement?.closest?.('[data-progress-key]')?.dataset.progressKey;
+  const mocksOpen=host().querySelector('details.progress-section')?.open;
   const m=model(local,writing,speaking);current=m;currentOwner=identity();
   const rows=m.activity.slice(0,visibleCount);
-  const row=(a,index)=>'<button type="button" class="progress-attempt" data-progress-attempt="'+index+'"><span class="progress-attempt-copy"><strong>'+esc(a.title)+'</strong><span class="progress-caption">'+esc(a.task||a.title)+' · '+date(a.at)+' · '+esc(a.status)+'</span></span><span class="progress-attempt-action">'+esc(a.action)+' <span aria-hidden="true">→</span></span></button>';
+  const row=(a,index)=>'<button type="button" class="progress-attempt" data-progress-key="'+esc([a.engine,a.id,a.timestamp].join(':'))+'" data-progress-attempt="'+index+'"><span class="progress-attempt-copy"><strong>'+esc(a.title)+'</strong><span class="progress-caption">'+esc(a.task||a.title)+' · '+date(a.at)+' · '+esc(a.status)+'</span></span><span class="progress-attempt-action">'+esc(a.action)+' <span aria-hidden="true">→</span></span></button>';
   host().innerHTML='<div class="progress-heading"><div><h2>My Progress</h2><p>Your latest questions first. Select a response to review your saved work and feedback.</p></div><button type="button" class="portal-button" data-progress-refresh>Refresh</button></div>'+
    (error?'<p class="progress-notice" role="alert">'+esc(error)+' <button type="button" class="portal-button" data-progress-refresh>Retry</button></p>':'')+
-   '<section class="progress-section progress-recent"><h3>Recently attempted questions</h3>'+(rows.length?'<div class="progress-attempts">'+rows.map(row).join('')+'</div>':'<div class="progress-empty"><p>Your saved questions will appear here after you practise.</p><button type="button" class="portal-button primary" data-progress-route="practice-hub">Go to Practice</button></div>')+
+   (pending?'<p class="progress-caption" role="status">Refreshing saved activity…</p>':'')+
+   '<section class="progress-section progress-recent"><h3>Recently attempted questions</h3>'+(rows.length?'<div class="progress-attempts">'+rows.map(row).join('')+'</div>':'<div class="progress-empty"><p>'+(pending?'Checking for newer saved activity.':'Your saved questions will appear here after you practise.')+'</p><button type="button" class="portal-button primary" data-progress-route="practice-hub">Go to Practice</button></div>')+
    (m.activity.length>rows.length?'<button type="button" class="portal-button progress-more" data-progress-more>Show more questions</button>':'')+'</section>'+
    (m.mocks.length?'<details class="progress-section"><summary>Saved mock tests ('+m.mocks.length+')</summary><div class="progress-attempts">'+m.mocks.map((a,index)=>'<button type="button" class="progress-attempt" data-progress-review="'+index+'"><span class="progress-attempt-copy"><strong>'+esc(a.title)+'</strong><span class="progress-caption">'+date(a.at)+' · '+(!a.done?'In progress':a.pending?'Assessment pending':'Completed')+'</span></span><span class="progress-attempt-action">'+(a.done?'View result':'Continue')+' →</span></button>').join('')+'</div></details>':'');
-  host().querySelector('[data-progress-more]')?.addEventListener('click',()=>{visibleCount+=20;paint(local,writing,speaking,error);});
+  host().querySelector('[data-progress-more]')?.addEventListener('click',()=>{visibleCount+=20;paint(local,writing,speaking,error,pending);});
+  const details=host().querySelector('details.progress-section');if(details&&mocksOpen)details.open=true;
+  if(focused)[...host().querySelectorAll('[data-progress-key]')].find(e=>e.dataset.progressKey===focused)?.focus({preventScroll:true});
  }
  async function open(){
   const ticket=++serial,owner=identity();if(!owner.uid||!owner.token)return;
   const same=()=>ticket===serial&&identity().uid===owner.uid&&identity().token===owner.token;
-  current=null;currentOwner=null;visibleCount=20;host().innerHTML='<p role="status">Loading your progress…</p>';
-  const results=await Promise.allSettled([
-   loadLocal(),
-   (async()=>{const r=await get('/api/writing-lab/attempts',{headers:{'x-session-token':owner.token},cache:'no-store',signal:AbortSignal.timeout(20000)});if(!r.ok)throw Error('Writing and listening results could not load.');return r.json();})(),
-   (async()=>{const r=await get('/api/speaking/attempts',{headers:{'x-session-token':owner.token},cache:'no-store',signal:AbortSignal.timeout(20000)});if(!r.ok)throw Error('Speaking results could not load.');return r.json();})()
+  if(!cache||cache.uid!==owner.uid||cache.token!==owner.token)cache={...owner,local:{},writing:[],speaking:[]};
+  const view=cache;visibleCount=20;let pending=refreshLocal?4:3,failed=false,localPriority=-1;
+  const update=()=>{if(same())paint(view.local,view.writing,view.speaking,failed?'Some progress could not be refreshed. Available saved activity is shown below.':'',pending>0);};
+  update();
+  const receive=(key,task,priority=0)=>Promise.resolve().then(task).then(value=>{if(same()&&(key!=='local'||priority>=localPriority)){view[key]=value;if(key==='local')localPriority=priority;}},()=>{if(same())failed=true;}).finally(()=>{pending--;update();});
+  await Promise.all([
+   receive('local',loadLocal),
+   receive('writing',async()=>{const r=await get('/api/writing-lab/attempts',{headers:{'x-session-token':owner.token},cache:'no-store',signal:AbortSignal.timeout(20000)});if(!r.ok)throw Error('Writing and listening results could not load.');return r.json();}),
+   receive('speaking',async()=>{const r=await get('/api/speaking/attempts',{headers:{'x-session-token':owner.token},cache:'no-store',signal:AbortSignal.timeout(20000)});if(r.status===403&&(await r.clone().json().catch(()=>({}))).code==='SPEAKING_ACCESS_DISABLED')return [];if(!r.ok)throw Error('Speaking results could not load.');return r.json();}),
+   ...(refreshLocal?[receive('local',refreshLocal,1)]:[])
   ]);
-  if(!same())return;
-  const local=results[0].status==='fulfilled'?results[0].value:{};
-  const writing=results[1].status==='fulfilled'?results[1].value:[];
-  const speaking=results[2].status==='fulfilled'?results[2].value:[];
-  paint(local,writing,speaking,results.some(r=>r.status==='rejected')?'Some progress could not be refreshed. Available saved activity is shown below.':'');
  }
  host().onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-progress-refresh'))return open();const user=identity();if(!currentOwner||currentOwner.uid!==user.uid||currentOwner.token!==user.token)return;if(b.dataset.progressRoute)return navigate(b.dataset.progressRoute);const entry=b.dataset.progressAttempt!==undefined?current?.activity[Number(b.dataset.progressAttempt)]:b.dataset.progressReview!==undefined?current?.mocks[Number(b.dataset.progressReview)]:null;if(entry)return review(entry);};
  return {open};

@@ -10,7 +10,7 @@ function gate(verify, check = allowed) {
     let user; try { user=verify(req.headers['x-session-token'] || ''); } catch {}
     if (!user) return res.status(401).json({error:'Please sign in to your practice account.'});
     try {
-      if (!await check(user)) return res.status(403).json({error:'Speaking is not available for this account.'});
+      if (!await check(user)) return res.status(403).json({code:'SPEAKING_ACCESS_DISABLED',error:'Speaking is not available for this account.'});
       next();
     } catch { res.status(503).json({error:'Speaking access could not be checked. Please retry.'}); }
   };

@@ -10,6 +10,12 @@ function credentialsError(username,password,{register=false,email}={}){
 function signedParts(token){if(typeof token!=='string'||token.length>4096)return null;const parts=token.split('.');return parts.length===2&&parts[0]&&/^[a-f0-9]{64}$/.test(parts[1])?parts:null;}
 function signatureMatches(signature,expected){return typeof signature==='string'&&/^[a-f0-9]{64}$/.test(signature)&&crypto.timingSafeEqual(Buffer.from(signature,'hex'),Buffer.from(expected,'hex'));}
 const credentialVersion=hash=>crypto.createHash('sha256').update(String(hash)).digest('hex');
+function sessionPayload(payload){
+ if(typeof payload!=='string')return null;
+ const parts=payload.split('|'),version=parts.length===2?0:/^v\d+$/.test(parts[1])?Number(parts[1].slice(1)):NaN;
+ const expiry=Number(parts.at(-1));
+ return [2,3].includes(parts.length)&&parts[0]&&Number.isSafeInteger(version)&&version>=0&&Number.isFinite(expiry)&&expiry>0?{username:parts[0],version,expiry}:null;
+}
 function resetOrigin(req,env=process.env){
  const configured=env.PORTAL_PUBLIC_URL||(env.RAILWAY_PUBLIC_DOMAIN?'https://'+env.RAILWAY_PUBLIC_DOMAIN:'');
  if(configured){try{const url=new URL(configured);if(url.protocol==='https:'&&!url.username&&!url.password)return url.origin;}catch{}}
@@ -17,4 +23,4 @@ function resetOrigin(req,env=process.env){
  return 'https://swt.up.railway.app';
 }
 function createSerialQueue(){let pending=Promise.resolve();return operation=>{const task=pending.catch(()=>{}).then(operation);pending=task;return task;};}
-module.exports={passwordError,credentialsError,signedParts,signatureMatches,credentialVersion,resetOrigin,createSerialQueue};
+module.exports={passwordError,credentialsError,signedParts,signatureMatches,credentialVersion,sessionPayload,resetOrigin,createSerialQueue};

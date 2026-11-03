@@ -1,5 +1,48 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),puppeteer=require('puppeteer'),{fixture}=require('./helpers/auth-server');
+test('Duplicate-email sign-up remains recoverable through the real Forgot password screens',{timeout:60000},async t=>{
+ const f=await fixture(t),username='email-browser',password='Original-pass-123';
+ const original=(await f.request('/api/auth/register',{username,password,email:'email-browser@example.test'})).body;
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const page=await browser.newPage();await page.setViewport({width:390,height:900});await page.goto(f.base);await page.waitForSelector('#loginUsername',{visible:true});
+ await page.evaluate(()=>toggleSignupMode(true));await page.type('#regUsername','duplicate-email-browser');await page.type('#regEmail','EMAIL-BROWSER@example.test');await page.type('#regPassword',password);await page.click('#regSubmitBtn');
+ await page.waitForSelector('#registerError.show');assert.match(await page.$eval('#registerError',e=>e.textContent),/already uses this email.*Forgot password/);assert.equal(await page.$eval('#regSubmitBtn',e=>e.disabled),false);
+ await page.evaluate(()=>toggleForgotPasswordMode(true));await page.type('#forgotUsername',username);await page.click('#forgotStep1Btn');
+ await page.waitForFunction(()=>document.getElementById('forgotPasswordNotice')?.textContent.includes('check your email'));
+ const link=(await f.mail()).text.match(/https?:\/\/\S+/)[0];await page.goto(link);await page.waitForSelector('#emailResetPassword',{visible:true});
+ await page.type('#emailResetPassword','Recovered-pass-456');await page.type('#emailResetConfirm','Recovered-pass-456');await page.click('#emailResetSubmit');
+ await page.waitForFunction(()=>document.getElementById('loginError')?.textContent.includes('Password updated'));
+ assert.equal((await f.request('/api/auth/login',{username,password})).body.success,false);
+ assert.equal((await f.request('/api/auth/login',{username,password:'Recovered-pass-456'})).body.success,true);
+ assert.equal((await f.request('/api/sync/'+username,undefined,original.token)).status,401);
+});
+test('Password changes renew browser authentication, revoke older sessions and retain saved drafts',{timeout:60000},async t=>{
+ const f=await fixture(t),username='password-browser',password='Original-pass-123';
+ const registered=(await f.request('/api/auth/register',{username,password,email:'password-browser@example.test'})).body;
+ await f.request('/api/sync/'+username,{essayDraft:{essayText:'A retained synthetic draft',updatedAt:Date.now()}},registered.token);
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const page=await browser.newPage();await page.setViewport({width:390,height:900});
+ await page.goto(f.base);await page.waitForSelector('#loginUsername',{visible:true});await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.click('#loginSubmitBtn');
+ const ready=()=>page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
+ await ready();const old=await page.evaluate(()=>sessionToken);
+ await page.evaluate(()=>{openUserMenu();changePassword();});
+ await page.type('#changeCurrentPassword',password);await page.type('#changeNewPassword','Replacement-pass-456');await page.type('#changeConfirmPassword','Replacement-pass-456');
+ const changed=page.waitForResponse(r=>r.url().endsWith('/api/auth/change-password'));
+ await page.click('#changePasswordSubmit');const response=await changed;assert.equal(response.status(),200);
+ await page.waitForFunction(previous=>sessionToken!==previous,{},old);
+ const renewed=await page.evaluate(()=>({token:sessionToken,stored:getAuthStorageValue('pte_session_token')}));assert.equal(renewed.token,renewed.stored);
+ assert.equal((await f.request('/api/sync/'+username,undefined,old)).status,401);
+ assert.equal((await f.request('/api/sync/'+username,undefined,renewed.token)).body.data.essayDraft.essayText,'A retained synthetic draft');
+ await page.reload();await ready();assert.equal(await page.evaluate(()=>currentUserId),username);
+});
+test('My Progress opens without a failure warning when Speaking access is intentionally disabled',{timeout:30000},async t=>{
+ const f=await fixture(t),username='progress-restricted';await f.request('/api/auth/register',{username,password:'Original-pass-123',email:'progress-restricted@example.test'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const page=await browser.newPage();await page.goto(f.base);await page.waitForSelector('#loginUsername',{visible:true});await page.type('#loginUsername',username);await page.type('#loginPassword','Original-pass-123');await page.click('#loginSubmitBtn');
+ await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
+ await page.evaluate(()=>switchSection('progress'));await page.waitForSelector('#progressPane .progress-empty',{visible:true});
+ assert.equal(await page.$('#progressPane .progress-notice'),null);
+});
 test('Admins can set and extend portal access dates when granting access on desktop and mobile',{timeout:60000},async t=>{
  const f=await fixture(t),browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
  const errors=[];
@@ -76,11 +119,11 @@ test('AUTH-01/03/04: real login, keyboard double-submit and expired-session draf
  await page.goto(f.base);await page.waitForSelector('#loginUsername');await page.type('#loginUsername','browser-alice');await page.type('#loginPassword','Wrong-pass-123');await page.click('#loginSubmitBtn');await page.waitForSelector('#loginError.show');assert.equal(await page.$eval('#loginSubmitBtn',e=>e.disabled),false);await page.$eval('#loginPassword',e=>e.value='');await page.type('#loginPassword','Password123');
  await page.evaluate(()=>{const form=document.getElementById('loginSubmitForm');form.dispatchEvent(new Event('submit',{cancelable:true}));form.dispatchEvent(new Event('submit',{cancelable:true}));});
  await workspace('first account');assert.equal(logins,2);
- await page.evaluate(()=>switchSection('swt'));await page.click('[data-swt-mode="summary"]');await page.waitForSelector('#summaryInput',{visible:true});await page.type('#summaryInput','A recoverable first-account summary.');assert.equal(await page.$eval('#summaryInput',e=>e.value),'A recoverable first-account summary.');assert.equal(await page.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('pte_browser-alice_summaries')||'{}')).some(entry=>entry.text==='A recoverable first-account summary.')),true,'The draft is saved before expiry');
+ await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput',{visible:true});await page.type('#summaryInput','A recoverable first-account summary.');assert.equal(await page.$eval('#summaryInput',e=>e.value),'A recoverable first-account summary.');assert.equal(await page.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('pte_browser-alice_summaries')||'{}')).some(entry=>entry.text==='A recoverable first-account summary.')),true,'The draft is saved before expiry');
  await f.clock(31*24*60*60*1000);await page.evaluate(()=>refreshPracticeHistory({force:true}));await page.waitForFunction(()=>document.getElementById('loginScreen')?.style.display==='flex');
  await f.clock(0);await page.type('#loginUsername','browser-bob');await page.type('#loginPassword','Password123');await page.click('#loginSubmitBtn');await workspace('second account');
- await page.evaluate(()=>switchSection('swt'));await page.click('[data-swt-mode="summary"]');await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'');
- await page.evaluate(()=>signOut());await page.type('#loginUsername','browser-alice');await page.type('#loginPassword','Password123');await page.click('#loginSubmitBtn');await workspace('original account recovery');await page.evaluate(()=>switchSection('swt'));await page.click('[data-swt-mode="summary"]');await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'A recoverable first-account summary.');
+ await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'');
+ await page.evaluate(()=>signOut());await page.type('#loginUsername','browser-alice');await page.type('#loginPassword','Password123');await page.click('#loginSubmitBtn');await workspace('original account recovery');await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'A recoverable first-account summary.');
 });
 
 test('SWT practice submits with the signed-in session after login and reload',{timeout:60000},async t=>{
@@ -110,7 +153,7 @@ test('SWT practice submits with the signed-in session after login and reload',{t
   const ready=()=>page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
   await ready();const login=receipts['/api/auth/login'];assert.equal(login.success,true);
   if(reload){await page.reload();await ready();}
-  await page.evaluate(()=>switchSection('swt'));await page.click('[data-swt-mode="summary"]');await page.waitForSelector('#summaryInput',{visible:true});
+  await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput',{visible:true});
   // Two sentences exercise the real server's deterministic form gate after
   // authentication, without any external scoring provider or mocked HTTP reply.
   const text='Bees support plants. Flowers grow.';await page.type('#summaryInput',text);
