@@ -27,7 +27,7 @@ for(const mobile of [false,true])test('Speaking mock Chrome '+(mobile?'mobile':'
  await page.waitForSelector('#sm-check-record');assert.equal(created,0);assert.equal(uploads,0);assert(await page.$eval('#sm-check-begin',node=>node.disabled));
  await click('#sm-check-record');await page.waitForFunction(()=>!document.getElementById('sm-check-play').disabled);assert.equal(created,0);assert.equal(uploads,0);
  await click('#sm-check-play');await page.waitForFunction(()=>!document.getElementById('sm-check-heard').disabled);assert(await page.$eval('#sm-check-begin',node=>node.disabled));
- await click('#sm-check-heard');await click('#sm-check-begin');await page.waitForSelector('#sm-next');assert.equal(created,1);assert.equal(uploads,0);assert(await page.evaluate(()=>!!document.fullscreenElement));
+ await click('#sm-check-heard');await click('#sm-check-begin');await page.waitForSelector('#sm-next');assert.equal(created,1);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Speaking header overflows the viewport');assert.equal(uploads,0);assert(await page.evaluate(()=>!!document.fullscreenElement));
  const [summary]=await service.store.list('alice'),attempt=await service.store.get('alice',summary.id),index=attempt.questions.findIndex(q=>q.type==='rts');
  await service.store.update('alice',attempt.id,a=>{a.index=index;a.questions[index].audioSeconds=sample.audioSeconds;delete a.questionStartedAt;delete a.questionTimingVersion;return a;});
  await page.evaluate(()=>SpeakingMock.open({history:true}));await page.waitForSelector('[data-sm="resume"]');await click('[data-sm="resume"]');await page.waitForSelector('#sm-audio-status');
