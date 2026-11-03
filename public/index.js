@@ -15859,8 +15859,11 @@ async function scoreSummary(submission = null){
     try { await saveAttempt(passageId, text, data, spellData); }
     catch { saved = false; }
     if (!sameOwner()) return;
+    let synced=false;
+    try{synced=await flushSync();}catch(_){}
+    if(!sameOwner())return;
+    saved=saved||synced===true;
     if(saved){
-      try{await flushSync();}catch(_){}
       if(typeof window!=='undefined'&&typeof window.CustomEvent==='function')window.dispatchEvent(new window.CustomEvent('pte:attempt-completed',{detail:{engine:'swt',passageId}}));
     }
     attempted.add(passageId);
@@ -15898,19 +15901,21 @@ function retrySwtAssessment(){
 
 async function saveAttempt(pid, text, data, spellData){
   const ts = new Date().toISOString();
+  let durable=true;
+  const set=(suffix,value)=>{if(LocalStore.set(getPteStorageKey(suffix),value)===false)durable=false;};
   
   attempted.add(pid);
-  LocalStore.set(getPteStorageKey('attempted'), Array.from(attempted));
+  set('attempted', Array.from(attempted));
 
   const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
   if (!summaries[pid] || String(summaries[pid].text || '').trim() === text.trim()) {
     summaries[pid] = { text, timestamp: ts, score: data.overall_score || 0 };
   }
-  LocalStore.set(getPteStorageKey('summaries'), summaries);
+  set('summaries', summaries);
 
   const scores = LocalStore.get(getPteStorageKey('scores')) || {};
   scores[pid] = Object.assign({}, data, { __text: text, __timestamp: ts, __spellData: spellData || null });
-  LocalStore.set(getPteStorageKey('scores'), scores);
+  set('scores', scores);
 
   const h = LocalStore.get(getPteStorageKey('history')) || {};
   if(!h[pid]) h[pid] = [];
@@ -15924,9 +15929,13 @@ async function saveAttempt(pid, text, data, spellData){
     scoring_version: data.scoring_version || 'unknown'
   });
   if(h[pid].length > 10) h[pid] = h[pid].slice(0,10);
-  LocalStore.set(getPteStorageKey('history'), h);
+  set('history', h);
 
   queueSync();
+  if(!durable){
+    const saved=typeof practiceStorage!=='undefined'&&await practiceStorage.flush(['attempted','summaries','scores','history'].map(getPteStorageKey));
+    if(!saved)throw Error('Practice backup could not be confirmed.');
+  }
 }
 
 function loadPreviousAnswer(){
