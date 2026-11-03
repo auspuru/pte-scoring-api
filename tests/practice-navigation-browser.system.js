@@ -22,12 +22,16 @@ test('Practice storage: blocked browser caches preserve Essay and SWT across nav
   const set=Storage.prototype.setItem;
   Storage.prototype.setItem=function(key,value){if(key.startsWith('pte_storage-browser_')||key.startsWith('ipt_practice_backup_v1:')||key.startsWith('ipt_essay_draft_v1:storage-browser'))throw new DOMException('Synthetic full cache','QuotaExceededError');return set.call(this,key,value);};
  });
- async function ready(p){await p.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));}
+ async function ready(p){await p.waitForFunction(id=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&passages.length>1&&essays.length>1&&localAccountProgress().history[id]?.length&&userProfile?.practiceHistory?.some(a=>a.id==='original-essay'),{},passage.id);}
  async function login(p){await p.goto(f.base);await p.type('#loginUsername',username);await p.type('#loginPassword',password);await p.locator('#loginSubmitBtn').click();await ready(p);}
  await login(page);
  const swtDraft='The latest summary must survive blocked browser caches and synchronise with the account.';
- await page.evaluate(text=>{switchSection('swt');loadPassage(1);const input=document.getElementById('summaryInput');input.value=text;input.dispatchEvent(new Event('input',{bubbles:true}));},swtDraft);
- await page.evaluate(async()=>{await practiceStorage.flush([getPteStorageKey('summaries')]);await flushSyncDirect();});
+ const passageId=await page.evaluate(text=>{switchSection('swt');loadPassage(1);const input=document.getElementById('summaryInput');input.value=text;input.dispatchEvent(new Event('input',{bubbles:true}));return swtPassageStorageId();},swtDraft);
+ assert.equal(passageId,passage.id,'The edited question must match the seeded stable passage ID');
+ const receipt=await page.evaluate(async()=>({backup:await practiceStorage.flush([getPteStorageKey('summaries')]),synced:await flushSyncDirect(),draft:localAccountProgress().summaries[swtPassageStorageId()]?.text}));
+ assert.deepEqual(receipt,{backup:true,synced:true,draft:swtDraft});
+ const savedSummary=(await f.request('/api/sync/'+username,undefined,registration.body.token)).body;
+ assert.equal(savedSummary.data?.summaries?.[passageId]?.text,swtDraft,JSON.stringify({status:savedSummary.success,ids:Object.keys(savedSummary.data?.summaries||{})}));
  await page.reload();await ready(page);
  await page.evaluate(()=>{switchSection('swt');loadPassage(1);});
  assert.equal(await page.$eval('#summaryInput',e=>e.value),swtDraft);
@@ -38,7 +42,7 @@ test('Practice storage: blocked browser caches preserve Essay and SWT across nav
  },essayDraft);
  await page.evaluate(async()=>{await moveEssayQuestion(1);await moveEssayQuestion(-1);});
  assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),essayDraft);
- await page.evaluate(async()=>{savePortalEssayDraft();await practiceStorage.flush(['ipt_essay_draft_v1:'+encodeURIComponent(currentUserId)]);await flushSyncDirect();});
+ assert.equal(await page.evaluate(async()=>{savePortalEssayDraft();await practiceStorage.flush(['ipt_essay_draft_v1:'+encodeURIComponent(currentUserId)]);return await flushSyncDirect();}),true);
  await page.reload();await ready(page);await page.waitForSelector('#practiceEssayInput');
  assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),essayDraft);
  const cloud=(await f.request('/api/sync/'+username,undefined,registration.body.token)).body.data;
