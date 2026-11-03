@@ -52,7 +52,7 @@ test('SWT review shows the selected historical response, not the newest answer o
  const older={text:'Older saved answer',timestamp:'2026-10-01T00:00:00Z',trait_scores:{content:2},feedback:'Older feedback'};
  const latest={text:'Latest saved answer',timestamp:'2026-10-02T00:00:00Z'};const shown=[],screens=[];
  const data={history:{910498:[latest,older]},scores:{910498:{__text:latest.text,__timestamp:latest.timestamp,feedback:'Latest feedback'}}};
- const ctx={passages:[{id:910498,title:'Origin of Species'},{id:1,title:'Other'}],LocalStore:{get:k=>data[k]},getPteStorageKey:k=>k,setSwtPracticeMode(){},updateResultsNav(){},showResults:(...a)=>shown.push(a),showSwtScreen:s=>screens.push(s),toast:()=>assert.fail('Unexpected missing-response notice')};
+ const ctx={passages:[{id:910498,title:'Origin of Species'},{id:1,title:'Other'}],LocalStore:{get:k=>data[k]},localAccountProgress:()=>data,currentUserId:'alice',sessionToken:'alice-token',portalWorkspace:{current:()=> 'swt'},loadStoredData(){},populatePassageDropdowns(){},getPteStorageKey:k=>k,setSwtPracticeMode(){},updateResultsNav(){},showResults:(...a)=>shown.push(a),showSwtScreen:s=>screens.push(s),toast:()=>assert.fail('Unexpected missing-response notice')};
  vm.createContext(ctx);vm.runInContext(functions('openSavedSwtResponse','function reviewSavedPractice('),ctx);
  ctx.openSavedSwtResponse({passageId:'910498',timestamp:older.timestamp,responseText:older.text});
  assert.equal(shown[0][0].feedback,'Older feedback');assert.equal(shown[0][3],older.text);assert.equal(ctx.currentPassageId,1);assert.equal(screens[0],'swtResultsScreen');

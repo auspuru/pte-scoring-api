@@ -117,7 +117,7 @@ for(const width of [1363,390,320])test('Progress opens exact saved responses and
  assert.equal(registration.body.success,true);
  const passages=(await f.request('/api/passages')).body;
  const passage=(Array.isArray(passages)?passages:passages.passages)[0];
- const older={text:'Older saved summary response for exact historical feedback.',timestamp:'2026-10-01T10:00:00.000Z',overall_score:65,trait_scores:{content:2,form:1,grammar:2,vocabulary:2},content_details:{},feedback:'Older saved feedback'};
+ const older={text:'Older saved summary response for exact historical feedback.',timestamp:Date.parse('2026-10-01T10:00:00.000Z'),overall_score:65,trait_scores:{content:2,form:1,grammar:2,vocabulary:2},content_details:{},feedback:'Older saved feedback'};
  const latest={...older,text:'Latest saved summary response must not replace the older response.',timestamp:'2026-10-03T10:00:00.000Z',overall_score:80};
  const history={[passage.id]:[latest,older]};
  const synced=await f.request('/api/sync/'+username,{history,scores:{[passage.id]:{...latest,__text:latest.text,__timestamp:latest.timestamp}},practiceHistory:[{id:'saved-essay',date:Date.parse('2026-10-02T10:00:00.000Z'),questionTitle:'Saved essay question',questionText:'Discuss the topic.',essayText:'The exact saved essay response.',wordCount:220,scores:{total:20}}]},registration.body.token);
@@ -127,6 +127,14 @@ for(const width of [1363,390,320])test('Progress opens exact saved responses and
  const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
  const page=await browser.newPage();await page.setViewport({width,height:900});const errors=[],assessmentCalls=[],planReads=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(new URL(r.url()).pathname==='/api/interventions')planReads.push(r.url());if(r.method()==='POST'&&/\/(?:grade|score)(?:\/|$)/.test(new URL(r.url()).pathname))assessmentCalls.push(new URL(r.url()).pathname);});
+ // Reproduce a cloud-visible response whose browser cache cannot be written.
+ await page.evaluateOnNewDocument(()=>{
+  const set=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(key,value){
+   if(/^pte_progress-browser_(history|scores)$/.test(key))throw new DOMException('Synthetic quota limit','QuotaExceededError');
+   return set.call(this,key,value);
+  };
+ });
  try {
  await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword','Synthetic-pass-123');await page.locator('#loginSubmitBtn').click();
  await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&location.hash==='#/home');
@@ -144,12 +152,14 @@ for(const width of [1363,390,320])test('Progress opens exact saved responses and
  assert.equal(await page.$eval('[data-progress-attempt="1"]',e=>e.textContent.includes('Saved essay question')),true);
  assert.equal(await page.$eval('#progressPane',e=>e.textContent.includes('Task trends')),false);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
+ assert.equal(await page.evaluate(()=>localStorage.getItem('pte_progress-browser_history')),null,'The response is present only in reconciled memory');
  await page.locator('[data-progress-attempt="2"]').click();
  await page.waitForFunction(()=>document.getElementById('swtResultsScreen')?.classList.contains('active'));
  assert.equal(await page.$eval('#swtResultsScreen',(e,text)=>e.textContent.includes(text),older.text),true);
  assert.equal(await page.$eval('#swtResultsScreen',(e,text)=>e.textContent.includes(text),latest.text),false);
  await page.reload();await page.waitForFunction(()=>document.getElementById('swtResultsScreen')?.classList.contains('active'));
  assert.equal(await page.$eval('#swtResultsScreen',(e,text)=>e.textContent.includes(text),older.text),true);
+ assert.equal(await page.$eval('#resPassageSelect option:checked',e=>e.textContent.includes('(Attempted)')),true);
  assert.equal(await page.$('#nav-next-steps'),null);
  assert.equal(await page.$('#nextStepsDashboardCard'),null);
  assert.equal(await page.$('#nextStepNotification'),null,'Existing unread plans do not show a popup');
