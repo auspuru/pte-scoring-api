@@ -162,3 +162,21 @@ test('Essay submission stays on the response if saving fails',async()=>{
  const h=harness();h.ctx.savePortalEssayDraft=()=>false;await h.ctx.submitPracticeEssay();
  assert.equal(h.requests.length,0);assert.equal(h.ctx.practiceState.view,'write');assert.equal(h.ctx.practiceState.essayText,essay);
 });
+
+test('Essay Review waits for its durable backup and duplicate clicks create one assessment',async()=>{
+ const h=harness(),checkpoints=[];h.ctx.savePortalEssayDraft=()=>false;
+ h.ctx.practiceStorage={flush:()=>new Promise(resolve=>checkpoints.push(resolve))};
+ const first=h.ctx.submitPracticeEssay(),second=h.ctx.submitPracticeEssay();
+ assert.equal(h.requests.length,0);for(const complete of checkpoints)complete(true);
+ await until(()=>h.requests.length===1);h.requests[0].reply(result());
+ await until(()=>h.saves.length===1);h.saves[0].finish();await Promise.all([first,second]);
+ assert.equal(h.requests.length,1);assert.equal(h.quota(),1);assert.equal(h.ctx.practiceState.currentAttempt.essayText,essay);
+});
+
+test('A delayed Essay backup cannot submit changed text or the next account response',async()=>{
+ for(const change of ['text','account']){
+  const h=harness();let finish;h.ctx.savePortalEssayDraft=()=>false;h.ctx.practiceStorage={flush:()=>new Promise(resolve=>finish=resolve)};
+  const pending=h.ctx.submitPracticeEssay();if(change==='text')h.ctx.practiceState.essayText='New unfinished answer';else h.ctx.currentUserId='another';
+  finish(true);await pending;assert.equal(h.requests.length,0);assert.equal(h.ctx.practiceState.view,'write');
+ }
+});
