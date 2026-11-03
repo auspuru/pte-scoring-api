@@ -61,6 +61,7 @@ jobs:
             .cache/swt-review-*.png
             .cache/swt-mock-*.png
             .cache/full-mock-flow-*.png
+            .cache/reading-history-*.png
             public/index.min.js
           include-hidden-files: true
           if-no-files-found: error
