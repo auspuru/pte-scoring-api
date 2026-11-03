@@ -150,6 +150,20 @@ test('A browser storage failure cannot discard a completed SWT assessment', asyn
   assert.match(h.notices[0], /could not save/);
 });
 
+test('A completed SWT result still syncs to the account when device backup is unavailable',async()=>{
+ const h=harness();let syncs=0;h.ctx.saveAttempt=async()=>{throw Error('All device stores unavailable');};h.ctx.flushSync=async()=>{syncs++;return true;};
+ const pending=h.ctx.scoreSummary();h.requests[0].reply(result());await pending;
+ assert.equal(syncs,1);assert.equal(h.results.length,1);assert.deepEqual(h.notices,[]);
+});
+
+test('SWT attempt saving waits for a recovery receipt and reports an unavailable backup',async()=>{
+ const data={},ctx={attempted:new Set(),getPteStorageKey:s=>s,queueSync(){},LocalStore:{get:k=>data[k],set:(k,v)=>{data[k]=v;return false;}}};
+ let finish;ctx.practiceStorage={flush:()=>new Promise(resolve=>finish=resolve)};vm.createContext(ctx);vm.runInContext(fn('saveAttempt'),ctx);
+ const pending=ctx.saveAttempt(1,summary,result(),null);finish(false);await assert.rejects(pending,/backup could not be confirmed/);
+ assert.equal(data.history[1][0].text,summary);assert.equal(data.scores[1].overall_score,90);
+ const retry=ctx.saveAttempt(2,summary,result(),null);finish(true);await retry;assert.equal(data.history[2][0].text,summary);
+});
+
 test('Retry assessment resubmits the displayed response while preserving an edited draft', async () => {
   const h = harness(); h.ctx.swtResultSubmission = { passageId: 1, text: summary, ownerId: 'student', token: 'token' };
   h.input.value = 'A new unfinished draft.';

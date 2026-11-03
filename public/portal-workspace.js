@@ -247,7 +247,7 @@
           updatedAt: Date.now()
         };
         const previous = read(owner);
-        if (previous && JSON.stringify({ ...previous, updatedAt: 0 }) === JSON.stringify({ ...record, updatedAt: 0 })) return true;
+        if (previous && JSON.stringify({ ...previous, updatedAt: 0 }) === JSON.stringify({ ...record, updatedAt: 0 })) { if (storage.isDurable?.(key(owner)) !== false) return true; storage.setItem(key(owner), JSON.stringify(previous)); return true; }
         record.updatedAt = Math.max(record.updatedAt, (previous?.updatedAt || 0) + 1);
         storage.setItem(key(owner), JSON.stringify(record));
         return true;

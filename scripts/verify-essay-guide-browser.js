@@ -9,7 +9,7 @@ const auth=spawnSync(process.execPath,['--test','--test-name-pattern=SWT practic
 if(auth.error)throw Error('SWT authenticated browser verification could not start.');
 if(auth.status!==0)process.exitCode=Number.isInteger(auth.status)?auth.status:1;
 else {
-const result=spawnSync(process.execPath,['--test','--test-name-pattern=Essay guide:|SWT review:|SWT mock feedback:|Reading mock history:','tests/practice-navigation-browser.system.js'],{
+const result=spawnSync(process.execPath,['--test','--test-name-pattern=Essay guide:|SWT review:|SWT mock feedback:|Reading mock history:|Practice storage:','tests/practice-navigation-browser.system.js'],{
  cwd:path.resolve(__dirname,'..'),env:releaseEnvironment(process.env),stdio:'inherit'
 });
 if(result.error)throw Error('Practice feedback browser verification could not start.');
