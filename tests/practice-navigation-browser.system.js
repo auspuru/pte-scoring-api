@@ -8,6 +8,47 @@ async function essayGuideScreenshot(page,width,state){
  const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});
  await page.screenshot({path:path.join(root,'.cache','essay-guide-'+width+'-'+state+'.png')});
 }
+test('Practice storage: blocked browser caches preserve Essay and SWT across navigation, reload and a fresh device',{timeout:90000},async t=>{
+ const f=await authFixture(t),username='storage-browser',password='Synthetic-pass-123';
+ const registration=await f.request('/api/auth/register',{username,password,email:'storage@example.test'});
+ assert.equal(registration.body.success,true);
+ const original={text:'Original saved summary remains available.',timestamp:100,overall_score:79,trait_scores:{content:3,form:1,grammar:2,vocabulary:2}};
+ const list=(await f.request('/api/passages')).body,passage=(Array.isArray(list)?list:list.passages)[0];
+ await f.request('/api/sync/'+username,{history:{[passage.id]:[original]},scores:{[passage.id]:{...original,__text:original.text,__timestamp:100}},practiceHistory:[{id:'original-essay',date:100,questionTitle:'Original essay',questionText:'Original question',essayText:'Original essay answer',scores:{total:18}}]},registration.body.token);
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ const page=await browser.newPage();await page.setViewport({width:390,height:900});const errors=[],grades=[];
+ page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.method()==='POST'&&/\/(?:grade|score)(?:\/|$)/.test(new URL(r.url()).pathname))grades.push(r.url());});
+ await page.evaluateOnNewDocument(()=>{
+  const set=Storage.prototype.setItem;
+  Storage.prototype.setItem=function(key,value){if(key.startsWith('pte_storage-browser_')||key.startsWith('ipt_practice_backup_v1:')||key.startsWith('ipt_essay_draft_v1:storage-browser'))throw new DOMException('Synthetic full cache','QuotaExceededError');return set.call(this,key,value);};
+ });
+ async function ready(p){await p.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));}
+ async function login(p){await p.goto(f.base);await p.type('#loginUsername',username);await p.type('#loginPassword',password);await p.locator('#loginSubmitBtn').click();await ready(p);}
+ await login(page);
+ const swtDraft='The latest summary must survive blocked browser caches and synchronise with the account.';
+ await page.evaluate(text=>{switchSection('swt');loadPassage(1);const input=document.getElementById('summaryInput');input.value=text;input.dispatchEvent(new Event('input',{bubbles:true}));},swtDraft);
+ await page.evaluate(async()=>{await practiceStorage.flush([getPteStorageKey('summaries')]);await flushSyncDirect();});
+ await page.reload();await ready(page);
+ await page.evaluate(()=>{switchSection('swt');loadPassage(1);});
+ assert.equal(await page.$eval('#summaryInput',e=>e.value),swtDraft);
+ const essayDraft='This exact essay draft must survive the full cache and question navigation.';
+ await page.evaluate(text=>{
+  switchSection('practice');const questions=essays.filter(e=>e.question?.trim());
+  practiceState={...emptyPracticeState(),view:'write',writeStep:2,questionSource:'library',selectedQuestionId:questions[0].id,questionTitle:questions[0].title,questionText:questions[0].question,questionQueue:questions.slice(0,2).map(e=>e.id),essayText:text};renderPracticeMain();
+ },essayDraft);
+ await page.evaluate(async()=>{await moveEssayQuestion(1);await moveEssayQuestion(-1);});
+ assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),essayDraft);
+ await page.evaluate(async()=>{savePortalEssayDraft();await practiceStorage.flush(['ipt_essay_draft_v1:'+encodeURIComponent(currentUserId)]);await flushSyncDirect();});
+ await page.reload();await ready(page);await page.waitForSelector('#practiceEssayInput');
+ assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),essayDraft);
+ const cloud=(await f.request('/api/sync/'+username,undefined,registration.body.token)).body.data;
+ assert.equal(cloud.summaries[passage.id].text,swtDraft);assert.equal(cloud.essayDraft.essayText,essayDraft);
+ assert.equal(cloud.history[passage.id][0].overall_score,79);assert.equal(cloud.practiceHistory.find(a=>a.id==='original-essay').scores.total,18);
+ const context=await browser.createBrowserContext(),fresh=await context.newPage();await login(fresh);
+ assert.equal(await fresh.evaluate(()=>portalDraftStore.read(currentUserId).essayText),essayDraft);
+ assert.equal(await fresh.evaluate(id=>localAccountProgress().summaries[id].text,passage.id),swtDraft);
+ assert.deepEqual(errors,[]);assert.deepEqual(grades,[]);
+});
 for(const width of [1363,390,320])test('Essay guide: combined page, inline approaches, clock, ownership and mock isolation at '+width+'px',{timeout:90000},async t=>{
  const f=await authFixture(t),username='essay-guide-browser',password='Synthetic-pass-123';
  for(const name of [username,'essay-guide-other'])assert.equal((await f.request('/api/auth/register',{username:name,password,email:name+'@example.test'})).body.success,true);

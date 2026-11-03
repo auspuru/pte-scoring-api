@@ -363,6 +363,23 @@ function device(store, owner = 'student') {
   return { ctx, host, values, requests, statuses, timers, errors, click, offline(value) { offline = value; } };
 }
 
+test('a full browser cache still uploads the latest SWT draft and retains original account history', async () => {
+  const store=backend(),browser=device(store),key='pte_student_summaries';
+  const original={text:'Original assessed response',timestamp:100,overall_score:79};
+  await store.setUserData('student',{history:{1:[original]},summaries:{1:{text:'Old draft',timestamp:100}},scores:{1:{overall_score:79,__timestamp:100}}});
+  await browser.ctx.refreshPracticeHistory({force:true});
+  const storage=require('../public/practice-storage').create({local:{getItem:k=>browser.values.get(k)||null,setItem(){throw Error('Full');}},session:{getItem(){return null;},setItem(){throw Error('Denied');}}});
+  browser.ctx.practiceStorage=storage;
+  browser.ctx.LocalStore={get:k=>JSON.parse(storage.getItem(k)||'null'),set:(k,v)=>{try{storage.setItem(k,JSON.stringify(v));return true;}catch{return false;}}};
+  assert.equal(browser.ctx.LocalStore.set(key,{1:{text:'Latest exact unsynced draft',timestamp:Date.now()}}),false);
+  browser.ctx.queueSync();
+  assert.equal(await browser.ctx.flushSync(),true,browser.errors.join('\n'));
+  const saved=await store.getUserData('student');
+  assert.equal(saved.summaries[1].text,'Latest exact unsynced draft');
+  assert.equal(saved.history[1][0].text,original.text);
+  assert.equal(saved.scores[1].overall_score,79);
+});
+
 test('unchanged cloud refreshes do not rebuild editors, history or dashboard', async () => {
   const store=backend(),browser=device(store);
   await store.setUserData('student',{essays:[{id:'essay',intro:'Saved introduction'}]});

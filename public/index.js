@@ -465,10 +465,12 @@ function removeAuthStorageValue(key) {
   try { sessionStorage.removeItem(key); } catch (_) {}
 }
 
+const practiceStorage = PracticeStorage.create({local:()=>window.localStorage,session:()=>window.sessionStorage,database:()=>window.indexedDB});
+
 const LocalStore = {
-  get(k){ try{ const i=localStorage.getItem(k); return i?JSON.parse(i):null; }catch(e){ return null; } },
-  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } },
-  remove(k){ try{ localStorage.removeItem(k); return true; }catch(e){ return false; } },
+  get(k){ try{ const i=practiceStorage.getItem(k); return i?JSON.parse(i):null; }catch(e){ return null; } },
+  set(k,v){ try{ practiceStorage.setItem(k,JSON.stringify(v)); return true; }catch(e){ return false; } },
+  remove(k){ try{ practiceStorage.removeItem(k); return true; }catch(e){ return false; } },
   getUserId(){ return getAuthStorageValue('pte_user_id'); },
   setUserId(id){ if (id) return setAuthStorageValue('pte_user_id', id); removeAuthStorageValue('pte_user_id'); return 'cleared'; }
 };
@@ -946,6 +948,9 @@ async function submitPasswordChange(ev) {
 async function enterApp(uid) {
   if (!portalWorkspace) initialisePortalWorkspace();
   if (!portalWorkspace) throw new Error('Portal workspace is unavailable.');
+  const entryToken = sessionToken;
+  await practiceStorage.ready;
+  if (entryToken !== sessionToken) return;
   clearTimeout(portalDraftTimer);
   stopPracticeTimer();
   practiceState = emptyPracticeState();
@@ -1210,10 +1215,10 @@ async function flushSyncDirect(options = {}) {
     const fullPayload = {
       ...(accountProgress || {}),
       // SWT progress fields
-      attempted: Array.from(attempted),
-      history: LocalStore.get('pte_' + currentUserId + '_history') || {},
-      summaries: LocalStore.get('pte_' + currentUserId + '_summaries') || {},
-      scores: LocalStore.get('pte_' + currentUserId + '_scores') || {},
+      attempted: accountProgress?.attempted || Array.from(attempted),
+      history: accountProgress?.history || {},
+      summaries: accountProgress?.summaries || {},
+      scores: accountProgress?.scores || {},
       
       // Email
       email: userProfile?.email || '',
@@ -1307,7 +1312,7 @@ async function flushSyncDirect(options = {}) {
     console.error(err);
     syncQueued = true;
     LocalStore.set(`pte_${syncUserId}_syncPending`, true);
-    setSync('error', 'Saved on this device — waiting to sync');
+    setSync('error', typeof practiceStorage !== 'undefined' && practiceStorage.hasPendingWrites() ? 'Save not confirmed — keep this page open' : 'Saved on this device — waiting to sync');
     lastSyncOk = false;
     if (syncRetryCount < SYNC_MAX_RETRIES) {
       syncRetryCount++;
@@ -6420,7 +6425,7 @@ function uid() { return 'e' + Date.now() + Math.random().toString(36).slice(2, 6
 // These never throw; they log and continue so the app keeps working.
 function safeLSSet(key, value) {
   try {
-    localStorage.setItem(key, value);
+    practiceStorage.setItem(key, value);
     return true;
   } catch (e) {
     console.warn('localStorage write failed (private mode or quota?):', key, e.name);
@@ -6429,7 +6434,7 @@ function safeLSSet(key, value) {
 }
 function safeLSGet(key) {
   try {
-    return localStorage.getItem(key);
+    return practiceStorage.getItem(key);
   } catch (e) {
     console.warn('localStorage read failed:', key, e.name);
     return null;
@@ -6437,7 +6442,7 @@ function safeLSGet(key) {
 }
 function safeLSRemove(key) {
   try {
-    localStorage.removeItem(key);
+    practiceStorage.removeItem(key);
   } catch (e) { /* ignore */ }
 }
 
@@ -12751,7 +12756,7 @@ function initialisePortalWorkspace() {
   // dashboard can become interactive without parsing feature-specific clients.
   // Writing Lab is mounted directly in this document; navigation uses switchSection().
   // Access to storage can be denied by browser privacy settings.
-  try { portalDraftStore = PortalWorkspace.createDraftStore(window.localStorage); } catch (_) { /* In-memory editing still works. */ }
+  try { portalDraftStore = PortalWorkspace.createDraftStore(practiceStorage); } catch (_) { /* In-memory editing still works. */ }
   window.addEventListener('pagehide', savePortalEssayDraft);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') savePortalEssayDraft();
@@ -13672,7 +13677,7 @@ function copyPracticeText(type) {
 
 function getPracticeHistory() {
   if (offlineMode) {
-    const accountHistory = currentUserId ? getCachedPracticeHistory(currentUserId) : [];
+    const accountHistory = currentUserId ? mergePracticeHistoryClient(userProfile?.practiceHistory || [], getCachedPracticeHistory(currentUserId), practiceHistoryDeleted) : [];
     if (accountHistory.length > 0 || currentUserId) return accountHistory;
     try { return JSON.parse(safeLSGet('ipt_practice') || '[]'); }
     catch (e) { return []; }
@@ -13866,11 +13871,21 @@ function essayQuestionNavigation() {
   const questions=Array.isArray(practiceState.questionQueue)?practiceState.questionQueue.map(id=>essays.find(e=>e.id===id)).filter(Boolean):essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId));
   return `<nav class="speaking-actions" aria-label="Practice questions"><button class="btn" onclick="moveEssayQuestion(-1)" ${index<=0?'disabled':''}>← Back</button><span>${index<0?'Choose a question':'Question '+(index+1)+' of '+questions.length}</span><button class="btn" onclick="moveEssayQuestion(1)" ${index<0||index>=questions.length-1?'disabled':''}>Next →</button></nav>`;
 }
-function moveEssayQuestion(direction) {
+async function moveEssayQuestion(direction) {
   const questions=Array.isArray(practiceState.questionQueue)?practiceState.questionQueue.map(id=>essays.find(e=>e.id===id)).filter(Boolean):essays.filter(e=>e.question?.trim()),index=questions.findIndex(e=>e.id===(practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId)),target=questions[index+direction];
   if(index<0||!target)return;
   const ta=document.getElementById('practiceEssayInput');if(ta&&practiceState.view==='write')practiceState.essayText=ta.value;
-  if(!saveEssayQuestionDraft()){toast('Could not save your draft. Please keep this question open.',true);return;}
+  if(moveEssayQuestion.pending)return;
+  const owner=currentUserId,token=sessionToken,signature=JSON.stringify([practiceState.selectedQuestionId,practiceState.essayText,practiceState.questionText,practiceState.view]);
+  const activeSaved=practiceState.view!=='write'||savePortalEssayDraft();
+  const questionSaved=saveEssayQuestionDraft();
+  if(!activeSaved||!questionSaved){
+    moveEssayQuestion.pending=true;
+    let saved=false;
+    try{saved=typeof practiceStorage!=='undefined'&&await practiceStorage.flush([getPteStorageKey('essay-question-drafts'),'ipt_essay_draft_v1:'+encodeURIComponent(owner)]);}finally{moveEssayQuestion.pending=false;}
+    if(owner!==currentUserId||token!==sessionToken||signature!==JSON.stringify([practiceState.selectedQuestionId,practiceState.essayText,practiceState.questionText,practiceState.view]))return;
+    if(!saved){toast('Could not save your draft. Please keep this question open.',true);return;}
+  }
   stopPracticeTimer();stopLoadingMessages();
   const context={questionQueue:practiceState.questionQueue,pickerSearch:practiceState.pickerSearch,pickerScroll:practiceState.pickerScroll};
   const saved=(LocalStore.get(getPteStorageKey('essay-question-drafts'))||{})[target.id];
@@ -14580,8 +14595,14 @@ async function submitPracticeEssay() {
   }
   const submissionId = practiceState.submissionId;
   const parentAttemptId = practiceState.revisionParentId;
-  if (savePortalEssayDraft() === false || !saveEssayQuestionDraft()) { toast('Could not save your draft. Please keep this question open.', true); return; }
+  const activeSaved=savePortalEssayDraft(),questionSaved=saveEssayQuestionDraft();
   const sameOwner = () => owner.uid === canonicalClientUserId(currentUserId) && owner.token === sessionToken;
+  if(!activeSaved||!questionSaved){
+    const saved=typeof practiceStorage!=='undefined'&&await practiceStorage.flush([getPteStorageKey('essay-question-drafts'),'ipt_essay_draft_v1:'+encodeURIComponent(currentUserId)]);
+    if(!sameOwner()||practiceState.submissionId!==submissionId||practiceState.essayText.trim()!==essay||practiceState.questionText.trim()!==question)return;
+    if(!saved){toast('Could not save your draft. Please keep this question open.',true);return;}
+  }
+  if(!sameOwner()||jobs.has(submissionId))return;
   stopPracticeTimer();
   jobs.set(submissionId, owner);
   practiceSubmissionPending = true;
@@ -15300,8 +15321,18 @@ function changeResultsPassageFilter(val) {
   }
 }
 
-function jumpToPassage(target) {
+async function jumpToPassage(target) {
   if (target < 1 || target > passages.length) return;
+  const key=getPteStorageKey('summaries');
+  if(!practiceStorage.isDurable(key)){
+    if(jumpToPassage.pending)return;
+    const owner=currentUserId,token=sessionToken,position=currentPassageId;
+    jumpToPassage.pending=true;
+    let saved=false;
+    try{saved=await practiceStorage.flush([key]);}finally{jumpToPassage.pending=false;}
+    if(owner!==currentUserId||token!==sessionToken||position!==currentPassageId)return;
+    if(!saved){toast('Could not save your summary. Please keep this question open.',true);return;}
+  }
   loadPassage(target);
   const select1 = document.getElementById('passageSelect');
   if (select1) select1.value = target;
