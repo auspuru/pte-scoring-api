@@ -27,7 +27,7 @@ async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,
   const flush=async()=>{for(let n=0;n<25;n++)await new Promise(resolve=>setImmediate(resolve));};
   const tick=async ms=>{at+=ms;for(const audio of audios)if(audio.played&&!audio.paused&&!audio.ended&&audio.duration&&at>=audio.playedAt+(audio.duration-audio.offset)*1000){audio.ended=true;audio.onended?.();}cueAudio?.run();for(const fn of [...intervals.values()])await fn();await flush();const ends=Date.now()+3000;while(nodes.get('sm-record-status')?.textContent==='Preparing your response…'&&Date.now()<ends)await new Promise(resolve=>setTimeout(resolve,1));};
   const rawClick=data=>host.onclick({target:{closest:()=>({dataset:data,disabled:false})}});
-  const finishCheck=async()=>{await rawClick({sm:'check-record'});await tick(3001);await rawClick({sm:'check-play'});await tick(3001);host.onchange({target:{id:'sm-check-heard',checked:true}});await rawClick({sm:'check-begin'});};
+  const finishCheck=async()=>{await rawClick({sm:'check-record'});await tick(10001);await rawClick({sm:'check-play'});await tick(3001);host.onchange({target:{id:'sm-check-heard',checked:true}});await rawClick({sm:'check-begin'});};
   return {env,host,nodes,requests,audios,controller,lab,flush,cueAudio,finishCheck,rawClick,
     click:async data=>{await rawClick(data);if(autoCheck&&['start','reattempt'].includes(data.sm)&&nodes.has('sm-check-record'))await finishCheck();},tick,
     active:async()=>{const [row]=await lab.store.list('alice');return row&&lab.store.update('alice',row.id,a=>a);},
@@ -38,10 +38,10 @@ test('Headset check records and plays locally before creating a timed mock, with
  const h=await harness(t,{autoCheck:false});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
  assert.match(h.host.innerHTML,/Check your microphone and headphones/);assert.equal(h.permissions(),0);assert.equal(await h.active(),undefined);
  await h.rawClick({sm:'check-begin'});assert.equal(await h.active(),undefined);
- await h.rawClick({sm:'check-record'});await h.tick(3001);
+ await h.rawClick({sm:'check-record'});await h.tick(9999);assert(h.nodes.get('sm-check-play').disabled);await h.tick(2);
  assert.equal(h.permissions(),1);assert.equal(h.starts(),0);assert.equal(h.requests.filter(r=>r.method==='POST').length,0);
  h.host.onchange({target:{id:'sm-check-heard',checked:true}});await h.rawClick({sm:'check-begin'});assert.equal(await h.active(),undefined);
- await h.rawClick({sm:'check-play'});assert(h.audios.at(-1).url.startsWith('blob:'));await h.tick(3001);
+ h.host.oninput({target:{id:'sm-volume',value:'0.4'}});await h.rawClick({sm:'check-play'});assert(h.audios.at(-1).url.startsWith('blob:'));assert.equal(h.audios.at(-1).volume,0.4);await h.tick(3001);
  await h.rawClick({sm:'check-begin'});assert.equal(await h.active(),undefined,'Listening alone does not confirm the headset.');
  h.host.onchange({target:{id:'sm-check-heard',checked:true}});await h.rawClick({sm:'check-begin'});
  assert.equal((await h.active()).index,0);assert.equal(h.permissions(),1);assert.equal(h.protected(),true);assert.equal(h.starts(),0);
@@ -55,11 +55,11 @@ test('Denied microphone access and blocked sample playback keep the mock unstart
  const h=await harness(t,{autoCheck:false});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});const microphone=h.env.navigator.mediaDevices.getUserMedia;
  h.env.navigator.mediaDevices.getUserMedia=async()=>{throw Error('Microphone permission denied');};await h.rawClick({sm:'check-record'});
  assert.match(h.nodes.get('sm-notice').textContent,/Microphone permission denied/);assert.equal(await h.active(),undefined);
- h.env.navigator.mediaDevices.getUserMedia=microphone;await h.rawClick({sm:'check-record'});await h.tick(3001);
+ h.env.navigator.mediaDevices.getUserMedia=microphone;await h.rawClick({sm:'check-record'});await h.tick(10001);
  const Audio=h.env.Audio;h.env.Audio=class extends Audio{async play(){throw Error('Playback blocked');}};await h.rawClick({sm:'check-play'});
  assert.match(h.nodes.get('sm-notice').textContent,/Playback was blocked/);h.host.onchange({target:{id:'sm-check-heard',checked:true}});await h.rawClick({sm:'check-begin'});assert.equal(await h.active(),undefined);
  h.env.Audio=Audio;await h.rawClick({sm:'check-play'});assert.equal(h.nodes.get('sm-notice').textContent,'');await h.tick(3001);h.host.onchange({target:{id:'sm-check-heard',checked:true}});
- await h.rawClick({sm:'check-record'});await h.tick(3001);await h.rawClick({sm:'check-begin'});assert.equal(await h.active(),undefined,'A new sample must be listened to and confirmed again.');
+ await h.rawClick({sm:'check-record'});await h.tick(10001);await h.rawClick({sm:'check-begin'});assert.equal(await h.active(),undefined,'A new sample must be listened to and confirmed again.');
 });
 test('A delayed begin response and a fast device clock do not consume the visible audio countdown',async t=>{
  const h=await harness(t),clock=h.env.Date.now;h.env.Date.now=()=>clock()+300000;

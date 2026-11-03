@@ -665,15 +665,15 @@ test('Opening, switching and closing inline feedback keeps submitted answers, sc
  assert.deepEqual(snapshot(h),before);
 });
 
-test('Practice integrated mocks preserve a 55-minute budget across tasks and pause that budget while away',async()=>{
+test('Integrated practice gives each SWT 10 minutes and Reading a shared 25 minutes, preserving pause',async()=>{
  const h=client(),clock=clockFor(h),audio=speechHarness();Object.assign(h.ctx,audio.env);h.ctx.passages=swtPassages;
  await h.ctx.ReadingPractice.open();await h.click({start:'practice-mock-1'});
- const initial=snapshot(h).session,firstDeadline=initial.startedAt+55*60000;
- clock.add(2*60000);nextQuestion(h);assert.equal(snapshot(h).session.deadline,firstDeadline);
- clock.add(2*60000);nextQuestion(h);assert.equal(snapshot(h).session.questions[2].type,'dropdown');assert.equal(snapshot(h).session.deadline,firstDeadline);
- h.click({action:'exam-exit'});h.click({action:'exam-confirm'});const parked=snapshot(h).session;assert.equal(parked.deadline,null);assert.equal(parked.pausedRemainingSeconds,51*60);
+ const initial=snapshot(h).session;assert.deepEqual(Array.from(initial.stages,s=>s.minutes),[10,10,25,10]);assert.equal(initial.deadline,initial.startedAt+10*60000);
+ clock.add(2*60000);nextQuestion(h);assert.equal(snapshot(h).session.deadline,clock.now+10*60000);
+ clock.add(2*60000);nextQuestion(h);assert.equal(snapshot(h).session.questions[2].type,'dropdown');assert.equal(snapshot(h).session.deadline,clock.now+25*60000);
+ h.click({action:'exam-exit'});h.click({action:'exam-confirm'});const parked=snapshot(h).session;assert.equal(parked.deadline,null);assert.equal(parked.pausedRemainingSeconds,25*60);
  clock.add(60000);h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
- let active=snapshot(h).session;assert.equal(active.deadline,clock.now+51*60000);assert.match(h.host.innerHTML,/51:00/);
+ let active=snapshot(h).session;assert.equal(active.deadline,clock.now+25*60000);assert.match(h.host.innerHTML,/25:00/);
  goToAudio(h);active=snapshot(h).session;const deadline=active.deadline;
  const readyAt=active.audioStates[active.questions[active.index].uid].readyAt;clock.set(readyAt);h.timers.at(-1)();const utterance=audio.utterances.at(-1);utterance.onstart();
  clock.set(deadline);h.timers.at(-1)();utterance.onend();
@@ -682,13 +682,13 @@ test('Practice integrated mocks preserve a 55-minute budget across tasks and pau
  assert.deepEqual(snapshot(h),finished);assert.match(h.host.innerHTML,/submitted automatically/);
 });
 
-test('Saved untimed practice drafts retain their original format while new integrated mocks use 55 minutes',async()=>{
+test('Saved untimed practice drafts retain their original format while new integrated mocks use individual and shared stages',async()=>{
  const h=client(),clock=clockFor(h);h.ctx.passages=swtPassages;await h.ctx.ReadingPractice.open();await h.click({start:'practice-mock-2'});
- const saved=snapshot(h);saved.session.deadline=null;saved.session.formatVersion=5;h.values.set(storageKey('first'),JSON.stringify(saved));
+ const saved=snapshot(h);saved.session.deadline=null;delete saved.session.stages;delete saved.session.stageIndex;saved.session.formatVersion=5;h.values.set(storageKey('first'),JSON.stringify(saved));
  clock.add(60*60000);h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();
  assert.equal(snapshot(h).session.done,false);assert.equal(snapshot(h).session.deadline,null);assert.match(h.host.innerHTML,/Untimed practice/);
  h.click({action:'home'});assert.match(h.host.innerHTML,/previous untimed format/);
- await h.click({start:'practice-mock-2'});assert.equal(snapshot(h).session.deadline-clock.now,55*60000);
+ await h.click({start:'practice-mock-2'});assert.equal(snapshot(h).session.deadline-clock.now,10*60000);
 });
 
 test('Switching task libraries parks a running mock until the student resumes it',async()=>{

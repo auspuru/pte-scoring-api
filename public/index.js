@@ -12505,11 +12505,11 @@ function ensureReadingRuntimeLoaded() {
   readingRuntimeLoadPromise = (async () => {
     const modules = [
       ['reading-predictions-sep-2026.js?v=1', 'reading predictions'],
-      ['reading-mock-tools.js?v=20261001-mock-input2', 'reading mock tools'],
-      ['reading-exam-player.js?v=20261001-exam-focus', 'reading exam player'],
+      ['reading-mock-tools.js?v=sha256-09f39d17f156', 'reading mock tools'],
+      ['reading-exam-player.js?v=sha256-784ef20c0524', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=sha256-98e9c23a186f', 'reading review'],
-      ['reading-practice.js?v=sha256-002b102f1b87', 'reading practice']
+      ['reading-practice.js?v=sha256-19241f159f7c', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
     // downloads overlap. Initialise the practice client only after all succeed.
@@ -12529,7 +12529,7 @@ let speakingCueLoadPromise=null;
 function ensureSpeakingCueLoaded(){
   if(window.SpeakingStartCue&&window.SpeakingImages)return Promise.resolve(window.SpeakingStartCue);
   if(!speakingCueLoadPromise)speakingCueLoadPromise=Promise.all([
-    window.SpeakingStartCue?null:loadDeferredScript('/speaking-start-cue.js?v=sha256-a6b555dcdbf7','speaking start sound'),
+    window.SpeakingStartCue?null:loadDeferredScript('/speaking-start-cue.js?v=sha256-75e64b87d5f8','speaking start sound'),
     window.SpeakingImages?null:loadDeferredScript('/speaking-images.js?v=sha256-64e96a99ea48','speaking image viewer')
   ]).then(()=>{
     if(!window.SpeakingStartCue||!window.SpeakingImages)throw Error('Speaking media did not load.');return window.SpeakingStartCue;
@@ -12556,14 +12556,14 @@ function ensureSpeakingRuntimeLoaded() {
 let speakingMockRuntimeLoadPromise=null;
 function ensureSpeakingMockRuntimeLoaded() {
   if(window.SpeakingMock)return Promise.resolve(window.SpeakingMock);
-  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-2095ae51b97e','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
+  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-05a742b2425b','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
   return speakingMockRuntimeLoadPromise;
 }
 let fullMockRuntimeLoadPromise = null;
 function ensureFullMockRuntimeLoaded() {
   if (window.FullMock) return Promise.resolve(window.FullMock);
   if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-518b1d455ebf', 'full mock report')
-    .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-9249ccfcc443', 'full mock'))
+    .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-098790365023', 'full mock'))
     .then(() => { if (!window.FullMock) throw Error('Full mock did not load.'); return window.FullMock; })
     .catch(error => { fullMockRuntimeLoadPromise = null; throw error; });
   return fullMockRuntimeLoadPromise;
@@ -12572,7 +12572,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-65899d0626b4', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-b804264cc3a4', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;

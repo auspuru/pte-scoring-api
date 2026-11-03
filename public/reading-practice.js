@@ -447,7 +447,7 @@
     if(mock.isAudio(q))prepareAudio(q);
     if(testing) {
       prepareAudio(q);
-      host.innerHTML=exam.render({session:s,question:q,metadata:sourceMeta(q),content:questionHTML(q,a),audio:mock.isAudio(q)?audioHTML(q):'',timer:timerText(),saved:saveNotice,notice:examNotice});
+      host.innerHTML=exam.render({session:s,question:q,metadata:sourceMeta(q),content:questionHTML(q,a),audio:mock.isAudio(q)?audioHTML(q):'',timer:timerText(),saved:saveNotice,notice:examNotice,volume:speaker?.getVolume?.() ?? 1});
       updateAutoplay();
       return;
     }
@@ -710,6 +710,7 @@
     persist();
   }
   function input(e) {
+    if (owner && identity() === owner && e.target.hasAttribute?.('data-exam-volume')) { speaker?.setVolume(e.target.value); return; }
     if(owner&&identity()===owner&&libraryView&&e.target.dataset.librarySearch!==undefined){libraryView.query=e.target.value;libraryView.page=0;refreshLibraryList();return;}
     if (!owner || identity()!==owner || !editable() || e.target.dataset.swtResponse===undefined) return;
     const q=state.session.questions[state.session.index]; if(q.type!=='swt')return;

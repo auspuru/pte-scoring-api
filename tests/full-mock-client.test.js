@@ -20,13 +20,13 @@ const storage = () => { const values = new Map(); return { getItem: key => value
 
 // A real DOM, IndexedDB transactions and authenticated HTTP routes; only browser
 // hardware and scheduling are substituted. Hardware/mobile QA remains Phase 6.
-async function fixture(t, type = 'intro') {
+async function fixture(t, type = 'intro', sectionTransitions = false) {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'full-mock-client-')), app = express(); app.use(express.json());
   let now = 1000000, owner = 'alice', offline = false, closing = false, interceptor, deferStop = false, metadataReady = true;
   const service = installFullMock(app, { directory, verifyToken: token => ['alice', 'bob'].includes(token) ? token : null,
-    getAccount: async () => ({ role: 'admin' }), now: () => now });
+    getAccount: async () => ({ role: 'admin' }), now: () => now, sectionTransitions });
   const id = randomUUID();
-  await service.store.create('alice', id, paper, (key, at) => session.create(key, paper, at, { preview: true }), now);
+  await service.store.create('alice', id, paper, (key, at) => session.create(key, paper, at, { preview: true, sectionTransitions }), now);
   if (type !== 'intro') await service.store.update('alice', id, state => { while (session.item(paper, state.index).question.type !== type) session.next(state, paper, { itemToken: state.current.token, skip: true }, now); return state; });
   const server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
   const base = 'http://127.0.0.1:' + server.address().port;
@@ -98,7 +98,7 @@ test('All 22 task forms render usable controls from the redacted player projecti
 test('Equipment check requires a recorded local sample and sound confirmation before starting', async t => {
   const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
   assert(f.document.getElementById('fm-begin').disabled);
-  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio'));
+  await f.click('[data-fm="sample"]'); await f.step(9999); assert.equal(f.recorders[0].state, 'recording'); assert.equal(f.document.querySelector('#fm-sample audio'), null); await f.step(1); await until(() => f.document.querySelector('#fm-sample audio'));
   assert(f.document.getElementById('fm-heard').disabled);
   const sample = f.document.querySelector('#fm-sample audio'); sample.onplay();
   assert(f.document.getElementById('fm-heard').disabled, 'Confirmation waits for the complete sample playback');
@@ -111,7 +111,7 @@ test('Equipment check requires a recorded local sample and sound confirmation be
 });
 test('Fullscreen is requested before an attempt starts, and cancelling it keeps the start button available', async t => {
   const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
-  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio'));
+  await f.click('[data-fm="sample"]'); await f.step(10000); await until(() => f.document.querySelector('#fm-sample audio'));
   f.playSample();
   const target=f.document.getElementById('fm-heard');target.checked=true;f.document.getElementById('fullMockPane').onchange({target});
   let calls=0;f.env.PortalExamMode.prepare=async (owner,pane,options)=>{calls++;assert.equal(owner,'full-mock');assert.equal(options.immediate,true);assert.equal(f.requests.filter(r=>r.route==='/api/full-mocks/attempts'&&r.init.method==='POST').length,0);return false;};
@@ -120,7 +120,7 @@ test('Fullscreen is requested before an attempt starts, and cancelling it keeps 
 });
 test('Rerecording resets playback confirmation and requires sound in the new headset sample', async t => {
   const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
-  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
+  await f.click('[data-fm="sample"]'); await f.step(10000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
   const target = f.document.getElementById('fm-heard'); target.checked = true; f.document.getElementById('fullMockPane').onchange({ target });
   assert.equal(f.document.getElementById('fm-begin').disabled, false);
   f.env.AudioContext.prototype.createAnalyser = () => ({ fftSize:512, getByteTimeDomainData: values => values.fill(128) });
@@ -129,7 +129,7 @@ test('Rerecording resets playback confirmation and requires sound in the new hea
   f.tracks[0].readyState = 'ended';
   await f.click('[data-fm="sample"]');
   assert.equal(target.checked, false); assert(target.disabled); assert(f.document.getElementById('fm-begin').disabled);
-  await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
+  await f.step(10000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
   target.checked = true; f.document.getElementById('fullMockPane').onchange({ target });
   assert(f.document.getElementById('fm-begin').disabled);
   assert.match(f.document.getElementById('fm-notice').textContent, /No clear sound/);
@@ -144,17 +144,17 @@ test('A headset recording permission error can retry without starting the full m
   assert.equal(f.document.getElementById('fm-sample-button').disabled, false);
   assert(f.document.getElementById('fm-begin').disabled);
   f.env.navigator.mediaDevices.getUserMedia = access;
-  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
+  await f.click('[data-fm="sample"]'); await f.step(10000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
   assert.equal(f.document.getElementById('fm-heard').disabled, false);
   assert.equal(f.requests.filter(r => r.init.method === 'PUT' || r.route === '/api/full-mocks/attempts' && r.init.method === 'POST').length, 0);
 });
 test('A failed headset sample playback cannot approve the equipment check', async t => {
   const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
-  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio'));
+  await f.click('[data-fm="sample"]'); await f.step(10000); await until(() => f.document.querySelector('#fm-sample audio'));
   const playback = f.document.querySelector('#fm-sample audio'); playback.onplay(); playback.onerror();
   assert(f.document.getElementById('fm-heard').disabled); assert(f.document.getElementById('fm-begin').disabled);
   assert.match(f.document.getElementById('fm-notice').textContent, /could not play/);
-  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
+  await f.click('[data-fm="sample"]'); await f.step(10000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
   assert.equal(f.document.getElementById('fm-heard').disabled, false);
 });
 test('Back cancels a headset recording, releases the microphone and ignores late sample events', async t => {
@@ -167,7 +167,7 @@ test('Back cancels a headset recording, releases the microphone and ignores late
 });
 test('Changing headset confirmation during a pending start cannot create duplicate attempts', async t => {
   const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
-  await f.click('[data-fm="sample"]'); await f.step(3000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
+  await f.click('[data-fm="sample"]'); await f.step(10000); await until(() => f.document.querySelector('#fm-sample audio')); f.playSample();
   const target = f.document.getElementById('fm-heard'); target.checked = true; f.document.getElementById('fullMockPane').onchange({ target });
   let release, starts = 0;
   f.env.PortalExamMode.prepare = async () => { starts++; return new Promise(resolve => { release = () => resolve(false); }); };
@@ -451,4 +451,25 @@ test('A failed answer save blocks Next and keeps the exact draft available for a
   fail = false; await f.click('[data-fm="next"]');
   assert.equal((await f.state()).index, index + 1);
   assert.deepEqual((await f.state()).responses[index].answer, ['Retain my original answer during a failed save.']);
+});
+
+ test('Part instructions wait without starting clocks and Begin section starts preparation', async t => {
+  const f = await fixture(t, 'intro', true); await f.resume();
+  assert.match(f.document.querySelector('.fm-transition').textContent, /Speaking & Writing/);
+  assert.equal(f.document.getElementById('fm-time'), null);
+  await f.step(60000); const parked = await f.state();
+  assert.equal(parked.current, null); assert.equal(parked.responses.length, 0);
+  await f.click('[data-fm="begin-section"]'); const started = await f.state();
+  assert.equal(started.current.enteredAt, f.now());
+  assert.equal(started.current.responseAt - f.now(), 25300);
+  assert.match(f.document.getElementById('fm-record-status').textContent, /Preparation/);
+});
+ test('Mock volume updates active audio, persists across questions and leaves deadlines unchanged', async t => {
+  const f = await fixture(t, 'rs'); await f.resume(); const before = await f.state();
+  const target = f.document.getElementById('fm-volume'); target.value = '0.35';
+  f.document.getElementById('fullMockPane').oninput({target});
+  assert.equal(f.env.localStorage.getItem('ipt-exam-volume'), '0.35');
+  await f.step(3001); assert.equal(f.audio.at(-1).volume, 0.35);
+  assert.equal((await f.state()).current.endsAt, before.current.endsAt);
+  await f.click('[data-fm="skip"]'); assert.equal(f.document.getElementById('fm-volume').value, '0.35');
 });

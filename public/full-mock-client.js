@@ -72,7 +72,9 @@
       output = null, outputUrl = null, imageUrl = null, played = '', rendering = '', draft = [], sequence = -1,
       sample = null, sampleUrl = null, sampleRecorder = null, samplePlayback = null, sampleTimer = null, samplePlayed = false, sampleBusy = false, equipmentStarting = false, micDetected = false, equipmentReady = false, setupPaper = '',
       anchor = 0, anchorAt = 0, lastClock = 0, saveTimer = null, readingLevel = 0, preparingSegment = false, cued = '',
-      report = null, reviewId = '', reportLoading = false, reportRequest = 0, assessmentRetrying = false;
+      report = null, reviewId = '', reportLoading = false, reportRequest = 0, assessmentRetrying = false, volume = 1;
+    try { const saved = env.localStorage?.getItem('ipt-exam-volume'); if (saved != null && Number.isFinite(Number(saved))) volume = Math.max(0, Math.min(1, Number(saved))); } catch {}
+    const volumeControl = () => '<label class="fm-volume">Volume <input type="range" id="fm-volume" min="0" max="1" step="0.05" value="' + volume + '" aria-label="Mock volume"></label>';
     const volatile = new Map(), segmentCounts = new Map();
     const reviewUrls = new Map();
     const uid = () => String(getUserId() || '').trim().toLowerCase();
@@ -172,7 +174,7 @@
     }
     function setup(paperId) {
       clearSample(); setupPaper = paperId; micDetected = false; readingLevel = 0;
-      shell('<span class="fm-eyebrow">BEFORE YOU BEGIN</span><h1>Check your microphone and headphones</h1><p>Record a few words, play the sample, then confirm you can hear it clearly. The sample stays on your device.</p><label class="fm-meter">Microphone level<meter id="fm-level" min="0" max="1" value="0"></meter></label><button type="button" class="portal-button" data-fm="sample" id="fm-sample-button">Record a 3-second sample</button><div id="fm-sample"></div><label class="fm-check"><input id="fm-heard" type="checkbox" disabled> I can hear my recorded voice clearly.</label><p id="fm-notice" role="status"></p><button type="button" class="portal-button" data-fm="reload" id="fm-check-back">Back</button> <button type="button" class="portal-button primary" data-fm="begin" id="fm-begin" disabled>Begin full mock</button>');
+      shell('<span class="fm-eyebrow">BEFORE YOU BEGIN</span><h1>Check your microphone and headphones</h1><p>Record a few words, play the sample, then confirm you can hear it clearly. The sample stays on your device.</p><label class="fm-meter">Microphone level<meter id="fm-level" min="0" max="1" value="0"></meter></label>' + volumeControl() + '<button type="button" class="portal-button" data-fm="sample" id="fm-sample-button">Record a 10-second sample</button><div id="fm-sample"></div><label class="fm-check"><input id="fm-heard" type="checkbox" disabled> I can hear my recorded voice clearly.</label><p id="fm-notice" role="status"></p><button type="button" class="portal-button" data-fm="reload" id="fm-check-back">Back</button> <button type="button" class="portal-button primary" data-fm="begin" id="fm-begin" disabled>Begin full mock</button>');
       env.clearInterval(timer); timer = env.setInterval(() => { meter(); const node = doc.getElementById('fm-level'); if (node) node.value = readingLevel; }, 100);
     }
     async function sampleAudio() {
@@ -193,7 +195,7 @@
           if (sample.size) {
             sampleUrl = env.URL.createObjectURL(sample);
             const node = doc.getElementById('fm-sample'); if (node) node.innerHTML = '<audio controls src="' + sampleUrl + '" aria-label="Your microphone sample"></audio>';
-            const playback = samplePlayback = node?.querySelector('audio');
+            const playback = samplePlayback = node?.querySelector('audio'); if (playback) playback.volume = volume;
             if (playback) {
               const current = () => valid(ticket) && samplePlayback === playback;
               playback.onplay = () => { if (!current()) return; samplePlayed = false; equipmentReady = false; confirmation.checked = false; equipmentControls(); notice('Playing your sample…'); };
@@ -204,11 +206,11 @@
           equipmentControls(); notice(sample.size && micDetected ? 'Sample recorded. Play it and confirm the sound.' : 'No clear sound detected. Check your microphone and record again.', !sample.size || !micDetected);
         };
         active.onerror = () => { if (!valid(ticket) || sampleRecorder !== active) return; clearSample(); equipmentControls(); notice('The sample could not be recorded. Check your microphone and try again.', true); };
-        active.start(300); sampleTimer = env.setTimeout(() => { if (active.state === 'recording') active.stop(); }, 3000); notice('Say a few words now…');
+        active.start(300); sampleTimer = env.setTimeout(() => { if (active.state === 'recording') active.stop(); }, 10000); notice('Speak clearly for 10 seconds…');
       } catch (error) { if (valid(ticket) && doc.getElementById('fm-sample-button') === button) { clearSample(); equipmentControls(); notice(error.message || 'Microphone access was not granted.', true); } }
     }
     async function unlockAudio() {
-      output ||= new env.Audio(); output.preload = 'auto';
+      output ||= new env.Audio(); output.volume = volume; output.preload = 'auto';
       const bytes = new Uint8Array(524), view = new DataView(bytes.buffer);
       for (const [offset, value] of [[0, 'RIFF'], [8, 'WAVE'], [12, 'fmt '], [36, 'data']]) [...value].forEach((letter, index) => { bytes[offset + index] = letter.charCodeAt(0); });
       view.setUint32(4, 516, true); view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true); view.setUint32(24, 8000, true); view.setUint32(28, 16000, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true); view.setUint32(40, 480, true);
@@ -252,7 +254,7 @@
           if (!ready || !valid(ticket)) return;
         }
         const value = await api('/attempts/' + id); if (!valid(ticket)) return; attempt = value;
-        if (value.status === 'active') { if (unlocking) { const error = await unlocking; if (error) throw error; } else await unlockAudio(); if (!valid(ticket)) return; if (speech(value.question.type)) await microphone(); if (!valid(ticket)) return; await establishClaim(); if (valid(ticket)) startPlayer(); }
+        if (value.status === 'active') { if (unlocking) { const error = await unlocking; if (error) throw error; } else await unlockAudio(); if (!valid(ticket)) return; if (speech(value.question?.type)) await microphone(); if (!valid(ticket)) return; await establishClaim(); if (valid(ticket)) startPlayer(); }
         else { accept(value); render(); await flush(); await syncReport(); }
       } catch (error) { if (valid(ticket)) { env.PortalExamMode?.set(OWNER, false, host); notice(error.message, true); } }
     }
@@ -355,11 +357,18 @@
         if (!report) shell('<h1>Test submitted</h1><p role="status">Loading your saved report…</p><p>Keep this tab open until pending recordings finish uploading.</p><p id="fm-save-status" role="status"></p><p id="fm-notice" role="status"></p><button class="portal-button" data-fm="retry">Retry pending saves and report</button><button class="portal-button" data-fm="reload">Saved attempts</button>');
         syncReport(); return;
       }
+      if (attempt.transition) {
+        const part = attempt.transition, key = 'transition:' + part.id;
+        if (rendering === key) return;
+        stopCapture(); stopPrompt(); rendering = key;
+        shell('<section class="fm-transition" aria-labelledby="fm-part-title"><span class="fm-eyebrow">PART ' + part.part + ' OF 3</span><h1 id="fm-part-title">' + esc(part.title) + '</h1><p>Read the instructions before you begin.</p><ul>' + part.details.map(text => '<li>' + esc(text) + '</li>').join('') + '</ul><p>You cannot return to a completed question or an earlier part.</p><p>Timing begins when you select Begin section.</p>' + volumeControl() + '<p id="fm-notice" role="status"></p><button type="button" class="portal-button primary" data-fm="begin-section">Begin section →</button></section>');
+        return;
+      }
       if (rendering === attempt.current.token) return;
       stopCapture(); stopPrompt(); rendering = attempt.current.token; played = ''; cued = ''; sequence = attempt.draftSequence; draft = structuredClone(attempt.draft || []);
       const q = attempt.question;
-      shell((attempt.preview ? '<div class="fm-preview-tools"><button type="button" class="fm-text-button" data-fm="end">Finish test early</button></div>' : '') + '<header class="fm-exam-header"><div><span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><strong>' + esc(q.type === 'intro' ? 'Personal Introduction · Not scored' : q.name) + '</strong></div><div class="fm-exam-meta"><span class="fm-badge">Full Mock</span><span>' + (attempt.index === 0 ? 'Introduction' : 'Question ' + attempt.index + ' of 65') + '</span><strong id="fm-time" aria-label="Time remaining"></strong></div></header><main class="fm-exam-body"><p class="fm-instruction">' + esc(q.instruction) + '</p>'
-        + (q.audio ? '<section class="fm-prompt"><span id="fm-audio-status" role="status">Audio will play automatically.</span><label>Volume <input type="range" id="fm-volume" min="0" max="1" step="0.1" value="1" aria-label="Prompt volume"></label><button type="button" class="portal-button" data-fm="audio" id="fm-audio-resume" hidden>Resume remaining audio</button></section>' : '')
+      shell((attempt.preview ? '<div class="fm-preview-tools"><button type="button" class="fm-text-button" data-fm="end">Finish test early</button></div>' : '') + '<header class="fm-exam-header"><div><span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><strong>' + esc(q.type === 'intro' ? 'Personal Introduction · Not scored' : q.name) + '</strong></div><div class="fm-exam-meta"><span class="fm-badge">Full Mock</span><span>' + (attempt.index === 0 ? 'Introduction' : 'Question ' + attempt.index + ' of 65') + '</span><span class="fm-timer"><small id="fm-clock-label">Time remaining</small><strong id="fm-time" aria-label="Time remaining"></strong></span>' + volumeControl() + '</div></header><main class="fm-exam-body"><p class="fm-instruction">' + esc(q.instruction) + '</p>'
+        + (q.audio ? '<section class="fm-prompt"><span id="fm-audio-status" role="status">Audio will play automatically.</span><button type="button" class="portal-button" data-fm="audio" id="fm-audio-resume" hidden>Resume remaining audio</button></section>' : '')
         + '<div id="fm-question">' + renderQuestion(q, draft) + '</div>' + (speech(q.type) ? '<button class="portal-button" data-fm="mic" id="fm-mic-resume" hidden>Reconnect microphone</button>' : '') + '<p id="fm-save-status" class="fm-save-status" role="status">Responses save automatically.</p><p id="fm-notice" role="status"></p></main><footer class="fm-exam-footer"><div>' + (speech(q.type) ? '<button class="fm-text-button" data-fm="skip">Skip this item</button>' : '') + '</div><button class="portal-button primary" id="fm-next" data-fm="next">' + (attempt.index === 65 ? 'Submit test' : 'Next') + ' →</button></footer>');
       recoverDraft(rendering).catch(error => notice(error.message, true)); loadMedia(rendering); if (speech(q.type)) prepareSegment(rendering);
       doc.getElementById('fm-question')?.querySelector('textarea,input,select,button')?.focus({ preventScroll: true });
@@ -381,7 +390,7 @@
         const q = attempt.question;
         if (q.image) { const blob = await mediaBlob(q.image.id, token); if (blob) { imageUrl = env.URL.createObjectURL(blob); doc.getElementById('fm-image').src = imageUrl; } }
         if (q.audio && serverNow() < attempt.current.promptEndsAt) {
-          const blob = await mediaBlob(q.audio.id, token); if (blob) { output ||= new env.Audio(); outputUrl = env.URL.createObjectURL(blob); output.src = outputUrl; output.preload = 'auto'; output.onended = () => { if (rendering === token) { played = token; updateAudioStatus('Audio completed.'); } }; output.onerror = () => audioFailure(); }
+          const blob = await mediaBlob(q.audio.id, token); if (blob) { output ||= new env.Audio(); output.volume = volume; outputUrl = env.URL.createObjectURL(blob); output.src = outputUrl; output.preload = 'auto'; output.onended = () => { if (rendering === token) { played = token; updateAudioStatus('Audio completed.'); } }; output.onerror = () => audioFailure(); }
         }
       } catch (error) { if (rendering === token) { logEvent('media-failure'); notice(error.message, true); } }
     }
@@ -437,16 +446,17 @@
       // build a backlog faster than the microphone produces audio.
       media.start(5000);
     }
-    function beep() { try { if (!context) return; const tone = context.createOscillator(), gain = context.createGain(); tone.frequency.value = 1000; gain.gain.value = 0.07; tone.connect(gain); gain.connect(context.destination); tone.start(); tone.stop(context.currentTime + 0.12); } catch {} }
+    function beep() { try { if (!context) return; const tone = context.createOscillator(), gain = context.createGain(); tone.frequency.value = 1000; gain.gain.value = 0.07 * volume; tone.connect(gain); gain.connect(context.destination); tone.start(); tone.stop(context.currentTime + 0.12); } catch {} }
     async function finishCapture(current, ownerPrefix) {
       await queuePut(ownerPrefix + current.id + ':finish:' + current.segmentId, { kind: 'finish', id: current.id, itemToken: current.itemToken, segmentId: current.segmentId, segmentToken: current.segmentToken, chunks: current.count }); await flush();
     }
     function stopCapture() { if (!capture) return; capture.stopped = true; if (capture.recorder?.state === 'recording') capture.recorder.stop(); else if (!capture.recorder) finishCapture(capture, capture.ownerPrefix).catch(() => {}); capture = null; }
     function tick() {
-      if (!attempt || attempt.status !== 'active') return;
+      if (!attempt || attempt.status !== 'active' || attempt.transition || !attempt.current) return;
       const now = serverNow(), current = attempt.current, q = attempt.question;
       const phase = now < (current.promptAt ?? 0) ? 'instructions' : q.audio && now < current.promptEndsAt ? 'listening' : now < current.responseAt ? 'preparing' : speech(q.type) ? 'recording' : 'answering';
       const preparationEndsAt = current.responseAt - (q.startCueMs || 0);
+      const clockLabel = doc.getElementById('fm-clock-label'); if (clockLabel) clockLabel.textContent = phase === 'preparing' ? 'Preparation' : current.section === 'reading' ? 'Reading section' : current.section === 'listening' && q.type !== 'sst' ? 'Listening section' : speech(q.type) ? 'Recording' : 'This question';
       const time = doc.getElementById('fm-time'); if (time) time.textContent = clock(phase === 'preparing' ? preparationEndsAt - now : current.endsAt - now);
       meter(); const level = doc.getElementById('fm-level'); if (level) level.value = readingLevel;
       const status = phase === 'instructions' ? 'Audio begins in ' + clock(current.promptAt - now) : phase === 'preparing' ? now < preparationEndsAt ? 'Preparation time: ' + clock(preparationEndsAt - now) : 'Get ready' : { listening: 'Listening', recording: 'Recording' }[phase] || phase;
@@ -544,7 +554,7 @@
       const element = event.target;
       if (element.id === 'fm-review-select') { selectReview(element.value); return; }
       if (element.id === 'fm-heard') { if (!element.disabled) equipmentReady = element.checked && samplePlayed; equipmentControls(); return; }
-      if (element.id === 'fm-volume') { if (output) output.volume = Number(element.value); return; }
+      if (element.id === 'fm-volume') { volume = Math.max(0, Math.min(1, Number(element.value))); if (output) output.volume = volume; if (samplePlayback) samplePlayback.volume = volume; try { env.localStorage?.setItem('ipt-exam-volume', String(volume)); } catch {} return; }
       if (!attempt?.current) return;
       if (element.matches('[data-fm-text]')) { draft = [element.value]; const label = doc.getElementById('fm-word-count'); if (label) label.textContent = words(element.value) + ' words'; }
       else if (element.matches('[data-fm-answer]')) draft[Number(element.dataset.fmAnswer)] = element.value;
@@ -574,6 +584,17 @@
         switch (button.dataset.fm) {
           case 'setup': setup(button.dataset.paper); break;
           case 'sample': await sampleAudio(); break;
+          case 'begin-section': {
+            if (advancing || !attempt?.transition || env.PortalExamMode?.isLocked?.(OWNER)) break;
+            const part = attempt.transition, ticket = generation; advancing = true; button.disabled = true;
+            try {
+              await unlockAudio(); if (part.part === 1) await microphone();
+              if (!valid(ticket)) break;
+              accept(await api('/attempts/' + attempt.id + '/begin-section', { transitionId: part.id }));
+            } catch (error) { if (valid(ticket)) notice(error.message, true); }
+            finally { advancing = false; if (button.isConnected) button.disabled = false; tick(); }
+            break;
+          }
           case 'mic': await microphone(); button.hidden = true; logEvent('recording-resumed'); break;
           case 'begin': await begin(); break;
           case 'resume': await resume(button.dataset.id, button.dataset.status || 'active'); break;

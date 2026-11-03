@@ -10,15 +10,16 @@
       const previous=active;active=null;if(!previous)return;
       env.clearTimeout?.(previous.timer);try{previous.tone.stop();}catch{}try{previous.tone.disconnect();previous.gain.disconnect();}catch{}
     }
-    function play(key,complete){
+    function play(key,complete,volume=1){
       if(active?.key===key)return;
       if(used.has(key)){complete();return;}used.add(key);cancel();
       if(!context||context.state!=='running'||typeof env.setTimeout!=='function'){complete();return;}
       try{
         const tone=context.createOscillator(),gain=context.createGain(),at=context.currentTime;
-        tone.type='sine';tone.frequency.value=1000;gain.gain.value=.06;
-        gain.gain.setValueAtTime?.(0,at);gain.gain.linearRampToValueAtTime?.(.06,at+.01);
-        gain.gain.setValueAtTime?.(.06,at+.1);gain.gain.linearRampToValueAtTime?.(0,at+.12);
+        const level=.06*Math.max(0,Math.min(1,Number(volume)));
+        tone.type='sine';tone.frequency.value=1000;gain.gain.value=level;
+        gain.gain.setValueAtTime?.(0,at);gain.gain.linearRampToValueAtTime?.(level,at+.01);
+        gain.gain.setValueAtTime?.(level,at+.1);gain.gain.linearRampToValueAtTime?.(0,at+.12);
         tone.connect(gain);gain.connect(context.destination);tone.start(at);tone.stop(at+.12);
         const pending={key,tone,gain};active=pending;
         pending.timer=env.setTimeout(()=>{if(active!==pending)return;cancel();complete();},DURATION_MS);
