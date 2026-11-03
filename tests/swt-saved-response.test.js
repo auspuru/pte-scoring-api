@@ -31,3 +31,9 @@ test('Attempted passage labels use the reconciled account history and stable pas
  const fragment=source.slice(source.indexOf('function loadStoredData('),source.indexOf('function setSwtPracticeMode('));
  const ctx={passages:[{id:910174},{id:910001}],attempted:new Set(),localAccountProgress:()=>({attempted:['910001'],history:{910174:[{timestamp:123,text:'Saved'}]}})};vm.createContext(ctx);vm.runInContext(fragment,ctx);ctx.loadStoredData();assert.deepEqual([...ctx.attempted],[910174,910001]);
 });
+test('Next in saved results uses the stable passage ID and reconciled feedback, not the visible position',()=>{
+ const snippet=source.slice(source.indexOf('function navResultsPassage('),source.indexOf('function goToNextPassage(')),shown=[];
+ const grade={overall_score:79,__text:'The saved response',feedback:'Saved next feedback'};
+ const ctx={currentPassageId:1,activeResFilter:'attempted',swtNavigationPositions:()=>[1,2],localAccountProgress:()=>({scores:{910174:grade}}),swtPassageAt:n=>n===2?{id:910174}:null,updateResultsNav(){},showResults:(...x)=>shown.push(x),loadPassage:()=>assert.fail('Must not replace saved feedback with a blank editor'),showSwtScreen(){}};
+ vm.createContext(ctx);vm.runInContext(snippet,ctx);ctx.navResultsPassage(1);assert.equal(ctx.currentPassageId,2);assert.equal(shown[0][3],grade.__text);
+});

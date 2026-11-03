@@ -15312,7 +15312,7 @@ function jumpToResultsPassage(target) {
   const select2 = document.getElementById('resPassageSelect');
   if (select2) select2.value = target;
   
-  const scores = LocalStore.get(getPteStorageKey('scores')) || {};
+  const scores = localAccountProgress().scores || {};
   const p = swtPassageAt(target);
   if (!p) return;
   
@@ -16720,7 +16720,7 @@ function backToPractice(){
 function navResultsPassage(delta){
   const positions = swtNavigationPositions(activeResFilter), index = positions.indexOf(currentPassageId), target = positions[index + delta];
   if(index < 0 || target == null) return;
-  const scores = LocalStore.get(getPteStorageKey('scores')) || {};
+  const scores = localAccountProgress().scores || {};
   const p = swtPassageAt(target);
   if(!p) return;
   if(scores[p.id] && typeof scores[p.id].overall_score === 'number'){
