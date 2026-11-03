@@ -393,9 +393,16 @@ for(const adminView of [false,true])for(const width of [1363,390,320])test('Read
  await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
  await page.evaluate(()=>switchSection('reading',{readingRequest:{history:true}}));
  await page.waitForSelector('[data-saved-mock="latest-result"]');
+ // Admin entry restores the Reading route while its entrance animation is
+ // running. Measure the completed layout; narrow screens use normal scrolling.
+ await page.evaluate(async admin=>{
+  const pane=document.getElementById('readingPane');
+  await Promise.all(pane.getAnimations({subtree:true}).filter(a=>Number.isFinite(a.effect.getComputedTiming().iterations)).map(a=>a.finished.catch(()=>{})));
+  if(admin)pane.querySelector('[data-saved-mock="latest-result"] button').scrollIntoView({block:'nearest',behavior:'instant'});
+ },adminView);
  assert.deepEqual(await page.$$eval('[data-saved-mock]',nodes=>nodes.map(n=>n.dataset.savedMock)),['latest-result','older-result']);
  assert(await page.$eval('[data-saved-mock="latest-result"]',n=>n.textContent.includes('Latest completed mock')&&n.textContent.includes('3 Nov 2026')&&n.textContent.includes('AEST')));
- assert(await page.$eval('[data-saved-mock="latest-result"] button',n=>{const r=n.getBoundingClientRect();return r.height>=44&&r.top>=0&&r.bottom<=innerHeight;}));
+ assert(await page.$eval('[data-saved-mock="latest-result"] button',n=>{const r=n.getBoundingClientRect();return r.height>=44&&r.top>=0&&r.bottom<=innerHeight;}),'The result action is at least 44px and visible after the route settles');
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'History overflows at '+width);
  if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','reading-history-'+(adminView?'admin-':'')+width+'.png'),fullPage:true});}
  await page.locator('[data-saved-mock="latest-result"] button').click();await page.waitForSelector('.reading-report');
