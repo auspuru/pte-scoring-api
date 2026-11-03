@@ -100,6 +100,26 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Email registration/recovery only; retain the preceding session-security
+  // snapshot and its historical compatibility chain for existing attempts.
+  const emailBaseline=require('../content/full-mock/account-email-compatible-sources.json');
+  if(digest(emailBaseline)==='43da96ca5a5e6fda029c7eaa6279dd3e24da91b8f9bad49247c148d7564e8f75'
+    &&current.scoringSources.files['server.js']?.sha256==='49b249ffed4307e4daef7a6414c79bc89142ff307e3b1b930730c9b8d4e803f1'){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of ['server.js','full-mock/assessment.js'])sources.files[file]=structuredClone(emailBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(emailBaseline))return digest(saved)===digest(current);
+  }
+  // Session revocation changes authentication transport only. Project this exact
+  // reviewed server revision onto its prior snapshot; native graders stay pinned.
+  const securityBaseline=require('../content/full-mock/session-security-compatible-sources.json');
+  if(digest(securityBaseline)==='24f1c9275df50097c21f4b6b589ce981472a42b1e41c36d195200ae4e49787d7'
+    &&current.scoringSources.files['server.js']?.sha256==='9a9f5d3eb297d1e49a97578eb1dac69dd9772b628af624a54381f42f64be5816'){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of ['server.js','full-mock/assessment.js'])sources.files[file]=structuredClone(securityBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(securityBaseline))return digest(saved)===digest(current);
+  }
   // Account/cache transport only; keep old saved attempts on their pinned graders.
   const storageBaseline = require('../content/full-mock/reading-storage-compatible-sources.json');
   if (digest(storageBaseline) === '047313cb885ef75e3804813682ca58561e75ffa5efbeb45377b278267a63efd9' && current.scoringSources.files['public/reading-practice.js']?.sha256 === '73894747029a2abb151e8de0dab2dbd6191b6a3e22246d49ac8109a33f7caa48') {

@@ -1,5 +1,10 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),policy=require('../account-security');
+test('Session payloads retain version-zero legacy sessions and reject malformed versions',()=>{
+ assert.deepEqual(policy.sessionPayload('alice|123'),{username:'alice',version:0,expiry:123});
+ assert.deepEqual(policy.sessionPayload('alice|v2|123'),{username:'alice',version:2,expiry:123});
+ for(const payload of ['alice|v-1|123','alice|vNaN|123','alice|v1|123|456','|v1|123','alice|v1|0'])assert.equal(policy.sessionPayload(payload),null);
+});
 test('Auth input bounds reject malformed types without rejecting existing short-password logins',()=>{
  for(const user of [null,[],{},'','x'.repeat(101),'a|b','a\nb'])assert(policy.credentialsError(user,'Password123'));
  for(const password of [null,{},[],'x'.repeat(1025)])assert(policy.credentialsError('alice',password));

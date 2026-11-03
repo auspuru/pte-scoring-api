@@ -90,7 +90,8 @@ function harness(options={}) {
     get innerHTML() { return this.html || ''; }
     setAttribute(key, value) { this.attrs[key] = value; }
   }
-  const practice = new Element('practiceHubPane'), mocks = new Element('mockTestsPane');
+  const practice = require('linkedom').parseHTML('<main id="practiceHubPane"></main>').document.getElementById('practiceHubPane'), mocks = new Element('mockTestsPane');
+  nodes.set('practiceHubPane',practice);
   const document = { getElementById: id => nodes.get(id), querySelectorAll: () => modes };
   let fail = false;
   const controller = catalogue.createController({ document, canAccessSpeaking:()=>options.speaking!==false, navigate: (...args) => navigations.push(args),

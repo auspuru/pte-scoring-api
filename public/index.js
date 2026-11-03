@@ -98,7 +98,7 @@ let timerSeconds = 0;
 let timerInterval = null;
 let lastSpellData = null;
 let writeTab = 'write';
-let swtPracticeMode = '';
+let swtPracticeMode = 'summary';
 let swtHighlightExercise = null;
 let swtHighlightSelected = [];
 let swtHighlightResult = null;
@@ -903,6 +903,7 @@ function changePassword() {
 
 async function submitPasswordChange(ev) {
   ev.preventDefault();
+  const passwordOwner=currentUserId,passwordToken=sessionToken;
   const currentPassword = document.getElementById('changeCurrentPassword')?.value || '';
   const newPassword = document.getElementById('changeNewPassword')?.value || '';
   const confirmPassword = document.getElementById('changeConfirmPassword')?.value || '';
@@ -924,11 +925,13 @@ async function submitPasswordChange(ev) {
       body: JSON.stringify({ oldPassword: currentPassword, newPassword })
     });
     const d = await r.json().catch(() => ({}));
+    if(currentUserId!==passwordOwner||sessionToken!==passwordToken)return;
     if (r.status === 401 || r.status === 403) {
       handleAuthExpired();
       return;
     }
     if (!r.ok || !d.success) return fail(d.error || 'Password could not be changed.');
+    if(d.token){sessionToken=d.token;setAuthStorageValue('pte_session_token',d.token);}
     document.getElementById('changeCurrentPassword').value = '';
     document.getElementById('changeNewPassword').value = '';
     document.getElementById('changeConfirmPassword').value = '';
@@ -12592,7 +12595,7 @@ function ensureWritingLabRuntimeLoaded() {
 function ensureStudentProgressRuntimeLoaded() {
   if (window.StudentProgress?.create) return Promise.resolve(window.StudentProgress);
   if (studentProgressRuntimeLoadPromise) return studentProgressRuntimeLoadPromise;
-  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=sha256-6fbfebc1af3f', 'student progress')
+  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=sha256-adb857bf71fc', 'student progress')
     .then(() => {
       if (!window.StudentProgress?.create) throw new Error('Progress history did not initialise.');
       return window.StudentProgress;
@@ -12936,11 +12939,35 @@ function reviewSavedPractice(entry) {
   return switchSection(entry.route || 'writing-history', {labRequest:{attemptId:entry.id},routeHash:PortalWorkspace.questionHash(entry.route || 'writing-history',{attempt:entry.id})});
 }
 
+function readStudentProgressSnapshot() {
+  const owner=currentUserId;
+  let reading = {};
+  try {
+    const packed = localAccountProgress(owner).readingProgress;
+    reading = window.AccountProgress ? AccountProgress.unpackReading(packed) : packed;
+  } catch (_) {}
+  reading ||= {};
+  const enrich = a => {
+    if (!a || !a.done || !Array.isArray(a.questions)) return a;
+    return window.ReadingPractice ? {...a,...ReadingPractice.totals(a)} : a;
+  };
+  reading = {...reading,history:(reading.history||[]).map(enrich),session:enrich(reading.session)};
+  const progress = localAccountProgress(owner);
+  return {
+    reading,
+    swt:progress.history||{},
+    swtDrafts:progress.summaries||{},
+    passages:passages.map(p=>({id:p.id,title:p.title})),
+    essays:getPracticeHistory(),
+    essayDraft:progress.essayDraft||null
+  };
+}
+
 function openStudentProgress() {
-  if (!window.StudentProgress || !window.ReadingPractice) {
+  if (!window.StudentProgress) {
     const pane = document.getElementById('progressPane');
     if (pane && !pane.children.length) pane.innerHTML = '<div class="dash-card" role="status">Preparing progress history…</div>';
-    return Promise.all([ensureStudentProgressRuntimeLoaded(), ensureReadingRuntimeLoaded()])
+    return ensureStudentProgressRuntimeLoaded()
       .then(() => {
         if (portalWorkspace.current() === 'progress') return openStudentProgress();
       })
@@ -12955,37 +12982,21 @@ function openStudentProgress() {
     identity: () => ({uid:currentUserId,token:sessionToken}),
     navigate: switchSection,
     review: reviewSavedPractice,
-    loadLocal: async () => {
+    loadLocal: readStudentProgressSnapshot,
+    refreshLocal: async () => {
       const owner = currentUserId, token = sessionToken;
       // My Progress is an observation surface, so always pull the latest cloud
       // snapshot when it opens or the user presses Refresh. This avoids the
       // normal background-sync throttle hiding another device's recent work.
-      if (syncQueued || LocalStore.get(`pte_${canonicalClientUserId(owner)}_syncPending`)) {
-        if (typeof flushSync === 'function') await flushSync();
-      }
-      if (typeof refreshPracticeHistory === 'function') await refreshPracticeHistory({ force: true });
-      else if (typeof resumeAccountSync === 'function') await resumeAccountSync();
+      await Promise.all([ensureReadingRuntimeLoaded(),(async()=>{
+        if (syncQueued || LocalStore.get(`pte_${canonicalClientUserId(owner)}_syncPending`)) {
+          if (typeof flushSync === 'function') await flushSync();
+        }
+        if (typeof refreshPracticeHistory === 'function') await refreshPracticeHistory({ force: true });
+        else if (typeof resumeAccountSync === 'function') await resumeAccountSync();
+      })()]);
       if (owner !== currentUserId || token !== sessionToken) throw Error('Account changed.');
-      let reading = {};
-      try {
-        const packed = localAccountProgress(owner).readingProgress;
-        reading = window.AccountProgress ? AccountProgress.unpackReading(packed) : packed;
-      } catch (_) {}
-      reading ||= {};
-      const enrich = a => {
-        if (!a || !a.done || !Array.isArray(a.questions)) return a;
-        return {...a,...ReadingPractice.totals(a)};
-      };
-      reading = {...reading,history:(reading.history||[]).map(enrich),session:enrich(reading.session)};
-      const progress = localAccountProgress(owner);
-      return {
-        reading,
-        swt:progress.history||{},
-        swtDrafts:progress.summaries||{},
-        passages:passages.map(p=>({id:p.id,title:p.title})),
-        essays:getPracticeHistory(),
-        essayDraft:progress.essayDraft||null
-      };
+      return readStudentProgressSnapshot();
     }
   });
   return studentProgressController.open();
@@ -15367,7 +15378,7 @@ function loadStoredData(){
 
 
 function setSwtPracticeMode(mode){
-  if(!['summary','highlight'].includes(mode)) return;
+  if(mode!=='summary') return;
   swtPracticeMode = mode;
   document.querySelectorAll('[data-swt-mode]').forEach(button => {
     const active = button.dataset.swtMode === mode;

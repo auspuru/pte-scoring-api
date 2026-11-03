@@ -106,6 +106,9 @@
 }
 #swtQuestionNavigation button:disabled{opacity:.45;cursor:default}
 #swtQuestionNavigation[hidden]{display:none}
+/* SWT navigation stays in the document flow, never over the passage or editor. */
+#swtQuestionNavigation{position:static;bottom:auto;margin:0 0 16px;padding:8px 12px;box-shadow:none}
+#swtPane #swtQuestionNavigation .swt-pager{padding:0;border:0;background:transparent}
 #swtQuestionNavigation .swt-pager>span{font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink-soft,#536f80)}
 
 #swtPracticeNav{position:static;box-shadow:none}

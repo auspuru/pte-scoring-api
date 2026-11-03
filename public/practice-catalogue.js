@@ -108,7 +108,7 @@
       .sort((a,b) => a.module.localeCompare(b.module) || a.number - b.number);
   }
   function createController({ document: doc, navigate, launchReading, launchWriting, launchSpeaking, canAccessSpeaking=()=>true, getSessionToken=()=>'', fetch: get = fetch, getProgress = async () => ({}) }) {
-    let data, loading, page = 0, progress = { practice: {}, mocks: {} };
+    let data, loading, readingCounts, page = 0, progress = { practice: {}, mocks: {} }, progressOwner=getSessionToken(), progressReady=false, practiceRequest=0;
     const filters = { mode: 'sectional', module: 'all', search: '', attempt: 'all' };
     let pageSize = 12;
     async function load() {
@@ -117,13 +117,22 @@
         const r = await get(url, { signal: AbortSignal.timeout(15000), headers:{'x-session-token':getSessionToken()} });
         if (!r.ok) throw Error('The catalogue could not load. Please retry.');
         return r.json();
-      })).then(([reading, writing]) => (data = { reading, writing, mocks: mockItems(reading, writing) }))
+      })).then(([reading, writing]) => {
+        readingCounts=Object.fromEntries(readingLibraries(reading).map(l=>[l.id,l.questions.length]));
+        return data = { reading, writing, mocks: mockItems(reading, writing) };
+      })
         .finally(() => { loading = null; });
       return loading;
     }
     async function refreshProgress() {
-      try { progress = await Promise.resolve(getProgress()) || { practice: {}, mocks: {} }; }
-      catch (_) { progress = { practice: {}, mocks: {} }; }
+      const owner=getSessionToken();
+      if(progressOwner!==owner){progress={practice:{},mocks:{}};progressOwner=owner;progressReady=false;}
+      try {
+        const next=await Promise.resolve(getProgress());
+        if(owner!==getSessionToken())return progress;
+        progress=next||{practice:{},mocks:{}};progressOwner=owner;progressReady=true;
+      }
+      catch (_) { return progress; }
       progress.practice ||= {}; progress.mocks ||= {};
       return progress;
     }
@@ -134,27 +143,40 @@
     function practiceCount(task) {
       const custom = Number(progress.practice?.[task.route]?.count);
       if (Number.isFinite(custom) && custom >= 0) return custom;
-      if (task.listeningType && data.writing?.listeningPractice) return data.writing.listeningPractice.filter(q=>q.type===task.listeningType).length;
-      if (task.type) return readingLibraries(data.reading).find(l => l.id === task.type)?.questions?.length || 0;
-      if (task.route === 'spoken-text') return data.writing?.spoken?.length || 0;
-      if (task.route === 'dictation') return data.writing?.dictation?.length || 0;
+      if (task.listeningType && data?.writing?.listeningPractice) return data.writing.listeningPractice.filter(q=>q.type===task.listeningType).length;
+      if (task.type) return readingCounts?.[task.type] || 0;
+      if (task.route === 'spoken-text') return data?.writing?.spoken?.length || 0;
+      if (task.route === 'dictation') return data?.writing?.dictation?.length || 0;
       return 0;
+    }
+    function practiceLabels(task){
+      const meta=progress.practice?.[task.route]||{},count=practiceCount(task),last=dateLabel(meta.lastAttempt);
+      return {count:count?count+' question'+(count===1?'':'s'):'Practice available',last:last?'Last attempt '+last:progressReady?'Not attempted yet':''};
     }
     async function openPractice() {
       const host = doc.getElementById('practiceHubPane');
-      host.innerHTML = '<p role="status">Loading practice choices…</p>';
-      try { await Promise.all([load(), refreshProgress()]); }
-      catch (error) { host.innerHTML = '<p role="alert">' + esc(error.message) + '</p>'; return; }
+      const ticket=++practiceRequest,owner=getSessionToken();
+      if(progressOwner!==owner){progress={practice:{},mocks:{}};progressOwner=owner;progressReady=false;}
       const subjectMark = id => ({ speaking:'SP', writing:'WR', reading:'RD', listening:'LS' }[id] || id.slice(0,2).toUpperCase());
       host.innerHTML = '<div class="catalogue-heading"><h2>Practice</h2><p>Choose a skill, then select a task to begin.</p></div>'
         + '<div class="practice-banners">' + groups.filter(g=>g.id!=='speaking'||canAccessSpeaking()).map(g => '<details name="practice-skill" class="practice-banner ' + g.id + '" aria-labelledby="practice-' + g.id + '"><summary class="practice-banner-header"><span class="practice-subject-mark" aria-hidden="true">' + subjectMark(g.id) + '</span><h3 id="practice-' + g.id + '">' + g.title + '</h3><span class="practice-skill-count">' + g.tasks.length + ' tasks</span><span class="practice-skill-toggle" aria-hidden="true">+</span></summary><div class="practice-task-list">'
           + g.tasks.map(t => {
-            const meta=progress.practice?.[t.route] || {}, count=practiceCount(t), last=dateLabel(meta.lastAttempt);
-            const countLabel = count ? count + ' question' + (count===1?'':'s') : 'Practice available';
-            const lastLabel = last ? 'Last attempt ' + esc(last) : 'Not attempted yet';
-            return '<button type="button" data-practice-route="' + t.route + '"><span class="practice-task-copy"><strong>' + esc(t.label) + '</strong><small><span class="practice-task-count">' + countLabel + '</span><span class="practice-task-last">' + lastLabel + '</span></small></span><span class="practice-task-arrow" aria-hidden="true">→</span></button>';
+            const labels=practiceLabels(t);
+            return '<button type="button" data-practice-route="' + t.route + '"><span class="practice-task-copy"><strong>' + esc(t.label) + '</strong><small><span class="practice-task-count">' + esc(labels.count) + '</span><span class="practice-task-last">' + esc(labels.last) + '</span></small></span><span class="practice-task-arrow" aria-hidden="true">→</span></button>';
           }).join('') + '</div></details>').join('') + '</div>';
       host.onclick = e => { const b = e.target.closest('[data-practice-route]'); if (b) navigate(b.dataset.practiceRoute); };
+      // Task navigation needs no bank or history request. Enrich the existing
+      // controls in place so disclosure state, focus and scroll stay intact.
+      const update=()=>{
+        if(ticket!==practiceRequest||owner!==getSessionToken())return;
+        for(const task of groups.flatMap(g=>g.tasks)){
+          const button=host.querySelector('[data-practice-route="'+task.route+'"]');if(!button)continue;
+          const labels=practiceLabels(task);
+          button.querySelector('.practice-task-count').textContent=labels.count;
+          button.querySelector('.practice-task-last').textContent=labels.last;
+        }
+      };
+      await Promise.allSettled([load().then(update),refreshProgress().then(update)]);
     }
     function renderList() {
       const board = doc.getElementById('catalogue-board');
