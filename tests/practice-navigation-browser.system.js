@@ -330,10 +330,11 @@ for(const width of [1363,390,320])test('Reading mock history: newest result is v
  const saved={session:old,history:[old,latest],drafts:[{...base,id:'unfinished',name:'Reading Practice Mock 2',done:false,deadline:null}],practiceResults:{}};
  const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
  const page=await browser.newPage();await page.setViewport({width,height:950});await page.emulateTimezone('UTC');const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ try {
  await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();
  await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
  await page.evaluate(({username,saved})=>localStorage.setItem('ipt_reading_v1:'+username,JSON.stringify(saved)),{username,saved});
- await page.locator('#nav-mock-tests').click();await page.waitForSelector('[data-mock-history="reading"]');await page.locator('[data-mock-history="reading"]').click();
+ await page.evaluate(()=>switchSection('reading',{readingRequest:{history:true}}));
  await page.waitForSelector('[data-saved-mock="latest-result"]');
  assert.deepEqual(await page.$$eval('[data-saved-mock]',nodes=>nodes.map(n=>n.dataset.savedMock)),['latest-result','older-result']);
  assert(await page.$eval('[data-saved-mock="latest-result"]',n=>n.textContent.includes('Latest completed mock')&&n.textContent.includes('3 Nov 2026')&&n.textContent.includes('AEST')));
@@ -344,4 +345,5 @@ for(const width of [1363,390,320])test('Reading mock history: newest result is v
  assert(await page.$eval('#readingPane',n=>n.textContent.includes('Integrated Reading & Listening Sectional Mock 1')));
  await page.locator('#readingPane [data-action="home"]').click();await page.locator('[data-saved-mock="older-result"] button').click();await page.waitForSelector('.reading-report');
  assert(await page.$eval('#readingPane',n=>n.textContent.includes('Reading Practice Mock 5')));assert.deepEqual(errors,[]);
+ } catch(error) { t.diagnostic('Reading history screen: '+await page.$eval('body',n=>n.innerText.slice(-2000))); if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','reading-history-failed-'+width+'.png'),fullPage:true});} throw error; }
 });
