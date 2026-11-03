@@ -113,7 +113,7 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
     if (q.type === 'dropdown') { readingDeadline ||= saved.current.endsAt; assert.equal(saved.current.endsAt, readingDeadline); }
     if (['lmcma','lfi','hcs','lmcsa','smw','hiw','wfd'].includes(q.type)) { listeningDeadline ||= saved.current.endsAt; assert.equal(saved.current.endsAt, listeningDeadline); }
     if (adapters.SPOKEN.has(q.type)) {
-      if (q.id === 'fm1-ra-01' || q.id === 'fm1-rs-01') {
+      if (['ra','rs'].includes(q.type) && paper.questions.find(row => row.question.type === q.type).question.id === q.id) {
         if (q.type === 'rs') { f.advanceTo(saved.current.promptAt + 100); await page.waitForFunction(() => /Playing/.test(document.getElementById('fm-audio-status')?.textContent)); await page.waitForFunction(() => /Audio completed/.test(document.getElementById('fm-audio-status')?.textContent)); }
         else f.advanceTo(saved.current.responseAt - 2000);
         await page.waitForFunction(() => document.getElementById('fm-record-status')?.textContent === 'Recording');

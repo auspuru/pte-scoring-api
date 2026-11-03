@@ -505,8 +505,11 @@
       } catch (error) { notice(error.message, true); }
       finally { flushing = false; if (saved && owner === expectedOwner && attempt?.status === 'submitted') syncReport(true); }
     }
-    async function commitDraft() {
+    async function commitDraft(acceptDisplayedOrder = false) {
       if (!attempt?.current || speech(attempt.question.type)) return;
+      // Next submits the order the student can see, even when no box moved.
+      // Finishing early and expired untouched questions remain unanswered.
+      if (acceptDisplayedOrder && attempt.question.type === 'reorder' && !draft.length) draft = attempt.question.items.map(item => item.key);
       const packet = await persistDraft(), key = prefix() + attempt.id + ':draft:' + attempt.current.token;
       await api('/attempts/' + attempt.id + '/draft', packet);
       const queued = (await queueList(key)).find(row => row.key === key);
@@ -521,7 +524,7 @@
         // Recording chunks already have their own durable retry queue. Do not
         // make navigation wait for every earlier upload on a slow connection.
         stopCapture();
-        if (!valid(ticket)) return; await commitDraft(); if (!valid(ticket)) return;
+        if (!valid(ticket)) return; await commitDraft(true); if (!valid(ticket)) return;
         const value = await api('/attempts/' + id + '/next', { itemToken: token, skip }); accept(value);
       } catch (error) { notice(error.message, true); }
       finally {
