@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "fe188a3133305d5b01e31b6a26a3e3d585ab1ad0",
+  "baseCommit": "b42ef8f01c797946962c08edd1b6975ccd85d5e2",
   "checkedAt": "2026-11-03",
-  "scope": "Reading mock history presentation only: visible newest-first results, explicit saved-result actions and Brisbane dates. Native scoring functions, timers, papers and confirmed marks unchanged.",
+  "scope": "Reading account/cache transport only: restore synced admin history and durable practice backups. Native scoring, questions, timers and confirmed marks unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "aeb30b882debd48dd2f7df53ef3ffe939aeac9af7ce7ccb78c95aae76662b8ec",
+        "sha256": "017f3792b5eef4d1ef111b3626ce8e8051450d8a76adc78f96f5d461ee14d535",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -169,7 +169,7 @@
         "version": null
       },
       "public/reading-practice.js": {
-        "sha256": "278d9167c25e2a48edfe01f6b6fb026feba9ed47671a493b077de4e9df9c3bb4",
+        "sha256": "73894747029a2abb151e8de0dab2dbd6191b6a3e22246d49ac8109a33f7caa48",
         "version": null
       },
       "public/writing-lab-report.js": {

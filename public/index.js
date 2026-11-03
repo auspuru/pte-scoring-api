@@ -12514,7 +12514,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-exam-player.js?v=sha256-784ef20c0524', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=sha256-98e9c23a186f', 'reading review'],
-      ['reading-practice.js?v=sha256-278d9167c25e', 'reading practice']
+      ['reading-practice.js?v=sha256-73894747029a', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
     // downloads overlap. Initialise the practice client only after all succeed.
@@ -12968,7 +12968,7 @@ function openStudentProgress() {
       if (owner !== currentUserId || token !== sessionToken) throw Error('Account changed.');
       let reading = {};
       try {
-        const packed = JSON.parse(localStorage.getItem(ReadingPractice.storageKey(owner)) || 'null');
+        const packed = localAccountProgress(owner).readingProgress;
         reading = window.AccountProgress ? AccountProgress.unpackReading(packed) : packed;
       } catch (_) {}
       reading ||= {};

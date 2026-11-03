@@ -100,6 +100,15 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Account/cache transport only; keep old saved attempts on their pinned graders.
+  const storageBaseline = require('../content/full-mock/reading-storage-compatible-sources.json');
+  if (digest(storageBaseline) === '047313cb885ef75e3804813682ca58561e75ffa5efbeb45377b278267a63efd9' && current.scoringSources.files['public/reading-practice.js']?.sha256 === '73894747029a2abb151e8de0dab2dbd6191b6a3e22246d49ac8109a33f7caa48') {
+    const sources = structuredClone(current.scoringSources);
+    for (const file of ['public/reading-practice.js','full-mock/assessment.js']) sources.files[file] = structuredClone(storageBaseline.files[file]);
+    current = { ...current, scoringSources: sources };
+    if (digest(saved.scoringSources) === digest(storageBaseline)) return digest(saved) === digest(current);
+  }
+
   // Presentation-only Reading history update; exact projection preserves older saved graders.
   const historyBaseline = require('../content/full-mock/reading-history-compatible-sources.json');
   if (digest(historyBaseline) === '62360edb16bfb5e718b7441b6f1d94def84c0957803bba130b261f6d10295113' && current.scoringSources.files['public/reading-practice.js']?.sha256 === '278d9167c25e2a48edfe01f6b6fb026feba9ed47671a493b077de4e9df9c3bb4') {

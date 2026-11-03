@@ -114,6 +114,18 @@
   const progressSync = () => globalThis.AccountProgress;
   function identity() { return typeof currentUserId !== 'undefined' ? String(currentUserId).trim().toLowerCase() : ''; }
   function authToken() { return typeof sessionToken !== 'undefined' ? sessionToken : null; }
+  function readProgress(uid) {
+    // Account hydration can recover cloud data even when the native cache is
+    // unavailable (including an administrator opening a student's account).
+    if (typeof localAccountProgress === 'function') return localAccountProgress(uid).readingProgress;
+    if (typeof LocalStore !== 'undefined') return LocalStore.get(storageKey(uid));
+    return JSON.parse(localStorage.getItem(storageKey(uid)) || 'null');
+  }
+  function writeProgress(uid, snapshot) {
+    if (typeof LocalStore !== 'undefined') return LocalStore.set(storageKey(uid), snapshot);
+    localStorage.setItem(storageKey(uid), JSON.stringify(snapshot));
+    return true;
+  }
   function persist() {
     if (!owner || identity() !== owner) return;
     if (progressSync()) {
@@ -126,7 +138,7 @@
     const snapshot = progressSync() ? progressSync().packReading(state) : state;
     const changed = JSON.stringify(snapshot) !== JSON.stringify(lastSnapshot);
     let localSaved = false;
-    try { localStorage.setItem(storageKey(owner), JSON.stringify(snapshot)); localSaved = true; saveNotice = cloudStatus?.text || 'Saved on this device'; lastPersisted = Date.now(); }
+    try { localSaved = writeProgress(owner, snapshot); saveNotice = cloudStatus?.text || (localSaved ? 'Saved on this device' : 'Saving your progress. Keep this page open.'); if (localSaved) lastPersisted = Date.now(); }
     catch (_) { saveNotice = 'Could not save on this device. Keep this page open.'; }
     lastSnapshot = JSON.parse(JSON.stringify(snapshot));
     if (changed && typeof queueSync === 'function') queueSync({ localSaved });
@@ -151,7 +163,7 @@
     if (before && merged.session && before.id === merged.session.id) { Object.assign(before, merged.session); merged.session = before; }
     state = merged;
     lastSnapshot = progressSync().packReading(state);
-    try { localStorage.setItem(storageKey(owner), JSON.stringify(lastSnapshot)); } catch (_) { /* The cloud copy remains available. */ }
+    try { writeProgress(owner, lastSnapshot); } catch (_) { /* The cloud copy remains available. */ }
     const afterView = state.session && JSON.stringify([state.session.id, state.session.index, state.session.done, state.session.answers, state.session.assessments]);
     const moved = navigation !== (state.session && JSON.stringify([state.session.id, state.session.index, state.session.done]));
     if (beforeView !== afterView && !host.hidden && viewingQuestion && (moved || !document.activeElement?.matches?.('textarea,input'))) {
@@ -252,7 +264,7 @@
       if (serial !== requestSerial || requestGeneration !== generation || nextOwner !== identity() || host.hidden) return;
       state = initialState();
       try {
-        const raw = JSON.parse(localStorage.getItem(storageKey(owner)) || 'null');
+        const raw = readProgress(owner);
         const saved = progressSync() ? progressSync().unpackReading(raw) : raw;
         if (saved && Array.isArray(saved.history)) {
           state.history = saved.history;
