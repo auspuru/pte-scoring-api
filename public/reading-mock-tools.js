@@ -292,7 +292,7 @@
   }
   function composeIntegrated(name, reading, readingMinutes, audio, listeningMinutes, swtPassages, timed, sharedMinutes) {
     if (!Array.isArray(swtPassages) || swtPassages.length !== 2 || swtPassages.some(p => p?.id == null || !p.text || !p.keyElements) || new Set(swtPassages.map(p => String(p.id))).size !== 2 || new Set(swtPassages.map(p => p.text.trim().replace(/\s+/g, ' ').toLowerCase())).size !== 2) throw Error('Two different SWT passages are required. Please try again.');
-    const swt = swtPassages.map((p, i) => ({ id: p.id, uid: 'mixed:swt:' + p.id, type: 'swt', title: p.title || 'Summarise written text', passageId: p.id, passage: p.text, keyPoints: p.keyElements, sampleResponse: p.sampleResponse || '', instructions: 'Read the passage and write a one-sentence summary of 5–75 words. This is SWT ' + (i + 1) + ' of 2.' + (sharedMinutes ? ' All questions share the '+sharedMinutes+'-minute mock timer.' : timed ? ' You have 10 minutes for this question.' : ' Take your time in this untimed practice mock.') }));
+    const swt = swtPassages.map((p, i) => ({ id: p.id, uid: 'mixed:swt:' + p.id, type: 'swt', title: p.title || 'Summarise written text', passageId: p.id, passage: p.text, keyPoints: p.keyElements, sampleResponse: p.sampleResponse || '', instructions: 'Read the passage and write a one-sentence summary of 5–75 words. This is SWT ' + (i + 1) + ' of 2.' + (timed ? ' You have 10 minutes for this question.' : ' Take your time in this untimed practice mock.') }));
     const questions = [...swt, ...reading, ...audio];
     if (new Set(questions.map(q => q.uid)).size !== questions.length) throw Error('This mock contains repeated questions.');
     const stages = [
@@ -301,11 +301,18 @@
       { id: 'reading', name: 'Reading', first: 2, last: reading.length + 1, minutes: readingMinutes },
       { id: 'listening', name: 'HCS & HIW', first: reading.length + 2, last: questions.length - 1, minutes: listeningMinutes }
     ];
-    return { name, minutes: sharedMinutes || stages.reduce((n, stage) => n + stage.minutes, 0), questions, stages: timed && !sharedMinutes ? stages : undefined };
+    return { name, minutes: stages.reduce((n, stage) => n + stage.minutes, 0), questions, stages: timed ? stages : undefined };
   }
   // Autoplay, manual playback and review share one audio lifecycle.
   function createSpeaker(env, onState) {
-    let active = null, timeout = null, startTimeout = null, serial = 0;
+    let active = null, timeout = null, startTimeout = null, serial = 0, volume = 1, utteranceQueue = [];
+    try { const saved = env.localStorage?.getItem('ipt-exam-volume'); if (saved != null && Number.isFinite(Number(saved))) volume = Math.max(0, Math.min(1, Number(saved))); } catch {}
+    function setVolume(value) {
+      volume = Math.max(0, Math.min(1, Number(value)));
+      for (const utterance of utteranceQueue) utterance.volume = volume;
+      if (effects?.master) effects.master.gain.value = DISTRACTION_GAIN * volume;
+      try { env.localStorage?.setItem('ipt-exam-volume', String(volume)); } catch {}
+    }
     let audioContext = null, effects = null, voiceCleanup = null;
     function clearTimers() {
       if (timeout !== null) env.clearTimeout(timeout);
@@ -369,7 +376,7 @@
         };
         try {
           const master = track(audioContext.createGain()); layer.master = master;
-          master.gain.value = DISTRACTION_GAIN;
+          master.gain.value = DISTRACTION_GAIN * volume;
           master.connect(audioContext.destination);
           if (background) {
             // Distinct environmental textures: steady rain, passing engines,
@@ -515,12 +522,14 @@
         const distinct = first && second && identity(first) !== identity(second);
         utterances = parts.map((part, i) => {
           const utterance = new env.SpeechSynthesisUtterance(part);
+          utterance.volume = volume;
           utterance.voice = i % 2 ? second : first;
           utterance.lang = utterance.voice?.lang || (i % 2 ? 'en-US' : 'en-GB');
           utterance.rate = twoSpeakers ? (i % 2 ? 0.96 : 1.03) : 1;
           utterance.pitch = twoSpeakers ? (i % 2 ? (distinct ? 0.92 : 0.82) : (distinct ? 1.06 : 1.18)) : 1;
           return utterance;
         });
+        utteranceQueue = utterances;
         playNext();
       };
       const readVoices = () => env.speechSynthesis.getVoices().filter(v => /^en(?:[-_]|$)/i.test(v.lang));
@@ -547,7 +556,7 @@
         voicesChanged();
       } catch (_) { finish('error', 'The speech voice could not load. Check your browser audio settings and retry.'); }
     }
-    return { play, cancel, unlock };
+    return { play, cancel, unlock, setVolume, getVolume: () => volume };
   }
   return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, languageFirstFib, qualityFibPool, strengthenFib, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS, AUDIO_BACKGROUNDS, AUDIO_CUES };
 });

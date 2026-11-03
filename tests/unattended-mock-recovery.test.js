@@ -54,7 +54,8 @@ test('Reviewed recovery transport changes keep native graders, models and score 
  assert.equal(sha(source),'46d41b342356759573baf0b731624cf9998f215266794d9e1ecb9e7ac272f804');
  source=read('public/writing-lab-report.js').replace("(attempt.kind!=='mock' || !needsReview(r,q))",'(!weighted || !needsReview(r,q))');
  assert.equal(sha(source),baseline.files['public/writing-lab-report.js'].sha256);
- for(const name of ['full-mock/session.js','full-mock/profiles.js','speaking-scoring.js','speaking-delivery.js','writing-lab-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
+ for(const name of ['full-mock/profiles.js','speaking-scoring.js','speaking-delivery.js','writing-lab-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
+ assert.equal(sha(read('full-mock/session.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/session.js'].sha256); // Reviewed section transition flow; legacy clock regression is covered separately.
  // Explicit instructor exclusions have separate ownership/integrity and
  // denominator tests. Their exact source is pinned; native graders and the
  // original profile weights remain byte-identical above.

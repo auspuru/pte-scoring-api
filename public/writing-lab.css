@@ -5,3 +5,5 @@
 .content-provenance{display:inline-block;margin:0 0 14px;padding:7px 10px;border:1px solid #cbdbe3;border-radius:6px;background:#f4f8fa;color:#536f80;font-size:12px;line-height:1.4}
 
 #writingLabScreen button,#writingLabScreen input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),#writingLabScreen select{min-height:44px}
+
+.mock-volume{display:flex;align-items:center;gap:8px;font-size:13px;margin-top:8px}.mock-volume input{width:90px;min-width:60px}

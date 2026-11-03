@@ -700,3 +700,11 @@ test('Listening saved feedback never navigates from an empty or wrong-task selec
   assert.equal(h.hooks.current().id,'saved-one');assert.equal(h.requests.length,reads);
  }
 });
+
+test('Volume remains available on silent questions and applies to current and subsequent mock audio',()=>{
+ const h=harness();open(h,attempt(3));const audio=h.recordings.at(-1),deadline=h.hooks.current().deadline;
+ const slider=h.nodes.get('audio-volume');assert(slider);slider.value='0.4';slider.oninput({target:slider});
+ assert.equal(audio.volume,0.4);assert.equal(h.memory.get('ipt-exam-volume'),'0.4');assert.equal(h.hooks.current().deadline,deadline);
+ open(h,attempt(0));assert(h.nodes.get('audio-volume'));assert.match(h.nodes.get('lab').innerHTML,/id="audio-volume"[^>]*value="0.4"/);
+ open(h,attempt(4));assert.equal(h.recordings.at(-1).volume,0.4);
+});

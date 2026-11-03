@@ -133,7 +133,7 @@ function createStore({ pool, directory }) {
       const index = await readVersion(path.join(directory, dir.name, 'index'));
       if (index?.value.active) {
         const current = await readVersion(path.join(directory, dir.name, index.value.active.id, 'state'));
-        if (current?.value.status === 'active' && current.value.current.endsAt <= at) rows.push({ uid: index.value.owner, id: index.value.active.id });
+        if (current?.value.status === 'active' && current.value.current?.endsAt <= at) rows.push({ uid: index.value.owner, id: index.value.active.id });
       }
     }
     return rows.slice(0, 500);

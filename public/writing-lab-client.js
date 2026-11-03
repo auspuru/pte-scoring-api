@@ -14,6 +14,8 @@
   const count = text => text.trim().split(/\s+/).filter(Boolean).length;
   const clock = seconds => Math.floor(Math.max(0,seconds)/60)+':'+String(Math.floor(Math.max(0,seconds)%60)).padStart(2,'0');
   const labels = {content:'Content',form:'Form',grammar:'Grammar',vocabulary:'Vocabulary',spelling:'Spelling',linguistic:'General linguistic range',coherence:'Development, structure & coherence'};
+  let volume=1;try{const saved=localStorage.getItem('ipt-exam-volume');if(saved!=null&&Number.isFinite(Number(saved)))volume=Math.max(0,Math.min(1,Number(saved)));}catch{}
+  function setVolume(value){volume=Math.max(0,Math.min(1,Number(value)));if(audio)audio.volume=volume;try{localStorage.setItem('ipt-exam-volume',String(volume));}catch{}}
   let libraryPage=0, mockModule='writing';
   let catalog, username, attempt = null, view = location.pathname === '/spoken-text' ? 'sst' : 'mocks', requestedView = view, bootPromise = null;
   let seenQuestionIds = new Set();
@@ -329,14 +331,15 @@
     const listeningWorkspace=listening&&(attempt.kind!=='mock'||attempt.module==='listening');
     setListeningStyle(listeningWorkspace);
     const instruction=q.prompt || (q.type==='wfd'?'Listen and type the sentence.' :sst?'Listen and write a summary of 50–70 words.':q.type==='swt'?'Summarise the passage in one sentence of 5–75 words.':'Write an essay of 200–300 words.');
-    const questionHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?(attempt.module==='listening'?'Listening sectional mock':'Writing sectional mock'):'Listening practice')+'</strong><small>'+esc(username)+'</small></div><div class="timer-wrap"><span>'+(q.timeGroup==='listening'?'LISTENING TIME REMAINING':q.timeGroup?'DICTATION TIME REMAINING':'TIME REMAINING')+'</span><strong id="timer">'+(supportedPractice()?'Untimed':q.minutes+':00')+'</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main exam-main-'+esc(q.type)+'"><p class="instruction">'+instruction+'</p>'+
-      (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Play':'Play')+'</button> <label class="meta">Volume <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="1">'+(supportedPractice()?'<button type="button" id="audio-replay">↻ Replay</button>':'')+'</label></div><details class="studio-notes"><summary>Notes</summary><label class="answer-label" for="notes">Notes</label><textarea id="notes" '+(attempt.status==='ready'?'disabled':'')+' class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea></details>':'<div class="passage">'+esc(q.text)+'</div>')+
+    const questionHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?(attempt.module==='listening'?'Listening sectional mock':'Writing sectional mock'):'Listening practice')+'</strong><small>'+esc(username)+'</small><label class="mock-volume">Volume <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="'+volume+'" aria-label="Mock volume"></label></div><div class="timer-wrap"><span>'+(q.timeGroup==='listening'?'LISTENING TIME REMAINING':q.timeGroup?'DICTATION TIME REMAINING':'QUESTION TIME REMAINING')+'</span><strong id="timer">'+(supportedPractice()?'Untimed':q.minutes+':00')+'</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main exam-main-'+esc(q.type)+'"><p class="instruction">'+instruction+'</p>'+
+      (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Play':'Play')+'</button> '+(supportedPractice()?'<button type="button" id="audio-replay">↻ Replay</button>':'')+'</div><details class="studio-notes"><summary>Notes</summary><label class="answer-label" for="notes">Notes</label><textarea id="notes" '+(attempt.status==='ready'?'disabled':'')+' class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea></details>':'<div class="passage">'+esc(q.text)+'</div>')+
       (studio&&listening&&supportedPractice()?'<details class="studio-help"><summary>How to answer</summary><p>'+esc(studio.help[q.type])+'</p></details>':'')+(objective?listeningTasks.render(q,attempt.answers[attempt.index]):'')+'<label class="answer-label" for="answer" '+(objective?'hidden':'')+'>Your response</label><textarea id="answer" '+(objective?'hidden':'')+' spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools" '+(objective?'hidden':'')+'><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Words: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'Ready to begin':'Your current answer is saved on this device')+'</p></div><footer class="exam-footer">'+(attempt.kind==='mock'?'':'<button class="secondary" data-leave="1">Exit</button>')+practiceNavigation(true)+'<button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.kind!=='mock'?'Check answer':attempt.index===attempt.questions.length-1?'Finish test':'Submit & next')+'</button></footer>'+practiceNavigation()+'</section>';
     root.innerHTML=studio&&listeningWorkspace?studioWrap(questionHTML,q.type,attempt.kind==='mock'):questionHTML;
     if(studio&&listeningWorkspace){bindStudioLibrary();const strip=root.querySelector?.('.exam-strip');if(strip&&attempt.kind!=='mock')strip.insertAdjacentHTML('beforeend','<button type="button" class="studio-bookmark" data-listening-bookmark="'+esc(q.id)+'" aria-label="Bookmark question" aria-pressed="'+bookmarks().includes(q.id)+'">'+(bookmarks().includes(q.id)?'★':'☆')+'</button>');}
     document.getElementById('answer').addEventListener('input',onInput);
     if(objective)listeningTasks.bind(root,q,document.getElementById('answer'),onInput,()=>attempt?.status==='active'&&!moving&&!saveConflict&&!document.getElementById('answer').readOnly&&beforeDeadline()&&!window.PortalExamMode?.isLocked?.('writing'));
     document.getElementById('notes')?.addEventListener('input',onInput);
+    document.getElementById('audio-volume').oninput=e=>setVolume(e.target.value);
     document.getElementById('next').onclick=nextQuestion;
     setMockMode(attempt.kind==='mock');
     if(objective)listeningTasks.setEditable?.(root,attempt.status==='active');
@@ -443,7 +446,7 @@
     const saved=attempt.playback?.[index];
     if(audioAttempt!==key) {
       stopAudio();
-      audio=new Audio(q.audioUrl); audio.preload='auto'; audioAttempt=key; audioSaveAt=0;
+      audio=new Audio(q.audioUrl); audio.volume=volume; audio.preload='auto'; audioAttempt=key; audioSaveAt=0;
       audioFinished=(!!saved?.finished && saved.position>0) || (!!local?.audioFinished && local.audioTime>0);
     }
     const player=audio, startButton=document.getElementById('audio-start'), status=document.getElementById('audio-status');
@@ -558,7 +561,7 @@
       status.textContent='Audio could not load. Check your connection and retry.';
       startButton.textContent='Retry audio'; startButton.disabled=false; startButton.classList.remove('hidden');
     };
-    document.getElementById('audio-volume').oninput=e=>player.volume=Number(e.target.value);
+    document.getElementById('audio-volume').oninput=e=>setVolume(e.target.value);
     const replay=document.getElementById('audio-replay');
     if(replay&&canReplay)replay.onclick=()=>{if(!current()||starting)return;player.pause();player.currentTime=0;audioFinished=false;resumePosition=0;startButton.classList.remove('hidden');return play();};
     startButton.onclick=()=>{

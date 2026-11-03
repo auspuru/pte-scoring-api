@@ -44,7 +44,7 @@ async function fixture(t, mobile, selectedPaper = paper) {
   page.on('response', response => { if (response.status() >= 400 && response.url().includes('/api/full-mocks/')) apiErrors.push(response.status() + ' ' + new URL(response.url()).pathname); });
   await page.setRequestInterception(true);
   page.on('request', request => { if (request.url().startsWith('http://127.0.0.1:') || request.url().startsWith('blob:') || request.url().startsWith('data:')) request.continue(); else request.abort(); });
-  await page.evaluateOnNewDocument(() => { window.__cues = 0; const create = AudioContext.prototype.createOscillator; AudioContext.prototype.createOscillator = function (...args) { window.__cues++; return create.apply(this, args); }; });
+  await page.evaluateOnNewDocument(() => { window.__mockAudio = []; const NativeAudio = window.Audio; window.Audio = class extends NativeAudio { constructor(...args) { super(...args); window.__mockAudio.push(this); } }; window.__cues = 0; const create = AudioContext.prototype.createOscillator; AudioContext.prototype.createOscillator = function (...args) { window.__cues++; return create.apply(this, args); }; });
   await page.goto('http://127.0.0.1:' + server.address().port);
   const state = async () => (await service.store.list('alice'))[0];
   return { page, service, errors, apiErrors, unexpectedDialogs, calls, state, advanceTo:at => { offset += Math.max(0, at - now()); },
@@ -86,16 +86,33 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
   await page.waitForFunction(() => !document.getElementById('fm-heard').disabled);
   await page.click('#fm-heard'); await page.waitForFunction(() => !document.getElementById('fm-begin').disabled); await page.click('#fm-begin');
   await page.waitForFunction(() => document.fullscreenElement === document.documentElement);
+  await page.waitForSelector('[data-fm="begin-section"]');
+  assert.equal((await f.state()).current,null);
+  await fs.mkdir(path.join(root,'.cache'),{recursive:true});
+  await page.screenshot({path:path.join(root,'.cache','full-mock-flow-' + paper.id + '-' + (mobile?'mobile':'desktop') + '-part1.png')});
+  await clickControl(page, '[data-fm="begin-section"]');
   await page.waitForSelector('[data-fm="skip"]'); await page.click('[data-fm="skip"]');
   const expected = new Map(), seen = new Set(); let attemptId, readingDeadline, listeningDeadline;
   for (let i = 0; i < paper.questions.length; i++) {
     const q = paper.questions[i].question;
     expectedIndex = i + 1;
     if (!seen.has(q.type)) t.diagnostic('Entering ' + q.type + ' at question ' + expectedIndex);
+    await page.waitForFunction(number => document.querySelector('[data-fm="begin-section"]') || document.querySelector('.fm-exam-meta')?.textContent.includes('Question ' + number + ' of 65'), {}, i + 1);
+    if (await page.$('[data-fm="begin-section"]')) {
+      const waiting = await f.state(); assert.equal(waiting.current, null);
+      assert(await page.$eval('.fm-transition', node => node.textContent.includes('Read the instructions')));
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+      await fs.mkdir(path.join(root,'.cache'),{recursive:true});
+      await page.screenshot({path:path.join(root,'.cache','full-mock-flow-' + paper.id + '-' + (mobile?'mobile':'desktop') + '-' + waiting.transition.section + '.png')});
+      await clickControl(page, '[data-fm="begin-section"]');
+    }
     await page.waitForFunction(number => document.querySelector('.fm-exam-meta')?.textContent.includes('Question ' + number + ' of 65'), {}, i + 1);
     const saved = await f.state(); attemptId = saved.id; assert.equal(saved.paperId,paper.id); assert.equal(saved.index, i + 1); seen.add(q.type);
     assert(await page.evaluate(() => document.fullscreenElement === document.documentElement && document.getElementById('portal-exam-guard').hidden), 'Fullscreen was lost between questions');
     assert(!await page.$eval('.fm-exam-header', node => /preview/i.test(node.textContent)));
+    if (i === 0) await page.$eval('#fm-volume',node=>{node.value='0.35';node.dispatchEvent(new Event('input',{bubbles:true}));});
+    assert.equal(await page.$eval('#fm-volume',node=>Number(node.value)),0.35);
+
     if (!mobile && i === 0) {
       await page.evaluate(() => document.exitFullscreen());
       await page.waitForSelector('#portal-exam-guard:not([hidden])');
@@ -114,7 +131,11 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
     if (['lmcma','lfi','hcs','lmcsa','smw','hiw','wfd'].includes(q.type)) { listeningDeadline ||= saved.current.endsAt; assert.equal(saved.current.endsAt, listeningDeadline); }
     if (adapters.SPOKEN.has(q.type)) {
       if (['ra','rs'].includes(q.type) && paper.questions.find(row => row.question.type === q.type).question.id === q.id) {
-        if (q.type === 'rs') { f.advanceTo(saved.current.promptAt + 100); await page.waitForFunction(() => /Playing/.test(document.getElementById('fm-audio-status')?.textContent)); await page.waitForFunction(() => /Audio completed/.test(document.getElementById('fm-audio-status')?.textContent)); }
+        if (q.type === 'rs') { f.advanceTo(saved.current.promptAt + 100); await page.waitForFunction(() => /Playing/.test(document.getElementById('fm-audio-status')?.textContent));
+          assert.equal(await page.evaluate(()=>window.__mockAudio.at(-1).volume),0.35);
+          await page.$eval('#fm-volume',node=>{node.value='0.5';node.dispatchEvent(new Event('input',{bubbles:true}));});
+          assert.equal(await page.evaluate(()=>window.__mockAudio.at(-1).volume),0.5);
+          await page.$eval('#fm-volume',node=>{node.value='0.35';node.dispatchEvent(new Event('input',{bubbles:true}));}); await page.waitForFunction(() => /Audio completed/.test(document.getElementById('fm-audio-status')?.textContent)); }
         else f.advanceTo(saved.current.responseAt - 2000);
         await page.waitForFunction(() => document.getElementById('fm-record-status')?.textContent === 'Recording');
         await until(async () => (await f.state()).responses[i + 1].segments.some(segment => Object.values(segment.chunks).some(chunk => chunk.stored)), 'Native MediaRecorder did not upload audio.');

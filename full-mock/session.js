@@ -5,6 +5,7 @@ const { questionForPlayer, digest, assertReleased } = require('./paper');
 const { hash, uuid, fail } = require('./store');
 const VERSION = 'full-mock-session-2026-10-29.2';
 const SPEECH = new Set(['intro', 'ra', 'rs', 'di', 'rl', 'asq', 'sgd', 'rts']);
+const PARTS = { 'speaking-writing': { part: 1, title: 'Speaking & Writing' }, reading: { part: 2, title: 'Reading' }, listening: { part: 3, title: 'Listening' } };
 function item(paper, index) {
   return index === 0 ? { id: 'introduction', question: { ...paper.introduction, preparation: 25, seconds: 30, startCueMs: 300 } } : paper.questions[index - 1];
 }
@@ -12,6 +13,10 @@ function section(candidate) { return candidate.question.type === 'intro' ? 'spea
 function enter(state, paper, at) {
   if (state.index > paper.questions.length) { state.status = 'submitted'; state.submittedAt = at; state.current = null; return; }
   const candidate = item(paper, state.index), q = candidate.question, part = section(candidate);
+  if (state.sectionTransitions === 1 && !state.sectionStarts?.[part]) {
+    if (state.transition?.section !== part) state.transition = { id: randomUUID(), section: part };
+    state.current = null; return;
+  }
   if (part === 'reading' && !state.clocks.reading) state.clocks.reading = at + paper.clockPolicy.readingSeconds * 1000;
   if (part === 'listening' && q.type !== 'sst' && !state.clocks.listening) state.clocks.listening = at + paper.clockPolicy.listeningAfterSstSeconds * 1000;
   const promptAt = candidate.audio ? at + (q.playbackDelaySeconds || 0) * 1000 : null;
@@ -22,10 +27,11 @@ function enter(state, paper, at) {
   state.responses[state.index] = { token: state.current.token, type: q.type, draft: SPEECH.has(q.type) ? null : [], draftSequence: -1, segments: [], sealed: false,
     ...(SPEECH.has(q.type) ? { permit: { id: randomUUID(), token: randomUUID(), responseAt, deadline: endsAt } } : {}) };
 }
-function create(id, paper, at, { preview = false, assessmentSnapshot } = {}) {
+function create(id, paper, at, { preview = false, assessmentSnapshot, sectionTransitions = false } = {}) {
   if (!preview) assertReleased(paper);
   const state = { id, version: VERSION, paperId: paper.id, paperVersion: paper.version, paperHash: digest(paper), preview,
     title: paper.title, createdAt: at, status: 'active', index: 0, clocks: {}, responses: [], events: [], recoveries: [] };
+  if (sectionTransitions) { state.sectionTransitions = 1; state.sectionStarts = {}; }
   if (assessmentSnapshot) state.assessment = require('./assessment').stateFor(assessmentSnapshot);
   enter(state, paper, at); return state;
 }
@@ -41,7 +47,7 @@ function seal(state, at, reason) {
   response.answer = structuredClone(response.draft); response.status = responseStatus(response);
 }
 function reconcile(state, paper, now) {
-  for (let count = 0; state.status === 'active' && now >= state.current.endsAt && count < 70; count++) {
+  for (let count = 0; state.status === 'active' && state.current && now >= state.current.endsAt && count < 70; count++) {
     const deadline = state.current.endsAt;
     seal(state, deadline, 'time-expired'); state.index++; enter(state, paper, deadline);
   }
@@ -49,6 +55,7 @@ function reconcile(state, paper, now) {
 }
 function phase(state, now) {
   if (state.status !== 'active') return 'submitted';
+  if (state.transition) return 'transition';
   const current = state.current;
   if (current.promptAt != null && now < current.promptAt) return 'instructions';
   if (current.promptAt != null && now < current.promptEndsAt) return 'listening';
@@ -66,7 +73,14 @@ function control(state, token, now) {
   if (!state.control || state.control.hash !== hash(String(token || ''))) throw fail('This player connection was replaced. Reconnect to this attempt.');
   state.control.expiresAt = now + 20000;
 }
-function current(state, token) { if (state.status !== 'active' || state.current.token !== token) throw fail('This question has already finished.'); return state.responses[state.index]; }
+function beginSection(state, paper, transitionId, now) {
+  if (Object.values(state.sectionStarts || {}).some(value => value.id === transitionId)) return;
+  if (state.status !== 'active' || !state.transition || state.transition.id !== transitionId) throw fail('This section introduction is no longer current.', 409);
+  const part = state.transition.section;
+  state.sectionStarts[part] = { id: transitionId, startedAt: now };
+  delete state.transition; enter(state, paper, now);
+}
+function current(state, token) { if (state.status !== 'active' || !state.current || state.current.token !== token) throw fail('This question has already finished.'); return state.responses[state.index]; }
 function validateAnswer(q, answer) {
   if (!Array.isArray(answer) || answer.length > 500 || JSON.stringify(answer).length > 16000) throw fail('Invalid answer.', 400);
   if (['swt', 'essay', 'sst', 'wfd'].includes(q.type)) { if (answer.length > 1 || answer.some(value => typeof value !== 'string' || value.length > 12000)) throw fail('Invalid written answer.', 400); }
@@ -93,7 +107,7 @@ function next(state, paper, body, now) {
 function openSegment(state, paper, body, now) {
   const index = state.responses.findIndex(value => value.token === body.itemToken), response = state.responses[index];
   if (!response || !SPEECH.has(response.type)) throw fail('Recording item not found.', 404);
-  const live = state.status === 'active' && state.current.token === body.itemToken && now < state.current.endsAt;
+  const live = state.status === 'active' && state.current?.token === body.itemToken && now < state.current.endsAt;
   const reserved = response.permit?.id === body.segmentId && response.permit.token === body.segmentToken;
   // A delayed, unused declaration is harmless after an explicit skip. Its
   // corresponding zero-chunk finalisation is also idempotent below.
@@ -145,7 +159,7 @@ function recover(state, paper, body, now) {
   state.recoveries.push({ itemToken: body.itemToken, sequence: body.sequence, answer, receivedAt: now, status: 'needs-review' });
 }
 function present(state, paper, now) {
-  const response = state.status === 'active' ? state.responses[state.index] : null;
+  const response = state.status === 'active' && !state.transition ? state.responses[state.index] : null;
   const assessed = state.assessment && state.status === 'submitted' ? require('./aggregation').aggregate(paper, state) : null;
   const assessmentStatus = state.assessment?.displayStatus || (state.assessment?.status === 'complete' && assessed && !assessed.ready ? 'needs-attention' : state.assessment?.status) || 'not-enabled';
   const output = { id: state.id, paperId: state.paperId, paperVersion: state.paperVersion, paperHash: state.paperHash, title: state.title,
@@ -154,11 +168,24 @@ function present(state, paper, now) {
     serverNow: now, mediaPending: state.responses.reduce((sum, value) => sum + value.segments.filter(segment => !segment.finished).length, 0),
     recoveredEvidenceCount: state.recoveries.length, assessmentStatus,
     ...(state.assessment ? { assessmentProgress: { assessed: assessed?.assessedCount || 0, expected: 65 } } : {}) };
+  if (state.transition) {
+    const info = PARTS[state.transition.section];
+    const details = state.transition.section === 'speaking-writing'
+      ? ['Complete the unscored personal introduction, then answer the speaking and writing questions.', 'Speaking questions have their own preparation and recording windows.', 'Each Summarize Written Text has 10 minutes. Each essay has 20 minutes.']
+      : state.transition.section === 'reading'
+        ? ['All Reading questions share one ' + paper.clockPolicy.readingSeconds / 60 + '-minute timer.', 'Time continues when you move to the next Reading question.']
+        : ['Each Summarize Spoken Text has ' + paper.clockPolicy.sstSeconds / 60 + ' minutes, including its recording.', 'The remaining Listening questions share one ' + paper.clockPolicy.listeningAfterSstSeconds / 60 + '-minute timer, including audio playback.'];
+    output.transition = { ...state.transition, ...info, details };
+  }
   if (response) Object.assign(output, { question: state.index === 0 ? { ...paper.introduction, preparation: 25, seconds: 30, startCueMs: 300 } : questionForPlayer(item(paper, state.index)),
     current: { ...state.current, phase: phase(state, now) }, draft: response.draft, draftSequence: response.draftSequence,
     ...(response.permit ? { recordingPermit: { id: response.permit.id, token: response.permit.token } } : {}),
     recordingSegments: response.segments.map(segment => ({ id: segment.id, mime: segment.mime, finished: segment.finished, sequences: Object.keys(segment.chunks).map(Number) })) });
   return output;
 }
-function end(state, paper, now) { while (state.status === 'active') { seal(state, now, 'finished-early'); state.index++; enter(state, paper, now); } }
-module.exports = { VERSION, SPEECH, item, create, reconcile, phase, claim, control, saveDraft, next, openSegment, findSegment, registerChunk, finishSegment, recover, present, end };
+function end(state, paper, now) {
+  if (state.sectionTransitions === 1) for (const part of Object.keys(PARTS)) state.sectionStarts[part] ||= { id: 'finished-early', startedAt: now };
+  if (state.transition) { delete state.transition; enter(state, paper, now); }
+  while (state.status === 'active') { seal(state, now, 'finished-early'); state.index++; enter(state, paper, now); }
+}
+module.exports = { VERSION, SPEECH, item, create, reconcile, phase, beginSection, claim, control, saveDraft, next, openSegment, findSegment, registerChunk, finishSegment, recover, present, end };

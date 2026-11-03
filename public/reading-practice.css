@@ -355,3 +355,5 @@ body.dark .reading-mock-card .portal-button { color: #092333; }
   .reading-review-question:has(> .reading-blank-review) > .reading-review-source { grid-column: 1 / -1; }
   .reading-review-question:has(> .reading-blank-review) > .reading-feedback-detail { margin-top: 0; }
 }
+
+.reading-volume{display:flex;align-items:center;gap:6px;font-size:13px}.reading-volume input{width:88px;min-width:60px}

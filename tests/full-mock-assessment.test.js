@@ -425,3 +425,13 @@ for(const changed of ['model','native-source','report-source'])test('SWT report 
  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
  await assert.rejects(f.engine.request('alice',f.id),error=>error.status===409);assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
+
+test('Exam-flow upgrade finishes the exact prior snapshot without repeating confirmed marks',async t=>{
+ let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
+ const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/exam-flow-compatible-sources.json')};
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
+ const marked=structuredClone((await f.state()).assessment.items);
+ await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal(calls,65);
+ assert.deepEqual((await f.state()).assessment.items,marked);assert.deepEqual((await f.state()).assessment.snapshot,original);
+});
