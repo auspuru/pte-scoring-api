@@ -342,6 +342,6 @@ for(const width of [1363,390,320])test('Reading mock history: newest result is v
  if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','reading-history-'+width+'.png'),fullPage:true});}
  await page.locator('[data-saved-mock="latest-result"] button').click();await page.waitForSelector('.reading-report');
  assert(await page.$eval('#readingPane',n=>n.textContent.includes('Integrated Reading & Listening Sectional Mock 1')));
- await page.getByRole('button',{name:'← Back to attempts',exact:true}).click();await page.locator('[data-saved-mock="older-result"] button').click();await page.waitForSelector('.reading-report');
+ await page.locator('#readingPane [data-action="home"]').click();await page.locator('[data-saved-mock="older-result"] button').click();await page.waitForSelector('.reading-report');
  assert(await page.$eval('#readingPane',n=>n.textContent.includes('Reading Practice Mock 5')));assert.deepEqual(errors,[]);
 });
