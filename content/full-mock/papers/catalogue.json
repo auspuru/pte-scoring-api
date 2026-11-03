@@ -22,7 +22,34 @@
       "scoredQuestionCount": 65,
       "taskTypeCount": 22,
       "file": "content/full-mock/papers/full-mock-1.v2.json"
+    },
+    {
+      "id": "full-mock-2",
+      "version": 1,
+      "sha256": "eddce979ae49333e2667baf6d0546aef69bed39400155de585d3bf5823879d7d",
+      "title": "IPT Brisbane — Full Mock 2",
+      "status": "frozen-draft",
+      "available": false,
+      "scoredQuestionCount": 65,
+      "taskTypeCount": 22,
+      "file": "content/full-mock/papers/full-mock-2.v1.json"
+    },
+    {
+      "id": "full-mock-3",
+      "version": 1,
+      "sha256": "1a65f767416d6c3b4ab4f158cc5ef6fd70a16e95564aea30dc5e5dd4925c23a3",
+      "title": "IPT Brisbane — Full Mock 3",
+      "status": "frozen-draft",
+      "available": false,
+      "scoredQuestionCount": 65,
+      "taskTypeCount": 22,
+      "file": "content/full-mock/papers/full-mock-3.v1.json"
     }
   ],
-  "activeVersion": 2
+  "activeVersion": 2,
+  "activeVersions": {
+    "full-mock-1": 2,
+    "full-mock-2": 1,
+    "full-mock-3": 1
+  }
 }

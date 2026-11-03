@@ -12,9 +12,9 @@ const { loadPaper } = require('../full-mock/paper');
 const { installFullMock } = require('../full-mock/api');
 const adapters = require('../full-mock/adapters');
 const paper = loadPaper(), root = path.resolve(__dirname, '..');
-async function fixture(t, mobile) {
+async function fixture(t, mobile, selectedPaper = paper) {
   const db = await database(t), directory = await fs.mkdtemp(path.join(os.tmpdir(), 'full-mock-browser-'));
-  const source = paper.questions.find(candidate => candidate.question.type === 'rs').audio.path, microphone = path.join(directory, 'microphone.wav');
+  const source = selectedPaper.questions.find(candidate => candidate.question.type === 'rs').audio.path, microphone = path.join(directory, 'microphone.wav');
   await run('ffmpeg', ['-hide_banner','-loglevel','error','-nostdin','-y','-i',path.join(root, source),'-ar','48000','-ac','1','-c:a','pcm_s16le',microphone]);
   let offset = 0; const now = () => Date.now() + offset, calls = new Map(), native = adapters.createAdapters();
   const app = express(); app.use(express.json());
@@ -74,11 +74,11 @@ async function answer(page, q) {
   for (const value of values) await clickControl(page, q.type === 'hiw' ? '[data-fm="highlight"][data-index="' + value + '"]' : '[data-fm-choice="' + value + '"]');
   return q.type === 'hiw' ? values : [...values].sort((a, b) => a - b);
 }
-for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation' : 'desktop') + ': native recording, all 22 forms, refresh recovery and submitted report', { timeout:240000 }, async t => {
-  const f = await fixture(t, mobile), { page } = f;
+for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loadPaper('full-mock-2')],[true,loadPaper('full-mock-3')]]) test('Chrome ' + paper.id + ' ' + (mobile ? 'mobile emulation' : 'desktop') + ': native recording, all 22 forms, refresh recovery and submitted report', { timeout:240000 }, async t => {
+  const f = await fixture(t, mobile, paper), { page } = f;
   let expectedIndex = 0;
   try {
-  await page.waitForSelector('[data-fm="setup"]'); assert(!await page.$eval('.fm-shell',node=>/preview/i.test(node.textContent))); await page.click('[data-fm="setup"]');
+  await page.waitForSelector('[data-fm="setup"]'); assert(!await page.$eval('.fm-shell',node=>/preview/i.test(node.textContent))); await page.click('[data-fm="setup"][data-paper="' + paper.id + '"]');
   await page.click('[data-fm="sample"]'); await page.waitForSelector('#fm-sample audio');
   await page.click('#fm-sample audio', { offset:{ x:20, y:25 } });
   await page.waitForFunction(() => document.querySelector('#fm-sample audio').currentTime > 0);
@@ -93,7 +93,7 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
     expectedIndex = i + 1;
     if (!seen.has(q.type)) t.diagnostic('Entering ' + q.type + ' at question ' + expectedIndex);
     await page.waitForFunction(number => document.querySelector('.fm-exam-meta')?.textContent.includes('Question ' + number + ' of 65'), {}, i + 1);
-    const saved = await f.state(); attemptId = saved.id; assert.equal(saved.index, i + 1); seen.add(q.type);
+    const saved = await f.state(); attemptId = saved.id; assert.equal(saved.paperId,paper.id); assert.equal(saved.index, i + 1); seen.add(q.type);
     assert(await page.evaluate(() => document.fullscreenElement === document.documentElement && document.getElementById('portal-exam-guard').hidden), 'Fullscreen was lost between questions');
     assert(!await page.$eval('.fm-exam-header', node => /preview/i.test(node.textContent)));
     if (!mobile && i === 0) {
@@ -113,7 +113,7 @@ for (const mobile of [false,true]) test('Chrome ' + (mobile ? 'mobile emulation'
     if (q.type === 'dropdown') { readingDeadline ||= saved.current.endsAt; assert.equal(saved.current.endsAt, readingDeadline); }
     if (['lmcma','lfi','hcs','lmcsa','smw','hiw','wfd'].includes(q.type)) { listeningDeadline ||= saved.current.endsAt; assert.equal(saved.current.endsAt, listeningDeadline); }
     if (adapters.SPOKEN.has(q.type)) {
-      if (q.id === 'fm1-ra-01' || q.id === 'fm1-rs-01') {
+      if (['ra','rs'].includes(q.type) && paper.questions.find(row => row.question.type === q.type).question.id === q.id) {
         if (q.type === 'rs') { f.advanceTo(saved.current.promptAt + 100); await page.waitForFunction(() => /Playing/.test(document.getElementById('fm-audio-status')?.textContent)); await page.waitForFunction(() => /Audio completed/.test(document.getElementById('fm-audio-status')?.textContent)); }
         else f.advanceTo(saved.current.responseAt - 2000);
         await page.waitForFunction(() => document.getElementById('fm-record-status')?.textContent === 'Recording');

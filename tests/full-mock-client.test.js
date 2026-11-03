@@ -288,6 +288,24 @@ test('An offline first recording uploads as review evidence after its original d
   assert(state.responses[0].segments[0].finished); assert.equal(state.responses[0].answer, null); assert.equal(state.responses[0].status, 'needs-review');
 });
 
+test('Next saves the displayed reorder arrangement even when no paragraph has moved', async t => {
+  const f = await fixture(t, 'reorder'); await f.resume();
+  const before = await f.state(), expected = [...f.document.querySelectorAll('[data-fm-box]')].map(node => node.dataset.fmBox);
+  assert(expected.length > 1); assert.deepEqual(before.responses[before.index].draft, []);
+  await f.click('[data-fm="next"]');
+  const saved = await f.state();
+  assert.equal(saved.index, before.index + 1);
+  assert.deepEqual(saved.responses[before.index].answer, expected);
+  assert.equal(saved.responses[before.index].sealed, true);
+});
+
+for (const action of ['end', 'expire']) test('Untouched reorder stays unanswered when the student does not press Next: ' + action, async t => {
+  const f = await fixture(t, 'reorder'); await f.resume(); const before = await f.state();
+  if (action === 'end') await f.click('[data-fm="end"]');
+  else { await f.step(before.current.endsAt - f.now() + 1); await until(async () => (await f.state()).index !== before.index); }
+  assert.deepEqual((await f.state()).responses[before.index].answer, []);
+});
+
 test('Storage quota failure keeps in-memory drafts available until the server acknowledges them', async t => {
   const f = await fixture(t, 'swt'); await f.resume(); const put = f.pending.put;
   f.pending.put = async () => { throw Error('Quota exceeded'); }; f.offline(true); f.input('Survives a full device.'); await settle();

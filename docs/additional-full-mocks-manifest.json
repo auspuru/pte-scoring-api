@@ -1,0 +1,368 @@
+[
+  {
+    "id": "full-mock-2",
+    "title": "IPT Brisbane — Full Mock 2",
+    "version": 1,
+    "audience": "Same signed-in Full Mock audience as paper 1; existing access policy retained.",
+    "clockPolicy": {
+      "overallCountdown": false,
+      "speakingWriting": "per-item",
+      "readingSeconds": 1500,
+      "sstSeconds": 600,
+      "sstIncludesPlayback": true,
+      "listeningAfterSstSeconds": 1500,
+      "sharedListeningClockContinuesBetweenItems": true
+    },
+    "tasks": [
+      {
+        "type": "ra",
+        "count": 6
+      },
+      {
+        "type": "rs",
+        "count": 10
+      },
+      {
+        "type": "di",
+        "count": 5
+      },
+      {
+        "type": "rl",
+        "count": 2
+      },
+      {
+        "type": "asq",
+        "count": 5
+      },
+      {
+        "type": "sgd",
+        "count": 2
+      },
+      {
+        "type": "rts",
+        "count": 2
+      },
+      {
+        "type": "swt",
+        "count": 2
+      },
+      {
+        "type": "essay",
+        "count": 1
+      },
+      {
+        "type": "dropdown",
+        "count": 5
+      },
+      {
+        "type": "mcma",
+        "count": 2
+      },
+      {
+        "type": "reorder",
+        "count": 2
+      },
+      {
+        "type": "wordbank",
+        "count": 4
+      },
+      {
+        "type": "mcsa",
+        "count": 2
+      },
+      {
+        "type": "sst",
+        "count": 1
+      },
+      {
+        "type": "lmcma",
+        "count": 2
+      },
+      {
+        "type": "lfi",
+        "count": 2
+      },
+      {
+        "type": "hcs",
+        "count": 2
+      },
+      {
+        "type": "lmcsa",
+        "count": 2
+      },
+      {
+        "type": "smw",
+        "count": 1
+      },
+      {
+        "type": "hiw",
+        "count": 2
+      },
+      {
+        "type": "wfd",
+        "count": 3
+      }
+    ],
+    "selections": {
+      "number": 2,
+      "ra": [
+        "pred26-user-swt-10",
+        "pred26-user-swt-11",
+        "pred26-user-swt-12",
+        "pred26-user-swt-13",
+        "pred26-user-swt-14",
+        "pred26-swt-01"
+      ],
+      "rs": [
+        "pred26-wfd-15",
+        "pred26-wfd-16",
+        "pred26-wfd-17",
+        "pred26-wfd-18",
+        "pred26-wfd-19",
+        "pred26-wfd-20",
+        "pred26-wfd-21",
+        "pred26-wfd-22",
+        "pred26-wfd-23",
+        "pred26-wfd-24"
+      ],
+      "di": [
+        "3000195",
+        "3000589",
+        "3000134",
+        "3000586",
+        "3000411"
+      ],
+      "rl": [
+        "rl-user-wages-debt",
+        "rl-user-civilisation-ship"
+      ],
+      "sgd": [
+        "sgd-user-20261030-01",
+        "sgd-user-20261030-02"
+      ],
+      "rts": [
+        "rts-3",
+        "rts-4"
+      ],
+      "swt": [
+        "pred26-user-swt-01",
+        "pred26-user-swt-02"
+      ],
+      "essay": 2,
+      "dropdown": [
+        "pred26-rw-06",
+        "pred26-rw-07",
+        "pred26-rw-08",
+        "pred26-rw-09",
+        "pred26-rw-10"
+      ],
+      "wordbank": [
+        "pred26-r-05",
+        "pred26-r-06",
+        "pred26-r-07",
+        "pred26-r-08"
+      ],
+      "readingSet": "v2",
+      "sst": "pred26-sst-02",
+      "lmcma": [
+        "listen-lmcma-sst-urban-trees",
+        "listen-lmcma-sst-community-museums"
+      ],
+      "hcs": [
+        "listen-hcs-sst-sleep-memory",
+        "listen-hcs-sst-water-reuse"
+      ],
+      "wfd": [
+        "pred26-wfd-26",
+        "pred26-wfd-27",
+        "pred26-wfd-28"
+      ]
+    },
+    "media": "36 existing fixed recordings and five original supplied DI PNGs per paper; no runtime generation.",
+    "overlap": "Reuses approved ASQ, LFI, LMCSA, SMW and HIW items from paper 1. Other sources explicitly selected above; cross-paper overlap allowed, intra-paper duplicates rejected.",
+    "catalogue": "content/full-mock/papers/full-mock-2.v1.json"
+  },
+  {
+    "id": "full-mock-3",
+    "title": "IPT Brisbane — Full Mock 3",
+    "version": 1,
+    "audience": "Same signed-in Full Mock audience as paper 1; existing access policy retained.",
+    "clockPolicy": {
+      "overallCountdown": false,
+      "speakingWriting": "per-item",
+      "readingSeconds": 1500,
+      "sstSeconds": 600,
+      "sstIncludesPlayback": true,
+      "listeningAfterSstSeconds": 1500,
+      "sharedListeningClockContinuesBetweenItems": true
+    },
+    "tasks": [
+      {
+        "type": "ra",
+        "count": 6
+      },
+      {
+        "type": "rs",
+        "count": 10
+      },
+      {
+        "type": "di",
+        "count": 5
+      },
+      {
+        "type": "rl",
+        "count": 2
+      },
+      {
+        "type": "asq",
+        "count": 5
+      },
+      {
+        "type": "sgd",
+        "count": 2
+      },
+      {
+        "type": "rts",
+        "count": 2
+      },
+      {
+        "type": "swt",
+        "count": 2
+      },
+      {
+        "type": "essay",
+        "count": 1
+      },
+      {
+        "type": "dropdown",
+        "count": 5
+      },
+      {
+        "type": "mcma",
+        "count": 2
+      },
+      {
+        "type": "reorder",
+        "count": 2
+      },
+      {
+        "type": "wordbank",
+        "count": 4
+      },
+      {
+        "type": "mcsa",
+        "count": 2
+      },
+      {
+        "type": "sst",
+        "count": 1
+      },
+      {
+        "type": "lmcma",
+        "count": 2
+      },
+      {
+        "type": "lfi",
+        "count": 2
+      },
+      {
+        "type": "hcs",
+        "count": 2
+      },
+      {
+        "type": "lmcsa",
+        "count": 2
+      },
+      {
+        "type": "smw",
+        "count": 1
+      },
+      {
+        "type": "hiw",
+        "count": 2
+      },
+      {
+        "type": "wfd",
+        "count": 3
+      }
+    ],
+    "selections": {
+      "number": 3,
+      "ra": [
+        "pred26-swt-02",
+        "pred26-swt-03",
+        "pred26-swt-04",
+        "pred26-swt-05",
+        "pred26-swt-06",
+        "pred26-swt-07"
+      ],
+      "rs": [
+        "pred26-wfd-01",
+        "pred26-wfd-07",
+        "pred26-wfd-11",
+        "pred26-wfd-25",
+        "pred26-wfd-29",
+        "pred26-wfd-30",
+        "pred26-wfd-31",
+        "pred26-wfd-32",
+        "pred26-wfd-33",
+        "pred26-wfd-34"
+      ],
+      "di": [
+        "3000561",
+        "3000354",
+        "3000349",
+        "3000392",
+        "3000375"
+      ],
+      "rl": [
+        "rl-user-black-carbon",
+        "rl-user-morton-prince"
+      ],
+      "sgd": [
+        "sgd-user-20261030-03",
+        "sgd-user-20261030-04"
+      ],
+      "rts": [
+        "rts-5",
+        "rts-user-tom-book"
+      ],
+      "swt": [
+        "pred26-user-swt-10",
+        "pred26-user-swt-11"
+      ],
+      "essay": 3,
+      "dropdown": [
+        "pred26-rw-11",
+        "pred26-rw-12",
+        "pred26-rw-13",
+        "pred26-rw-14",
+        "pred26-rw-15"
+      ],
+      "wordbank": [
+        "pred26-r-09",
+        "pred26-r-10",
+        "pred26-r-11",
+        "pred26-r-12"
+      ],
+      "readingSet": "v3",
+      "sst": "pred26-sst-03",
+      "lmcma": [
+        "listen-lmcma-sst-citizen-science",
+        "fm1-lmcma-02"
+      ],
+      "hcs": [
+        "listen-hcs-sst-public-transport",
+        "listen-hcs-sst-digital-archives"
+      ],
+      "wfd": [
+        "pred26-wfd-02",
+        "pred26-wfd-03",
+        "pred26-wfd-04"
+      ]
+    },
+    "media": "36 existing fixed recordings and five original supplied DI PNGs per paper; no runtime generation.",
+    "overlap": "Reuses approved ASQ, LFI, LMCSA, SMW and HIW items from paper 1. Other sources explicitly selected above; cross-paper overlap allowed, intra-paper duplicates rejected.",
+    "catalogue": "content/full-mock/papers/full-mock-3.v1.json"
+  }
+]
