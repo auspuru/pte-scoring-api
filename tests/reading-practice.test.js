@@ -1009,3 +1009,22 @@ test('Reading history highlights the newest completion, retains original indices
  const before=snapshot(h);await h.click({history:'2'});assert.match(h.host.innerHTML,/Integrated Reading &amp; Listening Sectional Mock 1/);assert.deepEqual(snapshot(h).history,before.history);
  await h.click({action:'home'});await h.click({history:'0'});assert.match(h.host.innerHTML,/Reading Practice Mock 5/);
 });
+
+test('Reading restores reconciled account history when browser storage is unavailable and keeps owners isolated',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'practice'});await h.click({action:'submit'});const saved=snapshot(h),original=JSON.stringify(saved.history);
+ h.ctx.AccountProgress=require('../public/account-progress');
+ h.ctx.localAccountProgress=uid=>({readingProgress:uid==='first'?saved:{}});
+ h.ctx.LocalStore={set:()=>true};h.ctx.localStorage.getItem=()=>{throw Error('Synthetic blocked cache');};h.ctx.localStorage.setItem=()=>{throw Error('Synthetic blocked cache');};
+ h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open({history:true});
+ assert.match(h.host.innerHTML,/Completed mocks <span>\(1\)/);assert.match(h.host.innerHTML,/data-history="0"/);
+ await h.click({history:'0'});assert.match(h.host.innerHTML,/Session complete/);assert.equal(JSON.stringify(saved.history),original);
+ h.ctx.currentUserId='second';await h.ctx.ReadingPractice.open({history:true});assert.match(h.host.innerHTML,/No completed mocks yet/);assert.doesNotMatch(h.host.innerHTML,/data-history="0"/);
+});
+
+test('Reading answers use the shared durable practice adapter when native localStorage writes fail',async()=>{
+ const h=client(),backups=new Map();h.ctx.LocalStore={set:(key,value)=>{backups.set(key,structuredClone(value));return true;}};
+ h.ctx.localAccountProgress=uid=>({readingProgress:backups.get(storageKey(uid))||{}});h.ctx.localStorage.setItem=()=>{throw Error('Synthetic full cache');};
+ await h.ctx.ReadingPractice.open();await h.click({start:'practice'});h.host.onchange({target:{dataset:{answer:'0'},value:'Calm'}});
+ const saved=backups.get(storageKey('first'));assert(saved?.session);assert(JSON.stringify(saved.session.answers).includes('Calm'));
+ h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();assert.match(h.host.innerHTML,/option selected value="Calm"/);
+});

@@ -365,7 +365,7 @@ for(const width of [1363,390,320])test('SWT mock feedback: submitted Writing and
  if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.$eval('#full-swt-browser .swt-mock-feedback',e=>e.scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:path.join(root,'.cache','swt-mock-'+width+'.png')});}
 });
 
-for(const width of [1363,390,320])test('Reading mock history: newest result is visible and exact review links work at '+width+'px',{timeout:90000},async t=>{
+for(const adminView of [false,true])for(const width of [1363,390,320])test('Reading mock history: '+(adminView?'admin view with blocked cache':'student view')+' restores newest results and exact review links at '+width+'px',{timeout:90000},async t=>{
  const f=await authFixture(t),username='reading-history-browser',password='Synthetic-pass-123';
  const registration=await f.request('/api/auth/register',{username,password,email:username+'@example.test'});assert.equal(registration.body.success,true);
  const tools=require('../public/reading-mock-tools'),bank=require('../public/reading-bank.json');
@@ -377,8 +377,19 @@ for(const width of [1363,390,320])test('Reading mock history: newest result is v
  const synced=await f.request('/api/sync/'+username,{readingProgress:packed},registration.body.token);assert.equal(synced.body.success,true);
  const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
  const page=await browser.newPage();await page.setViewport({width,height:950});await page.emulateTimezone('UTC');const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ if(adminView)await page.evaluateOnNewDocument(()=>{
+  const get=Storage.prototype.getItem,set=Storage.prototype.setItem;
+  Storage.prototype.getItem=function(key){if(key.startsWith('ipt_reading_v1:'))throw Error('Synthetic blocked Reading cache');return get.call(this,key);};
+  Storage.prototype.setItem=function(key,value){if(key.startsWith('ipt_reading_v1:')||key.startsWith('ipt_practice_backup_v1:'))throw Error('Synthetic full cache');return set.call(this,key,value);};
+ });
  try {
- await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();
+ if(adminView){
+  const minted=await f.request('/api/admin/impersonate/'+username,undefined,null,true);assert.equal(minted.body.success,true);
+  await page.goto(f.base+'/index?impersonate='+encodeURIComponent(minted.body.token)+'#/reading');
+ }else{
+  await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();
+ }
+
  await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
  await page.evaluate(()=>switchSection('reading',{readingRequest:{history:true}}));
  await page.waitForSelector('[data-saved-mock="latest-result"]');
@@ -386,10 +397,21 @@ for(const width of [1363,390,320])test('Reading mock history: newest result is v
  assert(await page.$eval('[data-saved-mock="latest-result"]',n=>n.textContent.includes('Latest completed mock')&&n.textContent.includes('3 Nov 2026')&&n.textContent.includes('AEST')));
  assert(await page.$eval('[data-saved-mock="latest-result"] button',n=>{const r=n.getBoundingClientRect();return r.height>=44&&r.top>=0&&r.bottom<=innerHeight;}));
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'History overflows at '+width);
- if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','reading-history-'+width+'.png'),fullPage:true});}
+ if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','reading-history-'+(adminView?'admin-':'')+width+'.png'),fullPage:true});}
  await page.locator('[data-saved-mock="latest-result"] button').click();await page.waitForSelector('.reading-report');
  assert(await page.$eval('#readingPane',n=>n.textContent.includes('Integrated Reading & Listening Sectional Mock 1')));
  await page.locator('#readingPane [data-action="home"]').click();await page.locator('[data-saved-mock="older-result"] button').click();await page.waitForSelector('.reading-report');
- assert(await page.$eval('#readingPane',n=>n.textContent.includes('Reading Practice Mock 5')));assert.deepEqual(errors,[]);
+ assert(await page.$eval('#readingPane',n=>n.textContent.includes('Reading Practice Mock 5')));
+ if(adminView){
+  assert.match(await page.$eval('body',n=>n.innerText),/Admin view.*acting as reading-history-browser/);
+  await page.reload();await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
+  await page.evaluate(()=>switchSection('reading',{readingRequest:{history:true}}));await page.waitForSelector('[data-saved-mock="latest-result"]');
+  assert.equal(await page.$$eval('[data-saved-mock]',nodes=>nodes.length),2);
+  const after=await f.request('/api/sync/'+username,undefined,registration.body.token);
+  const restored=require('../public/account-progress').unpackReading(after.body.data.readingProgress);
+  const records=items=>items.map(a=>[a.id,a.answers,a.assessments,a.questions]).sort((a,b)=>a[0].localeCompare(b[0]));
+  assert.deepEqual(records(restored.history),records(require('../public/account-progress').unpackReading(packed).history));
+ }
+ assert.deepEqual(errors,[]);
  } catch(error) { t.diagnostic('Reading history screen: '+await page.$eval('body',n=>n.innerText.slice(-2000))); if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','reading-history-failed-'+width+'.png'),fullPage:true});} throw error; }
 });
