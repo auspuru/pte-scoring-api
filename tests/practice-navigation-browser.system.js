@@ -370,7 +370,7 @@ for(const adminView of [false,true])for(const width of [1363,390,320])test('Read
  const registration=await f.request('/api/auth/register',{username,password,email:username+'@example.test'});assert.equal(registration.body.success,true);
  const tools=require('../public/reading-mock-tools'),bank=require('../public/reading-bank.json');
  const questions=tools.prepareQuestions(bank.sets[0].questions.map(q=>({...q,uid:bank.sets[0].id+':'+q.id})),'history-fixture');
- const base={mode:'practice-reading-5',formatVersion:bank.version,questions,index:0,answers:{},assessments:{},audioStates:{},times:{},flags:[],checked:[],done:true,startedAt:Date.parse('2026-09-30T01:00:00Z'),finishedAt:Date.parse('2026-09-30T01:23:00Z'),deadline:null};
+ const base={mode:'practice-reading-5',formatVersion:bank.version,questions,index:0,answers:Object.fromEntries(questions.map((q,i)=>[q.uid,i===0?[...q.answers]:[]])),assessments:{},audioStates:{},times:{},flags:[],checked:[],done:true,startedAt:Date.parse('2026-09-30T01:00:00Z'),finishedAt:Date.parse('2026-09-30T01:23:00Z'),deadline:null};
  const old={...base,id:'older-result',name:'Reading Practice Mock 5'},latest={...base,id:'latest-result',mode:'sectional-1',name:'Integrated Reading & Listening Sectional Mock 1',startedAt:Date.parse('2026-11-02T22:37:00Z'),finishedAt:Date.parse('2026-11-02T23:30:00Z')};
  const saved={session:old,history:[old,latest],drafts:[{...base,id:'unfinished',name:'Reading Practice Mock 2',done:false,deadline:null}],practiceResults:{}};
  const packed=require('../public/account-progress').packReading(saved);assert.equal(packed.history.length,2,'The saved fixture must satisfy the normal session contract');
