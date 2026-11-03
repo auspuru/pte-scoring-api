@@ -26,14 +26,14 @@ test('Practice storage: blocked browser caches preserve Essay and SWT across nav
  async function login(p){await p.goto(f.base);await p.type('#loginUsername',username);await p.type('#loginPassword',password);await p.locator('#loginSubmitBtn').click();await ready(p);}
  await login(page);
  const swtDraft='The latest summary must survive blocked browser caches and synchronise with the account.';
- const passageId=await page.evaluate(text=>{switchSection('swt');loadPassage(1);const input=document.getElementById('summaryInput');input.value=text;input.dispatchEvent(new Event('input',{bubbles:true}));return swtPassageStorageId();},swtDraft);
+ const passageId=await page.evaluate(({text,id})=>{switchSection('swt');loadPassage(passages.findIndex(p=>p.id===id)+1);const input=document.getElementById('summaryInput');input.value=text;input.dispatchEvent(new Event('input',{bubbles:true}));return swtPassageStorageId();},{text:swtDraft,id:passage.id});
  assert.equal(passageId,passage.id,'The edited question must match the seeded stable passage ID');
  const receipt=await page.evaluate(async()=>({backup:await practiceStorage.flush([getPteStorageKey('summaries')]),synced:await flushSyncDirect(),draft:localAccountProgress().summaries[swtPassageStorageId()]?.text}));
  assert.deepEqual(receipt,{backup:true,synced:true,draft:swtDraft});
  const savedSummary=(await f.request('/api/sync/'+username,undefined,registration.body.token)).body;
  assert.equal(savedSummary.data?.summaries?.[passageId]?.text,swtDraft,JSON.stringify({status:savedSummary.success,ids:Object.keys(savedSummary.data?.summaries||{})}));
  await page.reload();await ready(page);
- await page.evaluate(()=>{switchSection('swt');loadPassage(1);});
+ await page.evaluate(id=>{switchSection('swt');loadPassage(passages.findIndex(p=>p.id===id)+1);},passage.id);
  assert.equal(await page.$eval('#summaryInput',e=>e.value),swtDraft);
  const essayDraft='This exact essay draft must survive the full cache and question navigation.';
  await page.evaluate(text=>{
