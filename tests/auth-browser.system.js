@@ -28,7 +28,10 @@ test('Password changes renew browser authentication, revoke older sessions and r
  await page.evaluate(()=>{openUserMenu();changePassword();});
  await page.type('#changeCurrentPassword',password);await page.type('#changeNewPassword','Replacement-pass-456');await page.type('#changeConfirmPassword','Replacement-pass-456');
  const changed=page.waitForResponse(r=>r.url().endsWith('/api/auth/change-password'));
- await page.click('#changePasswordSubmit');const response=await changed;assert.equal(response.status(),200);
+ // The expanded mobile account form scrolls inside its modal. Use the
+ // locator's stable, in-viewport click instead of a single moving coordinate.
+ await page.locator('#changePasswordSubmit').click();
+ const response=await changed.catch(async error=>{throw Error('Password submit did not reach the server: '+JSON.stringify(await page.evaluate(()=>({status:document.getElementById('changePasswordStatus')?.textContent,valid:document.getElementById('changePasswordForm')?.checkValidity(),lengths:['changeCurrentPassword','changeNewPassword','changeConfirmPassword'].map(id=>document.getElementById(id)?.value.length),visible:document.getElementById('userMenuModal')?.classList.contains('show')}))),{cause:error});});assert.equal(response.status(),200);
  await page.waitForFunction(previous=>sessionToken!==previous,{},old);
  const renewed=await page.evaluate(()=>({token:sessionToken,stored:getAuthStorageValue('pte_session_token')}));assert.equal(renewed.token,renewed.stored);
  assert.equal((await f.request('/api/sync/'+username,undefined,old)).status,401);
