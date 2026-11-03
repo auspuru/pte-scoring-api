@@ -25,8 +25,14 @@ test('Password changes renew browser authentication, revoke older sessions and r
  await page.goto(f.base);await page.waitForSelector('#loginUsername',{visible:true});await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.click('#loginSubmitBtn');
  const ready=()=>page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
  await ready();const old=await page.evaluate(()=>sessionToken);
- await page.evaluate(()=>{openUserMenu();changePassword();});
+ await page.evaluate(()=>openUserMenu());
+ // Wait for the menu's scheduled accessibility focus before opening its form.
+ // Opening both in one JS frame lets that focus interrupt password typing.
+ await page.waitForFunction(()=>document.getElementById('userMenuModal').contains(document.activeElement));
+ await page.locator('#userMenuModal button[onclick="changePassword()"]').click();
  await page.type('#changeCurrentPassword',password);await page.type('#changeNewPassword','Replacement-pass-456');await page.type('#changeConfirmPassword','Replacement-pass-456');
+ assert.equal(await page.$eval('#changeCurrentPassword',(el,expected)=>el.value===expected,password),true,'The complete current password is entered');
+ assert.equal(await page.$eval('#changeConfirmPassword',el=>el.value===document.getElementById('changeNewPassword').value),true,'The new password fields match');
  const changed=page.waitForResponse(r=>r.url().endsWith('/api/auth/change-password'));
  // The expanded mobile account form scrolls inside its modal. Use the
  // locator's stable, in-viewport click instead of a single moving coordinate.
