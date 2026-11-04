@@ -24,7 +24,7 @@
     let phase='idle',deadline=0,clockId,promptAudio,stream,recorder,playbackUrl='',uploadBlob=null,notice='';
     let practiceMode='timed',promptRequest,promptSource='',promptAttemptId='';
     const modeOf=a=>a?.practiceMode==='untimed'?'untimed':'timed';
-    const bufferedResponse=()=>modeOf(attempt)==='timed'&&['rl','sgd'].includes(attempt?.question.type);
+    const timedListeningTask=()=>modeOf(attempt)==='timed'&&['rl','sgd'].includes(attempt?.question.type);
     const cueType=type=>['rs','rl','sgd'].includes(type);
     const modeName=mode=>mode==='untimed'?'Untimed practice':'Timed practice';
     const matchingMode=a=>modeOf(a)===practiceMode;
@@ -107,7 +107,7 @@
     function leave() {
       stopComparisonPoll();stopAssessmentPoll();
       cacheDraft();if(attempt?.status==='draft'&&!busy)saveTranscript().catch(()=>{});
-      visible=false;serial++;clearAudio();if(['preparing','listening','loading-prompt','ready','cue','permission'].includes(phase))phase='idle';
+      visible=false;serial++;clearAudio();if(['preparing','listening','loading-prompt','lead-in','ready','cue','permission'].includes(phase))phase='idle';
     }
     function chrome(content) {
       const locked=!!(attempt&&attempt.status!=='submitted'&&!attempt.recording);
@@ -404,6 +404,7 @@
         permission:'Microphone check',
         'loading-prompt':'Preparing prompt audio',
         ready:'Ready when you are',
+        'lead-in':'Audio starts in',
         listening:'Listening',
         preparing:'Preparation',
         cue:'Get ready',
@@ -411,14 +412,14 @@
         saving:'Submitting response',
         error:attempt?.recording?'Assessment interrupted':'Attempt interrupted'
       }[phase]||'';
-      const clock=doc.getElementById('speaking-clock');if(clock)clock.textContent=modeOf(attempt)==='untimed'?'Untimed':['recording','preparing'].includes(phase)?time((deadline-now())/1000):'';
+      const clock=doc.getElementById('speaking-clock');if(clock)clock.textContent=modeOf(attempt)==='untimed'?'Untimed':['recording','preparing','lead-in'].includes(phase)?time((deadline-now())/1000):'';
     }
     function countdown(seconds,next) {deadline=now()+seconds*1000;env.clearInterval(clockId);refreshControls();clockId=env.setInterval(()=>{refreshControls();if(now()>=deadline){env.clearInterval(clockId);next();}},200);}
     function prepare(){if(!visible){clearAudio();phase='idle';return;}
       if(modeOf(attempt)==='untimed'){phase='ready';env.clearInterval(clockId);message('Take your time. Select Start recording when you are ready.');refreshControls();return;}
       if(attempt.question.type==='rs')return cueRecording();
-      const seconds=(attempt.question.preparation||0)+(bufferedResponse()?5:0);
-      phase='preparing';if(bufferedResponse())message('You have '+seconds+' seconds to prepare. Listen for the beep, then start speaking.');
+      const seconds=attempt.question.preparation||0;
+      phase='preparing';if(timedListeningTask())message('You have '+seconds+' seconds to prepare. Listen for the beep, then start speaking.');
       if(seconds)countdown(seconds,startResponse);else startResponse();
     }
     function cueRecording(){
@@ -427,7 +428,7 @@
       startCue.play(id+':'+captureGeneration,()=>{if(valid(ticket,user)&&visible&&!doc.hidden&&attempt?.id===id&&phase==='cue')record();});
     }
     function startResponse(){
-      if(bufferedResponse())return cueRecording();
+      if(timedListeningTask())return cueRecording();
       return record();
     }
     function record() {
@@ -466,7 +467,8 @@
     async function playPrompt(ticket,user) {
       stopPrompt();const savedId=attempt.id,url=attempt.question.audioUrl;
       phase=url.startsWith('/api/speaking/attempts/')?'loading-prompt':'listening';refreshControls();
-      const current=()=>valid(ticket,user)&&visible&&attempt?.id===savedId&&['loading-prompt','listening'].includes(phase);
+      const current=()=>valid(ticket,user)&&visible&&attempt?.id===savedId&&['loading-prompt','lead-in','listening'].includes(phase);
+      const failed=error=>{if(!current())return;env.clearInterval(clockId);stopPrompt();phase='error';message(error.name==='NotAllowedError'?'Your browser blocked automatic prompt audio. Use Play prompt once to continue this attempt.':'The prompt could not play. Use Play prompt to retry.');refreshControls();};
       try{
         let source=url;
         if(url.startsWith('/api/speaking/attempts/')){
@@ -483,8 +485,15 @@
         const active=()=>current()&&promptAudio===audio&&phase==='listening';
         audio.onended=()=>{if(active()){stopPrompt();prepare();}};
         audio.onerror=()=>{if(active()){clearAudio();phase='error';message('The prompt recording could not load. Retry when ready.');refreshControls();}};
-        refreshControls();await audio.play();if(active())refreshControls();
-      }catch(error){if(!current())return;stopPrompt();phase='error';message(error.name==='NotAllowedError'?'Your browser blocked automatic prompt audio. Use Play prompt once to continue this attempt.':'The prompt could not play. Use Play prompt to retry.');refreshControls();}
+        const play=()=>{
+          if(!current()||promptAudio!==audio)return;
+          phase='listening';if(timedListeningTask())message('Listen to the recording. Preparation begins when it finishes.');refreshControls();
+          return Promise.resolve().then(()=>{if(active())return audio.play();}).then(()=>{if(active())refreshControls();}).catch(failed);
+        };
+        if(timedListeningTask()){
+          phase='lead-in';message('Get ready to listen. Audio starts in 5 seconds.');countdown(5,play);
+        }else await play();
+      }catch(error){failed(error);}
     }
     async function begin(respondNow=false) {
       if(busy||attempt.recording||uploadBlob||!['idle','error'].includes(phase))return;
@@ -567,7 +576,7 @@
     }
     async function submit(refreshDescribeFeedback=false) {
       if(busy||!attempt)return;
-      if(['permission','listening','preparing','cue','recording','saving'].includes(phase)||uploadBlob){message('The timed response is still in progress.');return;}
+      if(['permission','lead-in','listening','preparing','cue','recording','saving'].includes(phase)||uploadBlob){message('The timed response is still in progress.');return;}
       if(attempt.assessment?.status==='pending'){message('Feedback is already being prepared for this saved response.');pollAssessment();return;}
       if(!attempt.recording&&!refreshDescribeFeedback){message('No saved recording is available for assessment.');return;}
       try{await requestAssessment(attempt,owner,refreshDescribeFeedback);}catch{}
@@ -605,7 +614,7 @@
       if(!['audio/webm','audio/mp4','audio/wav','audio/mpeg'].includes(file.type.split(';')[0])||file.size>3*1024*1024){message('Choose a WebM, MP4, WAV or MP3 audio file under 3 MB.');return;}
       uploadBlob=file;await uploadRecording();
     }
-    doc.addEventListener('visibilitychange',()=>{if(doc.hidden&&visible){cacheDraft();const interrupted=['listening','loading-prompt','ready','preparing','permission','cue'].includes(phase);clearAudio();if(interrupted){phase='error';message('This practice attempt was interrupted when the tab was hidden. Return here and use Retry microphone to restart the question flow.');}refreshControls();}});
+    doc.addEventListener('visibilitychange',()=>{if(doc.hidden&&visible){cacheDraft();const interrupted=['listening','loading-prompt','lead-in','ready','preparing','permission','cue'].includes(phase);clearAudio();if(interrupted){phase='error';message('This practice attempt was interrupted when the tab was hidden. Return here and use Retry microphone to restart the question flow.');}refreshControls();}});
     env.addEventListener?.('beforeunload',()=>{cacheDraft();clearAudio();});
     return {open,leave,reset};
   }
