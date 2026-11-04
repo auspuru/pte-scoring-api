@@ -1,0 +1,1826 @@
+{
+  "schemaVersion": 1,
+  "preparedAt": "2026-11-04",
+  "scope": "new-individual-practice-only",
+  "status": "prepared-not-generated",
+  "apiAccess": "not-visible-in-current-workspace",
+  "textPolicy": "exact-text-no-added-fillers",
+  "protected": [
+    "saved attempts",
+    "confirmed scores",
+    "frozen papers",
+    "historical audio",
+    "Essay Library AI/PDF/email"
+  ],
+  "format": {
+    "master": "lossless WAV at native provider sample rate",
+    "delivery": "mono MP3 128-192kbps",
+    "integratedLufs": -18,
+    "truePeakDbtp": -1.5
+  },
+  "generationPolicy": {
+    "noSilencePadding": true,
+    "noTempoStretching": true,
+    "noTruncation": true,
+    "preserveThreeStableSgdVoices": true,
+    "independentTranscriptVerification": true,
+    "listeningReviewRequired": true,
+    "providerModel": "verify-current-supported-model-at-generation-time"
+  },
+  "sharedListeningHiw": [
+    {
+      "id": "listen-hiw-pred26-sst-10",
+      "audioId": "pred26-sst-10",
+      "reuseReplacementOf": "pred26-sst-10"
+    },
+    {
+      "id": "listen-hiw-pred26-sst-11",
+      "audioId": "pred26-sst-11",
+      "reuseReplacementOf": "pred26-sst-11"
+    },
+    {
+      "id": "listen-hiw-pred26-sst-12",
+      "audioId": "pred26-sst-12",
+      "reuseReplacementOf": "pred26-sst-12"
+    },
+    {
+      "id": "listen-hiw-pred26-sst-13",
+      "audioId": "pred26-sst-13",
+      "reuseReplacementOf": "pred26-sst-13"
+    },
+    {
+      "id": "listen-hiw-pred26-sst-14",
+      "audioId": "pred26-sst-14",
+      "reuseReplacementOf": "pred26-sst-14"
+    },
+    {
+      "id": "listen-hiw-pred26-sst-15",
+      "audioId": "pred26-sst-15",
+      "reuseReplacementOf": "pred26-sst-15"
+    }
+  ],
+  "recordings": [
+    {
+      "id": "wfd-practice-04",
+      "type": "wfd",
+      "text": "Our department offers practical workshops for students interested in environmental research.",
+      "sourceTextSha256": "ef7130208ad130fc03fa1bdbd905019beb6a020aa28faca3483dfeab0e90de86",
+      "originalAudioSha256": "f1d0d8d0b83bdd42ff1b83697c9d1248c97fa585b3d403fc3d2c54fc36a35805",
+      "voiceCandidate": "cedar",
+      "paceWpm": [
+        145,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-01",
+      "type": "sst",
+      "text": "A strong business idea is rarely created from nothing; it usually combines existing knowledge in a way that solves a problem more effectively. Novelty matters, but usefulness matters as well, because an unusual idea has little value if it does not improve an experience, product or process. Entrepreneurs should therefore test whether customers understand the idea, whether it can be delivered reliably and whether competitors can copy it easily. Innovation continues after launch as feedback reveals weaknesses and new possibilities. The central lesson is that uniqueness comes from purposeful improvement and execution, not simply from being different.",
+      "sourceTextSha256": "f2e59a21a5069aff22498cb3f12ec1175eb5996c34517fe5d4ee64f546f35a01",
+      "originalAudioSha256": "9f182f84014fc348e05385c4835046dd03fa184b85e7026a9ae8fe94687a98c1",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-04",
+      "type": "sst",
+      "text": "The word need can describe very different things depending on context, from a strong personal desire to an essential condition for survival or function. Saying that someone needs a holiday expresses preference differently from saying that a plant needs water. Social policy adds another layer because communities debate which goods and services should count as basic needs. Psychological needs such as belonging and recognition can also influence behaviour even though they are not physical necessities. Clear communication therefore requires speakers to identify which meaning of need they are using instead of assuming the word is self-explanatory.",
+      "sourceTextSha256": "b9a2c2f57610c812994ade14c50f430083092d1ae19eb933ac5a1290f6b8f5b6",
+      "originalAudioSha256": "36f8e37207c95c051b3a0f7649c46144a588c60a99a54bea782ae65251703fc8",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-05",
+      "type": "sst",
+      "text": "Washing fresh produce can remove soil and reduce some surface contamination before food is eaten or prepared. Running water is usually appropriate, while firm produce can be cleaned with a brush that is kept for food use. Pre-washed packaged greens may not need another wash if the label says they are ready to eat, because extra handling can introduce contamination. Cleaning the sink, hands and utensils is just as important as rinsing the food itself. Good produce hygiene is therefore a simple routine that combines clean water, clean equipment and attention to package instructions.",
+      "sourceTextSha256": "f2d68196f346e094a8b7afd215260556f7756ad142767f3d84be659cfdfcd6b4",
+      "originalAudioSha256": "d1b57aa9349447a33d35b5553fd9ad19872ead71c530788373f9f8dff8f9cc64",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-02",
+      "type": "sst",
+      "text": "Managers work under time pressure, but continuing education can broaden the perspectives they bring to difficult decisions. Reading outside a narrow professional field exposes leaders to different ways of thinking about people, markets and organisations. Formal study is valuable when it helps a manager connect experience with concepts such as strategy, motivation, ethics and organisational design. Experience alone can produce habits that work in one situation but fail in another. Effective managers keep learning so they can explain their decisions, adapt methods and lead teams with a wider understanding of the organisation.",
+      "sourceTextSha256": "341373554753a5d5e50f10c4f0e2eb7e6299bf3dbaa32fda9eafe18c8ced7fdd",
+      "originalAudioSha256": "e069e242540a4c33650975346063099c73e2cf1d4c524f1bc1fb889e6c167e04",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-03",
+      "type": "sst",
+      "text": "People differ in how strongly their moods change, with some experiencing sharp emotional swings and others remaining comparatively steady. Emotional health does not require constant excitement because a calm sense of satisfaction can be more sustainable than repeated extreme highs. A moderate level of challenge can support attention and growth, while excessive stress may reduce judgement and well-being. Contentment also does not mean passivity; it can coexist with ambition and effort. The useful goal is emotional balance, where people can respond to problems without being controlled by every temporary feeling.",
+      "sourceTextSha256": "42357ab1358a441d304b20084f2ae030cd67aeb1de5663cf9358706a0ff44142",
+      "originalAudioSha256": "571464d26dc39c8da7d85fdd63b5ca1909f86e8b385d2a5d07aca4f01a130431",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-08",
+      "type": "sst",
+      "text": "An economy built heavily around private cars can create jobs and mobility while also encouraging congestion, fuel use and dispersed urban development. Diversifying investment toward public transport, renewable energy and efficient urban infrastructure can create different industries and employment opportunities. The transition is not immediate because workers, businesses and communities depend on existing supply chains. Policy needs to support retraining and new investment while improving alternatives that people can actually use. Changing economic priorities works best when environmental goals are linked with practical plans for employment, transport and regional development.",
+      "sourceTextSha256": "ee8f82dffd99ba8e796b292e1acf8826545019ae29f3703fdeee9340919fa6a6",
+      "originalAudioSha256": "bd52c07cb153689473d16ad82111e0a5064b54c9936342baeac94d9c574a73fb",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-06",
+      "type": "sst",
+      "text": "Scientific research can explain what is possible, but evidence alone does not decide how every discovery should be used. Choices about medicine, artificial intelligence, genetics and the environment involve values such as fairness, privacy, responsibility and harm. Ethical debate should be informed by accurate science so that decisions are not based on fear or misinformation. At the same time, technical experts need to hear from communities affected by the consequences of new technologies. Responsible progress combines reliable evidence with transparent discussion about the human purposes that innovation is meant to serve.",
+      "sourceTextSha256": "bc0c9def83b9022381568dab6663b9a53fea1230f79e62533fa7c716ba0f8d40",
+      "originalAudioSha256": "9726b222067a368fcf9585f9feeecb1d22cbb4a8b8ee4403fb5091abbcfbbb04",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-09",
+      "type": "sst",
+      "text": "Rail travel cards can make frequent journeys cheaper and reduce the time passengers spend purchasing individual tickets. Different schemes may target students, older travellers, commuters or families, so the value depends on a passenger’s actual pattern of travel. Some cards provide discounts while others work as prepaid or subscription products. Travellers should compare eligibility rules, peak-hour limits and the number of trips required before the card becomes economical. The main advantage is convenience, but a travel card is useful only when its conditions match the way the passenger normally travels.",
+      "sourceTextSha256": "c0dc727bbf58f0bfd4ec5245bd2f881238880b43424994dc2028c725ddfb5c30",
+      "originalAudioSha256": "9aafb44512d7310e46ca2eb41716593d915d388204be3a19b6be64ef3ebf71b7",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-07",
+      "type": "sst",
+      "text": "People often react more strongly to the possibility of losing something they already have than to an equally sized potential gain. This tendency, commonly described as loss aversion, can influence decisions about money, health and personal goals. Messages framed around avoiding a loss may therefore attract more attention than messages promising a future benefit. However, communicators should not exaggerate threats because fear-based messages can become manipulative or reduce trust. Understanding loss aversion is most useful when it helps people notice how framing affects judgement and make more deliberate choices.",
+      "sourceTextSha256": "36102900bf6ef1cf10165c28cafc64da82e1fe43046cbcbe55c47baa3472068b",
+      "originalAudioSha256": "818c4ca080bc7cdb03c9efe5af9ca9426b92e26e6763751d06254883fc2b5b4c",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-10",
+      "type": "sst",
+      "text": "Organisations can fill vacancies by recruiting internally or by searching for candidates outside the existing workforce. Internal recruitment can reward employees, reduce induction time and use knowledge the organisation already has. External recruitment can widen the talent pool and bring skills or perspectives that are not available inside the company. Both methods have costs, and relying on only one approach can limit fairness or flexibility. A sound recruitment strategy chooses the method that fits the role while using transparent criteria to compare candidates consistently.",
+      "sourceTextSha256": "d8afd639f2a5088e35aa132768d8a86375c82362edd6b8189eb43e7e88fbcd7a",
+      "originalAudioSha256": "8441e2270b3157021c796a8e7edf18ab712189505155d6b9a0ffa8da8be53915",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-11",
+      "type": "sst",
+      "text": "Computers support communication, analysis, record keeping and automated tasks across education, health, business and many other fields. Their speed and storage capacity can improve productivity, but greater dependence on digital systems also creates risks. Cybersecurity failures, unequal access and loss of basic manual processes can become serious problems when organisations digitise without planning. People still need judgement to decide what data means and whether an automated result is appropriate. The value of computers therefore comes from combining technical capability with responsible design, security and human oversight.",
+      "sourceTextSha256": "e76371fe626e547ad8678f0ddbc9a68644f1304ddf7facf71e2c5bc64e8c35c1",
+      "originalAudioSha256": "b96e8ef41ef3bb537900df4668651224932e617f48ea6a7af7664b3dda82fb68",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-12",
+      "type": "sst",
+      "text": "Orientation helps new employees understand how an organisation works before they are expected to perform independently. A useful program explains responsibilities, safety, workplace policies, communication channels and where to obtain technical or personal support. Meeting colleagues and managers early can reduce uncertainty and help newcomers understand how their role connects with the wider team. Too much information in one session is easily forgotten, so important guidance should remain accessible afterwards. Effective orientation is a process of integration rather than a single presentation on the employee’s first day.",
+      "sourceTextSha256": "a8245c9ded613709491b43f847c810b1e4598a5031c848b62818bfc06d4dc667",
+      "originalAudioSha256": "9d9b4716d4b085b8bbf040cfd91bd3b35379af088343b2ff5f595b4dc1015dc4",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-13",
+      "type": "sst",
+      "text": "Travel can broaden experience, but distance alone does not guarantee learning or personal growth. People can pass through many places without reflecting on culture, history or the lives of local residents. Meaningful learning can also happen through local communities, books, digital resources and sustained contact with people from different backgrounds. Tourism may bring economic benefits while also increasing emissions, crowding and pressure on local traditions. The value of travel depends less on how far someone goes than on the attention, respect and reflection they bring to the experience.",
+      "sourceTextSha256": "7d0c9cd5e8162f46ef9ac2508a535481f73a7779415008d5e95e928967aee387",
+      "originalAudioSha256": "feab05fa3ca7b4c4d8bf7a2d663101b574a3df44d21832279e32e45421dbab91",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-16",
+      "type": "sst",
+      "text": "Online journalism can combine written reporting with photographs, audio, video and links to background material in a single story. Digital tools also make research faster because reporters can search documents, contact sources and check earlier coverage quickly. At the same time, speed increases the risk of publishing unverified information before facts have been confirmed. Traditional news organisations have also faced economic pressure as audiences and advertising moved online. The internet changes the tools and business model of journalism, but careful verification and clear sourcing remain central to credible reporting.",
+      "sourceTextSha256": "1380ad5d63a33315eb6fb71d3798f034e1af4662b2a421c9b438bcb17dbaabc4",
+      "originalAudioSha256": "700a24cd7ef2762246f41d34b7e7a8b43cb57f9ad57a5897bedbb0578fa441c2",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-15",
+      "type": "sst",
+      "text": "Rejection is common in academic publishing and can be especially discouraging for researchers at the beginning of their careers. A rejected paper is not always worthless because reviewers may identify weak evidence, unclear argument or missing literature that can be improved. Researchers should separate useful criticism from comments that are less relevant to the goals of the study. Revising carefully before sending the work to another journal can strengthen both the paper and the author’s future research practice. Persistence matters, but so does learning from feedback rather than submitting the same unchanged manuscript repeatedly.",
+      "sourceTextSha256": "3553fb8de4fed022c8020036921e3668139a441e595492260ce1cf91662be701",
+      "originalAudioSha256": "af75d2e01390de27c7c8510610f9c7c7c1226aa39028ed67376a03ef42e21230",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-17",
+      "type": "sst",
+      "text": "A honeybee colony functions through highly specialised roles that allow thousands of insects to behave as a coordinated system. The queen lays eggs, workers gather food and maintain the hive, and male drones have a narrower reproductive role. Worker bees perform demanding tasks throughout short lives, while new generations continually replace those that die. Communication and division of labour allow the colony to regulate food, temperature and care for developing bees. Studying a hive shows how cooperation among individuals can produce behaviour that is more complex than the actions of any single bee.",
+      "sourceTextSha256": "f0280e975170325db852e15ca7d85c9dd97ee897943e302159da1cbdfa4c196e",
+      "originalAudioSha256": "fb5c05c3b61486d36bf15b7fc67f757c86de0798157b73d6c416cc6f6f07ccf2",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-sst-14",
+      "type": "sst",
+      "text": "Information technology allows organisations to store, process and exchange data at a scale that has transformed work and public services. Digital systems can improve access to education, healthcare and communication across long distances. The same systems create responsibilities around privacy, cybersecurity, reliability and unequal access. Organisations need clear rules for who can use data and how failures are detected and corrected. Technology creates the greatest benefit when convenience and innovation are matched by security, accountability and support for users.",
+      "sourceTextSha256": "7148e73144f498e5c9f256edd98f1507099b404bfa56c4e9e21014fa32a50934",
+      "originalAudioSha256": "30d9f446e909b84229e38fc9b04ed91622ff06df37f91bc8aeeba89071791d31",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ]
+    },
+    {
+      "id": "pred26-wfd-23",
+      "type": "wfd",
+      "text": "Mathematics provides an essential foundation for understanding and analysing data.",
+      "sourceTextSha256": "064a44a7c36c0eb02603ea1920f787fa59c0e73f45bff7400b2a831808e7e906",
+      "originalAudioSha256": "15ded4047f64a39e0e07c2362b04eeaf647ab0240099f4ed86a10112c60a55ee",
+      "voiceCandidate": "cedar",
+      "paceWpm": [
+        145,
+        165
+      ]
+    },
+    {
+      "id": "pred26-wfd-35",
+      "type": "wfd",
+      "text": "The course combines theoretical mathematics with practical applications.",
+      "sourceTextSha256": "c9cfe8a61ae44d501577aa2c28bd3959d45fa80c2cd3cf751b51af658329b51f",
+      "originalAudioSha256": "b207ede694023b96fa4aa8acd23213b4ddb5fc45944acffec2348338f6c54153",
+      "voiceCandidate": "cedar",
+      "paceWpm": [
+        145,
+        165
+      ]
+    },
+    {
+      "id": "sgd-1",
+      "type": "sgd",
+      "title": "Extending library opening hours",
+      "sourceTextSha256": "e3edaaa4b71b96788e70918e197bf8b9d7867280725deb1d8827d809069ee9b6",
+      "originalAudioSha256": "b8888bf656052433f175356a1b3fdf38d5138b6cc41d6e897cd828792437cf7d",
+      "voiceCandidates": {
+        "Maya": "marin",
+        "Ben": "cedar",
+        "Clara": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 95,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Three students are discussing whether the university library should extend its opening hours."
+        },
+        {
+          "turn": 1,
+          "speaker": "Maya",
+          "voiceCandidate": "marin",
+          "text": "I think the library should stay open later throughout the semester, not only during exams. Some students work in the evening and need somewhere quiet afterwards. My shared house is noisy, so having access until midnight would make a real difference. What do you both think?"
+        },
+        {
+          "turn": 2,
+          "speaker": "Ben",
+          "voiceCandidate": "cedar",
+          "text": "I understand the need, but opening the whole building could be expensive. We would need security, lighting and staff even if only a few students came. I would rather see a limited late-opening area, with student-card access, than promise a service the library cannot sustain."
+        },
+        {
+          "turn": 3,
+          "speaker": "Clara",
+          "voiceCandidate": "coral",
+          "text": "A small area sounds sensible, but getting home safely is another issue. The last bus leaves before midnight. Students without cars might not benefit unless transport is considered too. Perhaps the university could coordinate a shuttle on the busiest nights rather than run it every evening."
+        },
+        {
+          "turn": 4,
+          "speaker": "Maya",
+          "voiceCandidate": "marin",
+          "text": "That is a fair point. I do not need the borrowing desk to stay open; I mainly need a desk, power and internet. We could start with the ground-floor study room. A short survey might tell us which nights working students actually need it most."
+        },
+        {
+          "turn": 5,
+          "speaker": "Ben",
+          "voiceCandidate": "cedar",
+          "text": "I would support a trial based on that survey. We could count visits and check the cost for six weeks, then decide whether to continue. Clear rules would matter, especially about noise, visitors and what students should do if they need help after staff leave."
+        },
+        {
+          "turn": 6,
+          "speaker": "Clara",
+          "voiceCandidate": "coral",
+          "text": "Then our recommendation could combine a small supervised study area with a transport check. We should ask students about both demand and travel, and make sure accessibility is included. That gives the university evidence before it commits to opening the entire library later."
+        }
+      ]
+    },
+    {
+      "id": "sgd-2",
+      "type": "sgd",
+      "title": "Choosing a group-project format",
+      "sourceTextSha256": "0898bda54702a12fe803e78fa227160123147ef4a580a13680402b6c303d0a0f",
+      "originalAudioSha256": "567e8087d1a6eec50edb119c5650ec7b3cd299717d322380d2d9f3ad7c759757",
+      "voiceCandidates": {
+        "Daniel": "marin",
+        "Leah": "cedar",
+        "Omar": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 95,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Three students are discussing how to present their environmental group project."
+        },
+        {
+          "turn": 1,
+          "speaker": "Daniel",
+          "voiceCandidate": "marin",
+          "text": "For our environmental project, I would like to make a short video instead of a slide presentation. We could show the recycling facilities around campus and interview students. That might make our findings easier to understand than reading statistics from a screen during the final class."
+        },
+        {
+          "turn": 2,
+          "speaker": "Leah",
+          "voiceCandidate": "cedar",
+          "text": "A video could be engaging, but editing takes time and none of us has much experience. We also have to show how we collected and analysed our data. I worry that production work might distract us from the research, which is the main part of the assessment."
+        },
+        {
+          "turn": 3,
+          "speaker": "Omar",
+          "voiceCandidate": "coral",
+          "text": "Could we combine the approaches? A few short clips could introduce the problem, followed by slides explaining the evidence. We should also provide captions and avoid filming anyone without permission. The format should help communicate the findings rather than become the main focus of the project."
+        },
+        {
+          "turn": 4,
+          "speaker": "Daniel",
+          "voiceCandidate": "marin",
+          "text": "I like that compromise. We could record the facilities without identifying students, and use an anonymous questionnaire instead of interviews. I can take responsibility for two brief clips. If the clips do not work well, the research presentation would still be complete without them."
+        },
+        {
+          "turn": 5,
+          "speaker": "Leah",
+          "voiceCandidate": "cedar",
+          "text": "That makes the workload more manageable. Let us agree on the research questions and divide the analysis first. Then we can set a strict time limit for filming and editing. I would also like us to practise together so the final presentation feels like one coherent explanation."
+        },
+        {
+          "turn": 6,
+          "speaker": "Omar",
+          "voiceCandidate": "coral",
+          "text": "Agreed. We should check the assessment instructions before committing, share a draft early and keep the clips short and accessible. The final plan is a slide-based presentation supported by video, with research quality, consent and clear teamwork taking priority over elaborate production."
+        }
+      ]
+    },
+    {
+      "id": "sgd-3",
+      "type": "sgd",
+      "title": "Improving campus food choices",
+      "sourceTextSha256": "58ff071e16b924ad47ebfd9ac4f92f9919b31fb39d42db889474323daa49d8ec",
+      "originalAudioSha256": "3e388edfe3db120ce6c9d03707e1eecefd9eef3e5664c4b54623f82b1149172b",
+      "voiceCandidates": {
+        "Aisha": "marin",
+        "Tom": "cedar",
+        "Sophie": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 95,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Three students are discussing ways to improve food choices in the campus cafeteria."
+        },
+        {
+          "turn": 1,
+          "speaker": "Aisha",
+          "voiceCandidate": "marin",
+          "text": "I would like the cafeteria to offer more affordable plant-based meals. There is usually one option, but it is often the same dish. Students with different diets should have a genuine choice, and some of my friends bring lunch because the available meals are too expensive."
+        },
+        {
+          "turn": 2,
+          "speaker": "Tom",
+          "voiceCandidate": "cedar",
+          "text": "More choice sounds good, but the kitchen already throws away food when demand is low. Adding several dishes every day could make that worse. I think the cafeteria should first find out what students would actually buy and whether it can use ingredients across different meals."
+        },
+        {
+          "turn": 3,
+          "speaker": "Sophie",
+          "voiceCandidate": "coral",
+          "text": "Price and information matter too. A meal may look suitable but contain an ingredient someone cannot eat. Clear labels would help. We could ask for one rotating, reasonably priced dish each day and make sure staff can answer questions, instead of expanding the whole menu at once."
+        },
+        {
+          "turn": 4,
+          "speaker": "Aisha",
+          "voiceCandidate": "marin",
+          "text": "A rotating dish would be a useful start, especially if students could suggest recipes. I do not expect every meal to suit everyone. I mainly want variety across the week and a price that makes buying lunch realistic for students who are watching their budgets."
+        },
+        {
+          "turn": 5,
+          "speaker": "Tom",
+          "voiceCandidate": "cedar",
+          "text": "Then we should propose a trial rather than a permanent change immediately. The kitchen could record sales and leftovers for a month. If the new option sells well without increasing waste, that would provide evidence for expanding it or adjusting the portion sizes later."
+        },
+        {
+          "turn": 6,
+          "speaker": "Sophie",
+          "voiceCandidate": "coral",
+          "text": "Let us include a simple feedback form and accurate ingredient labels in the trial. Students could comment on taste, value and portion size. We seem to agree that affordable variety is the goal, but it should be introduced gradually and checked against actual demand."
+        }
+      ]
+    },
+    {
+      "id": "sgd-4",
+      "type": "sgd",
+      "title": "Making lecture recordings useful",
+      "sourceTextSha256": "6432b4714efbcf61a2f6707c3db651d6ded4deedf2684f492f64ad3cf5bc6c5f",
+      "originalAudioSha256": "eb2c1a29c5341d10e0420c49edcfa85ec9632bd785d30ca238abdd51e25a06e2",
+      "voiceCandidates": {
+        "Ethan": "marin",
+        "Nina": "cedar",
+        "Luis": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 96,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Three students are discussing how to make lecture recordings more useful for students."
+        },
+        {
+          "turn": 1,
+          "speaker": "Ethan",
+          "voiceCandidate": "marin",
+          "text": "I find lecture recordings very helpful because I can revisit difficult explanations and pause to check my notes. They are also useful if someone misses class for a legitimate reason. I think every lecture should be recorded and made available soon after the class finishes."
+        },
+        {
+          "turn": 2,
+          "speaker": "Nina",
+          "voiceCandidate": "cedar",
+          "text": "I use them too, but I sometimes postpone watching because I know the recording will be there. Then several lectures pile up before a test. Recordings are useful resources, but simply providing them does not mean students will use them effectively or keep up with the course."
+        },
+        {
+          "turn": 3,
+          "speaker": "Luis",
+          "voiceCandidate": "coral",
+          "text": "Perhaps the course could provide short guides alongside each recording. Time markers for key topics would make revision easier, and a few practice questions could encourage students to check their understanding. Captions are important as well, but they should be checked because technical terms are sometimes transcribed incorrectly."
+        },
+        {
+          "turn": 4,
+          "speaker": "Ethan",
+          "voiceCandidate": "marin",
+          "text": "Those additions would definitely help. I still think recordings should remain available for revision rather than disappear after a few days. Some topics make more sense later in the semester. We should encourage attendance without removing a resource that students use in different ways."
+        },
+        {
+          "turn": 5,
+          "speaker": "Nina",
+          "voiceCandidate": "cedar",
+          "text": "I agree about keeping access. My concern is study habits, not restricting recordings. A weekly reminder and a short self-check could help me stay on schedule. It would also be useful if teachers explained when to review a short section instead of replaying an entire lecture."
+        },
+        {
+          "turn": 6,
+          "speaker": "Luis",
+          "voiceCandidate": "coral",
+          "text": "So we could recommend continued access, accurate captions, topic markers and optional self-checks. Live classes still offer questions and discussion, while recordings support review. The two should complement each other, with some guidance to help students avoid leaving all their viewing until the last minute."
+        }
+      ]
+    },
+    {
+      "id": "sgd-5",
+      "type": "sgd",
+      "title": "Planning a community volunteering day",
+      "sourceTextSha256": "70a3623ac980412d2751ff8b91a81c7cae225422a0e27e794fd6c173132cd189",
+      "originalAudioSha256": "1657b683ca3b71110a9fb11ba2331a5565fda12e3487443a0d3e2785ce6249eb",
+      "voiceCandidates": {
+        "Grace": "marin",
+        "Sam": "cedar",
+        "Priya": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 95,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Three students are planning a volunteering day at a community garden."
+        },
+        {
+          "turn": 1,
+          "speaker": "Grace",
+          "voiceCandidate": "marin",
+          "text": "For our student society’s volunteering day, I suggest helping at the community garden. We could do something practical outdoors and meet local residents. A full Saturday would allow us to finish a useful amount of work rather than spend most of a short visit getting organised."
+        },
+        {
+          "turn": 2,
+          "speaker": "Sam",
+          "voiceCandidate": "cedar",
+          "text": "I like the garden idea, but a full day may exclude students who have weekend jobs or caring responsibilities. We also should not assume that everyone can do heavy outdoor work. I would prefer flexible shifts and a choice of activities so more people can take part."
+        },
+        {
+          "turn": 3,
+          "speaker": "Priya",
+          "voiceCandidate": "coral",
+          "text": "Before planning the timetable, we should ask the garden organisers what help they actually need. They may need seed sorting, signs or publicity as well as planting. A project is more useful when it supports the community’s priorities rather than just offering us an enjoyable day out."
+        },
+        {
+          "turn": 4,
+          "speaker": "Grace",
+          "voiceCandidate": "marin",
+          "text": "That is a good reminder. I can contact the coordinator and ask about suitable jobs and the number of volunteers they can manage. Perhaps we could offer a morning and an afternoon shift, with some lighter tasks available under cover if the weather is poor."
+        },
+        {
+          "turn": 5,
+          "speaker": "Sam",
+          "voiceCandidate": "cedar",
+          "text": "Two shifts would work better for me. We should also explain transport options and any equipment people need. Students could choose activities when signing up, but we should avoid promising a particular task until the coordinator confirms that it is useful and safe."
+        },
+        {
+          "turn": 6,
+          "speaker": "Priya",
+          "voiceCandidate": "coral",
+          "text": "Exactly. Once the coordinator responds, we can publish an accessible plan and arrange a short briefing. Afterwards, we should ask the garden whether our contribution was helpful. We agree on volunteering there, provided the event is flexible, well organised and shaped by the garden’s needs."
+        }
+      ]
+    },
+    {
+      "id": "sgd-user-20261030-01",
+      "type": "sgd",
+      "title": "Tackling a college essay",
+      "sourceTextSha256": "fa5d3e64af62908204e4d20670225aa003b4a40f661493c2f010dff98ef6e97c",
+      "originalAudioSha256": "8cdebdaa7a68690d5784888115bf7b32d427d33132e77676f993fb6c809c8438",
+      "voiceCandidates": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 160,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Three students are discussing how to tackle the challenge of writing a college essay."
+        },
+        {
+          "turn": 1,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Guys, I'm really struggling with this essay. It's so much more difficult than high school, and I have no idea where to start. It's just overwhelming. I keep rereading the prompt, but I'm still not sure if I'm interpreting it correctly."
+        },
+        {
+          "turn": 2,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "Hey, don't worry too much about it. The first thing you should do is to make sure you understand the question. Trying to write without a clear idea of what you're supposed to be discussing will just make things harder. Maybe try breaking the prompt down into smaller parts or even talk to your professor after class to clarify what they're looking for."
+        },
+        {
+          "turn": 3,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "Yeah. You don't need to start by writing the summary or introduction. Just start with the main content first. Get all your ideas down, and then you can organize them into a logical order later. I always do a brain dump first just writing everything I know or think about the topic without worrying about structure."
+        },
+        {
+          "turn": 4,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "That's true. Once you have your main points, you can write a draft and then go back and revise. You might find it easier to write the summary once you've done that. And don't forget, we're here to help, too. We can proofread your draft and give you some feedback. If you want, we could even set up a study session this weekend to go over your outline together."
+        },
+        {
+          "turn": 5,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "That sounds like a good plan. I feel much better about this now. I think I'll try the brain dump method tonight and then maybe share my rough points with you tomorrow."
+        },
+        {
+          "turn": 6,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "The writing center on campus is also a great resource. They can help you brainstorm ideas and even review your essay before you submit it."
+        },
+        {
+          "turn": 7,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "Exactly, don't hesitate to use the resources available to you. And take breaks too when you find yourself stuck. Sometimes stepping away for a bit can help clear your mind and give you a fresh perspective. I always set a timer like 45 minutes of writing, then a 10-minute break. It keeps me from burning out."
+        },
+        {
+          "turn": 8,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Yeah, you guys make a lot of sense. I'll start by understanding the question and then move on from there. And I'll definitely use the writing center's help, too. Thank you so much! I was so stressed earlier, but now I actually have a clear starting point."
+        },
+        {
+          "turn": 9,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "You're welcome! Just remember to take it one step at a time. Writing an essay doesn't have to be a huge, insurmountable task. You're capable of breaking it down and conquering it, piece by piece. And honestly, your first draft doesn't have to be perfect just getting something on paper is already progress."
+        },
+        {
+          "turn": 10,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "Exactly, remember we're only a call away. We all struggle at times, but that's how we learn and grow. You've got this!"
+        }
+      ]
+    },
+    {
+      "id": "sgd-user-20261030-02",
+      "type": "sgd",
+      "title": "AI tools for academic assignments",
+      "sourceTextSha256": "062b81124bfad54bb368a478f9a85f88e38e1715c56b04d768030cb281757ce5",
+      "originalAudioSha256": "36d2764184a9c277beba8b4dc295699fcaa505fc89f6345cdfaeb6ff21dde328",
+      "voiceCandidates": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 146,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Three students are debating over the pros and cons of using AI tools for academic assignments, gathered at a cozy corner table in the library lounge."
+        },
+        {
+          "turn": 1,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "I have serious concerns about relying on AI for academic work. Last week, I reviewed a peer's paper that was clearly AI-generated - it sounded polished but completely lacked original thought. What's the point of education if we're not developing our own thinking abilities?"
+        },
+        {
+          "turn": 2,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "I completely agree. The bigger issue is academic integrity. My professor just announced that any detected AI-generated content will result in automatic failure. It's becoming impossible to trust what's authentic anymore. Remember how we used to spend hours in the library actually engaging with sources? That struggle is where real learning happens."
+        },
+        {
+          "turn": 3,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "I understand your concerns, but I think you're overlooking the positive aspects. AI tools have been incredibly helpful for overcoming writer's block and organizing my thoughts. The outlining feature alone has saved me hours of frustration. It's not about replacing thinking - it's about enhancing it."
+        },
+        {
+          "turn": 4,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "But that's exactly the problem! When we rely on AI for organization and structure, we're missing out on developing those crucial skills ourselves. I've noticed my analytical abilities have declined since I started using these tools last semester."
+        },
+        {
+          "turn": 5,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "And what about the classroom experience? If everyone comes to class with AI-polished contributions, how do we have genuine discussions? The imperfections and hesitations in our conversations are where the most interesting insights often emerge."
+        },
+        {
+          "turn": 6,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "I see your points, but consider the accessibility benefits. For students with learning differences or those struggling with academic writing, AI tools provide crucial support that might not otherwise be available. It's not about perfect papers - it's about giving everyone a fair chance to express their ideas. These tools can help bridge gaps for neuro diverse students or those writing in a second language, allowing their ideas to be heard more clearly."
+        },
+        {
+          "turn": 7,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "I appreciate that perspective, but I worry we're creating a dependency. What happens when these tools are no longer available? Will we still know how to think for ourselves? We need to ensure we're not sacrificing fundamental skills for short-term convenience, as true intellectual development comes from working through challenges independently."
+        },
+        {
+          "turn": 8,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "That's my concern too. The value of education isn't just in the final product - it's in the struggle to get there. If we shortcut that process with AI, we're missing the most important part of learning."
+        },
+        {
+          "turn": 9,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "I guess we'll have to agree to disagree. I still believe that when used responsibly, AI can be a valuable tool rather than a threat to genuine learning. The key is finding the right balance."
+        }
+      ]
+    },
+    {
+      "id": "sgd-user-20261030-03",
+      "type": "sgd",
+      "title": "Campus part-time jobs",
+      "sourceTextSha256": "bb340a1bd2ee9433eda6a0081b9f213d4ccf02e3f4e6c709996a2699f7cd4fcd",
+      "originalAudioSha256": "8a1df71a16d0ffcd7bdc77475035ccb655dafe4dabd70a3a743d654ec05a5654",
+      "voiceCandidates": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 167,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Three students are debating the pros and cons of campus part-time jobs, gathered at a corner table in the student lounge, the air filled with the faint smell of coffee and the rustle of textbook pages."
+        },
+        {
+          "turn": 1,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "I think working part-time on campus is a total waste of energy. Last month I took a job at the library desk, and between shelving books and scanning IDs, I barely had any mental capacity left for my coursework. I ended up dozing off during my morning lectures twice last week."
+        },
+        {
+          "turn": 2,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "Actually, I find my part-time job at the academic office really helpful. It forces me to manage my time better. I used to procrastinate all afternoon, but now I block out my shifts and study hours in advance. Plus, I'm earning my own spending money it feels good not to have to ask my parents for every little thing."
+        },
+        {
+          "turn": 3,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "But the workload is no joke. I tried working at the campus café last semester and it drained me completely. Some days I'd finish my shift at 8 pm, and then still have to write a lab report due at midnight. I got so stressed I had to quit after a month. It's not just about time it's the mental toll."
+        },
+        {
+          "turn": 4,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Exactly! And let's be honest most of these jobs don't even relate to our future careers. I'd rather join a student club or work on a project that actually builds my resume. Stuffing envelopes or swiping cards isn't going to help me get into grad school."
+        },
+        {
+          "turn": 5,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "I see what you mean, but you're overlooking the soft skills. I've learned to talk to supervisors, handle complaints, and show up on time that's real-world experience. And it's not always about the job itself; it's about showing you can balance responsibilities."
+        },
+        {
+          "turn": 6,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "I guess, but I still think it depends on your schedule. If you're taking 18 credits like I am this semester, adding a job is just unrealistic. The stress isn't sustainable. Maybe if the university limited work hours to under 10 per week... but even then, I'd rather use that time to review or sleep."
+        },
+        {
+          "turn": 7,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Same. I'd prefer a work-study program that's more flexible and aligned with my major. Maybe assisting a professor with research instead of stacking books. That way I'm earning and learning at the same time. Otherwise, it just feels like trading precious study hours for tasks that don't contribute to my long-term goals."
+        },
+        {
+          "turn": 8,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "That's a fair point. I wouldn't say no to a more relevant job either. But still, even a simple job teaches discipline. And let's be real not all of us can get those research assistant roles. Sometimes starting with a basic job can actually open doors to those better opportunities later on."
+        },
+        {
+          "turn": 9,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "Well, if I'm going to work, I'd want it to mean something beyond the pay check. Otherwise, I'd rather focus on my grades. There has to be a balance. Burnout is real, and no amount of money is worth compromising both my health and academic performance."
+        }
+      ]
+    },
+    {
+      "id": "sgd-user-20261030-04",
+      "type": "sgd",
+      "title": "On-campus and off-campus housing",
+      "sourceTextSha256": "7b18a8022c5be685b0eb1e871626e00370944490210e6ca34cf6c94f464c786c",
+      "originalAudioSha256": "e62526aee63bac04b4022a449efbadf7c2da7e1578c28f4452f6825ba6e4d6e3",
+      "voiceCandidates": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 152,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Three students are talking about their living experiences in on-campus dorms and off-campus housing."
+        },
+        {
+          "turn": 1,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "I live in a house off campus with my friends. It's quite far from the school, but I am lucky because I live close to bus stops and it is very convenient. Also, our landlord is nice and takes care of things like cleaning and other problems around the house."
+        },
+        {
+          "turn": 2,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "I live in the school dormitory, which is very convenient, and there are places where I can study. Actually, I'd be quite happy to share a house with friends off campus, but the rent is too expensive. Also, I don't want to get up early, and the dormitory is very close to the teaching buildings."
+        },
+        {
+          "turn": 3,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "I also live in the school dormitory. If anything in the dorm breaks, it gets repaired soon, so students don't have to bother with it. Some friends living outside have problems with water and have to wait for a long time to have it fixed."
+        },
+        {
+          "turn": 4,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "That's honestly a huge advantage of living on campus. Even though our landlord is responsible and helpful, off-campus maintenance is really slow in general. We once had a water leakage issue and waited nearly a week for someone to fix it, which was really troublesome."
+        },
+        {
+          "turn": 5,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "While dorm life has plenty of benefits, it definitely comes with some annoying downsides as well. The fire alarm in our dormitory building often goes off in the middle of the night. Whenever the alarm goes off, we have to leave the building and wait until it has been checked. I'm fed up with being forced to get out of bed and evacuate outside because of fire alarms on cold winter nights."
+        },
+        {
+          "turn": 6,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "I totally agree with your opinion. I've experienced two fire alarms in the dorm, and both times they were caused by someone using a toaster illegally in the building. Can't they find the people who are cooking illegally and deal with them more quickly? Still, I think the system is quite safe, so I accept this accommodation plan."
+        },
+        {
+          "turn": 7,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "I had no idea dorm life had such annoying safety issues. Living off-campus definitely gives us more private space and flexible schedules. We can cook freely in our own kitchen without violating any campus rules, and we never suffer from sudden fire alarms at night."
+        },
+        {
+          "turn": 8,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "That sounds really relaxing, but off-campus accommodation still has obvious drawbacks. Apart from the high rent and slow maintenance, you also have to spend plenty of time on daily housework and commuting every single day."
+        },
+        {
+          "turn": 9,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "Exactly. Every living option has its own pros and cons. On-campus dorms are affordable, safe and time-saving, while off-campus houses provide more freedom and privacy. It all depends on personal study habits and lifestyle choices."
+        }
+      ]
+    },
+    {
+      "id": "sgd-user-20261030-05",
+      "type": "sgd",
+      "title": "Choosing courses for next semester",
+      "sourceTextSha256": "733fe6aebc1f46b77ca52b9b840fe1e00d5b19670eb44a7d6e1d84c052df00b4",
+      "originalAudioSha256": "84486771d4d1c45fa5f801f4990605351c47ad8defa1aa474285851171941dcb",
+      "voiceCandidates": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 151,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "three students are discussing which course to take next semester."
+        },
+        {
+          "turn": 1,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "So, have you guys checked out the course list for next semester? I skimmed through it, and I think we should pick something that's actually helpful for our major to make learning more meaningful. I'm considering research or design-survey courses. For me, high grades are not everything. As long as a course brings personal benefits and supports our future careers, that is good enough."
+        },
+        {
+          "turn": 2,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "Absolutely! I was thinking the exact same thing. There is no value in choosing an easy-high-grade course with no practical relevance. We ought to select subjects that build real-world practical skills. Curiosity will drive us to explore deeper and bring long-term rewards. I am interested in the business course, but it involves statistics, and I am not confident about my data-handling ability."
+        },
+        {
+          "turn": 3,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "Honestly, I believe personal interest should be the top priority, even if the subject is not tightly linked to our major. As a business student, I am really attracted by languages and cross-cultural content. That is why I plan to sign up for Spanish next semester. I hold the view that genuine interest helps us stay focused and pass assessments, so Spanish is my final pick."
+        },
+        {
+          "turn": 4,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "I agree interest plays an important role. Still, purely interesting courses with no major-related value can feel like a waste of time. We need to think about input-output efficiency and future job-hunting advantages. Meanwhile, course difficulty cannot be ignored; being able to pass the final exam should be a realistic goal for us."
+        },
+        {
+          "turn": 5,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "I actually disagree that Spanish has no practical value for business majors. Language skills are great assets in today's global marketplace. Whether you negotiate with overseas clients, cooperate in multicultural teams, or travel for business work, foreign-language communication brings us obvious competitive edges."
+        },
+        {
+          "turn": 6,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "To be honest, I did not weigh those career-related advantages too carefully when I made my choice. My decision mainly comes from my real passion for Spanish culture and the language itself. When you are truly fascinated by a subject, you naturally pay more attention and devote more energy to your studies. And even if the coursework gets difficult, this inner motivation can help you get through and pass."
+        },
+        {
+          "turn": 7,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "That makes sense. So there is not just one single correct way to choose courses. We have to balance practical career benefits, personal interest and the difficulty of each subject before we make our final decisions."
+        },
+        {
+          "turn": 8,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "Right. Everyone's priorities are different. Some people focus more on career preparation, while others value personal interest more. There is no one-size-fits-all answer for course selection."
+        },
+        {
+          "turn": 9,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "Exactly. The most important thing is that we are clear about our own goals, no matter which subject we end up enrolling in."
+        }
+      ]
+    },
+    {
+      "id": "sgd-user-20261030-06",
+      "type": "sgd",
+      "title": "AI as a proofreading tool",
+      "sourceTextSha256": "44969a179bcf40c39e45f929987a7c71de5c56e342ef7edb5c75adfc7fd75b57",
+      "originalAudioSha256": "08dafca288ba0547d5de882d356ed12824d5bdf262a7cbc56cea15f2441a474c",
+      "voiceCandidates": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 161,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "three students are discussing using artificial intelligence as a proofreading tool."
+        },
+        {
+          "turn": 1,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Hey guys, have you ever thought about using AI for proofreading? I just got feedback on my essay from my tutor, and she said I need to proofread it. AI can check grammar for me and provide me some ideas, but I don't know if I should use AI tools because I don't want to be suspected of plagiarism."
+        },
+        {
+          "turn": 2,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "There is indeed a significant risk of being accused of plagiarism if you use AI. Many universities are now implementing strict policies about AI-generated content. If the AI suggests substantial changes to your sentence structures or replaces too many of your original words, the final work might not truly be yours anymore."
+        },
+        {
+          "turn": 3,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "Well, I don't mind using AI as long as it is for educational purposes and is used responsibly. AI can be used because students often use some computer software to check grammar, and are supposed to use others' words to improve their own vocabulary when learning linguistic expressions. In the past, we used dictionaries to check grammar, and it's really no different from using AI."
+        },
+        {
+          "turn": 4,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Well, I get your point. I think the line when it comes to using AI for proofreading can get really blurry. I definitely don't want to be suspected of plagiarism, so is there another way I can improve my assignments next time without using AI?"
+        },
+        {
+          "turn": 5,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "I'm not sure. I still think this needs to be considered carefully. For example, when Word marks mistakes with red and green underlines, is that considered AI-assisted proofreading? Different institutions and even different professors may have different standards for what counts as acceptable AI use. I'd be especially careful with major assignments or final papers."
+        },
+        {
+          "turn": 6,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "Actually, I've already been using AI on my tablet for proofreading for a while now. But, I still get asked by my teacher to do another proofread myself. I think the key thing is, you won't get any new ideas from AI. AI will only make your existing ideas clearer and more correct. It's really just an advanced tool that helps polish your work, not something that creates content for you. The fundamental thinking and ideas still need to come from you."
+        },
+        {
+          "turn": 7,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Okay, I see. Thanks. I think I'll go back and ask for advice from my tutor about it first. I really don't want to be accused of plagiarism, especially since I'm not clear on where the line is drawn. It's better to be safe and get proper guidance rather than risk any academic consequences."
+        },
+        {
+          "turn": 8,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "That makes total sense. Since acceptance standards vary widely among teachers and universities, relying on your own judgment can be risky. It is wise to get clear instructions directly from your tutor."
+        },
+        {
+          "turn": 9,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "I agree. No matter whether you end up using AI tools or not, your own original ideas should always stay at the core of your writing."
+        }
+      ]
+    },
+    {
+      "id": "sgd-user-20261030-07",
+      "type": "sgd",
+      "title": "Making the university more eco-friendly",
+      "sourceTextSha256": "0dc15c945270682f033af8bae618a054604a735003c5e4a576179c9ca2d26a02",
+      "originalAudioSha256": "728d61ea422b62af42f72b47739186801e37f08ae5de6bb8ea146227fa2b819f",
+      "voiceCandidates": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 144,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Three students are discussing how to make their university more eco-friendly."
+        },
+        {
+          "turn": 1,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Hey fellas, I think there is still room for improvement when it comes to making our campus more eco-friendly. The staff should install recycling stations on key spots around the university, making it convenient for us to recycle plastic bottles, which can reduce landfill waste."
+        },
+        {
+          "turn": 2,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "Actually, we should reduce waste from the source, namely, reduce the amount of waste produced by us instead of having more bins. Just the campus cafe alone uses hundreds of paper cups every day. People should use fewer single-use coffee cups at the cafe and bring their own reusable cups."
+        },
+        {
+          "turn": 3,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "You are right. It is good for the cafeteria to use recycled paper, but they give out too many napkins at one time. Also, some packaging is too excessive, such as five layers of packaging for an apple."
+        },
+        {
+          "turn": 4,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Yes, and students can also play a role here. We should take only what we actually need and avoid wasting food, paper, and other resources, by which we would also save money in the long run."
+        },
+        {
+          "turn": 5,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "If students bring their own bottles and cups, the university could reduce the amount of waste while students could develop more environmentally friendly habits. Another thing is more sustainable transportation. The university should build better bike paths, and provide more bike parking spaces, in order to encourage students to ride bikes with dual benefits, which is eco-friendly and great for their physical health."
+        },
+        {
+          "turn": 6,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "For students rushing between lectures, bicycles can cut their travel time. But there would be limited impact because few students own bikes. The university should establish a shared bicycle station."
+        },
+        {
+          "turn": 7,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "That sounds practical because students would not need to buy or maintain their own bicycles. They could simply rent a bike when they need one and return it after class."
+        },
+        {
+          "turn": 8,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "The university should also encourage carpooling, like having cheap parking to reward carpooling students or even free parking. It can also reduce the number of cars on campus and lower traffic congestion, especially during busy hours in the morning and afternoon."
+        },
+        {
+          "turn": 9,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "Yes, carpooling allows students to get together. Anyway, better public transport should also be considered, like buses or trains. If public transport is more convenient and reliable, students may be less dependent on private cars. This could make a bigger difference in the long term."
+        },
+        {
+          "turn": 10,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "We are a part of this green community, and should join in the eco-friendly movement. There are a lot of things to do, but we should start from small ones by ourselves, like bringing our own cups to the cafeteria, and carpooling."
+        }
+      ]
+    },
+    {
+      "id": "sgd-user-20261030-08",
+      "type": "sgd",
+      "title": "Adjusting to university life",
+      "sourceTextSha256": "24296fa2a3c5edc2fea8170e8ecf34b8f3a22d7439c63d5ba742e21e45ef2823",
+      "originalAudioSha256": "93e5f53d82ca390adeb81d5a4a67f7e353f06c2d02d14094328aebbc5f25087a",
+      "voiceCandidates": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 143,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "three students are discussing the new experience at university."
+        },
+        {
+          "turn": 1,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Hey everyone! Can't believe we've been at university for a month already. How's everyone feeling about it? I come from a small town where there wasn't much to do, mostly just watching movies or playing football with friends. But now that I'm here in the big city, everything feels so fresh and exciting."
+        },
+        {
+          "turn": 2,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "University life doesn't bring huge changes to me because I spent high school years in a big city. Students in high school organized activities and gatherings, but I wasn't of the outgoing type and seldom went out. I didn't enjoy social or entertainment activities."
+        },
+        {
+          "turn": 3,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "That is interesting. Personally, I believe the biggest challenge for freshmen is keeping a sensible balance between countless university activities and academic study. There are so many events both on campus and off campus, and many new students easily get overwhelmed by them."
+        },
+        {
+          "turn": 4,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Exactly. Now that I have moved to this big city, almost everything around me feels incredibly fresh and exciting. There are concerts, exhibitions and social events I could never access in my small hometown. I am eager to explore as much as I possibly can."
+        },
+        {
+          "turn": 5,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "To be honest, I rarely took part in those high school social or entertainment events. They never really appealed to me. My daily routine here works in my own way. I tend to go out and hang out with people during weekdays when my study pressure is relatively light."
+        },
+        {
+          "turn": 6,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "A lot of my classmates burn themselves out from too many activities. They end up feeling worn out, with little energy left to review lessons or finish homework. Some of them can only catch up on proper rest during weekends or official holidays."
+        },
+        {
+          "turn": 7,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Still, I realize there is a hidden risk. It is surprisingly easy for newcomers like me to get distracted by all these brand new attractions in the city. I have to remind myself frequently not to neglect my schoolwork while enjoying city life."
+        },
+        {
+          "turn": 8,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "I save most of my homework, laundry and house chores for weekends. If there is an invitation, I may join my friends' parties on Saturday nights. It serves as a nice little break after a full week of classes and casual outings."
+        },
+        {
+          "turn": 9,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "My strategy is to finish all my urgent study tasks immediately after class before I go out for fun. This way, I make sure important school assignments will never get delayed. Even so, I run into my own trouble, and I only plan short breaks, yet these breaks often stretch out and become far longer than expected."
+        }
+      ]
+    },
+    {
+      "id": "sgd-user-20261030-09",
+      "type": "sgd",
+      "title": "Presenting at a sociology conference",
+      "sourceTextSha256": "f52c22f97ae68306bd56f8d15279511018f5ab480b1b280e93ecb00dd16667eb",
+      "originalAudioSha256": "fb3c063ce479be37a508ec7c89b15d51291eba4caa39657cf07c143401d93de1",
+      "voiceCandidates": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 145,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Two students and a tutor are discussing their presentation at a sociology conference."
+        },
+        {
+          "turn": 1,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "There will be a great sociology conference taking place this summer, and I have been looking forward to this academic event for a long time. I really want to attend the conference and give a presentation about my research, because I can get valuable and professional feedback from many experienced scholars and peers."
+        },
+        {
+          "turn": 2,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "I totally feel the same way. I also hope to take part in this big academic presentation conference. So far, only two professors have watched and commented on our research, so we really need more external opinions. Luckily, there are many common points in our separate studies, so we plan to deliver a joint presentation together."
+        },
+        {
+          "turn": 3,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "I appreciate your enthusiasm for academic participation, but I have to be honest with you. I don't think it is a good idea for you two to deliver a formal oral presentation at such a professional conference, because neither of you has any related presentation experience, and it will be extremely challenging for new learners."
+        },
+        {
+          "turn": 4,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "We understand that oral presentations at formal conferences are very challenging for us. However, our research is still at the early stage, and attending this conference is a precious chance for us to practice and improve ourselves. A joint presentation can also make our research content more complete and logical."
+        },
+        {
+          "turn": 5,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "Exactly. We were actually planning to write a formal proposal and ask for your approval before deciding to attend the conference. We know our research still has many imperfections, so diverse feedback from the conference will be very helpful for our future revision and in-depth study."
+        },
+        {
+          "turn": 6,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "I have a more suitable suggestion for both of you. Instead of doing a stressful oral presentation, you can try poster presentation as observers this time. It is much less stressful, and you can still get useful feedback from passing participants and teachers at the conference."
+        },
+        {
+          "turn": 7,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "I think your suggestion about poster presentation is really good and practical. It perfectly matches our current academic level and research progress. I am fully prepared to start designing and preparing for our poster presentation seriously."
+        },
+        {
+          "turn": 8,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "I totally agree with this arrangement as well. Doing a joint poster presentation is definitely a wise choice for our early-stage research. It allows us to accumulate formal conference experience without too much pressure, and it can lay a solid foundation for our future oral presentations."
+        },
+        {
+          "turn": 9,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "That's great to hear. This low-pressure but high-reward participation method can help you gain academic insights, communicate with other researchers, and polish your research findings, which is far more suitable for your current situation."
+        }
+      ]
+    },
+    {
+      "id": "sgd-user-20261030-10",
+      "type": "sgd",
+      "title": "The new semester timetable",
+      "sourceTextSha256": "292e0c053c9fb39b5fafd161d08395a1e189e7918eb92f6862ad45dbd326f99c",
+      "originalAudioSha256": "cc7ddc380b61dfcf5a4866c74e1fd0b981add4b84728581344c6ea319b134c6a",
+      "voiceCandidates": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "voiceSelection": "pilot-listening-pending",
+      "paceWpm": [
+        155,
+        170
+      ],
+      "maximumSeconds": 180,
+      "minimumPossibleWpm": 154,
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Three students are discussing the new timetable for this semester."
+        },
+        {
+          "turn": 1,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Hey, guys! Have you checked out the timetable for the new semester yet? I just looked at mine this morning, and I found my schedule is really full this term. I've got several early morning classes, which means I have to get up really early almost every day. My new timetable is quite packed, leaving me little spare time in the morning."
+        },
+        {
+          "turn": 2,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "Yeah, I've also switched to a new timetable this semester. Most of my classes start at 9 a.m., and I have to say I really don't like this arrangement. I always feel so tired and sleepy in the morning, so I definitely need a cup of coffee before class to wake myself up, otherwise I can't focus at all. Getting up early every single day has already made me feel exhausted."
+        },
+        {
+          "turn": 3,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "Oh, well. I've checked my timetable, and it's quite different from both of yours. I don't have any very early morning classes; most of my classes are scheduled in the afternoon, which I really prefer. I have many seminars and lectures arranged throughout the daytime, but at least I don't need to rush out of bed in a hurry."
+        },
+        {
+          "turn": 4,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "Honestly, these early morning classes have completely messed up my daily routine. I'm not used to getting up so early, and I often feel distracted during the first lesson. It's tough to stay energetic and efficient when I haven't had enough rest in the morning."
+        },
+        {
+          "turn": 5,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "I totally agree with you. Morning classes are such a struggle for me. Even though my classes start at nine o'clock, I still need to get up early to wash up, have breakfast and walk to the teaching building. I basically rely on coffee to stay awake for my whole morning study."
+        },
+        {
+          "turn": 6,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "I'm really lucky in comparison. Having all my classes in the afternoon allows me to sleep longer in the morning and prepare well for my study. I can finish my revision, preview my courses and organize my notes calmly before heading to class."
+        },
+        {
+          "turn": 7,
+          "speaker": "Speaker 1",
+          "voiceCandidate": "marin",
+          "text": "I wish I could adjust my timetable a little bit. A fully packed schedule with non-stop morning classes makes my semester feel extremely busy and stressful. I barely have time to relax or do extra reading in the morning."
+        },
+        {
+          "turn": 8,
+          "speaker": "Speaker 2",
+          "voiceCandidate": "cedar",
+          "text": "Same here. I hope I can gradually get used to this early class routine later. Drinking coffee every morning is not a long-term solution, but for now, it's the only way for me to keep up with my study progress."
+        },
+        {
+          "turn": 9,
+          "speaker": "Speaker 3",
+          "voiceCandidate": "coral",
+          "text": "Although I don't have early classes, my afternoon seminars and lectures are intensive and require lots of concentration. Still, I think studying in the afternoon suits my personal study habit better, making my overall schedule more manageable and comfortable."
+        }
+      ]
+    },
+    {
+      "id": "ipt:hiw-c2-01",
+      "type": "hiw",
+      "sourceTextSha256": "223c5e13f24928e5a665bfb9c4c6278bbec010351d8f276104daa14e07909699",
+      "text": "Administrative standards are often defended as a means of insulating decisions from personal preference. Their legitimacy, however, remains contingent on the purposes they serve and the circumstances in which they are applied. A rule may constrain discretion without eliminating the judgement required to interpret an unusual case. Treating every classification as provisional does not entail abandoning consistency; it acknowledges that categories can obscure distinctions relevant to a defensible decision. The crucial question is whether departures from routine are authorised through reasons that others can examine. Where decisions are reversible, institutions can learn from objections without presenting every revision as an admission of incompetence. Accountability therefore depends on making interpretations contestable while preserving a coherent explanation of why comparable cases receive comparable treatment.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "Administrative standards are often defended as a means of insulating decisions from personal preference. Their legitimacy, however, remains inevitable on the purposes they serve and the circumstances in which they are applied. A rule may preclude discretion without eliminating the judgement required to interpret an unusual case. Treating every classification as definitive does not entail abandoning consistency; it acknowledges that categories can obscure distinctions relevant to a defensible decision. The crucial question is whether departures from routine are imposed through reasons that others can examine. Where decisions are irreversible, institutions can learn from objections without presenting every revision as an admission of incompetence. Accountability therefore depends on making interpretations incontestable while preserving a coherent explanation of why comparable cases receive comparable treatment.",
+      "preserveAnswerIndices": [
+        18,
+        35,
+        51,
+        78,
+        88,
+        109
+      ]
+    },
+    {
+      "id": "ipt:hiw-c2-02",
+      "type": "hiw",
+      "sourceTextSha256": "58a38eb4ad8d3c28e5fa601c647ea2f18a87c515876142823ad0595a528b7d9a",
+      "text": "A model can reproduce an observed pattern without establishing the mechanism that generated it. This distinction is particularly consequential when observational data are used to recommend an intervention. An association may persist because an unmeasured variable influences both the supposed cause and the outcome, leaving confounding unresolved. Even a statistically identifiable relationship need not remain invariant when the circumstances of its production change. The purpose of a useful model is consequently not to conceal these dependencies beneath a precise numerical prediction, but to specify which assumptions permit that prediction to travel. Its conclusions should remain conditional on those assumptions and receptive to evidence that exposes their limits. Precision becomes informative only when accompanied by scrutiny of what has been measured, what has been omitted, and what the analysis can legitimately support.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "A model can reproduce an observed pattern without establishing the mechanism that generated it. This distinction is particularly consequential when experimental data are used to recommend an intervention. An association may persist because an unmeasured variable influences both the supposed cause and the outcome, leaving corroboration unresolved. Even a statistically inevitable relationship need not remain incidental when the circumstances of its production change. The purpose of a useful model is consequently not to conceal these dependencies beneath a precise numerical prediction, but to specify which assumptions permit that prediction to travel. Its conclusions should remain categorical on those assumptions and receptive to evidence that exposes their limits. Precision becomes informative only when accompanied by deference of what has been measured, what has been omitted, and what the analysis can legitimately support.",
+      "preserveAnswerIndices": [
+        20,
+        45,
+        50,
+        55,
+        95,
+        114
+      ]
+    },
+    {
+      "id": "ipt:hiw-c2-03",
+      "type": "hiw",
+      "sourceTextSha256": "caa534b291cd0c10f4d7040b55745e9015337c24c54c418777498a9e0c94fcfb",
+      "text": "An archive is a selective residue of past activity rather than an exhaustive account of what occurred. Documents survive through decisions about preservation, institutional priorities and accidents of material durability. An apparent absence must therefore be interpreted in relation to the processes that produced the collection. Where a claim is corroborated by independent records, confidence may increase, but the provenance of each record still matters. Repetition can reflect a shared administrative source rather than several independent observations. Historians must also distinguish contingent gaps in documentation from the systematic exclusion of people whose experiences were seldom recorded. Silence cannot simply be converted into evidence of consent. A responsible interpretation remains provisional where the surviving material cannot discriminate between plausible explanations, while stating clearly which conclusions the available evidence does sustain.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "An archive is a comprehensive residue of past activity rather than an exhaustive account of what occurred. Documents survive through decisions about preservation, institutional priorities and accidents of material durability. An apparent absence must therefore be interpreted in relation to the processes that produced the collection. Where a claim is contradicted by independent records, confidence may increase, but the prominence of each record still matters. Repetition can reflect a shared administrative source rather than several independent observations. Historians must also distinguish intrinsic gaps in documentation from the systematic exclusion of people whose experiences were seldom recorded. Silence cannot simply be converted into evidence of dissent. A responsible interpretation remains conclusive where the surviving material cannot discriminate between plausible explanations, while stating clearly which conclusions the available evidence does sustain.",
+      "preserveAnswerIndices": [
+        4,
+        50,
+        59,
+        81,
+        104,
+        109
+      ]
+    },
+    {
+      "id": "ipt:hiw-c2-04",
+      "type": "hiw",
+      "sourceTextSha256": "72b6cccb734973c651dc64f549b38143bb326a6fbc0ca576d1dce64e546443ab",
+      "text": "The apparent stability of an ecosystem can obscure a gradual erosion of its capacity to absorb disturbance. A lake may retain familiar characteristics while accumulating pressures that bring it closer to a threshold. Because the response can involve nonlinearity, a modest additional disturbance may produce a disproportionate change. Restoration then becomes more complicated than merely reversing the final pressure: feedback within the altered system can perpetuate the new condition. This possibility does not make recovery futile, but it qualifies the assumption that degradation and restoration follow symmetrical paths. Effective management attends to early indications of diminishing resilience while acknowledging that their interpretation is uncertain. The objective is to preserve options for intervention before an apparently incremental process produces a transition whose consequences are difficult to reverse.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "The apparent stability of an ecosystem can obscure a gradual expansion of its capacity to absorb disturbance. A lake may retain familiar characteristics while accumulating pressures that bring it closer to a threshold. Because the response can involve uniformity, a modest additional disturbance may produce a proportionate change. Restoration then becomes more complicated than merely reversing the final pressure: feedback within the altered system can eliminate the new condition. This possibility does not make recovery futile, but it qualifies the assumption that degradation and restoration follow sequential paths. Effective management attends to early indications of increasing resilience while acknowledging that their interpretation is uncertain. The objective is to preserve options for intervention before an apparently incremental process produces a transition whose consequences are difficult to reverse.",
+      "preserveAnswerIndices": [
+        10,
+        38,
+        46,
+        65,
+        86,
+        95
+      ]
+    },
+    {
+      "id": "ipt:hiw-c2-05",
+      "type": "hiw",
+      "sourceTextSha256": "773cf11f34cde4ad70094b611b0e68cc4ec0fb077b8e0bcd00cc415378bf95a0",
+      "text": "A translation may be lexically accurate yet alter the relationship between a speaker and an audience. Forms of address, understated objections and strategically unresolved references carry pragmatic implications that cannot always be transferred through equivalent vocabulary. The translator must decide which ambiguities are incidental and which are constitutive of the original argument. Resolving every uncertainty can impose a clarity that the source deliberately withholds; reproducing every unfamiliar construction can make a coherent voice seem needlessly obscure. Fidelity consequently requires a negotiated balance between intelligibility and the preservation of meaningful difference. Such judgement is neither arbitrary nor reducible to a universal formula. It becomes defensible when the translator can explain how a particular choice sustains the force of an utterance, including what it insinuates without explicitly asserting.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "A translation may be lexically accurate yet alter the relationship between a speaker and an audience. Forms of address, understated objections and strategically unresolved references carry numerical implications that cannot always be transferred through equivalent vocabulary. The translator must decide which ambiguities are incidental and which are derivative of the original argument. Resolving every uncertainty can impose a clarity that the source deliberately supplies; reproducing every unfamiliar construction can make a coherent voice seem needlessly obscure. Fidelity consequently requires a negotiated balance between interchangeability and the preservation of meaningful difference. Such judgement is neither arbitrary nor reducible to a universal formula. It becomes indefensible when the translator can explain how a particular choice sustains the force of an utterance, including what it contradicts without explicitly asserting.",
+      "preserveAnswerIndices": [
+        26,
+        47,
+        63,
+        83,
+        103,
+        122
+      ]
+    },
+    {
+      "id": "ipt:hiw-c2-06",
+      "type": "hiw",
+      "sourceTextSha256": "9ec891ac0b1fff6dabfd471ae3a6c1151fd1d2d3518e2eb0124153951b01df15",
+      "text": "Inviting people to speak does not by itself ensure that their contributions receive equitable consideration. A participant may be formally included while the credibility of their testimony is discounted through assumptions about expertise or social standing. Conversely, familiar institutional language can confer authority on a claim whose evidential basis remains weak. Addressing this asymmetry requires more than an indiscriminate declaration that every statement deserves equal weight. It requires examining how credibility is allocated, what opportunities exist to challenge an interpretation, and whether participants possess the resources to make their experiences intelligible within the discussion. Deliberation improves when these conditions become explicit and revisable. The aim is neither automatic deference nor reflexive scepticism, but a process in which the reasons for accepting or rejecting a contribution can themselves be questioned.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "Inviting people to speak does not by itself ensure that their contributions receive identical consideration. A participant may be formally included while the credibility of their testimony is amplified through assumptions about expertise or social standing. Conversely, familiar institutional language can withdraw authority on a claim whose evidential basis remains weak. Addressing this uniformity requires more than an indiscriminate declaration that every statement deserves equal weight. It requires examining how credibility is allocated, what opportunities exist to challenge an interpretation, and whether participants possess the resources to make their experiences invisible within the discussion. Deliberation improves when these conditions become explicit and immutable. The aim is neither automatic deference nor reflexive scepticism, but a process in which the reasons for accepting or rejecting a contribution can themselves be questioned.",
+      "preserveAnswerIndices": [
+        13,
+        28,
+        41,
+        53,
+        90,
+        102
+      ]
+    },
+    {
+      "id": "ipt:hiw-c2-07",
+      "type": "hiw",
+      "sourceTextSha256": "d9f3d577e013eb9daa1ce064bfb6ae09481e158456f39bfd952d18ccb74b1c9a",
+      "text": "Infrastructure planning distributes opportunities across time as well as across space. A project that appears efficient under current assumptions may foreclose alternatives that later generations would have preferred. This does not imply that all irreversible investments should be deferred, since postponement also imposes costs and can entrench existing disadvantages. It does require distinguishing uncertainty about future demand from disagreement about whose interests should determine the decision. Appraisal becomes more transparent when these issues are articulated separately instead of being compressed into a single forecast. Where feasible, modular designs can preserve flexibility without requiring planners to predict every subsequent development. Their value lies partly in the options they retain, including the ability to revise a commitment when its original rationale no longer withstands public examination.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "Infrastructure planning distributes opportunities across time as well as across space. A project that appears efficient under current assumptions may facilitate alternatives that later generations would have preferred. This does not imply that all irreversible investments should be accelerated, since postponement also imposes costs and can eradicate existing disadvantages. It does require distinguishing uncertainty about future demand from disagreement about whose interests should determine the decision. Appraisal becomes more transparent when these issues are articulated collectively instead of being compressed into a single forecast. Where feasible, monolithic designs can preserve flexibility without requiring planners to predict every subsequent development. Their value lies partly in the options they relinquish, including the ability to revise a commitment when its original rationale no longer withstands public examination.",
+      "preserveAnswerIndices": [
+        20,
+        38,
+        46,
+        75,
+        86,
+        107
+      ]
+    },
+    {
+      "id": "ipt:hiw-c2-08",
+      "type": "hiw",
+      "sourceTextSha256": "68e6235e4c39e06c39047d1d8b1f275a0c83439eef7ee3bfd5da637b861b8da6",
+      "text": "Automated classification acquires an appearance of neutrality when its categories are presented as purely technical. Yet the choice of a target variable already embeds a judgement about which differences matter. A system trained to reproduce previous decisions may faithfully replicate patterns that an institution ought to reconsider. Evaluating its performance therefore requires attention to the provenance of the labels as well as the frequency of predictive errors. Aggregated accuracy can conceal uneven consequences for groups whose circumstances are inadequately represented in the training material. Accountability depends on making these limitations legible to those affected and providing a practicable route for contesting decisions. The central challenge is not simply to increase computational sophistication, but to ensure that the purposes governing classification remain explicit, revisable and answerable to public reasons.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "Automated classification acquires an appearance of partiality when its categories are presented as purely technical. Yet the choice of a target variable already excludes a judgement about which differences matter. A system trained to reproduce previous decisions may faithfully rectify patterns that an institution ought to reconsider. Evaluating its performance therefore requires attention to the provenance of the labels as well as the frequency of predictive errors. Aggregated accuracy can reveal uneven consequences for groups whose circumstances are inadequately represented in the training material. Accountability depends on making these limitations negligible to those affected and providing a practicable route for endorsing decisions. The central challenge is not simply to increase computational sophistication, but to ensure that the purposes governing classification remain explicit, revisable and answerable to public reasons.",
+      "preserveAnswerIndices": [
+        6,
+        23,
+        39,
+        70,
+        90,
+        100
+      ]
+    },
+    {
+      "id": "ipt:hiw-c2-09",
+      "type": "hiw",
+      "sourceTextSha256": "bbdadf037e0b27af16a61aeed2da69ea6436f79b33ea587d17610d15fef67901",
+      "text": "Conserving a historic building involves interpreting continuity rather than simply arresting change. Materials decay, functions evolve and successive alterations may acquire historical significance of their own. Restoring a structure to an imagined original condition can erase evidence of the very processes that make it valuable. Authenticity is therefore not exhausted by the survival of individual components; it also concerns the intelligibility of relationships between fabric, use and setting. This broader account does not license unrestricted redevelopment. It calls for a discriminating judgement about which interventions sustain the building's significance and which merely substitute a convenient narrative for its complexity. Documentation should make those judgements traceable, allowing later conservators to distinguish inherited features from deliberate additions and to reassess decisions whose assumptions may no longer be persuasive.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "Conserving a historic building involves interpreting continuity rather than simply accelerating change. Materials decay, functions evolve and successive alterations may acquire historical significance of their own. Restoring a structure to an imagined original condition can authenticate evidence of the very processes that make it valuable. Authenticity is therefore not enhanced by the survival of individual components; it also concerns the intelligibility of relationships between fabric, use and setting. This broader account does not license provisional redevelopment. It calls for a indiscriminate judgement about which interventions sustain the building's significance and which merely substitute a convenient narrative for its complexity. Documentation should make those judgements irretrievable, allowing later conservators to distinguish inherited features from deliberate additions and to reassess decisions whose assumptions may no longer be persuasive.",
+      "preserveAnswerIndices": [
+        10,
+        35,
+        49,
+        74,
+        80,
+        104
+      ]
+    },
+    {
+      "id": "ipt:hiw-c2-10",
+      "type": "hiw",
+      "sourceTextSha256": "f7091104a2c6ffdd10025400c88056530a84f9ce02563d849acac323ac88d9f1",
+      "text": "A public programme may satisfy its numerical targets while failing to realise the purpose for which those targets were introduced. Once an indicator becomes consequential for funding, organisations have an incentive to optimise what is counted, even when doing so displaces less measurable responsibilities. This divergence is not an inevitable consequence of quantification, but it reveals the danger of treating a proxy as an exhaustive definition of success. Evaluation should examine how reported improvements were produced and whether their benefits endure beyond the reporting interval. Independent scrutiny and qualitative evidence can expose achievements that are nominal rather than substantive. A credible assessment preserves the usefulness of measurement while keeping its categories subordinate to the public purposes they are meant to illuminate, rather than allowing the categories themselves to dictate those purposes.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "A public programme may satisfy its numerical targets while failing to relinquish the purpose for which those targets were introduced. Once an indicator becomes consequential for funding, organisations have an incentive to optimise what is counted, even when doing so reinforces less measurable responsibilities. This divergence is not an inevitable consequence of quantification, but it reveals the danger of treating a prerequisite as an exhaustive definition of success. Evaluation should examine how reported improvements were produced and whether their benefits dissipate beyond the reporting interval. Independent scrutiny and qualitative evidence can expose achievements that are substantial rather than substantive. A credible assessment preserves the usefulness of measurement while keeping its categories indifferent to the public purposes they are meant to illuminate, rather than allowing the categories themselves to dictate those purposes.",
+      "preserveAnswerIndices": [
+        11,
+        40,
+        61,
+        80,
+        95,
+        111
+      ]
+    },
+    {
+      "id": "ipt:hiw-11",
+      "type": "hiw",
+      "sourceTextSha256": "65e287dad66e5002ca5fe6aefeb24d1e209e3c81f6f1e78199b8b64c67df6a7d",
+      "text": "Planting trees can reduce the temperature of a city street, but the benefits depend on more than the number of saplings installed. A continuous canopy provides shade along an entire walking route, whereas isolated trees may leave long stretches exposed. Planners must therefore consider where people actually travel and where heat is most persistent. Maintenance is equally important: restricted roots and inadequate watering can undermine an otherwise ambitious planting programme. Residents may also value open space for markets, games and community events, so the design must accommodate several uses. Successful projects combine local knowledge with careful observation of seasonal conditions. Their performance should be evaluated through changes in comfort and access over time, rather than through planting totals alone, because survival and distribution determine who ultimately benefits.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "Planting trees can reduce the temperature of a city street, but the benefits depend on more than the number of saplings installed. A fragmented canopy provides shade along an entire walking route, whereas isolated trees may leave long stretches sheltered. Planners must therefore consider where people actually travel and where heat is most temporary. Maintenance is equally important: restricted roots and inadequate watering can reinforce an otherwise ambitious planting programme. Residents may also value open space for markets, games and community events, so the design must exclude several uses. Successful projects combine local knowledge with careful observation of seasonal conditions. Their performance should be evaluated through changes in comfort and access over time, rather than through planting totals alone, because survival and uniformity determine who ultimately benefits.",
+      "preserveAnswerIndices": [
+        23,
+        39,
+        53,
+        64,
+        86,
+        122
+      ]
+    },
+    {
+      "id": "ipt:hiw-12",
+      "type": "hiw",
+      "sourceTextSha256": "1fd205591c148b1e85e327261faf2ca5c4d72bde9f74d605d06e8b70f80ade0c",
+      "text": "Repeating a scientific study is sometimes treated as a straightforward test of whether the original researchers were correct. In practice, replication requires careful attention to the conditions under which a finding was produced. Differences in equipment, participants or measurement procedures can influence the result without implying misconduct. Researchers should make these differences explicit and distinguish a failure to reproduce an effect from evidence that the effect is impossible. A useful replication may reveal that an apparent general principle depends on a narrower set of circumstances. This discovery can refine a theory rather than simply discredit it. Open methods and accessible data allow others to examine competing explanations, while several independent investigations provide a stronger basis for judgement than a single dramatic success or failure reported in isolation.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "Repeating a scientific study is sometimes treated as a straightforward test of whether the original researchers were correct. In practice, replication requires casual attention to the conditions under which a finding was produced. Differences in equipment, participants or measurement procedures can guarantee the result without implying misconduct. Researchers should make these differences implicit and distinguish a failure to reproduce an effect from evidence that the effect is impossible. A useful replication may reveal that an apparent general principle depends on a broader set of circumstances. This discovery can abandon a theory rather than simply discredit it. Open methods and accessible data allow others to examine competing explanations, while several dependent investigations provide a stronger basis for judgement than a single dramatic success or failure reported in isolation.",
+      "preserveAnswerIndices": [
+        22,
+        41,
+        52,
+        81,
+        88,
+        109
+      ]
+    },
+    {
+      "id": "ipt:hiw-13",
+      "type": "hiw",
+      "sourceTextSha256": "8f04c60a2e0fa4e62cbe7e2231c28865a5306647e41c5d0de59f81f2fddb2502",
+      "text": "A product that can be repaired easily may remain useful long after its original warranty has expired. Yet repairability is determined partly by decisions made before manufacturing begins. Components joined with removable fasteners are generally more accessible than those sealed permanently inside a casing. Clear documentation also matters, since a replacement part has limited value if technicians cannot identify the fault. Manufacturers may argue that a compact design improves performance, but this advantage must be weighed against the costs of premature disposal. Designing for repair does not require every component to last indefinitely. Instead, it allows predictable failures to be addressed without discarding the whole device. Such an approach can conserve materials while supporting local services, provided that spare parts and reliable information remain available throughout the product's working life.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "A product that can be repaired easily may remain useful long after its original warranty has expired. Yet repairability is determined partly by decisions made before manufacturing begins. Components joined with permanent fasteners are generally more concealed than those sealed permanently inside a casing. Clear documentation also matters, since a replacement part has limited value if technicians cannot conceal the fault. Manufacturers may argue that a compact design improves performance, but this advantage must be weighed against the costs of delayed disposal. Designing for repair does not require every component to last indefinitely. Instead, it allows predictable failures to be addressed without preserving the whole device. Such an approach can exhaust materials while supporting local services, provided that spare parts and reliable information remain available throughout the product's working life.",
+      "preserveAnswerIndices": [
+        31,
+        36,
+        58,
+        80,
+        102,
+        110
+      ]
+    },
+    {
+      "id": "ipt:hiw-14",
+      "type": "hiw",
+      "sourceTextSha256": "3bf374d09b85f843031adcd83d47d3c4a95b87c493e784f5e98a44bd9590a468",
+      "text": "Restoring a coastal wetland involves more than planting vegetation in an area that has lost its original habitat. Water must move through the landscape at suitable intervals, carrying sediment and creating conditions in which different species can establish themselves. If an old embankment continues to restrict tidal flow, newly planted vegetation may struggle despite intensive maintenance. Restoration teams therefore begin by investigating the physical processes that sustain the habitat. They also consider neighbouring communities, whose access routes or drainage systems may be affected by proposed changes. A successful project balances ecological recovery with these practical concerns and monitors outcomes over several seasons. Early fluctuations do not necessarily indicate failure, because living systems respond unevenly and may require time to develop the diversity and structure of an established wetland.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "Restoring a coastal wetland involves more than planting vegetation in an area that has lost its original habitat. Water must move through the landscape at identical intervals, carrying sediment and creating conditions in which different species can establish themselves. If an old embankment continues to expand tidal flow, newly planted vegetation may struggle despite intensive maintenance. Restoration teams therefore begin by investigating the physical processes that destabilise the habitat. They also consider neighbouring communities, whose access routes or drainage systems may be affected by proposed changes. A successful project separates ecological recovery with these practical concerns and monitors outcomes over several seasons. Early fluctuations do not necessarily indicate failure, because living systems respond uniformly and may require time to develop the simplicity and structure of an established wetland.",
+      "preserveAnswerIndices": [
+        25,
+        45,
+        66,
+        89,
+        113,
+        121
+      ]
+    },
+    {
+      "id": "ipt:hiw-15",
+      "type": "hiw",
+      "sourceTextSha256": "f412eb8f807b86aba7e89b86343b6f81479e7f0a66797a420c312a5e6fbdb79d",
+      "text": "Reading a familiar page can create a strong impression that its contents have been learned. However, recognition while the information remains visible is different from retrieving it without assistance. Students who close the book and attempt to explain an idea may discover gaps that repeated reading had concealed. These difficulties can be useful because they identify what needs further attention. Effective retrieval practice includes feedback, allowing mistaken answers to be corrected before they become established. It also benefits from spacing, with material revisited after an interval instead of rehearsed continuously in a single sitting. The aim is not to make every practice attempt effortless. Some manageable difficulty can strengthen later recall, provided that the learner eventually reaches an accurate understanding and connects individual facts to a coherent explanation.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "Reading a familiar page can create a strong impression that its contents have been learned. However, recognition while the information remains hidden is different from retrieving it without assistance. Students who close the book and attempt to explain an idea may discover gaps that repeated reading had revealed. These difficulties can be useful because they identify what needs further attention. Effective retrieval practice includes feedback, allowing mistaken answers to be repeated before they become established. It also benefits from spacing, with material revisited after an interval instead of rehearsed occasionally in a single sitting. The aim is not to make every practice attempt demanding. Some manageable difficulty can weaken later recall, provided that the learner eventually reaches an accurate understanding and connects individual facts to a coherent explanation.",
+      "preserveAnswerIndices": [
+        21,
+        47,
+        70,
+        89,
+        103,
+        108
+      ]
+    },
+    {
+      "id": "ipt:hiw-16",
+      "type": "hiw",
+      "sourceTextSha256": "76dd3d0c1951aa3cc666e22c43b29ed14635a1eb4eebc5d022435c5f601f6b8c",
+      "text": "A museum label may appear to offer a neutral description of an object, yet its selection of details directs the visitor's attention. Naming a maker, explaining a technique or describing an object's journey into the collection can produce quite different interpretations. Curators increasingly consult communities whose knowledge was excluded from earlier displays. This collaboration can reveal meanings that are absent from written catalogues, although agreement should not be assumed simply because consultation has occurred. Different contributors may understand the same object through distinct histories and responsibilities. A thoughtful exhibition makes these perspectives visible while explaining the evidence behind particular claims. Its purpose is not to remove all uncertainty, but to help visitors recognise how knowledge is assembled and why an apparently familiar object may support more than one account.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "A museum label may appear to offer a selective description of an object, yet its selection of details directs the visitor's attention. Naming a maker, explaining a technique or describing an object's journey into the collection can produce quite different interpretations. Curators increasingly consult communities whose knowledge was included from earlier displays. This collaboration can reveal meanings that are abundant from written catalogues, although agreement should not be assumed simply because consultation has occurred. Different contributors may understand the same object through identical histories and responsibilities. A thoughtful exhibition makes these perspectives invisible while explaining the evidence behind particular claims. Its purpose is not to remove all certainty, but to help visitors recognise how knowledge is assembled and why an apparently familiar object may support more than one account.",
+      "preserveAnswerIndices": [
+        8,
+        48,
+        59,
+        82,
+        92,
+        107
+      ]
+    },
+    {
+      "id": "ipt:hiw-17",
+      "type": "hiw",
+      "sourceTextSha256": "629555384bd9beb7fc652b96c9f2c6368e4d1df292932a80e4083ed38f0e6cc5",
+      "text": "Extending public transport into the night can improve access to employment, especially for people whose shifts begin or end outside ordinary commuting hours. Nevertheless, a timetable alone does not guarantee a useful service. Connections must be coordinated, waiting areas should feel secure, and information needs to remain available when staffing is reduced. A route with modest passenger numbers may still provide substantial value if it links workers to a hospital or a distribution centre. Evaluating such services only through average occupancy can overlook these wider benefits. Transport planners therefore examine who depends on each connection and what alternatives are realistically affordable. The challenge is to design a reliable network within limited resources, using evidence from actual journeys rather than assuming that daytime travel patterns continue unchanged throughout the night.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "Extending public transport into the night can restrict access to employment, especially for people whose shifts begin or end outside ordinary commuting hours. Nevertheless, a timetable alone does not guarantee a useful service. Connections must be separated, waiting areas should feel exposed, and information needs to remain available when staffing is reduced. A route with modest passenger numbers may still provide negligible value if it links workers to a hospital or a distribution centre. Evaluating such services only through average occupancy can capture these wider benefits. Transport planners therefore examine who depends on each connection and what alternatives are realistically affordable. The challenge is to design a reliable network within limited resources, using evidence from actual journeys rather than assuming that daytime travel patterns continue reversed throughout the night.",
+      "preserveAnswerIndices": [
+        7,
+        36,
+        41,
+        61,
+        82,
+        125
+      ]
+    },
+    {
+      "id": "ipt:hiw-18",
+      "type": "hiw",
+      "sourceTextSha256": "989b63ae3b27699c7ee57d4a3262a98f40e826d9325fdf191d9ebc80f42ca638",
+      "text": "Seed collections provide a reserve of plant diversity that may become valuable when growing conditions change. Their usefulness, however, depends on how representative and well documented the stored material is. Collecting many seeds from a small number of closely related plants can create an impressive inventory while preserving relatively little genetic variation. Collectors therefore sample across populations and record the environments in which the plants were found. Storage also requires continuing attention, because seeds differ in their tolerance of drying and gradually lose viability. Periodic testing helps staff decide when a collection must be renewed. These facilities complement conservation in natural habitats rather than replacing it, since an isolated seed cannot preserve all the relationships between a plant, its pollinators, the soil and the surrounding ecological community.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "Seed collections provide a reserve of plant diversity that may become valuable when growing conditions change. Their usefulness, however, depends on how repetitive and well documented the stored material is. Collecting many seeds from a small number of closely related plants can create an impressive inventory while preserving relatively extensive genetic variation. Collectors therefore sample within populations and record the environments in which the plants were found. Storage also requires continuing attention, because seeds differ in their tolerance of drying and gradually gain viability. Periodic testing helps staff decide when a collection must be abandoned. These facilities supplant conservation in natural habitats rather than replacing it, since an isolated seed cannot preserve all the relationships between a plant, its pollinators, the soil and the surrounding ecological community.",
+      "preserveAnswerIndices": [
+        22,
+        49,
+        55,
+        82,
+        94,
+        97
+      ]
+    },
+    {
+      "id": "ipt:hiw-19",
+      "type": "hiw",
+      "sourceTextSha256": "59707f217343f25a7ab72dc6a775f4a6e059453b8728be360d053a6447dcd849",
+      "text": "Converting public records into digital files can make information easier to locate, but accessibility is not achieved simply by scanning documents. Search systems depend on accurate descriptions, readable text and consistent information about when and how each record was created. A badly indexed collection can remain effectively invisible even when every page is online. Long term preservation presents another challenge, because software formats and storage systems eventually become obsolete. Institutions need procedures for checking files, migrating them to suitable formats and documenting any changes made during that process. They must also consider which personal details should be restricted and which records serve a legitimate public interest. The objective is durable and intelligible access, supported by clear responsibilities, rather than the rapid accumulation of files that nobody can reliably interpret.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "Converting public records into digital files can make information easier to locate, but accessibility is not achieved simply by scanning documents. Search systems depend on approximate descriptions, readable text and consistent information about when and how each record was created. A badly indexed collection can remain effectively prominent even when every page is online. Long term preservation presents another challenge, because software formats and storage systems eventually become permanent. Institutions need procedures for checking files, migrating them to suitable formats and concealing any changes made during that process. They must also consider which personal details should be advertised and which records serve a legitimate public interest. The objective is durable and ambiguous access, supported by clear responsibilities, rather than the rapid accumulation of files that nobody can reliably interpret.",
+      "preserveAnswerIndices": [
+        25,
+        47,
+        68,
+        81,
+        97,
+        111
+      ]
+    },
+    {
+      "id": "ipt:hiw-20",
+      "type": "hiw",
+      "sourceTextSha256": "d4aab7e47fd684a3c0c8803608f295eb1783b3de1c789d7e9f8792fabbb976f1",
+      "text": "A river connects places that may be governed by different authorities and used for competing purposes. An action that improves conditions in one location can transfer a problem downstream, especially when drainage works accelerate the movement of water. Managing the catchment as a connected system therefore requires cooperation beyond individual property boundaries. Farmers, residents and local agencies may agree on the need to reduce flooding while disagreeing about where water should be retained. Evidence about soils, rainfall and land use can clarify the available options, but it does not eliminate questions about how costs are shared. Effective planning makes these tradeoffs explicit and revisits decisions as conditions change. It also recognises that small interventions can have cumulative effects, so their combined consequences matter as much as the performance of any single project.",
+      "voiceCandidate": "marin",
+      "paceWpm": [
+        150,
+        165
+      ],
+      "preserveDisplayedPassage": "A river connects places that may be governed by different authorities and used for identical purposes. An action that improves conditions in one location can transfer a problem downstream, especially when drainage works impede the movement of water. Managing the catchment as a connected system therefore requires competition beyond individual property boundaries. Farmers, residents and local agencies may agree on the need to reduce flooding while disagreeing about where water should be released. Evidence about soils, rainfall and land use can clarify the available options, but it does not eliminate questions about how costs are shared. Effective planning makes these tradeoffs implicit and revisits decisions as conditions change. It also recognises that small interventions can have isolated effects, so their combined consequences matter as much as the performance of any single project.",
+      "preserveAnswerIndices": [
+        14,
+        33,
+        47,
+        72,
+        101,
+        116
+      ]
+    }
+  ]
+}
