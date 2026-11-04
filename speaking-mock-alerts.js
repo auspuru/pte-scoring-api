@@ -4,7 +4,7 @@ const {createJobs,createWorker,stage,disposition,hash}=require('./scoring-jobs')
 const VERSION='speaking-admin-alert-v1',TEN_MINUTES=10*60000;
 const LABELS={ra:'Read Aloud',rs:'Repeat Sentence',di:'Describe Image',rl:'Retell Lecture',sgd:'Summarise Group Discussion',rts:'Respond to a Situation'};
 const clean=(value,max=120)=>String(value||'').replace(/[\r\n<>]/g,' ').slice(0,max);
-const complete=a=>a?.status==='submitted'&&report.summarize(a).azure.status==='assessed';
+const complete=a=>!require('./speaking-mock-submission').blocked(a)&&a?.status==='submitted'&&report.summarize(a).azure.status==='assessed';
 function smtpFailure(error){
   const response=Number(error?.responseCode),command=String(error?.command||'').toUpperCase();
   const code=error?.code==='EAUTH'?'SMTP_AUTH':Number.isInteger(response)?'SMTP_'+response:/^(ECONNECTION|ESOCKET|ETIMEDOUT|EDNS)$/.test(error?.code||'')?error.code:'SMTP_UNCONFIRMED';

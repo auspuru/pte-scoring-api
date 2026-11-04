@@ -56,7 +56,7 @@
       a=null;release();stopPolling();env.PortalExamMode?.set(OWNER,false,host);
       shell('<div class="sm-hub"><h2>'+(options.history?'Saved speaking mocks':'Speaking mock test')+'</h2><p>A timed speaking paper with saved prompt recordings and one chance to record each answer.</p>'
         +(options.history?'':catalog.papers.filter(p=>!options.paperId||p.id===options.paperId).map(p=>'<article class="sm-paper"><h3>'+esc(p.title)+'</h3><p>'+esc(p.scope)+'</p><p>'+p.questionCount+' scored questions · about '+p.minutes+' minutes · unscored introduction</p><p>Use headphones and a working microphone. Questions play once. Review your saved responses and feedback after the test.</p><button class="portal-button primary" data-sm="start" data-paper="'+esc(p.id)+'">Start speaking mock</button></article>').join(''))
-        +'<h3>Your saved attempts</h3><div class="ipr-history-grid">'+history.map(row=>layout.historyCard({title:row.title,at:row.startedAt,status:row.status==='active'?'In progress':row.resultsReady===false?'Assessing':'Completed',score:row.speakingReport?.azure?.status==='assessed'?row.speakingReport.azure.overallScore:null,actions:'<button class="portal-button" data-sm="resume" data-id="'+esc(row.id)+'">'+(row.status==='active'?'Continue':row.resultsReady===false?'View status':'Score report')+'</button>'+(row.status==='submitted'?'<button class="portal-button" data-sm="reattempt" data-id="'+esc(row.id)+'">Reattempt</button>':'')})).join('')+'</div>' +'<p id="sm-notice" role="status"></p></div>');
+        +'<h3>Your saved attempts</h3><div class="ipr-history-grid">'+history.map(row=>layout.historyCard({title:row.title,at:row.startedAt,status:row.resultStatus?.status==='finalizing'?'Saving recording':row.resultStatus?.status==='incomplete'?'Submission incomplete':row.status==='active'?'In progress':row.resultsReady===false?'Assessing':'Completed',score:row.speakingReport?.azure?.status==='assessed'?row.speakingReport.azure.overallScore:null,actions:'<button class="portal-button" data-sm="resume" data-id="'+esc(row.id)+'">'+(row.status==='active'?'Continue':row.resultsReady===false?'View status':'Score report')+'</button>'+(row.status==='submitted'?'<button class="portal-button" data-sm="reattempt" data-id="'+esc(row.id)+'">Reattempt</button>':'')})).join('')+'</div>' +'<p id="sm-notice" role="status"></p></div>');
     }
     async function microphone(){
       if(stream)return;if(!env.MediaRecorder||!env.navigator?.mediaDevices?.getUserMedia)throw Error('This browser cannot record microphone audio. Use a supported browser for the speaking mock.');stream=await env.navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false});
@@ -115,6 +115,7 @@
     async function resume(id){
       if(busy)return;startCue.unlock();busy=true;const ticket=serial;
       try{const saved=await api('/attempts/'+id);if(!valid(ticket))return;
+        if(saved.resultStatus?.status==='finalizing'){a=saved;await retryPending();release();results();return;}
         if(saved.status==='active'){const ready=await env.PortalExamMode.prepare(OWNER,host,{immediate:true});if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}}
         a=saved;selected=null;reportFilter='all';reportSection='overview';responsePane='feedback';reviewSignature='';
         if(a.status==='active'){const blob=await pending('get',key(a.id,a.index));if(blob){done.add(key(a.id,a.index));await upload(blob,a.id,a.index);}await begin();}else{startCue.close();results();}
@@ -122,19 +123,19 @@
       finally{busy=false;}
     }
     async function begin(){
-      if(a.status!=='active'){results();return;}
+      if(a.status!=='active'||a.submission){results();return;}
       const fresh=a.timing.phase==='ready';if(fresh)a=await api('/attempts/'+a.id+'/begin',{index:a.index,timingVersion:2});
       flow={key:key(a.id,a.index),leadUntil:localNow()+(fresh?3000:Math.max(0,a.timing.audioAt-now())),fresh,ended:a.timing.playbackDriven&&a.timing.prepAt!=null,prepUntil:null,finishing:false};
       notice='';renderExam();protectedMode();stopTimer();timer=env.setInterval(tick,100);tick();
     }
     function renderExam(){
       const q=a.question;
-      shell('<div class="sm-exam"><header class="sm-exam-header"><strong>IPT Brisbane · Speaking</strong><div><span><small id="sm-clock-label">This question</small> <span id="sm-time"></span></span><span>Item '+(a.index+1)+' of '+a.totalItems+'</span><label class="sm-volume">Volume <input id="sm-volume" aria-label="Mock volume" type="range" min="0" max="1" step="0.05" value="'+volume+'"></label></div></header>'
+      shell('<div class="sm-exam"><header class="sm-exam-header"><strong>IPT Brisbane · Speaking</strong><div><span class="sm-overall-clock"><small>Overall time remaining</small> <span id="sm-overall-time" role="timer"></span></span><span><small id="sm-clock-label">This question</small> <span id="sm-time"></span></span><span>Item '+(a.index+1)+' of '+a.totalItems+'</span><label class="sm-volume">Volume <input id="sm-volume" aria-label="Mock volume" type="range" min="0" max="1" step="0.05" value="'+volume+'"></label></div></header>'
         +'<main class="sm-exam-main"><p class="sm-instructions">'+esc(q.instruction)+'</p><div class="sm-question '+(q.type==='di'?'sm-visual':'')+'">'
         +'<div class="sm-stimulus">'+(q.type==='di'&&q.title?'<h2 class="sm-image-title">'+esc(q.title)+'</h2>':'')+(q.text?'<p class="sm-passage">'+esc(q.text)+'</p>':'')+(q.imageUrl?'<button type="button" class="sm-exam-image" data-sm="zoom-image" aria-label="Enlarge question image">'+images.image(q)+'</button><button type="button" class="portal-button sm-image-enlarge" data-sm="zoom-image">Enlarge image</button>'+images.legend(q):'')+'</div>'
         +'<div class="sm-controls">'+(q.audioUrl?'<section class="sm-audio-panel" aria-label="Prompt audio"><div>Status: <span id="sm-audio-status">Beginning shortly</span></div><div class="sm-bar"><span id="sm-audio-bar"></span></div></section>':'')
         +'<section class="sm-record-panel" aria-label="Recorded answer"><strong>Recorded Answer</strong><p>Current Status:</p><div id="sm-preparation-status" role="status"></div><div id="sm-record-status" role="status" aria-live="polite">Beginning shortly</div><div class="sm-bar"><span id="sm-record-bar"></span></div></section></div></div>'
-        +'<p id="sm-notice" role="status">'+esc(notice)+'</p><button class="portal-button" data-sm="play" id="sm-play" hidden>Play remaining audio</button><button class="portal-button" data-sm="upload" id="sm-upload" hidden>Retry saving recording</button></main>'
+        +'<p id="sm-time-warning" role="status" aria-live="polite"></p><p id="sm-notice" role="status">'+esc(notice)+'</p><button class="portal-button" data-sm="play" id="sm-play" hidden>Play remaining audio</button><button class="portal-button" data-sm="upload" id="sm-upload" hidden>Retry saving recording</button></main>'
         +'<footer class="sm-exam-footer"><span>'+esc(q.type==='intro'?'Personal Introduction · Not scored':labels[q.type])+'</span><button type="button" class="sm-next" data-sm="next" id="sm-next">Next <span aria-hidden="true">➜</span></button></footer><dialog id="sm-image-dialog" class="sm-image-dialog" aria-label="Full-size question image"></dialog></div>');
     }
     function beep(){try{if(!context)return;const tone=context.createOscillator(),gain=context.createGain();tone.frequency.value=1000;gain.gain.value=.07*volume;tone.connect(gain);gain.connect(context.destination);tone.start();tone.stop(context.currentTime+.12);}catch{}}
@@ -186,6 +187,9 @@
     }
     function tick(){
       if(!a||a.status!=='active')return;
+      const overallLeft=Math.max(0,a.deadline-now()),overall=doc.getElementById('sm-overall-time');if(overall)overall.textContent=clock(overallLeft/1000);
+      const warning=overallLeft<=60000?'One minute or less remains in this mock.':overallLeft<=300000?'Five minutes or less remain in this mock.':'';
+      const warningNode=doc.getElementById('sm-time-warning');if(warningNode&&warningNode.textContent!==warning)warningNode.textContent=warning;
       if(now()>=a.deadline)return finishAtDeadline();
       if(env.PortalExamMode?.isLocked(OWNER))return;
       const t=a.timing,current=now(),q=a.question,captureKey=key(a.id,a.index);
@@ -249,7 +253,7 @@
         capture=null;recordingPromise=null;if(a.status==='submitted'){release();results();}else await begin();
       }catch(error){message(error.message);}finally{busy=false;if(button){button.disabled=false;button.innerHTML='Next <span aria-hidden="true">➜</span>';}}
     }
-    async function refresh(){const ticket=serial,saved=await api('/attempts/'+a.id);if(!valid(ticket))return;a=saved;if(a.status==='submitted'){release();results();}else{renderExam();protectedMode();tick();}}
+    async function refresh(){const ticket=serial,saved=await api('/attempts/'+a.id);if(!valid(ticket))return;a=saved;if(a.status==='submitted'||a.submission){release();results();}else{renderExam();protectedMode();tick();}}
     function score(trait){return trait?.score==null?'—':esc(trait.score)+'/5'+(trait.manualOverride?' (manual override)':'');}
     const setMarkup=(node,markup)=>{if(node&&node.innerHTML!==markup)node.innerHTML=markup;};
     const answers=()=>a?.responses?.filter(r=>r.question.type!=='intro')||[];
@@ -285,13 +289,24 @@
       }
       const provider=doc.getElementById('sm-overview-provider');if(provider)provider.value=reportProvider;
     }
+    async function retryPending(){
+      const id=a.id,ticket=serial,indices=a.resultStatus?.pendingUploads||[];
+      for(const index of indices){const localKey=key(id,index),blob=await pending('get',localKey);if(!valid(ticket)||a?.id!==id)return;if(blob)await upload(blob,id,index);}
+    }
     function preparing(){
-      shell('<div class="sm-results"><header class="sm-results-heading"><div><h2>'+esc(a.title)+'</h2><p id="sm-preparing-status" role="status" aria-live="polite">Preparing your results. Please wait.</p></div><button class="portal-button" data-sm="history">Saved speaking mocks</button></header><p>Your answers are saved. Results may take around 5–10 minutes. This page will open your complete report automatically. You can leave and return later.</p><p id="sm-preparing-progress" class="sm-muted"></p><p id="sm-notice" role="status"></p></div>');
-      updatePreparing();pollResults();
+      shell('<div class="sm-results"><header class="sm-results-heading"><div><h2>'+esc(a.title)+'</h2><p id="sm-preparing-status" role="status" aria-live="polite">Preparing your results. Please wait.</p></div><button class="portal-button" data-sm="history">Saved speaking mocks</button></header><p id="sm-preparing-help">Your answers are saved. Results may take around 5–10 minutes. This page will open your complete report automatically. You can leave and return later.</p><p id="sm-preparing-progress" class="sm-muted"></p><button class="portal-button" id="sm-reconcile-upload" data-sm="reconcile-upload" hidden>Retry saving pending recording</button><p id="sm-notice" role="status"></p></div>');
+      updatePreparing();if(a.resultStatus?.status!=='incomplete')pollResults();
     }
     function updatePreparing(){
       const progress=a.resultStatus||{},node=doc.getElementById('sm-preparing-progress'),status=doc.getElementById('sm-preparing-status');
       if(node)node.textContent=progress.accountedFor==null?'':progress.accountedFor+' of '+progress.total+' questions accounted for.';
+      const waiting=progress.status==='finalizing',incomplete=progress.status==='incomplete',retry=doc.getElementById('sm-reconcile-upload');if(retry)retry.hidden=!waiting;
+      if(waiting||incomplete){
+        if(status)status.textContent=waiting?'Time is up. Finishing your recording upload…':'Submission incomplete — no final score published.';
+        const help=doc.getElementById('sm-preparing-help');if(help)help.textContent=waiting?'No new answers can begin. Keep this page open while your existing recording is saved.':'Your saved recordings are retained. A final score has not been published. Contact IPT Brisbane and keep this device’s saved data.';
+        if(node)node.textContent=(waiting?progress.pendingUploads:progress.missingUploads)?.length+' recording upload(s) '+(waiting?'pending.':'missing.')+(!waiting&&progress.unattemptedQuestions?.length?' '+progress.unattemptedQuestions.length+' question(s) were not reached before time expired.':'');
+        if(incomplete)stopPolling();return;
+      }
       if(status)status.textContent=progress.delayed?'Your results are taking longer than usual. Your answers are saved; we are checking the remaining assessments.':'Preparing your results. Please wait.';
     }
     function results(){
@@ -381,6 +396,7 @@
       if(data.sm==='start')return start(data.paper);
       if(data.sm==='reattempt')return start(null,data.id);
       if(data.sm==='resume')return resume(data.id);
+      if(data.sm==='reconcile-upload'){if(busy)return;busy=true;try{await retryPending();await refresh();}catch(error){message(error.message);}finally{busy=false;}return;}
       if(data.sm==='next')return next();
       if(data.sm==='section'){if(['overview','answers','analysis','next'].includes(data.section)){reportSection=data.section;updateReportState();if(reportSection==='next')updateNextSteps();}return;}
       if(data.sm==='response-pane'){if(['feedback','transcript','sample'].includes(data.pane)){responsePane=data.pane;refreshReviewFeedback();doc.getElementById('sm-response-tab-'+data.pane)?.focus?.({preventScroll:true});}return;}

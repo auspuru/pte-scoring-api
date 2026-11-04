@@ -36,6 +36,7 @@ function snapshot(engine,a,record){
     const failures=(a.events||[]).filter(row=>['media-failure','microphone-interrupted','local-storage-failure'].includes(row.reason));
     base.mediaError=failures.length>0;base.mediaErrorAt=Math.max(0,...failures.map(row=>Number(row.receivedAt)||0));
   }else if(engine==='speaking'){
+    if(require('./speaking-mock-submission').blocked(a)){base.ready=false;base.held=a.submission.state==='incomplete';base.pending=(a.submission.pending?.length||0)+(a.submission.missing?.length||0)+(a.submission.unattempted?.length||0);return base;}
     base.ready=a.assessment?.status==='ready';
     if(!base.ready&&Array.isArray(a.questions)&&Array.isArray(a.responses)){
       base.ready=base.submitted&&require('./speaking-mock-report').summarize(a).azure.status==='assessed';

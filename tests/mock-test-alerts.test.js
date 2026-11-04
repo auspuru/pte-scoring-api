@@ -120,3 +120,10 @@ test('A held real full-mock submission is discovered using submittedAt and sends
  await h.monitor.check();await h.wait();assert.equal(h.messages.length,2);
  assert(!JSON.stringify(h.messages).includes('practical project'));
 });
+
+test('Speaking upload-finalising and incomplete submissions cannot emit a completion event',()=>{
+ for(const state of ['finalizing','incomplete']){
+  const a={id:'synthetic',status:state==='finalizing'?'active':'submitted',finishedAt:100,assessment:{status:'ready'},submission:{state,pending:state==='finalizing'?[25]:[],missing:state==='incomplete'?[25]:[],unattempted:[26,27]}};
+  const value=snapshot('speaking',a);assert.equal(value.ready,false);assert.equal(value.pending,3);assert.equal(require('../speaking-mock-jobs').complete(a),false);
+ }
+});
