@@ -32,8 +32,8 @@
   const section=doc.createElement('section');section.className='portal-ux-activity';
   section.innerHTML='<h3>Practice activity</h3><p class="progress-caption">Submitted questions over the last seven days · Brisbane time</p><div class="portal-ux-chart"><canvas role="img" aria-label="Submitted practice questions over the last seven days"></canvas></div><p class="portal-ux-chart-summary"></p>';
   host.querySelector('.progress-heading')?.after(section);
-  const days=activityDays(items),summary=section.querySelector('.portal-ux-chart-summary');summary.textContent=days.map(d=>d.day.slice(5)+': '+d.count).join(' · ');
-  load('chart').then(Chart=>{if(!connected(section))return;const chart=new Chart(section.querySelector('canvas'),{type:'bar',data:{labels:days.map(d=>d.day.slice(5)),datasets:[{label:'Submitted questions',data:days.map(d=>d.count),backgroundColor:'#537b70',borderRadius:4,maxBarThickness:42}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}},x:{grid:{display:false}}}}});own(section,()=>chart.destroy());}).catch(()=>{section.querySelector('.portal-ux-chart').hidden=true;});
+  const days=activityDays(items),label=day=>new Date(day+'T12:00:00+10:00').toLocaleDateString('en-AU',{day:'numeric',month:'short',timeZone:'Australia/Brisbane'}),summary=section.querySelector('.portal-ux-chart-summary');summary.textContent=days.map(d=>label(d.day)+': '+d.count).join(' · ');
+  load('chart').then(Chart=>{if(!connected(section))return;const chart=new Chart(section.querySelector('canvas'),{type:'bar',data:{labels:days.map(d=>label(d.day)),datasets:[{label:'Submitted questions',data:days.map(d=>d.count),backgroundColor:'#537b70',borderRadius:4,maxBarThickness:42}]},options:{responsive:true,maintainAspectRatio:false,animation:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}},x:{grid:{display:false}}}}});own(section,()=>chart.destroy());}).catch(()=>{section.querySelector('.portal-ux-chart').hidden=true;});
   table(host,items);
  }
  function table(host,items){
@@ -53,8 +53,8 @@
    ]});
    const status=panel.querySelector('[role="status"]');status.textContent=rows.length+' saved questions';
    const input=panel.querySelector('input');input.oninput=()=>{const matches=new Set(search(rows,input.value,['title','task','status']).map(row=>row.rowIndex));grid.setFilter(row=>matches.has(row.rowIndex));status.textContent=matches.size+' of '+rows.length+' saved questions';};
-   const toggle=panel.querySelector('button');let list=false;toggle.onclick=()=>{list=!list;fallback.hidden=!list;if(more)more.hidden=!list;panel.querySelector('.portal-ux-grid').hidden=list;input.disabled=list;toggle.textContent=list?'Table view':'List view';toggle.setAttribute('aria-pressed',String(list));if(!list)grid.redraw(true);};
-   fallback.hidden=true;if(more)more.hidden=true;panel.hidden=false;grid.on('tableBuilt',()=>grid.redraw(true));
+   const toggle=panel.querySelector('button');let list=fallback.contains(doc.activeElement);const view=()=>{fallback.hidden=!list;if(more)more.hidden=!list;panel.querySelector('.portal-ux-grid').hidden=list;input.disabled=list;toggle.textContent=list?'Table view':'List view';toggle.setAttribute('aria-pressed',String(list));};toggle.onclick=()=>{list=!list;view();if(!list)grid.redraw(true);};
+   panel.hidden=false;view();grid.on('tableBuilt',()=>grid.redraw(true));
    own(panel,()=>{grid.destroy();panel.remove();fallback.hidden=false;if(more)more.hidden=false;});
   }).catch(()=>panel.remove());
  }

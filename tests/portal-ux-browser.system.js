@@ -13,6 +13,8 @@ async function setup(t){
 test('UX libraries: fuzzy catalogue search, real progress chart, sortable/searchable history and exact saved response',{timeout:90000},async t=>{
  const {page,errors,history}=await setup(t);await page.locator('#nav-progress').click();await page.waitForSelector('.portal-ux-history:not([hidden]) .tabulator-row');await page.waitForFunction(()=>window.Chart&&Chart.getChart(document.querySelector('.portal-ux-chart canvas')));
  assert.equal(await page.$$eval('.portal-ux-history .tabulator-row',rows=>rows.length),20);assert.equal(await page.$eval('.portal-ux-history [role=status]',e=>e.textContent),'43 saved questions');
+ await page.locator('.portal-ux-history-tools button').click();await page.waitForFunction(()=>document.querySelector('.progress-recent>.progress-attempts')?.hidden===false);assert.equal(await page.$$eval('.progress-recent>.progress-attempts [data-progress-attempt]',rows=>rows.length),20);
+ await page.locator('.portal-ux-history-tools button').click();await page.waitForFunction(()=>document.querySelector('.progress-recent>.progress-attempts')?.hidden===true);await page.waitForSelector('.portal-ux-grid .tabulator-row');
  await page.type('.portal-ux-history input[type=search]','impossible-xzq');await page.waitForFunction(()=>document.querySelector('.portal-ux-history [role=status]').textContent==='0 of 43 saved questions');assert.equal(await page.$$eval('.portal-ux-history .tabulator-row',rows=>rows.length),0);
  await page.$eval('.portal-ux-history input',e=>{e.value='';e.dispatchEvent(new Event('input',{bubbles:true}));});await page.waitForSelector('.portal-ux-history .tabulator-row');
  await page.locator('.portal-ux-grid [tabulator-field="dateValue"]').click();await page.waitForFunction(()=>document.querySelector('.portal-ux-grid [data-progress-attempt="42"]'));
@@ -34,4 +36,14 @@ test('UX audio review uses the saved native player and releases it when leaving;
  await page.screenshot({path:path.join(root,'.cache/portal-layout-ux-waveform.png')});await page.locator('#nav-progress').click();await page.waitForFunction(()=>window.__nativeReviewAudio.paused);await page.waitForSelector('.portal-ux-history:not([hidden])');
  await page.locator('#nav-practice-hub').click();await page.evaluate(()=>{window.Chart=undefined;window.Tabulator=undefined;});await page.setRequestInterception(true);page.on('request',request=>request.url().includes('/vendor/chart.js/')||request.url().includes('/vendor/tabulator-tables/')?request.abort():request.continue());
  await page.reload();await page.waitForSelector('.portal-layout-skills');await page.locator('#nav-progress').click();await page.waitForSelector('.progress-attempts:not([hidden]) [data-progress-attempt]');assert(await page.$('.portal-ux-chart-summary'));assert.deepEqual(errors,[]);
+});
+test('UX history keeps a focused saved response usable when the optional table finishes loading',{timeout:90000},async t=>{
+ const {page,errors,history}=await setup(t);let release;const held=new Promise(resolve=>release=resolve);
+ await page.setRequestInterception(true);page.on('request',request=>request.url().endsWith('/tabulator.min.js')?release(request):request.continue());
+ await page.locator('#nav-progress').click();const request=await held;await page.focus('.progress-recent>.progress-attempts [data-progress-attempt="0"]');await request.continue();
+ await page.waitForSelector('.portal-ux-history:not([hidden]) .portal-ux-history-tools button');
+ assert.equal(await page.$eval('.progress-recent>.progress-attempts',node=>node.hidden),false);
+ assert.equal(await page.evaluate(()=>document.activeElement.dataset.progressAttempt),'0');
+ assert.equal(await page.$eval('.portal-ux-history-tools button',node=>node.textContent),'Table view');
+ await page.keyboard.press('Enter');await page.waitForFunction(text=>document.getElementById('swtResultsScreen')?.textContent.includes(text),{},history[0].text);assert.deepEqual(errors,[]);
 });
