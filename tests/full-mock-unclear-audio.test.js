@@ -62,3 +62,9 @@ test('The worker releases the final confirmed unclear recording as soon as other
  await engine.request(owner,f.state.id,{retry:true});await engine.drain();const saved=(await store.get(owner,f.state.id)).state;
  assert.equal(saved.assessment.status,'complete');assert.equal(aggregate(paper,saved).excludedCount,1);assert.equal(saved.assessment.recovery.retries,0);assert.equal(calls,1);
 });
+test('A confirmed insufficient-speech delivery receipt retains its partial trait and marks audio quality',async()=>{
+ const engine=adapters.createAdapters({transcribe:async()=>{throw Error('Reuse transcript');},gradeSpeaking:async()=>{throw Error('Reuse content');},assessDelivery:async()=>({deliveryEvidence:{sufficient:false},pronunciation:{status:'scored',score:3},fluency:{status:'unavailable'}})});
+ const previous={transcription:{status:'complete',value:'Retained text'},content:{status:'complete',value:{total:2,maximum:3}},delivery:{status:'partial',traits:{pronunciation:{score:4}},uncertain:false}};
+ const value=await engine.assess({type:'rs',text:'Retained text'},{sealed:true,segments:[{chunkCount:1}]},{recording:{},previous,run:2});
+ assert.equal(value.reason,'delivery-unavailable');assert.equal(value.stages.delivery.audioQuality,'insufficient-speech');assert.equal(value.stages.delivery.traits.pronunciation.score,4);assert.equal(value.stages.delivery.uncertain,false);
+});
