@@ -86,5 +86,441 @@
       "date": "2026-10-24"
     },
     "audioRate": "-3%"
+  },
+  {
+    "id": "rl-user-20261104-neuron-intensity",
+    "type": "rl",
+    "title": "Neurons and the coding of intensity",
+    "text": "One interesting thing about neurons is a neuron is like a gun. It either fires or it doesn't. It's all or nothing. If you squeeze the trigger of a gun really hard and really fast, it doesn't fire any faster or harder than if you just squeezed it gently. Now, this seems to be strange. Why? How could neurons be all or nothing when sensation is very graded? If somebody next to you pushed on your hand - the degree of pushing - you'd be able to notice it. It's not either pushing or not pushing. You can - Degrees of pushing, degrees of heat, degrees of brightness. And the answer is, although neurons are all or nothing, there are ways to code intensity. So, one simple way to code intensity is the number of neurons firing, the more neurons the more intense. Another way to increase intensity is the frequency of firing. So, I'll just use those two. The first one is the number of neurons firing. The second one is the frequency of firing in that something is more intense if it's \"bang, bang, bang, bang, bang, bang\" then \"bang, bang, bang\" and these are two ways through which neurons encode intensity.",
+    "facts": [
+      "Individual neurons follow an all-or-nothing firing principle, illustrated by a gun trigger.",
+      "Sensations such as pressure, heat and brightness have different degrees of intensity.",
+      "Intensity can be encoded by the number of neurons firing.",
+      "A higher frequency of neuronal firing is another way to encode greater intensity."
+    ],
+    "sample": "The lecture explains how neurons encode the intensity of sensations. Although an individual neuron either fires or does not fire, people can distinguish different degrees of pressure, heat and brightness. The speaker identifies two ways to represent this variation: increasing the number of neurons that fire and increasing their firing frequency. Thus graded sensations can be encoded through the activity of all-or-nothing neurons.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 1,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    }
+  },
+  {
+    "id": "rl-user-20261104-science-scientist",
+    "type": "rl",
+    "title": "Science and Scientist",
+    "text": "Female: Which one are you going to write more in your book, science or scientists?\nMale: I do want very much to write something about science, actually. So I prefer to scientists.\nFemale: All right. What's interesting in scientists then?\nMale: Science is just like complex furniture, which is all about evidence. But scientists can tell stories, do researches and propose questions to find what is true. They are like a focal point. They are always in interesting situations.\nFemale: Whether science or scientists your book mainly about, it seems to be rather hard for general readers to understand, doesn't it?\nMale: I don't think so, really. In fact the book I write is a science fiction, which is related with science but is not strictly scientific. So you don't have to have a PhD degree in physics or other disciplines to understand a science fiction. And loving science is very different from being a scientist, which means fiction writing is not the same as writing scientific journals. When scientists fail, they will question the situation about why they have failed. But as a fiction writer, I don't have to. In my book, you can always see stories about 'happy family'.",
+    "facts": [
+      "The discussion concerns whether a book focuses on science or scientists.",
+      "The writer finds scientists interesting because they ask questions, investigate and tell stories.",
+      "The book is science fiction rather than a strictly scientific journal.",
+      "The writer says general readers need no specialist PhD to understand the book and distinguishes fiction writing from scientific research."
+    ],
+    "sample": "The speakers discuss a writer's interest in science and scientists. He finds scientists appealing because they investigate questions and provide interesting stories. He explains that his book is science fiction rather than a strictly scientific work, so readers do not need a specialist degree to understand it. The discussion also distinguishes enjoying science and writing fiction from working as a scientist or publishing scientific journals.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 2,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    },
+    "turns": [
+      [
+        "Female",
+        "Which one are you going to write more in your book, science or scientists?"
+      ],
+      [
+        "Male",
+        "I do want very much to write something about science, actually. So I prefer to scientists."
+      ],
+      [
+        "Female",
+        "All right. What's interesting in scientists then?"
+      ],
+      [
+        "Male",
+        "Science is just like complex furniture, which is all about evidence. But scientists can tell stories, do researches and propose questions to find what is true. They are like a focal point. They are always in interesting situations."
+      ],
+      [
+        "Female",
+        "Whether science or scientists your book mainly about, it seems to be rather hard for general readers to understand, doesn't it?"
+      ],
+      [
+        "Male",
+        "I don't think so, really. In fact the book I write is a science fiction, which is related with science but is not strictly scientific. So you don't have to have a PhD degree in physics or other disciplines to understand a science fiction. And loving science is very different from being a scientist, which means fiction writing is not the same as writing scientific journals. When scientists fail, they will question the situation about why they have failed. But as a fiction writer, I don't have to. In my book, you can always see stories about 'happy family'."
+      ]
+    ]
+  },
+  {
+    "id": "rl-user-20261104-government-blogging",
+    "type": "rl",
+    "title": "Government blogging and audience interaction",
+    "text": "We normally see blogging as a two-way interaction, in which the blogger/author creates the content and the readers interact with or challenge the author. But the case will be much difficult when it comes to governments, such as the White House. Because people will become coarser and ruder online towards their governments, especially in comment areas. Thus, governments' blogs may go wild and chaotic. And then governments will have to administrate the comments. Once the government starts to impose harsh administration on comment areas, citizens may find the government manipulating what should be said and what should be shown, which contradicts the original intention. A blog is an effective way to help your target audience find you and convert them into leads. Most people use search engines to find solutions, whether it's for a product, service, or information they need. Blogging helps ensure your business or ideas gain visibility, especially for e-commerce companies.",
+    "facts": [
+      "Blogging usually allows two-way interaction between an author and readers.",
+      "Government blogs may attract rude or chaotic comments.",
+      "Heavy moderation can create concerns about manipulation and contradict open interaction.",
+      "Blogs can also improve search visibility and help businesses reach audiences and generate leads."
+    ],
+    "sample": "The lecture describes blogging as a two-way exchange between authors and readers. Government blogs face particular difficulties because hostile comments can become chaotic, while strict moderation may appear manipulative and undermine open discussion. The speaker also explains the commercial value of blogging: it helps audiences find useful information through search engines, increases visibility and can turn interested readers into leads, especially for e-commerce businesses.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 3,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    }
+  },
+  {
+    "id": "rl-user-20261104-advanced-machine",
+    "type": "rl",
+    "title": "Advanced Machine",
+    "text": "The biotech engineering has undergone three phases. In the first phase, people designed and made some simple machines, which aimed to help people understand ourselves. And first group of people that realized we could learn from ourselves were engineers. And then, based on the studies, people began to make complicated devices, in order to cure wounds, like the practice of suture, and to study physiology. This is the second phase. Later, since we went into the third phase, more complicated machines have been developed, like ECG (electrocardiography), able to have an insight of your internal body without intruding it, which can show the human brain's functions. X-ray is a good example. In an X-ray picture, you can see the bright area is the heart with some vessels around, and the dark area is the lungs. These devices benefit humans greatly in solving health problems, such as diseases.",
+    "facts": [
+      "The speaker describes three phases in biotech engineering.",
+      "Early simple machines helped people understand the human body.",
+      "A second phase involved more complicated devices for treating wounds and studying physiology.",
+      "The third phase uses advanced diagnostic technology to examine the body, with ECG and X-rays given as examples.",
+      "These developments are presented as beneficial for solving health problems."
+    ],
+    "sample": "The lecture outlines three stages in the development of biotech engineering. Early engineers built simple machines to understand the human body. Later devices supported wound treatment and physiological study. The third stage introduced more sophisticated diagnostic technologies, with ECG and X-rays mentioned as examples of examining internal processes. Overall, the speaker argues that these devices have greatly helped people investigate and address health problems.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 4,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot",
+      "externalQuestionId": "47340"
+    }
+  },
+  {
+    "id": "rl-user-20261104-deliberate-practice",
+    "type": "rl",
+    "title": "Practice",
+    "text": "Deliberate practice takes time and people also need to find and solve problems and mistakes during it. To be a high performing solo musician for the violin you also have to spend several dozen hundreds of hours in solitary practice. When it comes to other things, for example, studying geometry, it is still the case. During practice you should identify your weakness, focus on it, and carry out further deliberate practice to demonstrate how important deliberate practice is even for talents, they generally need spend ten years to achieve the high international level of recognition. So there is no need for average people to be ashamed to practice.",
+    "facts": [
+      "Deliberate practice requires sustained time and attention to mistakes.",
+      "Violin performance and geometry are used as examples.",
+      "Learners should identify weaknesses and practise them deliberately.",
+      "Even talented people may need around ten years to gain high international recognition.",
+      "Ordinary learners should not feel ashamed of practising."
+    ],
+    "sample": "The lecture emphasises that deliberate practice is essential for improvement, even for talented people. Examples from violin performance and geometry show that learners must invest substantial time, identify weaknesses and correct mistakes through focused practice. The speaker notes that international recognition may take around ten years. Therefore, practice is a normal part of achievement and should not be a source of embarrassment for average learners.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 5,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    }
+  },
+  {
+    "id": "rl-user-20261104-animal-behaviour",
+    "type": "rl",
+    "title": "Animal Behavior",
+    "text": "We can ask 2 fundamental questions about animal behavior they referred to as proximate and ultimate. Proximate questions are those concerned with the mechanisms that bring about behavior. Ultimate questions are those concerned with the evolution of behavior. We can divide the proximate and ultimate into 2 sub-questions. For proximate, how does behavior develop and secondly what causes the behavior. For ultimate, you can ask how did the behaviour evolve and secondly what is the adaptive of significance of the behavior. What's its purpose? Together these comprise what are called Tinbergen's 4 questions about animal behavior. Niko Tinbergen was one of the founding fathers of the study of the animal behaviors. These questions represent different ways of studying animal behavior and understanding the difference between those 4 questions are fundamental to understanding behavior and indeed the whole of biology. How do we study animal behavior? Well that depends on the type of question we're hoping to answer.",
+    "facts": [
+      "Animal behaviour can be studied through proximate and ultimate questions.",
+      "Proximate questions address development and immediate causes or mechanisms.",
+      "Ultimate questions address evolutionary history and adaptive significance or purpose.",
+      "These form Tinbergen's four questions, which guide different approaches to studying behaviour and biology."
+    ],
+    "sample": "The lecture introduces Tinbergen's four questions about animal behaviour. Proximate explanations examine how behaviour develops and what mechanisms cause it. Ultimate explanations consider its evolutionary history and adaptive significance. Niko Tinbergen helped establish this framework, which distinguishes complementary approaches to behaviour. The speaker concludes that the method used to study an animal depends on the particular question researchers want to answer.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 6,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    }
+  },
+  {
+    "id": "rl-user-20261104-sigmund-freud",
+    "type": "rl",
+    "title": "Sigmund Freud",
+    "text": "For better or worse, we live in a world profoundly affected by Sigmund Freud. If I had to ask you to name a famous psychologist, the answer of most of you would be Freud. He was the most famous psychologist ever and he had a profound influence on the 20th and 21st century. Some biographical information: he was born in the 1850s. He spent most of his life in Vienna, Austria, and, but he died in London and he escaped to London soon after retreating there at the beginning of World War Two as the Nazis began to occupy where he lived. He was one of the most famous scholars ever but he was not known for any single discovery. Instead, he was known for the development of an encompassing theory of mind, one that he developed over the span of many decades. He was in his time extremely well known, a celebrity recognized on the street, and throughout his life. He was a man of extraordinary energy and productivity, in part because he was a very serious cocaine addict, but also just in general. He was just a high-energy sort of person.",
+    "facts": [
+      "The lecture presents Freud as an exceptionally famous and influential psychologist.",
+      "The speaker describes his life in Vienna and his move to London during Nazi expansion.",
+      "His reputation is associated with a broad theory of mind developed over decades rather than one discovery.",
+      "The lecture also comments on his celebrity, energy and productivity."
+    ],
+    "sample": "The lecture discusses Sigmund Freud's broad influence on psychology and modern society. It gives biographical details about his life in Vienna and later move to London. Rather than attributing his fame to one discovery, the speaker emphasises his comprehensive theory of mind, developed over several decades. Freud is also portrayed as a public celebrity with exceptional energy and productivity throughout his career.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 7,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    }
+  },
+  {
+    "id": "rl-user-20261104-language-disorders",
+    "type": "rl",
+    "title": "Language",
+    "text": "Language is a human essence that defines human characters. Language disorder is children's disability to produce speech. 10% of children have language disability in the US. People can not take it for granted, and should this problem seriously. Children's language is different from that of adults, so it should be dealt with separately. Not being able to generate sentences is a philosophical issue because it involves children's psychology. In adults, it is a logical issue. To solve this problem, we need to ask questions about language itself first. We should know what language is, how language is learned, and how children can speak different sentences by words.",
+    "facts": [
+      "The speaker presents language as central to human characteristics.",
+      "The lecture states that 10% of US children have a language disability.",
+      "Children's language difficulties should be treated separately from adults' difficulties.",
+      "Understanding what language is, how it is learned and how sentences are produced is presented as necessary for addressing the problem."
+    ],
+    "sample": "The lecture presents language as a defining human characteristic and discusses childhood language disorders. It states that ten percent of children in the United States experience language disability and argues that the issue deserves serious attention. Because children's language differs from adults' language, their difficulties should be considered separately. The speaker proposes first investigating the nature of language, how it is learned and how children construct sentences.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 8,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot",
+      "percentageClarification": "User confirmed 10% (Language) and 40% (Chemical label)."
+    }
+  },
+  {
+    "id": "rl-user-20261104-why-comedy-matters",
+    "type": "rl",
+    "title": "Why Comedy Matters",
+    "text": "The comic move is to guide us to a benevolent conception of people, and hence, parts of ourselves. Comedy also does a great job at reducing power imbalances. It's hugely reassuring to see the powerful laughing at themselves. Finding oneself comical is a token of maturity; it means being able to see one's faults without being too defensive about it. Humor often provides a mechanism where by the powerless, or, at least, the less powerful, can give constructive but pointed feedback to the powerful. Monty Python was particularly focused on this task. \"The Philosophers' Football Match\" mocks the great figures of intellectual history. It's funny because we've been intimidated so deeply in the past by intellectual bullies, we've made us feel small with our reading of Wittgenstein or Schopenhauer. And now they're shown as being completely rubbish at football, and yet seriously involved in the game. Comedy isn't just a bit of fun. The comic perspective is a central need of a society. It enables us to cope much better with our own follies and disappointments, our troubles around work and love, and our difficulties in enduring ourselves. Comedy is waiting to be re-framed as a central tool in a better society.",
+    "facts": [
+      "Comedy encourages a benevolent view of people and greater acceptance of personal faults.",
+      "Humour can reduce power imbalances by allowing constructive criticism of powerful people.",
+      "Monty Python's Philosophers' Football Match is used as an example.",
+      "The comic perspective helps people cope with disappointments and everyday difficulties and is presented as socially important."
+    ],
+    "sample": "The lecture argues that comedy serves important personal and social purposes. It helps people recognise their faults without defensiveness and allows less powerful people to criticise those with authority. Monty Python's portrayal of philosophers playing football illustrates this challenge to intellectual status. The speaker concludes that humour helps people cope with difficulties in work, relationships and everyday life, making comedy a valuable tool for a better society.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 9,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot",
+      "externalQuestionId": "48229"
+    }
+  },
+  {
+    "id": "rl-user-20261104-underwater-remote-detector",
+    "type": "rl",
+    "title": "Underwater remote detector",
+    "text": "Science lets us know what is going on. Underwater remote detector, which is called Arentas, is a kind of camera installed underwater in cages for fish monitoring in the industry of marine aquaculture. It is an advanced system of remote technology, by which researchers can remotely monitor fish on their computers in their universities. The camera can detect surrounding environments as well as fish. This helps people find out what they eat, what they don't eat, and how much they eat. Thus people can stop feeding them if necessary in some situation to save time and labor.",
+    "facts": [
+      "Arentas is described as an underwater camera system for monitoring caged fish in marine aquaculture.",
+      "Researchers can observe fish remotely from university computers.",
+      "The camera monitors fish and surrounding environmental conditions.",
+      "Observing what and how much fish eat can help decide when to stop feeding, saving time and labour."
+    ],
+    "sample": "The lecture describes Arentas, an underwater camera system used in marine aquaculture. Researchers can monitor fish and their surroundings remotely from university computers. The system reveals what fish eat and how much they consume, allowing feeding to stop when appropriate. The speaker presents this remote monitoring technology as a way to improve understanding of fish behaviour while saving time and labour.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 10,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    }
+  },
+  {
+    "id": "rl-user-20261104-childhood-obesity",
+    "type": "rl",
+    "title": "Childhood obesity",
+    "text": "The growing issue of childhood obesity is a serious health crisis that we can no longer ignore. There are twenty percent of children in the USA today have the obesity problem. As a result, heart diseases have become more and more common among children, the youngest of which is five years old. This is a stark departure from the past. The diseases that used to occur to people above fifty or sixty are now happening to people as early as they are five or six years old. This situation makes children suffer the heart attack and other health problems earlier and earlier, such as kidney impairment and stroke. Those diseases that used to be uncommon have begun to be common. This normalization is dangerous because it can make us less urgent in our response. When serious health issues become frequent, we risk accepting them as an inevitable part of modern life, rather than as a preventable crisis. Therefore, the need for action is clear and immediate. We have to address the overweight problem.",
+    "facts": [
+      "The speaker describes childhood obesity as an urgent health crisis and cites a US figure of twenty percent.",
+      "Diseases associated with older adults are described as appearing in very young children.",
+      "The lecture mentions heart disease, kidney impairment and stroke.",
+      "Normalising these conditions may reduce urgency, so the speaker calls for immediate action on overweight."
+    ],
+    "sample": "The lecture presents childhood obesity as an urgent and preventable health crisis. It states that twenty percent of children in the United States are affected and describes serious conditions appearing at much younger ages than in the past. The speaker warns that increasingly common heart disease and other complications should not be accepted as normal. Instead, society needs to respond promptly to the problem of childhood overweight.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 11,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    }
+  },
+  {
+    "id": "rl-user-20261104-us-economic-strength",
+    "type": "rl",
+    "title": "US economic strength",
+    "text": "One way to understand a country's economic strength is by looking at the size of economy. In terms of overall economic size, the United States produces more than the total amount of several major economies, including China, Japan, the UK, and Germany. This comparison highlights the significant role the United States plays in the global economy. Another important indicator is the industrial output. US output is approximately $2.8 trillion, making it one of the largest manufacturing sectors in the world. Interestingly, this figure equals to the sum of China and Japan, showing the remarkable scale of American industrial production. Although many countries continue to expand their economies, the United States remains one of the world's leading economic powers",
+    "facts": [
+      "The lecture uses total economic size and industrial output as indicators of economic strength.",
+      "The speaker compares the US economy with China, Japan, the UK and Germany.",
+      "US industrial output is stated to be approximately $2.8 trillion and compared with the combined output of China and Japan.",
+      "The overall argument presents the US as a leading global economic power."
+    ],
+    "sample": "The lecture explains that economic strength can be assessed through total economic size and industrial output. The speaker compares the United States with several major economies and cites industrial production of approximately 2.8 trillion dollars. This manufacturing output is described as comparable to the combined output of China and Japan. The lecture concludes that the United States remains one of the world's leading economic powers.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 12,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    }
+  },
+  {
+    "id": "rl-user-20261104-earth-mars",
+    "type": "rl",
+    "title": "Earth v.s. Mars",
+    "text": "Scientists often compare the conditions on the Earth and Mars to evaluate the habitability of Mars. There are some similarities between Earth and Mars. Both planets have polar caps, atmospheres, and evidence of a water-related climate. The lecture also describes different forms of water on Earth and Mars. On Earth, it exists as oceans, while on Mars, water is present in the form of ice. Despite these similarities, however, there are still lots of differences between the two worlds. Even the most inhabitable areas on the earth are way different from those on Mars. In preparing for the Phoenix Mission, scientists have conducted Antarctica trial runs. During these tests, researchers dug trenches, collected samples, and examined the ice-soil boundary. These Antarctic experiments serve as practical simulations, helping scientists get ready for investigations on Mars.",
+    "facts": [
+      "Earth and Mars are compared to assess the habitability of Mars.",
+      "Both planets have polar caps, atmospheres and evidence of water-related conditions.",
+      "Earth's oceans are contrasted with ice on Mars, alongside substantial planetary differences.",
+      "Antarctic trials for the Phoenix Mission involved trenches, samples and the ice-soil boundary to prepare for Martian investigations."
+    ],
+    "sample": "The lecture compares Earth and Mars in relation to the habitability of Mars. Both planets have polar caps, atmospheres and water-related conditions, although Earth's oceans differ from the ice found on Mars. The speaker also describes Antarctic trials undertaken for the Phoenix Mission. Researchers dug trenches, collected samples and examined the ice-soil boundary, using these activities as simulations to prepare for investigations on Mars.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 13,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot",
+      "externalQuestionId": "62562"
+    }
+  },
+  {
+    "id": "rl-user-20261104-fatherhood",
+    "type": "rl",
+    "title": "The role of a father",
+    "text": "The role of a father is an important part of parenting and has a significant influence on children's development. Fatherhood is not only about providing support and protection, but also about helping children build confidence and develop important qualities for their future lives. A father can create a sense of security and help children feel safe when they explore the world around them. With this support, children become more willing to take risks, try new experiences, and learn from challenges. These experiences allow them to develop confidence and gradually build their own abilities. In addition, a father's guidance can help children develop independence and autonomy. Instead of controlling every decision, supportive fathers encourage children to think independently and solve problems by themselves. This process helps children become more mature as they grow up. Ultimately, good fatherhood contributes to raising responsible and compassionate citizens. Through emotional support, encouragement, and guidance, fathers play a key role in helping children become confident individuals who can positively contribute to society.",
+    "facts": [
+      "Fatherhood contributes to children's development through protection, emotional support and encouragement.",
+      "A secure environment helps children explore, take risks and learn from challenges.",
+      "Supportive guidance encourages independent thinking, problem-solving and autonomy rather than controlling every decision.",
+      "The lecture links good fatherhood with confidence, maturity, responsibility and compassion."
+    ],
+    "sample": "The lecture explains how fathers contribute to children's development. Support and protection create a sense of security, encouraging children to explore, take risks and build confidence. Supportive fathers also promote independence by helping children think and solve problems for themselves rather than controlling every decision. Through emotional support and guidance, fathers can help raise mature, responsible and compassionate individuals who contribute positively to society.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 14,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    }
+  },
+  {
+    "id": "rl-user-20261104-dna-proteins",
+    "type": "rl",
+    "title": "DNA",
+    "text": "In biology, genes play an important role because they decide the protein produced inside the cells. In simple terms, genes contain the information needed for cells to produce proteins, which are essential for the structure and function of living organisms. However, the process from genes to protein is not simple. It is a complex process involving several stages, where genetic information is copied and transformed into proteins that perform different tasks in the body. Proteins are considered the fundamental building blocks of all organisms. They help form body structures and support many biological activities. Without proteins, living things would not be able to grow, repair themselves, or maintain normal functions. The genetic information is stored in DNA, which is shown in the picture. DNA looks like a chain, with many connected parts carrying important instructions. These instructions are passed from genes to proteins, creating the foundation of life and biological development.",
+    "facts": [
+      "Genes carry information that cells use to produce proteins.",
+      "The lecture describes a complex, multistage transfer of genetic information into protein production.",
+      "Proteins support body structure, biological activities, growth, repair and normal functioning.",
+      "DNA stores the genetic instructions that underpin life and biological development."
+    ],
+    "sample": "The lecture explains the relationship between genes, DNA and proteins. Genes provide cells with instructions for producing proteins through a complex process involving several stages. Proteins form structures and support biological activities, growth and repair. The speaker describes DNA as a chain carrying genetic information and emphasises that the transmission of these instructions into protein production is fundamental to living organisms and their development.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 15,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot",
+      "externalQuestionId": "62564"
+    }
+  },
+  {
+    "id": "rl-user-20261104-chemical-labels",
+    "type": "rl",
+    "title": "Chemical's Label",
+    "text": "Product labels play an important role in protecting consumers, especially when the label is attached to a hazardous chemical product. However, some products are designed in a way that may confuse people instead of warning them about potential risks. For example, the front of a container may show the lovely picture, giving the impression that the product is safe. Meanwhile, the warning information is only displayed at the back, which is very concerning because many people may never notice it before using the product. Another problem is that the warning text is often printed in small font, making it difficult to read. Studies have shown that about 60% of Americans cannot recognize words printed in fonts smaller than size 10. In addition, around 40% are illiterate, so they may not be able to understand written warnings even if they see them. As a result, many consumers won't be aware of the hazards associated with these products. For this reason, warning labels should be placed where they are easy to notice and written in a clear, readable format so that everyone can understand the potential dangers.",
+    "facts": [
+      "Labels on hazardous chemical products should communicate risks clearly.",
+      "Attractive front images and warnings hidden on the back may mislead consumers.",
+      "The speaker cites difficulties with small print and literacy as barriers to understanding warnings.",
+      "Warning labels should therefore be prominent and readable."
+    ],
+    "sample": "The lecture discusses problems with warning labels on hazardous chemical products. Attractive pictures on the front can suggest safety, while important warnings placed on the back may go unnoticed. The speaker also highlights small print and literacy difficulties as barriers to understanding risk. The main recommendation is that warning labels should be placed prominently and written clearly so consumers can recognise potential dangers.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 16,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot",
+      "externalQuestionId": "62565",
+      "percentageClarification": "User confirmed 10% (Language) and 40% (Chemical label)."
+    }
+  },
+  {
+    "id": "rl-user-20261104-joseph-lister",
+    "type": "rl",
+    "title": "Joseph Lister",
+    "text": "Joseph Lister was a great surgeon in Britain who completely transformed the way surgeries are performed. In the 19th century, many patients died after operations due to infections, but Lister changed this tragic reality. He became well known for his groundbreaking work in antiseptic surgery. Inspired by the germ theory, Lister successfully introduced carbolic acid as a powerful disinfectant. He used this chemical to sterilize surgical instruments and to clean wounds before and after operations. This innovative method led to a reduction in infections and significantly made surgery safer for patients all over the world. Because of his great medical achievement, Joseph Lister is often honored as the father of modern surgery. His dedication and scientific approach represent a major achievement in medicine, saving countless lives and laying the foundation for the sterile medical practices we rely on today.",
+    "facts": [
+      "Joseph Lister transformed nineteenth-century surgery by reducing infections.",
+      "Inspired by germ theory, he introduced carbolic acid as a disinfectant.",
+      "He applied it to instruments and wounds to make operations safer.",
+      "The lecture presents his antiseptic work as a foundation for modern sterile surgery."
+    ],
+    "sample": "The lecture describes Joseph Lister's contribution to safer surgery. In the nineteenth century, postoperative infections caused many deaths. Influenced by germ theory, Lister introduced carbolic acid to disinfect instruments and clean wounds, reducing infections and saving lives. His work in antiseptic surgery is presented as a major medical achievement that helped establish the sterile practices used in modern operations.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 17,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    }
+  },
+  {
+    "id": "rl-user-20261104-four-dimensions",
+    "type": "rl",
+    "title": "Four Dimensions",
+    "text": "In physics, people often describe the universe as existing in a four-dimension space. Unlike traditional three-dimensional space, which only includes location, the fourth dimension adds another important factor: time. The three basic spatial dimensions are longitude, latitude, and altitude. Longitude and latitude help us locate a position on the Earth, while altitude shows the height of an object. When time is added, these four elements allow scientists to describe anything in space. With these four dimensions, we can identify the location of an object or event at any time. For example, if we want to describe an event, we need to provide information about its position and moment of occurrence, including longitude, latitude, altitude, and date. The concept of the fourth dimension helps researchers better understand movement, changes, and events in the universe. It provides a more complete way to describe not only where something happens but also when it happens.",
+    "facts": [
+      "The lecture presents time as the fourth dimension in addition to spatial location.",
+      "Longitude, latitude and altitude are used to describe position.",
+      "Adding time allows an object or event to be located at a particular moment.",
+      "The framework helps describe movement, change and when events occur."
+    ],
+    "sample": "The lecture explains the idea of four-dimensional space by adding time to three spatial coordinates. Longitude, latitude and altitude describe where something is, while time identifies when it is there. Together, these dimensions allow scientists to specify events and follow objects through changing positions. The speaker argues that this provides a fuller understanding of movement and events by explaining both where and when they occur.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 18,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot",
+      "externalQuestionId": "63512"
+    }
+  },
+  {
+    "id": "rl-user-20261104-psychology-subfields",
+    "type": "rl",
+    "title": "The scope and subfields of psychology",
+    "text": "But the general goals of this course are actually I think even more interesting than that. What I want to do is provide a state of the art introduction to the most important topic that there is: us. How the human mind works, how we think, what makes us what we are. And we'll be approaching this from a range of directions. So, traditionally, psychology is often broken up into the following -- into five sub-areas: Neuroscience, which is the study of the mind by looking at the brain; developmental, which is the area which I focus mostly on, which is trying to learn about how people develop and grow and learn; cognitive, which is the one term of the five that might be unfamiliar to some of you, but it refers to a sort of computational approach to studying the mind, often viewing the mind on analogy with a computer and looking at how people do things like understand language, recognize objects, play games, and so on. There is social, which is the study of how people act in groups, how people act with other people. And there is clinical, which is maybe the aspect of psychology that people think of immediately when they hear psychology, which is the study of mental health and mental illness. And we'll be covering all of those areas. We'll also be covering a set of related areas. I'm convinced that you cannot study the mind solely by looking at the discipline of psychology. The discipline of psychology spills over to issues of how the mind has evolved. Economics and game theory are now essential tools for understanding human thought and human behavior -- issues connecting to philosophy, computer science, anthropology, literature, theology, and many, many other domains. So, this course will be wide ranging in that sense.",
+    "facts": [
+      "The course introduces how the human mind works through several complementary perspectives.",
+      "Five traditional subfields are neuroscience, developmental, cognitive, social and clinical psychology.",
+      "These address the brain, development, cognition, social interaction and mental health.",
+      "The speaker argues that studying the mind also requires connections with evolution, economics, game theory, philosophy and other disciplines."
+    ],
+    "sample": "The lecturer introduces a broad course on how the human mind works. It covers five traditional areas: neuroscience, developmental, cognitive, social and clinical psychology. These examine the brain, growth, mental processes, group behaviour and mental health. The speaker also stresses that psychology cannot explain the mind in isolation, so the course connects it with evolution, economics, game theory, philosophy and other disciplines.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 19,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    }
+  },
+  {
+    "id": "rl-user-20261104-management-leadership",
+    "type": "rl",
+    "title": "Management and leadership",
+    "text": "In organizations, there are profound differences between management and leadership. Although both of them are important for achieving goals, they focus on different ways of thinking and working. Leaders usually do not accept the current situation easily. They may dislike the status quo and try to make some challenges to existing systems. They often question traditional methods, take risks, and attempt to change directions in order to create new opportunities and improvements. On the other hand, managers usually focus on maintaining stability and efficiency. They often stay in the status quo, follow established rules, and ensure that everything goes with the procedures. Their main responsibility is to organize resources, control processes, and make sure that daily operations run smoothly. Therefore, leadership and management have different purposes. Management emphasizes order, consistency, and following existing systems, while leadership focuses on innovation, change, and challenging old ideas. In this sense, leadership disrupts management because leaders often need to break traditional patterns in order to create progress and transformation.",
+    "facts": [
+      "Management and leadership are presented as distinct but important organisational functions.",
+      "Leaders challenge the status quo, take risks and pursue innovation and new opportunities.",
+      "Managers emphasise stability, efficiency, established procedures and resource coordination.",
+      "Leadership may disrupt existing patterns to bring progress and transformation."
+    ],
+    "sample": "The lecture contrasts management with leadership. Managers maintain stability, efficiency and consistency by coordinating resources and following established procedures. Leaders question traditional approaches, take risks and pursue innovation or new opportunities. Although both roles support organisational goals, their purposes differ. The speaker suggests that leadership can disrupt management because creating progress sometimes requires challenging existing systems and breaking familiar patterns.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-04",
+      "contentStatus": "transcribed-user-provided",
+      "sourceImageIndex": 20,
+      "suppliedMaterial": "User-provided Retell Lecture transcript screenshot"
+    }
   }
 ]

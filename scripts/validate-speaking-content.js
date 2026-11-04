@@ -6,7 +6,7 @@ function validate() {
   let recordings=0;
   const discussions=require('../content/user-sgd-oct30.json');
   assert.equal(bank.questions.length,30+require('../content/di-user-predictions.json').length+require('../content/rts-original-practice.json').length+require('../content/user-speaking-oct24.json').length+discussions.length);assert.equal(new Set(bank.questions.map(q=>q.id)).size,bank.questions.length);
-  for(const type of Object.keys(bank.types))assert.equal(bank.questions.filter(q=>q.type===type).length,type==='di'?5+require('../content/di-user-predictions.json').length:type==='rts'?6+require('../content/rts-original-practice.json').length:type==='rl'?9:type==='sgd'?5+discussions.length:5);
+  for(const type of Object.keys(bank.types))assert.equal(bank.questions.filter(q=>q.type===type).length,type==='di'?5+require('../content/di-user-predictions.json').length:type==='rts'?6+require('../content/rts-original-practice.json').length:type==='rl'?5+require('../content/user-speaking-oct24.json').filter(q=>q.type==='rl').length:type==='sgd'?5+discussions.length:5);
   for(const q of bank.questions) {
     assert(q.sample&&q.sample.trim(),q.id+' sample');
     if(['ra','rts'].includes(q.type))assert(q.text.split(/\s+/).length<=60,q.id+' prompt length');
