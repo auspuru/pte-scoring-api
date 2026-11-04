@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "context": {
+    "paperHash": "0daa47e9aa4990c3fd0ec530ab27eeebd020a2bc931468bf20253c9442e5ffa5",
+    "weightingVersion": "full-mock-profiles-2026-10-29.1",
+    "practiceIndexPolicyVersion": "full-mock-practice-index-2026-10-29.1",
+    "profileVersions": {
+      "overall": "full-mock-overall-2026-10-29.1",
+      "listening": "full-mock-listening-2026-10-29.1",
+      "reading": "full-mock-reading-2026-10-29.1",
+      "speaking": "full-mock-speaking-2026-10-29.1",
+      "writing": "full-mock-writing-2026-10-29.1"
+    },
+    "assessmentSnapshotHash": null
+  },
+  "records": []
+}

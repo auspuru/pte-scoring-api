@@ -7,7 +7,7 @@ const active=registeredPapers({activeOnly:true});
 test('Three independently frozen full papers have complete keys/media, clocks and unique stimuli',()=>{
  assert.deepEqual(active.map(p=>p.id),['full-mock-1','full-mock-2','full-mock-3']);
  assert.equal(digest(loadPaper('full-mock-1',1)),'f1dfe1045d4c657ed3a03c428ca3953f91dc706ff53281598b697a7ce84de173');
- assert.equal(digest(loadPaper()),'c76c0ea41112ed9d3b2ec12782fb05c6c26c0f9a4ed323ed26bde715cff0bbf2');
+ assert.equal(digest(loadPaper('full-mock-1',2)),'c76c0ea41112ed9d3b2ec12782fb05c6c26c0f9a4ed323ed26bde715cff0bbf2');
  const bank=require('../content/speaking-bank');
  for(const p of active.slice(1)){
   assert.deepEqual(validatePaper(p),[]);assert.deepEqual(duplicates(p.questions),[]);assert.deepEqual(p.clockPolicy,loadPaper().clockPolicy);
@@ -22,7 +22,7 @@ test('Three independently frozen full papers have complete keys/media, clocks an
    }
   }
  }
- for(const [id,v]of [['full-mock-4',1],['full-mock-2',2],['../full-mock-1',2],['full-mock-2','1']])assert.throws(()=>loadPaper(id,v),/Unknown frozen/);
+ for(const [id,v]of [['full-mock-4',1],['full-mock-2',99],['../full-mock-1',2],['full-mock-2','1']])assert.throws(()=>loadPaper(id,v),/Unknown frozen/);
 });
 async function fixture(t){
  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'full-mock-registry-')),app=express();app.use(express.json());

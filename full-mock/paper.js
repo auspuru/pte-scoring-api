@@ -44,9 +44,10 @@ function validatePaper(paper, { root = ROOT } = {}) {
   if (assetMap.size !== paper.assets?.length) issues.push('Duplicate asset descriptors.');
   const referenced = new Set();
   for (const candidate of paper.questions) {
+    if (candidate.displayImage && candidate.displayImage.originalSha256 !== candidate.image?.sha256) issues.push('Display image source mismatch: ' + candidate.id);
     const audit = auditCandidate(candidate, { root });
     if (!audit.structurallyValid) issues.push(...audit.issues.filter(issue => !issue.code.includes('review')).map(issue => candidate.id + ': ' + issue.code));
-    for (const descriptor of [candidate.audio, candidate.image].filter(Boolean)) {
+    for (const descriptor of [candidate.audio, candidate.image, candidate.displayImage].filter(Boolean)) {
       referenced.add(descriptor.path);
       const asset = assetMap.get(descriptor.path);
       const sha256 = descriptor.sha256 || descriptor.entry?.audioSha256;
@@ -157,7 +158,7 @@ function questionForPlayer(candidate) {
   if (Array.isArray(q.items)) result.items = q.items.map(({ key, text }) => ({ key, text }));
   if (candidate.audio) result.audio = { id: candidate.audio.entry.audioSha256, seconds: candidate.audio.entry.seconds,
     playOnce: true, playbackDelaySeconds: q.playbackDelaySeconds };
-  if (candidate.image) result.image = { id: candidate.image.sha256, width: 730, height: 500 };
+  if (candidate.image) result.image = { id: (candidate.displayImage || candidate.image).sha256, width: 730, height: 500 };
   return result;
 }
 module.exports = { canonical, digest, deepFreeze, putImmutable, validatePaper, freezePaper, catalogue, loadPaper, registeredPapers, assertReleased, snapshotForAttempt, questionForPlayer };

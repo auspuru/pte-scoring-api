@@ -140,7 +140,7 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   await request('/attempts/'+id+'/retry',{});await waitForJobs();assert.equal(overallCalls,0,'Task-weighted totals never request a separate whole-audio judgment.');assert.equal(itemCalls,27,'Successful individual assessments are reused.');
   assert.equal((await request('/attempts/'+id+'/recordings/2',Buffer.alloc(200,99),'alice',true)).status,409);
   const saved=await store.update('alice',id,value=>{value.questions[1].title='The exact saved question';
-    const old=require('../content/di-user-predictions.json').find(q=>q.id==='di-pred-3000411'),image=value.questions.find(q=>q.id===old.id);
+    const old=require('../content/di-user-predictions.json').find(q=>q.id==='di-pred-3000186'),image=value.questions.find(q=>q.id===old.id);
     image.facts=structuredClone(old.facts);image.visual=structuredClone(old.visual);image.sample=old.sample;delete image.imageReference;delete image.optionalFactIndices;return value;});assert(saved.responses.every(r=>r.recording.hash));
   const before=JSON.stringify(saved),newId=crypto.randomUUID();now+=10000;
   assert.equal((await request('/attempts/'+id+'/reattempt',{id:newId},'bob')).status,404);
@@ -150,7 +150,7 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   assert.equal(fresh.id,newId);assert.equal(fresh.reattemptOf,id);assert.equal(fresh.status,'active');assert.equal(fresh.index,0);assert.equal(fresh.overall,null);
   assert.equal(fresh.deadline-fresh.startedAt,40*60000);assert.equal(saved.deadline-saved.startedAt,36*60000);assert(fresh.startedAt>saved.startedAt);
   const copy=await store.update('alice',newId,value=>value);assert.deepEqual(copy.questions,bank.reattemptQuestions(saved));assert.deepEqual(copy.responses,[]);assert.equal(copy.grading,undefined);
-  assert.match(copy.questions.find(q=>q.id==='di-pred-3000411').sample,/October/);assert.equal(saved.questions.find(q=>q.id==='di-pred-3000411').imageReference,undefined);
+  assert(copy.questions.find(q=>q.id==='di-pred-3000186').imageReference);assert.equal(saved.questions.find(q=>q.id==='di-pred-3000186').imageReference,undefined);
   assert.equal((await request('/attempts/'+id+'/reattempt',{id:newId})).body.id,newId,'Network retries reuse the same new attempt.');
   assert.equal(JSON.stringify(await store.update('alice',id,value=>value)),before,'Reattempting preserves the prior recordings and result.');
   assert.equal(itemCalls,27);assert.equal(overallCalls,0);
@@ -196,7 +196,7 @@ test('all mock DI placements use supplied original PNGs and reattempts replace l
  }
  const original={paperId:'speaking-mock-2',questions:structuredClone(bank.papers[1].questions),responses:[{recording:{hash:'saved-audio'}}]};
  const index=original.questions.findLastIndex(q=>q.type==='di');original.questions[index]=structuredClone(require('../content/speaking-bank').questions.find(q=>q.id==='di-pred-3000125'));
- const before=JSON.stringify(original),fresh=bank.reattemptQuestions(original);assert.equal(fresh[index].id,'di-pred-3000586');assert(bank.suppliedMockImage(fresh[index]));assert.equal(JSON.stringify(original),before);
+ const before=JSON.stringify(original),fresh=bank.reattemptQuestions(original);assert.equal(fresh[index].id,'di-pred-3000137');assert(bank.suppliedMockImage(fresh[index]));assert.equal(JSON.stringify(original),before);
  original.questions[index]={id:'older-generated-image',type:'di',visual:{kind:'bar'},facts:['Old placeholder.']};assert(bank.suppliedMockImage(bank.reattemptQuestions(original)[index]));
 });
 

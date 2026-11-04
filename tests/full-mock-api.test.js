@@ -22,7 +22,7 @@ async function fixture(t, options = {}) {
   async function request(route, body, { user = 'alice', method, raw = false, headers = {} } = {}) {
     const response = await fetch(base + route, { method: method || (body === undefined ? 'GET' : 'POST'), headers: { 'x-session-token': user,
       ...(control ? { 'x-full-mock-control': control.controlToken } : {}), ...(body === undefined ? {} : { 'Content-Type': raw ? 'audio/webm' : 'application/json' }), ...headers }, body: body === undefined ? undefined : raw ? body : JSON.stringify(body) });
-    return { status: response.status, body: await response.json(), headers: response.headers };
+    return { status: response.status, body: response.headers.get('content-type')?.includes('application/json') ? await response.json() : Buffer.from(await response.arrayBuffer()), headers: response.headers };
   }
   async function start() {
     const result = await request('/attempts', { id: randomUUID(), paperId: 'full-mock-1', checks: { microphone: true, playback: true } });
@@ -134,4 +134,18 @@ test('Independent filesystem store instances use atomic revisions without losing
   const f = await fixture(t), a = await f.start(), other = createStore({ directory: f.directory });
   await Promise.all(Array.from({ length: 12 }, (_, index) => (index % 2 ? other : f.service.store).update('alice', a.id, async state => { await new Promise(resolve => setImmediate(resolve)); state.counter = (state.counter || 0) + 1; return state; })));
   assert.equal((await other.get('alice', a.id)).state.counter, 12);
+});
+
+test('Clear DI media is bound to the current owned question and its saved submitted review',async t=>{
+ const f=await fixture(t),paper=loadPaper(),images=paper.questions.filter(c=>c.image);let a=await f.until(await f.start(),'di');
+ assert.equal(a.question.image.id,images[0].displayImage.sha256);
+ const url='/attempts/'+a.id+'/media/';
+ assert.equal((await f.request(url+images[0].displayImage.sha256)).status,200);
+ assert.equal((await f.request(url+images[0].image.sha256)).status,200);
+ assert.equal((await f.request(url+images[1].displayImage.sha256)).status,404);
+ assert.equal((await f.request(url+images[0].displayImage.sha256,undefined,{user:'bob'})).status,404);
+ const qid=images[0].question.id;
+ while(a.status==='active'){if(a.transition)a=(await f.request('/attempts/'+a.id+'/begin-section',{transitionId:a.transition.id})).body;else a=(await f.request('/attempts/'+a.id+'/next',{itemToken:a.current.token,skip:true})).body;}
+ assert.equal((await f.request('/attempts/'+a.id+'/review/'+qid+'/media/'+images[0].displayImage.sha256)).status,200);
+ assert.equal((await f.request('/attempts/'+a.id+'/review/'+qid+'/media/'+images[1].displayImage.sha256)).status,404);
 });

@@ -15,7 +15,7 @@ const { inputHash } = require('../full-mock/aggregation');
 const writing = require('../content/writing-predictions-sep-2026');
 const reading = require('../public/reading-predictions-sep-2026');
 const speaking = require('../content/speaking-bank');
-const previous = loadPaper('full-mock-1', 1), paper = loadPaper();
+const previous = loadPaper('full-mock-1', 1), paper = loadPaper('full-mock-1', 2);
 const root = path.resolve(__dirname, '..');
 const changedTypes = new Set(['ra', 'rs', 'di', 'swt', 'essay', 'dropdown', 'wordbank', 'sst', 'wfd']);
 
@@ -160,7 +160,7 @@ test('A pending original-paper attempt finishes with its saved questions and mar
   await engine.request('alice', id, { retry: true }); await engine.drain();
   assert.equal(calls.length, 64);
   const nextId = randomUUID();
-  await store.create('alice', nextId, paper, (key, at) => session.create(key, paper, at, { preview: true, assessmentSnapshot: engine.snapshot }), 2000);
+  await store.create('alice', nextId, paper, (key, at) => session.create(key, paper, at, { preview: true, assessmentSnapshot: engine.snapshotFor(paper) }), 2000);
   await store.update('alice', nextId, state => { session.end(state, paper, 2000); return state; });
   await engine.request('alice', nextId); await engine.drain();
   assert.equal((await engine.results('alice', nextId)).ready, true);

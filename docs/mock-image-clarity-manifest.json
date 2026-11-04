@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-04",
+  "papers": [
+    {
+      "id": "full-mock-1",
+      "version": 3,
+      "previousVersion": 2,
+      "sha256": "9ee2830cd29b4f2f3308d08e9d407f60857269b1340de7c7da9fc41ad0219a0c",
+      "graphs": [
+        "3000186",
+        "3000375",
+        "3000586",
+        "3000881"
+      ],
+      "map": "3000365"
+    },
+    {
+      "id": "full-mock-2",
+      "version": 2,
+      "previousVersion": 1,
+      "sha256": "0daa47e9aa4990c3fd0ec530ab27eeebd020a2bc931468bf20253c9442e5ffa5",
+      "graphs": [
+        "3000587",
+        "3000664",
+        "3001366",
+        "3001386"
+      ],
+      "map": "3000137"
+    },
+    {
+      "id": "full-mock-3",
+      "version": 2,
+      "previousVersion": 1,
+      "sha256": "a54539ae262638ae82dae399e790e5e1ab3555c971f59433b265acaf07eed546",
+      "graphs": [
+        "3000370",
+        "3000481",
+        "3000601",
+        "3001403"
+      ],
+      "map": "3000349"
+    }
+  ],
+  "originalsPreserved": true
+}
