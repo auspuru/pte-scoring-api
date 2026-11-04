@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="720" viewBox="0 0 1100 720" role="img" aria-labelledby="title desc">
+  <title id="title">Social Activities by Gender</title>
+  <desc id="desc">Number of people. Men: drama 10, painting 25, sculpture 10, language 20. Women: drama 20, painting 30, sculpture 5, language 40. Vertical axis: 0 to 40.</desc>
+  <rect width="1100" height="720" fill="white"/>
+  <g font-family="Arial, sans-serif" fill="#18314c">
+    <text x="550" y="58" text-anchor="middle" font-size="34" font-weight="700">Social Activities by Gender</text>
+    <rect x="391" y="90" width="23" height="23" fill="#159eea"/><text x="426" y="110" font-size="24">Men</text>
+    <rect x="571" y="90" width="23" height="23" fill="#6ec037"/><text x="606" y="110" font-size="24">Women</text>
+    <g stroke="#dce4ef" stroke-width="2"><path d="M125 170H1030 M125 270H1030 M125 370H1030 M125 470H1030 M125 570H1030"/></g>
+    <g font-size="24" text-anchor="end"><text x="107" y="578">0</text><text x="107" y="478">10</text><text x="107" y="378">20</text><text x="107" y="278">30</text><text x="107" y="178">40</text></g>
+    <path d="M125 165V570H1030" fill="none" stroke="#52677d" stroke-width="2.5"/>
+    <g data-axis-max="40" data-baseline="570" data-scale="10">
+      <g fill="#159eea">
+        <rect data-category="Drama" data-series="Men" data-value="10" x="170" y="470" width="73" height="100"/>
+        <rect data-category="Painting" data-series="Men" data-value="25" x="400" y="320" width="73" height="250"/>
+        <rect data-category="Sculpture" data-series="Men" data-value="10" x="630" y="470" width="73" height="100"/>
+        <rect data-category="Language" data-series="Men" data-value="20" x="860" y="370" width="73" height="200"/>
+      </g>
+      <g fill="#6ec037">
+        <rect data-category="Drama" data-series="Women" data-value="20" x="248" y="370" width="73" height="200"/>
+        <rect data-category="Painting" data-series="Women" data-value="30" x="478" y="270" width="73" height="300"/>
+        <rect data-category="Sculpture" data-series="Women" data-value="5" x="708" y="520" width="73" height="50"/>
+        <rect data-category="Language" data-series="Women" data-value="40" x="938" y="170" width="73" height="400"/>
+      </g>
+    </g>
+    <g font-size="25" text-anchor="middle" font-weight="700">
+      <text x="206.5" y="458">10</text><text x="284.5" y="358">20</text>
+      <text x="436.5" y="308">25</text><text x="514.5" y="258">30</text>
+      <text x="666.5" y="458">10</text><text x="744.5" y="508">5</text>
+      <text x="896.5" y="358">20</text><text x="974.5" y="158">40</text>
+    </g>
+    <g font-size="25" text-anchor="middle"><text x="245.5" y="612">Drama</text><text x="475.5" y="612">Painting</text><text x="705.5" y="612">Sculpture</text><text x="935.5" y="612">Language</text></g>
+    <text transform="translate(48 370) rotate(-90)" text-anchor="middle" font-size="24">Number of people</text>
+    <text x="577" y="676" text-anchor="middle" font-size="24">Social activity</text>
+  </g>
+</svg>

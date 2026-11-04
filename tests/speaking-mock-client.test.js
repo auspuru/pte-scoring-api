@@ -380,9 +380,9 @@ test('Old generated-image reports retain their saved image while a new reattempt
  const h=await harness(t),{id}=await sampleReport(h),legacy=structuredClone(require('../content/speaking-bank').questions.find(q=>q.id==='di-1'));
  await h.lab.store.update('alice',id,a=>{a.questions[17]=legacy;return a;});
  await h.click({sm:'resume',id});await h.click({sm:'filter',type:'di'});assert(h.nodes.get('sm-review-details').innerHTML.includes('/speaking-image/di-1.svg'));
- await h.click({sm:'reattempt',id});const fresh=await h.active();assert.equal(fresh.reattemptOf,id);assert.equal(fresh.questions[17].id,'di-pred-3000411');
+ await h.click({sm:'reattempt',id});const fresh=await h.active();assert.equal(fresh.reattemptOf,id);assert.equal(fresh.questions[17].id,'di-pred-3000186');
  assert.deepEqual((await h.lab.store.get('alice',id)).questions[17],legacy);
- assert.equal(require('../content/speaking-mocks').papers[0].questions[17].id,'di-pred-3000411');
+ assert.equal(require('../content/speaking-mocks').papers[0].questions[17].id,'di-pred-3000186');
 });
 
 test('Visible overall timer warns once and worker expiry cannot lock out an in-flight upload',{timeout:10000},async t=>{

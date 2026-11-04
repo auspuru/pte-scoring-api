@@ -110,24 +110,19 @@
     "di-pred-3000370": {
       "originalImageUrl": "/assets/di-predictions-20260930/3000370.png",
       "originalSha256": "8dfa0f0046b17c7c70e8382539963e5ca9ffc322b55c0e66f8c47e496366dfc3",
-      "displayImageUrl": "/assets/di-display-20261028/3000370-c2638133a26b.webp",
-      "displaySha256": "c2638133a26b684260805669bba5dabd1f092725bee2df6f59bb292af63eaf2c",
-      "bytes": 282952,
-      "derivation": "source-resampling",
-      "academyAsset": "assets/clear/upscaled/3000370.webp",
+      "displayImageUrl": "/assets/di-display-20261104/3000370-cf5f3a16b4b7.jpg",
+      "displaySha256": "cf5f3a16b4b76182cc76ffcbf964ace372ba8aa52ba3c12560667e22d9c6cfae",
+      "bytes": 38145,
+      "derivation": "same-image-higher-resolution",
       "legend": [],
-      "originalDimensions": [
-        504,
-        273
-      ],
-      "displayDimensions": [
-        1512,
-        819
-      ],
-      "roundTripRmse": 0.006086,
       "limitations": [
         "The curves have no exact labels for every point; plotted participant counts are approximate, not a complete numerical series."
-      ]
+      ],
+      "source": {
+        "url": "https://api.ptenepal.com/api/ptenepal/uploads/public/di-3000370.jpeg",
+        "reviewedAt": "2026-11-04",
+        "method": "Compared title, axes, series, labels and plotted values with the supplied original; exact downloaded bytes retained."
+      }
     },
     "di-pred-3000365": {
       "originalImageUrl": "/assets/di-predictions-20260930/3000365.png",
@@ -296,24 +291,19 @@
     "di-pred-3000481": {
       "originalImageUrl": "/assets/di-predictions-20260930/3000481.png",
       "originalSha256": "fc3c676f50e0e978db62a2415a63653b49d1aceb52804655bb9a74aa590b57cc",
-      "displayImageUrl": "/assets/di-display-20261028/3000481-b4526401b7e6.webp",
-      "displaySha256": "b4526401b7e6a1455830e314ddc400d712d30b636f8d556a99f812812d572fc7",
-      "bytes": 226840,
-      "derivation": "source-resampling",
-      "academyAsset": "assets/clear/upscaled/3000481.webp",
+      "displayImageUrl": "/assets/di-display-20261104/3000481-a85edba58534.jpg",
+      "displaySha256": "a85edba5853460778155efa7a0e640f5729779292c406c921c2ddc3287802052",
+      "bytes": 24929,
+      "derivation": "same-image-higher-resolution",
       "legend": [],
-      "originalDimensions": [
-        469,
-        341
-      ],
-      "displayDimensions": [
-        1407,
-        1023
-      ],
-      "roundTripRmse": 0.007536,
       "limitations": [
         "The projected lower-right annotation is too small for reliable transcription; no forecast numbers are inferred."
-      ]
+      ],
+      "source": {
+        "url": "https://api.ptenepal.com/api/ptenepal/uploads/public/di-3000481.jpeg",
+        "reviewedAt": "2026-11-04",
+        "method": "Compared title, axes, series, labels and plotted values with the supplied original; exact downloaded bytes retained."
+      }
     },
     "di-pred-3000469": {
       "originalImageUrl": "/assets/di-predictions-20260930/3000469.png",
