@@ -1,3 +1,26 @@
+# Neural refresh draft — 4 November 2026
+
+The 30 original-practice RTS questions now have separate immutable candidate
+keys ending `-prompt-20261104-1`. The draft current-question projection uses
+these fixed recordings for new attempts; it does not change the source situations,
+samples, question IDs or response timing. `rts-neural-manifest.json` records exact
+text/audio hashes, generation and transcription receipts, measured levels and
+lossless-master hashes. The six prior bundled neural recordings stay unchanged.
+
+Old snapshots without a keyed recording retain their original local narration
+and cache identity. New keyed snapshots never fall back to eSpeak if their
+recording is missing or mismatched. The earlier Edge authoring command now
+handles only its original prompt version so it cannot overwrite neural candidates.
+
+This is a listening-review draft, not a published refresh. Question 09 has an
+unresolved `noticed`/`notice` transcription difference, and full listening review
+is pending for the newly generated clips. Automated audio review failed to
+produce usable observations and is not a quality pass. See
+[the batch listening register](../review/rts-neural-20261104/README.md).
+
+The notes below describe the retained October version.
+
+
 # Respond to a Situation prompt format
 
 All 36 portal RTS questions use a short situation followed by a direct question naming the listener: `What would you say to ...?` The five older mock scenarios were rewritten into this format. Four practice endings now name the library staff, club member, accommodation office staff member or waiting students explicitly. The supplied Tom scenario uses the same final-question wording in the authored portal bank; its supplied source transcript remains unchanged.

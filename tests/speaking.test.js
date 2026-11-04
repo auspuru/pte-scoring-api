@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const bank=require('../content/speaking-bank'),scoring=require('../speaking-scoring'),delivery=require('../speaking-delivery'),{installSpeakingLab,transcribeRecording,question}=require('../speaking-lab');
 const {createStore}=require('../writing-lab-store'),localEngine=require('../local-scoring-engine');
 test('Speaking questions include the original situation practice set, samples and verified audio',()=>{
-  assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:124,recordings:35});
+  assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:124,recordings:65});
   assert(!bank.types.asq);assert.equal(new Set(bank.questions.map(q=>q.sample)).size,124);
   for(const q of bank.questions.filter(q=>q.type==='sgd'))assert.equal(new Set(q.turns.map(t=>t[0])).size,3);
 });
@@ -240,5 +240,5 @@ test('Supplied image questions serve their real asset path and reveal reference 
 
 test("Original situation questions expose the complete question without a missing audio URL",()=>{
  const rows=require("../content/rts-original-practice.json");assert.equal(rows.length,30);
- for(const row of rows){const q=bank.questions.find(q=>q.id===row.id);assert(q);assert.match(q.text,/What would you say[^?]*\?$/);const shown=question(q);assert.equal(shown.text,row.text);assert.equal(shown.audioUrl,undefined);assert.equal(shown.preparation,10);assert.equal(shown.seconds,40);}
+ for(const row of rows){const q=bank.questions.find(q=>q.id===row.id);assert(q);assert.match(q.text,/What would you say[^?]*\?$/);const shown=question(q);assert.equal(shown.text,row.text);assert.match(shown.audioUrl,/\?prompt=rts-original-20261024-\d+-prompt-20261104-1&v=sha256-/);assert.equal(shown.preparation,10);assert.equal(shown.seconds,40);}
 });

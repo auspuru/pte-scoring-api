@@ -479,12 +479,12 @@ test('Untimed practice waits for manual recording and stays active beyond the ti
 });
 test('Untimed RTS loads its saved situation audio and replay never starts a recorder',async()=>{
  const h=harness();await h.controller.open('rts');await h.click({speakingMode:'untimed'});await h.click({speakingQuestion:'rts-original-20261024-01'});
- const a=[...h.attempts.values()][0];assert(h.requests.some(r=>r.url==='/api/speaking/attempts/'+a.id+'/prompt'));assert.equal(h.audio.length,1);assert.equal(h.audio[0].paused,false);assert.equal(h.recorders.length,0);
+ const a=[...h.attempts.values()][0];assert.equal(h.audio[0].url,present(a).question.audioUrl);assert.match(h.audio[0].url,/prompt=rts-original-20261024-01-prompt-20261104-1/);assert.equal(h.audio.length,1);assert.equal(h.audio[0].paused,false);assert.equal(h.recorders.length,0);
  h.audio[0].onended();h.tick(120000);assert.equal(h.nodes.get('speaking-ready-start').hidden,false);assert.equal(h.recorders.length,0);
- await h.click({speakingAction:'replay-prompt'});assert.equal(h.audio.length,2);assert.equal(h.requests.filter(r=>r.url.endsWith('/prompt')).length,1);h.audio[1].onended();assert.equal(h.recorders.length,0);
+ await h.click({speakingAction:'replay-prompt'});assert.equal(h.audio.length,2);assert.equal(h.requests.filter(r=>r.url.endsWith('/prompt')).length,0);h.audio[1].onended();assert.equal(h.recorders.length,0);
  await h.click({speakingAction:'ready-record'});assert.equal(h.recorders.length,1);h.controller.reset();await flush();
 });
-test('Timed text-only RTS waits for prompt playback then gives the full preparation countdown',async()=>{
+test('Timed fixed-audio RTS waits for prompt playback then gives the full preparation countdown',async()=>{
  const h=harness();await h.controller.open('rts');await h.click({speakingQuestion:'rts-original-20261024-02'});h.tick(60000);assert.equal(h.nodes.get('speaking-phase').textContent,'Listening');assert.equal(h.recorders.length,0);
  h.audio[0].onended();assert.equal(h.nodes.get('speaking-clock').textContent,'0:10');h.tick(9999);assert.equal(h.recorders.length,0);h.tick(2);assert.equal(h.recorders.length,1);assert.equal(h.nodes.get('speaking-clock').textContent,'0:40');h.controller.reset();await flush();
 });
@@ -495,7 +495,7 @@ test('Mode-specific navigation does not resume a timed attempt as untimed, and p
  h.controller.reset();h.user('bob');await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});assert.equal([...h.attempts.values()].at(-1).practiceMode,'timed');h.controller.reset();
 });
 test('A failed RTS prompt keeps recording stopped and exposes a retry action',async()=>{
- const h=harness(),request=h.env.fetch;h.env.fetch=(url,opts)=>url.endsWith('/prompt')?Promise.resolve({ok:false}):request(url,opts);
+ const h=harness();h.env.Audio=class{constructor(){h.audio.push(this);}async play(){throw Error('Recording unavailable');}pause(){}};
  await h.controller.open('rts');await h.click({speakingQuestion:'rts-original-20261024-03'});assert.equal(h.recorders.length,0);assert.equal(h.nodes.get('speaking-record').hidden,false);assert.match(h.nodes.get('speaking-notice').textContent,/prompt.*retry/i);h.controller.reset();
 });
 
