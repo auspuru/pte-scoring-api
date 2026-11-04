@@ -21,6 +21,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     admin.get('/:username/:id/scoring', wrap(async (req, res) => res.json(await support.inspect(req.params.username, req.params.id))));
     admin.post('/:username/:id/scoring/exclude-audio', wrap(async (req, res) => res.json(await support.exclude(req.params.username, req.params.id, req.body))));
     admin.post('/:username/:id/scoring/exclude-delivery', wrap(async (req, res) => res.json(await support.excludeDelivery(req.params.username, req.params.id, req.body))));
+    admin.post('/:username/:id/scoring/review', wrap(async(req,res)=>{await assessor.review(req.params.username,req.params.id,req.body||{});res.json(await support.inspect(req.params.username,req.params.id));}));
     app.use('/api/admin/full-mocks', admin);
   }
   router.use(wrap(async (req, res, next) => {

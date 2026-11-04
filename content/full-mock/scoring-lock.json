@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "3a82d22e2b51b2d4f85f4490646f275e3c7244be",
+  "baseCommit": "32f66b0",
   "checkedAt": "2026-11-04",
-  "scope": "Approved versioned audio and fixed HIW playback, preserving the image clarity release and all prior assessment snapshots. Native graders, providers, weights, saved marks and frozen papers unchanged.",
+  "scope": "Opt-in administrator analysis, at most two retry rounds and explicit report publication. Approved audio, native graders, models, weights, frozen papers and confirmed marks retained.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -84,11 +84,11 @@
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
-        "sha256": "beff601c82209621acc5c3cf887e262872af57358abd101958249420f44a390a",
+        "sha256": "95b6aa39dc1f070d22ad95ecb65e19d391dacdac406b6291130797ed10d1e8af",
         "version": "full-mock-aggregation-2026-10-29.1"
       },
       "full-mock/api.js": {
-        "sha256": "74d400fa1438bc2ea0573af567d969f0375f1b5f864eef163108dbd904c56a53",
+        "sha256": "9643c74eb5e52295e2c78fd37f81a6d9ff9f47fa67c8c3ee6798fc903617bae1",
         "version": null
       },
       "full-mock/asq-scoring.js": {
@@ -96,11 +96,11 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "65520b5d003e047b80d535a776f3513bbb5fe777abe5eecc7275f2d741f84e00",
+        "sha256": "5105e55ee9e551e98aa7d82080d0e29d64ed63cce53bdae2272e9f353932f9f3",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
-        "sha256": "cb14bda7e8a6a1a5ab12a56058ab044dc670f3c42da1084041d5d28c9f79b494",
+        "sha256": "b92fe040ae104387d589d493ff3f5513c20ce4f3f1219729f7b1ccb4a0e584d7",
         "version": null
       },
       "full-mock/blueprint.js": {
@@ -108,7 +108,7 @@
         "version": null
       },
       "full-mock/exclusions.js": {
-        "sha256": "9ba8608328b13b462d495b5b37ca3b9fe7ae65d5f8bddfc664b16710544fde04",
+        "sha256": "cf2fccd5f69eb17b8f100253b94b7e2ad6c994c89f6e5c4bc4488f9fc8cf7e98",
         "version": null
       },
       "full-mock/paper.js": {
@@ -124,7 +124,7 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "f4b1c12767df25591c6badd5cf2364073bce0cdefec45875948e16240a996b7f",
+        "sha256": "87662d144407dd632ee54da6ffa77c08e232dfded2b712521c8c1c3239a83668",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
@@ -227,6 +227,10 @@
       "writing-lab-scoring.js": {
         "sha256": "a130307d850613728d40a36634b3aef337ea211a620695cc9e2217f0bbb1fad6",
         "version": "exam-practice-2026-10-09.1"
+      },
+      "mock-result-review.js": {
+        "sha256": "6b129f42dfebb0b46fb0f99d582398540ea1b96c3c0a37f1c459fc3841581878",
+        "version": null
       }
     }
   }

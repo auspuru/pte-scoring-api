@@ -2,6 +2,7 @@
   const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.AdminMockRecovery=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
+  const resultReview=typeof module==='object'&&module.exports?require('./admin-result-review'):globalThis.AdminResultReview;
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const stages=new Set(['transcription','content','azure','academy']);
   function canRepair(job,name,value){
@@ -21,7 +22,9 @@
     function paint(){
       const d=diagnostic;
       details.innerHTML='<p><strong>'+esc(d.accountedFor)+'/'+esc(d.total)+' questions accounted for · '+esc(d.status)+'</strong></p>'+(d.jobs||[]).filter(j=>j.status!=='ready').map(job=>'<section><h5>Question index '+esc(job.index)+'</h5>'+Object.entries(job.stages||{}).map(([name,s])=>'<p>'+esc(name)+': '+esc(s.status)+(s.code?' · '+esc(s.code):'')+(s.detail?' · '+esc(JSON.stringify(s.detail)):'')+(canRepair(job,name,s)?' <button type="button" class="btn-sm" data-mock-job="'+esc(job.id)+'" data-mock-stage="'+esc(name)+'">Retry missing '+esc(name)+'</button>':'')+'</p>').join('')+'</section>').join('');
-      if(d.deadlineRelease?.eligible)details.innerHTML+='<h5>Final unreached question</h5><p>Question '+esc(d.deadlineRelease.number)+' was not reached before the overall timer expired. All other 26 assessments are confirmed.</p><label>Exclusion note<textarea data-mock-deadline-note rows="3">This question was not reached before the overall timer expired. Excluded at instructor request; saved recordings and completed marks are retained.</textarea></label><label><input type="checkbox" data-mock-deadline-confirm> I confirm the instructor requested exclusion of Question '+esc(d.deadlineRelease.number)+'.</label><button type="button" class="btn-sm" data-mock-deadline-release>Exclude Question '+esc(d.deadlineRelease.number)+' and release report</button>';
+      if(d.deadlineRelease?.eligible&&!d.review?.started)details.innerHTML+='<h5>Final unreached question</h5><p>Question '+esc(d.deadlineRelease.number)+' was not reached before the overall timer expired. All other 26 assessments are confirmed.</p><label>Exclusion note<textarea data-mock-deadline-note rows="3">This question was not reached before the overall timer expired. Excluded at instructor request; saved recordings and completed marks are retained.</textarea></label><label><input type="checkbox" data-mock-deadline-confirm> I confirm the instructor requested exclusion of Question '+esc(d.deadlineRelease.number)+'.</label><button type="button" class="btn-sm" data-mock-deadline-release>Exclude Question '+esc(d.deadlineRelease.number)+' and release report</button>';
+      if(d.review?.started)details.innerHTML='<p><strong>'+esc(d.accountedFor)+'/'+esc(d.total)+' questions accounted for</strong></p>';
+      if(resultReview)details.innerHTML+=resultReview.render(d);
     }
     async function inspect(){
       if(busy)return;const id=input.value.trim();
@@ -34,6 +37,7 @@
     input.oninput=()=>{serial++;diagnostic=null;details.innerHTML='';notice.textContent='';};
     host.querySelector('[data-mock-inspect]').onclick=inspect;
     details.onclick=async event=>{
+      if(busy)return;if(resultReview&&await resultReview.act(event,{host,diagnostic,operations,operationId,request:async body=>request(path(diagnostic.attemptId)+(body?'/retry':''),body?{...body,mode:'instructor-review'}:undefined),commit:value=>{diagnostic=value;paint();},lock,notice:value=>{notice.textContent=value;}}))return;
       if(event.target.closest('[data-mock-deadline-release]')){
         if(busy||!diagnostic?.deadlineRelease?.eligible)return;
         const before=diagnostic,release=before.deadlineRelease,note=details.querySelector('[data-mock-deadline-note]').value.trim();

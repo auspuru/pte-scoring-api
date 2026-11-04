@@ -6,6 +6,7 @@ function readingRecords(progress){
 function snapshot(engine,a,record){
   if(!a)return null;
   const base={id:a.id,title:a.title||a.name,isMock:true,submitted:a.status==='submitted',finishedAt:Number(engine==='full'?(a.submittedAt??a.finishedAt):a.finishedAt),ready:false,held:false,pending:0};
+  if(require('./mock-result-review').held(a))return {...base,held:true,pending:1};
   if(engine==='reading'){
     base.isMock=!a.practiceUid&&Array.isArray(a.questions)&&a.questions.length>0;
     if(!base.isMock)return null;

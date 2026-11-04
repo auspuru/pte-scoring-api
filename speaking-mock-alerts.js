@@ -48,7 +48,7 @@ function createSpeakingMockAlerts({pool,directory,mockStore,progressive,mailer,f
   const provider=mailer?.provider||'smtp';
   const health={enabled,recipient:enabled?recipient:null,provider,transportConfigured:!!mailer&&!!from&&mailer.configured!==false,verified:false,verification:'not-checked',verifiedAt:null,lastError:null,lastSentAt:null};
   async function incident(username,a){
-    if(!a||a.status!=='submitted'||complete(a))return null;
+    if(!a||a.status!=='submitted'||require('./mock-result-review').held(a)||complete(a))return null;
     const candidate=await progressive.hydrate(username,a);let publicationFailed=false;
     if(complete(candidate)){try{await progressive.publish(username,a.id);a=await mockStore.get(username,a.id,{omitMockAudio:true});if(complete(a))return null;}catch{publicationFailed=true;}}
     const diagnostic=await progressive.diagnostics(username,a.id),submittedAt=a.finishedAt||a.deadline||a.startedAt;

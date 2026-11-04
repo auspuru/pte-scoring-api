@@ -67,6 +67,7 @@ jobs:
             .cache/swt-practice-*.png
             .cache/progress-fast-*.png
             .cache/speaking-mock-timer-*.png
+            .cache/admin-result-review-*.png
             public/index.min.js
           include-hidden-files: true
           if-no-files-found: error

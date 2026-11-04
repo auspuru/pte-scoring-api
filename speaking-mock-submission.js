@@ -12,7 +12,7 @@ function validRelease(a){
   &&a.responses?.[i]?.deadlineUnattempted===true&&a.responses[i].reason==='deadline-unattempted'&&!a.responses[i].recording);
 }
 const due=(a,now)=>a?.status==='active'&&now>=a.deadline&&(a.submission?.state!=='finalizing'||now>a.submission.closesAt);
-const blocked=a=>a?.submission?.state==='finalizing'||a?.submission?.state==='incomplete'&&!validRelease(a);
+const blocked=a=>a?.submission?.state==='finalizing'||a?.submission?.state==='incomplete'&&!validRelease(a)&&!require('./mock-result-review').publicationValid(a,'speaking');
 function progress(a){return {status:a.submission.state,ready:false,total:a.questionCount,pendingUploads:a.submission.pending||[],missingUploads:a.submission.missing||[],unattemptedQuestions:a.submission.unattempted||[],uploadClosesAt:a.submission.closesAt};}
 function reconcile(a,now,clock=require('./speaking-mock').timing){
  if(a.status!=='active'||now<a.deadline)return a;

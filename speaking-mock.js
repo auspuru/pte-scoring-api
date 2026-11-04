@@ -25,6 +25,7 @@ function reconcile(a,now=Date.now()){
   return submission.reconcile(a,now,timing);
 }
 function present(a,now=Date.now(),{completeOnly=false,progress}={}){
+  if(require('./mock-result-review').held(a))return {serverNow:now,id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,questionCount:a.questionCount,resultsReady:false,resultStatus:{status:'awaiting-instructor',ready:false,total:a.questionCount},speakingReport:null,overall:null,overallAzure:null};
   if(submission.blocked(a))return {serverNow:now,id:a.id,paperId:a.paperId,title:a.title,status:'submitted',startedAt:a.startedAt,deadline:a.deadline,index:a.index,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,submission:{...submission.progress(a)},grading:{status:a.submission.state},resultsReady:false,resultStatus:submission.progress(a),speakingReport:null,overall:null,overallAzure:null};
   if(completeOnly){const ready=a.status==='submitted'&&require('./speaking-mock-jobs').complete(a);if(!ready)return{serverNow:now,id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,integrity:a.integrity,grading:{status:'processing'},resultsReady:false,resultStatus:progress||{status:'preparing',ready:false,total:a.questionCount},speakingReport:null,overall:null,overallAzure:null,combinedOverall:null,overallFeedback:null,combinedComparisons:null,...(a.status==='active'&&a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],false),timing:timing(a,now)}:{})};}
 
@@ -75,7 +76,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     let claimed=false;
     let a=await store.update(uid,id,a=>{
       claimed=false;
-      if(submission.blocked(a)||a.status!=='submitted'||!['pending','processing'].includes(a.grading?.status))return a;
+      if(require('./mock-result-review').held(a)||submission.blocked(a)||a.status!=='submitted'||!['pending','processing'].includes(a.grading?.status))return a;
       if(a.lease&&a.lease.expiresAt>now())return a;
       claimed=true;a.lease={owner:instance,expiresAt:now()+120000};a.grading={status:'processing'};return a;
     });
@@ -134,6 +135,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     finally{clearInterval(heartbeat);}
   }
   function queue(uid,a,options){
+    if(require('./mock-result-review').held(a))return;
     if(useProgressive(a)&&!options?.overallOnly&&!options?.azureOverallOnly){const task=progressive.ensure(uid,a);task.catch(()=>console.warn('[speaking-mock] Saved answers will resume in the recovery scan.'));return task;}
     if(jobs.has(a.id))return jobs.get(a.id);
     if(submission.blocked(a)||a.status!=='submitted'||!['pending','processing'].includes(a.grading?.status)||jobs.size>=2)return;
@@ -194,7 +196,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
         deadline:startedAt+bank.OVERALL_MINUTES*60000,integrity:{protected:true,events:[]}};
     });res.json(view(a));
   }));
-  router.get('/attempts/:id/status',wrap(async(req,res)=>{const a=await readResults(req.mockUser,req.params.id);res.json(submission.blocked(a)?submission.progress(a):useProgressive(a)?await progressive.status(req.mockUser,a):{ready:a.grading?.status==='complete',status:a.grading?.status==='complete'?'ready':'preparing'});}));
+  router.get('/attempts/:id/status',wrap(async(req,res)=>{const a=await readResults(req.mockUser,req.params.id);res.json(require('./mock-result-review').held(a)?{status:'awaiting-instructor',ready:false,total:a.questionCount}:submission.blocked(a)?submission.progress(a):useProgressive(a)?await progressive.status(req.mockUser,a):{ready:a.grading?.status==='complete',status:a.grading?.status==='complete'?'ready':'preparing'});}));
   router.get('/attempts/:id',wrap(async(req,res)=>{const a=await readResults(req.mockUser,req.params.id);res.json(view(a));queue(req.mockUser,a);}));
   router.post('/attempts/:id/begin',limiter,wrap(async(req,res)=>{
     const a=await store.update(req.mockUser,req.params.id,a=>{if(!a)throw fail('Mock attempt not found.',404);reconcile(a,now());if(a.status!=='active'||submission.blocked(a))throw fail('This mock has finished.',409);if(req.body.index!==a.index)throw fail('A different question is active. Reopen the mock.',409);if(!a.questionStartedAt){a.questionStartedAt=now();if(req.body.timingVersion===2)a.questionTimingVersion=2;}return a;});res.json(view(a));
