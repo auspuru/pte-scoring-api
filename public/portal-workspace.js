@@ -14,12 +14,13 @@
   };
   const routes = Object.freeze({
     dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home', eyebrow: 'Your practice workspace', context: '' },
-    progress: { pane:'progressPane',nav:'nav-progress',title:'My Progress',path:'progress',eyebrow:'Your activity',context:'' },
+    progress: { pane:'progressPane',nav:'nav-saved-results',title:'My Progress',path:'progress',eyebrow:'Your activity',context:'' },
+    'saved-results': {pane:'savedResultsPane',nav:'nav-saved-results',title:'Results',path:'results',eyebrow:'Saved attempts',context:''},
     'practice-hub': { pane: 'practiceHubPane', nav: 'nav-practice-hub', title: 'Practice', path: 'practice', eyebrow: 'Individual questions', context: '' },
     'mock-tests': { pane: 'mockTestsPane', nav: 'nav-mock-tests', title: 'Mock Tests', path: 'mock-tests', eyebrow: 'Timed tests', context: '' },
     'speaking-mocks': {pane:'mockTestsPane',nav:'nav-mock-tests',catalogueModule:'speaking',title:'Speaking mocks',path:'speaking-mocks',eyebrow:'Mock Tests · Speaking',context:''},
     'speaking-run': {pane:'speakingMockPane',nav:'nav-mock-tests',speakingMock:true,title:'Speaking mock',path:'speaking-attempt',eyebrow:'Mock Tests · Speaking',context:''},
-    'speaking-history': {pane:'speakingMockPane',nav:'nav-mock-tests',speakingMock:true,mockHistory:true,title:'Saved speaking mocks',path:'speaking-mock-attempts',eyebrow:'Mock Tests · Saved attempts',context:''},
+    'speaking-history': {pane:'speakingMockPane',nav:'nav-saved-results',speakingMock:true,mockHistory:true,title:'Saved speaking mocks',path:'speaking-mock-attempts',eyebrow:'Mock Tests · Saved attempts',context:''},
     'full-mock': { pane:'fullMockPane',nav:'nav-mock-tests',fullMock:true,title:'Full mock',path:'full-mock',eyebrow:'Full Mock',context:'' },
     swt: { pane: 'swtPane', nav: 'nav-practice-hub', title: 'Summarise written text', path: 'swt', eyebrow: 'Practice · SWT', context: '' },
     practice: { pane: 'practiceScreen', nav: 'nav-practice-hub', title: 'Essay practice', path: 'essays', eyebrow: 'Practice · Essays', context: '' },
@@ -28,12 +29,12 @@
     ...Object.fromEntries(Object.entries({lmcma:'Multiple Choice, Multiple Answers',lfi:'Fill in the Blanks',hcs:'Highlight Correct Summary',lmcsa:'Multiple Choice, Single Answer',smw:'Select Missing Word',hiw:'Highlight Incorrect Words'}).map(([type,title])=>['listening-'+type,{pane:'writingLabScreen',nav:'nav-practice-hub',labTab:type,title,path:'listening-'+type,eyebrow:'Listening Practice',context:''}])),
     'listening-mocks': { pane:'mockTestsPane',nav:'nav-mock-tests',catalogueModule:'listening',title:'Listening sectional mocks',path:'listening-mocks',eyebrow:'Mock Tests · Listening',context:'' },
     'listening-run': { pane:'writingLabScreen',nav:'nav-mock-tests',labTab:'mocks',title:'Listening sectional mock',path:'listening-attempt',eyebrow:'Mock Tests · Listening',context:'' },
-    'listening-history': { pane:'writingLabScreen',nav:'nav-mock-tests',labTab:'history',title:'Listening mock attempts',path:'listening-mock-attempts',eyebrow:'Mock Tests · Saved attempts',context:'' },
+    'listening-history': { pane:'writingLabScreen',nav:'nav-saved-results',labTab:'history',title:'Listening mock attempts',path:'listening-mock-attempts',eyebrow:'Mock Tests · Saved attempts',context:'' },
     'writing-mocks': { pane: 'mockTestsPane', nav: 'nav-mock-tests', catalogueModule: 'writing', title: 'Writing sectional mocks', path: 'writing-mocks', eyebrow: 'Mock Tests · Writing', context: '' },
     'writing-run': { pane: 'writingLabScreen', nav: 'nav-mock-tests', labTab: 'mocks', title: 'Writing sectional mock', path: 'writing-attempt', eyebrow: 'Mock Tests · Writing', context: '' },
-    'writing-history': { pane: 'writingLabScreen', nav: 'nav-mock-tests', labTab: 'history', title: 'Writing mock attempts', path: 'writing-mock-attempts', eyebrow: 'Mock Tests · Saved attempts', context: '' },
+    'writing-history': { pane: 'writingLabScreen', nav: 'nav-saved-results', labTab: 'history', title: 'Writing mock attempts', path: 'writing-mock-attempts', eyebrow: 'Mock Tests · Saved attempts', context: '' },
     library: { pane: 'libraryPane', title: 'Essay Library', path: 'library', eyebrow: 'Review · Saved writing', context: '' },
-    reading: { pane: 'readingPane', nav: 'nav-mock-tests', title: 'Reading mock attempts', path: 'reading', eyebrow: 'Mock Tests · Reading', context: '' },
+    reading: { pane: 'readingPane', nav: 'nav-saved-results', title: 'Reading mock attempts', path: 'reading', eyebrow: 'Mock Tests · Reading', context: '' },
     ...Object.fromEntries(Object.entries(taskRoutes).map(([key,[title,type]]) => [key, { pane: 'readingPane', nav: 'nav-practice-hub', title, path: key, readingLibrary: type, eyebrow: (key.startsWith('reading-') ? 'Reading' : 'Listening') + ' Practice', context: '' }])),
     ...Object.fromEntries(Object.entries({ra:'Read Aloud',rs:'Repeat Sentence',di:'Describe Image',rl:'Retell Lecture',sgd:'Summarise Group Discussion',rts:'Respond to a Situation'}).map(([type,title])=>['speaking-'+type,{pane:'speakingPane',nav:'nav-practice-hub',speakingType:type,title,path:'speaking-'+type,eyebrow:'Speaking Practice',context: ''}])),
     vocab: { pane: 'vocabScreen', title: 'Vocabulary', path: 'vocabulary', eyebrow: 'Practice · Vocabulary', context: '' }
@@ -43,7 +44,7 @@
     const path = String(hash || '').replace(/^#\/?/, '').split(/[?\/]/)[0];
     if (path === 'next-steps') return 'progress';
     if (path === 'test-centre') return 'mock-tests';
-    return Object.keys(routes).find(key => routes[key].path === path) || (Object.hasOwn(routes, path) ? path : 'dashboard');
+    return Object.keys(routes).find(key => routes[key].path === path) || (Object.hasOwn(routes, path) ? path : 'practice-hub');
   }
 
   function questionHash(section, detail={}) {

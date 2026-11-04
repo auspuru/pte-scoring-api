@@ -15,7 +15,8 @@ for(const width of [1363,390,320])test('Practice choices are usable before slow 
   return{elapsed:performance.now()-start,choices:document.querySelectorAll('#practiceHubPane [data-practice-route]').length,text:document.getElementById('practiceHubPane').textContent};
  });
  assert(initial.choices>=15,'All permitted task choices exist synchronously');assert.doesNotMatch(initial.text,/Loading practice choices/);
- await page.locator('#practiceHubPane .practice-banner.reading summary').click();
+ await page.locator('#practiceHubPane [data-layout-skill="reading"]').click();
+ assert.equal(await page.$eval('[data-layout-skill="reading"]',e=>e.getAttribute('aria-pressed')),'true');
  await page.focus('[data-practice-route="reading-dropdown"]');await page.evaluate(()=>window.__practiceButton=document.querySelector('[data-practice-route="reading-dropdown"]'));
  assert(held.length>=2,'The menu is usable while catalogue and history requests are stalled');
  released=true;await Promise.allSettled(held.map(request=>request.continue()));

@@ -104,7 +104,7 @@ test('Speaking routes remain addressable and retired Next Steps opens My Progres
   h.controller.activate('next-steps');
   assert.equal(h.controller.current(), 'progress');
   assert.equal(h.nodes.get('progressPane').hidden, false);
-  assert.equal(h.nodes.get('nav-progress').attrs['aria-current'], 'page');
+  assert.equal(h.nodes.get('nav-saved-results').attrs['aria-current'], 'page');
 });
 
 test('Every Reading and Listening library opens the requested type without starting a mock', () => {
@@ -122,7 +122,7 @@ test('Every Reading and Listening library opens the requested type without start
   h.controller.activate('reading', { readingRequest: { mockId: 'practice-mock-4' } });
   assert.equal(opened.at(-1).mockId, 'practice-mock-4');
   assert.equal(opened.at(-1).mockOnly, true);
-  assert.equal(h.nodes.get('nav-mock-tests').attrs['aria-current'], 'page');
+  assert.equal(h.nodes.get('nav-saved-results').attrs['aria-current'], 'page');
 });
 
 test('Switching sections preserves draft nodes, cursor position and scroll, with only one active pane', () => {
@@ -150,7 +150,7 @@ test('Back and Forward restore the section without adding history entries or rou
   assert.equal(h.controller.current(), 'practice');
   h.controller.reset(); h.win.location.hash = '#/vocabulary'; h.events.hashchange();
   assert.equal(h.controller.current(), null);
-  assert.equal(routeFromHash('#/unexpected-route'), 'dashboard');
+  assert.equal(routeFromHash('#/unexpected-route'), 'practice-hub');
 });
 
 test('Mobile navigation moves focus to the active item and Escape returns it to the menu button', () => {

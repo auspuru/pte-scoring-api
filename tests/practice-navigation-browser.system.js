@@ -182,9 +182,9 @@ for(const width of [1363,390,320])test('Progress opens exact saved responses and
  });
  try {
  await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword','Synthetic-pass-123');await page.locator('#loginSubmitBtn').click();
- await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&location.hash==='#/home');
+ await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&location.hash==='#/practice');
  async function navigate(id){
-  if(width<640&&!await page.$eval('body',e=>e.classList.contains('portal-menu-open'))){
+  if(await page.$eval('#'+id,e=>!!e.closest('#portalSidebar'))&&!await page.$eval('body',e=>e.classList.contains('portal-menu-open'))){
    const hit=await page.$eval('#portalMenuToggle',e=>{const r=e.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('button')?.id;});
    assert.equal(hit,'portalMenuToggle','The visible Menu control must receive the pointer');
    await page.locator('#portalMenuToggle').click();
