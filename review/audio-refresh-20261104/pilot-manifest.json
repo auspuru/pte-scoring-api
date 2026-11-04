@@ -1,0 +1,90 @@
+{
+  "status": "candidate-only; editorial listening pending",
+  "engine": "eSpeak 1.48.15",
+  "voice": "en-us",
+  "wordsPerMinute": 160,
+  "encoding": "MP3 libmp3lame 64k",
+  "sourceCommit": "f142748df74e60841f59703df81203c626c3bf40",
+  "pilotNumbers": [
+    1,
+    2,
+    8,
+    17,
+    20,
+    26
+  ],
+  "clips": [
+    {
+      "questionId": "rts-original-20261024-01",
+      "title": "Assignment upload problem",
+      "pilot": true,
+      "file": "01-pilots/rts-original-20261024-01-espeak-160-e1be03a814f9.mp3",
+      "textSha256": "e1be03a814f96089f0e736ca7c4d21412927afb5fdf58070df48d04c245ea909",
+      "audioSha256": "76a736bb49139780594fe61829bff25483fcc8d4f1274effde61a8f225af1c51",
+      "bytes": 126475,
+      "seconds": 15.777959,
+      "decode": "passed",
+      "editorialListening": "pending"
+    },
+    {
+      "questionId": "rts-original-20261024-02",
+      "title": "Shared kitchen",
+      "pilot": true,
+      "file": "01-pilots/rts-original-20261024-02-espeak-160-0d6d34ee50b5.mp3",
+      "textSha256": "0d6d34ee50b5465491f9e34e8937b677275a374da0707dad41d67ba1d0efd8b8",
+      "audioSha256": "bce909de8230438a3eb99fa4ffc22c56b8639bb68655a65c67331e9cdf0da2b5",
+      "bytes": 125639,
+      "seconds": 15.673469,
+      "decode": "passed",
+      "editorialListening": "pending"
+    },
+    {
+      "questionId": "rts-original-20261024-08",
+      "title": "Duplicate membership payment",
+      "pilot": true,
+      "file": "01-pilots/rts-original-20261024-08-espeak-160-88210916c7d0.mp3",
+      "textSha256": "88210916c7d0e8bb459b81aafff8e328aa464cf2093372364d94b2708b7c1663",
+      "audioSha256": "cb363cc5e7097a26c26000b734a7fe857fd36f74b3d4cc8dfcb3afede57030d9",
+      "bytes": 128565,
+      "seconds": 16.039184,
+      "decode": "passed",
+      "editorialListening": "pending"
+    },
+    {
+      "questionId": "rts-original-20261024-17",
+      "title": "A work roster conflict",
+      "pilot": true,
+      "file": "01-pilots/rts-original-20261024-17-espeak-160-5e35c1c17e6c.mp3",
+      "textSha256": "5e35c1c17e6c072fb1a96cce9692e34654d39689f5b615933f21babdfbba8d3c",
+      "audioSha256": "cddca941cfc4c498075e7a0dfe79bf867386d18b1ae82b3d3e83d876a433c724",
+      "bytes": 111638,
+      "seconds": 13.923265,
+      "decode": "passed",
+      "editorialListening": "pending"
+    },
+    {
+      "questionId": "rts-original-20261024-20",
+      "title": "An accessible event venue",
+      "pilot": true,
+      "file": "01-pilots/rts-original-20261024-20-espeak-160-42e9cdd145bf.mp3",
+      "textSha256": "42e9cdd145bfe7230cc0e557ffce978bf75cc4cdf789d0b46fa080f0d94417c8",
+      "audioSha256": "7112fdc8f8982812c90bfa49982efe0601efd6080d07b0dd50dae4e598e69213",
+      "bytes": 124803,
+      "seconds": 15.56898,
+      "decode": "passed",
+      "editorialListening": "pending"
+    },
+    {
+      "questionId": "rts-original-20261024-26",
+      "title": "An overdue equipment return",
+      "pilot": true,
+      "file": "01-pilots/rts-original-20261024-26-espeak-160-1a01a74ccff0.mp3",
+      "textSha256": "1a01a74ccff053c3ff1c2e4b72eedd3d598d4838727fa03a3b5ca1b5de05ac2f",
+      "audioSha256": "d24ba9e1551baa8a5dde96327765bfcffedfde7f797fdac0cfc23826ef8ee05c",
+      "bytes": 146955,
+      "seconds": 18.337959,
+      "decode": "passed",
+      "editorialListening": "pending"
+    }
+  ]
+}
