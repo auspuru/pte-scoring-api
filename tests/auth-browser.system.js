@@ -198,7 +198,7 @@ test('Staff recovery inspects one owned attempt and retries only its missing con
  await page.click('[data-mock-inspect]');await page.waitForFunction(()=>document.querySelector('[data-mock-notice]')?.textContent.includes('complete report is ready'));
  assert.equal(await page.$$eval('[data-mock-stage]',els=>els.length),0);
 });
-test('Staff releases a final failed RS or ASQ with one explicit exclusion on mobile and desktop',{timeout:90000},async t=>{
+test('Staff releases the final failed Repeat Sentence or ASQ with one explicit exclusion on mobile and desktop',{timeout:90000},async t=>{
  const f=await fixture(t),username='rs-release-browser';await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:'rs-release@example.test'});
  const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
  for(const mode of ['delivery','transcription'])for(const width of [390,1440]){
