@@ -69,7 +69,13 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
       const segments = response.segments.filter(value => !value.cancelled && value.chunkCount !== 0);
       if (!segments.length && ['skipped','finished-early'].includes(response.reason)) return { ...zero(q, 'Explicitly unanswered'), stages };
       if (!recording) return { status: 'pending', version: VERSION, reason: 'recording-not-ready', stages };
-      const transcript = await stage('transcription', () => transcribe(recording), value => typeof value === 'string' && !!value.trim());
+      const transcript = await stage('transcription', async () => {
+        const value = await transcribe(recording);
+        // A successful recogniser response containing no words is audio evidence,
+        // unlike a network, account or malformed-provider-response failure.
+        if (typeof value === 'string' && !value.trim()) throw Object.assign(Error('No intelligible speech was recognised.'), { code:'unintelligible_audio' });
+        return value;
+      }, value => typeof value === 'string' && !!value.trim());
       if (!transcript) return failed('transcription-unavailable');
       if (q.type === 'asq') {
         const marked = asq.scoreTranscript(q, transcript);
@@ -95,7 +101,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
               descriptor:typeof trait.descriptor === 'string' ? trait.descriptor.slice(0, 2000) : '', coaching:typeof trait.coaching === 'string' ? trait.coaching.slice(0, 3000) : '',
               words:Array.isArray(trait.words) ? trait.words.filter(word => word && typeof word.word === 'string').slice(0, 20).map(word => ({ word:word.word.slice(0, 200), errorType:String(word.errorType || '').slice(0, 80) })) : [] };
         }
-        stages.delivery = { status: Object.keys(traits).length === 2 ? 'complete' : 'partial', attemptedRun: run, traits, uncertain: error ? require('../mock-recovery-policy').failure(error).uncertain : false, ...(error?{failureCode:require('../mock-recovery-policy').failure(error).code,recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked}:{}) };
+        stages.delivery = { status: Object.keys(traits).length === 2 ? 'complete' : 'partial', attemptedRun: run, traits, uncertain: error ? require('../mock-recovery-policy').failure(error).uncertain : false, ...(!error&&raw?.deliveryEvidence?.sufficient===false?{audioQuality:'insufficient-speech'}:{}), ...(error?{failureCode:require('../mock-recovery-policy').failure(error).code,recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked}:{}) };
         await checkpoint(stages);
       }
       if (stages.delivery?.status !== 'complete') return failed('delivery-unavailable');

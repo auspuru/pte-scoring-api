@@ -100,6 +100,17 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Exact audio-evidence/publication upgrade. Preserve frozen models, native
+  // score functions, successful jobs and snapshots; no arbitrary source drift.
+  const unclearBaseline=require('../content/full-mock/unclear-audio-compatible-sources.json');
+  const unclearPins={"full-mock/adapters.js":"b60ac3338309a30713914e855167ecd97d3c0df2a777a67981d28a9a69e04a2c","full-mock/exclusions.js":"9ba8608328b13b462d495b5b37ca3b9fe7ae65d5f8bddfc664b16710544fde04","full-mock/report.js":"f4b1c12767df25591c6badd5cf2364073bce0cdefec45875948e16240a996b7f"};
+  if(digest(unclearBaseline)==='a19d40afbfc52a9ec1812adc05640071193589d74244aefa31d00e54747db64b'&&Object.entries(unclearPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of [...Object.keys(unclearPins),'full-mock/assessment.js'])sources.files[file]=structuredClone(unclearBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(unclearBaseline))return digest(saved)===digest(current);
+  }
+
   // Email registration/recovery only; retain the preceding session-security
   // snapshot and its historical compatibility chain for existing attempts.
   const emailBaseline=require('../content/full-mock/account-email-compatible-sources.json');
@@ -455,7 +466,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     }
     try {
       await Promise.all([itemWorker(), itemWorker()]);
-      state = await save(current => { current.assessment.status = aggregate(savedPaper, current).ready ? 'complete' : closing ? 'processing' : 'needs-attention'; if (!closing) { current.assessment.finishedAt = now(); scheduleRecovery(current.assessment, now()); require('./exclusions').releaseExhausted(current,savedPaper,now(),{leaseId:lease}); } });
+      state = await save(current => { current.assessment.status = aggregate(savedPaper, current).ready ? 'complete' : closing ? 'processing' : 'needs-attention'; if (!closing) { current.assessment.finishedAt = now(); scheduleRecovery(current.assessment, now()); require('./exclusions').releaseUnclearAudio(current,savedPaper,now(),{leaseId:lease}); require('./exclusions').releaseExhausted(current,savedPaper,now(),{leaseId:lease}); } });
       await store.update(uid, id, current => { if (current.assessment.lease?.id === lease) delete current.assessment.lease; return current; });
       const result = aggregate(savedPaper, state);
       console.info('[full-mock-assessment]', JSON.stringify({ uid, id, status:state.assessment.status, assessedCount:result.assessedCount, pendingReasons:[...new Set(Object.values(state.assessment.items).filter(item => item.status !== 'assessed').map(item => item.result?.reason || item.reason || item.status))] }));
@@ -470,6 +481,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     const record=await store.get(uid,id);if(!record)return false;
     const state = await store.update(uid, id, state => {
       const a = state.assessment, r = a?.recovery;
+      if(state.status==='submitted'&&a?.status==='needs-attention'){validate(state);if(require('./exclusions').releaseUnclearAudio(state,record.paper,now()))return state;}
       if(state.status==='submitted'&&a?.status==='needs-attention'&&r?.status==='exhausted'){
         validate(state);require('./exclusions').releaseExhausted(state,record.paper,now());return state;
       }
