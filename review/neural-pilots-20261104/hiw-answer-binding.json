@@ -1,0 +1,44 @@
+{
+  "questionId": "hiw-institutions-c2",
+  "passage": "Institutional resilience is often contrasted with an organisation's capacity to preserve existing arrangements. Yet an institution that remains receptive to criticism may appear stable precisely because the costs of its rigidity are borne elsewhere. Adaptation, by contrast, entails distinguishing dispensable commitments from procedures whose authority rests largely on precedent. The difficulty is that ostensibly pragmatic reforms can eradicate the very asymmetries they purport to remedy. Consequently, resilience should be understood neither as indiscriminate flexibility nor as unqualified continuity, but as a capacity for revision unconstrained by publicly defensible purposes. What matters is whether dissent can alter decisions without dissolving the unilateral obligations that make collective action possible. Such responsiveness requires judgement, rather than the mechanical application of a universal blueprint.",
+  "answers": [
+    4,
+    18,
+    39,
+    57,
+    84,
+    100
+  ],
+  "corrections": [
+    {
+      "index": 4,
+      "written": "contrasted",
+      "spoken": "conflated"
+    },
+    {
+      "index": 18,
+      "written": "receptive",
+      "spoken": "impervious"
+    },
+    {
+      "index": 39,
+      "written": "dispensable",
+      "spoken": "indispensable"
+    },
+    {
+      "index": 57,
+      "written": "eradicate",
+      "spoken": "entrench"
+    },
+    {
+      "index": 84,
+      "written": "unconstrained",
+      "spoken": "constrained"
+    },
+    {
+      "index": 100,
+      "written": "unilateral",
+      "spoken": "reciprocal"
+    }
+  ]
+}
