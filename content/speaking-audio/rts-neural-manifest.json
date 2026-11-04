@@ -413,7 +413,7 @@
       "reason": "Audio reviewer returned empty or non-observational output; not accepted as listening evidence.",
       "audioSha256": "670b2cf273eef22fcc8f6ca87b975303b125a916427c4a61bee6590635491845"
     },
-    "transcriptStatus": "unresolved-noticed-versus-notice",
+    "transcriptStatus": "user-accepted-minor-notice-noticed-variation",
     "losslessMaster": {
       "path": "content/speaking-audio/masters/rts-neural-20261104/rts-original-20261024-09-prompt-20261104-1.flac",
       "sha256": "dd19317849f1615d8c3eb79acfab80b70ca8029e25a0a02ef3e2f7f097397ea6",
@@ -421,7 +421,7 @@
       "channels": 1,
       "sampleFormat": "s16"
     },
-    "releaseReview": "Human listening pending; do not publish from this draft."
+    "releaseReview": "Rejected for user-reported distortion. Do not publish this recording. A separate pilot-speed candidate is awaiting listening review."
   },
   "rts-original-20261024-10-prompt-20261104-1": {
     "questionId": "rts-original-20261024-10",

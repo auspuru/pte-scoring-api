@@ -1,0 +1,7 @@
+{
+  "model": "gpt-4o-transcribe",
+  "requestId": "req_fdaed93775f5426c87b7108b296e8c53",
+  "audioSha256": "9d9f93500157fcafcddafb669bb6e81b30f56f6b69a01adfe75d5453253e24a8",
+  "transcript": "You bought a vegetarian sandwich from the campus cafe, but after opening the bag, you notice that it contains a chicken sandwich. Your next class starts in 10 minutes, and you need a suitable replacement before you leave. What would you say to the cafe staff?",
+  "sourcePromptProvided": false
+}

@@ -12,9 +12,10 @@ and cache identity. New keyed snapshots never fall back to eSpeak if their
 recording is missing or mismatched. The earlier Edge authoring command now
 handles only its original prompt version so it cannot overwrite neural candidates.
 
-This is a listening-review draft, not a published refresh. Question 09 has an
-unresolved `noticed`/`notice` transcription difference, and full listening review
-is pending for the newly generated clips. Automated audio review failed to
+This is a listening-review draft, not a published refresh. Question 09 was rejected for user-reported audio distortion. The user accepts
+the minor `notice`/`noticed` variation. A new pilot-speed, gain-only candidate
+is provided separately for listening comparison. Full listening review remains
+pending for the newly generated clips. Automated audio review failed to
 produce usable observations and is not a quality pass. See
 [the batch listening register](../review/rts-neural-20261104/README.md).
 

@@ -4,7 +4,7 @@ The five neural pilot profiles were approved by the user. This batch prepares th
 
 **Not released:** all new clips except the approved question 01 still need full listening review. Automated auditory review returned empty or non-observational results and is recorded as unverified, not passed.
 
-**Question 09 is unresolved:** independent ASR repeatedly hears “notice” instead of the source “noticed”. Its final question is present in this candidate. The source text has not been changed to make the check pass. Keep this clip out of a release until the exact past-tense word is audibly verified or corrected.
+**Question 09 was reported distorted by the user.** The user explicitly accepts the minor “notice/noticed” variation; it is no longer a word-level blocker. Keep the existing question-09 candidate out of release for audio quality. A [new MP3](q9-quality-repair/q9-pilot-speed-gain-only.mp3), [gain-matched lossless WAV](q9-quality-repair/q9-pilot-speed-gain-only.wav) and [untouched native WAV](q9-quality-repair/q9-original-unprocessed.wav) are available for comparison. The new render returns to the approved pilot’s 0.95 synthesis speed; processing is a constant volume adjustment only, with no dynamic normalization, limiting or tempo processing. This is a diagnostic comparison, not an established distortion fix until heard.
 
 Independent ASR matches the other 29 scripts, allowing spelling and number-format variants. Every delivery file fully decodes and passes the 5–35 second RTS range and final true-peak limit. Words/minute is descriptive, including phrase pauses; recordings outside the approximate 145–165 house guide need pace review.
 
@@ -20,7 +20,7 @@ Click a recording, then select View raw / Download raw file to listen.
 | 06 | [Food for a club event](../../content/speaking-audio/rts-original-20261024-06-prompt-20261104-1.mp3) | 16.6s | 170.0 | Word match (orthographic variants allowed) |
 | 07 | [Missed safety training](../../content/speaking-audio/rts-original-20261024-07-prompt-20261104-1.mp3) | 17.9s | 157.5 | Word match (orthographic variants allowed) |
 | 08 | [Duplicate membership payment](../../content/speaking-audio/rts-original-20261024-08-prompt-20261104-1.mp3) | 15.4s | 167.2 | Word match (orthographic variants allowed) |
-| 09 | [Wrong takeaway order](../../content/speaking-audio/rts-original-20261024-09-prompt-20261104-1.mp3) | 19.4s | 142.5 | Needs noticed/notice review |
+| 09 | [Wrong takeaway order](../../content/speaking-audio/rts-original-20261024-09-prompt-20261104-1.mp3) | 19.4s | 142.5 | Rejected: user reported distortion |
 | 10 | [A parcel at the wrong door](../../content/speaking-audio/rts-original-20261024-10-prompt-20261104-1.mp3) | 16.4s | 167.9 | Word match (orthographic variants allowed) |
 | 11 | [Interview during a field trip](../../content/speaking-audio/rts-original-20261024-11-prompt-20261104-1.mp3) | 19.1s | 147.8 | Word match (orthographic variants allowed) |
 | 12 | [Quiet time for an interview](../../content/speaking-audio/rts-original-20261024-12-prompt-20261104-1.mp3) | 15.8s | 178.8 | Word match (orthographic variants allowed) |
@@ -47,6 +47,6 @@ The runtime draft assigns a new immutable prompt key to new practice snapshots. 
 
 Model, voice, speed, exact instructions, API request receipts, source/audio/master hashes, level measurements, independent transcripts and review status are retained in `content/speaking-audio/rts-neural-manifest.json`. Native 24 kHz lossless FLAC masters are retained in `content/speaking-audio/masters/rts-neural-20261104/`.
 
-Release gate: resolve question 09; listen through all remaining recordings and record the decision against each audio hash; verify applicable desktop/timing/cache/history checks; require final-head CI before normal publication. No additional mobile-browser campaign is included.
+Release gate: resolve question 09 audio distortion; listen through all remaining recordings and record the decision against each audio hash; verify applicable desktop/timing/cache/history checks; require final-head CI before normal publication. No additional mobile-browser campaign is included.
 
 Authoring helper: `python scripts/author-rts-neural.py --verify` verifies source and delivery/master hashes and full decoding without a provider call. `--generate QUESTION_ID --output work/rts-review-candidates` explicitly authors a single resumable review candidate using the recorded settings, without modifying deployed files. Candidate synthesis, independent transcription and listening review are separate gates.
