@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os'),express=require('express'),puppeteer=require('puppeteer'),run=require('node:util').promisify(require('node:child_process').execFile);
 const {installSpeakingLab}=require('../speaking-lab'),{until}=require('./helpers/full-mock-systems');
 const root=path.resolve(__dirname,'..');
-for(const width of [1365,390])test('Speaking practice '+width+'px: RTS modes plus buffered RL/SGD preparation and recording cues',{timeout:60000},async t=>{
+for(const width of [1365,390])test('Speaking practice '+width+'px: RTS modes plus RL/SGD pre-audio buffer, ten-second preparation and recording cues',{timeout:60000},async t=>{
  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-modes-browser-')),source=path.join(root,'content/speaking-audio/rs-1.mp3'),clip=path.join(directory,'prompt.mp3'),mic=path.join(directory,'mic.wav');
  await run('ffmpeg',['-hide_banner','-loglevel','error','-nostdin','-y','-i',source,'-t','2','-c:a','libmp3lame',clip]);await run('ffmpeg',['-hide_banner','-loglevel','error','-nostdin','-y','-i',source,'-ar','48000','-ac','1','-c:a','pcm_s16le',mic]);
  const app=express();app.use(express.json());app.get('/speaking-audio/:id.mp3',(_,res)=>res.type('audio/mpeg').sendFile(clip));const service=installSpeakingLab(app,{directory,verifyToken:token=>token==='fixture'?'fixture':null,getAccount:async()=>({}),transcriptionAvailable:true,transcribe:async()=> 'Could you help me submit my assignment another way?',deliveryAssessmentAvailable:false,azureComparisonAvailable:false,narratePrompt:async()=>clip});
@@ -21,12 +21,16 @@ for(const width of [1365,390])test('Speaking practice '+width+'px: RTS modes plu
  assert.equal(await page.$eval('#speaking-clock',e=>e.textContent),'0:10');assert.equal(await page.evaluate(()=>__records),1);await page.evaluate(()=>__offset+=9000);assert.equal(await page.evaluate(()=>__records),1);await page.evaluate(()=>__offset+=1100);await page.waitForFunction(()=>__records===2);
  const previousBytes=await page.evaluate(()=>__bytes);await page.waitForFunction(bytes=>__bytes>bytes+100,{},previousBytes);await page.evaluate(()=>__offset+=40001);await until(async()=>(await service.store.list('fixture')).filter(a=>a.recording).length===2,'Timed response did not stop and save');
  for(const [type,questionId,seconds] of [['rl','rl-1',40],['sgd','sgd-1',120]]){
-  const before=await page.evaluate(()=>({records:__records,beeps:__beeps}));
+  const before=await page.evaluate(()=>({records:__records,beeps:__beeps,plays:__plays}));
   await page.evaluate(type=>SpeakingPractice.open(type),type);await click('[data-speaking-question="'+questionId+'"]');
+  await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Audio starts in');
+  assert.equal(await page.$eval('#speaking-clock',e=>e.textContent),'0:05');assert.equal(await page.evaluate(()=>__plays),before.plays);
+  await page.evaluate(()=>__offset+=4000);assert.equal(await page.evaluate(()=>__plays),before.plays);
+  await page.evaluate(()=>__offset+=1100);await page.waitForFunction(n=>__plays===n,{},before.plays+1);
   await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Preparation');
-  assert.equal(await page.$eval('#speaking-clock',e=>e.textContent),'0:15');
-  await page.evaluate(()=>__offset+=10000);assert.equal(await page.evaluate(()=>__records),before.records);assert.equal(await page.evaluate(()=>__beeps),before.beeps);
-  await page.evaluate(()=>__offset+=5100);await page.waitForFunction(n=>__records===n,{},before.records+1);
+  assert.equal(await page.$eval('#speaking-clock',e=>e.textContent),'0:10');
+  await page.evaluate(()=>__offset+=9000);assert.equal(await page.evaluate(()=>__records),before.records);assert.equal(await page.evaluate(()=>__beeps),before.beeps);
+  await page.evaluate(()=>__offset+=1100);await page.waitForFunction(n=>__records===n,{},before.records+1);
   assert.equal(await page.evaluate(()=>__beeps),before.beeps+1);
   const remaining=await page.$eval('#speaking-clock',e=>e.textContent.split(':').reduce((n,v)=>n*60+Number(v),0));assert(remaining>=seconds-1,'The beep must not consume the response window');
   const bytes=await page.evaluate(()=>__bytes);await page.waitForFunction(n=>__bytes>n+100,{},bytes);

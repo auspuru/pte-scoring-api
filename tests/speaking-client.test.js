@@ -178,7 +178,7 @@ test('Repeat Sentence hides the transcript prompt, plays once automatically, the
 
 test('Audio-prompt tasks show Skip preparation only after the prompt has finished',async()=>{
   const h=harness();await h.controller.open('rl');await h.click({speakingQuestion:'rl-1'});
-  assert.equal(h.nodes.get('speaking-skip').hidden,true);h.audio[0].onended();
+  assert.equal(h.nodes.get('speaking-skip').hidden,true);h.audio[0].onended();assert.equal(h.nodes.get('speaking-phase').textContent,'Audio starts in');h.tick(5000);await flush();h.audio[0].onended();
   assert.equal(h.nodes.get('speaking-phase').textContent,'Preparation');assert.equal(h.nodes.get('speaking-skip').hidden,false);
   await h.click({speakingAction:'skip'});assert.equal(h.recorders[0].state,'recording');
 });
@@ -509,15 +509,17 @@ test('Speaking direct saved response retains feedback with navigation disabled u
 });
 
 for(const type of ['rl','sgd']){
- test(type+': timed practice adds five preparation seconds and one cue before the full response',async()=>{
+ test(type+': timed practice waits five seconds before audio then gives ten seconds preparation and one cue',async()=>{
   const h=harness({audioCue:true}),q=bank.questions.find(q=>q.type===type);await h.controller.open(type);await h.click({speakingQuestion:q.id});
+  assert.equal(h.nodes.get('speaking-phase').textContent,'Audio starts in');assert.equal(h.nodes.get('speaking-clock').textContent,'0:05');assert.equal(h.audio[0].paused,true);
+  h.tick(4999);await flush();assert.equal(h.audio[0].paused,true);assert.equal(h.cueAudio.tones.length,0);h.tick(1);await flush();assert.equal(h.audio[0].paused,false);
   h.tick(30000);assert.equal(h.recorders.length,0,'Prompt playback must finish before preparation');h.audio[0].onended();
-  assert.equal(h.nodes.get('speaking-clock').textContent,'0:15');h.tick(10000);assert.equal(h.cueAudio.tones.length,0);h.tick(4999);assert.equal(h.recorders.length,0);h.tick(1);
+  assert.equal(h.nodes.get('speaking-clock').textContent,'0:10');h.tick(9999);assert.equal(h.cueAudio.tones.length,0);assert.equal(h.recorders.length,0);h.tick(1);
   assert.equal(h.cueAudio.tones.length,1);assert.equal(h.recorders.length,0);h.tick(299);assert.equal(h.recorders.length,0);h.tick(1);assert.equal(h.recorders.length,1);
   assert.equal(h.nodes.get('speaking-clock').textContent,time(q.seconds));h.tick(q.seconds*1000-1);assert.equal(h.recorders[0].state,'recording');h.tick(1);assert.equal(h.recorders[0].state,'inactive');await flush();h.controller.reset();
  });
  test(type+': skip preparation still plays one cue and leaving cancels capture',async()=>{
-  const h=harness({audioCue:true}),q=bank.questions.find(q=>q.type===type);await h.controller.open(type);await h.click({speakingQuestion:q.id});h.audio[0].onended();
+  const h=harness({audioCue:true}),q=bank.questions.find(q=>q.type===type);await h.controller.open(type);await h.click({speakingQuestion:q.id});h.tick(5000);await flush();h.audio[0].onended();
   await h.click({speakingAction:'skip'});await h.click({speakingAction:'skip'});assert.equal(h.cueAudio.tones.length,1);h.controller.leave();h.tick(1000);assert.equal(h.recorders.length,0);
  });
  test(type+': untimed practice remains manually started',async()=>{
@@ -525,3 +527,15 @@ for(const type of ['rl','sgd']){
   assert.equal(h.nodes.get('speaking-clock').textContent,'Untimed');assert.equal(h.recorders.length,0);await h.click({speakingAction:'ready-record'});assert.equal(h.recorders.length,1);assert.equal(h.cueAudio.tones.length,0);h.controller.reset();
  });
 }
+
+for(const type of ['rl','sgd'])test(type+': leaving or backgrounding during the pre-audio buffer prevents late playback',async()=>{
+ for(const hidden of [false,true]){
+  const h=harness({audioCue:true}),q=bank.questions.find(q=>q.type===type);await h.controller.open(type);await h.click({speakingQuestion:q.id});
+  if(hidden){h.doc.hidden=true;h.events.visibilitychange();}else h.controller.leave();
+  h.tick(10000);await flush();assert.equal(h.audio[0].paused,true);assert.equal(h.recorders.length,0);assert.equal(h.cueAudio.tones.length,0);h.controller.reset();
+ }
+});
+
+test('Leaving exactly when the pre-audio countdown expires cancels queued playback',async()=>{
+ const h=harness(),q=bank.questions.find(q=>q.type==='rl');await h.controller.open('rl');await h.click({speakingQuestion:q.id});h.tick(5000);h.controller.leave();await flush();assert.equal(h.audio[0].paused,true);assert.equal(h.recorders.length,0);
+});
