@@ -1,0 +1,338 @@
+{
+  "status": "listening-review candidates only; not deployed",
+  "model": "gpt-4o-mini-tts-2025-12-15",
+  "sourceCommit": "f142748df74e60841f59703df81203c626c3bf40",
+  "clips": [
+    {
+      "kind": "rts",
+      "questionId": "rts-original-20261024-01",
+      "title": "Assignment upload problem",
+      "textSha256": "e1be03a814f96089f0e736ca7c4d21412927afb5fdf58070df48d04c245ea909",
+      "spokenTextSha256": "e1be03a814f96089f0e736ca7c4d21412927afb5fdf58070df48d04c245ea909",
+      "audioSha256": "fcf871e34bb9f7be4d01f3deaf24f5de4dae6079d5c9f0ca2b0e7c4e1b63a30a",
+      "bytes": 342764,
+      "seconds": 17.112,
+      "wordsPerMinuteIncludingPauses": 161.3,
+      "loudnessLUFS": -18.45,
+      "truePeakDbTP": -2.85,
+      "decode": "passed",
+      "listeningReview": "pending user review",
+      "generationReceipts": [
+        {
+          "inputHash": "896e3a1e3b83f76a1854251db8fd49fe9c67579956290c1763e95e902ffb61bb",
+          "textSha256": "e1be03a814f96089f0e736ca7c4d21412927afb5fdf58070df48d04c245ea909",
+          "model": "gpt-4o-mini-tts-2025-12-15",
+          "voice": "marin",
+          "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+          "speed": 0.95,
+          "requestId": "req_4ae7b37dd3e24ff3a36010f12f2b7c50",
+          "createdAt": "2026-11-04T04:24:20.154197+00:00",
+          "master": "rts-896e3a1e3b83.wav",
+          "nativeRateHz": 24000,
+          "sha256": "f115828ec0da1dcbf5513c1f631deb3f5b221ceff557b12afdd060b2f9dac23e",
+          "losslessFlac": "masters/rts-896e3a1e3b83.flac",
+          "flacSha256": "0d937cc2aa3f0ea3656f1f96bf29287f52d7893ef75c9526b804da981aa9a7f6"
+        }
+      ],
+      "independentTranscription": {
+        "model": "gpt-4o-transcribe",
+        "requestId": "req_63b1849ec6134a368eebeed616402e56",
+        "audioSha256": "fcf871e34bb9f7be4d01f3deaf24f5de4dae6079d5c9f0ca2b0e7c4e1b63a30a",
+        "transcript": "You finished your assignment before the deadline, but the university website stopped working when you tried to upload it. You saved a screenshot showing the error and the time. You need help submitting your work without a late penalty. What would you say to your lecturer?",
+        "sourcePromptProvided": false,
+        "comparisonIgnoringCaseAndPunctuation": "exact",
+        "differences": []
+      },
+      "transcriptReview": "Independent ASR matches source words; orthographic UK/US variants only where noted. Audible intelligibility remains pending user review."
+    },
+    {
+      "kind": "sgd",
+      "questionId": "sgd-1",
+      "title": "Extending library opening hours",
+      "textSha256": "e3edaaa4b71b96788e70918e197bf8b9d7867280725deb1d8827d809069ee9b6",
+      "spokenTextSha256": "3949fad467ebe348f00cef721be0dbca7804108f4b60b6945150d6c8e794b3d5",
+      "audioSha256": "98129ea8038384f6706d20abb54b0517d8195c756f23d043abde671d5d965d75",
+      "bytes": 2091884,
+      "seconds": 104.568,
+      "wordsPerMinuteIncludingPauses": 162.4,
+      "loudnessLUFS": -18.58,
+      "truePeakDbTP": -2.42,
+      "decode": "passed",
+      "listeningReview": "pending user review",
+      "generationReceipts": [
+        {
+          "inputHash": "278e6ef89c1af1bf166008b0a11ca1ba02d6bb209a766920c1da648c169b2c71",
+          "textSha256": "534acdb630df15ed7f3090142a821770233a2b864644fa2c5246b23b3f16199e",
+          "model": "gpt-4o-mini-tts-2025-12-15",
+          "voice": "marin",
+          "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+          "speed": 1.0,
+          "requestId": "req_bcfa4d280288487a9b09513839e504b3",
+          "createdAt": "2026-11-04T04:22:50.845312+00:00",
+          "master": "sgd-00-278e6ef89c1a.wav",
+          "nativeRateHz": 24000,
+          "sha256": "144681b60e0e733be2e3b736293c99ff12ddc9213ffd188ee8b05ad47301c9af",
+          "losslessFlac": "masters/sgd-00-278e6ef89c1a.flac",
+          "flacSha256": "cd227d04a0d7d9ade72ba45257f3041bb721b003d4c923e558c440e38a68ea56"
+        },
+        {
+          "inputHash": "e60bfacb6130327a2ed3fc5319c04e95946c93cb07380a3134f38ce2fdc4eace",
+          "textSha256": "c95358f781b96921556e83bb73f88aadba1e205b7e36fe989980fbad437da15b",
+          "model": "gpt-4o-mini-tts-2025-12-15",
+          "voice": "marin",
+          "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+          "speed": 1.0,
+          "requestId": "req_0c5316f27048489eac9f65c53c54531e",
+          "createdAt": "2026-11-04T04:22:53.915286+00:00",
+          "master": "sgd-01-e60bfacb6130.wav",
+          "nativeRateHz": 24000,
+          "sha256": "d642b7eb68d6f50b3547716f949e6dc14b2ad6830a682d599590ab1f0c37b5e7",
+          "losslessFlac": "masters/sgd-01-e60bfacb6130.flac",
+          "flacSha256": "3682896f06531d4ada684b0f0e0aa4281aa536c8927d68fd2d3b685f9549c526"
+        },
+        {
+          "inputHash": "dc929fc9c8b70c90f627831f08e0a74a385ce8ed746e3e18a0e1a61e652b1004",
+          "textSha256": "3a0dc4b9c99a8e3d02576b423c657d11eff840740f4f203bdb69309e7fab2451",
+          "model": "gpt-4o-mini-tts-2025-12-15",
+          "voice": "cedar",
+          "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+          "speed": 1.0,
+          "requestId": "req_d9ab04f4f5c94305b6a25ea2b776bf54",
+          "createdAt": "2026-11-04T04:22:57.171269+00:00",
+          "master": "sgd-02-dc929fc9c8b7.wav",
+          "nativeRateHz": 24000,
+          "sha256": "aeba8a7d95c101ef0c9dfe4e602070c992aa2b8e330fc1c3c766d91e57b3f4da",
+          "losslessFlac": "masters/sgd-02-dc929fc9c8b7.flac",
+          "flacSha256": "ac105b8be2b8e900630471bdb7f967ba2f8c0de4114a8c487f3489899507341a"
+        },
+        {
+          "inputHash": "46a1fc41c950f08d69f7ebb53c0fe48c159d0074a691fc7bbc11302ada53961f",
+          "textSha256": "23d16e880071bafa750f9ab07e21a1119990d82d92368cff81b884660dbf0059",
+          "model": "gpt-4o-mini-tts-2025-12-15",
+          "voice": "coral",
+          "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+          "speed": 1.0,
+          "requestId": "req_a63d48924a564c7da35983dcf05c9ca0",
+          "createdAt": "2026-11-04T04:23:00.659125+00:00",
+          "master": "sgd-03-46a1fc41c950.wav",
+          "nativeRateHz": 24000,
+          "sha256": "750794a618db875d988d4bd2122052be71611bf1bb421a8ac5b6ee2490cd9004",
+          "losslessFlac": "masters/sgd-03-46a1fc41c950.flac",
+          "flacSha256": "c2e2ca101f894b53990de81ca753f698777d86a34718bb3494fb8869aab27260"
+        },
+        {
+          "inputHash": "f230c87572fc53038bd2c87dc9d28a31aeb35718b658ad1846d0e8bd367b9956",
+          "textSha256": "bd0cadfb39f225fcc9eac99f067dcaca8d2e45a3cbffad35b47dfc4391f9d29a",
+          "model": "gpt-4o-mini-tts-2025-12-15",
+          "voice": "marin",
+          "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+          "speed": 1.0,
+          "requestId": "req_448a1dbbc9c6412a972a531ef7d30c55",
+          "createdAt": "2026-11-04T04:23:03.420111+00:00",
+          "master": "sgd-04-f230c87572fc.wav",
+          "nativeRateHz": 24000,
+          "sha256": "95dc368cc7cc5a45f31d67e6c84d9a5c212c269a5acfad48edc0b2d4ed848b50",
+          "losslessFlac": "masters/sgd-04-f230c87572fc.flac",
+          "flacSha256": "a105302f890cfe383b54ff312df2794a25c07d55da8e4f69b75d62c135ed9cd4"
+        },
+        {
+          "inputHash": "711b5516dd75768ecc27b5c5e4346609d018caf8fcbc3c43b09afd599f0d7dcf",
+          "textSha256": "3f708e90b21670f4e0fe5ec3a175964968eb19f2be5e147ad5720695c7b3e34f",
+          "model": "gpt-4o-mini-tts-2025-12-15",
+          "voice": "cedar",
+          "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+          "speed": 1.0,
+          "requestId": "req_bcae2ad74df04fc6beffe7a932d2895b",
+          "createdAt": "2026-11-04T04:23:06.535776+00:00",
+          "master": "sgd-05-711b5516dd75.wav",
+          "nativeRateHz": 24000,
+          "sha256": "41e60502d628fe3552edee40a0b1f0673277aad53fbbe628ff99f51d03229689",
+          "losslessFlac": "masters/sgd-05-711b5516dd75.flac",
+          "flacSha256": "c0b1ec700e6bc7fe9e51bf79b3d0fe4ed005d70b9b3c15b1b061083adb1ac535"
+        },
+        {
+          "inputHash": "b78f9ac55341f8682a17f2c3d21f5a42c71b72e0714a360bb11d08af8ccb7007",
+          "textSha256": "52e4de16d832f1a22992e91264158d58d5b5684e09b1ffc89391e2865415b5cf",
+          "model": "gpt-4o-mini-tts-2025-12-15",
+          "voice": "coral",
+          "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+          "speed": 1.0,
+          "requestId": "req_8a3fc8a12b094f2080d523991a5f48a4",
+          "createdAt": "2026-11-04T04:23:09.701632+00:00",
+          "master": "sgd-06-b78f9ac55341.wav",
+          "nativeRateHz": 24000,
+          "sha256": "51fae4f9e53704d0008381a687384652c3cf7b5e296f354ca866ffce029fe14e",
+          "losslessFlac": "masters/sgd-06-b78f9ac55341.flac",
+          "flacSha256": "473870971286fb8b581f2dbb65116fe9bf64c4c787ac2be88a9a7be1c2f5fd5b"
+        }
+      ],
+      "speakerVoices": {
+        "Maya": "marin",
+        "Ben": "cedar",
+        "Clara": "coral"
+      },
+      "requestedAccents": {
+        "Maya": "clear educated British English",
+        "Ben": "clear general American English",
+        "Clara": "clear Australian English"
+      },
+      "turnSpeakers": [
+        "Maya",
+        "Ben",
+        "Clara",
+        "Maya",
+        "Ben",
+        "Clara"
+      ],
+      "narrationIncluded": true,
+      "independentTranscription": {
+        "model": "gpt-4o-transcribe",
+        "requestId": "req_8aba3654758d4795bffff92cc6399040",
+        "audioSha256": "98129ea8038384f6706d20abb54b0517d8195c756f23d043abde671d5d965d75",
+        "transcript": "Three students are discussing whether the university library should extend its opening hours.\n\nI think the library should stay open later throughout the semester, not only during exams. Some students work in the evening and need somewhere quiet afterwards. My shared house is noisy, so having access until midnight would make a real difference. What do you both think?\n\nI understand the need, but opening the whole building could be expensive. We would need security, lighting, and staff, even if only a few students came. I would rather see a limited late opening area with student card access than promise a service the library cannot sustain.\n\nA small area sounds sensible, but getting home safely is another issue. The last bus leaves before midnight. Students without cars might not benefit unless transport is considered too. Perhaps the university could coordinate a shuttle on the busiest nights rather than run it every evening.\n\nThat is a fair point. I do not need the borrowing desk to stay open. I mainly need a desk, power, and internet. We could start with the ground floor study room. A short survey might tell us which nights working students actually need it most.\n\nI would support a trial based on that survey. We could count visits and check the cost for six weeks, then decide whether to continue. Clear rules would matter, especially about noise, visitors, and what students should do if they need help after staff leave.\n\nThen our recommendation could combine a small supervised study area with a transport check. We should ask students about both demand and travel and make sure accessibility is included. That gives the university evidence before it commits to opening the entire library later.",
+        "sourcePromptProvided": false,
+        "comparisonIgnoringCaseAndPunctuation": "exact",
+        "differences": []
+      },
+      "transcriptReview": "Independent ASR matches source words; orthographic UK/US variants only where noted. Audible intelligibility remains pending user review."
+    },
+    {
+      "kind": "hiw",
+      "questionId": "hiw-institutions-c2",
+      "title": "Institutional resilience",
+      "textSha256": "e05e01e1befba5f4b1bdecd556a7535ad5f7ab6856ad401812901279fc884a26",
+      "spokenTextSha256": "e05e01e1befba5f4b1bdecd556a7535ad5f7ab6856ad401812901279fc884a26",
+      "audioSha256": "cc7e531a29205eb3dfcc11e786fe7274e7d95ddaa8805afdd6a8ceaacd49cc58",
+      "bytes": 1206764,
+      "seconds": 60.312,
+      "wordsPerMinuteIncludingPauses": 119.4,
+      "loudnessLUFS": -18.49,
+      "truePeakDbTP": -2.42,
+      "decode": "passed",
+      "listeningReview": "pending user review",
+      "generationReceipts": [
+        {
+          "inputHash": "915b7147ff71ac5f0edb4e0f579d27421ffe33714b37ccb47c572e1604e35ee7",
+          "textSha256": "e05e01e1befba5f4b1bdecd556a7535ad5f7ab6856ad401812901279fc884a26",
+          "model": "gpt-4o-mini-tts-2025-12-15",
+          "voice": "marin",
+          "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Speak fluently at an ordinary lecture pace, around 155 to 165 words per minute, with brief natural pauses. This is an exact-word listening assessment. Retain every article, contraction and qualifier verbatim; no paraphrasing. In particular, the final phrase must be exactly: a universal blueprint.",
+          "speed": 1.0,
+          "requestId": "req_ca04a7135ae246a1b903b09637c88f9e",
+          "createdAt": "2026-11-04T04:24:35.654246+00:00",
+          "master": "hiw-915b7147ff71.wav",
+          "nativeRateHz": 24000,
+          "sha256": "469f76fcb0a135a681def5e65582743c21cdf61ce7d8ab691d7f9b1d5d79d40f",
+          "losslessFlac": "masters/hiw-915b7147ff71.flac",
+          "flacSha256": "45343f2eedd1770ebec95f7cd536eb3c8dd519f0f1145d266d493c6330fffbb0"
+        }
+      ],
+      "independentTranscription": {
+        "model": "gpt-4o-transcribe",
+        "requestId": "req_bcc014837f3e4f1ebddbfb5b88cbd018",
+        "audioSha256": "cc7e531a29205eb3dfcc11e786fe7274e7d95ddaa8805afdd6a8ceaacd49cc58",
+        "transcript": "Institutional resilience is often conflated with an organization's capacity to preserve existing arrangements. Yet an institution that remains impervious to criticism may appear stable precisely because the costs of its rigidity are borne elsewhere. Adaptation, by contrast, entails distinguishing indispensable commitments from procedures whose authority rests largely on precedent. The difficulty is that ostensibly pragmatic reforms can entrench the very asymmetries they purport to remedy. Consequently, resilience should be understood neither as indiscriminate flexibility nor as unqualified continuity, but as a capacity for revision constrained by publicly defensible purposes. What matters is whether dissent can alter decisions without dissolving the reciprocal obligations that make collective action possible. Such responsiveness requires judgment rather than the mechanical application of a universal blueprint.",
+        "sourcePromptProvided": false,
+        "comparisonIgnoringCaseAndPunctuation": "differences require review",
+        "differences": [
+          {
+            "operation": "replace",
+            "expected": "organisation",
+            "heard": "organization"
+          },
+          {
+            "operation": "replace",
+            "expected": "judgement",
+            "heard": "judgment"
+          }
+        ]
+      },
+      "transcriptReview": "Independent ASR matches source words; orthographic UK/US variants only where noted. Audible intelligibility remains pending user review.",
+      "paceReview": "Below proposed house target; assess pace and naturalness during pilot listening before any batch generation."
+    },
+    {
+      "kind": "sst",
+      "questionId": "pred26-sst-01",
+      "title": "Innovation and Uniqueness",
+      "textSha256": "f2e59a21a5069aff22498cb3f12ec1175eb5996c34517fe5d4ee64f546f35a01",
+      "spokenTextSha256": "f2e59a21a5069aff22498cb3f12ec1175eb5996c34517fe5d4ee64f546f35a01",
+      "audioSha256": "0217ee39dd9b86af23253646460b861b5b0b93fc26a339400d7efb4d0da8393d",
+      "bytes": 793484,
+      "seconds": 39.648,
+      "wordsPerMinuteIncludingPauses": 146.8,
+      "loudnessLUFS": -18.44,
+      "truePeakDbTP": -2.44,
+      "decode": "passed",
+      "listeningReview": "pending user review",
+      "generationReceipts": [
+        {
+          "inputHash": "c7f9d7a1a40456ce6046cd47e77e5ef13d8a838a750189ae5c68b24f22cdb86e",
+          "textSha256": "f2e59a21a5069aff22498cb3f12ec1175eb5996c34517fe5d4ee64f546f35a01",
+          "model": "gpt-4o-mini-tts-2025-12-15",
+          "voice": "marin",
+          "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+          "speed": 1.0,
+          "requestId": "req_aec4b494c163469d9d8ec6f0dd31fc6b",
+          "createdAt": "2026-11-04T04:23:34.074668+00:00",
+          "master": "sst-c7f9d7a1a404.wav",
+          "nativeRateHz": 24000,
+          "sha256": "00831f40999cd08265c25faac342eac915608ae8e9ebd18e6737679ba6516273",
+          "losslessFlac": "masters/sst-c7f9d7a1a404.flac",
+          "flacSha256": "d06b46ab740b7237c116d25b8a530d856074507ed96f67f49ea8eef9ec159b14"
+        }
+      ],
+      "independentTranscription": {
+        "model": "gpt-4o-transcribe",
+        "requestId": "req_bae242fd0c22492687a2066a43f6fbce",
+        "audioSha256": "0217ee39dd9b86af23253646460b861b5b0b93fc26a339400d7efb4d0da8393d",
+        "transcript": "A strong business idea is rarely created from nothing; it usually combines existing knowledge in a way that solves a problem more effectively. Novelty matters, but usefulness matters as well, because an unusual idea has little value if it does not improve an experience, product, or process. Entrepreneurs should therefore test whether customers understand the idea, whether it can be delivered reliably, and whether competitors can copy it easily. Innovation continues after launch as feedback reveals weaknesses and new possibilities. The central lesson is that uniqueness comes from purposeful improvement and execution, not simply from being different.",
+        "sourcePromptProvided": false,
+        "comparisonIgnoringCaseAndPunctuation": "exact",
+        "differences": []
+      },
+      "transcriptReview": "Independent ASR matches source words; orthographic UK/US variants only where noted. Audible intelligibility remains pending user review."
+    },
+    {
+      "kind": "wfd",
+      "questionId": "pred26-user-wfd-01",
+      "title": "Prediction 01",
+      "textSha256": "faf3ca3d483a125d23b0ebb119d5d07d22e03d1286c65515217c7e1d15cbff6f",
+      "spokenTextSha256": "faf3ca3d483a125d23b0ebb119d5d07d22e03d1286c65515217c7e1d15cbff6f",
+      "audioSha256": "ea874631b512da731d718b48e4c478f4632bb6788d83bd9c9711e7e7d0f6deb5",
+      "bytes": 84524,
+      "seconds": 4.2,
+      "wordsPerMinuteIncludingPauses": 114.3,
+      "loudnessLUFS": -18.65,
+      "truePeakDbTP": -2.43,
+      "decode": "passed",
+      "listeningReview": "pending user review",
+      "generationReceipts": [
+        {
+          "inputHash": "fbfef50e8e4c8812c6c1af9fcc2a5f8aab30c39b9dc65587d32d3c0cacac8901",
+          "textSha256": "faf3ca3d483a125d23b0ebb119d5d07d22e03d1286c65515217c7e1d15cbff6f",
+          "model": "gpt-4o-mini-tts-2025-12-15",
+          "voice": "marin",
+          "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Read the complete sentence once only; no introductory or closing phrase.",
+          "speed": 1.0,
+          "requestId": "req_3ac76d9d24fc45679b03620f6b7111a3",
+          "createdAt": "2026-11-04T04:23:37.737219+00:00",
+          "master": "wfd-fbfef50e8e4c.wav",
+          "nativeRateHz": 24000,
+          "sha256": "a55413081c467cc1e2b9477bcf475883d1bb7f0ee32027aece745aa954cf2794",
+          "losslessFlac": "masters/wfd-fbfef50e8e4c.flac",
+          "flacSha256": "9d6e26c9ce75c48e55c745d2fb60c6d3979576ac91336109724bf147a9b16642"
+        }
+      ],
+      "independentTranscription": {
+        "model": "gpt-4o-transcribe",
+        "requestId": "req_5ac01695d23d4a848fc29b0b4ada42f6",
+        "audioSha256": "ea874631b512da731d718b48e4c478f4632bb6788d83bd9c9711e7e7d0f6deb5",
+        "transcript": "Our professor is hosting the business development conference.",
+        "sourcePromptProvided": false,
+        "comparisonIgnoringCaseAndPunctuation": "exact",
+        "differences": []
+      },
+      "transcriptReview": "Independent ASR matches source words; orthographic UK/US variants only where noted. Audible intelligibility remains pending user review."
+    }
+  ]
+}
