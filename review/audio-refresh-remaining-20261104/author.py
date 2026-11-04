@@ -5,7 +5,7 @@ Examples:
   python author.py --generate sgd/sgd-2 --output /workspace/pte-scoring-api/work/new-review
 No provider call occurs unless --generate is supplied. This never publishes media.
 """
-import argparse, hashlib, json, os, subprocess, urllib.request, urllib.error, uuid, wave
+import argparse, hashlib, json, os, subprocess, sys, urllib.request, urllib.error, uuid, wave
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent
 sha=lambda data:hashlib.sha256(data).hexdigest()
@@ -36,6 +36,7 @@ def main():
     action.add_argument('--verify',action='store_true');action.add_argument('--generate',metavar='KIND/QUESTION_ID');parser.add_argument('--output',type=Path)
     args=parser.parse_args()
     if args.verify:
+        sys.dont_write_bytecode=True
         from verify import verify
         verify();return
     if args.output is None:parser.error('--generate requires an explicit --output directory.')
