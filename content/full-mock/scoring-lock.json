@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "f9321b4060bbe8610dfccc43e1bf0d8623b19872",
-  "checkedAt": "2026-11-03",
-  "scope": "Account registration, recovery and session authentication transport with exact historical compatibility. Native graders, models, paper content, timers and saved marks unchanged.",
+  "baseCommit": "f142748df74e60841f59703df81203c626c3bf40",
+  "checkedAt": "2026-11-04",
+  "scope": "Confirmed unusable recording evidence and final-question publication with exact historical compatibility. Native graders, models, weights, paper content, timers and saved marks unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -80,7 +80,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "03c75d443499754f79bb413d7259a5e3d1256bb2662e96a1251876a040767ed7",
+        "sha256": "b60ac3338309a30713914e855167ecd97d3c0df2a777a67981d28a9a69e04a2c",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "3aed387f8b3cf8aeed427d9d84fee3e754eaa6e2a098dff38f75ee00ff39e9a9",
+        "sha256": "20778bfe6e8f96dabb284b65cc4ee6bc2accb98eeb05595825c8fa98eb52e3bc",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -108,7 +108,7 @@
         "version": null
       },
       "full-mock/exclusions.js": {
-        "sha256": "ba95a1cff0e1eb6a9b4404a969f7753cc41d325289b4f6066182be0e3675827f",
+        "sha256": "9ba8608328b13b462d495b5b37ca3b9fe7ae65d5f8bddfc664b16710544fde04",
         "version": null
       },
       "full-mock/paper.js": {
@@ -124,7 +124,7 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "40c4de49dabcf6b9e0271e94d38a1d077cd03e1e16f20244cbce9d923bafa962",
+        "sha256": "f4b1c12767df25591c6badd5cf2364073bce0cdefec45875948e16240a996b7f",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
