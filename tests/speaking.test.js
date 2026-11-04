@@ -240,5 +240,5 @@ test('Supplied image questions serve their real asset path and reveal reference 
 
 test("Original situation questions expose the complete question without a missing audio URL",()=>{
  const rows=require("../content/rts-original-practice.json");assert.equal(rows.length,30);
- for(const row of rows){const q=bank.questions.find(q=>q.id===row.id);assert(q);assert.match(q.text,/What would you say[^?]*\?$/);const shown=question(q);assert.equal(shown.text,row.text);assert.match(shown.audioUrl,/\?prompt=rts-original-20261024-\d+-prompt-20261104-1&v=sha256-/);assert.equal(shown.preparation,10);assert.equal(shown.seconds,40);}
+ for(const row of rows){const q=bank.questions.find(q=>q.id===row.id);assert(q);assert.match(q.text,/What would you say[^?]*\?$/);const shown=question(q);assert.equal(shown.text,row.text);assert.match(shown.audioUrl,/\?prompt=rts-original-20261024-\d+-prompt-20261104-2&v=sha256-/);assert.equal(shown.preparation,10);assert.equal(shown.seconds,40);}
 });

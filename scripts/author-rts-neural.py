@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import subprocess
 import urllib.request
@@ -36,7 +37,7 @@ def main():
     questions = {q['id']:q for q in json.loads((ROOT / 'content/rts-original-practice.json').read_text())}
     manifest = json.loads(MANIFEST.read_text())
     if args.verify:
-        assert len(manifest) == len(questions)
+        assert {entry['questionId'] for entry in manifest.values()} == set(questions)
         for key, entry in manifest.items():
             q = questions[entry['questionId']]
             assert digest(q['text'].encode()) == entry['textSha256'], key
@@ -51,13 +52,16 @@ def main():
     if args.generate not in questions:
         parser.error('Choose an existing original RTS question ID.')
     q = questions[args.generate]
-    settings = manifest[q['id'] + '-prompt-20261104-1']['generation']
+    keys = [key for key,entry in manifest.items() if entry['questionId'] == q['id']]
+    active = max(keys, key=lambda key:tuple(map(int,re.search(r'-prompt-(\d+)-(\d+)$',key).groups())))
+    settings = manifest[active]['generation']
     speed = args.speed if args.speed is not None else settings['speed']
     if not 0.75 <= speed <= 1.05:
         parser.error('Candidate speed must be between 0.75 and 1.05.')
     payload = {k:settings[k] for k in ['model', 'voice', 'instructions']}
     payload.update(input=q['text'], speed=speed, response_format='pcm')
-    binding = digest(json.dumps(payload, sort_keys=True).encode())
+    output_policy = 'constant-gain-mono-24khz-mp3-160k-v2'
+    binding = digest(json.dumps({'generation':payload, 'outputPolicy':output_policy}, sort_keys=True).encode())
     directory = args.output.resolve()
     # Candidate output cannot collide with the deployed media directory.
     if directory.is_relative_to((ROOT / 'content').resolve()):
@@ -85,16 +89,17 @@ def main():
             pcm, request_id = response.read(), response.headers.get('x-request-id')
         with wave.open(str(wav), 'wb') as output:
             output.setnchannels(1); output.setsampwidth(2); output.setframerate(24000); output.writeframes(pcm)
-        saved = {'questionId':q['id'], 'inputHash':binding, 'textSha256':digest(q['text'].encode()),
+        saved = {'questionId':q['id'], 'inputHash':binding, 'outputPolicy':output_policy, 'textSha256':digest(q['text'].encode()),
             'settings':{k:v for k,v in payload.items() if k != 'input'}, 'requestId':request_id,
             'masterSha256':digest(wav.read_bytes()), 'status':'candidate; transcription and full listening pending'}
         receipt.write_text(json.dumps(saved, indent=2) + '\n')
     if not mp3.exists():
         m = measure(wav)
-        af = (f"loudnorm=I=-18:TP=-2:LRA=11:linear=true:measured_I={m['input_i']}:measured_TP={m['input_tp']}:"
-              f"measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}")
-        run(['ffmpeg', '-v', 'error', '-i', str(wav), '-af', af, '-ac', '1', '-ar', '24000',
+        gain = min(-18 - float(m['input_i']), -2 - float(m['input_tp']))
+        run(['ffmpeg', '-v', 'error', '-i', str(wav), '-af', f'volume={gain:.6f}dB',
             '-codec:a', 'libmp3lame', '-b:a', '160k', str(mp3)])
+        saved['processing'] = {'kind':'constant-gain-only', 'constantGainDb':gain,
+            'tempoProcessing':'none', 'dynamicLoudnessProcessing':'none', 'limiting':'none'}
     run(['ffmpeg', '-v', 'error', '-i', str(mp3), '-f', 'null', '-'])
     m = measure(mp3)
     seconds = float(run(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1:nk=1', str(mp3)]))

@@ -479,7 +479,7 @@ test('Untimed practice waits for manual recording and stays active beyond the ti
 });
 test('Untimed RTS loads its saved situation audio and replay never starts a recorder',async()=>{
  const h=harness();await h.controller.open('rts');await h.click({speakingMode:'untimed'});await h.click({speakingQuestion:'rts-original-20261024-01'});
- const a=[...h.attempts.values()][0];assert.equal(h.audio[0].url,present(a).question.audioUrl);assert.match(h.audio[0].url,/prompt=rts-original-20261024-01-prompt-20261104-1/);assert.equal(h.audio.length,1);assert.equal(h.audio[0].paused,false);assert.equal(h.recorders.length,0);
+ const a=[...h.attempts.values()][0];assert.equal(h.audio[0].url,present(a).question.audioUrl);assert.match(h.audio[0].url,/prompt=rts-original-20261024-01-prompt-20261104-2/);assert.equal(h.audio.length,1);assert.equal(h.audio[0].paused,false);assert.equal(h.recorders.length,0);
  h.audio[0].onended();h.tick(120000);assert.equal(h.nodes.get('speaking-ready-start').hidden,false);assert.equal(h.recorders.length,0);
  await h.click({speakingAction:'replay-prompt'});assert.equal(h.audio.length,2);assert.equal(h.requests.filter(r=>r.url.endsWith('/prompt')).length,0);h.audio[1].onended();assert.equal(h.recorders.length,0);
  await h.click({speakingAction:'ready-record'});assert.equal(h.recorders.length,1);h.controller.reset();await flush();

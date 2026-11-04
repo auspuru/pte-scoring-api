@@ -1424,5 +1424,1882 @@
       "sampleFormat": "s16"
     },
     "releaseReview": "Human listening pending; do not publish from this draft."
+  },
+  "rts-original-20261024-01-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-01",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "e1be03a814f96089f0e736ca7c4d21412927afb5fdf58070df48d04c245ea909",
+    "audioSha256": "fcf871e34bb9f7be4d01f3deaf24f5de4dae6079d5c9f0ca2b0e7c4e1b63a30a",
+    "bytes": 342764,
+    "seconds": 17.112,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_4ae7b37dd3e24ff3a36010f12f2b7c50"
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "f115828ec0da1dcbf5513c1f631deb3f5b221ceff557b12afdd060b2f9dac23e",
+    "processing": {
+      "kind": "approved-pilot-bytes-unchanged",
+      "tempoProcessing": "none"
+    },
+    "wordsPerMinute": 161.3,
+    "loudnessLUFS": -18.45,
+    "truePeakDbTP": -2.85,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-01-prompt-20261104-2.flac",
+      "sha256": "0d937cc2aa3f0ea3656f1f96bf29287f52d7893ef75c9526b804da981aa9a7f6",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "ad442f677cb8715c569cb46009b486008efda34d654745e442b0ea9fde855664"
+    },
+    "auditoryReview": {
+      "status": "pilot-approved",
+      "audioSha256": "fcf871e34bb9f7be4d01f3deaf24f5de4dae6079d5c9f0ca2b0e7c4e1b63a30a",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "User approved this exact recording.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_63b1849ec6134a368eebeed616402e56",
+      "text": "You finished your assignment before the deadline, but the university website stopped working when you tried to upload it. You saved a screenshot showing the error and the time. You need help submitting your work without a late penalty. What would you say to your lecturer?",
+      "audioSha256": "fcf871e34bb9f7be4d01f3deaf24f5de4dae6079d5c9f0ca2b0e7c4e1b63a30a",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-02-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-02",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "0d6d34ee50b5465491f9e34e8937b677275a374da0707dad41d67ba1d0efd8b8",
+    "audioSha256": "1fa551da2209c55345b92a9d733639b58fb901dbc92b53389ce7f406744f89f9",
+    "bytes": 313004,
+    "seconds": 15.624,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_b828c40d99bb404788a5ef2dff013558",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "d1b854595d2c28c4bda7860131e8f9ca10c0cb7f139b8f1d8324bfff9148e574",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.5,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.62,
+      "sourceTruePeakDbTP": -6.5,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 172.8,
+    "loudnessLUFS": -18.55,
+    "truePeakDbTP": -2.44,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-02-prompt-20261104-2.flac",
+      "sha256": "e264c63df88486c22ed29abb0b97e9b67725367cb93089360ebdc55d09d4b46d",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "d296dd4bcb5e04962c656075f2cf498da06615971e89c58695f065678e92c140"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "1fa551da2209c55345b92a9d733639b58fb901dbc92b53389ce7f406744f89f9",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_2a39c06b66414b0ebb8d6fba562de6e1",
+      "text": "You share a student apartment with two other people. Recently, dirty dishes have been left in the sink overnight, making it difficult for you to prepare breakfast before class. You want to agree on a fair cleaning arrangement. What would you say to your flatmates?",
+      "audioSha256": "1fa551da2209c55345b92a9d733639b58fb901dbc92b53389ce7f406744f89f9",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-03-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-03",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "aeee59228f69d5a0f07fdf2f90a09fe7430adeac4371431cd9bd7bef81cd4bf5",
+    "audioSha256": "64a45f9d5e384428d80ca78000fa01edbed80f127a7ee38a3eedc76323cdc9a9",
+    "bytes": 287084,
+    "seconds": 14.328,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_c56886bc8c5d4837a3c0ea649fd76d28",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "71c78d126bcbe90b66efb062f873c06b4efa8361464bef4feae107aade71fae9",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.61,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.07,
+      "sourceTruePeakDbTP": -4.61,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 184.3,
+    "loudnessLUFS": -19.91,
+    "truePeakDbTP": -2.45,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-03-prompt-20261104-2.flac",
+      "sha256": "90db9a4cecf14d55f02d2569787f891103d13900be7ca313bf1fbf0c786d2c5f",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "ef91e70ffd980ed8c8d04466ff922ad8b39c82229356e2763416e0b71f611b04"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "64a45f9d5e384428d80ca78000fa01edbed80f127a7ee38a3eedc76323cdc9a9",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_b0a934b71a444e09b8ede06491e58e6c",
+      "text": "Your group presentation is on Friday, but two members want to rehearse at a time when you have a compulsory laboratory class. You still want to take part and need to suggest another way to practice together. What would you say to your group?",
+      "audioSha256": "64a45f9d5e384428d80ca78000fa01edbed80f127a7ee38a3eedc76323cdc9a9",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-04-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-04",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "10fe43158b763e937789bc58d2976e71b5a0a718822abcef925371082da7d36f",
+    "audioSha256": "33a336c44224c327606878de8d0da29fc1bfcc99b58fb4a185603f14023cfbf4",
+    "bytes": 331244,
+    "seconds": 16.536,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_65619b7aa5ea41b49da2f7f415f1eb0c",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "6d572c24487b598bf7e709d399a695ee91aa11c2275a0d451ff721c53eb6dd07",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.35,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.81,
+      "sourceTruePeakDbTP": -5.35,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 174.2,
+    "loudnessLUFS": -19.91,
+    "truePeakDbTP": -2.45,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-04-prompt-20261104-2.flac",
+      "sha256": "019890362b9bcf85044412ae9b996b129142f519ef12fe31945da1717f78825a",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "9834d270535cdb995875e97786877010cd6940331281b541c35d37a2c7262a5e"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "33a336c44224c327606878de8d0da29fc1bfcc99b58fb4a185603f14023cfbf4",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_8dba831ebf544738bfc128af92e993d8",
+      "text": "You booked a library study room for a group meeting, but another group is using it when you arrive. They believe they also have a booking. You have the confirmation on your phone and approach the library staff for help. What would you say to the library staff?",
+      "audioSha256": "33a336c44224c327606878de8d0da29fc1bfcc99b58fb4a185603f14023cfbf4",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-05-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-05",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "17cc03967e9c77175ff47a0b348464261c9c60e66808ca12ae5971fbe8a77ca5",
+    "audioSha256": "e02953a2047b84821f43468b497d0fc1ab24f49e7cb59ed33956d239889baecd",
+    "bytes": 281324,
+    "seconds": 14.04,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_2c6befdc164948b5b888588a25a48816",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "826dab63c3d43e9f9999f5bcd49fd6d97c413b1e4d98d8e8aead6ad31f529bc3",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.1,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.41,
+      "sourceTruePeakDbTP": -6.1,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 183.8,
+    "loudnessLUFS": -18.76,
+    "truePeakDbTP": -2.43,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-05-prompt-20261104-2.flac",
+      "sha256": "cbcb474c0f18c1cce7681301dece741577ff87b6334dec1e439200eb25006246",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "412369405e8d93dd49c0dcee2d9a0af7a000d3c3bb59223c4524a345a45c7630"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "e02953a2047b84821f43468b497d0fc1ab24f49e7cb59ed33956d239889baecd",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_e946302107864e018ebd8ec793307554",
+      "text": "You have been assigned to a Tuesday afternoon tutorial, but it overlaps with a compulsory subject in your course. There is another tutorial on Thursday morning that you could attend. You want to change groups. What would you say to the course administrator?",
+      "audioSha256": "e02953a2047b84821f43468b497d0fc1ab24f49e7cb59ed33956d239889baecd",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-06-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-06",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "560cfb5cb9a164b8fc4c5a38bd27925d00925e8dc1dbafac8194d8fba197cf81",
+    "audioSha256": "e09b4291e85c81a1746799c673e2c85578aec92cbf0cc632a7289126f967c81a",
+    "bytes": 332204,
+    "seconds": 16.584,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_dc6be2d695124de49678e9e9e90662f3",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "5c58024a44dc0bf9be605019f19f0f00525a72f801171b6c9d158a946e34a9d9",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.16,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.74,
+      "sourceTruePeakDbTP": -6.16,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 170.0,
+    "loudnessLUFS": -19.03,
+    "truePeakDbTP": -2.44,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-06-prompt-20261104-2.flac",
+      "sha256": "bcf1071bb27e4e8de5ce4e91bee1185a2d3a32538e662beb617ef5d6bea2bea5",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "2d437bf59f135723de0798b3831692bd4321183fb2a3e0dee4434cc85d8d6e94"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "e09b4291e85c81a1746799c673e2c85578aec92cbf0cc632a7289126f967c81a",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_9917dd6c39554124ad82e2caf5ee834b",
+      "text": "You are organizing lunch for your university photography club. One member has told you that they cannot eat certain foods, but you are unsure which foods they need to avoid. You need to check their dietary requirements before ordering. What would you say to the club member?",
+      "audioSha256": "e09b4291e85c81a1746799c673e2c85578aec92cbf0cc632a7289126f967c81a",
+      "sourcePromptProvided": false,
+      "differences": [
+        {
+          "expected": "organising",
+          "heard": "organizing"
+        }
+      ],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-07-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-07",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "30f19cd5d022e2396153ff2f0f2036a3f681f1d4b3fd18faf06267b178f1bdec",
+    "audioSha256": "17bb3347e174fe43e5c6710b55234c5bff383ed050dcae362ae3f1d23d1f0c74",
+    "bytes": 358604,
+    "seconds": 17.904,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_4184cae2fdb246ac83be1820d0eae9c5",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "a37d76795859b287513515ece6461a6a8f1210994d28f14f0dc2b4057e2fd4bd",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.16,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.16,
+      "sourceTruePeakDbTP": -6.33,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": false
+    },
+    "wordsPerMinute": 157.5,
+    "loudnessLUFS": -18.45,
+    "truePeakDbTP": -2.6,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-07-prompt-20261104-2.flac",
+      "sha256": "e4004819df71e04ee674fdd55ac231c704df58ee5b173aaa337aace463ba7998",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "227e4efa821810fe22bc53db3ae91c780f513e0a19d6bf540d106cf700e1b22d"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "17bb3347e174fe43e5c6710b55234c5bff383ed050dcae362ae3f1d23d1f0c74",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_1e1624d5ea5a46cfafb21594f928879c",
+      "text": "You missed the laboratory safety session because you were attending a medical appointment. You have been told that you cannot join practical classes until you complete the training. You want to explain your absence and arrange to catch up. What would you say to the laboratory coordinator?",
+      "audioSha256": "17bb3347e174fe43e5c6710b55234c5bff383ed050dcae362ae3f1d23d1f0c74",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-08-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-08",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "88210916c7d0e8bb459b81aafff8e328aa464cf2093372364d94b2708b7c1663",
+    "audioSha256": "7a14cd9287124539d6a8d384cb17cb925b1b3ffff846b850c7e507b8c86dbd57",
+    "bytes": 309164,
+    "seconds": 15.432,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_17c24c4fba224c3ca89551053d2e98f6",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "39ac04844f1349ba232be48a3e20b8b3a0928d85123d2465d06db86be65d6839",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.87,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -23.09,
+      "sourceTruePeakDbTP": -6.87,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 167.2,
+    "loudnessLUFS": -18.67,
+    "truePeakDbTP": -2.45,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-08-prompt-20261104-2.flac",
+      "sha256": "3cab5cbee7b3ca2d6d97dd835e37dcc4beb10eb16e2174dbf0b0b69fb56d4d8a",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "caaebab592b5fcee4b9f714fac68cb73fc9125928118a2b5f52cfeb1effa779c"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "7a14cd9287124539d6a8d384cb17cb925b1b3ffff846b850c7e507b8c86dbd57",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_c8465bfc1277456d939c2808396b94e7",
+      "text": "You joined a university sports club and paid the membership fee online. Your bank statement now shows that the fee was charged twice. You have receipts for both payments and want the duplicate payment refunded. What would you say to the club administrator?",
+      "audioSha256": "7a14cd9287124539d6a8d384cb17cb925b1b3ffff846b850c7e507b8c86dbd57",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-09-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-09",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "2f3b4ab678791a668da4ecb9ded4d94196d7e585df00e2aae8d12d194e6bc961",
+    "audioSha256": "9d9f93500157fcafcddafb669bb6e81b30f56f6b69a01adfe75d5453253e24a8",
+    "bytes": 324524,
+    "seconds": 16.2,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_6e44be28a9ef4c5abdfcf2f4595850d7"
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "26c8684d6a856291aa5fcb8adfae03d47d99c007fb007a318cacc588e17ecd65",
+    "processing": {
+      "constantGainDb": 4.04,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "kind": "constant-gain-only",
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.46,
+      "sourceTruePeakDbTP": -6.04,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 170.4,
+    "loudnessLUFS": -18.87,
+    "truePeakDbTP": -2.43,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-09-prompt-20261104-2.flac",
+      "sha256": "c85db4e718f4cd28abee48d5d08800c9365d57438cba3255dd76d0d399183b2f",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "fe9e9ed2359c9358f0c136ad8d25f23b20978ad6c0e3372910008f04337afdc4"
+    },
+    "auditoryReview": {
+      "status": "pilot-approved",
+      "audioSha256": "9d9f93500157fcafcddafb669bb6e81b30f56f6b69a01adfe75d5453253e24a8",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "User approved this exact recording.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_fdaed93775f5426c87b7108b296e8c53",
+      "text": "You bought a vegetarian sandwich from the campus cafe, but after opening the bag, you notice that it contains a chicken sandwich. Your next class starts in 10 minutes, and you need a suitable replacement before you leave. What would you say to the cafe staff?",
+      "audioSha256": "9d9f93500157fcafcddafb669bb6e81b30f56f6b69a01adfe75d5453253e24a8",
+      "sourcePromptProvided": false,
+      "differences": [
+        {
+          "expected": "noticed",
+          "heard": "notice"
+        },
+        {
+          "expected": "ten",
+          "heard": "10"
+        }
+      ],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-10-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-10",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "baa9237d70888e841b62052e69e6c5168d7ede0ecccbb275ccca82acacdd7bd3",
+    "audioSha256": "4ecd9f8a3d9a056e68540acd68f0d4982fa183476ed649b69cad7e84a903f922",
+    "bytes": 329324,
+    "seconds": 16.44,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_768b696ecadd456e853ba2093b4774db",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "5729acf6124d4d3fd2c6d6a97ece9da471c2ee40b86b3c8a106814dd67a1ac84",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.04,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.02,
+      "sourceTruePeakDbTP": -5.04,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 167.9,
+    "loudnessLUFS": -19.43,
+    "truePeakDbTP": -2.45,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-10-prompt-20261104-2.flac",
+      "sha256": "5cd3187b0cbabd092dc45c478d1fa4325246f8f88e9b2666161fb1d8b0427e8d",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "6642159aec152935283ef253bfd43d3888e31c488e21f49f89b8b1db16120364"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "4ecd9f8a3d9a056e68540acd68f0d4982fa183476ed649b69cad7e84a903f922",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_3f5d3e45a928418fae0faedc23d630d4",
+      "text": "A parcel addressed to another student has been delivered outside your room in university accommodation. You recognize the student from the floor above, but you have never spoken to them. You want to introduce yourself and return the parcel. What would you say to the student?",
+      "audioSha256": "4ecd9f8a3d9a056e68540acd68f0d4982fa183476ed649b69cad7e84a903f922",
+      "sourcePromptProvided": false,
+      "differences": [
+        {
+          "expected": "recognise",
+          "heard": "recognize"
+        }
+      ],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-11-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-11",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "61a2392add92989d96ca70232110e09c369449284b044a63a6f0eddd2cfa4416",
+    "audioSha256": "e80a3251d9d49a7dbf83c8b55a1844bb403ee2e77e3259a09cbacb128147a4f3",
+    "bytes": 317324,
+    "seconds": 15.84,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_3932808073a54ce7984d7c2ccf51c5be",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "7d9df9ea83bfb7f6819f35f97439bbc9ad3078b5088213a079c12093cf4785e8",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.57,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.57,
+      "sourceTruePeakDbTP": -6.74,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": false
+    },
+    "wordsPerMinute": 178.0,
+    "loudnessLUFS": -18.45,
+    "truePeakDbTP": -2.6,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-11-prompt-20261104-2.flac",
+      "sha256": "293cd539dbef81a411678f932220f302f6e45a0d71b174ded3fcd172f9977dbf",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "81fa5c20609d2576a1ac89e76f568a7b54f70b5673fc4ac85cf65b800e5beae6"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "e80a3251d9d49a7dbf83c8b55a1844bb403ee2e77e3259a09cbacb128147a4f3",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_890cc5cc48fc412298dae42cb7ab6a64",
+      "text": "You have been invited to an internship interview on Wednesday morning. You have just learned that your course has a compulsory field trip at the same time. You want to explain the clash and request a different interview time. What would you say to the internship coordinator?",
+      "audioSha256": "e80a3251d9d49a7dbf83c8b55a1844bb403ee2e77e3259a09cbacb128147a4f3",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-12-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-12",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "9256200e668d22d0d872916dabce510480d18ab7213d29b44c7f917b10f23477",
+    "audioSha256": "4084d40c4ba193499707e285cee792fe7ea76bc7993df43821ecda267349b9f2",
+    "bytes": 323564,
+    "seconds": 16.152,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_e0550ca373c746a1b1416d9924ed0e49",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "0f6e8f2ac021e2d2fe4510e4927534390bbe797aa103a620777bc76005516d20",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.46,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.44,
+      "sourceTruePeakDbTP": -5.46,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 174.6,
+    "loudnessLUFS": -19.43,
+    "truePeakDbTP": -2.44,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-12-prompt-20261104-2.flac",
+      "sha256": "a8e4b339be35876351d786422f62850e14a261f279636a5ea48f2c9810f91c48",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "711e7ef2290c3b60a394b095ec9cdf587b4eed01eee8dd3c5b8ba51f1b518d66"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "4084d40c4ba193499707e285cee792fe7ea76bc7993df43821ecda267349b9f2",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_9445008a98a04069923d9d6cf76454f3",
+      "text": "You have an important online interview tomorrow morning. Your housemate usually practices the guitar in the room next to yours at that time. You want to ask them to practice later that day so you can have a quiet interview. What would you say to your housemate?",
+      "audioSha256": "4084d40c4ba193499707e285cee792fe7ea76bc7993df43821ecda267349b9f2",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-13-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-13",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "4b114bd6124f4334179fa3ee71c56d7a34fec9403a7bf17471577c5039558a91",
+    "audioSha256": "9f64e33d86ea0bb98659545a634247b608180331cc4f36419967fd33564b16b9",
+    "bytes": 309164,
+    "seconds": 15.432,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_b1d6a6ab1c6f4cb9ad2cfa7c57080fd1",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "f65c1f8ce886ea48dbdb42d8a223fb197011d1e9b53b937757e54a543c12f03e",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.81,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.27,
+      "sourceTruePeakDbTP": -4.81,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 178.8,
+    "loudnessLUFS": -19.91,
+    "truePeakDbTP": -2.46,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-13-prompt-20261104-2.flac",
+      "sha256": "1b92e0102d5549efb9b77c999f7e622a2c0b701ff29a7ae5bfc06b31305654bd",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "fb9e44826f3d80ca35eca897f4482e2d15beef6de084f2b0854abb0014489786"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "9f64e33d86ea0bb98659545a634247b608180331cc4f36419967fd33564b16b9",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_30fd077e234c4668a5ab9329bfd29dff",
+      "text": "Your train has stopped between stations, and you will not reach campus in time for your scheduled presentation. You have the presentation file on your phone. You need to explain the delay and ask to present later or online. What would you say to your lecturer?",
+      "audioSha256": "9f64e33d86ea0bb98659545a634247b608180331cc4f36419967fd33564b16b9",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-14-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-14",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "06a2b1598eb0c74afd94aab8d9205a7935e1cab7aa6a3ff9fa51f8d5e843db97",
+    "audioSha256": "0335140e38d4b09d0d481d72157e991eebcaf776b38e0613963a3a60c82a6f53",
+    "bytes": 314924,
+    "seconds": 15.72,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_43e02640cf574a3ea0279106701b3631",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "4271a61af328a56ceec61860013bb487bac67f8b6bd900216fa14b34f2d4414f",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.36,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.14,
+      "sourceTruePeakDbTP": -5.36,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 190.8,
+    "loudnessLUFS": -19.22,
+    "truePeakDbTP": -2.45,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-14-prompt-20261104-2.flac",
+      "sha256": "2bb83577cca5ba6e5fe56eed091e5d49ba7f46859c560189316cf95f2adb26a6",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "a2cfec5e974b99f28acb204e644fc7a3a13c369e6b55d93e90bf378ed9a3f9ff"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "0335140e38d4b09d0d481d72157e991eebcaf776b38e0613963a3a60c82a6f53",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_ac04829cac5b4a2fb9d158caa3c2acba",
+      "text": "You used a computer in the university library yesterday and think you left your USB drive there. It contains the latest version of your research project. You want to find out whether anyone has handed it in and where you should check. What would you say to the library assistant?",
+      "audioSha256": "0335140e38d4b09d0d481d72157e991eebcaf776b38e0613963a3a60c82a6f53",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-15-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-15",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "0425e661b4e80ba622560a1834152bbd315a71f71951eabf27064f202da45232",
+    "audioSha256": "bcaec228e8088aea514c47828377514d494d797ab4280ee85a8ac7da3ac818e1",
+    "bytes": 303404,
+    "seconds": 15.144,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_2153bb242c154196af896c5153ca9a57",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "e270c789fc1f5d5a74b367b51492454524b5a2f320b7989abcc8d6d3a3267936",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.71,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.95,
+      "sourceTruePeakDbTP": -6.71,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 178.3,
+    "loudnessLUFS": -18.68,
+    "truePeakDbTP": -2.43,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-15-prompt-20261104-2.flac",
+      "sha256": "e2e17003e4ca05da196ff29f16b9aac64482e68a80ddb19b5cf0da1f2ebb7277",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "2b15e9984b6e0dbcf76f9cf0c3eb2253df294039d19ad4fa2d916d49f41576de"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "bcaec228e8088aea514c47828377514d494d797ab4280ee85a8ac7da3ac818e1",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_5d8790f7e38b44f6b0394b429d51fcba",
+      "text": "Your classmates want to celebrate the end of exams at an expensive restaurant. You would like to join them, but the suggested cost is beyond your budget. You want to suggest a more affordable way to celebrate together. What would you say to your classmates?",
+      "audioSha256": "bcaec228e8088aea514c47828377514d494d797ab4280ee85a8ac7da3ac818e1",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-16-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-16",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "5ceb0d92e92888a9b1804b8085f7b59e776d129b588c7531690f7eb47cd6f1d5",
+    "audioSha256": "a77a699ea6fd73cf406781526e21fbd0d8f0da33029d080fd362222569bd8551",
+    "bytes": 282284,
+    "seconds": 14.088,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_06902a67711d410dacec37fb802623a0",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "5ff16b6967cab7a1a97ddf1ab073450e615c9440c12fb272cef1e40be53e2247",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.66,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.66,
+      "sourceTruePeakDbTP": -7.21,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": false
+    },
+    "wordsPerMinute": 200.2,
+    "loudnessLUFS": -18.45,
+    "truePeakDbTP": -3.0,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-16-prompt-20261104-2.flac",
+      "sha256": "72190a3d3e9b4c78039ed523911c652aae01107afd570f75b5e17f16cac4664a",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "3794344a9ea26019686efe96903bcaec9293dd3d8c5b9cad1f7e59dca540e8db"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "a77a699ea6fd73cf406781526e21fbd0d8f0da33029d080fd362222569bd8551",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_50655007a58f4528945df38be136db2a",
+      "text": "You are helping at a university charity stall on Saturday, but another volunteer has canceled. You need someone to help for two hours in the afternoon. You want to explain the role to a friend and ask them to help. What would you say to your friend?",
+      "audioSha256": "a77a699ea6fd73cf406781526e21fbd0d8f0da33029d080fd362222569bd8551",
+      "sourcePromptProvided": false,
+      "differences": [
+        {
+          "expected": "cancelled",
+          "heard": "canceled"
+        }
+      ],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-17-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-17",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "5e35c1c17e6c072fb1a96cce9692e34654d39689f5b615933f21babdfbba8d3c",
+    "audioSha256": "c06dfaa7cd24dc398d0e220473038a3c5feff3962ad82eecf2ca6aca37ffcd08",
+    "bytes": 279404,
+    "seconds": 13.944,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_40cb36e9a5674acebcf456a41cd74339",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "8411a5fea15bcab6641ff92e8eac5d1849d406a53a59785be0030dc834d28598",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.89,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.73,
+      "sourceTruePeakDbTP": -5.89,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 176.4,
+    "loudnessLUFS": -19.28,
+    "truePeakDbTP": -2.46,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-17-prompt-20261104-2.flac",
+      "sha256": "cd2e605d8c8a4e75baf9580b77d7b387ff1ac4dfdd60ba8b5946311c25a70efb",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "fc0057b08bc9b45c580b8484783a88a1e869d368546d02cf2164ec545eb872c0"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "c06dfaa7cd24dc398d0e220473038a3c5feff3962ad82eecf2ca6aca37ffcd08",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_8f77e10f8f9d415890b90311d2204e10",
+      "text": "Your manager has scheduled you to work on Monday evening, although you previously explained that you have a university class then. You are available on Wednesday instead and want to request a shift change. What would you say to your manager?",
+      "audioSha256": "c06dfaa7cd24dc398d0e220473038a3c5feff3962ad82eecf2ca6aca37ffcd08",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-18-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-18",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "9fad48da2f4591fb8f684ffffe1262d214a8fc27d5dc4529bcf255cddcae3d24",
+    "audioSha256": "d0694ff64ced9ca2f30387b71839e333fb72e80070ed4e513e9864e78a847eb2",
+    "bytes": 375404,
+    "seconds": 18.744,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_dab2acf019fc41d58149f3d638792186",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "92d87fefba195dcffa66c8fda874df9fe843856f4e7135327e084eb7696a8c83",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.11,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.03,
+      "sourceTruePeakDbTP": -5.11,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 153.6,
+    "loudnessLUFS": -19.37,
+    "truePeakDbTP": -2.45,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-18-prompt-20261104-2.flac",
+      "sha256": "5008514e4d85464d462d3db4f4a72912fce5a77a3f8873304fa7ed8f4f20d9e3",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "1c8e86ca45d8cca4f134404145df25975093800991ab2686b5cb282c5a83bb2c"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "d0694ff64ced9ca2f30387b71839e333fb72e80070ed4e513e9864e78a847eb2",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_c948d870bcd249bcb7642e72cdb4e111",
+      "text": "Your tutor returned your assignment with a comment saying that your evidence needs to be stronger. You are unsure whether this means using more sources or explaining your examples more clearly. You need clarification so you can improve your next assignment. What would you say to your tutor?",
+      "audioSha256": "d0694ff64ced9ca2f30387b71839e333fb72e80070ed4e513e9864e78a847eb2",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-19-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-19",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "1693dcfef8d5dd84c268d2d0fbfc5ee9886a51a93233af37b62125423ffc3a07",
+    "audioSha256": "7cb500e06c856b0f652d07c504d93ad77ec02eb19d526f6f2b3b005ced1553b6",
+    "bytes": 360524,
+    "seconds": 18.0,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_045a52e98a5a4c6b883aad0816e9a3c9",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "0fe543e5e9bb3d137a77441810e06f14ed439e27124f344babdd3c999cbf5e57",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 5.29,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -23.61,
+      "sourceTruePeakDbTP": -7.29,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 160.0,
+    "loudnessLUFS": -18.78,
+    "truePeakDbTP": -2.45,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-19-prompt-20261104-2.flac",
+      "sha256": "bdd155e79e573b230176396593603cc8a80459882b5cd2a9dd8fef0bd45639f7",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "2793c2abd2f92099cb907988d0865ad3ed56f2e83353e83999400711f8055fc5"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "7cb500e06c856b0f652d07c504d93ad77ec02eb19d526f6f2b3b005ced1553b6",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_8200d63100ad4c02b43053ab49c46805",
+      "text": "The tap in your student apartment has been leaking for several days. You reported it online but nobody has contacted you, and water is now collecting under the sink. You call the accommodation office to request a repair. What would you say to the accommodation office staff member?",
+      "audioSha256": "7cb500e06c856b0f652d07c504d93ad77ec02eb19d526f6f2b3b005ced1553b6",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-20-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-20",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "42e9cdd145bfe7230cc0e557ffce978bf75cc4cdf789d0b46fa080f0d94417c8",
+    "audioSha256": "23dfe0e65764a4715746588fd8bfb01822b97cf49ba39208e6e1afd16588ca7c",
+    "bytes": 336524,
+    "seconds": 16.8,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_0a479081b70741cfba132d09b32a7580",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "5f2f6978885d250a12d0c22c9a5101d542e868d87a4864c63b92cdb1812dc98c",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 1.3,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -21.79,
+      "sourceTruePeakDbTP": -3.3,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 164.3,
+    "loudnessLUFS": -20.94,
+    "truePeakDbTP": -2.48,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-20-prompt-20261104-2.flac",
+      "sha256": "2a494e533eae75904f78a0852df2d11010af266c15d701309f32169fcbb34e12",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "d86392553bf832b74cec1ed38384f0f095f24ca1445fec63d82cec0676009ba6"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "23dfe0e65764a4715746588fd8bfb01822b97cf49ba39208e6e1afd16588ca7c",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_91e3072974d0414b8ab3cc319823b2d3",
+      "text": "You are organizing a student society meeting and discover that the booked room can only be reached by stairs. One member uses a wheelchair and plans to attend. You need to request a room that everyone can access. What would you say to the events officer?",
+      "audioSha256": "23dfe0e65764a4715746588fd8bfb01822b97cf49ba39208e6e1afd16588ca7c",
+      "sourcePromptProvided": false,
+      "differences": [
+        {
+          "expected": "organising",
+          "heard": "organizing"
+        }
+      ],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-21-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-21",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "8854311a33ccbff0e5575a1fe6a89b3affe9ddbd105484d757e7f944bf2aaafb",
+    "audioSha256": "aab8a87c4eb4ec30ae5a44a2921848b823eed19a2a1a57096eebbfc279aab758",
+    "bytes": 343724,
+    "seconds": 17.16,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_74652965016e42e6a2ce0eb641f14c5f",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "6f4a87ef96a14be920a5f1a3cf4775a236598c4ec92a20063d9b21d2fc752113",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.17,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -21.66,
+      "sourceTruePeakDbTP": -5.17,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 167.8,
+    "loudnessLUFS": -18.96,
+    "truePeakDbTP": -2.44,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-21-prompt-20261104-2.flac",
+      "sha256": "ed23d540b5d2d2df263dd989d9486c14e2c9360f67011e91e1f314614a92df65",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "5441504274bea12d15b4655532c4f4b3c4556e3d9fda5825a80d335a622022da"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "aab8a87c4eb4ec30ae5a44a2921848b823eed19a2a1a57096eebbfc279aab758",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_35311f7eae1a497f846418ed3f0dc796",
+      "text": "Your online attendance record shows that you missed last Friday's tutorial, but you attended and took part in the group activity. You are concerned because attendance affects your course requirements. You want to explain the error and have the record corrected. What would you say to your tutor?",
+      "audioSha256": "aab8a87c4eb4ec30ae5a44a2921848b823eed19a2a1a57096eebbfc279aab758",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-22-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-22",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "0cd031cdeb0cf1abb42160314f11eac86f15139b18f8b9c69cfaa939828f89c9",
+    "audioSha256": "f60dcdd2e1cb933a4633c4661beff5c667a46951c657f08d25ec8d199cf27d5d",
+    "bytes": 323564,
+    "seconds": 16.152,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_4b94ed4e923a406e80f8efd763c62623",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "4fa033ba9877c46bd124072df314bdeb270464539c326f1e0aafc1160d13305f",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.39,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.87,
+      "sourceTruePeakDbTP": -6.39,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 170.9,
+    "loudnessLUFS": -18.94,
+    "truePeakDbTP": -2.45,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-22-prompt-20261104-2.flac",
+      "sha256": "18790ca224d6416ff6fe435c656ae490b72e277cce6382017fee835356edb483",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "8795786c68e960e3b2b6059ccb1e79b9a11071145a5f7fc0550034f8013e3cdd"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "f60dcdd2e1cb933a4633c4661beff5c667a46951c657f08d25ec8d199cf27d5d",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_0fb3d183169547d8b4e62a2c441994d1",
+      "text": "You need a camera for a university project this weekend. The equipment office has none available, but a classmate has offered to lend you theirs. You want to thank them and arrange when to collect and return the camera. What would you say to your classmate?",
+      "audioSha256": "f60dcdd2e1cb933a4633c4661beff5c667a46951c657f08d25ec8d199cf27d5d",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-23-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-23",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "254c3070b975b4a0d28b68d33417775ba10364959b9ecc21abc702c2b54c4a84",
+    "audioSha256": "372e7a79c270427af98d4475d413aca482dad00127edd1ccf1b37ef05b4a4b71",
+    "bytes": 332204,
+    "seconds": 16.584,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_55043abeb42946c2a348c8b204ca11fd",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "58ed533c59714a391b200e6d0ed38e61b7378f0d0049c8138fc95210bc93b98c",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.09,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.09,
+      "sourceTruePeakDbTP": -6.56,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": false
+    },
+    "wordsPerMinute": 166.4,
+    "loudnessLUFS": -18.45,
+    "truePeakDbTP": -2.93,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-23-prompt-20261104-2.flac",
+      "sha256": "7aa3050881f1729936c3105786881fd6f23510672992d946617c807c1ea8ba64",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "44c2bde2f6894612d213cf09861e1cc0c895e89ce1c5e91f4e82c9fe6539d16d"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "372e7a79c270427af98d4475d413aca482dad00127edd1ccf1b37ef05b4a4b71",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_1313eafe03244e0a9bf2282ae51d07a4",
+      "text": "You are helping run a university workshop. The original room has become unavailable, so the session has moved to a building five minutes away and will start fifteen minutes later. Several students are waiting outside the original room. What would you say to the waiting students?",
+      "audioSha256": "372e7a79c270427af98d4475d413aca482dad00127edd1ccf1b37ef05b4a4b71",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-24-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-24",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "5148c335fa7c72343d52f7eb9214ce5a00a176321b990af524dc7cf4cd94d1f3",
+    "audioSha256": "366e6fe4c14e6291ec6b45633195259fec0303f32a9a1f882874cf232f6950a5",
+    "bytes": 310124,
+    "seconds": 15.48,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_c20d4fc5b43b469db7540696b6474c06",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "4b473fa34a3a16e32b8dc9fdb726a7a5467c70b8fb89f945fc6a5f859357171b",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.29,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -20.31,
+      "sourceTruePeakDbTP": -4.29,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 189.9,
+    "loudnessLUFS": -18.46,
+    "truePeakDbTP": -2.45,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-24-prompt-20261104-2.flac",
+      "sha256": "0dd84e09494a9ea632f281486aa7de7192412296c88d18cad0e117c07f70340f",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "9486d51aeaca850f0674e787b6bc5299ab7a49a71ffe0248c4b1d752292fb2e7"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "366e6fe4c14e6291ec6b45633195259fec0303f32a9a1f882874cf232f6950a5",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_779feffca44645ada9b5c7f3894b0783",
+      "text": "A classmate who missed two lectures has asked to borrow your notes. You are happy to help, but you need your notebook tonight to study for a quiz. You want to suggest a way to share your notes while keeping the notebook. What would you say to your classmate?",
+      "audioSha256": "366e6fe4c14e6291ec6b45633195259fec0303f32a9a1f882874cf232f6950a5",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-25-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-25",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "8883981e0c034b222704b978a1036edb2e36e10d43e719b3c9cd3b873d83cc29",
+    "audioSha256": "ab55cd380c44d1034aa0c0cb4c2aea715bbcaa1c355f7977759226215a7cea61",
+    "bytes": 287084,
+    "seconds": 14.328,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_1afeb3dac76f492e8f606674963ac38c",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "1765ce5b33b97e4c4c27577491e92e67eab3e04ff1c91e42d38bf970cc9f8240",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.08,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -21.92,
+      "sourceTruePeakDbTP": -5.08,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 184.3,
+    "loudnessLUFS": -19.3,
+    "truePeakDbTP": -2.44,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-25-prompt-20261104-2.flac",
+      "sha256": "ccf5069e0fe900a3f5e1e55d8cb06e4e191783fabc38af683d64b94f0f30b616",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "358dfdb8ddfacddae9739a4e2633823960a5aa2eb8c0d9eda5b9b9c247c88044"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "ab55cd380c44d1034aa0c0cb4c2aea715bbcaa1c355f7977759226215a7cea61",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_42e79d311c88483eb37bece7284b9465",
+      "text": "You are applying for a scholarship and need a reference from a lecturer who knows your work. The application closes in 10 days. You want to explain the opportunity and ask for a reference before the deadline. What would you say to your lecturer?",
+      "audioSha256": "ab55cd380c44d1034aa0c0cb4c2aea715bbcaa1c355f7977759226215a7cea61",
+      "sourcePromptProvided": false,
+      "differences": [
+        {
+          "expected": "ten",
+          "heard": "10"
+        }
+      ],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-26-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-26",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "1a01a74ccff053c3ff1c2e4b72eedd3d598d4838727fa03a3b5ca1b5de05ac2f",
+    "audioSha256": "ee8d6ebf5e0b9c2d211c885027abae102cee2404f66ccfb24482a681edf95ee6",
+    "bytes": 364844,
+    "seconds": 18.216,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_7041f14889904429b080428ce944cf6a",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "66ae6f6ed9a0af8ecba8d69230d2c3b41ef6cbdf0e7d105f38ad91b91f1797a6",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.78,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -21.78,
+      "sourceTruePeakDbTP": -6.17,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": false
+    },
+    "wordsPerMinute": 177.9,
+    "loudnessLUFS": -18.48,
+    "truePeakDbTP": -2.83,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-26-prompt-20261104-2.flac",
+      "sha256": "53cbd02e6cb319119a123dfa7ce6951c7878ba93002c3dec7bc868cbd6824501",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "7ad936fcf03614e3febf256efc64385b1bb209b640cd24af3087f05234d06f9a"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "ee8d6ebf5e0b9c2d211c885027abae102cee2404f66ccfb24482a681edf95ee6",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_9a1a78a646ee4338a0919fa032bf34c4",
+      "text": "You borrowed a voice recorder from your department and were supposed to return it yesterday. You forgot because you were preparing for an exam, and you have brought it back today. You need to apologize and check whether anything else is required. What would you say to the staff member at the equipment desk?",
+      "audioSha256": "ee8d6ebf5e0b9c2d211c885027abae102cee2404f66ccfb24482a681edf95ee6",
+      "sourcePromptProvided": false,
+      "differences": [
+        {
+          "expected": "apologise",
+          "heard": "apologize"
+        }
+      ],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-27-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-27",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "8af0d98e17a97e218121d22fdadffa6776042866c7e0b82ba44c16b8490ee5e7",
+    "audioSha256": "97bab0c25cef9ad2a362d1ee4a006e5cd9cbfd368ec482591e31cc76e4ec9d34",
+    "bytes": 305804,
+    "seconds": 15.264,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_6e5596b66721407484abaca3e290e2c5",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "851f243d04d3507a75a0a029676861bbdca47db426f48e486c4116fe2da01128",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.77,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -21.73,
+      "sourceTruePeakDbTP": -4.77,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 184.7,
+    "loudnessLUFS": -19.41,
+    "truePeakDbTP": -2.45,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-27-prompt-20261104-2.flac",
+      "sha256": "d3454fa959601fa8ea95accb77fb2d754110533253372a810e6260d61c7a512c",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "cb6017ae03649788cd8d489c61285445ab609781a13163b671207b1f30d57032"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "97bab0c25cef9ad2a362d1ee4a006e5cd9cbfd368ec482591e31cc76e4ec9d34",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_cdb80d811fa7449f842442e8d90406d6",
+      "text": "Your project group has arranged to meet on campus tomorrow. You have injured your ankle and cannot travel easily, but you have completed your research and want to contribute. You want to ask if you can join by video call. What would you say to your group?",
+      "audioSha256": "97bab0c25cef9ad2a362d1ee4a006e5cd9cbfd368ec482591e31cc76e4ec9d34",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-28-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-28",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "ccb97b124d5c749a3e867b842e540675d7e2ddfddbd555f58d0a4683e8631249",
+    "audioSha256": "4189d093dec37ba20a148c3837f21a89b7ded6aec48ed63976cb7a0cef1b9d46",
+    "bytes": 297164,
+    "seconds": 14.832,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_544f5e1610a646348c4942e0a6911e61"
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "37cd181902d3ab95c585bba5f1a1de74e6eda2ddcef878a815ba58f34f047e2e",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.88,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.49,
+      "sourceTruePeakDbTP": -5.88,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 194.2,
+    "loudnessLUFS": -19.06,
+    "truePeakDbTP": -2.45,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-28-prompt-20261104-2.flac",
+      "sha256": "85bde7f57438fd5983078469588915dedc1f0afacb1ef2807fe4bdd643921ed3",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "ac320b407a9fd7767e13a21543c2c90d560f78be4719b50562d14ed2c00e93e8"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "4189d093dec37ba20a148c3837f21a89b7ded6aec48ed63976cb7a0cef1b9d46",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_290d179d2ef445038992c9ae5dabbfa9",
+      "text": "You stayed after class to ask your tutor about a difficult topic, but the tutor now needs to leave for another lecture. You still need guidance before next week's test and want to arrange another time or way to get help. What would you say to your tutor?",
+      "audioSha256": "4189d093dec37ba20a148c3837f21a89b7ded6aec48ed63976cb7a0cef1b9d46",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-29-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-29",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "04e3f55ed96fde3bdba8b7a8800d0e2b00eb25b9e497ad367bb85d0591f14cb7",
+    "audioSha256": "b83fd69a3fc9223485126732682212467bf9fb560b8f5ed3025e9df4a2dc32df",
+    "bytes": 338444,
+    "seconds": 16.896,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_88911cd25cb849fca1084fcde806de3f",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "ec3e4cda572154af2db86dbb4a2cc6bd2736777643123253cb418259300855d1",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.64,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.38,
+      "sourceTruePeakDbTP": -5.64,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 177.6,
+    "loudnessLUFS": -19.19,
+    "truePeakDbTP": -2.44,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-29-prompt-20261104-2.flac",
+      "sha256": "f88e2896628ce2dffd18d8086abb85509f2773d64bd81d4174c420c9b7cf8cce",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "d6e30388ac66ade54b4703e2689bbb08ed162734263fa1a199f9d9d93c56c4b9"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "b83fd69a3fc9223485126732682212467bf9fb560b8f5ed3025e9df4a2dc32df",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_1ddd27943b0949bea5d0190aa6667f49",
+      "text": "Your project partner wants to choose a broad topic that would require collecting a large amount of data. You are worried that your group cannot finish the work within two weeks. You want to suggest narrowing the topic while keeping their main idea. What would you say to your partner?",
+      "audioSha256": "b83fd69a3fc9223485126732682212467bf9fb560b8f5ed3025e9df4a2dc32df",
+      "sourcePromptProvided": false,
+      "differences": [],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
+  },
+  "rts-original-20261024-30-prompt-20261104-2": {
+    "questionId": "rts-original-20261024-30",
+    "promptVersion": "rts-neural-2026-11-04.2",
+    "textSha256": "bff34ba075c64b10f7aa6a35b5455e0ac3ba982bc7b6f069036eeaf3ce1a7b4c",
+    "audioSha256": "461feef629a9d54a4fce2b9068726b86f654532d7fac130d2fbf8cd9fc8f9452",
+    "bytes": 326924,
+    "seconds": 16.32,
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_a4668743ae5e47929daff61d9b72c5d7",
+      "nativeRateHz": 24000
+    },
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "voices": [
+      "marin"
+    ],
+    "masterSha256": "5e6d4d51556031f274429dac2ac5594764750be9a73d76d9174bc95b36b75e43",
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.15,
+      "tempoProcessing": "none",
+      "dynamicLoudnessProcessing": "none",
+      "limiting": "none",
+      "sampleRateHz": 24000,
+      "targetLoudnessLUFS": -18,
+      "sourceLoudnessLUFS": -22.63,
+      "sourceTruePeakDbTP": -6.15,
+      "peakHeadroomDbTP": -2,
+      "gainPeakConstrained": true
+    },
+    "wordsPerMinute": 180.1,
+    "loudnessLUFS": -18.93,
+    "truePeakDbTP": -2.45,
+    "losslessMaster": {
+      "path": "content/speaking-audio/masters/rts-neural-20261104-v2/rts-original-20261024-30-prompt-20261104-2.flac",
+      "sha256": "7cf4521b6fd8449677c3701b7f6afe22bddf918ad8aab6cee762ba2b47b38b51",
+      "sampleRateHz": 24000,
+      "channels": 1,
+      "sampleFormat": "s16",
+      "pcmSha256": "0d7414ff8a58a2cbc3afef0a45a18ed0b482db2e501fac3b1fbdec863c1c155c"
+    },
+    "auditoryReview": {
+      "status": "unverified",
+      "audioSha256": "461feef629a9d54a4fce2b9068726b86f654532d7fac130d2fbf8cd9fc8f9452",
+      "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
+      "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
+    },
+    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_9b7a2309e1a24ed28e129a52f9c36547",
+      "text": "You agreed to help at the university open day until 3 o'clock. The organizer has now asked you to stay until 5, but you have a work shift starting at 4. You want to explain your availability and offer help before leaving. What would you say to the organizer?",
+      "audioSha256": "461feef629a9d54a4fce2b9068726b86f654532d7fac130d2fbf8cd9fc8f9452",
+      "sourcePromptProvided": false,
+      "differences": [
+        {
+          "expected": "three",
+          "heard": "3"
+        },
+        {
+          "expected": "organiser",
+          "heard": "organizer"
+        },
+        {
+          "expected": "five",
+          "heard": "5"
+        },
+        {
+          "expected": "four",
+          "heard": "4"
+        },
+        {
+          "expected": "organiser",
+          "heard": "organizer"
+        }
+      ],
+      "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    }
   }
 }

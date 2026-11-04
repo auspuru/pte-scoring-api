@@ -1,26 +1,24 @@
-# Neural refresh draft — 4 November 2026
+# Neural refresh draft — gain-only version 2, 4 November 2026
 
-The 30 original-practice RTS questions now have separate immutable candidate
-keys ending `-prompt-20261104-1`. The draft current-question projection uses
-these fixed recordings for new attempts; it does not change the source situations,
-samples, question IDs or response timing. `rts-neural-manifest.json` records exact
-text/audio hashes, generation and transcription receipts, measured levels and
-lossless-master hashes. The six prior bundled neural recordings stay unchanged.
+The user approved the cleaner question-09 clip. Current original-practice RTS
+snapshots use immutable keys ending `-prompt-20261104-2` with Marin at synthesis
+speed 0.95. Gain-only processing preserves natural dynamics without normalization,
+limiting or post-generation tempo changes. The first approved pilot is unchanged;
+question 09 uses the exact cleaner approved bytes. Question 28 was regenerated at
+0.95 to restore the full final question. All 30 independent transcripts now include
+that final question. Minor word differences accepted by the user are not blockers.
 
-Old snapshots without a keyed recording retain their original local narration
-and cache identity. New keyed snapshots never fall back to eSpeak if their
-recording is missing or mismatched. The earlier Edge authoring command now
-handles only its original prompt version so it cannot overwrite neural candidates.
+Version-1 recordings and metadata remain available for saved keyed snapshots;
+old unkeyed snapshots retain the local narrator and its original cache identity.
+New keyed snapshots never fall back to eSpeak when the requested recording is
+unavailable. The six earlier neural prompts and all frozen mock papers remain intact.
 
-This is a listening-review draft, not a published refresh. Question 09 was rejected for user-reported audio distortion. The user accepts
-the minor `notice`/`noticed` variation. A new pilot-speed, gain-only candidate
-is provided separately for listening comparison. Full listening review remains
-pending for the newly generated clips. Automated audio review failed to
-produce usable observations and is not a quality pass. See
-[the batch listening register](../review/rts-neural-20261104/README.md).
+The user's approval covers the common processing profile and exact pilot files,
+not a claimed full listening pass for unheard clips. The remaining 28 individual
+listening reviews are unverified. This remains a release draft. See the
+[batch listening register](../review/rts-neural-20261104/README.md).
 
 The notes below describe the retained October version.
-
 
 # Respond to a Situation prompt format
 

@@ -2,14 +2,14 @@
 const path=require('node:path'),crypto=require('node:crypto');
 const legacy=require('./content/rts-prompt-legacy.json');
 const VERSION='rts-prompt-2026-10-28.1';
-const NEURAL_VERSION='rts-neural-2026-11-04.1';
+const NEURAL_VERSION='rts-neural-2026-11-04.2';
 const neuralManifest=require('./content/speaking-audio/rts-neural-manifest.json');
 const manifest={...require('./content/speaking-audio/rts-manifest.json'),...neuralManifest};
 const sha=text=>crypto.createHash('sha256').update(text).digest('hex');
 function current(q){
   if(q.type!=='rts')return q;
   if(/^rts-original-20261024-(?:0[1-9]|[12]\d|30)$/.test(q.id)){
-    return {...q,audioPrompt:true,promptVersion:NEURAL_VERSION,promptAudioKey:q.id+'-prompt-20261104-1'};
+    return {...q,audioPrompt:true,promptVersion:NEURAL_VERSION,promptAudioKey:q.id+'-prompt-20261104-2'};
   }
   // Retain the supplied transcript in its source file and archive; standardise
   // the authored portal prompt without overwriting the production recording.
