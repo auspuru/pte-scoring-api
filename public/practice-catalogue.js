@@ -1,10 +1,11 @@
 (function (root, factory) {
   const fibQuality = root.ReadingFibQuality || (typeof require === 'function' ? require('./reading-fib-quality') : null);
   const patternBank = root.ReadingFibPatternBank || (typeof require === 'function' ? require('./reading-fib-pattern-bank') : null);
-  const api = factory(fibQuality, patternBank);
+  const currentAudio=q=>{const tools=root.ReadingMockTools||(typeof require==='function'?require('./reading-mock-tools'):null);return tools?.approvedQuestion?tools.approvedQuestion(q):q;};
+  const api = factory(fibQuality, patternBank, currentAudio);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PracticeCatalogue = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (fibQuality, patternBank) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (fibQuality, patternBank, currentAudio) {
   'use strict';
   const groups = [
     { id: 'speaking', title: 'Speaking Practice', tasks: [
@@ -56,14 +57,14 @@
         ...l,
         questions: [...l.questions, ...extras]
           .filter(q => !['dropdown','wordbank'].includes(l.id) || languageFirstFib(q))
-          .map(q => ['dropdown','wordbank'].includes(l.id) && fibQuality ? fibQuality.strengthen(q, 'library:'+q.id) : q)
+          .map(q => ['dropdown','wordbank'].includes(l.id) && fibQuality ? fibQuality.strengthen(q, 'library:'+q.id) : currentAudio(q))
       };
     });
     for (const task of groups.flatMap(g => g.tasks).filter(t => t.type)) {
       if (libraries.some(l => l.id === task.type)) continue;
       const questions = ['hcs','hiw'].includes(task.type)
         ? [...(bank.audioQuestionBank || []), ...(bank.mixedMock?.audioQuestions || [])]
-          .filter(q => q.type === task.type).map(q => ({ ...q, uid: 'audio:' + q.id }))
+          .filter(q => q.type === task.type).map(q => currentAudio({ ...q, uid: 'audio:' + q.id }))
         : (bank.sets || []).flatMap(set => set.questions.filter(q => q.type === task.type)
           .map(q => ({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning?.[q.id] || {} })));
       const seen = new Set();

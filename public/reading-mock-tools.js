@@ -7,6 +7,134 @@
   else root.ReadingMockTools = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this, function (predictions, fibQuality, patternBank) {
   'use strict';
+  const APPROVED_HIW_RECORDS={
+  "hiw-c2-01": {
+    "key": "hiw-c2-01-neural-20261104-1",
+    "text": "Administrative standards are often defended as a means of insulating decisions from personal preference. Their legitimacy, however, remains contingent on the purposes they serve and the circumstances in which they are applied. A rule may constrain discretion without eliminating the judgement required to interpret an unusual case. Treating every classification as provisional does not entail abandoning consistency; it acknowledges that categories can obscure distinctions relevant to a defensible decision. The crucial question is whether departures from routine are authorised through reasons that others can examine. Where decisions are reversible, institutions can learn from objections without presenting every revision as an admission of incompetence. Accountability therefore depends on making interpretations contestable while preserving a coherent explanation of why comparable cases receive comparable treatment.",
+    "seconds": 54.912,
+    "hash": "235afbf871a7"
+  },
+  "hiw-c2-02": {
+    "key": "hiw-c2-02-neural-20261104-1",
+    "text": "A model can reproduce an observed pattern without establishing the mechanism that generated it. This distinction is particularly consequential when observational data are used to recommend an intervention. An association may persist because an unmeasured variable influences both the supposed cause and the outcome, leaving confounding unresolved. Even a statistically identifiable relationship need not remain invariant when the circumstances of its production change. The purpose of a useful model is consequently not to conceal these dependencies beneath a precise numerical prediction, but to specify which assumptions permit that prediction to travel. Its conclusions should remain conditional on those assumptions and receptive to evidence that exposes their limits. Precision becomes informative only when accompanied by scrutiny of what has been measured, what has been omitted, and what the analysis can legitimately support.",
+    "seconds": 56.448,
+    "hash": "2bb0ef177d78"
+  },
+  "hiw-c2-03": {
+    "key": "hiw-c2-03-neural-20261104-1",
+    "text": "An archive is a selective residue of past activity rather than an exhaustive account of what occurred. Documents survive through decisions about preservation, institutional priorities and accidents of material durability. An apparent absence must therefore be interpreted in relation to the processes that produced the collection. Where a claim is corroborated by independent records, confidence may increase, but the provenance of each record still matters. Repetition can reflect a shared administrative source rather than several independent observations. Historians must also distinguish contingent gaps in documentation from the systematic exclusion of people whose experiences were seldom recorded. Silence cannot simply be converted into evidence of consent. A responsible interpretation remains provisional where the surviving material cannot discriminate between plausible explanations, while stating clearly which conclusions the available evidence does sustain.",
+    "seconds": 53.856,
+    "hash": "c37bea301064"
+  },
+  "hiw-c2-04": {
+    "key": "hiw-c2-04-neural-20261104-1",
+    "text": "The apparent stability of an ecosystem can obscure a gradual erosion of its capacity to absorb disturbance. A lake may retain familiar characteristics while accumulating pressures that bring it closer to a threshold. Because the response can involve nonlinearity, a modest additional disturbance may produce a disproportionate change. Restoration then becomes more complicated than merely reversing the final pressure: feedback within the altered system can perpetuate the new condition. This possibility does not make recovery futile, but it qualifies the assumption that degradation and restoration follow symmetrical paths. Effective management attends to early indications of diminishing resilience while acknowledging that their interpretation is uncertain. The objective is to preserve options for intervention before an apparently incremental process produces a transition whose consequences are difficult to reverse.",
+    "seconds": 54.312,
+    "hash": "5ca0747be41b"
+  },
+  "hiw-c2-05": {
+    "key": "hiw-c2-05-neural-20261104-1",
+    "text": "A translation may be lexically accurate yet alter the relationship between a speaker and an audience. Forms of address, understated objections and strategically unresolved references carry pragmatic implications that cannot always be transferred through equivalent vocabulary. The translator must decide which ambiguities are incidental and which are constitutive of the original argument. Resolving every uncertainty can impose a clarity that the source deliberately withholds; reproducing every unfamiliar construction can make a coherent voice seem needlessly obscure. Fidelity consequently requires a negotiated balance between intelligibility and the preservation of meaningful difference. Such judgement is neither arbitrary nor reducible to a universal formula. It becomes defensible when the translator can explain how a particular choice sustains the force of an utterance, including what it insinuates without explicitly asserting.",
+    "seconds": 55.008,
+    "hash": "675d38806ac8"
+  },
+  "hiw-c2-06": {
+    "key": "hiw-c2-06-neural-20261104-1",
+    "text": "Inviting people to speak does not by itself ensure that their contributions receive equitable consideration. A participant may be formally included while the credibility of their testimony is discounted through assumptions about expertise or social standing. Conversely, familiar institutional language can confer authority on a claim whose evidential basis remains weak. Addressing this asymmetry requires more than an indiscriminate declaration that every statement deserves equal weight. It requires examining how credibility is allocated, what opportunities exist to challenge an interpretation, and whether participants possess the resources to make their experiences intelligible within the discussion. Deliberation improves when these conditions become explicit and revisable. The aim is neither automatic deference nor reflexive scepticism, but a process in which the reasons for accepting or rejecting a contribution can themselves be questioned.",
+    "seconds": 57.72,
+    "hash": "32706ec365f0"
+  },
+  "hiw-c2-07": {
+    "key": "hiw-c2-07-neural-20261104-1",
+    "text": "Infrastructure planning distributes opportunities across time as well as across space. A project that appears efficient under current assumptions may foreclose alternatives that later generations would have preferred. This does not imply that all irreversible investments should be deferred, since postponement also imposes costs and can entrench existing disadvantages. It does require distinguishing uncertainty about future demand from disagreement about whose interests should determine the decision. Appraisal becomes more transparent when these issues are articulated separately instead of being compressed into a single forecast. Where feasible, modular designs can preserve flexibility without requiring planners to predict every subsequent development. Their value lies partly in the options they retain, including the ability to revise a commitment when its original rationale no longer withstands public examination.",
+    "seconds": 54.216,
+    "hash": "3c7120c50b36"
+  },
+  "hiw-c2-08": {
+    "key": "hiw-c2-08-neural-20261104-1",
+    "text": "Automated classification acquires an appearance of neutrality when its categories are presented as purely technical. Yet the choice of a target variable already embeds a judgement about which differences matter. A system trained to reproduce previous decisions may faithfully replicate patterns that an institution ought to reconsider. Evaluating its performance therefore requires attention to the provenance of the labels as well as the frequency of predictive errors. Aggregated accuracy can conceal uneven consequences for groups whose circumstances are inadequately represented in the training material. Accountability depends on making these limitations legible to those affected and providing a practicable route for contesting decisions. The central challenge is not simply to increase computational sophistication, but to ensure that the purposes governing classification remain explicit, revisable and answerable to public reasons.",
+    "seconds": 54.552,
+    "hash": "6a9624d31e9a"
+  },
+  "hiw-c2-09": {
+    "key": "hiw-c2-09-neural-20261104-1",
+    "text": "Conserving a historic building involves interpreting continuity rather than simply arresting change. Materials decay, functions evolve and successive alterations may acquire historical significance of their own. Restoring a structure to an imagined original condition can erase evidence of the very processes that make it valuable. Authenticity is therefore not exhausted by the survival of individual components; it also concerns the intelligibility of relationships between fabric, use and setting. This broader account does not license unrestricted redevelopment. It calls for a discriminating judgement about which interventions sustain the building's significance and which merely substitute a convenient narrative for its complexity. Documentation should make those judgements traceable, allowing later conservators to distinguish inherited features from deliberate additions and to reassess decisions whose assumptions may no longer be persuasive.",
+    "seconds": 58.32,
+    "hash": "31017c258281"
+  },
+  "hiw-c2-10": {
+    "key": "hiw-c2-10-neural-20261104-1",
+    "text": "A public programme may satisfy its numerical targets while failing to realise the purpose for which those targets were introduced. Once an indicator becomes consequential for funding, organisations have an incentive to optimise what is counted, even when doing so displaces less measurable responsibilities. This divergence is not an inevitable consequence of quantification, but it reveals the danger of treating a proxy as an exhaustive definition of success. Evaluation should examine how reported improvements were produced and whether their benefits endure beyond the reporting interval. Independent scrutiny and qualitative evidence can expose achievements that are nominal rather than substantive. A credible assessment preserves the usefulness of measurement while keeping its categories subordinate to the public purposes they are meant to illuminate, rather than allowing the categories themselves to dictate those purposes.",
+    "seconds": 53.904,
+    "hash": "febe37c61e60"
+  },
+  "hiw-11": {
+    "key": "hiw-11-neural-20261104-1",
+    "text": "Planting trees can reduce the temperature of a city street, but the benefits depend on more than the number of saplings installed. A continuous canopy provides shade along an entire walking route, whereas isolated trees may leave long stretches exposed. Planners must therefore consider where people actually travel and where heat is most persistent. Maintenance is equally important: restricted roots and inadequate watering can undermine an otherwise ambitious planting programme. Residents may also value open space for markets, games and community events, so the design must accommodate several uses. Successful projects combine local knowledge with careful observation of seasonal conditions. Their performance should be evaluated through changes in comfort and access over time, rather than through planting totals alone, because survival and distribution determine who ultimately benefits.",
+    "seconds": 51.864,
+    "hash": "1410ace4efb6"
+  },
+  "hiw-12": {
+    "key": "hiw-12-neural-20261104-1",
+    "text": "Repeating a scientific study is sometimes treated as a straightforward test of whether the original researchers were correct. In practice, replication requires careful attention to the conditions under which a finding was produced. Differences in equipment, participants or measurement procedures can influence the result without implying misconduct. Researchers should make these differences explicit and distinguish a failure to reproduce an effect from evidence that the effect is impossible. A useful replication may reveal that an apparent general principle depends on a narrower set of circumstances. This discovery can refine a theory rather than simply discredit it. Open methods and accessible data allow others to examine competing explanations, while several independent investigations provide a stronger basis for judgement than a single dramatic success or failure reported in isolation.",
+    "seconds": 54.456,
+    "hash": "3212f45c562a"
+  },
+  "hiw-13": {
+    "key": "hiw-13-neural-20261104-1",
+    "text": "A product that can be repaired easily may remain useful long after its original warranty has expired. Yet repairability is determined partly by decisions made before manufacturing begins. Components joined with removable fasteners are generally more accessible than those sealed permanently inside a casing. Clear documentation also matters, since a replacement part has limited value if technicians cannot identify the fault. Manufacturers may argue that a compact design improves performance, but this advantage must be weighed against the costs of premature disposal. Designing for repair does not require every component to last indefinitely. Instead, it allows predictable failures to be addressed without discarding the whole device. Such an approach can conserve materials while supporting local services, provided that spare parts and reliable information remain available throughout the product's working life.",
+    "seconds": 58.8,
+    "hash": "94292fd6657f"
+  },
+  "hiw-14": {
+    "key": "hiw-14-neural-20261104-1",
+    "text": "Restoring a coastal wetland involves more than planting vegetation in an area that has lost its original habitat. Water must move through the landscape at suitable intervals, carrying sediment and creating conditions in which different species can establish themselves. If an old embankment continues to restrict tidal flow, newly planted vegetation may struggle despite intensive maintenance. Restoration teams therefore begin by investigating the physical processes that sustain the habitat. They also consider neighbouring communities, whose access routes or drainage systems may be affected by proposed changes. A successful project balances ecological recovery with these practical concerns and monitors outcomes over several seasons. Early fluctuations do not necessarily indicate failure, because living systems respond unevenly and may require time to develop the diversity and structure of an established wetland.",
+    "seconds": 56.016,
+    "hash": "eeb23036390b"
+  },
+  "hiw-15": {
+    "key": "hiw-15-neural-20261104-1",
+    "text": "Reading a familiar page can create a strong impression that its contents have been learned. However, recognition while the information remains visible is different from retrieving it without assistance. Students who close the book and attempt to explain an idea may discover gaps that repeated reading had concealed. These difficulties can be useful because they identify what needs further attention. Effective retrieval practice includes feedback, allowing mistaken answers to be corrected before they become established. It also benefits from spacing, with material revisited after an interval instead of rehearsed continuously in a single sitting. The aim is not to make every practice attempt effortless. Some manageable difficulty can strengthen later recall, provided that the learner eventually reaches an accurate understanding and connects individual facts to a coherent explanation.",
+    "seconds": 51.312,
+    "hash": "f5075ce59d9c"
+  },
+  "hiw-16": {
+    "key": "hiw-16-neural-20261104-1",
+    "text": "A museum label may appear to offer a neutral description of an object, yet its selection of details directs the visitor's attention. Naming a maker, explaining a technique or describing an object's journey into the collection can produce quite different interpretations. Curators increasingly consult communities whose knowledge was excluded from earlier displays. This collaboration can reveal meanings that are absent from written catalogues, although agreement should not be assumed simply because consultation has occurred. Different contributors may understand the same object through distinct histories and responsibilities. A thoughtful exhibition makes these perspectives visible while explaining the evidence behind particular claims. Its purpose is not to remove all uncertainty, but to help visitors recognise how knowledge is assembled and why an apparently familiar object may support more than one account.",
+    "seconds": 52.512,
+    "hash": "9ea85eac1b23"
+  },
+  "hiw-17": {
+    "key": "hiw-17-neural-20261104-1",
+    "text": "Extending public transport into the night can improve access to employment, especially for people whose shifts begin or end outside ordinary commuting hours. Nevertheless, a timetable alone does not guarantee a useful service. Connections must be coordinated, waiting areas should feel secure, and information needs to remain available when staffing is reduced. A route with modest passenger numbers may still provide substantial value if it links workers to a hospital or a distribution centre. Evaluating such services only through average occupancy can overlook these wider benefits. Transport planners therefore examine who depends on each connection and what alternatives are realistically affordable. The challenge is to design a reliable network within limited resources, using evidence from actual journeys rather than assuming that daytime travel patterns continue unchanged throughout the night.",
+    "seconds": 54.0,
+    "hash": "a07c43a44f42"
+  },
+  "hiw-18": {
+    "key": "hiw-18-neural-20261104-1",
+    "text": "Seed collections provide a reserve of plant diversity that may become valuable when growing conditions change. Their usefulness, however, depends on how representative and well documented the stored material is. Collecting many seeds from a small number of closely related plants can create an impressive inventory while preserving relatively little genetic variation. Collectors therefore sample across populations and record the environments in which the plants were found. Storage also requires continuing attention, because seeds differ in their tolerance of drying and gradually lose viability. Periodic testing helps staff decide when a collection must be renewed. These facilities complement conservation in natural habitats rather than replacing it, since an isolated seed cannot preserve all the relationships between a plant, its pollinators, the soil and the surrounding ecological community.",
+    "seconds": 55.608,
+    "hash": "a75a06ae9f29"
+  },
+  "hiw-19": {
+    "key": "hiw-19-neural-20261104-1",
+    "text": "Converting public records into digital files can make information easier to locate, but accessibility is not achieved simply by scanning documents. Search systems depend on accurate descriptions, readable text and consistent information about when and how each record was created. A badly indexed collection can remain effectively invisible even when every page is online. Long term preservation presents another challenge, because software formats and storage systems eventually become obsolete. Institutions need procedures for checking files, migrating them to suitable formats and documenting any changes made during that process. They must also consider which personal details should be restricted and which records serve a legitimate public interest. The objective is durable and intelligible access, supported by clear responsibilities, rather than the rapid accumulation of files that nobody can reliably interpret.",
+    "seconds": 56.52,
+    "hash": "b58d48b311ca"
+  },
+  "hiw-20": {
+    "key": "hiw-20-neural-20261104-1",
+    "text": "A river connects places that may be governed by different authorities and used for competing purposes. An action that improves conditions in one location can transfer a problem downstream, especially when drainage works accelerate the movement of water. Managing the catchment as a connected system therefore requires cooperation beyond individual property boundaries. Farmers, residents and local agencies may agree on the need to reduce flooding while disagreeing about where water should be retained. Evidence about soils, rainfall and land use can clarify the available options, but it does not eliminate questions about how costs are shared. Effective planning makes these tradeoffs explicit and revisits decisions as conditions change. It also recognises that small interventions can have cumulative effects, so their combined consequences matter as much as the performance of any single project.",
+    "seconds": 51.96,
+    "hash": "eebb2f9097d5"
+  }
+};
+  function approvedQuestion(q){
+    if(!q||q.type!=='hiw'||q.audioKey||q.fixedAudio)return q;
+    const entry=APPROVED_HIW_RECORDS[q.id];if(!entry)return q;
+    if(q.audioText!==entry.text)return{...q,fixedAudio:true,audioUnavailable:true,audioUrl:null};
+    return{...q,fixedAudio:true,audioKey:entry.key,audioVersion:'approved-audio-2026-11-04.1',audioSeconds:entry.seconds,audioUrl:'/practice-audio/'+entry.key+'.mp3?v=sha256-'+entry.hash};
+  }
   const extraLabels = { swt: 'Summarise written text', hcs: 'Highlight Correct Summary', hiw: 'Highlight Incorrect Words' };
   const AUDIO_VARIANTS = Object.freeze(['single', 'ambient', 'two-speakers', 'sound-cue', 'mixed']);
   const AUDIO_BACKGROUNDS = Object.freeze([
@@ -56,6 +184,7 @@
     return q?.type === 'hiw' && challenge ? 'mixed' : 'single';
   }
   function audioPlayback(q, challenge = true) {
+    if(q?.fixedAudio)return{fixedAudio:true,audioUrl:q.audioUrl,audioSeconds:q.audioSeconds,variant:'single',label:'Recorded prompt',transcript:q.audioText||''};
     const variant = audioVariant(q, challenge);
     if (variant === 'single') return { variant, label: 'Single-speaker audio', transcript: q?.audioText || '' };
     const background = AUDIO_BACKGROUNDS[hash(q.id || q.uid) % AUDIO_BACKGROUNDS.length].id;
@@ -293,7 +422,7 @@
   function composeIntegrated(name, reading, readingMinutes, audio, listeningMinutes, swtPassages, timed, sharedMinutes) {
     if (!Array.isArray(swtPassages) || swtPassages.length !== 2 || swtPassages.some(p => p?.id == null || !p.text || !p.keyElements) || new Set(swtPassages.map(p => String(p.id))).size !== 2 || new Set(swtPassages.map(p => p.text.trim().replace(/\s+/g, ' ').toLowerCase())).size !== 2) throw Error('Two different SWT passages are required. Please try again.');
     const swt = swtPassages.map((p, i) => ({ id: p.id, uid: 'mixed:swt:' + p.id, type: 'swt', title: p.title || 'Summarise written text', passageId: p.id, passage: p.text, keyPoints: p.keyElements, sampleResponse: p.sampleResponse || '', instructions: 'Read the passage and write a one-sentence summary of 5–75 words. This is SWT ' + (i + 1) + ' of 2.' + (timed ? ' You have 10 minutes for this question.' : ' Take your time in this untimed practice mock.') }));
-    const questions = [...swt, ...reading, ...audio];
+    const questions = [...swt, ...reading, ...audio.map(approvedQuestion)];
     if (new Set(questions.map(q => q.uid)).size !== questions.length) throw Error('This mock contains repeated questions.');
     const stages = [
       { id: 'swt-1', name: 'SWT 1 of 2', first: 0, last: 0, minutes: 10 },
@@ -305,11 +434,12 @@
   }
   // Autoplay, manual playback and review share one audio lifecycle.
   function createSpeaker(env, onState) {
-    let active = null, timeout = null, startTimeout = null, serial = 0, volume = 1, utteranceQueue = [];
+    let active = null, timeout = null, startTimeout = null, serial = 0, volume = 1, utteranceQueue = [], recording = null;
     try { const saved = env.localStorage?.getItem('ipt-exam-volume'); if (saved != null && Number.isFinite(Number(saved))) volume = Math.max(0, Math.min(1, Number(saved))); } catch {}
     function setVolume(value) {
       volume = Math.max(0, Math.min(1, Number(value)));
       for (const utterance of utteranceQueue) utterance.volume = volume;
+      if(recording)recording.volume=volume;
       if (effects?.master) effects.master.gain.value = DISTRACTION_GAIN * volume;
       try { env.localStorage?.setItem('ipt-exam-volume', String(volume)); } catch {}
     }
@@ -345,6 +475,7 @@
       serial++;
       clearTimers();
       stopEffects();
+      if(recording){const previous=recording;recording=null;previous.onplaying=previous.onended=previous.onerror=null;previous.pause();}
       if (active !== null) {
         const previous = active; active = null;
         env.speechSynthesis?.cancel();
@@ -446,6 +577,27 @@
       cancel();
       options = { ...options };
       const effectsReady = unlock();
+      if(options.fixedAudio){
+        const ticket=serial;active=key;let started=false;
+        const current=()=>ticket===serial&&active===key;
+        const finish=(status,message)=>{
+          if(!current())return;active=null;serial++;clearTimers();stopEffects();
+          if(recording){const previous=recording;recording=null;previous.onplaying=previous.onended=previous.onerror=null;previous.pause();}
+          onState(key,status,message);
+        };
+        onState(key,'loading','Loading recording…');
+        if(!options.audioUrl||!env.Audio){finish('error','The recording is unavailable. Select Play audio to retry.');return;}
+        try{
+          const audio=new env.Audio(options.audioUrl);recording=audio;audio.volume=volume;
+          audio.onplaying=()=>{if(!current())return;started=true;if(startTimeout!==null)env.clearTimeout(startTimeout);startTimeout=null;onState(key,'playing','Playing. Follow the question on screen.');};
+          audio.onended=()=>{if(current())finish(started?'complete':'error',started?'Audio complete. Your answer is ready to submit.':'Audio did not start. Select Play audio to retry.');};
+          audio.onerror=()=>finish('error','The recording could not finish. Select Play audio to retry.');
+          startTimeout=env.setTimeout(()=>finish('error','Audio did not start. Select Play audio to retry.'),8000);
+          timeout=env.setTimeout(()=>finish('error','Audio timed out. Replay the question before submitting.'),150000);
+          const playing=audio.play();if(playing?.catch)playing.catch(()=>finish('error','Your browser could not start audio. Select Play audio to retry.'));
+        }catch(_){finish('error','The recording could not start. Select Play audio to retry.');}
+        return;
+      }
       if (!env.speechSynthesis || !env.SpeechSynthesisUtterance) {
         onState(key, 'error', 'Audio is unavailable in this browser. Open the practice in a browser with an English speech voice. Your saved selections can still be scored.');
         return;
@@ -558,5 +710,5 @@
     }
     return { play, cancel, unlock, setVolume, getVolume: () => volume };
   }
-  return { extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, languageFirstFib, qualityFibPool, strengthenFib, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS, AUDIO_BACKGROUNDS, AUDIO_CUES };
+  return { approvedQuestion, extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, languageFirstFib, qualityFibPool, strengthenFib, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS, AUDIO_BACKGROUNDS, AUDIO_CUES };
 });

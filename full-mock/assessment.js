@@ -100,6 +100,21 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Audio URLs, practice snapshots and fixed HIW playback only. Native score
+  // functions, frozen paper contents and provider configuration are unchanged.
+  // Explicit post-change pins include this file, so future drift is not waived.
+  const audioBaseline=require('../content/full-mock/audio-refresh-compatible-sources.json');
+  const audioPins=require('../content/full-mock/audio-refresh-transport-pins.json');
+  const audioFiles=['full-mock/assessment.js','public/reading-mock-tools.js','speaking-lab.js'];
+  if(digest(audioBaseline)==='034193be33c2bbb80ec52c53682539afaa6a4929e33114cd54245bc82dcdd5c0'
+    &&Object.keys(audioPins).sort().join()===audioFiles.slice().sort().join()
+    &&Object.entries(audioPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)
+    &&digest(saved.scoringSources)!==digest(current.scoringSources)){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of audioFiles)sources.files[file]=structuredClone(audioBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(audioBaseline))return digest(saved)===digest(current);
+  }
   // Exact audio-evidence/publication upgrade. Preserve frozen models, native
   // score functions, successful jobs and snapshots; no arbitrary source drift.
   const unclearBaseline=require('../content/full-mock/unclear-audio-compatible-sources.json');

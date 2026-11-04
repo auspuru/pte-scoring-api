@@ -9,6 +9,7 @@ const overall = require('./writing-mock-overall');
 const essayPolicy = require('./public/essay-scoring');
 const ESSAY_MAXIMUM = Object.values(essayPolicy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
 const bank = require('./content/writing-lab.json');
+const approvedAudio = require('./approved-audio');
 const predictions = require('./content/writing-predictions-sep-2026');
 const AUDIO_VERSION = '20261008-sst-native-minute3';
 const MAX_ASSESSMENT_QUEUE = 500;
@@ -69,7 +70,8 @@ const listening = require('./content/listening-mocks');
 const allMocks = [...bank.mocks, ...predictionMocks, ...listening.mocks];
 const userPredictionDictation = predictions.wfd.filter(q => q.predictionSource?.contentStatus === 'verbatim-user-provided');
 const previousDictation = [...new Map([...bank.mocks.flatMap(m => m.questions.filter(q => q.type === 'wfd')), ...(bank.dictation || [])].map(q => [q.id, q])).values()];
-const dictation = [...userPredictionDictation, ...previousDictation];
+const dictation = [...new Map([...userPredictionDictation, ...previousDictation,
+  ...predictions.wfd.filter(q=>approvedAudio.entryFor(q))].map(q=>[q.id,q])).values()];
 // Individual listening questions reuse the verified mock sources and immutable keys.
 const listeningPractice = [...new Map(listening.mocks.flatMap(m => m.questions)
   .filter(q => listeningScoring.TYPES.has(q.type)).map(q => [q.id, { ...q, minutes:5 }])).values()];
@@ -100,11 +102,12 @@ function present(a) {
     ...(a.status === 'submitted' || i === a.index ? {prompt:q.prompt,choices:q.choices,passage:q.passage} : {}),
     ...(q.predictionSource ? { predictionSource:q.predictionSource } : {}),
     ...(a.status === 'submitted' || i <= a.index ? { text:(['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && a.status !== 'submitted' ? '' : q.text } : {}),
-    ...((['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && (i <= a.index || a.status === 'submitted') ? { audioUrl:q.audioUrl || '/writing-audio/' + (q.audioId || q.id) + '.mp3?v=' + AUDIO_VERSION } : {}),
+    ...((['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && (i <= a.index || a.status === 'submitted') ? { audioUrl:approvedAudio.publicAudio(q)?.audioUrl || q.audioUrl || '/writing-audio/' + (q.audioId || q.id) + '.mp3?v=' + AUDIO_VERSION } : {}),
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation } : {}) }));
   return result;
 }
 function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, mockGraders = null, overallGrader = null, onMockError = async()=>{}, speakingAllowed = require('./speaking-access').allowed, now = Date.now }) {
+  approvedAudio.install(app);
   const router = express.Router(), store = createStore(pool, directory), pending = new Map();
   const reviewer = overall.createReviewer({ store, callModel:overallGrader, now });
   const retryableSwt = (result,question) => !!(swtGrader && question?.type === 'swt' && result
@@ -216,8 +219,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   router.get('/catalog', route(async(req,res) => res.json({ version:bank.version,
     speakingMocks:await speakingAllowed(verifyToken(req.headers['x-session-token']||''))?require('./content/speaking-mocks').catalogue():[],
     predictionBank:{source:predictions.source,userSource:predictions.userSource,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
-    spoken:predictions.sst.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
-    dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,audioUrl:'/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
+    spoken:predictions.sst.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
+    dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     listeningPractice:listeningPractice.map(q=>({id:q.id,type:q.type,title:q.title,minutes:q.minutes})),
     listeningMocks:listening.mocks.map(m=>({id:m.id,title:m.title,module:'listening',minutes:report.minutesFor(m.questions),questionCount:m.questions.length,tasks:Object.keys(listening.listeningFormat.tasks).map(type=>({type,label:report.labels[type],count:m.questions.filter(q=>q.type===type).length}))})),
     mocks:allMocks.filter(m=>m.module!=='listening').map(m => ({ id:m.id,title:m.title,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
@@ -258,7 +261,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     if(mode!=null && !['practice','exam'].includes(mode))throw bad('Invalid practice mode.');
     const mock = allMocks.find(m => m.id === testId), individual = individualQuestions.find(q => q.id === testId);
     if (!mock && !individual) throw bad('Question set not found.',404);
-    const q = structuredClone(mock ? mock.questions : [individual]);
+    const q = structuredClone(mock ? mock.questions : [individual]).map(approvedAudio.current);
     if (!mock) delete q[0].timeGroup;
     const a = await store.update(req.labUser, id, existing => {
       if (existing) return reconcile(existing);

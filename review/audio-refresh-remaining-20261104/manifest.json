@@ -1,5 +1,5 @@
 {
-  "status": "prepared review candidates; not connected to live portal",
+  "status": "Approved for publication; versioned playback integration included in this release.",
   "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
   "publicationBaseCommit": "3bcb07267ac573d8bd28cb42f3536ce0986228b1",
   "counts": {
@@ -7119,5 +7119,10 @@
     },
     "actualBilledCost": "unverified: binary speech responses do not return provider token usage",
     "boundedScope": "55 requested candidates; approved pilot segments reused; one repeated SGD turn regenerated."
+  },
+  "publicationApproval": {
+    "date": "2026-11-04",
+    "decision": "User approved all 55 recordings and requested publication.",
+    "scope": "Approval to publish the prepared recordings; individual listening records are not fabricated."
   }
 }

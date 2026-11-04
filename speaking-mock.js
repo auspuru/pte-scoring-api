@@ -53,6 +53,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   assessAzure=azure.assessRecording,gradeResponse,
   azureAvailable=azure.isConfigured(),
   assessAzureOverall=azureWhole.assess,azureOverallAvailable=azureAvailable&&azure.isConfigured(),backgroundEnabled=false,academyClient,contentModel,now=Date.now}={}){
+  require('./approved-audio').install(app);
   const gptAvailable=false;
   const store=createStore(pool,directory,{table:'speaking_mock_attempts'}),router=express.Router(),jobs=new Map(),instance=crypto.randomUUID();
   const progressive=require('./speaking-mock-jobs').createMockJobs({pool,directory,store,transcribe,assessAzure,callModel,gradeResponse,academyClient,includeLegacy:backgroundEnabled,now});
@@ -251,7 +252,10 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       const audio=require('./rts-prompts').requestedAudio(q.id,req.query.prompt);if(!audio)throw fail('Prompt recording not found.',404);
       res.type('audio/mpeg').set('Cache-Control',audio.versioned?'public,max-age=31536000,immutable':'public,max-age=3600').sendFile(audio.file);return;
     }
-    const file=path.join(__dirname,'content',q.audioSource.folder==='speaking'?'speaking-audio':'writing-audio',q.audioSource.id+'.mp3');
+    // Unversioned URLs are retained for saved snapshots. New approved media has
+    // its own immutable /practice-audio key and never changes this legacy file.
+    const legacy=q.audioSource.folder==='approved'?{folder:'speaking',id:q.id}:q.audioSource;
+    const file=path.join(__dirname,'content',legacy.folder==='speaking'?'speaking-audio':'writing-audio',legacy.id+'.mp3');
     await fs.access(file);res.type('audio/mpeg').set('Cache-Control','public,max-age=3600').sendFile(file);
   }));
   return {store,recoverOverall,progressive,start:()=>progressive.start(),stop:()=>progressive.stop(),waitForJobs:async()=>{await Promise.allSettled([...jobs.values()]);await progressive.wait();}};

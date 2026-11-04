@@ -29,7 +29,8 @@ function inventory() {
   for (const paper of speaking.papers) for (const q of paper.questions) {
     if (q.type === 'intro') continue;
     const source = q.audioSource;
-    const audio = source && { path: `content/${source.folder}-audio/${source.id}.mp3`,
+    const approved=source?.folder==='approved'?require('../approved-audio').fileFor(source.id):null;
+    const audio = approved?{path:approved.entry.file,entry:approved.entry}:source && { path: `content/${source.folder}-audio/${source.id}.mp3`,
       entry: (source.folder === 'speaking' ? speakingAudio : writingAudio)[source.id] };
     add('speaking/' + q.id, q, paper.id, audio);
   }
