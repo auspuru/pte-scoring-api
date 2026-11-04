@@ -100,6 +100,17 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Only this reviewed image transport change may adopt the previous sources.
+  // Saved papers, native graders, configuration and successful marks remain pinned.
+  const imageBaseline=require('../content/full-mock/image-clarity-compatible-sources.json');
+  const imagePins={"full-mock/paper.js":"0c172feefc2d7e447338ef10c11fc23405a53b9c65508550fe665ccdfc1fd8df","full-mock/api.js":"74d400fa1438bc2ea0573af567d969f0375f1b5f864eef163108dbd904c56a53"};
+  if(digest(imageBaseline)==='034193be33c2bbb80ec52c53682539afaa6a4929e33114cd54245bc82dcdd5c0' && Object.entries(imagePins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of [...Object.keys(imagePins),'full-mock/assessment.js'])sources.files[file]=structuredClone(imageBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(imageBaseline))return digest(saved)===digest(current);
+  }
+
   // Exact audio-evidence/publication upgrade. Preserve frozen models, native
   // score functions, successful jobs and snapshots; no arbitrary source drift.
   const unclearBaseline=require('../content/full-mock/unclear-audio-compatible-sources.json');

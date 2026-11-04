@@ -27,14 +27,14 @@ async function fixture(t, mobile, selectedPaper = paper) {
     } } } });
   await service.store.initialise();
   app.use(express.static(path.join(root, 'public'), { index:false }));
-  app.get('/', (req, res) => res.type('html').send('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/portal-workspace.css"><link rel="stylesheet" href="/full-mock.css"><link rel="stylesheet" href="/mock-report-ui.css"></head><body style="margin:0"><main id="appShell"><section id="fullMockPane" class="pane active"></section></main><script>window.currentUserId="alice";sessionStorage.setItem("pte_session_token","alice");</script><script src="/portal-exam-mode.js"></script><script src="/mock-impact-feedback.js"></script><script src="/mock-report-ui.js"></script><script src="/swt-mock-feedback.js"></script><script src="/full-mock-report.js"></script><script src="/full-mock-client.js"></script><script>FullMock.open();</script></body></html>'));
+  app.get('/', (req, res) => res.type('html').send('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/portal-workspace.css"><link rel="stylesheet" href="/portal-exam-mode.css"><link rel="stylesheet" href="/full-mock.css"><link rel="stylesheet" href="/mock-report-ui.css"></head><body style="margin:0"><main id="appShell"><section id="fullMockPane" class="pane active"></section></main><script>window.currentUserId="alice";sessionStorage.setItem("pte_session_token","alice");</script><script src="/portal-exam-mode.js"></script><script src="/mock-impact-feedback.js"></script><script src="/mock-report-ui.js"></script><script src="/swt-mock-feedback.js"></script><script src="/full-mock-report.js"></script><script src="/full-mock-client.js"></script><script>FullMock.open();</script></body></html>'));
   const server = app.listen(0, '127.0.0.1'); await new Promise(resolve => server.once('listening', resolve));
   let browser;
   db.onClose(async () => { await browser?.close(); await service.stop(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); await fs.rm(directory, { recursive:true, force:true }); });
   browser = await puppeteer.launch({ headless:true, ...(process.env.FULL_MOCK_TEST_CHROME_PATH ? { executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH } : {}),
     args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream','--use-file-for-fake-audio-capture=' + microphone] });
   t.diagnostic('Browser: ' + await browser.version() + '; sandbox enabled; synthetic microphone; ' + (mobile ? 'mobile emulation' : 'desktop'));
-  const page = await browser.newPage(); await page.setViewport(mobile ? { width:390, height:844, isMobile:true, hasTouch:true, deviceScaleFactor:1 } : { width:1365, height:1000 });
+  const mediaRequests=[];const page = await browser.newPage();page.on('request',request=>{if(request.url().includes('/media/'))mediaRequests.push(request.url());}); await page.setViewport(mobile ? { width:390, height:844, isMobile:true, hasTouch:true, deviceScaleFactor:1 } : { width:1365, height:1000 });
   page.setDefaultTimeout(15000); const unexpectedDialogs = []; let reloading = false;
   page.on('dialog', dialog => {
     if (reloading && dialog.type() === 'beforeunload') return dialog.accept();
@@ -47,7 +47,7 @@ async function fixture(t, mobile, selectedPaper = paper) {
   await page.evaluateOnNewDocument(() => { window.__mockAudio = []; const NativeAudio = window.Audio; window.Audio = class extends NativeAudio { constructor(...args) { super(...args); window.__mockAudio.push(this); } }; window.__cues = 0; const create = AudioContext.prototype.createOscillator; AudioContext.prototype.createOscillator = function (...args) { window.__cues++; return create.apply(this, args); }; });
   await page.goto('http://127.0.0.1:' + server.address().port);
   const state = async () => (await service.store.list('alice'))[0];
-  return { page, service, errors, apiErrors, unexpectedDialogs, calls, state, advanceTo:at => { offset += Math.max(0, at - now()); },
+  return { page, mediaRequests, service, errors, apiErrors, unexpectedDialogs, calls, state, advanceTo:at => { offset += Math.max(0, at - now()); },
     reload:async () => { reloading = true; try { await page.reload(); } finally { reloading = false; } } };
 }
 async function clickControl(page, selector) {
@@ -123,6 +123,20 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
     }
     assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Page overflow at ' + q.type);
     if(q.type==='di'){
+      await page.waitForFunction(()=>document.getElementById('fm-image')?.naturalWidth>0);
+      if(paper.questions[i].displayImage)assert(f.mediaRequests.some(url=>url.endsWith('/media/'+paper.questions[i].displayImage.sha256)));
+      await clickControl(page,'[data-fm="image"]');await page.waitForSelector('#fm-image-dialog[open]');
+      assert(await page.$eval('.fm-image-viewport',node=>node.scrollWidth>node.clientWidth));
+      await page.$eval('.fm-image-viewport',node=>{node.scrollTop=150;node.scrollLeft=150;});
+      assert(await page.$eval('.fm-image-viewport',node=>node.scrollLeft>0));
+      await clickControl(page,'[data-fm="close-image"]');assert.equal((await f.state()).current.endsAt,saved.current.endsAt);
+      const oldViewport=page.viewport();await page.setViewport({...oldViewport,height:420});
+      await page.$eval('#fullMockPane',node=>{node.scrollTop=0;});
+      await page.mouse.move(180,240);await page.mouse.wheel({deltaY:900});
+      await page.waitForFunction(()=>document.getElementById('fullMockPane').scrollTop>0);
+      await page.mouse.wheel({deltaY:-4000});await page.waitForFunction(()=>document.getElementById('fullMockPane').scrollTop===0);
+      await page.setViewport(oldViewport);
+
       assert.equal(await page.$eval('.fm-image-title',node=>node.textContent),q.title);
       assert.equal(await page.$eval('#fm-image',node=>node.alt),q.title);
       assert(await page.evaluate(()=>document.querySelector('.fm-image-title').getBoundingClientRect().bottom<=document.getElementById('fm-image').getBoundingClientRect().top),'Image title is above the image');
@@ -185,6 +199,8 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
   } catch (error) {
     const saved = await f.state();
     t.diagnostic('Expected Q' + expectedIndex + '; saved index=' + saved?.index + '; status=' + saved?.status + '; type=' + saved?.responses[saved?.index]?.type);
+    t.diagnostic('Guard: '+await page.evaluate(()=>JSON.stringify({body:document.body.innerText.slice(-2200),focus:document.hasFocus(),fullscreenEnabled:document.fullscreenEnabled,guard:document.getElementById('portal-exam-guard')?.outerHTML})));
+    await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','full-mock-error.png')});
     t.diagnostic('Screen: ' + await page.$eval('#fullMockPane', node => node.textContent.slice(-2200)).catch(() => 'unavailable'));
     t.diagnostic('API errors: ' + f.apiErrors.slice(-12).join('; ')); t.diagnostic('Unexpected dialogs: ' + f.unexpectedDialogs.join('; ')); throw error;
   }

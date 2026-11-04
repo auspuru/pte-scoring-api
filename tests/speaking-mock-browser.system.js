@@ -45,6 +45,10 @@ for(const mobile of [false,true])test('Speaking mock Chrome '+(mobile?'mobile':'
  await page.waitForSelector('.sm-image-title',{visible:true});assert.equal(await page.$eval('.sm-image-title',node=>node.textContent),image.title);
  assert.equal(await page.$eval('.sm-exam-image img',node=>node.alt),image.title);
  assert(await page.evaluate(()=>document.querySelector('.sm-image-title').getBoundingClientRect().bottom<=document.querySelector('.sm-exam-image').getBoundingClientRect().top),'Image title is above the image');
+ const imageViewport=page.viewport();await page.setViewport({...imageViewport,height:420});
+ await page.$eval('.sm-exam-main',node=>{node.scrollTop=0;});await page.mouse.move(160,220);await page.mouse.wheel({deltaY:800});
+ await page.waitForFunction(()=>document.querySelector('.sm-exam-main').scrollTop>0);await page.mouse.wheel({deltaY:-4000});
+ await page.waitForFunction(()=>document.querySelector('.sm-exam-main').scrollTop===0);await page.setViewport(imageViewport);
  await click('.sm-image-enlarge');await page.waitForSelector('#sm-image-dialog[open]');
  assert.equal(await page.$eval('#sm-image-dialog h3',node=>node.textContent),image.title);await click('[data-image-action="close"]');
  await page.evaluate(()=>{
