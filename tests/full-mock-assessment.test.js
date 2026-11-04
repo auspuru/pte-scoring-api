@@ -15,7 +15,7 @@ const media = require('../full-mock/recording');
 const { installFullMock } = require('../full-mock/api');
 const paper = loadPaper();
 const accessBase = require('../content/full-mock/access-compatible-sources.json');
-for(const baseline of ['session-security','account-email','audio-refresh'])test(baseline+' upgrade preserves old Full Mock snapshots and confirmed marks',async t=>{
+for(const baseline of ['session-security','account-email','image-clarity','audio-refresh'])test(baseline+' upgrade preserves old Full Mock snapshots and confirmed marks',async t=>{
  let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
  const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/'+baseline+'-compatible-sources.json')};
  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
@@ -24,7 +24,7 @@ for(const baseline of ['session-security','account-email','audio-refresh'])test(
  await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal(calls,65);
  assert.deepEqual((await f.state()).assessment.items,marked);assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
-for(const baseline of ['session-security','account-email','audio-refresh'])for(const changed of ['model','native-source','server-source'])test(baseline+' compatibility rejects changed '+changed,async t=>{
+for(const baseline of ['session-security','account-email','image-clarity','audio-refresh'])for(const changed of ['model','native-source','server-source'])test(baseline+' compatibility rejects changed '+changed,async t=>{
  const f=await fixture(t),original={...structuredClone(f.engine.snapshot),scoringSources:structuredClone(require('../content/full-mock/'+baseline+'-compatible-sources.json'))};
  if(changed==='model')original.configuration.speakingContent.model='another-model';
  else original.scoringSources.files[changed==='server-source'?'server.js':'speaking-scoring.js'].sha256='0'.repeat(64);

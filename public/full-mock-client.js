@@ -11,7 +11,7 @@
   const reports = typeof module === 'object' && module.exports ? require('./full-mock-report') : globalThis.FullMockReport;
   function renderQuestion(q, answer = []) {
     const values = Array.isArray(answer) ? answer : [];
-    if (speech(q.type)) return (q.text ? '<p class="fm-passage">' + esc(q.text) + '</p>' : '') + (q.type === 'di' && q.title ? '<h2 class="fm-image-title">' + esc(q.title) + '</h2>' : '') + (q.image ? '<img id="fm-image" class="fm-image" width="730" height="500" alt="'+esc(q.title||'Visual for this Describe Image question')+'">' : '')
+    if (speech(q.type)) return (q.text ? '<p class="fm-passage">' + esc(q.text) + '</p>' : '') + (q.type === 'di' && q.title ? '<h2 class="fm-image-title">' + esc(q.title) + '</h2>' : '') + (q.image ? '<button type="button" class="fm-image-button" data-fm="image" aria-label="Enlarge question image"><img id="fm-image" class="fm-image" width="730" height="500" alt="'+esc(q.title||'Visual for this Describe Image question')+'"></button><button type="button" class="portal-button" data-fm="image">Enlarge image</button><dialog id="fm-image-dialog" class="fm-image-dialog" aria-label="Full-size question image"><header><h3>'+esc(q.title||'Question image')+'</h3><button type="button" class="portal-button" data-fm="close-image">Close</button></header><p>Scroll to view all parts of the image.</p><div class="fm-image-viewport" tabindex="0" aria-label="Full-size image; scroll to see details"><img alt="'+esc(q.title||'Question image')+'"></div></dialog>' : '')
       + '<div class="fm-record-status" id="fm-record-status" role="status" aria-live="polite">Preparing</div><meter id="fm-level" min="0" max="1" value="0" aria-label="Microphone input level"></meter>';
     if (['swt', 'essay', 'sst', 'wfd'].includes(q.type)) return (q.text ? '<div class="fm-passage">' + esc(q.text).replace(/\n/g, '<br>') + '</div>' : '')
       + '<label class="fm-editor-label" for="fm-text">Your response</label><textarea id="fm-text" data-fm-text maxlength="12000" spellcheck="false" autocomplete="off" rows="10">' + esc(values[0] || '') + '</textarea><p id="fm-word-count">' + words(values[0]) + ' words</p>';
@@ -379,7 +379,7 @@
       const saved = records.find(row => row.value.itemToken === token)?.value;
       if (saved && saved.sequence > sequence && rendering === token) { draft = saved.answer; sequence = saved.sequence; doc.getElementById('fm-question').innerHTML = renderQuestion(attempt.question, draft); }
     }
-    function stopPrompt() { if (output) { output.pause(); output.removeAttribute?.('src'); output.load?.(); } if (outputUrl) env.URL.revokeObjectURL(outputUrl); outputUrl = null; if (imageUrl) env.URL.revokeObjectURL(imageUrl); imageUrl = null; }
+    function stopPrompt() { doc.getElementById('fm-image-dialog')?.close?.(); if (output) { output.pause(); output.removeAttribute?.('src'); output.load?.(); } if (outputUrl) env.URL.revokeObjectURL(outputUrl); outputUrl = null; if (imageUrl) env.URL.revokeObjectURL(imageUrl); imageUrl = null; }
     async function mediaBlob(asset, token) {
       const reply = await env.fetch('/api/full-mocks/attempts/' + attempt.id + '/media/' + asset, { headers: { 'x-session-token': sessionToken() }, cache: 'no-store' });
       if (!reply.ok) throw Error('Question media could not load. Your clock continues; the interruption is recorded for review.');
@@ -582,6 +582,12 @@
       const button = event.target.closest('[data-fm]'); if (!button || button.disabled) return;
       try {
         switch (button.dataset.fm) {
+          case 'image': {
+            const dialog=doc.getElementById('fm-image-dialog');
+            if(imageUrl&&dialog?.showModal){const picture=dialog.querySelector('img');picture.src=imageUrl;picture.style.width=Math.max(1600,doc.getElementById('fm-image')?.naturalWidth||0)+'px';dialog.showModal();}
+            break;
+          }
+          case 'close-image': doc.getElementById('fm-image-dialog')?.close?.(); break;
           case 'setup': setup(button.dataset.paper); break;
           case 'sample': await sampleAudio(); break;
           case 'begin-section': {

@@ -32,7 +32,7 @@ questions.push(...bank.questions.filter(q=>q.type==='rs').map(q=>source(q,'speak
 for(const q of writing.dictation.slice(0,5))questions.push(source({id:'mock-rs-'+q.id,type:'rs',...bank.types.rs,title:'Repeat Sentence',text:q.text,sourceId:q.id},'writing',q.id));
 // Original prediction assets reviewed for readable labels and matching samples.
 // Saved attempts retain their own snapshots; new papers exclude photographs.
-questions.push(...['3000411','3000392','3000375','3000469','3000561'].map(id=>pick('di-pred-'+id)));
+questions.push(...['3000186','3000375','3000586','3000881','3000365'].map(id=>pick('di-pred-'+id)));
 for(const type of ['rl','sgd','rts'])questions.push(...[1,2].map(n=>source(pick(type+'-'+n),'speaking')));
 function paper(number,items){
   for(const q of items.filter(q=>q.type==='di')){
@@ -52,8 +52,8 @@ function repeatSentence(q){return source({id:'mock-rs-'+q.id,type:'rs',...bank.t
 const sentences=writing.dictation.filter(q=>writingAudio[q.id]?.seconds>=3&&writingAudio[q.id]?.seconds<=9);
 const papers=[paper(1,questions)];
 for(const [number,passages,sentenceStart,imageIds,lectureIds,discussionIds,situationIds] of [
-  [2,writing.spoken.slice(0,6),5,['3000195','3000186','3000137','3000134','3000586'],['rl-3','rl-4'],['sgd-3','sgd-4'],['rts-3','rts-4']],
-  [3,[...writing.spoken.slice(6,9),...writing.spoken.slice(10,13)],15,['3000370','3000365','3000354','3000349','3000422'],['rl-5','rl-2'],['sgd-5','sgd-1'],['rts-5','rts-1']]
+  [2,writing.spoken.slice(0,6),5,['3000587','3000664','3001366','3001386','3000137'],['rl-3','rl-4'],['sgd-3','sgd-4'],['rts-3','rts-4']],
+  [3,[...writing.spoken.slice(6,9),...writing.spoken.slice(10,13)],15,['3000370','3000481','3000601','3001403','3000349'],['rl-5','rl-2'],['sgd-5','sgd-1'],['rts-5','rts-1']]
 ]){
   const items=[structuredClone(questions[0]),...passages.map(readAloud),...sentences.slice(sentenceStart,sentenceStart+10).map(repeatSentence),
     ...imageIds.map(id=>pick('di-pred-'+id)),...[...lectureIds,...discussionIds,...situationIds].map(id=>source(pick(id),'speaking'))];
@@ -83,7 +83,7 @@ function reattemptQuestions(original){
     if(q.type==='rs')return{...structuredClone(q),startCueMs:bank.types.rs.startCueMs,instruction:bank.types.rs.instruction};
     if(q.type!=='di')return structuredClone(q);
     const replacement=images[imageIndex++%images.length];
-    return suppliedMockImage(q)?references.forNewAttempt(q):structuredClone(replacement);
+    return structuredClone(replacement);
   });
 }
 module.exports={VERSION,papers,catalogue,publicQuestion,suppliedMockImage,reattemptQuestions};

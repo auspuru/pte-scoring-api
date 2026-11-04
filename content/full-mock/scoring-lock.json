@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "3bcb07267ac573d8bd28cb42f3536ce0986228b1",
+  "baseCommit": "3a82d22e2b51b2d4f85f4490646f275e3c7244be",
   "checkedAt": "2026-11-04",
-  "scope": "Approved versioned source audio and fixed HIW playback. Exact compatibility pins preserve historical pending assessments. Native score functions, providers, weights, frozen papers and saved marks unchanged.",
+  "scope": "Approved versioned audio and fixed HIW playback, preserving the image clarity release and all prior assessment snapshots. Native graders, providers, weights, saved marks and frozen papers unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -88,7 +88,7 @@
         "version": "full-mock-aggregation-2026-10-29.1"
       },
       "full-mock/api.js": {
-        "sha256": "06285adb9e42f4623d2378cfe1e67b6807e01124cfe0cf2900f64cb925f9c134",
+        "sha256": "74d400fa1438bc2ea0573af567d969f0375f1b5f864eef163108dbd904c56a53",
         "version": null
       },
       "full-mock/asq-scoring.js": {
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "af35aec08affe0c9f934746ba169d7206e2b632a00f9f91a381f96907d5789ea",
+        "sha256": "65520b5d003e047b80d535a776f3513bbb5fe777abe5eecc7275f2d741f84e00",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -112,7 +112,7 @@
         "version": null
       },
       "full-mock/paper.js": {
-        "sha256": "b0135ccb3cfae07eca84a94a71a8d295b9df4a6c7523e64310c9f129b105724c",
+        "sha256": "0c172feefc2d7e447338ef10c11fc23405a53b9c65508550fe665ccdfc1fd8df",
         "version": null
       },
       "full-mock/profiles.js": {

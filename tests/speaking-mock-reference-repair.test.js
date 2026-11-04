@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
 const repair=require('../speaking-mock-reference-repair'),{hash}=require('../scoring-jobs'),{createMockJobs,identity}=require('../speaking-mock-jobs'),{createStore}=require('../writing-lab-store');
 // Reconstruct the exact pre-review snapshot; fresh papers now have fuller references.
-const question=()=>require('../di-practice-references').forAttempt({},structuredClone(require('../content/speaking-mocks').papers[1].questions[19]));
+const question=()=>require('../di-practice-references').forAttempt({},structuredClone(require('../content/speaking-bank').questions.find(q=>q.id==='di-pred-3000137')));
 const delivery={status:'assessed',pronunciation:{score:4,maximum:5},fluency:{score:5,maximum:5}};
 test('The reference supplement binds the retained original image and exact historical snapshot without editing it',()=>{
  const q=question(),before=structuredClone(q),review=repair.prepare(q);

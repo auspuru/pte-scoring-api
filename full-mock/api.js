@@ -105,7 +105,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
   router.get('/attempts/:id/review/:questionId/media/:asset', wrap(async (req, res) => {
     const record = await read(req.fullMock.uid, req.params.id, req.fullMock);
     const { candidate } = reports.reviewItem(record.paper, record.state, req.params.questionId);
-    const descriptor = candidate.audio?.entry.audioSha256 === req.params.asset ? candidate.audio : candidate.image?.sha256 === req.params.asset ? candidate.image : null;
+    const descriptor = candidate.audio?.entry.audioSha256 === req.params.asset ? candidate.audio : candidate.image?.sha256 === req.params.asset ? candidate.image : candidate.displayImage?.sha256 === req.params.asset ? candidate.displayImage : null;
     const asset = descriptor && record.paper.assets.find(value => value.path === descriptor.path && value.sha256 === req.params.asset);
     if (!asset) throw fail('Review media not found.', 404);
     const bytes = await fs.readFile(path.join(__dirname, '..', asset.path));
@@ -159,7 +159,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     const record = await read(req.fullMock.uid, req.params.id, req.fullMock), state = record.state;
     if (state.status !== 'active') throw fail('Question media is not available.', 404);
     const candidate = session.item(record.paper, state.index);
-    const descriptor = candidate.audio?.entry.audioSha256 === req.params.asset ? candidate.audio : candidate.image?.sha256 === req.params.asset ? candidate.image : null;
+    const descriptor = candidate.audio?.entry.audioSha256 === req.params.asset ? candidate.audio : candidate.image?.sha256 === req.params.asset ? candidate.image : candidate.displayImage?.sha256 === req.params.asset ? candidate.displayImage : null;
     if (!descriptor || descriptor === candidate.audio && now() >= state.current.promptEndsAt) throw fail('Question media is not available.', 404);
     const asset = record.paper.assets.find(value => value.path === descriptor.path && value.sha256 === req.params.asset);
     if (!asset) throw fail('Question media is not available.', 404);

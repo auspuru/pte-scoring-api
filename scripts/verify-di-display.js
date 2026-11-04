@@ -8,7 +8,7 @@ function verify(){
     const q=bank.questions.find(q=>q.id===original.id),e=manifest.entries[q.id];
     assert.equal(q.imageUrl,e.originalImageUrl);assert.equal(hash(fs.readFileSync(path.join(root,q.imageUrl))),e.originalSha256,'Original image changed: '+q.id);
     assert.equal(q.imageReference.source.sha256,e.originalSha256);assert.equal(q.imageReference.source.kind,'image-sha256');
-    assert.match(e.displayImageUrl,/^\/assets\/di-display-20261028\/\d+-[a-f0-9]{12}\.(svg|webp|png|jpg)$/);
+    assert.match(e.displayImageUrl,/^\/assets\/di-display-\d{8}\/\d+-[a-f0-9]{12}\.(svg|webp|png|jpg)$/);
     const bytes=fs.readFileSync(path.join(root,e.displayImageUrl));assert.equal(hash(bytes),e.displaySha256,'Clear image changed: '+q.id);assert.equal(bytes.length,e.bytes);
     assert(e.displayImageUrl.includes('-'+e.displaySha256.slice(0,12)+'.'));assert.equal(forQuestion(q).displayImageUrl,e.displayImageUrl);
     assert.notEqual(e.originalImageUrl,e.displayImageUrl);assert(!e.displayImageUrl.includes('speaking-image/'));
