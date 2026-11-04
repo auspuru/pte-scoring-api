@@ -149,9 +149,8 @@ test('Mock tabs, filtering and launch show labels and timing without content des
   await h.controller.openMocks(); assert.equal(h.calls.length, 2, 'Loaded banks are reused');
   assert.equal(h.nodes.get('catalogue-module').value, 'writing');
   assert.match(h.mocks.innerHTML, /value="Writing Sectional Mock 33"/); assert.doesNotMatch(h.mocks.innerHTML,/Tests per page/);
-  h.click({ mockHistory: 'reading' }); h.click({ mockHistory: 'writing' });
-  assert.deepEqual(h.navigations.map(n => n[0]), ['reading', 'writing-history']);
-  assert.equal(h.navigations[0][1].readingRequest.history, true);
+  assert.doesNotMatch(h.mocks.innerHTML, /catalogue-attempt|data-mock-history|Saved mock attempts|Attempt status/);
+  assert.deepEqual(h.navigations, [], 'Mock launches do not use history navigation');
 });
 
 
@@ -211,17 +210,14 @@ test('Leaving Reading parks practice timers while protected mocks keep their dea
 test('Other accounts have no speaking practice group, mock filter or history link',async()=>{const h=harness({speaking:false});await h.controller.openPractice();assert(!h.practice.innerHTML.includes('Speaking Practice'));await h.controller.openMocks();assert(!h.mocks.innerHTML.includes('value="speaking"'));assert(!h.mocks.innerHTML.includes('data-mock-history="speaking"'));});
 
 
-test('Attempt status includes completed and unfinished mocks and combines with module, search and pagination',async()=>{
+test('Mock catalogue keeps module, search and pagination without duplicate history controls',async()=>{
  const h=harness();await h.controller.openMocks();
- h.change('catalogue-attempt','attempted');
  const ids=()=>Array.from(h.nodes.get('catalogue-board').innerHTML.matchAll(/data-mock-id="([^"]+)"/g),m=>m[1]);
- assert.deepEqual(ids(),['practice-mock-1','practice-mock-2','writing-1']);
- h.change('catalogue-module','writing');assert.deepEqual(ids(),['writing-1']);
- h.change('catalogue-attempt','unattempted');assert.equal(ids().length,12);assert(!ids().includes('writing-1'));
- h.click({cataloguePage:'1'});assert.equal(ids()[0],'writing-14');
- h.change('catalogue-attempt','attempted');assert.deepEqual(ids(),['writing-1']);assert.equal(h.nodes.get('catalogue-page').textContent,'1 / 1');
- h.mocks.oninput({target:{id:'catalogue-search',value:'Mock 33'}});assert.deepEqual(ids(),[]);assert.equal(h.nodes.get('catalogue-empty').hidden,false);
- h.change('catalogue-attempt','unattempted');assert.deepEqual(ids(),['writing-33']);
- await h.controller.openMocks();assert.equal(h.nodes.get('catalogue-attempt').value,'unattempted');
+ assert.doesNotMatch(h.mocks.innerHTML,/catalogue-attempt|data-mock-history|Saved mock attempts|Attempt status/);
+ assert.equal(ids().length,12);
+ h.change('catalogue-module','writing');assert.equal(ids().length,12);assert(ids().includes('writing-1'));
+ h.click({cataloguePage:'1'});assert.equal(ids()[0],'writing-13');
+ h.mocks.oninput({target:{id:'catalogue-search',value:'Mock 33'}});assert.deepEqual(ids(),['writing-33']);
+ await h.controller.openMocks();assert.deepEqual(ids(),['writing-33']);assert.equal(h.nodes.get('catalogue-module').value,'writing');
  assert.deepEqual(h.starts,[],'Filtering must never create or resume an attempt');
 });

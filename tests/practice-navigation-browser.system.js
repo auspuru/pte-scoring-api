@@ -221,11 +221,10 @@ for(const width of [1363,390,320])test('Progress opens exact saved responses and
  assert.equal(await page.$eval('.practice-banner.writing h3 img',e=>e.complete&&e.naturalWidth>0),true);
  assert.deepEqual(assessmentCalls,[],'Reviewing a saved SWT response does not re-assess it');
  assert.deepEqual(planReads,[],'The retired feature does not fetch assigned plans in the background');
- await navigate('nav-mock-tests');await page.waitForSelector('#catalogue-attempt');
- await page.select('#catalogue-attempt','attempted');
- await page.waitForFunction(()=>!document.getElementById('catalogue-empty').hidden);
- assert.equal(await page.$$eval('[data-mock-id]',nodes=>nodes.length),0);
- await page.select('#catalogue-attempt','unattempted');
+ await navigate('nav-mock-tests');await page.waitForSelector('#catalogue-module');
+ assert.equal(await page.$('#catalogue-attempt'),null);
+ assert.equal(await page.$('.catalogue-saved'),null);
+ assert.equal(await page.$('[data-mock-history]'),null);
  await page.waitForFunction(()=>document.querySelectorAll('[data-mock-id]').length>0);
  await page.select('#catalogue-module','writing');
  assert.equal(await page.$$eval('#catalogue-board .mock-catalogue-card',nodes=>nodes.every(n=>n.classList.contains('writing'))),true);
