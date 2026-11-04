@@ -8,16 +8,16 @@ test('all 36 portal RTS prompts name the listener in a direct final question and
   assert.equal(items.length,36);assert.deepEqual(items.map(q=>q.id).sort(),Object.keys(prompts.legacy.questions).sort());
   for(const q of items){
     assert.match(q.text,/What would you say to [^?]+\?$/);assert.doesNotMatch(q.text,/What would you say to (?:them|this member)\?$/);
-    assert(q.text.split(/\s+/).length<=60);assert.equal(q.preparation,10);assert.equal(q.seconds,40);assert.equal(q.promptVersion,prompts.VERSION);
+    assert(q.text.split(/\s+/).length<=60);assert.equal(q.preparation,10);assert.equal(q.seconds,40);assert.equal(q.promptVersion,q.id.startsWith('rts-original-')?prompts.NEURAL_VERSION:prompts.VERSION);
     assert.equal(q.sample,prompts.legacy.questions[q.id].sample);assert.deepEqual(q.facts,prompts.legacy.questions[q.id].facts);
     const shown=question(q);assert.equal(shown.text,q.text);assert.equal(shown.sample,undefined);assert.equal(shown.facts,undefined);
     if(q.audioPrompt===false)assert.equal(shown.audioUrl,undefined);else assert.match(shown.audioUrl,/\?prompt=.+&v=sha256-[a-f0-9]{12}$/);
   }
-  assert.equal(items.filter(q=>q.audioPrompt===false).length,30);assert.equal(items.filter(q=>q.promptAudioKey).length,6);
+  assert.equal(items.filter(q=>q.audioPrompt===false).length,0);assert.equal(items.filter(q=>q.promptAudioKey).length,36);
 });
 test('the six revised narrations and all original narrations are bound to their own text and byte hashes',async()=>{
   const active=require('../content/speaking-audio/rts-manifest.json');assert.equal(Object.keys(active).length,6);
-  for(const q of items.filter(q=>q.promptAudioKey)){
+  for(const q of items.filter(q=>q.promptAudioKey&&!q.id.startsWith('rts-original-'))){
     const modern=prompts.requestedAudio(q.id,q.promptAudioKey),legacy=prompts.requestedAudio(q.id),before=prompts.legacy.questions[q.id];
     assert(modern.versioned);assert(!legacy.versioned);assert.notEqual(modern.file,legacy.file);
     for(const [audio,text]of [[modern,q.text],[legacy,before.text]]){
@@ -67,7 +67,7 @@ test('practice and mock APIs preserve old prompt/audio snapshots and grade each 
     const audio=await fetch(base+a.question.audioUrl);assert.equal(audio.status,200);assert.match(audio.headers.get('content-type'),/audio\/mpeg/);assert.equal(hash(Buffer.from(await audio.arrayBuffer())),prompts.audioEntry(q).audioSha256);
   }
   const textOnly=items.find(q=>q.id==='rts-original-20261024-04'),textAttempt=await api('/api/speaking','/attempts',{id:crypto.randomUUID(),questionId:textOnly.id});
-  assert.equal(textAttempt.question.text,textOnly.text);assert.equal(textAttempt.question.audioUrl,'/api/speaking/attempts/'+textAttempt.id+'/prompt');
+  assert.equal(textAttempt.question.text,textOnly.text);assert.equal(textAttempt.question.audioUrl,prompts.publicAudio(textOnly,'/speaking-audio').audioUrl);
   const oldId=crypto.randomUUID(),oldQ=prompts.legacy.questions['rts-1'];
   await practice.store.update('alice',oldId,()=>({id:oldId,questionId:oldQ.id,status:'draft',startedAt:1,revision:0,transcript:'Could you explain which evidence needs improvement and how I can revise my assignment?'}));
   const previous=await api('/api/speaking','/attempts/'+oldId);assert.equal(previous.question.text,oldQ.text);assert(!previous.question.audioUrl.includes('prompt='));

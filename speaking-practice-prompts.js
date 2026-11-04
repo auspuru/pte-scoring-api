@@ -9,6 +9,17 @@ function createPromptNarrator(directory,{render=async(text,file)=>{
  const pending=new Map();let active=0;
  return async question=>{
   if(question?.type!=='rts'||typeof question.text!=='string'||!question.text.trim()||question.text.length>6000)throw Object.assign(Error('Situation audio is unavailable.'),{status:404});
+  // New snapshots use approved fixed media; never replace it with local speech.
+  // Historical snapshots without an audio key retain their original cache path.
+  if(question.promptAudioKey){
+   try{
+    const audio=require('./rts-prompts').requestedAudio(question.id,question.promptAudioKey);
+    if(!audio||audio.entry.textSha256!==createHash('sha256').update(question.text).digest('hex'))throw Error('Unmatched prompt');
+    const bytes=await fs.readFile(audio.file);
+    if(bytes.length!==audio.entry.bytes||createHash('sha256').update(bytes).digest('hex')!==audio.entry.audioSha256)throw Error('Invalid recording');
+    return audio.file;
+   }catch{throw Object.assign(Error('The situation recording is unavailable. Please retry.'),{status:503});}
+  }
   const hash=createHash('sha256').update(VERSION+'\n'+question.text).digest('hex'),file=path.join(directory,hash+'.mp3');
   try{if((await fs.stat(file)).size>1000)return file;}catch(error){if(error.code!=='ENOENT')throw error;}
   if(pending.has(hash))return pending.get(hash);

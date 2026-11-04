@@ -22,7 +22,7 @@ async def main():
     if os.environ.get('SSL_CERT_FILE'):
         edge_tts.communicate._SSL_CTX.load_verify_locations(os.environ['SSL_CERT_FILE'])
     questions = json.loads(subprocess.check_output(['node', '-e',
-        'console.log(JSON.stringify(require("./content/speaking-bank").questions.filter(q=>q.type==="rts"&&q.promptAudioKey)))'], cwd=ROOT))
+        'console.log(JSON.stringify(require("./content/speaking-bank").questions.filter(q=>q.type==="rts"&&q.promptAudioKey&&q.promptVersion===require("./rts-prompts").VERSION)))'], cwd=ROOT))
     manifest = json.loads(MANIFEST.read_text())
     limit = asyncio.Semaphore(3)
 

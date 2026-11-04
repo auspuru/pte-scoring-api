@@ -13,7 +13,9 @@ test('Speaking API persists distinct modes, defaults old clients to timed and au
  assert.equal((await request('/attempts',{id,questionId:untimed.data.questionId,practiceMode:'timed'})).status,409);
  for(const practiceMode of ['exam',{},[],false])assert.equal((await request('/attempts',{id:randomUUID(),questionId:'ra-1',practiceMode})).status,400);
  const history=(await request('/attempts')).data;assert.equal(history.find(a=>a.id===id).practiceMode,'untimed');assert.equal(history.find(a=>a.id===timed.data.id).practiceMode,'timed');
- const route=untimed.data.question.audioUrl;assert(route.endsWith('/prompt'));assert.equal((await fetch(base+route)).status,401);assert.equal((await fetch(base+route,{headers:{'x-session-token':'bob'}})).status,404);assert.equal(spoken.length,0);
+ assert.match(untimed.data.question.audioUrl,/prompt=rts-original-20261024-01-prompt-20261104-2/);
+ await service.store.update('alice',id,a=>({...a,questionSnapshot:structuredClone(require('../rts-prompts').legacy.questions[a.questionId])}));
+ const route=(await request('/attempts/'+id)).data.question.audioUrl;assert(route.endsWith('/prompt'));assert.equal((await fetch(base+route)).status,401);assert.equal((await fetch(base+route,{headers:{'x-session-token':'bob'}})).status,404);assert.equal(spoken.length,0);
  const reply=await fetch(base+route,{headers:{'x-session-token':'alice'}});assert.equal(reply.status,200);assert.match(reply.headers.get('content-type'),/audio\/mpeg/);assert.equal(reply.headers.get('cache-control'),'no-store');assert(Buffer.from(await reply.arrayBuffer()).equals(await fs.readFile(audio)));assert.deepEqual(spoken,[untimed.data.question.text]);
  const oldText='A saved historical situation. What would you say to your lecturer?';await service.store.update('alice',id,a=>{a.questionSnapshot.text=oldText;return a;});await fetch(base+route,{headers:{'x-session-token':'alice'}});assert.equal(spoken.at(-1),oldText,'Narration must use the saved snapshot rather than a changed bank question');
 });

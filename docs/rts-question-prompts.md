@@ -1,3 +1,27 @@
+# Neural refresh draft — gain-only version 2, 4 November 2026
+
+The user approved the cleaner question-09 clip. Current original-practice RTS
+snapshots use immutable keys ending `-prompt-20261104-2` with Marin at synthesis
+speed 0.95. Gain-only processing preserves natural dynamics without normalization,
+limiting or post-generation tempo changes. The first approved pilot is unchanged;
+question 09 uses the exact cleaner approved bytes. Question 28 was regenerated at
+0.95 to restore the full final question. All 30 independent transcripts now include
+that final question. Minor word differences accepted by the user are not blockers.
+
+Version-1 recordings and metadata remain available for saved keyed snapshots;
+old unkeyed snapshots retain the local narrator and its original cache identity.
+New keyed snapshots never fall back to eSpeak when the requested recording is
+unavailable. The six earlier neural prompts and all frozen mock papers remain intact.
+
+The user's approval covers the common processing profile and exact pilot files,
+not a claimed full listening pass for unheard clips. The remaining 28 individual
+listening reviews are unverified. The user explicitly approved publication of
+the batch based on the cleaner sample and common processing profile; this
+does not fabricate individual listening evidence. Final CI remains required. See the
+[batch listening register](../review/rts-neural-20261104/README.md).
+
+The notes below describe the retained October version.
+
 # Respond to a Situation prompt format
 
 All 36 portal RTS questions use a short situation followed by a direct question naming the listener: `What would you say to ...?` The five older mock scenarios were rewritten into this format. Four practice endings now name the library staff, club member, accommodation office staff member or waiting students explicitly. The supplied Tom scenario uses the same final-question wording in the authored portal bank; its supplied source transcript remains unchanged.
