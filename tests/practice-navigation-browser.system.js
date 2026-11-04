@@ -193,7 +193,10 @@ for(const width of [1363,390,320])test('Progress opens exact saved responses and
   await page.locator('#'+id).click();
  }
  await navigate('nav-progress');await page.waitForSelector('[data-progress-attempt="2"]');
- assert.equal(await page.$eval('#progressPane h3',e=>e.textContent),'Recently attempted questions');
+ await page.waitForSelector('.portal-ux-history:not([hidden]) .tabulator-row');
+ await page.locator('.portal-ux-history-tools button').click();
+ await page.waitForFunction(()=>document.querySelector('.progress-recent>.progress-attempts')?.hidden===false);
+ assert.equal(await page.$eval('#progressPane .progress-recent h3',e=>e.textContent),'Recently attempted questions');
  assert.equal(await page.$eval('[data-progress-attempt="1"]',e=>e.textContent.includes('Saved essay question')),true);
  assert.equal(await page.$eval('#progressPane',e=>e.textContent.includes('Task trends')),false);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);

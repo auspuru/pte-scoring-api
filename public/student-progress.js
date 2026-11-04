@@ -188,6 +188,7 @@ function create({document:doc,identity,loadLocal,refreshLocal,navigate,review,fe
    (m.activity.length>rows.length?'<button type="button" class="portal-button progress-more" data-progress-more>Show more questions</button>':'')+'</section>'+
    (m.mocks.length?'<details class="progress-section"><summary>Saved mock tests ('+m.mocks.length+')</summary><div class="progress-attempts">'+m.mocks.map((a,index)=>'<button type="button" class="progress-attempt" data-progress-review="'+index+'"><span class="progress-attempt-copy"><strong>'+esc(a.title)+'</strong><span class="progress-caption">'+date(a.at)+' · '+(!a.done?'In progress':a.pending?'Assessment pending':'Completed')+'</span></span><span class="progress-attempt-action">'+(a.done?'View result':'Continue')+' →</span></button>').join('')+'</div></details>':'');
   host().querySelector('[data-progress-more]')?.addEventListener('click',()=>{visibleCount+=20;paint(local,writing,speaking,error,pending);});
+  if(!pending)root.PortalUx?.progress(host(),m.activity);
   const details=host().querySelector('details.progress-section');if(details&&mocksOpen)details.open=true;
   if(focused)[...host().querySelectorAll('[data-progress-key]')].find(e=>e.dataset.progressKey===focused)?.focus({preventScroll:true});
  }
