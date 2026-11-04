@@ -1,0 +1,160 @@
+/* Approved layout skeleton. No global tokens, type defaults, report styles or protected-exam rules are replaced. */
+.portal-layout-header{display:none}
+@media screen {
+body.portal-layout:not(.portal-exam-active) #appShell{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
+body.portal-layout:not(.portal-exam-active) .portal-layout-header{display:block;grid-column:1/-1;background:var(--bg-card);border-bottom:1px solid var(--line);z-index:40}
+body.portal-layout:not(.portal-exam-active) .portal-layout-header-inner{max-width:1400px;min-height:78px;margin:0 auto;padding:0 32px;display:flex;align-items:center;gap:48px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-brand{display:flex;align-items:center;gap:10px;padding:0;border:0;background:none;text-align:left;color:var(--ink);box-shadow:none;min-height:44px;border-radius:5px}
+.portal-layout-brand img{width:45px;height:40px;object-fit:contain}.portal-layout-brand span{font-size:14px;font-weight:650;line-height:1.3;white-space:nowrap}.portal-layout-brand small{display:block;font-size:10px;font-weight:400;color:var(--ink-soft);margin-top:3px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-primary{display:flex;gap:30px;align-self:stretch;align-items:stretch}
+body.portal-layout:not(.portal-exam-active) .portal-layout-primary .nav-item{position:relative;display:flex;align-items:center;min-height:44px;padding:0 1px;border:0;border-radius:0;background:none;box-shadow:none;color:var(--ink-soft);font-size:13px;font-weight:500;transform:none}
+body.portal-layout:not(.portal-exam-active) .portal-layout-primary .nav-item.active{color:var(--accent);font-weight:650}
+body.portal-layout:not(.portal-exam-active) .portal-layout-primary .nav-item.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--accent)}
+body.portal-layout:not(.portal-exam-active) .portal-layout-primary .nav-icon{display:none}
+body.portal-layout:not(.portal-exam-active) .portal-layout-account{margin-left:auto;display:flex;align-items:center;gap:18px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-account #portalMenuToggle{display:flex;align-items:center;gap:7px;border:0;background:none;box-shadow:none;color:var(--ink-soft);font-size:12px;min-height:44px;padding:5px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-account #userBadge{display:flex;align-items:center;justify-content:center;width:40px;min-height:40px;padding:0;border:0;background:none;box-shadow:none}
+body.portal-layout:not(.portal-exam-active) .portal-layout-account #userName{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+body.portal-layout:not(.portal-exam-active) .portal-layout-account .user-avatar{width:33px;height:33px;border-radius:50%;font-size:12px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+body.portal-layout:not(.portal-exam-active) #portalSidebar{position:fixed;left:0;top:0;bottom:0;width:270px;max-width:90vw;height:100dvh;transform:translateX(-100%);visibility:hidden;pointer-events:none;transition:transform .16s,visibility .16s;z-index:90}
+body.portal-layout.portal-menu-open:not(.portal-exam-active) #portalSidebar{transform:none;visibility:visible;pointer-events:auto}
+body.portal-layout.portal-menu-open:not(.portal-exam-active) #portalMenuBackdrop{display:block;position:fixed;inset:0;width:100%;height:100%;z-index:85;background:#172d3455;border:0}
+body.portal-layout:not(.portal-exam-active) #portalSidebar .sidebar-footer #themeToggleBtn{width:100%;text-align:left;margin:6px 0 14px;border:1px solid var(--line);font-size:12px;min-height:40px}
+body.portal-layout:not(.portal-exam-active) .main-body{height:auto;min-height:0;grid-column:1/-1}
+body.portal-layout:not(.portal-exam-active) .topbar{width:100%;max-width:1180px;margin:0 auto;background:none;border:0;box-shadow:none;padding:27px 32px 19px;min-height:80px}
+body.portal-layout:not(.portal-exam-active) .topbar #pageEyebrow,body.portal-layout:not(.portal-exam-active) .topbar #pageContext,body.portal-layout:not(.portal-exam-active) .topbar .portal-corner-brand{display:none}
+body.portal-layout:not(.portal-exam-active) .topbar #pageTitle{font-size:28px;font-weight:650;letter-spacing:-.7px}
+body.portal-layout:not(.portal-exam-active) .pane:not(.portal-layout-report){width:100%;max-width:1180px;margin:0 auto;padding:0 32px 42px}
+/* Report width matches the prior desktop sidebar and gutters. All child report styles stay native. */
+@media(min-width:641px){body.portal-layout:not(.portal-exam-active) .pane.portal-layout-report{width:calc(100vw - 276px);max-width:none;margin:0 auto}}
+body.portal-layout:not(.portal-exam-active) .portal-skip-link{left:32px}
+body.portal-layout:not(.portal-exam-active) #impersonateBanner{max-width:1116px;width:calc(100% - 64px);margin:0 auto 16px}
+body.portal-exam-active .portal-layout-header{display:none!important}
+/* Practice hub: one skill at a time, existing task links and counts. */
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .catalogue-heading{margin:0 0 24px;padding:0;background:none;border:0;box-shadow:none}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .catalogue-heading h2{display:none}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .catalogue-heading p{font-size:14px;color:var(--ink-soft);margin:0}
+body.portal-layout:not(.portal-exam-active) .portal-layout-skills{display:flex;gap:30px;border-bottom:1px solid var(--line);margin:0 0 22px;overflow:auto}
+body.portal-layout:not(.portal-exam-active) .portal-layout-skills button{position:relative;flex:0 0 auto;padding:0 1px 13px;border:0;background:none;border-radius:0;box-shadow:none;font-size:14px;color:var(--ink-soft)}
+body.portal-layout:not(.portal-exam-active) .portal-layout-skills button.active{color:var(--accent);font-weight:650;border-bottom:2px solid var(--accent)}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-banners{display:block;max-width:none}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-banner{padding:0;margin:0;border:1px solid var(--line);border-radius:11px;background:var(--bg-card);box-shadow:none;overflow:hidden}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-banner::before,body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-banner::after,body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-banner-header{display:none}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-task-list{display:block;padding:0}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-task-list button{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:79px;padding:19px 24px;margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;box-shadow:none;transform:none;text-align:left}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-task-list button:last-child{border-bottom:0}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-task-list strong{font-size:15px;font-weight:550}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-task-list small{font-size:11px;color:var(--ink-soft);margin-top:4px}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-task-arrow{font-size:18px;background:none;border:0;color:var(--ink-soft);width:auto;height:auto}
+/* Individual question libraries; never report or saved-feedback markup. */
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .practice-studio-library,body.portal-layout:not(.portal-exam-active) .portal-layout-library .studio-library{padding:0;border:0;background:none;box-shadow:none}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .practice-studio-heading{margin:16px 0 22px;padding:0;border:0;background:none;box-shadow:none}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .practice-studio-heading h2{font-size:21px;font-weight:600}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .practice-studio-heading .practice-studio-eyebrow,body.portal-layout:not(.portal-exam-active) .portal-layout-library .practice-studio-badge{display:none}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-question-list,body.portal-layout:not(.portal-exam-active) .portal-layout-library .reading-library-list{display:block;overflow:hidden;margin:18px 0;border:1px solid var(--line);border-radius:11px;background:var(--bg-card);list-style:none;padding:0}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-question-list>article,body.portal-layout:not(.portal-exam-active) .portal-layout-library .reading-library-list>li{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 23px;margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;box-shadow:none;min-height:83px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-question-list>article:last-child,body.portal-layout:not(.portal-exam-active) .portal-layout-library .reading-library-list>li:last-child{border:0}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-question-list h3,body.portal-layout:not(.portal-exam-active) .portal-layout-library .reading-library-list strong{font-size:15px;font-weight:550}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-question-meta,body.portal-layout:not(.portal-exam-active) .portal-layout-library .reading-question-id,body.portal-layout:not(.portal-exam-active) .portal-layout-library .reading-source-meta{font-size:10px;color:var(--ink-soft)}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-library-filters{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;border:0;background:none;padding:0;margin:20px 0}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-library-filters>label:first-child{flex:1;max-width:460px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-mode-picker{margin:14px 0;padding:0;border:0;gap:8px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-mode-picker legend{font-size:11px;color:var(--ink-soft)}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-exam-disclosure{font-size:11px;max-width:85ch}
+body.portal-layout:not(.portal-exam-active) .portal-layout-filters{position:relative;min-width:80px;flex:0}
+body.portal-layout:not(.portal-exam-active) .portal-layout-filters>summary{cursor:pointer;font-size:12px;min-height:40px;display:flex;align-items:center;list-style:revert;color:var(--ink-soft)}
+body.portal-layout:not(.portal-exam-active) .portal-layout-filter-content{position:absolute;top:44px;right:0;z-index:10;width:270px;max-width:80vw;background:var(--bg-card);border:1px solid var(--line);border-radius:10px;padding:18px;box-shadow:0 10px 30px #172d3414;display:grid;gap:13px}
+/* Active individual questions: keep native nodes, handlers and timers alive. */
+body.portal-layout:not(.portal-exam-active) .portal-layout-question{max-width:1000px!important}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .practice-studio-content{max-width:900px;margin:0 auto;padding:15px 0 0;background:none;border:0;box-shadow:none}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .speaking-heading{padding:0;margin:20px 0;background:none;border:0;box-shadow:none}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .speaking-heading .portal-eyebrow{font-size:11px;color:var(--ink-soft)}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .speaking-prompt{padding:28px 32px;font-size:20px;line-height:1.9;background:var(--bg-card);border:1px solid var(--line);border-radius:11px;box-shadow:none;margin:20px 0}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .speaking-exam-panel{padding:24px 28px;margin:22px 0;border:1px solid var(--line);border-radius:11px;box-shadow:none;background:var(--bg-card)}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .speaking-exam-note{font-size:11px;max-width:80ch;color:var(--ink-soft)}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .speaking-exam-actions{justify-content:flex-end;gap:10px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .reading-individual-layout{display:block;max-width:900px;margin:20px auto}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .reading-question{box-shadow:none;border:1px solid var(--line);border-radius:11px;padding:28px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .reading-question h2{font-size:22px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .studio-layout{display:block}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .studio-center{max-width:900px;margin:0 auto}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .studio-side{position:static;width:100%;max-height:500px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .portal-layout-questions-list{margin-top:22px;border-top:1px solid var(--line);padding-top:16px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .portal-layout-questions-list>summary{cursor:pointer;font-size:12px;color:var(--ink-soft);padding:8px 0}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .exam{border:1px solid var(--line);border-radius:11px;box-shadow:none;overflow:hidden}
+body.portal-layout:not(.portal-exam-active) .portal-layout-help{margin:18px 0}
+body.portal-layout:not(.portal-exam-active) .portal-layout-help>summary{font-size:12px;color:var(--ink-soft);cursor:pointer}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question #swtPracticeGrid{display:grid;grid-template-columns:minmax(0,1fr);max-width:900px;margin:20px auto;gap:22px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .simulator-mode{max-width:900px;margin-inline:auto}
+/* Existing catalogue engine in a less dense list. No paper or launch logic changes. */
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .catalogue-heading{margin:0 0 22px;padding:0;background:none;border:0;box-shadow:none}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .catalogue-heading h2{display:none}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-shell-kicker{display:none}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-grid{display:block;border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--bg-card);padding:0}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px 24px;padding:23px 25px;margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;box-shadow:none;transform:none;min-height:0}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card:last-child{border-bottom:0}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card::before,body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card::after{display:none}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card h3{grid-column:1;font-size:17px;margin:0}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card>p{grid-column:1;font-size:11px;margin:0}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card footer{grid-column:2;grid-row:1/4;align-self:center;display:flex;align-items:center;gap:20px;margin:0;padding:0;border:0}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-card-meta{grid-column:1;font-size:10px;justify-content:flex-start;gap:12px}
+/* Results is an entry point, not a replacement report. */
+body.portal-layout:not(.portal-exam-active) #savedResultsPane .portal-layout-results-heading{margin-bottom:26px}
+body.portal-layout:not(.portal-exam-active) #savedResultsPane h2{font-size:21px;font-weight:600;margin:0 0 7px}
+body.portal-layout:not(.portal-exam-active) #savedResultsPane .portal-layout-results-heading p{font-size:14px;color:var(--ink-soft)}
+body.portal-layout:not(.portal-exam-active) #savedResultsPane .portal-layout-result-list{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--bg-card)}
+body.portal-layout:not(.portal-exam-active) #savedResultsPane .portal-layout-result-list article{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:25px;border-bottom:1px solid var(--line)}
+body.portal-layout:not(.portal-exam-active) #savedResultsPane .portal-layout-result-list article:last-child{border:0}
+body.portal-layout:not(.portal-exam-active) #savedResultsPane h3{font-size:16px;margin:0 0 4px}
+body.portal-layout:not(.portal-exam-active) #savedResultsPane article p{font-size:12px;color:var(--ink-soft);margin:0}
+@media(max-width:750px){
+ body.portal-layout:not(.portal-exam-active) .portal-layout-header-inner{min-height:68px;padding:12px 20px 0;gap:0;flex-wrap:wrap}
+ body.portal-layout:not(.portal-exam-active) .portal-layout-brand img{width:37px;height:34px}
+ body.portal-layout:not(.portal-exam-active) .portal-layout-brand span{font-size:13px}
+ body.portal-layout:not(.portal-exam-active) .portal-layout-account{gap:12px}
+ body.portal-layout:not(.portal-exam-active) .portal-layout-primary{order:3;width:100%;height:44px;gap:29px}
+ body.portal-layout:not(.portal-exam-active) .portal-layout-primary .nav-item{font-size:12px}
+ body.portal-layout:not(.portal-exam-active) .portal-layout-account #portalMenuToggle{font-size:11px}
+ body.portal-layout:not(.portal-exam-active) .topbar{padding:22px 20px 16px;gap:12px}
+ body.portal-layout:not(.portal-exam-active) .topbar #pageTitle{font-size:23px}
+ body.portal-layout:not(.portal-exam-active) .pane:not(.portal-layout-report){padding:0 20px 32px}
+ body.portal-layout:not(.portal-exam-active) .portal-layout-skills{gap:25px}
+ body.portal-layout:not(.portal-exam-active) .portal-layout-skills button{font-size:12px}
+ body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-task-list button{padding:18px;min-height:77px}
+ body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-question-list>article,body.portal-layout:not(.portal-exam-active) .portal-layout-library .reading-library-list>li{padding:18px;gap:12px;flex-wrap:wrap}
+ body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-question-list h3,body.portal-layout:not(.portal-exam-active) .portal-layout-library .reading-library-list strong{font-size:14px}
+ body.portal-layout:not(.portal-exam-active) .portal-layout-question .speaking-prompt{padding:22px;font-size:18px;line-height:1.85}
+ body.portal-layout:not(.portal-exam-active) .portal-layout-question .speaking-exam-panel,body.portal-layout:not(.portal-exam-active) .portal-layout-question .reading-question{padding:21px}
+ body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card{display:block;padding:21px}
+ body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card footer{margin-top:16px;justify-content:space-between;gap:12px;flex-wrap:wrap}
+ body.portal-layout:not(.portal-exam-active) #savedResultsPane .portal-layout-result-list article{padding:20px;gap:16px}
+ body.portal-layout:not(.portal-exam-active) #savedResultsPane article p{font-size:11px}
+ body.portal-layout:not(.portal-exam-active) #savedResultsPane .portal-layout-result-list .portal-button{font-size:12px;white-space:normal}
+ body.portal-layout:not(.portal-exam-active) #impersonateBanner{width:calc(100% - 40px)}
+ body.portal-layout:not(.portal-exam-active) .portal-skip-link{left:20px}
+}
+
+
+body.portal-layout:not(.portal-exam-active) #portalContent>.pane:not(.portal-layout-report){max-width:1180px;margin-inline:auto}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .practice-studio-heading h2{display:none}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-actions{position:static!important;inset:auto!important;transform:none!important;max-width:none!important;box-shadow:none!important;display:flex;flex-wrap:wrap;justify-content:flex-end;min-height:0;padding:12px 0;background:none;border:0}
+body.portal-layout:not(.portal-exam-active) .portal-layout-library .speaking-actions .portal-button{min-width:0}
+body.portal-layout:not(.portal-exam-active) :is(.portal-layout-library,.portal-layout-question) .practice-studio-taskbar{background:none!important;border:0!important;box-shadow:none!important;border-radius:0;min-height:40px;padding:0;margin:0 0 22px}
+body.portal-layout:not(.portal-exam-active) .portal-layout-question .practice-question-dock{position:static!important;inset:auto!important;transform:none!important;box-shadow:none!important}
+
+/* Remove decoration only from the new navigation chrome. Native report logos remain untouched. */
+body.portal-layout:not(.portal-exam-active) #appShell{padding-right:0}
+body.portal-layout:not(.portal-exam-active) .main-body{padding-left:0}
+body.portal-layout:not(.portal-exam-active) .portal-layout-header .portal-nav-emoji{display:none!important}
+body.portal-layout:not(.portal-exam-active) .portal-layout-primary .nav-item{white-space:nowrap;width:auto;flex-shrink:0}
+body.portal-layout:not(.portal-exam-active) .topbar{background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border:0!important;border-radius:0;isolation:auto;overflow:visible}
+body.portal-layout:not(.portal-exam-active) .topbar::after,body.portal-layout:not(.portal-exam-active) .topbar .portal-emoji-context-wrap{display:none!important}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .catalogue-heading::before{display:none}
+body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-task-list{padding:0!important;border-top:0!important}
+body.portal-layout:not(.portal-exam-active) .personal-ai-assistant:not(.is-open) .personal-ai-launcher{display:none}
+body.portal-layout:not(.portal-exam-active) #portalSidebar [data-layout-assistant]{display:block;width:100%;text-align:left;font-size:13px;padding:10px 8px;min-height:42px;color:var(--ink-soft)}
+@media(max-width:640px){body.portal-layout:not(.portal-exam-active) .pane.portal-layout-report{width:100%;margin:0 auto}}
+
+@media(prefers-reduced-motion:reduce){body.portal-layout:not(.portal-exam-active) #portalSidebar{transition:none}}
+
+}
