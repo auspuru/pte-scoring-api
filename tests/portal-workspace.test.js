@@ -104,7 +104,7 @@ test('Speaking routes remain addressable and retired Next Steps opens My Progres
   h.controller.activate('next-steps');
   assert.equal(h.controller.current(), 'progress');
   assert.equal(h.nodes.get('progressPane').hidden, false);
-  assert.equal(h.nodes.get('nav-saved-results').attrs['aria-current'], 'page');
+  assert.equal(h.nodes.get('nav-progress').attrs['aria-current'], 'page');
 });
 
 test('Every Reading and Listening library opens the requested type without starting a mock', () => {

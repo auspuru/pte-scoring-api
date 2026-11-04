@@ -9,13 +9,21 @@
   header.innerHTML='<div class="portal-layout-header-inner"><div class="portal-layout-brand-slot"></div><nav class="portal-layout-primary" aria-label="Main destinations"></nav><div class="portal-layout-account"></div></div>';
   shell.insertBefore(header,shell.firstChild);
   const home=doc.getElementById('nav-dashboard');if(home){home.classList.add('portal-layout-brand');home.setAttribute('aria-label','Home');home.innerHTML='<img src="/assets/ipt-brisbane-logo.png" alt="" width="45" height="40"><span>IPT Brisbane<small>PTE practice</small></span>';header.querySelector('.portal-layout-brand-slot').appendChild(home);}
-  const nav=header.querySelector('.portal-layout-primary');for(const id of ['nav-practice-hub','nav-mock-tests']){const node=doc.getElementById(id);if(node)nav.appendChild(node);}
+  const nav=header.querySelector('.portal-layout-primary');for(const id of ['nav-practice-hub','nav-mock-tests','nav-progress']){const node=doc.getElementById(id);if(node)nav.appendChild(node);}
   const results=doc.createElement('button');results.type='button';results.id='nav-saved-results';results.className='nav-item';results.textContent='Results';results.onclick=()=>env.switchSection?.('saved-results');nav.appendChild(results);
   const account=header.querySelector('.portal-layout-account');for(const id of ['portalMenuToggle','userBadge']){const node=doc.getElementById(id);if(node)account.appendChild(node);}
   const menu=doc.getElementById('portalMenuToggle');if(menu)menu.innerHTML='<span aria-hidden="true">☰</span> More';
   const theme=doc.getElementById('themeToggleBtn'),footer=doc.querySelector('#portalSidebar .sidebar-footer');if(theme&&footer)footer.insertBefore(theme,footer.firstChild);
   doc.body.classList.add('portal-layout');
   let skill='speaking',scheduled=false,lastResultsOwner=null,lastSection=null;
+  const swtScreen=doc.getElementById('swtPracticeScreen'),swtHeading=swtScreen?.querySelector('.swt-heading');
+  let swtFocusButton;
+  function expandSwt(expanded){mark(doc.body,'portal-swt-expanded',expanded);if(swtFocusButton){const label=expanded?'Exit focus view':'Focus view';if(swtFocusButton.textContent!==label)swtFocusButton.textContent=label;if(swtFocusButton.getAttribute('aria-pressed')!==String(expanded))swtFocusButton.setAttribute('aria-pressed',String(expanded));}}
+  if(swtHeading){
+   swtFocusButton=doc.createElement('button');swtFocusButton.type='button';swtFocusButton.id='swtFocusButton';swtFocusButton.className='btn portal-swt-focus';swtFocusButton.textContent='Focus view';swtFocusButton.setAttribute('aria-pressed','false');
+   swtFocusButton.onclick=()=>expandSwt(!doc.body.classList.contains('portal-swt-expanded'));swtHeading.appendChild(swtFocusButton);
+   doc.addEventListener('keydown',event=>{if(event.key==='Escape'&&!event.defaultPrevented&&doc.body.classList.contains('portal-swt-expanded')){event.preventDefault();expandSwt(false);swtFocusButton.focus({preventScroll:true});}});
+  }
   function catalogue(){
    const host=doc.getElementById('practiceHubPane'),board=host?.querySelector('.practice-banners');if(!board)return;
    mark(host,'portal-layout-catalogue',true);
@@ -43,6 +51,9 @@
   function refresh(){scheduled=false;
    if(footer&&doc.querySelector('.personal-ai-launcher')&&!footer.querySelector('[data-layout-assistant]')){const b=doc.createElement('button');b.type='button';b.dataset.layoutAssistant='';b.textContent='Study assistant';b.onclick=()=>{doc.querySelector('.personal-ai-launcher')?.click();doc.getElementById('portalMenuBackdrop')?.click();};footer.insertBefore(b,footer.firstChild);}
    const section=doc.body.dataset.section,exam=doc.body.classList.contains('portal-exam-active');
+   const swtWriting=section==='swt'&&!exam&&swtScreen?.classList.contains('active')&&!doc.getElementById('swtResultsScreen')?.classList.contains('active');
+   mark(doc.body,'portal-swt-workspace',swtWriting);
+   if(!swtWriting)expandSwt(false);
    for(const id of ['speakingPane','readingPane','writingLabScreen','swtPane','practiceScreen','speakingMockPane','fullMockPane']){
     const host=doc.getElementById(id);if(!host)continue;
     const report=[...host.querySelectorAll(reports)].some(node=>{const swt=node.closest('#swtResultsScreen');return !node.closest('[hidden]')&&(!swt||swt.classList.contains('active'));})||!!host.querySelector('#swtResultsScreen.active');mark(host,'portal-layout-report',report);
