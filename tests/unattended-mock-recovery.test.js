@@ -42,6 +42,18 @@ test('Reviewed recovery transport changes keep native graders, models and score 
  const read=name=>require('node:fs').readFileSync(require.resolve('../'+name),'utf8'),sha=s=>require('node:crypto').createHash('sha256').update(s).digest('hex');
  const baseline=require('../content/full-mock/unattended-recovery-compatible-sources.json');
  let source=read('full-mock/adapters.js');
+ // Remove only the reviewed empty-recognition classification and quality
+ // receipt. The remaining adapter must match its exact previous revision
+ // before projecting the older recovery metadata below.
+ source=source.replace(`const transcript = await stage('transcription', async () => {
+        const value = await transcribe(recording);
+        // A successful recogniser response containing no words is audio evidence,
+        // unlike a network, account or malformed-provider-response failure.
+        if (typeof value === 'string' && !value.trim()) throw Object.assign(Error('No intelligible speech was recognised.'), { code:'unintelligible_audio' });
+        return value;
+      }, value => typeof value === 'string' && !!value.trim());`, "const transcript = await stage('transcription', () => transcribe(recording), value => typeof value === 'string' && !!value.trim());");
+ source=source.replace(", ...(!error&&raw?.deliveryEvidence?.sufficient===false?{audioQuality:'insufficient-speech'}:{})",'');
+ assert.equal(sha(source),require('../content/full-mock/unclear-audio-compatible-sources.json').files['full-mock/adapters.js'].sha256);
  source=source.replace("uncertain: require('../mock-recovery-policy').failure(error).uncertain, failureCode:require('../mock-recovery-policy').failure(error).code, recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked",'uncertain: !!error.uncertain');
  source=source.replace("uncertain: error ? require('../mock-recovery-policy').failure(error).uncertain : false, ...(error?{failureCode:require('../mock-recovery-policy').failure(error).code,recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked}:{})",'uncertain: !!error?.uncertain');
  assert.equal(sha(source),baseline.files['full-mock/adapters.js'].sha256);
