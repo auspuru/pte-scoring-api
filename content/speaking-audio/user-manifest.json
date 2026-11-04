@@ -43,5 +43,663 @@
     "voices": [
       "production-recording"
     ]
+  },
+  "rl-user-20261104-underwater-remote-detector": {
+    "textSha256": "9947b8fb6d878413bc888752197fa1c56c3aafd430bed36d05c5f0bfe13d4435",
+    "audioSha256": "52b31b6fdfd76d7c2f17deeaf5a6e5eed144d3771c58673187fe918fe3fbbf05",
+    "bytes": 955244,
+    "seconds": 47.736,
+    "voices": [
+      "cedar"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "speed": 0.7,
+        "targetWordsPerMinute": 115,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 115 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "9947b8fb6d878413bc888752197fa1c56c3aafd430bed36d05c5f0bfe13d4435",
+        "requestId": "req_e3b4b5acbad1420382901f831291da7b"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.54,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -20.83,
+    "truePeakDbTP": -2.44
+  },
+  "rl-user-20261104-science-scientist": {
+    "textSha256": "a852000057416fa112d7151ceedbf22ca4b7e9495794c3c45237fc887ead9712",
+    "audioSha256": "6d950363130719bdb136eea9aaf41aa7ad7a290969cada68b288d74d64f3d7a9",
+    "bytes": 1458764,
+    "seconds": 72.912,
+    "voices": [
+      "marin",
+      "cedar"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.0,
+        "targetWordsPerMinute": 155,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 155 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "1ef4295bd5a508594f49dc01350cf137fdd588257686bb635f3083428a5bdb5a",
+        "requestId": "req_e12b1959af4c4115b5036657e6da6fbc"
+      },
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "speed": 1.0,
+        "targetWordsPerMinute": 155,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 155 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "1d37f173acdcb348d90eb581b943a09d91a5da7448beda8923971a28859fe448",
+        "requestId": "req_085129e096d14de0bc1ffd3beaadc4ec"
+      },
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.0,
+        "targetWordsPerMinute": 155,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 155 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "5858b7e5f9eb4d8bdf7028d6c7009a9010efa77c7d149d4e986bbbe417134e80",
+        "requestId": "req_12e4676e2dfe465895c4db16c4d6ac8d"
+      },
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "speed": 1.0,
+        "targetWordsPerMinute": 155,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 155 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "5cabd48e70995e431d4da5623dda659913da219f00b772e8508c3bbbcbf20d93",
+        "requestId": "req_eb085de3fc364b009fa764ee52ede4d4"
+      },
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.0,
+        "targetWordsPerMinute": 155,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 155 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "c8f2f0f1952985ae48cab46c46bc2e741392233e7bbd6a13c6dda1d03da0ea05",
+        "requestId": "req_9411f95ab250429e83b380a02b240c67"
+      },
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "speed": 1.0,
+        "targetWordsPerMinute": 155,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 155 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "8638e51ec234b11f2349c7ef537be94ab57655bbe110e768bed239a0cf5a1591",
+        "requestId": "req_a85f9c9f7d074c62924af88515035015"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": -0.7,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -23.4,
+    "truePeakDbTP": -2.44,
+    "speakerVoices": {
+      "Female": "marin",
+      "Male": "cedar"
+    },
+    "turnSpeakers": [
+      "Female",
+      "Male",
+      "Female",
+      "Male",
+      "Female",
+      "Male"
+    ]
+  },
+  "rl-user-20261104-psychology-subfields": {
+    "textSha256": "f0887ab75c6c501caec1656a6a1b9cd3ca62656958105aca460ea7d629c15781",
+    "audioSha256": "c6a617a64615c45765c72035ccc46e0bbfffdcab1e6b7f6d799bfd7dae578267",
+    "bytes": 1681484,
+    "seconds": 84.048,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.173,
+        "targetWordsPerMinute": 215,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 215 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "f0887ab75c6c501caec1656a6a1b9cd3ca62656958105aca460ea7d629c15781",
+        "requestId": "req_a70cb4526985418da3245d269c0a88f7"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.69,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -19.05,
+    "truePeakDbTP": -2.45
+  },
+  "rl-user-20261104-government-blogging": {
+    "textSha256": "17252f950797b59acdd574640d6f0265700fd38e0d38ceb87c6fe79572bee301",
+    "audioSha256": "54039a0caacb5d2b1f33a67f53160a42a623ea1a643a081e121bec6568bb7741",
+    "bytes": 1168844,
+    "seconds": 58.416,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.0,
+        "targetWordsPerMinute": 115,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 115 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "17252f950797b59acdd574640d6f0265700fd38e0d38ceb87c6fe79572bee301",
+        "requestId": "req_28cf754831564ad1859fb2b3d3a67994"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.82,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -19.36,
+    "truePeakDbTP": -2.45
+  },
+  "rl-user-20261104-advanced-machine": {
+    "textSha256": "5499c3ed9d8ac9c2198e166b0a6ca1c853b64b73a828f16b0a9c2f6c03e8a080",
+    "audioSha256": "3f281beb4919793d1de4b1474ebc9c423559a6db33490e44c8ac477da9c7cd62",
+    "bytes": 1035884,
+    "seconds": 51.768,
+    "voices": [
+      "cedar"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "speed": 1.0,
+        "targetWordsPerMinute": 115,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 115 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "5499c3ed9d8ac9c2198e166b0a6ca1c853b64b73a828f16b0a9c2f6c03e8a080",
+        "requestId": "req_f31a5d50b06a400785d3e557181de13c"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 1.78,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -21.49,
+    "truePeakDbTP": -2.43
+  },
+  "rl-user-20261104-animal-behaviour": {
+    "textSha256": "6462e18ee8a066c3ef30ba8a21b06a0e736c354e04e6b62713f10b1575125602",
+    "audioSha256": "05dcd9c4f35b52a35d70cd6fc6a546af4f420fcc16811a9b25985e45aa315ffd",
+    "bytes": 1227884,
+    "seconds": 61.368,
+    "voices": [
+      "cedar"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "speed": 1.0,
+        "targetWordsPerMinute": 118,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 118 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "6462e18ee8a066c3ef30ba8a21b06a0e736c354e04e6b62713f10b1575125602",
+        "requestId": "req_38b9bf6459e749c5bcb24da84cae81da"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 0.82,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -22.23,
+    "truePeakDbTP": -2.45
+  },
+  "rl-user-20261104-neuron-intensity": {
+    "textSha256": "e8cc43415ba70f210aa289be898c88a58dd035591e772ae9d90c702a3da02a44",
+    "audioSha256": "1768808d676660b91faecdaa474f170cfe205186d1dd60b2f6f79f54e79e2c2e",
+    "bytes": 1301804,
+    "seconds": 65.064,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.0,
+        "targetWordsPerMinute": 153,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 153 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "e8cc43415ba70f210aa289be898c88a58dd035591e772ae9d90c702a3da02a44",
+        "requestId": "req_41a72e0fb4104f919528a285b9e1f849"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.75,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -19.6,
+    "truePeakDbTP": -2.44
+  },
+  "rl-user-20261104-deliberate-practice": {
+    "textSha256": "d16d39d9a042221856623b11dce8103432db0772f28c6db53bda01b5e8e3389f",
+    "audioSha256": "03f8129ae26ef1322aec44debf8f26fcd1f90465c6caec5a60e0ff0da5e3d228",
+    "bytes": 918284,
+    "seconds": 45.888,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 0.84,
+        "targetWordsPerMinute": 115,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 115 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "d16d39d9a042221856623b11dce8103432db0772f28c6db53bda01b5e8e3389f",
+        "requestId": "req_91e2389bab1f4819a9d34204efcb4efe"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 1.8,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -20.54,
+    "truePeakDbTP": -2.44
+  },
+  "rl-user-20261104-sigmund-freud": {
+    "textSha256": "1548ee324fc640410bbaec61056cbc7f15d6e2d2fd716ec07f6dad904ca61327",
+    "audioSha256": "8269a7f7b3aeabf80f777ca02d1aca933b68d8cba1324edfb44f55c53f9100ad",
+    "bytes": 1199564,
+    "seconds": 59.952,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.0,
+        "targetWordsPerMinute": 145,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 145 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "1548ee324fc640410bbaec61056cbc7f15d6e2d2fd716ec07f6dad904ca61327",
+        "requestId": "req_76d2eebc6098460780f810a2c9aef9d9"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.98,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -19.5,
+    "truePeakDbTP": -2.45
+  },
+  "rl-user-20261104-language-disorders": {
+    "textSha256": "68a08dbdfae20b81981e49e12b5448f9576bb627b9053d4ceaffdb6d7c1f0e5b",
+    "audioSha256": "1710539da66904b3f4d6bbffccaaf505a71339a040d00637b1e5ca52776d883d",
+    "bytes": 1024844,
+    "seconds": 51.216,
+    "voices": [
+      "cedar"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "speed": 0.756,
+        "targetWordsPerMinute": 115,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 115 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "68a08dbdfae20b81981e49e12b5448f9576bb627b9053d4ceaffdb6d7c1f0e5b",
+        "requestId": "req_c1400fbf74ab491caa6dd6d916d8d806"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 1.68,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -22.1,
+    "truePeakDbTP": -2.45
+  },
+  "rl-user-20261104-childhood-obesity": {
+    "textSha256": "a8c1df0395cef2371b32dc0979831bc8f575ec52994e9bfb2f739804ea7262f0",
+    "audioSha256": "e19979817b29e2798cc48b6521ebb8ddc0439efb2926b2b48fd5443bcd31ad40",
+    "bytes": 1142924,
+    "seconds": 57.12,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.0,
+        "targetWordsPerMinute": 130,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 130 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "a8c1df0395cef2371b32dc0979831bc8f575ec52994e9bfb2f739804ea7262f0",
+        "requestId": "req_b781469e59fa449baa70d9be63805bb8"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": -0.25,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -22.34,
+    "truePeakDbTP": -2.45
+  },
+  "rl-user-20261104-why-comedy-matters": {
+    "textSha256": "908738ed42c5793c7cb951e426f0c04cc043063bbfa31b840ad0b1249172bcf6",
+    "audioSha256": "9607cc3b3944381c5cfc1c123f48779d0e744f6705750ec70128516adc102a08",
+    "bytes": 1400684,
+    "seconds": 70.008,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.0,
+        "targetWordsPerMinute": 152,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 152 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "908738ed42c5793c7cb951e426f0c04cc043063bbfa31b840ad0b1249172bcf6",
+        "requestId": "req_ecbd438a87cb4264a834236387acd1cd"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.37,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -20.26,
+    "truePeakDbTP": -2.45
+  },
+  "rl-user-20261104-earth-mars": {
+    "textSha256": "2c00b51d73dba17a140f5f70a970a7ed2c6d536eb4b98867f794051d79a50a06",
+    "audioSha256": "aced556667fadab680674c4cda345b95aecfd02bdbaa09a42e84a2dfa8982f6b",
+    "bytes": 1088684,
+    "seconds": 54.408,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.0,
+        "targetWordsPerMinute": 115,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 115 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "2c00b51d73dba17a140f5f70a970a7ed2c6d536eb4b98867f794051d79a50a06",
+        "requestId": "req_13bfe30b0fcd4afa9b653f646457b1fa"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 1.75,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -20.81,
+    "truePeakDbTP": -2.45
+  },
+  "rl-user-20261104-fatherhood": {
+    "textSha256": "687fe2d28f1182a132982cbfd82de952616cac5e8a9faca227160b7dfec2b58f",
+    "audioSha256": "c3ba5d065f26dbda2bdfb529254f6d963e1cda113eb5cc049adeced2e8abf6c7",
+    "bytes": 1339724,
+    "seconds": 66.96,
+    "voices": [
+      "cedar"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "speed": 1.0,
+        "targetWordsPerMinute": 125,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 125 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "687fe2d28f1182a132982cbfd82de952616cac5e8a9faca227160b7dfec2b58f",
+        "requestId": "req_ec709bc3f6484c9ba50a0468e58ddaf0"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 1.51,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -22.28,
+    "truePeakDbTP": -2.45
+  },
+  "rl-user-20261104-dna-proteins": {
+    "textSha256": "dc9f889f49f412ae49f1276e5b65d768a0dd183d6b64c65e536d6b25f7b32564",
+    "audioSha256": "cca709e2c5363ee2090bc02f848a247c466cf9d9e68a7fdede2d2e8a25277817",
+    "bytes": 1193804,
+    "seconds": 59.664,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.0,
+        "targetWordsPerMinute": 115,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 115 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "dc9f889f49f412ae49f1276e5b65d768a0dd183d6b64c65e536d6b25f7b32564",
+        "requestId": "req_45b359a7c5dc462cbcce6386a0f336bc"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.37,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -19.32,
+    "truePeakDbTP": -2.45
+  },
+  "rl-user-20261104-chemical-labels": {
+    "textSha256": "60d33b337e809899f55d33e6c7be3dcbe0716d556b1a60c684c30549a9c34495",
+    "audioSha256": "90bb721d73b4a617b6700b833e80512d2fb630b6806f4c8889f22b25954bf2a8",
+    "bytes": 1237484,
+    "seconds": 61.848,
+    "voices": [
+      "cedar"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "speed": 1.0,
+        "targetWordsPerMinute": 139,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 139 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "60d33b337e809899f55d33e6c7be3dcbe0716d556b1a60c684c30549a9c34495",
+        "requestId": "req_abc09b30575348deb6181368171cee54"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 1.39,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -22.29,
+    "truePeakDbTP": -2.46
+  },
+  "rl-user-20261104-joseph-lister": {
+    "textSha256": "8fb571fc42e00ea389ed99669a4fed616ea61bc8ef83b043b0723453572fc845",
+    "audioSha256": "c6515301df21061af6e2b11dfd18da21070cfaca8d132536608fda070a80607f",
+    "bytes": 1124684,
+    "seconds": 56.208,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.0,
+        "targetWordsPerMinute": 115,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 115 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "8fb571fc42e00ea389ed99669a4fed616ea61bc8ef83b043b0723453572fc845",
+        "requestId": "req_1e3aea345ff043ef9216b08f7c4268f6"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.73,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -19.29,
+    "truePeakDbTP": -2.45
+  },
+  "rl-user-20261104-four-dimensions": {
+    "textSha256": "13d18e4ed3f5eb7df846de2063508f312d069ea319fd152e449ea5f63d6ebf37",
+    "audioSha256": "7e34c5a3371f8482413b5a5582bc4af1ab6fd6d0ce6ba589aed00dd3fbf71321",
+    "bytes": 1095884,
+    "seconds": 54.768,
+    "voices": [
+      "cedar"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "speed": 1.0,
+        "targetWordsPerMinute": 115,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 115 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "13d18e4ed3f5eb7df846de2063508f312d069ea319fd152e449ea5f63d6ebf37",
+        "requestId": "req_a0ef0e6d489444c6b3bce14f6cc5e2a6"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 0.13,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -23.33,
+    "truePeakDbTP": -2.45
+  },
+  "rl-user-20261104-management-leadership": {
+    "textSha256": "f6571374065e28873b4c698cf200a55105ad15612d60cf3f2f6e873aa5e6cca9",
+    "audioSha256": "cadfb590aa5fda2ae5d0a88d78380a978e014fabaf53b3adfdd0a3263321e48e",
+    "bytes": 1301804,
+    "seconds": 65.064,
+    "voices": [
+      "cedar"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "speed": 1.0,
+        "targetWordsPerMinute": 124,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 124 words per minute, maintaining clear, fluid speech. Do not add fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "f6571374065e28873b4c698cf200a55105ad15612d60cf3f2f6e873aa5e6cca9",
+        "requestId": "req_1196122f70be4950a9707007583b994b"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 1.24,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -22.34,
+    "truePeakDbTP": -2.44
+  },
+  "rl-user-20261104-us-economic-strength": {
+    "textSha256": "8958ae1d8134f4f0e3dd4a1e510d132a31aae899b2c5c56bb2267a1a4f5fb5c8",
+    "audioSha256": "9747e46e128ccac06327605c56a7bc973f108667ae23ee6f93143c2592177a23",
+    "bytes": 985484,
+    "seconds": 49.248,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": [
+      {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "speed": 1.0,
+        "targetWordsPerMinute": 115,
+        "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 115 words per minute, maintaining clear, fluid speech. Stop immediately after the final supplied word. Do not add production cues, fillers, introductions, a conclusion, music, background noise or sound effects.",
+        "spokenTextSha256": "8958ae1d8134f4f0e3dd4a1e510d132a31aae899b2c5c56bb2267a1a4f5fb5c8",
+        "requestId": "req_455f60b757894de68f2d112ff11e2e8e"
+      }
+    ],
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 1.77,
+      "tempoProcessing": "none",
+      "limiting": "none",
+      "dynamicLoudnessProcessing": "none"
+    },
+    "loudnessLUFS": -20.7,
+    "truePeakDbTP": -2.45
   }
 }
