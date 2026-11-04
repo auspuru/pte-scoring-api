@@ -24,6 +24,8 @@
     let phase='idle',deadline=0,clockId,promptAudio,stream,recorder,playbackUrl='',uploadBlob=null,notice='';
     let practiceMode='timed',promptRequest,promptSource='',promptAttemptId='';
     const modeOf=a=>a?.practiceMode==='untimed'?'untimed':'timed';
+    const bufferedResponse=()=>modeOf(attempt)==='timed'&&['rl','sgd'].includes(attempt?.question.type);
+    const cueType=type=>['rs','rl','sgd'].includes(type);
     const modeName=mode=>mode==='untimed'?'Untimed practice':'Timed practice';
     const matchingMode=a=>modeOf(a)===practiceMode;
     function releasePromptSource(){promptRequest?.abort();promptRequest=null;if(promptSource)env.URL.revokeObjectURL(promptSource);promptSource='';promptAttemptId='';}
@@ -163,14 +165,14 @@
     }
     async function start(questionId) {
       stopComparisonPoll();stopAssessmentPoll();
-      if(busy)return;const needsCue=catalog.questions.find(q=>q.id===questionId)?.type==='rs';if(needsCue)startCue.unlock();busy=true;message('Preparing your question…');const ticket=serial,user=owner;let shouldBegin=false;
+      if(busy)return;const needsCue=cueType(catalog.questions.find(q=>q.id===questionId)?.type);if(needsCue)startCue.unlock();busy=true;message('Preparing your question…');const ticket=serial,user=owner;let shouldBegin=false;
       try{const a=await api('/attempts',{id:env.crypto.randomUUID(),questionId,practiceMode});if(!valid(ticket,user))return;clearAudio(needsCue);releasePlayback();uploadBlob=null;attempt=a;practiceMode=modeOf(a);phase='idle';notice='';render();shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
       if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function resume(id,{capture=true}={}) {
       stopComparisonPoll();stopAssessmentPoll();
-      if(busy)return;if(activeType==='rs')startCue.unlock();busy=true;const ticket=serial,user=owner;let shouldBegin=false;
-      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio(activeType==='rs');releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;practiceMode=modeOf(a);phase='idle';notice='';render();if(a.recording){await loadPlayback();if(a.assessment?.status==='pending')pollAssessment();}else shouldBegin=capture;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      if(busy)return;if(cueType(activeType))startCue.unlock();busy=true;const ticket=serial,user=owner;let shouldBegin=false;
+      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio(cueType(activeType));releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;practiceMode=modeOf(a);phase='idle';notice='';render();if(a.recording){await loadPlayback();if(a.assessment?.status==='pending')pollAssessment();}else shouldBegin=capture;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
       if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function loadPlayback() {
@@ -209,7 +211,7 @@
       navigationPending=true;refreshControls();const user=owner;
       try {
         if(!await prepareNavigation()||identity()!==user||owner!==user)return;
-        if(activeType==='rs')startCue.unlock();
+        if(cueType(activeType))startCue.unlock();
         const ticket=serial,history=await loadHistory();if(!valid(ticket,user))return;
         const saved=history.filter(a=>a.questionId===target.id&&matchingMode(a)).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt))[0];
         if(saved)await resume(saved.id);else await start(target.id);
@@ -414,11 +416,19 @@
     function countdown(seconds,next) {deadline=now()+seconds*1000;env.clearInterval(clockId);refreshControls();clockId=env.setInterval(()=>{refreshControls();if(now()>=deadline){env.clearInterval(clockId);next();}},200);}
     function prepare(){if(!visible){clearAudio();phase='idle';return;}
       if(modeOf(attempt)==='untimed'){phase='ready';env.clearInterval(clockId);message('Take your time. Select Start recording when you are ready.');refreshControls();return;}
-      if(attempt.question.type==='rs'){
-        const ticket=serial,user=owner,id=attempt.id;phase='cue';refreshControls();
-        startCue.play(id+':'+captureGeneration,()=>{if(valid(ticket,user)&&visible&&!doc.hidden&&attempt?.id===id&&phase==='cue')record();});return;
-      }
-      phase='preparing';if(attempt.question.preparation)countdown(attempt.question.preparation,record);else record();
+      if(attempt.question.type==='rs')return cueRecording();
+      const seconds=(attempt.question.preparation||0)+(bufferedResponse()?5:0);
+      phase='preparing';if(bufferedResponse())message('You have '+seconds+' seconds to prepare. Listen for the beep, then start speaking.');
+      if(seconds)countdown(seconds,startResponse);else startResponse();
+    }
+    function cueRecording(){
+      env.clearInterval(clockId);
+      const ticket=serial,user=owner,id=attempt.id;phase='cue';refreshControls();
+      startCue.play(id+':'+captureGeneration,()=>{if(valid(ticket,user)&&visible&&!doc.hidden&&attempt?.id===id&&phase==='cue')record();});
+    }
+    function startResponse(){
+      if(bufferedResponse())return cueRecording();
+      return record();
     }
     function record() {
       env.clearInterval(clockId);if(!visible||doc.hidden||!stream){clearAudio();phase='idle';refreshControls();return;}
@@ -577,7 +587,7 @@
       if(action==='record')return begin();
       if(action==='replay-prompt'&&phase==='ready')return playPrompt(serial,owner);
       if(action==='ready-record'&&phase==='ready'&&!busy){if(attempt.question.type==='rs'){const ticket=serial,user=owner,id=attempt.id;phase='cue';refreshControls();startCue.unlock();return startCue.play(id+':'+captureGeneration,()=>{if(valid(ticket,user)&&visible&&attempt?.id===id&&phase==='cue')record();});}return record();}
-      if(action==='skip'&&phase==='preparing')return record();
+      if(action==='skip'&&phase==='preparing')return startResponse();
       if(action==='respond'&&attempt?.question.type==='rts'&&modeOf(attempt)==='timed'&&!attempt.recording&&!uploadBlob&&!busy){
         if(!['listening','preparing','error'].includes(phase))return;
         stopPrompt();env.clearInterval(clockId);phase='idle';return stream?record():begin(true);

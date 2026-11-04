@@ -507,3 +507,21 @@ test('Speaking direct saved response retains feedback with navigation disabled u
  await h.click({speakingMove:'1'});assert.equal(h.attempts.size,1);assert.equal(h.requests.filter(r=>r.body).length,writes);
  assert.match(h.host.innerHTML,/Open the question list to select a queue/);h.controller.reset();
 });
+
+for(const type of ['rl','sgd']){
+ test(type+': timed practice adds five preparation seconds and one cue before the full response',async()=>{
+  const h=harness({audioCue:true}),q=bank.questions.find(q=>q.type===type);await h.controller.open(type);await h.click({speakingQuestion:q.id});
+  h.tick(30000);assert.equal(h.recorders.length,0,'Prompt playback must finish before preparation');h.audio[0].onended();
+  assert.equal(h.nodes.get('speaking-clock').textContent,'0:15');h.tick(10000);assert.equal(h.cueAudio.tones.length,0);h.tick(4999);assert.equal(h.recorders.length,0);h.tick(1);
+  assert.equal(h.cueAudio.tones.length,1);assert.equal(h.recorders.length,0);h.tick(299);assert.equal(h.recorders.length,0);h.tick(1);assert.equal(h.recorders.length,1);
+  assert.equal(h.nodes.get('speaking-clock').textContent,time(q.seconds));h.tick(q.seconds*1000-1);assert.equal(h.recorders[0].state,'recording');h.tick(1);assert.equal(h.recorders[0].state,'inactive');await flush();h.controller.reset();
+ });
+ test(type+': skip preparation still plays one cue and leaving cancels capture',async()=>{
+  const h=harness({audioCue:true}),q=bank.questions.find(q=>q.type===type);await h.controller.open(type);await h.click({speakingQuestion:q.id});h.audio[0].onended();
+  await h.click({speakingAction:'skip'});await h.click({speakingAction:'skip'});assert.equal(h.cueAudio.tones.length,1);h.controller.leave();h.tick(1000);assert.equal(h.recorders.length,0);
+ });
+ test(type+': untimed practice remains manually started',async()=>{
+  const h=harness({audioCue:true}),q=bank.questions.find(q=>q.type===type);await h.controller.open(type,undefined,{mode:'untimed'});await h.click({speakingQuestion:q.id});h.audio[0].onended();h.tick(60000);
+  assert.equal(h.nodes.get('speaking-clock').textContent,'Untimed');assert.equal(h.recorders.length,0);await h.click({speakingAction:'ready-record'});assert.equal(h.recorders.length,1);assert.equal(h.cueAudio.tones.length,0);h.controller.reset();
+ });
+}
