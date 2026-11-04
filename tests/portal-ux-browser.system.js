@@ -16,11 +16,11 @@ test('UX libraries: fuzzy catalogue search, real progress chart, sortable/search
  await page.type('.portal-ux-history input[type=search]','impossible-xzq');await page.waitForFunction(()=>document.querySelector('.portal-ux-history [role=status]').textContent==='0 of 43 saved questions');assert.equal(await page.$$eval('.portal-ux-history .tabulator-row',rows=>rows.length),0);
  await page.$eval('.portal-ux-history input',e=>{e.value='';e.dispatchEvent(new Event('input',{bubbles:true}));});await page.waitForSelector('.portal-ux-history .tabulator-row');
  await page.locator('.portal-ux-grid [tabulator-field="dateValue"]').click();await page.waitForFunction(()=>document.querySelector('.portal-ux-grid [data-progress-attempt="42"]'));
- await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache/portal-ux-progress.png')});
+ await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache/portal-layout-ux-progress.png')});
  await page.locator('.portal-ux-grid [data-progress-attempt="42"]').click();await page.waitForFunction(text=>document.body.textContent.includes(text),{},history[42].text);
  assert.equal(await page.$eval('#nav-progress',e=>e.getAttribute('aria-current')),null,'Saved response opens through its original report route');
  await page.locator('#nav-practice-hub').click();await page.locator('[data-layout-skill="speaking"]').click();await page.locator('[data-practice-route="speaking-rl"]').click();await page.waitForSelector('#speaking-search');await page.type('#speaking-search','neuronn');await page.waitForFunction(()=>document.querySelector('#speaking-library-list')?.textContent.toLowerCase().includes('neuron'));
- assert.equal(await page.$$eval('#speaking-library-list [data-speaking-question]',nodes=>nodes.length),1);await page.screenshot({path:path.join(root,'.cache/portal-ux-search.png')});assert.deepEqual(errors,[]);
+ assert.equal(await page.$$eval('#speaking-library-list [data-speaking-question]',nodes=>nodes.length),1);await page.screenshot({path:path.join(root,'.cache/portal-layout-ux-search.png')});assert.deepEqual(errors,[]);
 });
 test('UX audio review uses the saved native player and releases it when leaving; optional assets fail safely',{timeout:90000},async t=>{
  const {f,page,errors,token}=await setup(t),id=require('node:crypto').randomUUID();
@@ -31,7 +31,7 @@ test('UX audio review uses the saved native player and releases it when leaving;
  await page.$eval('#speaking-playback audio',audio=>{window.__nativeReviewAudio=audio;});await page.locator('.portal-ux-wave summary').click();await page.waitForFunction(()=>document.querySelector('.portal-ux-waveform')?.querySelector('div')?.shadowRoot?.querySelector('canvas'));
  assert.equal(await page.evaluate(()=>document.querySelector('#speaking-playback audio')===window.__nativeReviewAudio),true);
  await page.$eval('#speaking-playback audio',audio=>audio.play());await page.waitForFunction(()=>window.__nativeReviewAudio.currentTime>0);await page.$eval('.portal-ux-wave input',slider=>{slider.value='2';slider.dispatchEvent(new Event('input',{bubbles:true}));});await page.waitForFunction(()=>window.__nativeReviewAudio.currentTime>=2);
- await page.screenshot({path:path.join(root,'.cache/portal-ux-waveform.png')});await page.locator('#nav-progress').click();await page.waitForFunction(()=>window.__nativeReviewAudio.paused);await page.waitForSelector('.portal-ux-history:not([hidden])');
+ await page.screenshot({path:path.join(root,'.cache/portal-layout-ux-waveform.png')});await page.locator('#nav-progress').click();await page.waitForFunction(()=>window.__nativeReviewAudio.paused);await page.waitForSelector('.portal-ux-history:not([hidden])');
  await page.locator('#nav-practice-hub').click();await page.evaluate(()=>{window.Chart=undefined;window.Tabulator=undefined;});await page.setRequestInterception(true);page.on('request',request=>request.url().includes('/vendor/chart.js/')||request.url().includes('/vendor/tabulator-tables/')?request.abort():request.continue());
  await page.reload();await page.waitForSelector('.portal-layout-skills');await page.locator('#nav-progress').click();await page.waitForSelector('.progress-attempts:not([hidden]) [data-progress-attempt]');assert(await page.$('.portal-ux-chart-summary'));assert.deepEqual(errors,[]);
 });
