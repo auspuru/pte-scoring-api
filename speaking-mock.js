@@ -190,7 +190,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       const startedAt=now();
       return {...profile(req.mockUser),id:req.body.id,paperId:original.paperId,title:original.title,version:bank.VERSION,questionCount:original.questionCount,
         questions:bank.reattemptQuestions(original),reattemptOf:original.id,responses:[],index:0,status:'active',startedAt,
-        deadline:startedAt+(original.deadline-original.startedAt),integrity:{protected:true,events:[]}};
+        deadline:startedAt+bank.OVERALL_MINUTES*60000,integrity:{protected:true,events:[]}};
     });res.json(view(a));
   }));
   router.get('/attempts/:id/status',wrap(async(req,res)=>{const a=await readResults(req.mockUser,req.params.id);res.json(submission.blocked(a)?submission.progress(a):useProgressive(a)?await progressive.status(req.mockUser,a):{ready:a.grading?.status==='complete',status:a.grading?.status==='complete'?'ready':'preparing'});}));

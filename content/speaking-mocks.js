@@ -3,7 +3,8 @@ const crypto=require('node:crypto');
 const bank=require('./speaking-bank'),writing=require('./writing-lab.json');
 const references=require('../di-reference'),supplied=new Map(require('./di-user-predictions.json').map(q=>[q.id,q]));
 const speakingAudio=require('./speaking-audio-manifest')(),writingAudio=require('./writing-audio/manifest.json'),rtsPrompts=require('../rts-prompts');
-const VERSION='speaking-mock-2026-10-30.1';
+const VERSION='speaking-mock-2026-11-04.1';
+const OVERALL_MINUTES=40;
 const pick=id=>structuredClone(bank.questions.find(q=>q.id===id));
 function suppliedMockImage(q){
   const original=supplied.get(q.id),entry=references.manifest.entries[q.id];
@@ -33,8 +34,7 @@ function paper(number,items){
   for(const q of items.filter(q=>q.type==='di')){
     if(!suppliedMockImage(q)||!q.sample||!q.facts?.length)throw Error('Speaking mocks require a supplied original chart or diagram and matching sample: '+q.id);
   }
-  const seconds=items.reduce((sum,q)=>sum+3+(q.audioSeconds||0)+q.preparation+q.seconds+(q.startCueMs||0)/1000,0);
-  return {id:'speaking-mock-'+number,title:'Speaking Mock '+number,minutes:Math.ceil(seconds/60)+3,
+  return {id:'speaking-mock-'+number,title:'Speaking Mock '+number,minutes:OVERALL_MINUTES,
     questionCount:items.filter(q=>q.type!=='intro').length,description:'A complete speaking practice paper using saved portal recordings, with an unscored introduction.',
     scope:'6 Read Aloud · 10 Repeat Sentence · 5 Describe Image · 2 Retell Lecture · 2 Group Discussion · 2 Respond to a Situation',questions:items};
 }
@@ -77,4 +77,4 @@ function reattemptQuestions(original){
     return structuredClone(replacement);
   });
 }
-module.exports={VERSION,papers,catalogue,publicQuestion,suppliedMockImage,reattemptQuestions};
+module.exports={VERSION,OVERALL_MINUTES,papers,catalogue,publicQuestion,suppliedMockImage,reattemptQuestions};
