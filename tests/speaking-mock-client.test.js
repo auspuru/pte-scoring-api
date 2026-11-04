@@ -6,7 +6,7 @@ async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,
   class Element{constructor(id){this.id=id;this.hidden=false;this.disabled=false;this.textContent='';this.style={};nodes.set(id,this);}set innerHTML(text){this.html=text;if(this.id==='speakingMockPane'){for(const id of [...nodes.keys()])if(id!==this.id)nodes.delete(id);}for(const m of text.matchAll(/id="([^"]+)"/g))new Element(m[1]);}get innerHTML(){return this.html||'';}replaceChildren(){this.innerHTML='';}}
   const host=new Element('speakingMockPane');
   class Recorder{static isTypeSupported(type){return type==='audio/webm;codecs=opus';}constructor(){this.state='inactive';this.mimeType='audio/webm';}start(){this.state='recording';if(!nodes.has('sm-check-record'))recorderStarts++;}stop(){if(this.state!=='recording')return;this.state='inactive';this.ondataavailable?.({data:new Blob([Buffer.alloc(200,2)],{type:this.mimeType})});this.onstop?.();}}
-  class Audio{constructor(url){this.url=url;this.currentTime=0;this.volume=1;audios.push(this);const id=url.split('/').at(-1).split('.mp3')[0];this.duration=url.startsWith('blob:')?3:require('../content/speaking-mocks').papers.flatMap(p=>p.questions).find(q=>q.id===id)?.audioSeconds;}async play(){this.played=true;this.paused=false;this.playedAt=at;this.offset=this.currentTime;}pause(){this.paused=true;}}
+  class Audio{constructor(url){this.url=url;this.currentTime=0;this.volume=1;audios.push(this);const id=url.split('/').at(-1).split('.mp3')[0];this.duration=url.startsWith('blob:')?3:(require('../approved-audio').entries[id]?.seconds||require('../content/speaking-mocks').papers.flatMap(p=>p.questions).find(q=>q.id===id)?.audioSeconds);}async play(){this.played=true;this.paused=false;this.playedAt=at;this.offset=this.currentTime;}pause(){this.paused=true;}}
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-mock-ui-')),app=require('express')();app.use(require('express').json());
   const lab=installSpeakingMock(app,{directory,backgroundEnabled,now:()=>at,verifyToken:token=>token==='alice'?'alice':null,getAccount:async()=>({}),gptAvailable:true,azureAvailable:true,
     gradeResponse:async q=>{await gradeGate;return({transcript:'A clear response.',content:{total:require('../speaking-mock-report').contentMaximum(q),maximum:require('../speaking-mock-report').contentMaximum(q),scoringMode:'ai'},gpt:{status:'assessed',pronunciation:{score:5},fluency:{score:5}},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:5}}});},
@@ -66,14 +66,14 @@ test('A delayed begin response and a fast device clock do not consume the visibl
  await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});const saved=await h.active(),index=saved.questions.findIndex(q=>q.type==='rl');
  await h.lab.store.update('alice',saved.id,a=>{a.index=index;delete a.questionStartedAt;return a;});await h.controller.open();const request=h.env.fetch;
  h.env.fetch=async(url,options)=>{const response=await request(url,options);if(url.endsWith('/begin'))await h.tick(5000);return response;};
- await h.click({sm:'resume',id:saved.id});const prompts=()=>h.audios.filter(a=>a.url.startsWith('/speaking-mock-audio/'));
+ await h.click({sm:'resume',id:saved.id});const prompts=()=>h.audios.filter(a=>(a.url.startsWith('/speaking-mock-audio/')||a.url.startsWith('/practice-audio/')));
  assert.equal(prompts().length,0);await h.tick(2999);assert.equal(prompts().length,0);await h.tick(1);assert.equal(prompts().length,1);assert.equal(prompts()[0].offset,0);
 });
 for(const type of ['rl','sgd','rts'])test(type+': a full visible lead-in and preparation follow real prompt completion, even when playback is delayed',async t=>{
  const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
  const first=await h.active(),index=first.questions.findIndex(q=>q.type===type);await h.lab.store.update('alice',first.id,a=>{a.index=index;delete a.questionStartedAt;return a;});
  await h.controller.open();await h.click({sm:'resume',id:first.id});
- const prompts=()=>h.audios.filter(a=>a.url.startsWith('/speaking-mock-audio/'));
+ const prompts=()=>h.audios.filter(a=>(a.url.startsWith('/speaking-mock-audio/')||a.url.startsWith('/practice-audio/')));
  assert.equal(prompts().length,0);await h.tick(2999);assert.equal(prompts().length,0);await h.tick(1);
  const audio=prompts().at(-1);assert.equal(audio.offset,0);audio.playedAt+=5000;
  await h.tick(audio.duration*1000);assert.equal(h.starts(),0);assert.equal(h.nodes.get('sm-record-status').textContent,'Listening');assert.equal(h.nodes.get('sm-record-bar').style.width,'0%');
@@ -152,7 +152,7 @@ test('One complete mock runs timed recording, reuses saved audio, hides feedback
   assert.doesNotMatch(h.host.innerHTML,/GPT pronunciation|OpenAI-based overall/);assert.match(h.host.innerHTML,/Pronunciation \/ fluency/);
   assert.match(h.nodes.get('sm-result-rows').innerHTML,/5\/5/);assert.match(h.nodes.get('sm-result-rows').innerHTML,/4\/5/);
   assert(h.requests.filter(r=>r.method==='POST'&&r.url.includes('/recordings/')).every(r=>r.headers['x-session-token']==='alice'));
-  assert(h.audios.every(a=>a.url.startsWith('/speaking-mock-audio/')||a.url.startsWith('blob:')));
+  assert(h.audios.every(a=>(a.url.startsWith('/speaking-mock-audio/')||a.url.startsWith('/practice-audio/'))||a.url.startsWith('blob:')));
   assert.match(h.host.innerHTML,/Reattempt this mock/);
   const original=await h.active(),before=JSON.stringify(original);
   await h.controller.open({history:true});assert.match(h.host.innerHTML,/data-sm="reattempt"/);

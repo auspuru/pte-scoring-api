@@ -1,0 +1,62 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-16",
+  "title": "Museum interpretation",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "76dd3d0c1951aa3cc666e22c43b29ed14635a1eb4eebc5d022435c5f601f6b8c",
+  "spokenTextSha256": "76dd3d0c1951aa3cc666e22c43b29ed14635a1eb4eebc5d022435c5f601f6b8c",
+  "audioFile": "hiw-16-neural-review-20261104.mp3",
+  "audioSha256": "9ea85eac1b235c39e9486aab3702ec94a6ce6ac710aa7f5e0077110145e47ec7",
+  "masterFile": "hiw-16-native.flac",
+  "masterSha256": "02c853fdf309db0bba72faf798f08b273e77b5ff936eda709fadcf4b00f955cc",
+  "bytes": 1050764,
+  "seconds": 52.512,
+  "wordsPerMinuteIncludingPauses": 147.4,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -19.78,
+  "truePeakDbTP": -2.47,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 2.93,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.26,
+    "sourceTruePeakDbTP": -4.93
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "6501906d1ba01fff89c0b1ab6be215b32b7b18690a35e7a61c07fa02bd404071",
+      "textSha256": "76dd3d0c1951aa3cc666e22c43b29ed14635a1eb4eebc5d022435c5f601f6b8c",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_e85349e541af4d5f94ecacfd8cad69d6",
+      "masterSha256": "97046ddc543ecd519fe58d570f9596069bdfc02675c840995572945abaf6f813",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_59e3878e20f841e28a8c02abff3fbe58",
+    "audioSha256": "9ea85eac1b235c39e9486aab3702ec94a6ce6ac710aa7f5e0077110145e47ec7",
+    "sourcePromptProvided": false,
+    "text": "A museum label may appear to offer a neutral description of an object, yet its selection of details directs the visitor's attention. Naming a maker, explaining a technique, or describing an object's journey into the collection can produce quite different interpretations. Curators increasingly consult communities whose knowledge was excluded from earlier displays. This collaboration can reveal meanings that are absent from written catalogs, although agreement should not be assumed simply because consultation has occurred. Different contributors may understand the same object through distinct histories and responsibilities. A thoughtful exhibition makes these perspectives visible while explaining the evidence behind particular claims. Its purpose is not to remove all uncertainty, but to help visitors recognize how knowledge is assembled and why an apparently familiar object may support more than one account.",
+    "differences": [
+      {
+        "expected": "catalogues",
+        "heard": "catalogs"
+      },
+      {
+        "expected": "recognise",
+        "heard": "recognize"
+      }
+    ]
+  }
+}

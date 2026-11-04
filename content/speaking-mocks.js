@@ -3,7 +3,8 @@ const crypto=require('node:crypto');
 const bank=require('./speaking-bank'),writing=require('./writing-lab.json');
 const references=require('../di-reference'),supplied=new Map(require('./di-user-predictions.json').map(q=>[q.id,q]));
 const speakingAudio=require('./speaking-audio-manifest')(),writingAudio=require('./writing-audio/manifest.json'),rtsPrompts=require('../rts-prompts');
-const VERSION='speaking-mock-2026-11-04.1';
+const approvedAudio=require('../approved-audio');
+const VERSION='speaking-mock-2026-11-04.2';
 const OVERALL_MINUTES=40;
 const pick=id=>structuredClone(bank.questions.find(q=>q.id===id));
 function suppliedMockImage(q){
@@ -12,6 +13,10 @@ function suppliedMockImage(q){
     &&entry.mapping.category!=='photo'&&/^\/assets\/di-predictions-\d{8}\/\d+\.png$/.test(q.imageUrl||''));
 }
 function source(q,folder,id=q.id){
+  if(folder==='speaking'&&q.type==='sgd'){
+    const current=approvedAudio.current(q);
+    if(current.audioKey)return{...current,audioSource:{folder:'approved',id:current.audioKey},audioSeconds:current.audioSeconds};
+  }
   if(folder==='speaking'&&q.promptAudioKey)id=q.promptAudioKey;
   const manifest=folder==='speaking'?speakingAudio:writingAudio,entry=manifest[id];
   if(!entry||entry.textSha256!==crypto.createHash('sha256').update(q.text).digest('hex'))throw Error('Missing verified speaking mock audio: '+id);
@@ -59,7 +64,7 @@ function publicQuestion(q,reveal=false){
   return {id:q.id,type:q.type,name:q.name,preparation:q.preparation,seconds:q.seconds,instruction:q.instruction,
     ...(q.type==='di'?{title:q.title||q.visual?.title||''}:{}),
     ...(['intro','ra','rts'].includes(q.type)?{text:q.text}:{}),
-    ...(q.audioSource?(rtsPrompts.publicAudio(q,'/speaking-mock-audio')||{audioUrl:'/speaking-mock-audio/'+q.id+'.mp3?v='+VERSION,audioSeconds:q.audioSeconds}):{}),
+    ...(q.audioSource?(approvedAudio.publicAudio(q)||rtsPrompts.publicAudio(q,'/speaking-mock-audio')||{audioUrl:'/speaking-mock-audio/'+q.id+'.mp3?v='+VERSION,audioSeconds:q.audioSeconds}):{}),
     ...(q.imageUrl?{imageUrl:q.imageUrl,...require('../di-image-display').forQuestion(q)}:q.visual?{imageUrl:'/speaking-image/'+q.id+'.svg'}:{}),
     ...(reveal?{title:q.title,reference:q.text,sample:q.sample,facts:q.facts}:{} )};
 }
@@ -67,6 +72,10 @@ const catalogue=()=>papers.map(({questions,...paper})=>({...paper,tasks:Object.k
 function reattemptQuestions(original){
   const images=(papers.find(p=>p.id===original.paperId)||papers[0]).questions.filter(q=>q.type==='di');let imageIndex=0;
   return original.questions.map(q=>{
+    if(q.type==='sgd'){
+      const current=bank.questions.find(item=>item.id===q.id&&item.type==='sgd');
+      return current?source(structuredClone(current),'speaking'):structuredClone(q);
+    }
     if(q.type==='rts'){
       const current=bank.questions.find(item=>item.id===q.id&&item.type==='rts');
       return current?(current.audioPrompt===false?structuredClone(current):source(structuredClone(current),'speaking')):structuredClone(q);

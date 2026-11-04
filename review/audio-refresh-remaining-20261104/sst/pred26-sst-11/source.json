@@ -1,0 +1,30 @@
+{
+  "kind": "sst",
+  "id": "pred26-sst-11",
+  "type": "sst",
+  "title": "Computers",
+  "topic": "Technology",
+  "minutes": 10,
+  "voice": "alloy",
+  "text": "Computers support communication, analysis, record keeping and automated tasks across education, health, business and many other fields. Their speed and storage capacity can improve productivity, but greater dependence on digital systems also creates risks. Cybersecurity failures, unequal access and loss of basic manual processes can become serious problems when organisations digitise without planning. People still need judgement to decide what data means and whether an automated result is appropriate. The value of computers therefore comes from combining technical capability with responsible design, security and human oversight.",
+  "keyPoints": [
+    "Computers support communication, analysis, record keeping and automated tasks across education, health, business and many other fields.",
+    "Their speed and storage capacity can improve productivity, but greater dependence on digital systems also creates risks.",
+    "Cybersecurity failures, unequal access and loss of basic manual processes can become serious problems when organisations digitise without planning.",
+    "People still need judgement to decide what data means and whether an automated result is appropriate."
+  ],
+  "sample": "Computers support communication, analysis, record keeping and automated tasks across education, health, business and many other fields; their speed and storage capacity can improve productivity, but greater dependence on digital systems also creates risks; and cybersecurity failures, unequal access and loss of basic manual processes can become serious problems when organisations digitise without planning.",
+  "predictionSource": {
+    "provider": "PTE Nepal",
+    "week": "21-27 September 2026",
+    "checkedAt": "2026-09-23",
+    "lastReviewed": "2026-09-24",
+    "contentStatus": "adapted",
+    "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+    "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+    "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+    "task": "sst",
+    "sourceId": "13000671",
+    "sourceTitle": "Computers"
+  }
+}

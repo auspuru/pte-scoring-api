@@ -1,0 +1,332 @@
+{
+  "kind": "sgd",
+  "questionId": "sgd-user-20261030-09",
+  "title": "Presenting at a sociology conference",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "f52c22f97ae68306bd56f8d15279511018f5ab480b1b280e93ecb00dd16667eb",
+  "spokenTextSha256": "0d301cca43077b1108fc2a2629aaebed6ea2aa625146318f965320775d5e5df5",
+  "audioFile": "sgd-user-20261030-09-neural-review-20261104.mp3",
+  "audioSha256": "0a5a9c30118b5e33ff2f433a8efb30380b0f0c7f68febef7d9d21c261ca221aa",
+  "masterFile": "sgd-user-20261030-09-native.flac",
+  "masterSha256": "13470c0c35fadf6b0806682e449b44562f98cc11e614694bb97fb19bf6d0ab3d",
+  "bytes": 3350924,
+  "seconds": 167.52,
+  "wordsPerMinuteIncludingPauses": 155.8,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -23.51,
+  "truePeakDbTP": -2.46,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 0.88,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -23.94,
+    "sourceTruePeakDbTP": -2.88
+  },
+  "generationReceipts": [
+    {
+      "speaker": "Narrator",
+      "inputHash": "df6a4316b27ef1c1d98e15fd5a5e263c531c83282fe672c7faff8752ef2bb63c",
+      "textSha256": "b292aabe8aac1defc476b2e74d01286793fc421c24ea4453410c100ea1672c63",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_0f3fab4f44684d46a40ce2a1a77f048f",
+      "masterSha256": "43ddbd0b6bd407f32da5a25345b633224c7f0e61ba234734b44261651f293f86",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 1",
+      "inputHash": "d1c1c9717975ce28731da1906c4c7b24aa1b122644f40c2e032e1eb3759e2b0e",
+      "textSha256": "9940b696754154b479bd919c22fa970dabe0d51863a067e9b553e2cabb5207b8",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_bdcf61cfe04d44f7a8111db066f00bc9",
+      "masterSha256": "08d7c8c8ba641120a54b0472638955176fc7b9375c316f26b768c507e067df84",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 2",
+      "inputHash": "60f9c0d561dd0b75e3cc2f6830271c1fc63aa9c41f4fddb08877c1c80ed89f8b",
+      "textSha256": "21bbbf0e3e3b82a82e2e9bd4893a64c9d779be491418ee3d32683abf879443a9",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_5b459ad2056b414eb4b3d5ac0dd10e97",
+      "masterSha256": "d7674a0f569813126c4ff134556d7fb42572bd49f0352623935dc9df4df61135",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 3",
+      "inputHash": "5f832ec1dad3a64240e786d3c8cfbc1657fad5c37b710336b405019e45da95f2",
+      "textSha256": "8549777404894b3e48f7e535f81a5b66f263a1c2867b7f7cc5e54eccd2c0c9cb",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_107ae26732814086b1302d5dd345e1f4",
+      "masterSha256": "183576c1184d762839dd38cef25746c0c33e37bf7a38c13e1a9b27b481d35a40",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 1",
+      "inputHash": "e083d5dfb6c0e3d6f619fee16c3494f86d28a833c88343d103bc80a2b28550dd",
+      "textSha256": "ce018982c3fff0ed3e8c3e612318450ee9591ca804b869a51ff2c23087363b9f",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_fd15c0477e334be08e74f3bfc7564ce9",
+      "masterSha256": "258d45299ffb69f97dd49bbbc4904cd502fd0ed5bfcf9c993870d4d1d4543781",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 2",
+      "inputHash": "d7a9b56d0b5bcb4fba1fee081a0264cbd7b84646c186c25a0c94f0a891668ca9",
+      "textSha256": "4cab4cea5d1db220b9d3e8fde8d0c8363e5225d6e43181d9fd12471b7dc3b347",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_8158d1e6c1054dfb843097222e763771",
+      "masterSha256": "7c020e4e1ae8f4556c9545dc84966ceaec10d66521b6c94b83491202cbe294ca",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 3",
+      "inputHash": "d442328f5baa5508a61fbd7c502351af5c92c0c88f7f5eaf312403d911efa13a",
+      "textSha256": "0bb016430225678aec9f889a8606dbe412889bb987fef9a203d203c746ad088b",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_0eef9a42b52044388deefa6f55d9e63c",
+      "masterSha256": "996077fce0e9e24bcc0423b159f9f62aeaf4eb9d3013a649ea6b613099572641",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 1",
+      "inputHash": "ccd6d539dbcc2b579b5bef6e7fde8f7a3894fe1d99dfcd4bb17452e1e42dbb93",
+      "textSha256": "c3b14ecdaed8a59331ca538420b6c984a3e84fc27e8dc9cbc7d19ee5b095eb8c",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_395f5d390f0a455b84c44a74d6042a07",
+      "masterSha256": "95b4b34554c8e0c3c5eb2f0c051329a7893b6501a5c43f2f1248ef4871941523",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 2",
+      "inputHash": "fa0f127748755b8ee5ba4578426afc18fa8ce559c6963239ea831f41a84730e2",
+      "textSha256": "2867a4fd76dd3eed2eb00c890aefc0b1f874508913acc99b2d0c9c44d9044564",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_e867df74d92a43a5a43f231265a80728",
+      "masterSha256": "634704deda789abeb373641cee9cdddb9e1fce0f6a4684d82700cac8ee3bced7",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 3",
+      "inputHash": "a2d0ef5fe3821b948111870aa5d12b473ca568ac305fa36d3b01fa9612c4193e",
+      "textSha256": "bcd7146a49b29d10e76d522d60291ce913f2e4a762fc48722f11fdc294ca8645",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_bb0a015f68e94922b4e1da3c5ed11d4c",
+      "masterSha256": "7b91641518776f7ff086bd952054afc57791509a6dd468bdc70475c5051d6dd4",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "narrationIncluded": true,
+  "narrationSha256": "b292aabe8aac1defc476b2e74d01286793fc421c24ea4453410c100ea1672c63",
+  "speakerVoices": {
+    "Speaker 1": "marin",
+    "Speaker 2": "cedar",
+    "Speaker 3": "coral"
+  },
+  "requestedAccents": {
+    "Speaker 1": "British English",
+    "Speaker 2": "General American English",
+    "Speaker 3": "Australian English"
+  },
+  "turnSpeakers": [
+    "Speaker 1",
+    "Speaker 2",
+    "Speaker 3",
+    "Speaker 1",
+    "Speaker 2",
+    "Speaker 3",
+    "Speaker 1",
+    "Speaker 2",
+    "Speaker 3"
+  ],
+  "mockDurationEligible": true,
+  "turnCount": 9,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_1af0f8f9309141fea7c21745efbd6cc8",
+    "audioSha256": "0a5a9c30118b5e33ff2f433a8efb30380b0f0c7f68febef7d9d21c261ca221aa",
+    "sourcePromptProvided": false,
+    "text": "Two students and a tutor are discussing their presentation at a sociology conference.\n\nThere will be a great sociology conference taking place this summer, and I have been looking forward to this academic event for a long time. I really want to attend the conference and give a presentation about my research, because I can get valuable and professional feedback from many experienced scholars and peers.\n\nI totally feel the same way. I also hope to take part in this big academic presentation conference. So far, only two professors have watched and commented on our research, so we really need more external opinions. Luckily, there are many common points in our separate studies, so we plan to deliver a joint presentation together.\n\nI appreciate your enthusiasm for academic participation, but I have to be honest with you. I don't think it is a good idea for you two to deliver a formal oral presentation at such a professional conference, because neither of you has any related presentation experience, and it will be extremely challenging for new learners.\n\nWe understand that oral presentations at formal conferences are very challenging for us. However, our research is still at the early stage, and attending this conference is a precious chance for us to practice and improve ourselves. A joint presentation can also make our research content more complete and logical.\n\nExactly. We were actually planning to write a formal proposal and ask for your approval before deciding to attend the conference. We know our research still has many imperfections, so diverse feedback from the conference will be very helpful for our future revision and in-depth study.\n\nI have a more suitable suggestion for both of you. Instead of doing a stressful oral presentation, you can try poster presentation as observers this time. It is much less stressful, and you can still get useful feedback from passing participants and teachers at the conference.\n\nI think your suggestion about poster presentation is really good and practical. It perfectly matches our current academic level and research progress. I am fully prepared to start designing and preparing for our poster presentation seriously.\n\nI totally agree with this arrangement as well. Doing a joint poster presentation is definitely a wise choice for our early stage research. It allows us to accumulate formal conference experience without too much pressure, and it can lay a solid foundation for our future oral presentations.\n\nThat's great to hear. This low-pressure but high-reward participation method can help you gain academic insights, communicate with other researchers, and polish your research findings, which is far more suitable for your current situation.",
+    "differences": []
+  },
+  "assemblyVerification": {
+    "status": "passed",
+    "pcmSha256": "b1fe4589f27a56e6f5b4e7929bf315b06196c1aab375eaed61e1c96b3499dbd8",
+    "segments": [
+      {
+        "speaker": "Narrator",
+        "voice": "marin",
+        "startSeconds": 0.0,
+        "endSeconds": 5.3,
+        "textSha256": "b292aabe8aac1defc476b2e74d01286793fc421c24ea4453410c100ea1672c63",
+        "inputHash": "df6a4316b27ef1c1d98e15fd5a5e263c531c83282fe672c7faff8752ef2bb63c",
+        "startSample": 0,
+        "endSample": 127200,
+        "pcmSha256": "46fe46d018b482ffb28663bd0fa3488d56d410d82381fcb90ec9ef053ac88c7c",
+        "nativeWavSha256": "43ddbd0b6bd407f32da5a25345b633224c7f0e61ba234734b44261651f293f86"
+      },
+      {
+        "speaker": "Speaker 1",
+        "voice": "marin",
+        "startSeconds": 5.9,
+        "endSeconds": 24.1,
+        "textSha256": "9940b696754154b479bd919c22fa970dabe0d51863a067e9b553e2cabb5207b8",
+        "inputHash": "d1c1c9717975ce28731da1906c4c7b24aa1b122644f40c2e032e1eb3759e2b0e",
+        "startSample": 141600,
+        "endSample": 578400,
+        "pcmSha256": "cd89b09e7515205916eb575556e3475da4acb8c698654591d81b73d60700f80d",
+        "nativeWavSha256": "08d7c8c8ba641120a54b0472638955176fc7b9375c316f26b768c507e067df84"
+      },
+      {
+        "speaker": "Speaker 2",
+        "voice": "cedar",
+        "startSeconds": 24.35,
+        "endSeconds": 44.3,
+        "textSha256": "21bbbf0e3e3b82a82e2e9bd4893a64c9d779be491418ee3d32683abf879443a9",
+        "inputHash": "60f9c0d561dd0b75e3cc2f6830271c1fc63aa9c41f4fddb08877c1c80ed89f8b",
+        "startSample": 584400,
+        "endSample": 1063200,
+        "pcmSha256": "723f0cf1625c267ede5ecdd2e12924f2f846dd29994f65611a14bcb2df680136",
+        "nativeWavSha256": "d7674a0f569813126c4ff134556d7fb42572bd49f0352623935dc9df4df61135"
+      },
+      {
+        "speaker": "Speaker 3",
+        "voice": "coral",
+        "startSeconds": 44.55,
+        "endSeconds": 65.9,
+        "textSha256": "8549777404894b3e48f7e535f81a5b66f263a1c2867b7f7cc5e54eccd2c0c9cb",
+        "inputHash": "5f832ec1dad3a64240e786d3c8cfbc1657fad5c37b710336b405019e45da95f2",
+        "startSample": 1069200,
+        "endSample": 1581600,
+        "pcmSha256": "7775473effcacbec6dbb43f372223654874df471b3bba32563d714324bdd60e3",
+        "nativeWavSha256": "183576c1184d762839dd38cef25746c0c33e37bf7a38c13e1a9b27b481d35a40"
+      },
+      {
+        "speaker": "Speaker 1",
+        "voice": "marin",
+        "startSeconds": 66.15,
+        "endSeconds": 86.05,
+        "textSha256": "ce018982c3fff0ed3e8c3e612318450ee9591ca804b869a51ff2c23087363b9f",
+        "inputHash": "e083d5dfb6c0e3d6f619fee16c3494f86d28a833c88343d103bc80a2b28550dd",
+        "startSample": 1587600,
+        "endSample": 2065200,
+        "pcmSha256": "0e56d9194a38b2c65575a1ed775caca1e5aef2be0ae60a7dd9dd971f8d2d7cfb",
+        "nativeWavSha256": "258d45299ffb69f97dd49bbbc4904cd502fd0ed5bfcf9c993870d4d1d4543781"
+      },
+      {
+        "speaker": "Speaker 2",
+        "voice": "cedar",
+        "startSeconds": 86.3,
+        "endSeconds": 102.1,
+        "textSha256": "4cab4cea5d1db220b9d3e8fde8d0c8363e5225d6e43181d9fd12471b7dc3b347",
+        "inputHash": "d7a9b56d0b5bcb4fba1fee081a0264cbd7b84646c186c25a0c94f0a891668ca9",
+        "startSample": 2071200,
+        "endSample": 2450400,
+        "pcmSha256": "cb55470c7eec653efd67e0e6b820bc0c7087f87ee5c4b30647809b7015a65368",
+        "nativeWavSha256": "7c020e4e1ae8f4556c9545dc84966ceaec10d66521b6c94b83491202cbe294ca"
+      },
+      {
+        "speaker": "Speaker 3",
+        "voice": "coral",
+        "startSeconds": 102.35,
+        "endSeconds": 121.2,
+        "textSha256": "0bb016430225678aec9f889a8606dbe412889bb987fef9a203d203c746ad088b",
+        "inputHash": "d442328f5baa5508a61fbd7c502351af5c92c0c88f7f5eaf312403d911efa13a",
+        "startSample": 2456400,
+        "endSample": 2908800,
+        "pcmSha256": "0c3a13ce351ed9ea0a84d707a3af87d2ced1999c99a75213c3d8d93f11e691ff",
+        "nativeWavSha256": "996077fce0e9e24bcc0423b159f9f62aeaf4eb9d3013a649ea6b613099572641"
+      },
+      {
+        "speaker": "Speaker 1",
+        "voice": "marin",
+        "startSeconds": 121.45,
+        "endSeconds": 135.2,
+        "textSha256": "c3b14ecdaed8a59331ca538420b6c984a3e84fc27e8dc9cbc7d19ee5b095eb8c",
+        "inputHash": "ccd6d539dbcc2b579b5bef6e7fde8f7a3894fe1d99dfcd4bb17452e1e42dbb93",
+        "startSample": 2914800,
+        "endSample": 3244800,
+        "pcmSha256": "c69b4b41784e4838e4294530665551fe352f7b4ad559e71d733c1b1fa207f5a1",
+        "nativeWavSha256": "95b4b34554c8e0c3c5eb2f0c051329a7893b6501a5c43f2f1248ef4871941523"
+      },
+      {
+        "speaker": "Speaker 2",
+        "voice": "cedar",
+        "startSeconds": 135.45,
+        "endSeconds": 151.35,
+        "textSha256": "2867a4fd76dd3eed2eb00c890aefc0b1f874508913acc99b2d0c9c44d9044564",
+        "inputHash": "fa0f127748755b8ee5ba4578426afc18fa8ce559c6963239ea831f41a84730e2",
+        "startSample": 3250800,
+        "endSample": 3632400,
+        "pcmSha256": "2d17aeb896e1cba1320675db0905c29ee0e1fd83359cd4c421ea91f2694fc6e2",
+        "nativeWavSha256": "634704deda789abeb373641cee9cdddb9e1fce0f6a4684d82700cac8ee3bced7"
+      },
+      {
+        "speaker": "Speaker 3",
+        "voice": "coral",
+        "startSeconds": 151.6,
+        "endSeconds": 167.45,
+        "textSha256": "bcd7146a49b29d10e76d522d60291ce913f2e4a762fc48722f11fdc294ca8645",
+        "inputHash": "a2d0ef5fe3821b948111870aa5d12b473ca568ac305fa36d3b01fa9612c4193e",
+        "startSample": 3638400,
+        "endSample": 4018800,
+        "pcmSha256": "9bffa252e5b4f722f0dcce3f30198c3d6d212907f8cd62d31abebe8444db8542",
+        "nativeWavSha256": "7b91641518776f7ff086bd952054afc57791509a6dd468bdc70475c5051d6dd4"
+      }
+    ],
+    "method": "Decoded lossless master equals ordered native segment PCM plus declared turn gaps."
+  }
+}

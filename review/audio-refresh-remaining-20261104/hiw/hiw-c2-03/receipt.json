@@ -1,0 +1,53 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-c2-03",
+  "title": "Archival absences",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "caa534b291cd0c10f4d7040b55745e9015337c24c54c418777498a9e0c94fcfb",
+  "spokenTextSha256": "caa534b291cd0c10f4d7040b55745e9015337c24c54c418777498a9e0c94fcfb",
+  "audioFile": "hiw-c2-03-neural-review-20261104.mp3",
+  "audioSha256": "c37bea3010641342bb548054d9885b2eccef69cb7bf87bd313b6df459abeb712",
+  "masterFile": "hiw-c2-03-native.flac",
+  "masterSha256": "cfa5f07dd9d9e16e14f6821bd71a8b1e7c60020efc93e86bcbce3c06dfb5881e",
+  "bytes": 1077644,
+  "seconds": 53.856,
+  "wordsPerMinuteIncludingPauses": 143.7,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -22.36,
+  "truePeakDbTP": -2.44,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.07,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.98,
+    "sourceTruePeakDbTP": -3.07
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "75e61841a001c5e13ac28e661c708442cacc0d53c02a68ca50606859940f9092",
+      "textSha256": "caa534b291cd0c10f4d7040b55745e9015337c24c54c418777498a9e0c94fcfb",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_345d760bb8474ab088afa3f2db407407",
+      "masterSha256": "1cbeb286cbafe4664d0c33adf7dbc518540cff69fd9d52ff6c6b2a3b2b40c25f",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_9d04ebd791704d769018e98c290adcd9",
+    "audioSha256": "c37bea3010641342bb548054d9885b2eccef69cb7bf87bd313b6df459abeb712",
+    "sourcePromptProvided": false,
+    "text": "An archive is a selective residue of past activity, rather than an exhaustive account of what occurred. Documents survive through decisions about preservation, institutional priorities, and accidents of material durability. An apparent absence must therefore be interpreted in relation to the processes that produced the collection. Where a claim is corroborated by independent records, confidence may increase, but the provenance of each record still matters. Repetition can reflect a shared administrative source, rather than several independent observations. Historians must also distinguish contingent gaps in documentation from the systematic exclusion of people whose experiences were seldom recorded. Silence cannot simply be converted into evidence of consent. A responsible interpretation remains provisional where the surviving material cannot discriminate between plausible explanations, while stating clearly which conclusions the available evidence does sustain.",
+    "differences": []
+  }
+}

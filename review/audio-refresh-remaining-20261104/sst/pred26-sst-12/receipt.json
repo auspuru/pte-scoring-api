@@ -1,0 +1,59 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-12",
+  "title": "New Employee Orientation",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "a8245c9ded613709491b43f847c810b1e4598a5031c848b62818bfc06d4dc667",
+  "spokenTextSha256": "a8245c9ded613709491b43f847c810b1e4598a5031c848b62818bfc06d4dc667",
+  "audioFile": "pred26-sst-12-neural-review-20261104.mp3",
+  "audioSha256": "4cfe09e02855d3aa0c2cd3f48412630b782d1fe2d3fba93445b857f116eb7ac0",
+  "masterFile": "pred26-sst-12-native.flac",
+  "masterSha256": "79b03c114fcf992e44dd541170aae58dd029531cddc16399fb004a4054aa1a21",
+  "bytes": 768524,
+  "seconds": 38.4,
+  "wordsPerMinuteIncludingPauses": 135.9,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -21.12,
+  "truePeakDbTP": -2.44,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.19,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -21.86,
+    "sourceTruePeakDbTP": -3.19
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "b573769fdeb7daffa8186d94dca0a5d57be756706b24b7ceb2defb7cd8697b8f",
+      "textSha256": "a8245c9ded613709491b43f847c810b1e4598a5031c848b62818bfc06d4dc667",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_d2050696c4d54ae88107a6f608468588",
+      "masterSha256": "8d27385ea17561e3c82a1def49dbdbda320d6c1a51e39dddfc817160ac239d73",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_32b2ff624fc44c0c905ca2776c626874",
+    "audioSha256": "4cfe09e02855d3aa0c2cd3f48412630b782d1fe2d3fba93445b857f116eb7ac0",
+    "sourcePromptProvided": false,
+    "text": "Orientation helps new employees understand how an organization works before they are expected to perform independently. A useful program explains responsibilities, safety, workplace policies, communication channels, and where to obtain technical or personal support. Meeting colleagues and managers early can reduce uncertainty and help newcomers understand how their role connects with the wider team. Too much information in one session is easily forgotten, so important guidance should remain accessible afterwards. Effective orientation is a process of integration rather than a single presentation on the employee's first day.",
+    "differences": [
+      {
+        "expected": "organisation",
+        "heard": "organization"
+      }
+    ]
+  }
+}

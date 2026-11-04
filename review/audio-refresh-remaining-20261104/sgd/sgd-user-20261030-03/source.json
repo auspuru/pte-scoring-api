@@ -1,0 +1,67 @@
+{
+  "kind": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "id": "sgd-user-20261030-03",
+  "type": "sgd",
+  "title": "Campus part-time jobs",
+  "narration": "Three students are debating the pros and cons of campus part-time jobs, gathered at a corner table in the student lounge, the air filled with the faint smell of coffee and the rustle of textbook pages.",
+  "turns": [
+    [
+      "Speaker 1",
+      "I think working part-time on campus is a total waste of energy. Last month I took a job at the library desk, and between shelving books and scanning IDs, I barely had any mental capacity left for my coursework. I ended up dozing off during my morning lectures twice last week."
+    ],
+    [
+      "Speaker 2",
+      "Actually, I find my part-time job at the academic office really helpful. It forces me to manage my time better. I used to procrastinate all afternoon, but now I block out my shifts and study hours in advance. Plus, I'm earning my own spending money it feels good not to have to ask my parents for every little thing."
+    ],
+    [
+      "Speaker 3",
+      "But the workload is no joke. I tried working at the campus caf\u00e9 last semester and it drained me completely. Some days I'd finish my shift at 8 pm, and then still have to write a lab report due at midnight. I got so stressed I had to quit after a month. It's not just about time it's the mental toll."
+    ],
+    [
+      "Speaker 1",
+      "Exactly! And let's be honest most of these jobs don't even relate to our future careers. I'd rather join a student club or work on a project that actually builds my resume. Stuffing envelopes or swiping cards isn't going to help me get into grad school."
+    ],
+    [
+      "Speaker 2",
+      "I see what you mean, but you're overlooking the soft skills. I've learned to talk to supervisors, handle complaints, and show up on time that's real-world experience. And it's not always about the job itself; it's about showing you can balance responsibilities."
+    ],
+    [
+      "Speaker 3",
+      "I guess, but I still think it depends on your schedule. If you're taking 18 credits like I am this semester, adding a job is just unrealistic. The stress isn't sustainable. Maybe if the university limited work hours to under 10 per week... but even then, I'd rather use that time to review or sleep."
+    ],
+    [
+      "Speaker 1",
+      "Same. I'd prefer a work-study program that's more flexible and aligned with my major. Maybe assisting a professor with research instead of stacking books. That way I'm earning and learning at the same time. Otherwise, it just feels like trading precious study hours for tasks that don't contribute to my long-term goals."
+    ],
+    [
+      "Speaker 2",
+      "That's a fair point. I wouldn't say no to a more relevant job either. But still, even a simple job teaches discipline. And let's be real not all of us can get those research assistant roles. Sometimes starting with a basic job can actually open doors to those better opportunities later on."
+    ],
+    [
+      "Speaker 3",
+      "Well, if I'm going to work, I'd want it to mean something beyond the pay check. Otherwise, I'd rather focus on my grades. There has to be a balance. Burnout is real, and no amount of money is worth compromising both my health and academic performance."
+    ]
+  ],
+  "facts": [
+    "The discussion weighs campus part-time jobs against study demands and wellbeing.",
+    "Speaker 1 finds library work exhausting and insufficiently related to future career goals.",
+    "Speaker 1 would prefer flexible work-study or research assistance aligned with their major.",
+    "Speaker 2 says office work improves time management, financial independence, communication, reliability and discipline.",
+    "Speaker 2 accepts that relevant work is preferable but argues basic jobs can lead to better opportunities.",
+    "Speaker 3 describes caf\u00e9 work causing stress, quitting after a month, and an unsustainable workload with 18 credits.",
+    "Speaker 3 prioritises health and grades and considers limited hours, while the group recognises the need for balance without fully agreeing on the value of campus work."
+  ],
+  "sample": "The students discuss whether campus part-time jobs are worthwhile. The first speaker says library work drains energy and offers little career relevance, preferring flexible work connected to their major, such as research assistance. The second values office work for income, better time management and transferable skills, arguing that basic jobs can also lead to better opportunities. The third describes quitting a caf\u00e9 job because of stress and conflicting deadlines, and believes heavy study loads leave little room for employment. Although more relevant work appeals to the group, their views remain different. The discussion highlights balancing income and experience against academic performance and health.",
+  "source": {
+    "kind": "user-supplied-transcript",
+    "date": "2026-10-30",
+    "image": "AdobeExpressPhotos_c0b1846dbca24098b0490884d3e4956a_CopyEdited.png",
+    "contentStatus": "transcribed-user-provided"
+  },
+  "audioRate": "-17%",
+  "text": "Narration: Three students are debating the pros and cons of campus part-time jobs, gathered at a corner table in the student lounge, the air filled with the faint smell of coffee and the rustle of textbook pages.\nSpeaker 1: I think working part-time on campus is a total waste of energy. Last month I took a job at the library desk, and between shelving books and scanning IDs, I barely had any mental capacity left for my coursework. I ended up dozing off during my morning lectures twice last week.\nSpeaker 2: Actually, I find my part-time job at the academic office really helpful. It forces me to manage my time better. I used to procrastinate all afternoon, but now I block out my shifts and study hours in advance. Plus, I'm earning my own spending money it feels good not to have to ask my parents for every little thing.\nSpeaker 3: But the workload is no joke. I tried working at the campus caf\u00e9 last semester and it drained me completely. Some days I'd finish my shift at 8 pm, and then still have to write a lab report due at midnight. I got so stressed I had to quit after a month. It's not just about time it's the mental toll.\nSpeaker 1: Exactly! And let's be honest most of these jobs don't even relate to our future careers. I'd rather join a student club or work on a project that actually builds my resume. Stuffing envelopes or swiping cards isn't going to help me get into grad school.\nSpeaker 2: I see what you mean, but you're overlooking the soft skills. I've learned to talk to supervisors, handle complaints, and show up on time that's real-world experience. And it's not always about the job itself; it's about showing you can balance responsibilities.\nSpeaker 3: I guess, but I still think it depends on your schedule. If you're taking 18 credits like I am this semester, adding a job is just unrealistic. The stress isn't sustainable. Maybe if the university limited work hours to under 10 per week... but even then, I'd rather use that time to review or sleep.\nSpeaker 1: Same. I'd prefer a work-study program that's more flexible and aligned with my major. Maybe assisting a professor with research instead of stacking books. That way I'm earning and learning at the same time. Otherwise, it just feels like trading precious study hours for tasks that don't contribute to my long-term goals.\nSpeaker 2: That's a fair point. I wouldn't say no to a more relevant job either. But still, even a simple job teaches discipline. And let's be real not all of us can get those research assistant roles. Sometimes starting with a basic job can actually open doors to those better opportunities later on.\nSpeaker 3: Well, if I'm going to work, I'd want it to mean something beyond the pay check. Otherwise, I'd rather focus on my grades. There has to be a balance. Burnout is real, and no amount of money is worth compromising both my health and academic performance."
+}

@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-17",
+  "uid": "ipt:hiw-17",
+  "type": "hiw",
+  "title": "Night transport services",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "Extending public transport into the night can improve access to employment, especially for people whose shifts begin or end outside ordinary commuting hours. Nevertheless, a timetable alone does not guarantee a useful service. Connections must be coordinated, waiting areas should feel secure, and information needs to remain available when staffing is reduced. A route with modest passenger numbers may still provide substantial value if it links workers to a hospital or a distribution centre. Evaluating such services only through average occupancy can overlook these wider benefits. Transport planners therefore examine who depends on each connection and what alternatives are realistically affordable. The challenge is to design a reliable network within limited resources, using evidence from actual journeys rather than assuming that daytime travel patterns continue unchanged throughout the night.",
+  "passage": "Extending public transport into the night can restrict access to employment, especially for people whose shifts begin or end outside ordinary commuting hours. Nevertheless, a timetable alone does not guarantee a useful service. Connections must be separated, waiting areas should feel exposed, and information needs to remain available when staffing is reduced. A route with modest passenger numbers may still provide negligible value if it links workers to a hospital or a distribution centre. Evaluating such services only through average occupancy can capture these wider benefits. Transport planners therefore examine who depends on each connection and what alternatives are realistically affordable. The challenge is to design a reliable network within limited resources, using evidence from actual journeys rather than assuming that daytime travel patterns continue reversed throughout the night.",
+  "answers": [
+    7,
+    36,
+    41,
+    61,
+    82,
+    125
+  ],
+  "corrections": [
+    {
+      "index": 7,
+      "written": "restrict",
+      "spoken": "improve",
+      "explanation": "Night services can make employment easier to reach."
+    },
+    {
+      "index": 36,
+      "written": "separated,",
+      "spoken": "coordinated,",
+      "explanation": "Connections need to work together."
+    },
+    {
+      "index": 41,
+      "written": "exposed,",
+      "spoken": "secure,",
+      "explanation": "Waiting areas should feel safe."
+    },
+    {
+      "index": 61,
+      "written": "negligible",
+      "spoken": "substantial",
+      "explanation": "Even a lightly used route can offer considerable value."
+    },
+    {
+      "index": 82,
+      "written": "capture",
+      "spoken": "overlook",
+      "explanation": "Average occupancy alone may miss wider benefits."
+    },
+    {
+      "index": 125,
+      "written": "reversed",
+      "spoken": "unchanged",
+      "explanation": "Planners should not assume daytime patterns stay the same at night."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

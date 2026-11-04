@@ -1,0 +1,54 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-05",
+  "title": "Produce Hygiene",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "f2d68196f346e094a8b7afd215260556f7756ad142767f3d84be659cfdfcd6b4",
+  "spokenTextSha256": "f2d68196f346e094a8b7afd215260556f7756ad142767f3d84be659cfdfcd6b4",
+  "audioFile": "pred26-sst-05-neural-review-20261104.mp3",
+  "audioSha256": "fcbcce24c850ec4e21e74febf77d1297fae42128e8228d5d0c75dbe85624bbeb",
+  "masterFile": "pred26-sst-05-native.flac",
+  "masterSha256": "417dcce9a70c6f16c1413d21b3d969065a844c364e2a61102b307c4007823e6a",
+  "bytes": 726764,
+  "seconds": 36.312,
+  "wordsPerMinuteIncludingPauses": 155.3,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -22.7,
+  "truePeakDbTP": -2.43,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.12,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -23.37,
+    "sourceTruePeakDbTP": -3.12
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "2353d13a2325a0141f4b52fec5b1e924b03adb96538dbaac204d6f5c578fc496",
+      "textSha256": "f2d68196f346e094a8b7afd215260556f7756ad142767f3d84be659cfdfcd6b4",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_420eb11df185454c8b11d6ca950202f0",
+      "masterSha256": "364dd8553065df8e5ae50857872fb9b397c98ca351cf089c2973748a76e4389a",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_a12c9330a561439589af82f6307244f7",
+    "audioSha256": "fcbcce24c850ec4e21e74febf77d1297fae42128e8228d5d0c75dbe85624bbeb",
+    "sourcePromptProvided": false,
+    "text": "Washing fresh produce can remove soil and reduce some surface contamination before food is eaten or prepared. Running water is usually appropriate, while firm produce can be cleaned with a brush that is kept for food use. Pre-washed packaged greens may not need another wash if the label says they are ready to eat, because extra handling can introduce contamination. Cleaning the sink, hands, and utensils is just as important as rinsing the food itself. Good produce hygiene is therefore a simple routine that combines clean water, clean equipment, and attention to package instructions.",
+    "differences": []
+  }
+}

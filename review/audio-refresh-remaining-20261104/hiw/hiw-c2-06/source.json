@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-c2-06",
+  "uid": "ipt:hiw-c2-06",
+  "type": "hiw",
+  "title": "Credibility and participation",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "Inviting people to speak does not by itself ensure that their contributions receive equitable consideration. A participant may be formally included while the credibility of their testimony is discounted through assumptions about expertise or social standing. Conversely, familiar institutional language can confer authority on a claim whose evidential basis remains weak. Addressing this asymmetry requires more than an indiscriminate declaration that every statement deserves equal weight. It requires examining how credibility is allocated, what opportunities exist to challenge an interpretation, and whether participants possess the resources to make their experiences intelligible within the discussion. Deliberation improves when these conditions become explicit and revisable. The aim is neither automatic deference nor reflexive scepticism, but a process in which the reasons for accepting or rejecting a contribution can themselves be questioned.",
+  "passage": "Inviting people to speak does not by itself ensure that their contributions receive identical consideration. A participant may be formally included while the credibility of their testimony is amplified through assumptions about expertise or social standing. Conversely, familiar institutional language can withdraw authority on a claim whose evidential basis remains weak. Addressing this uniformity requires more than an indiscriminate declaration that every statement deserves equal weight. It requires examining how credibility is allocated, what opportunities exist to challenge an interpretation, and whether participants possess the resources to make their experiences invisible within the discussion. Deliberation improves when these conditions become explicit and immutable. The aim is neither automatic deference nor reflexive scepticism, but a process in which the reasons for accepting or rejecting a contribution can themselves be questioned.",
+  "answers": [
+    13,
+    28,
+    41,
+    53,
+    90,
+    102
+  ],
+  "corrections": [
+    {
+      "index": 13,
+      "written": "identical",
+      "spoken": "equitable",
+      "explanation": "Equitable consideration is fair consideration, rather than an assumption of identical weight."
+    },
+    {
+      "index": 28,
+      "written": "amplified",
+      "spoken": "discounted",
+      "explanation": "The testimony may receive less credibility because of assumptions about the speaker."
+    },
+    {
+      "index": 41,
+      "written": "withdraw",
+      "spoken": "confer",
+      "explanation": "Familiar institutional language can give a claim authority."
+    },
+    {
+      "index": 53,
+      "written": "uniformity",
+      "spoken": "asymmetry",
+      "explanation": "The problem is an unequal allocation of credibility."
+    },
+    {
+      "index": 90,
+      "written": "invisible",
+      "spoken": "intelligible",
+      "explanation": "Participants need ways to make their experiences understandable."
+    },
+    {
+      "index": 102,
+      "written": "immutable.",
+      "spoken": "revisable.",
+      "explanation": "The conditions of deliberation should remain open to revision."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

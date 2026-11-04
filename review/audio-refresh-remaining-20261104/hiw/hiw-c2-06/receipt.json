@@ -1,0 +1,58 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-c2-06",
+  "title": "Credibility and participation",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "9ec891ac0b1fff6dabfd471ae3a6c1151fd1d2d3518e2eb0124153951b01df15",
+  "spokenTextSha256": "9ec891ac0b1fff6dabfd471ae3a6c1151fd1d2d3518e2eb0124153951b01df15",
+  "audioFile": "hiw-c2-06-neural-review-20261104.mp3",
+  "audioSha256": "32706ec365f03f9f2d1bf64c03d574ede2e19860e554597d41001a421ae8cec7",
+  "masterFile": "hiw-c2-06-native.flac",
+  "masterSha256": "bf07cfa8dc7534dd191e99e5f60dab12d2773f809ec3e4f9353f1b7859f43818",
+  "bytes": 1154924,
+  "seconds": 57.72,
+  "wordsPerMinuteIncludingPauses": 134.1,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -20.68,
+  "truePeakDbTP": -2.45,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 2.25,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.48,
+    "sourceTruePeakDbTP": -4.25
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "0966a5e4386e04e1afa53a9be123207513d2817310f5e32c0291a2ba78d0faa1",
+      "textSha256": "9ec891ac0b1fff6dabfd471ae3a6c1151fd1d2d3518e2eb0124153951b01df15",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_5268157a0da24fe3b60b43dfeaa0f894",
+      "masterSha256": "d916f4538d046aaa966f61e9e963ed0796bdb0d684dd6e945a0134817e9f7e3b",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_6253b2270a774fd29dffc02581af17b8",
+    "audioSha256": "32706ec365f03f9f2d1bf64c03d574ede2e19860e554597d41001a421ae8cec7",
+    "sourcePromptProvided": false,
+    "text": "Inviting people to speak does not by itself ensure that their contributions receive equitable consideration. A participant may be formally included, while the credibility of their testimony is discounted through assumptions about expertise or social standing. Conversely, familiar institutional language can confer authority on a claim whose evidential basis remains weak. Addressing this asymmetry requires more than an indiscriminate declaration that every statement deserves equal weight. It requires examining how credibility is allocated, what opportunities exist to challenge an interpretation, and whether participants possess the resources to make their experiences intelligible within the discussion. Deliberation improves when these conditions become explicit and revisable. The aim is neither automatic deference nor reflexive skepticism, but a process in which the reasons for accepting or rejecting a contribution can themselves be questioned.",
+    "differences": [
+      {
+        "expected": "scepticism",
+        "heard": "skepticism"
+      }
+    ]
+  }
+}

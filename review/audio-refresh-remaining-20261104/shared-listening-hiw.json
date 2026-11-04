@@ -1,0 +1,44 @@
+[
+  {
+    "consumerId": "listen-hiw-pred26-sst-10",
+    "currentSourceAudioId": "pred26-sst-10",
+    "replacementCandidateId": "pred26-sst-10",
+    "textSha256": "d8afd639f2a5088e35aa132768d8a86375c82362edd6b8189eb43e7e88fbcd7a",
+    "status": "Prepared shared master only; existing mock versions and attempts are unchanged."
+  },
+  {
+    "consumerId": "listen-hiw-pred26-sst-11",
+    "currentSourceAudioId": "pred26-sst-11",
+    "replacementCandidateId": "pred26-sst-11",
+    "textSha256": "e76371fe626e547ad8678f0ddbc9a68644f1304ddf7facf71e2c5bc64e8c35c1",
+    "status": "Prepared shared master only; existing mock versions and attempts are unchanged."
+  },
+  {
+    "consumerId": "listen-hiw-pred26-sst-12",
+    "currentSourceAudioId": "pred26-sst-12",
+    "replacementCandidateId": "pred26-sst-12",
+    "textSha256": "a8245c9ded613709491b43f847c810b1e4598a5031c848b62818bfc06d4dc667",
+    "status": "Prepared shared master only; existing mock versions and attempts are unchanged."
+  },
+  {
+    "consumerId": "listen-hiw-pred26-sst-13",
+    "currentSourceAudioId": "pred26-sst-13",
+    "replacementCandidateId": "pred26-sst-13",
+    "textSha256": "7d0c9cd5e8162f46ef9ac2508a535481f73a7779415008d5e95e928967aee387",
+    "status": "Prepared shared master only; existing mock versions and attempts are unchanged."
+  },
+  {
+    "consumerId": "listen-hiw-pred26-sst-14",
+    "currentSourceAudioId": "pred26-sst-14",
+    "replacementCandidateId": "pred26-sst-14",
+    "textSha256": "7148e73144f498e5c9f256edd98f1507099b404bfa56c4e9e21014fa32a50934",
+    "status": "Prepared shared master only; existing mock versions and attempts are unchanged."
+  },
+  {
+    "consumerId": "listen-hiw-pred26-sst-15",
+    "currentSourceAudioId": "pred26-sst-15",
+    "replacementCandidateId": "pred26-sst-15",
+    "textSha256": "3553fb8de4fed022c8020036921e3668139a441e595492260ce1cf91662be701",
+    "status": "Prepared shared master only; existing mock versions and attempts are unchanged."
+  }
+]

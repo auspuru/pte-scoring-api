@@ -12513,7 +12513,7 @@ function ensureReadingRuntimeLoaded() {
   readingRuntimeLoadPromise = (async () => {
     const modules = [
       ['reading-predictions-sep-2026.js?v=1', 'reading predictions'],
-      ['reading-mock-tools.js?v=sha256-09f39d17f156', 'reading mock tools'],
+      ['reading-mock-tools.js?v=sha256-c5655a466dad', 'reading mock tools'],
       ['reading-exam-player.js?v=sha256-784ef20c0524', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=sha256-98e9c23a186f', 'reading review'],

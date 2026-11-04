@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-c2-05",
+  "uid": "ipt:hiw-c2-05",
+  "type": "hiw",
+  "title": "Translation and ambiguity",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "A translation may be lexically accurate yet alter the relationship between a speaker and an audience. Forms of address, understated objections and strategically unresolved references carry pragmatic implications that cannot always be transferred through equivalent vocabulary. The translator must decide which ambiguities are incidental and which are constitutive of the original argument. Resolving every uncertainty can impose a clarity that the source deliberately withholds; reproducing every unfamiliar construction can make a coherent voice seem needlessly obscure. Fidelity consequently requires a negotiated balance between intelligibility and the preservation of meaningful difference. Such judgement is neither arbitrary nor reducible to a universal formula. It becomes defensible when the translator can explain how a particular choice sustains the force of an utterance, including what it insinuates without explicitly asserting.",
+  "passage": "A translation may be lexically accurate yet alter the relationship between a speaker and an audience. Forms of address, understated objections and strategically unresolved references carry numerical implications that cannot always be transferred through equivalent vocabulary. The translator must decide which ambiguities are incidental and which are derivative of the original argument. Resolving every uncertainty can impose a clarity that the source deliberately supplies; reproducing every unfamiliar construction can make a coherent voice seem needlessly obscure. Fidelity consequently requires a negotiated balance between interchangeability and the preservation of meaningful difference. Such judgement is neither arbitrary nor reducible to a universal formula. It becomes indefensible when the translator can explain how a particular choice sustains the force of an utterance, including what it contradicts without explicitly asserting.",
+  "answers": [
+    26,
+    47,
+    63,
+    83,
+    103,
+    122
+  ],
+  "corrections": [
+    {
+      "index": 26,
+      "written": "numerical",
+      "spoken": "pragmatic",
+      "explanation": "The implications concern language in context and its effect on an audience."
+    },
+    {
+      "index": 47,
+      "written": "derivative",
+      "spoken": "constitutive",
+      "explanation": "Some ambiguities form an essential part of the argument."
+    },
+    {
+      "index": 63,
+      "written": "supplies;",
+      "spoken": "withholds;",
+      "explanation": "The original may deliberately leave some uncertainty unresolved."
+    },
+    {
+      "index": 83,
+      "written": "interchangeability",
+      "spoken": "intelligibility",
+      "explanation": "The balance concerns being understandable while retaining meaningful difference."
+    },
+    {
+      "index": 103,
+      "written": "indefensible",
+      "spoken": "defensible",
+      "explanation": "Explaining a translation choice can justify the judgement behind it."
+    },
+    {
+      "index": 122,
+      "written": "contradicts",
+      "spoken": "insinuates",
+      "explanation": "The final distinction is between implications and explicit assertions."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

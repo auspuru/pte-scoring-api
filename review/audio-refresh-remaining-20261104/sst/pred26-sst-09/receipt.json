@@ -1,0 +1,63 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-09",
+  "title": "Railway Cards",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "c0dc727bbf58f0bfd4ec5245bd2f881238880b43424994dc2028c725ddfb5c30",
+  "spokenTextSha256": "c0dc727bbf58f0bfd4ec5245bd2f881238880b43424994dc2028c725ddfb5c30",
+  "audioFile": "pred26-sst-09-neural-review-20261104.mp3",
+  "audioSha256": "06dd0ddae16841a8f2fd354460189a012b8d8f41711941ec07cbbb06ec5cf812",
+  "masterFile": "pred26-sst-09-native.flac",
+  "masterSha256": "2244f56081f8a002af1dfeb230fb63d16296c3eca4c0600f3cd41b75175491df",
+  "bytes": 759884,
+  "seconds": 37.968,
+  "wordsPerMinuteIncludingPauses": 142.2,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -20.72,
+  "truePeakDbTP": -2.46,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.76,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.04,
+    "sourceTruePeakDbTP": -3.76
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "921c23330c8425604c155791a17f92b85e3bf58bb8c286b3e7883ca57c4dea12",
+      "textSha256": "c0dc727bbf58f0bfd4ec5245bd2f881238880b43424994dc2028c725ddfb5c30",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_4e9f631f18224d93be1194de8c69e8ac",
+      "masterSha256": "73b6b58d0cdc65662addc1a590238cfccf93529573c30d773a010c50a09a5a1a",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_4030382f50e8466ea5e01b3b2a896aec",
+    "audioSha256": "06dd0ddae16841a8f2fd354460189a012b8d8f41711941ec07cbbb06ec5cf812",
+    "sourcePromptProvided": false,
+    "text": "Rail travel cards can make frequent journeys cheaper and reduce the time passengers spend purchasing individual tickets. Different schemes may target students, older travelers, commuters, or families, so the value depends on a passenger's actual pattern of travel. Some cards provide discounts, while others work as prepaid or subscription products. Travelers should compare eligibility rules, peak hour limits, and the number of trips required before the card becomes economical. The main advantage is convenience, but a travel card is useful only when its conditions match the way the passenger normally travels.",
+    "differences": [
+      {
+        "expected": "travellers",
+        "heard": "travelers"
+      },
+      {
+        "expected": "travellers",
+        "heard": "travelers"
+      }
+    ]
+  }
+}

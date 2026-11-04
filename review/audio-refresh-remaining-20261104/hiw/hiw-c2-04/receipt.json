@@ -1,0 +1,53 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-c2-04",
+  "title": "Ecological thresholds",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "72b6cccb734973c651dc64f549b38143bb326a6fbc0ca576d1dce64e546443ab",
+  "spokenTextSha256": "72b6cccb734973c651dc64f549b38143bb326a6fbc0ca576d1dce64e546443ab",
+  "audioFile": "hiw-c2-04-neural-review-20261104.mp3",
+  "audioSha256": "5ca0747be41b1bc9887b821c9ff62c365d9786d46648371674620cdf95fb26a5",
+  "masterFile": "hiw-c2-04-native.flac",
+  "masterSha256": "16d3d575d21165d2a99a48eaf713c1197df9e9e6ed9cb929493a3999d62919c5",
+  "bytes": 1086764,
+  "seconds": 54.312,
+  "wordsPerMinuteIncludingPauses": 139.2,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -19.94,
+  "truePeakDbTP": -2.43,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 3.16,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.65,
+    "sourceTruePeakDbTP": -5.16
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "4c831072d435d00fb83a8dfb4bb14526b7234a4e6e1645da1afb48c53c860caf",
+      "textSha256": "72b6cccb734973c651dc64f549b38143bb326a6fbc0ca576d1dce64e546443ab",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_c2e597028324407982690acff167c4f7",
+      "masterSha256": "297a77dbb3f4f7aeeb2cf24994283c54f5223715eb6afc2aa107f2ddff1c848a",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_dc0be44081904a5782d93b7c7c660d0b",
+    "audioSha256": "5ca0747be41b1bc9887b821c9ff62c365d9786d46648371674620cdf95fb26a5",
+    "sourcePromptProvided": false,
+    "text": "The apparent stability of an ecosystem can obscure a gradual erosion of its capacity to absorb disturbance. A lake may retain familiar characteristics while accumulating pressures that bring it closer to a threshold. Because the response can involve nonlinearity, a modest additional disturbance may produce a disproportionate change. Restoration then becomes more complicated than merely reversing the final pressure. Feedback within the altered system can perpetuate the new condition. This possibility does not make recovery futile, but it qualifies the assumption that degradation and restoration follow symmetrical paths. Effective management attends to early indications of diminishing resilience, while acknowledging that their interpretation is uncertain. The objective is to preserve options for intervention, before an apparently incremental process produces a transition whose consequences are difficult to reverse.",
+    "differences": []
+  }
+}

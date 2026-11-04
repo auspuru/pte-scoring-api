@@ -1,0 +1,66 @@
+{
+  "kind": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "id": "sgd-user-20261030-06",
+  "type": "sgd",
+  "title": "AI as a proofreading tool",
+  "narration": "three students are discussing using artificial intelligence as a proofreading tool.",
+  "turns": [
+    [
+      "Speaker 1",
+      "Hey guys, have you ever thought about using AI for proofreading? I just got feedback on my essay from my tutor, and she said I need to proofread it. AI can check grammar for me and provide me some ideas, but I don't know if I should use AI tools because I don't want to be suspected of plagiarism."
+    ],
+    [
+      "Speaker 2",
+      "There is indeed a significant risk of being accused of plagiarism if you use AI. Many universities are now implementing strict policies about AI-generated content. If the AI suggests substantial changes to your sentence structures or replaces too many of your original words, the final work might not truly be yours anymore."
+    ],
+    [
+      "Speaker 3",
+      "Well, I don't mind using AI as long as it is for educational purposes and is used responsibly. AI can be used because students often use some computer software to check grammar, and are supposed to use others' words to improve their own vocabulary when learning linguistic expressions. In the past, we used dictionaries to check grammar, and it's really no different from using AI."
+    ],
+    [
+      "Speaker 1",
+      "Well, I get your point. I think the line when it comes to using AI for proofreading can get really blurry. I definitely don't want to be suspected of plagiarism, so is there another way I can improve my assignments next time without using AI?"
+    ],
+    [
+      "Speaker 2",
+      "I'm not sure. I still think this needs to be considered carefully. For example, when Word marks mistakes with red and green underlines, is that considered AI-assisted proofreading? Different institutions and even different professors may have different standards for what counts as acceptable AI use. I'd be especially careful with major assignments or final papers."
+    ],
+    [
+      "Speaker 3",
+      "Actually, I've already been using AI on my tablet for proofreading for a while now. But, I still get asked by my teacher to do another proofread myself. I think the key thing is, you won't get any new ideas from AI. AI will only make your existing ideas clearer and more correct. It's really just an advanced tool that helps polish your work, not something that creates content for you. The fundamental thinking and ideas still need to come from you."
+    ],
+    [
+      "Speaker 1",
+      "Okay, I see. Thanks. I think I'll go back and ask for advice from my tutor about it first. I really don't want to be accused of plagiarism, especially since I'm not clear on where the line is drawn. It's better to be safe and get proper guidance rather than risk any academic consequences."
+    ],
+    [
+      "Speaker 2",
+      "That makes total sense. Since acceptance standards vary widely among teachers and universities, relying on your own judgment can be risky. It is wise to get clear instructions directly from your tutor."
+    ],
+    [
+      "Speaker 3",
+      "I agree. No matter whether you end up using AI tools or not, your own original ideas should always stay at the core of your writing."
+    ]
+  ],
+  "facts": [
+    "The discussion concerns whether AI proofreading is acceptable after Speaker 1 receives essay feedback.",
+    "Speaker 1 is unsure where assistance becomes plagiarism and wants to improve safely.",
+    "Speaker 2 warns that substantial rewriting can undermine authorship and that institutional and teacher standards vary.",
+    "Speaker 2 uses Word\u2019s error underlines to illustrate the unclear boundary and advises particular caution for major assignments.",
+    "Speaker 3 supports responsible educational proofreading to polish the student\u2019s own ideas rather than generate content, and still proofreads personally.",
+    "Speaker 1 decides to ask the tutor for guidance, and the others support clear instructions and keeping original thinking central."
+  ],
+  "sample": "The students discuss using AI to proofread assignments. The first speaker wants help after receiving essay feedback but fears plagiarism. The second warns that extensive changes may undermine authorship and explains that acceptable use varies between institutions and teachers. The third supports responsible proofreading as a way to clarify existing ideas, comparing it with other language tools, while stressing that students must supply their own thinking and still review their work. Because the boundary is unclear, the first speaker decides to ask the tutor for advice. The others support this approach and agree that original ideas should remain central to the writing.",
+  "source": {
+    "kind": "user-supplied-transcript",
+    "date": "2026-10-30",
+    "image": "AdobeExpressPhotos_95b98ff55b634ccf9d9b046e304c8cd5_CopyEdited.png",
+    "contentStatus": "transcribed-user-provided"
+  },
+  "audioRate": "-17%",
+  "text": "Narration: three students are discussing using artificial intelligence as a proofreading tool.\nSpeaker 1: Hey guys, have you ever thought about using AI for proofreading? I just got feedback on my essay from my tutor, and she said I need to proofread it. AI can check grammar for me and provide me some ideas, but I don't know if I should use AI tools because I don't want to be suspected of plagiarism.\nSpeaker 2: There is indeed a significant risk of being accused of plagiarism if you use AI. Many universities are now implementing strict policies about AI-generated content. If the AI suggests substantial changes to your sentence structures or replaces too many of your original words, the final work might not truly be yours anymore.\nSpeaker 3: Well, I don't mind using AI as long as it is for educational purposes and is used responsibly. AI can be used because students often use some computer software to check grammar, and are supposed to use others' words to improve their own vocabulary when learning linguistic expressions. In the past, we used dictionaries to check grammar, and it's really no different from using AI.\nSpeaker 1: Well, I get your point. I think the line when it comes to using AI for proofreading can get really blurry. I definitely don't want to be suspected of plagiarism, so is there another way I can improve my assignments next time without using AI?\nSpeaker 2: I'm not sure. I still think this needs to be considered carefully. For example, when Word marks mistakes with red and green underlines, is that considered AI-assisted proofreading? Different institutions and even different professors may have different standards for what counts as acceptable AI use. I'd be especially careful with major assignments or final papers.\nSpeaker 3: Actually, I've already been using AI on my tablet for proofreading for a while now. But, I still get asked by my teacher to do another proofread myself. I think the key thing is, you won't get any new ideas from AI. AI will only make your existing ideas clearer and more correct. It's really just an advanced tool that helps polish your work, not something that creates content for you. The fundamental thinking and ideas still need to come from you.\nSpeaker 1: Okay, I see. Thanks. I think I'll go back and ask for advice from my tutor about it first. I really don't want to be accused of plagiarism, especially since I'm not clear on where the line is drawn. It's better to be safe and get proper guidance rather than risk any academic consequences.\nSpeaker 2: That makes total sense. Since acceptance standards vary widely among teachers and universities, relying on your own judgment can be risky. It is wise to get clear instructions directly from your tutor.\nSpeaker 3: I agree. No matter whether you end up using AI tools or not, your own original ideas should always stay at the core of your writing."
+}

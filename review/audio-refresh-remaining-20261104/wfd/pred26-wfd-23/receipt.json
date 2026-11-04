@@ -1,0 +1,59 @@
+{
+  "kind": "wfd",
+  "questionId": "pred26-wfd-23",
+  "title": "Mathematics and data",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "064a44a7c36c0eb02603ea1920f787fa59c0e73f45bff7400b2a831808e7e906",
+  "spokenTextSha256": "064a44a7c36c0eb02603ea1920f787fa59c0e73f45bff7400b2a831808e7e906",
+  "audioFile": "pred26-wfd-23-neural-review-20261104.mp3",
+  "audioSha256": "71e8bf02bacdccf1f1b6e1ecd96dc286b8c994739c3eb24feb65259a3ce09cab",
+  "masterFile": "pred26-wfd-23-native.flac",
+  "masterSha256": "02efbe28530daa59d7924370bbf6e085964e9e51a85f12ae23aae4b3129e281f",
+  "bytes": 102764,
+  "seconds": 5.112,
+  "wordsPerMinuteIncludingPauses": 117.4,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -21.62,
+  "truePeakDbTP": -2.44,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 2.01,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -23.18,
+    "sourceTruePeakDbTP": -4.01
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "cf3f063d02098d8b84826b3bf971f5e360c56b64a42ed2cd9dc59a6b9315fdc6",
+      "textSha256": "064a44a7c36c0eb02603ea1920f787fa59c0e73f45bff7400b2a831808e7e906",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Read the complete sentence once only; no introductory or closing phrase.",
+        "speed": 1.0
+      },
+      "requestId": "req_9a45422bb7234f9ab8effd63ddd9a8a2",
+      "masterSha256": "773ce109f73fa8de6c3b5db62026327ce5e077b0213842eb26102ee5dfda94fa",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_ca75724a63ea4939b32fdd6bc2ff6fdb",
+    "audioSha256": "71e8bf02bacdccf1f1b6e1ecd96dc286b8c994739c3eb24feb65259a3ce09cab",
+    "sourcePromptProvided": false,
+    "text": "Mathematics provides an essential foundation for understanding and analyzing data.",
+    "differences": [
+      {
+        "expected": "analysing",
+        "heard": "analyzing"
+      }
+    ]
+  }
+}

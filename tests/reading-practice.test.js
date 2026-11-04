@@ -881,12 +881,12 @@ test('Question practice supports searching, paging, draft recovery, feedback and
  h.ctx.currentUserId='second';await h.ctx.ReadingPractice.open();h.click({browseLibrary:'dropdown'});assert.doesNotMatch(h.host.innerHTML,/points · Completed/);assert.equal(h.values.get(storageKey('first')).includes(q.uid),true);
 });
 
-test('New HIW practice autoplays and saves its highlights with full feedback',async()=>{
- const h=client(),clock=clockFor(h),audio=speechHarness();Object.assign(h.ctx,audio.env);await h.ctx.ReadingPractice.open();h.click({browseLibrary:'hiw'});
- assert.equal((h.host.innerHTML.match(/data-practice-uid=/g)||[]).length,10);const q=bank.practiceLibraries.find(l=>l.id==='hiw').questions[0];await h.click({practiceUid:q.uid});
- assert.match(h.host.innerHTML,/<h2>Highlight Incorrect Words<\/h2>/);clock.add(10000);h.timers.at(-1)();assert.equal(audio.utterances.length,1);
- audio.utterances[0].onstart();q.answers.forEach(index=>h.click({hiwWord:String(index)}));finishSpeech(audio,0);
- assert(audio.utterances.length>=2);assert.equal(audio.utterances.map(u=>u.text).join(' '),q.audioText);h.click({action:'submit'});
+test('New HIW practice autoplays its fixed recording and saves highlights with full feedback',async()=>{
+ const h=client(),clock=clockFor(h),audio=speechHarness(),recordings=[];Object.assign(h.ctx,audio.env);h.ctx.Audio=class{constructor(url){this.url=url;recordings.push(this);}play(){return Promise.resolve();}pause(){}};
+ await h.ctx.ReadingPractice.open();h.click({browseLibrary:'hiw'});assert.equal((h.host.innerHTML.match(/data-practice-uid=/g)||[]).length,10);
+ const q=bank.practiceLibraries.find(l=>l.id==='hiw').questions[0];await h.click({practiceUid:q.uid});assert.match(h.host.innerHTML,/<h2>Highlight Incorrect Words<\/h2>/);
+ clock.add(10000);h.timers.at(-1)();assert.equal(recordings.length,1);assert.equal(recordings[0].url,h.ctx.ReadingMockTools.approvedQuestion(q).audioUrl);assert.equal(audio.utterances.length,0);
+ recordings[0].onplaying();q.answers.forEach(index=>h.click({hiwWord:String(index)}));recordings[0].onended();h.click({action:'submit'});
  assert.equal(snapshot(h).practiceResults[q.uid].earned,6);assert.equal(snapshot(h).history[0].excluded,0);assert.match(h.host.innerHTML,/Meaning in context/);assert.match(h.host.innerHTML,/Legitimacy depends on purposes/);
 });
 test('Practice Back and Next traverse the task library and restore an answered draft',async()=>{

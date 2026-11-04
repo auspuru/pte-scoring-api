@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-12",
+  "uid": "ipt:hiw-12",
+  "type": "hiw",
+  "title": "Scientific replication",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "Repeating a scientific study is sometimes treated as a straightforward test of whether the original researchers were correct. In practice, replication requires careful attention to the conditions under which a finding was produced. Differences in equipment, participants or measurement procedures can influence the result without implying misconduct. Researchers should make these differences explicit and distinguish a failure to reproduce an effect from evidence that the effect is impossible. A useful replication may reveal that an apparent general principle depends on a narrower set of circumstances. This discovery can refine a theory rather than simply discredit it. Open methods and accessible data allow others to examine competing explanations, while several independent investigations provide a stronger basis for judgement than a single dramatic success or failure reported in isolation.",
+  "passage": "Repeating a scientific study is sometimes treated as a straightforward test of whether the original researchers were correct. In practice, replication requires casual attention to the conditions under which a finding was produced. Differences in equipment, participants or measurement procedures can guarantee the result without implying misconduct. Researchers should make these differences implicit and distinguish a failure to reproduce an effect from evidence that the effect is impossible. A useful replication may reveal that an apparent general principle depends on a broader set of circumstances. This discovery can abandon a theory rather than simply discredit it. Open methods and accessible data allow others to examine competing explanations, while several dependent investigations provide a stronger basis for judgement than a single dramatic success or failure reported in isolation.",
+  "answers": [
+    22,
+    41,
+    52,
+    81,
+    88,
+    109
+  ],
+  "corrections": [
+    {
+      "index": 22,
+      "written": "casual",
+      "spoken": "careful",
+      "explanation": "Replication needs close attention to the original conditions."
+    },
+    {
+      "index": 41,
+      "written": "guarantee",
+      "spoken": "influence",
+      "explanation": "Procedural differences can affect a result without guaranteeing it."
+    },
+    {
+      "index": 52,
+      "written": "implicit",
+      "spoken": "explicit",
+      "explanation": "Researchers should clearly state differences between studies."
+    },
+    {
+      "index": 81,
+      "written": "broader",
+      "spoken": "narrower",
+      "explanation": "The finding may apply to fewer circumstances than expected."
+    },
+    {
+      "index": 88,
+      "written": "abandon",
+      "spoken": "refine",
+      "explanation": "A replication can improve an existing theory."
+    },
+    {
+      "index": 109,
+      "written": "dependent",
+      "spoken": "independent",
+      "explanation": "Separate investigations provide stronger evidence."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

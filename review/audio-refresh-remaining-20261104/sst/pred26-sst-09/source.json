@@ -1,0 +1,30 @@
+{
+  "kind": "sst",
+  "id": "pred26-sst-09",
+  "type": "sst",
+  "title": "Railway Cards",
+  "topic": "Transport",
+  "minutes": 10,
+  "voice": "nova",
+  "text": "Rail travel cards can make frequent journeys cheaper and reduce the time passengers spend purchasing individual tickets. Different schemes may target students, older travellers, commuters or families, so the value depends on a passenger\u2019s actual pattern of travel. Some cards provide discounts while others work as prepaid or subscription products. Travellers should compare eligibility rules, peak-hour limits and the number of trips required before the card becomes economical. The main advantage is convenience, but a travel card is useful only when its conditions match the way the passenger normally travels.",
+  "keyPoints": [
+    "Rail travel cards can make frequent journeys cheaper and reduce the time passengers spend purchasing individual tickets.",
+    "Different schemes may target students, older travellers, commuters or families, so the value depends on a passenger\u2019s actual pattern of travel.",
+    "Some cards provide discounts while others work as prepaid or subscription products.",
+    "Travellers should compare eligibility rules, peak-hour limits and the number of trips required before the card becomes economical."
+  ],
+  "sample": "Rail travel cards can make frequent journeys cheaper and reduce the time passengers spend purchasing individual tickets; different schemes may target students, older travellers, commuters or families, so the value depends on a passenger\u2019s actual pattern of travel; and some cards provide discounts while others work as prepaid or subscription products.",
+  "predictionSource": {
+    "provider": "PTE Nepal",
+    "week": "21-27 September 2026",
+    "checkedAt": "2026-09-23",
+    "lastReviewed": "2026-09-24",
+    "contentStatus": "adapted",
+    "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+    "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+    "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+    "task": "sst",
+    "sourceId": "13000673",
+    "sourceTitle": "Railway Cards"
+  }
+}

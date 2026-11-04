@@ -1,0 +1,62 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-11",
+  "title": "Urban shade and public space",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "65e287dad66e5002ca5fe6aefeb24d1e209e3c81f6f1e78199b8b64c67df6a7d",
+  "spokenTextSha256": "65e287dad66e5002ca5fe6aefeb24d1e209e3c81f6f1e78199b8b64c67df6a7d",
+  "audioFile": "hiw-11-neural-review-20261104.mp3",
+  "audioSha256": "1410ace4efb61924bc863cc0577b4d30afe9c55515031a40b6e09fdbb21dfdfc",
+  "masterFile": "hiw-11-native.flac",
+  "masterSha256": "65d8432887e7f0bae4f74553ef1a6fc396b4f093ac2088d872e62d8ea2cfa278",
+  "bytes": 1037804,
+  "seconds": 51.864,
+  "wordsPerMinuteIncludingPauses": 146.9,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -20.48,
+  "truePeakDbTP": -2.45,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.89,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -21.93,
+    "sourceTruePeakDbTP": -3.89
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "01be67882a779b7279df89b12c7de47e927bf064bb803573c39129eaadacd0a1",
+      "textSha256": "65e287dad66e5002ca5fe6aefeb24d1e209e3c81f6f1e78199b8b64c67df6a7d",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_918dded38119439bab72c4cfad67a0ba",
+      "masterSha256": "f1bc10fcb8c96ff369b2829c1d1a10ba3ece2676755ddafaf18dbde9055063d8",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_f6213ad4e2924788a58bbf48379d5b21",
+    "audioSha256": "1410ace4efb61924bc863cc0577b4d30afe9c55515031a40b6e09fdbb21dfdfc",
+    "sourcePromptProvided": false,
+    "text": "Planting trees can reduce the temperature of a city street, but the benefits depend on more than the number of saplings installed. A continuous canopy provides shade along an entire walking route, whereas isolated trees may leave long stretches exposed. Planners must therefore consider where people actually travel and where heat is most persistent. Maintenance is equally important. Restricted routes and inadequate watering can undermine an otherwise ambitious planting program. Residents may also value open space for markets, games, and community events, so the design must accommodate several uses. Successful projects combine local knowledge with careful observation of seasonal conditions. Their performance should be evaluated through changes in comfort and access over time, rather than through planting totals alone, because survival and distribution determine who ultimately benefits.",
+    "differences": [
+      {
+        "expected": "roots",
+        "heard": "routes"
+      },
+      {
+        "expected": "programme",
+        "heard": "program"
+      }
+    ]
+  }
+}

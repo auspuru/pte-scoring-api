@@ -1,0 +1,247 @@
+{
+  "kind": "sgd",
+  "questionId": "sgd-1",
+  "title": "Extending library opening hours",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "e3edaaa4b71b96788e70918e197bf8b9d7867280725deb1d8827d809069ee9b6",
+  "spokenTextSha256": "3949fad467ebe348f00cef721be0dbca7804108f4b60b6945150d6c8e794b3d5",
+  "audioFile": "sgd-1-neural-review-20261104.mp3",
+  "audioSha256": "98129ea8038384f6706d20abb54b0517d8195c756f23d043abde671d5d965d75",
+  "masterFile": "sgd-1-native.flac",
+  "masterSha256": "c6e67135d9e78667bb6135e1710c9c03ce9393d9bdfc9c503487253d0801cf70",
+  "bytes": 2091884,
+  "seconds": 104.568,
+  "wordsPerMinuteIncludingPauses": 162.4,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -18.58,
+  "truePeakDbTP": -2.42,
+  "decode": "passed",
+  "processing": {
+    "kind": "approved-pilot-bytes-unchanged",
+    "tempoProcessing": "none"
+  },
+  "generationReceipts": [
+    {
+      "speaker": "Narrator",
+      "inputHash": "278e6ef89c1af1bf166008b0a11ca1ba02d6bb209a766920c1da648c169b2c71",
+      "textSha256": "534acdb630df15ed7f3090142a821770233a2b864644fa2c5246b23b3f16199e",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_bcfa4d280288487a9b09513839e504b3",
+      "masterSha256": "144681b60e0e733be2e3b736293c99ff12ddc9213ffd188ee8b05ad47301c9af",
+      "reusedApprovedPilotSegment": true
+    },
+    {
+      "speaker": "Maya",
+      "inputHash": "e60bfacb6130327a2ed3fc5319c04e95946c93cb07380a3134f38ce2fdc4eace",
+      "textSha256": "c95358f781b96921556e83bb73f88aadba1e205b7e36fe989980fbad437da15b",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_0c5316f27048489eac9f65c53c54531e",
+      "masterSha256": "d642b7eb68d6f50b3547716f949e6dc14b2ad6830a682d599590ab1f0c37b5e7",
+      "reusedApprovedPilotSegment": true
+    },
+    {
+      "speaker": "Ben",
+      "inputHash": "dc929fc9c8b70c90f627831f08e0a74a385ce8ed746e3e18a0e1a61e652b1004",
+      "textSha256": "3a0dc4b9c99a8e3d02576b423c657d11eff840740f4f203bdb69309e7fab2451",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_d9ab04f4f5c94305b6a25ea2b776bf54",
+      "masterSha256": "aeba8a7d95c101ef0c9dfe4e602070c992aa2b8e330fc1c3c766d91e57b3f4da",
+      "reusedApprovedPilotSegment": true
+    },
+    {
+      "speaker": "Clara",
+      "inputHash": "46a1fc41c950f08d69f7ebb53c0fe48c159d0074a691fc7bbc11302ada53961f",
+      "textSha256": "23d16e880071bafa750f9ab07e21a1119990d82d92368cff81b884660dbf0059",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_a63d48924a564c7da35983dcf05c9ca0",
+      "masterSha256": "750794a618db875d988d4bd2122052be71611bf1bb421a8ac5b6ee2490cd9004",
+      "reusedApprovedPilotSegment": true
+    },
+    {
+      "speaker": "Maya",
+      "inputHash": "f230c87572fc53038bd2c87dc9d28a31aeb35718b658ad1846d0e8bd367b9956",
+      "textSha256": "bd0cadfb39f225fcc9eac99f067dcaca8d2e45a3cbffad35b47dfc4391f9d29a",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_448a1dbbc9c6412a972a531ef7d30c55",
+      "masterSha256": "95dc368cc7cc5a45f31d67e6c84d9a5c212c269a5acfad48edc0b2d4ed848b50",
+      "reusedApprovedPilotSegment": true
+    },
+    {
+      "speaker": "Ben",
+      "inputHash": "711b5516dd75768ecc27b5c5e4346609d018caf8fcbc3c43b09afd599f0d7dcf",
+      "textSha256": "3f708e90b21670f4e0fe5ec3a175964968eb19f2be5e147ad5720695c7b3e34f",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_bcae2ad74df04fc6beffe7a932d2895b",
+      "masterSha256": "41e60502d628fe3552edee40a0b1f0673277aad53fbbe628ff99f51d03229689",
+      "reusedApprovedPilotSegment": true
+    },
+    {
+      "speaker": "Clara",
+      "inputHash": "b78f9ac55341f8682a17f2c3d21f5a42c71b72e0714a360bb11d08af8ccb7007",
+      "textSha256": "52e4de16d832f1a22992e91264158d58d5b5684e09b1ffc89391e2865415b5cf",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_8a3fc8a12b094f2080d523991a5f48a4",
+      "masterSha256": "51fae4f9e53704d0008381a687384652c3cf7b5e296f354ca866ffce029fe14e",
+      "reusedApprovedPilotSegment": true
+    }
+  ],
+  "listeningStatus": "user-approved exact pilot",
+  "publication": "not connected to the portal; not deployed",
+  "narrationIncluded": true,
+  "narrationSha256": "534acdb630df15ed7f3090142a821770233a2b864644fa2c5246b23b3f16199e",
+  "speakerVoices": {
+    "Maya": "marin",
+    "Ben": "cedar",
+    "Clara": "coral"
+  },
+  "requestedAccents": {
+    "Maya": "British English",
+    "Ben": "General American English",
+    "Clara": "Australian English"
+  },
+  "turnSpeakers": [
+    "Maya",
+    "Ben",
+    "Clara",
+    "Maya",
+    "Ben",
+    "Clara"
+  ],
+  "mockDurationEligible": true,
+  "turnCount": 6,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_8aba3654758d4795bffff92cc6399040",
+    "audioSha256": "98129ea8038384f6706d20abb54b0517d8195c756f23d043abde671d5d965d75",
+    "transcript": "Three students are discussing whether the university library should extend its opening hours.\n\nI think the library should stay open later throughout the semester, not only during exams. Some students work in the evening and need somewhere quiet afterwards. My shared house is noisy, so having access until midnight would make a real difference. What do you both think?\n\nI understand the need, but opening the whole building could be expensive. We would need security, lighting, and staff, even if only a few students came. I would rather see a limited late opening area with student card access than promise a service the library cannot sustain.\n\nA small area sounds sensible, but getting home safely is another issue. The last bus leaves before midnight. Students without cars might not benefit unless transport is considered too. Perhaps the university could coordinate a shuttle on the busiest nights rather than run it every evening.\n\nThat is a fair point. I do not need the borrowing desk to stay open. I mainly need a desk, power, and internet. We could start with the ground floor study room. A short survey might tell us which nights working students actually need it most.\n\nI would support a trial based on that survey. We could count visits and check the cost for six weeks, then decide whether to continue. Clear rules would matter, especially about noise, visitors, and what students should do if they need help after staff leave.\n\nThen our recommendation could combine a small supervised study area with a transport check. We should ask students about both demand and travel and make sure accessibility is included. That gives the university evidence before it commits to opening the entire library later.",
+    "sourcePromptProvided": false,
+    "comparisonIgnoringCaseAndPunctuation": "exact",
+    "differences": []
+  },
+  "assemblyVerification": {
+    "status": "passed",
+    "pcmSha256": "502797f00e9718fb27275ddf9bd7c94e9e2e97ef58531634d76ca7f92d752078",
+    "segments": [
+      {
+        "speaker": "Narrator",
+        "voice": "marin",
+        "startSeconds": 0.0,
+        "endSeconds": 6.3,
+        "textSha256": "534acdb630df15ed7f3090142a821770233a2b864644fa2c5246b23b3f16199e",
+        "inputHash": "278e6ef89c1af1bf166008b0a11ca1ba02d6bb209a766920c1da648c169b2c71",
+        "startSample": 0,
+        "endSample": 151200,
+        "pcmSha256": "c54226642520c1dd7b9995871fe65e4d9567dd36f229e55f94b28a0f3de045eb",
+        "nativeWavSha256": "144681b60e0e733be2e3b736293c99ff12ddc9213ffd188ee8b05ad47301c9af"
+      },
+      {
+        "speaker": "Maya",
+        "voice": "marin",
+        "startSeconds": 6.9,
+        "endSeconds": 22.6,
+        "textSha256": "c95358f781b96921556e83bb73f88aadba1e205b7e36fe989980fbad437da15b",
+        "inputHash": "e60bfacb6130327a2ed3fc5319c04e95946c93cb07380a3134f38ce2fdc4eace",
+        "startSample": 165600,
+        "endSample": 542400,
+        "pcmSha256": "b69ebf42d5ccc6dc8c2fd348bf14d88a0ddb6a2d7ef66b2b69c0933c72a2cb8b",
+        "nativeWavSha256": "d642b7eb68d6f50b3547716f949e6dc14b2ad6830a682d599590ab1f0c37b5e7"
+      },
+      {
+        "speaker": "Ben",
+        "voice": "cedar",
+        "startSeconds": 22.85,
+        "endSeconds": 39.65,
+        "textSha256": "3a0dc4b9c99a8e3d02576b423c657d11eff840740f4f203bdb69309e7fab2451",
+        "inputHash": "dc929fc9c8b70c90f627831f08e0a74a385ce8ed746e3e18a0e1a61e652b1004",
+        "startSample": 548400,
+        "endSample": 951600,
+        "pcmSha256": "9c4be6b70cbc8a72007f710c1874f66da3b493f5e7794b31d6c4dcaca37bb09b",
+        "nativeWavSha256": "aeba8a7d95c101ef0c9dfe4e602070c992aa2b8e330fc1c3c766d91e57b3f4da"
+      },
+      {
+        "speaker": "Clara",
+        "voice": "coral",
+        "startSeconds": 39.9,
+        "endSeconds": 58.45,
+        "textSha256": "23d16e880071bafa750f9ab07e21a1119990d82d92368cff81b884660dbf0059",
+        "inputHash": "46a1fc41c950f08d69f7ebb53c0fe48c159d0074a691fc7bbc11302ada53961f",
+        "startSample": 957600,
+        "endSample": 1402800,
+        "pcmSha256": "af5da06633ef6856ffd2cf589302490473bb22f21195eda50c3b3689242e58ec",
+        "nativeWavSha256": "750794a618db875d988d4bd2122052be71611bf1bb421a8ac5b6ee2490cd9004"
+      },
+      {
+        "speaker": "Maya",
+        "voice": "marin",
+        "startSeconds": 58.7,
+        "endSeconds": 72.75,
+        "textSha256": "bd0cadfb39f225fcc9eac99f067dcaca8d2e45a3cbffad35b47dfc4391f9d29a",
+        "inputHash": "f230c87572fc53038bd2c87dc9d28a31aeb35718b658ad1846d0e8bd367b9956",
+        "startSample": 1408800,
+        "endSample": 1746000,
+        "pcmSha256": "e67e6c20c8376c3add178aa0367aea82cacdcbbdc1c3eab653898cfef5a5048f",
+        "nativeWavSha256": "95dc368cc7cc5a45f31d67e6c84d9a5c212c269a5acfad48edc0b2d4ed848b50"
+      },
+      {
+        "speaker": "Ben",
+        "voice": "cedar",
+        "startSeconds": 73.0,
+        "endSeconds": 88.4,
+        "textSha256": "3f708e90b21670f4e0fe5ec3a175964968eb19f2be5e147ad5720695c7b3e34f",
+        "inputHash": "711b5516dd75768ecc27b5c5e4346609d018caf8fcbc3c43b09afd599f0d7dcf",
+        "startSample": 1752000,
+        "endSample": 2121600,
+        "pcmSha256": "81f2c323b47b80508841b82646cdb8c1589a17c29d96ebdb0d2ba140cbeff16c",
+        "nativeWavSha256": "41e60502d628fe3552edee40a0b1f0673277aad53fbbe628ff99f51d03229689"
+      },
+      {
+        "speaker": "Clara",
+        "voice": "coral",
+        "startSeconds": 88.65,
+        "endSeconds": 104.5,
+        "textSha256": "52e4de16d832f1a22992e91264158d58d5b5684e09b1ffc89391e2865415b5cf",
+        "inputHash": "b78f9ac55341f8682a17f2c3d21f5a42c71b72e0714a360bb11d08af8ccb7007",
+        "startSample": 2127600,
+        "endSample": 2508000,
+        "pcmSha256": "b95289595d9e3a5a40c35147a906e48d2efb7a5985f02407d8d7ad6d4c9c2264",
+        "nativeWavSha256": "51fae4f9e53704d0008381a687384652c3cf7b5e296f354ca866ffce029fe14e"
+      }
+    ],
+    "method": "Decoded lossless master equals ordered native segment PCM plus declared turn gaps."
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-c2-10",
+  "uid": "ipt:hiw-c2-10",
+  "type": "hiw",
+  "title": "Indicators and public value",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "A public programme may satisfy its numerical targets while failing to realise the purpose for which those targets were introduced. Once an indicator becomes consequential for funding, organisations have an incentive to optimise what is counted, even when doing so displaces less measurable responsibilities. This divergence is not an inevitable consequence of quantification, but it reveals the danger of treating a proxy as an exhaustive definition of success. Evaluation should examine how reported improvements were produced and whether their benefits endure beyond the reporting interval. Independent scrutiny and qualitative evidence can expose achievements that are nominal rather than substantive. A credible assessment preserves the usefulness of measurement while keeping its categories subordinate to the public purposes they are meant to illuminate, rather than allowing the categories themselves to dictate those purposes.",
+  "passage": "A public programme may satisfy its numerical targets while failing to relinquish the purpose for which those targets were introduced. Once an indicator becomes consequential for funding, organisations have an incentive to optimise what is counted, even when doing so reinforces less measurable responsibilities. This divergence is not an inevitable consequence of quantification, but it reveals the danger of treating a prerequisite as an exhaustive definition of success. Evaluation should examine how reported improvements were produced and whether their benefits dissipate beyond the reporting interval. Independent scrutiny and qualitative evidence can expose achievements that are substantial rather than substantive. A credible assessment preserves the usefulness of measurement while keeping its categories indifferent to the public purposes they are meant to illuminate, rather than allowing the categories themselves to dictate those purposes.",
+  "answers": [
+    11,
+    40,
+    61,
+    80,
+    95,
+    111
+  ],
+  "corrections": [
+    {
+      "index": 11,
+      "written": "relinquish",
+      "spoken": "realise",
+      "explanation": "The programme may fail to achieve its underlying purpose."
+    },
+    {
+      "index": 40,
+      "written": "reinforces",
+      "spoken": "displaces",
+      "explanation": "Optimising measured targets may push aside other responsibilities."
+    },
+    {
+      "index": 61,
+      "written": "prerequisite",
+      "spoken": "proxy",
+      "explanation": "An indicator stands in for an outcome; it does not fully define it."
+    },
+    {
+      "index": 80,
+      "written": "dissipate",
+      "spoken": "endure",
+      "explanation": "The evaluation asks whether the benefits last."
+    },
+    {
+      "index": 95,
+      "written": "substantial",
+      "spoken": "nominal",
+      "explanation": "Some achievements exist mainly in name rather than in their actual effects."
+    },
+    {
+      "index": 111,
+      "written": "indifferent",
+      "spoken": "subordinate",
+      "explanation": "Measurement categories should remain governed by public purposes."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

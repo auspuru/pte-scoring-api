@@ -1,0 +1,54 @@
+{
+  "kind": "wfd",
+  "questionId": "pred26-wfd-20",
+  "title": "Photography in geography",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "4796126c66537d33c84a3dec499af66daf2057967623c9da1384356832091fde",
+  "spokenTextSha256": "4796126c66537d33c84a3dec499af66daf2057967623c9da1384356832091fde",
+  "audioFile": "pred26-wfd-20-neural-review-20261104.mp3",
+  "audioSha256": "8c07d8498428c7987a61a354f4fd5fd69b9a23cf82c046fad377f80820591464",
+  "masterFile": "pred26-wfd-20-native.flac",
+  "masterSha256": "6da15471e84d485b7bbb7344d34214f6e70778b6755f121e7787b8b013aecfb3",
+  "bytes": 101804,
+  "seconds": 5.064,
+  "wordsPerMinuteIncludingPauses": 106.6,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -18.45,
+  "truePeakDbTP": -2.58,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 5.11,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -23.11,
+    "sourceTruePeakDbTP": -7.2
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "f4831844f8052ea7ed6572f39a126072d0d5f9143cbd6b625c017dccc5d962e6",
+      "textSha256": "4796126c66537d33c84a3dec499af66daf2057967623c9da1384356832091fde",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Read the complete sentence once only; no introductory or closing phrase.",
+        "speed": 1.0
+      },
+      "requestId": "req_3a45f372766a4d288d90d5b79f7950a4",
+      "masterSha256": "8d62b90cdccba84a1952b381b631b3468ca94d03fe163efd87eab7bf96778943",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_ccc5f910d61944f8903adde9ded0f242",
+    "audioSha256": "8c07d8498428c7987a61a354f4fd5fd69b9a23cf82c046fad377f80820591464",
+    "sourcePromptProvided": false,
+    "text": "Photography can provide useful evidence for geographical field research.",
+    "differences": []
+  }
+}

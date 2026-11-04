@@ -1,0 +1,70 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-c2-10",
+  "title": "Indicators and public value",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "f7091104a2c6ffdd10025400c88056530a84f9ce02563d849acac323ac88d9f1",
+  "spokenTextSha256": "f7091104a2c6ffdd10025400c88056530a84f9ce02563d849acac323ac88d9f1",
+  "audioFile": "hiw-c2-10-neural-review-20261104.mp3",
+  "audioSha256": "febe37c61e60568fdcb2e7169475e31a053ee5421726ca74be023dd006293d46",
+  "masterFile": "hiw-c2-10-native.flac",
+  "masterSha256": "62131a700070da26a0322d2590aac52d71c526da82492d876a674d7bb212af0f",
+  "bytes": 1078604,
+  "seconds": 53.904,
+  "wordsPerMinuteIncludingPauses": 145.8,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -21.76,
+  "truePeakDbTP": -2.45,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.28,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.61,
+    "sourceTruePeakDbTP": -3.28
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "40a979937ef824f543238c183455a7e5b76c8ca1b262a3ae8e773e94edd62e4c",
+      "textSha256": "f7091104a2c6ffdd10025400c88056530a84f9ce02563d849acac323ac88d9f1",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_455979dc78544c2d9228858c238a1890",
+      "masterSha256": "8d419e62e25666ba6bbde4b3dd95e39b00c4b9b273aa0f92844020482ed52a68",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_339cffe6f77943db90d38281d9a54850",
+    "audioSha256": "febe37c61e60568fdcb2e7169475e31a053ee5421726ca74be023dd006293d46",
+    "sourcePromptProvided": false,
+    "text": "A public program may satisfy its numerical targets while failing to realize the purpose for which those targets were introduced. Once an indicator becomes consequential for funding, organizations have an incentive to optimize what is counted, even when doing so displaces less measurable responsibilities. This divergence is not an inevitable consequence of quantification, but it reveals the danger of treating a proxy as an exhaustive definition of success. Evaluation should examine how reported improvements were produced and whether their benefits endure beyond the reporting interval. Independent scrutiny and qualitative evidence can expose achievements that are nominal rather than substantive. A credible assessment preserves the usefulness of measurement while keeping its categories subordinate to the public purposes they are meant to illuminate, rather than allowing the categories themselves to dictate those purposes.",
+    "differences": [
+      {
+        "expected": "programme",
+        "heard": "program"
+      },
+      {
+        "expected": "realise",
+        "heard": "realize"
+      },
+      {
+        "expected": "organisations",
+        "heard": "organizations"
+      },
+      {
+        "expected": "optimise",
+        "heard": "optimize"
+      }
+    ]
+  }
+}

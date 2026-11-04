@@ -1,0 +1,58 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-17",
+  "title": "Night transport services",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "629555384bd9beb7fc652b96c9f2c6368e4d1df292932a80e4083ed38f0e6cc5",
+  "spokenTextSha256": "629555384bd9beb7fc652b96c9f2c6368e4d1df292932a80e4083ed38f0e6cc5",
+  "audioFile": "hiw-17-neural-review-20261104.mp3",
+  "audioSha256": "a07c43a44f425de9f4adb426a0677683564d0d2d8f40efe6f35b35e18093a521",
+  "masterFile": "hiw-17-native.flac",
+  "masterSha256": "afd0eacfe0f19c6ed545b54c2a9609392d9352ad43dda8641f374e51d2db4007",
+  "bytes": 1080524,
+  "seconds": 54.0,
+  "wordsPerMinuteIncludingPauses": 143.3,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -18.94,
+  "truePeakDbTP": -2.42,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 4.15,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.64,
+    "sourceTruePeakDbTP": -6.15
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "fd9c540245630264f034a5aa745edafd774347c6ba73a4d078503e2d3946d93d",
+      "textSha256": "629555384bd9beb7fc652b96c9f2c6368e4d1df292932a80e4083ed38f0e6cc5",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_544f8d9f5b544ec780bda88ac4bf31c4",
+      "masterSha256": "0079cca645806024f9235b5331e03cf9f7fbc60d269a97d0067ea063658ebd4a",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_e2811bf862494ccbbd65519730d80d67",
+    "audioSha256": "a07c43a44f425de9f4adb426a0677683564d0d2d8f40efe6f35b35e18093a521",
+    "sourcePromptProvided": false,
+    "text": "Extending public transport into the night can improve access to employment, especially for people whose shifts begin or end outside ordinary commuting hours. Nevertheless, a timetable alone does not guarantee a useful service. Connections must be coordinated, waiting areas should feel secure, and information needs to remain available when staffing is reduced. A route with modest passenger numbers may still provide substantial value if it links workers to a hospital or a distribution center. Evaluating such services only through average occupancy can overlook these wider benefits. Transport planners therefore examine who depends on each connection and what alternatives are realistically affordable. The challenge is to design a reliable network within limited resources, using evidence from actual journeys rather than assuming that daytime travel patterns continue unchanged throughout the night.",
+    "differences": [
+      {
+        "expected": "centre",
+        "heard": "center"
+      }
+    ]
+  }
+}

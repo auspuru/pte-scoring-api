@@ -1,0 +1,63 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-10",
+  "title": "Recruitment Types",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "d8afd639f2a5088e35aa132768d8a86375c82362edd6b8189eb43e7e88fbcd7a",
+  "spokenTextSha256": "d8afd639f2a5088e35aa132768d8a86375c82362edd6b8189eb43e7e88fbcd7a",
+  "audioFile": "pred26-sst-10-neural-review-20261104.mp3",
+  "audioSha256": "910d3738444b51cbf8a187b1e8a0c13e41dc214fc00833c898e35fb83bec02f3",
+  "masterFile": "pred26-sst-10-native.flac",
+  "masterSha256": "b22793efaae0c4fdb585277b76f894f88a77e59b69286d54cc43a7b073b87b86",
+  "bytes": 699884,
+  "seconds": 34.968,
+  "wordsPerMinuteIncludingPauses": 144.1,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -21.67,
+  "truePeakDbTP": -2.45,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.01,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.24,
+    "sourceTruePeakDbTP": -3.01
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "b900a5cb1e3e611fdb84f776e5553f602fdaf91727c1fc4b922e992d36a9cc5a",
+      "textSha256": "d8afd639f2a5088e35aa132768d8a86375c82362edd6b8189eb43e7e88fbcd7a",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_47cac0834b7c49d8986cb88cc4a56bde",
+      "masterSha256": "8dfddb346f342ba11b8bbdff4b9cc51dab45ddccd8b3e8236a9c288393e38a76",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_f7ebbd5092914b738fae5e886e88172b",
+    "audioSha256": "910d3738444b51cbf8a187b1e8a0c13e41dc214fc00833c898e35fb83bec02f3",
+    "sourcePromptProvided": false,
+    "text": "Organizations can fill vacancies by recruiting internally or by searching for candidates outside the existing workforce. Internal recruitment can reward employees, reduce induction time, and use knowledge the organization already has. External recruitment can widen the talent pool and bring skills or perspectives that are not available inside the company. Both methods have costs, and relying on only one approach can limit fairness or flexibility. A sound recruitment strategy chooses the method that fits the role while using transparent criteria to compare candidates consistently.",
+    "differences": [
+      {
+        "expected": "organisations",
+        "heard": "organizations"
+      },
+      {
+        "expected": "organisation",
+        "heard": "organization"
+      }
+    ]
+  }
+}

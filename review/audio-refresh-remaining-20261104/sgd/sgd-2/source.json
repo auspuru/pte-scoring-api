@@ -1,0 +1,46 @@
+{
+  "kind": "sgd",
+  "id": "sgd-2",
+  "type": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "title": "Choosing a group-project format",
+  "narration": "Three students are discussing how to present their environmental group project.",
+  "turns": [
+    [
+      "Daniel",
+      "For our environmental project, I would like to make a short video instead of a slide presentation. We could show the recycling facilities around campus and interview students. That might make our findings easier to understand than reading statistics from a screen during the final class."
+    ],
+    [
+      "Leah",
+      "A video could be engaging, but editing takes time and none of us has much experience. We also have to show how we collected and analysed our data. I worry that production work might distract us from the research, which is the main part of the assessment."
+    ],
+    [
+      "Omar",
+      "Could we combine the approaches? A few short clips could introduce the problem, followed by slides explaining the evidence. We should also provide captions and avoid filming anyone without permission. The format should help communicate the findings rather than become the main focus of the project."
+    ],
+    [
+      "Daniel",
+      "I like that compromise. We could record the facilities without identifying students, and use an anonymous questionnaire instead of interviews. I can take responsibility for two brief clips. If the clips do not work well, the research presentation would still be complete without them."
+    ],
+    [
+      "Leah",
+      "That makes the workload more manageable. Let us agree on the research questions and divide the analysis first. Then we can set a strict time limit for filming and editing. I would also like us to practise together so the final presentation feels like one coherent explanation."
+    ],
+    [
+      "Omar",
+      "Agreed. We should check the assessment instructions before committing, share a draft early and keep the clips short and accessible. The final plan is a slide-based presentation supported by video, with research quality, consent and clear teamwork taking priority over elaborate production."
+    ]
+  ],
+  "facts": [
+    "The students are deciding how to present an environmental group project.",
+    "Daniel initially favours a video showing campus recycling and interviews.",
+    "Leah worries editing will distract from research and exceed their skills or time.",
+    "Omar proposes short clips plus evidence-focused slides, with captions and consent.",
+    "They agree on a mainly slide-based presentation, limited filming, clear responsibilities and joint rehearsal."
+  ],
+  "sample": "The group discusses the best format for an environmental project. Daniel initially favours a video because footage of campus recycling could make the findings engaging. Leah is concerned that filming and editing would consume time needed for research and analysis. Omar proposes a compromise: use a few short clips to introduce the issue, then present the evidence through slides. He also highlights captions and permission when filming. Daniel accepts the compromise and offers to produce brief clips without identifying students. Leah then recommends agreeing on research questions, dividing the analysis and rehearsing together. Overall, they choose a research-led slide presentation with limited video support, balancing engagement with workload, accessibility and ethical responsibilities.",
+  "text": "Narration: Three students are discussing how to present their environmental group project.\nDaniel: For our environmental project, I would like to make a short video instead of a slide presentation. We could show the recycling facilities around campus and interview students. That might make our findings easier to understand than reading statistics from a screen during the final class.\nLeah: A video could be engaging, but editing takes time and none of us has much experience. We also have to show how we collected and analysed our data. I worry that production work might distract us from the research, which is the main part of the assessment.\nOmar: Could we combine the approaches? A few short clips could introduce the problem, followed by slides explaining the evidence. We should also provide captions and avoid filming anyone without permission. The format should help communicate the findings rather than become the main focus of the project.\nDaniel: I like that compromise. We could record the facilities without identifying students, and use an anonymous questionnaire instead of interviews. I can take responsibility for two brief clips. If the clips do not work well, the research presentation would still be complete without them.\nLeah: That makes the workload more manageable. Let us agree on the research questions and divide the analysis first. Then we can set a strict time limit for filming and editing. I would also like us to practise together so the final presentation feels like one coherent explanation.\nOmar: Agreed. We should check the assessment instructions before committing, share a draft early and keep the clips short and accessible. The final plan is a slide-based presentation supported by video, with research quality, consent and clear teamwork taking priority over elaborate production."
+}

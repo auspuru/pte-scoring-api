@@ -1,0 +1,67 @@
+{
+  "kind": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "id": "sgd-user-20261030-10",
+  "type": "sgd",
+  "title": "The new semester timetable",
+  "narration": "Three students are discussing the new timetable for this semester.",
+  "turns": [
+    [
+      "Speaker 1",
+      "Hey, guys! Have you checked out the timetable for the new semester yet? I just looked at mine this morning, and I found my schedule is really full this term. I've got several early morning classes, which means I have to get up really early almost every day. My new timetable is quite packed, leaving me little spare time in the morning."
+    ],
+    [
+      "Speaker 2",
+      "Yeah, I've also switched to a new timetable this semester. Most of my classes start at 9 a.m., and I have to say I really don't like this arrangement. I always feel so tired and sleepy in the morning, so I definitely need a cup of coffee before class to wake myself up, otherwise I can't focus at all. Getting up early every single day has already made me feel exhausted."
+    ],
+    [
+      "Speaker 3",
+      "Oh, well. I've checked my timetable, and it's quite different from both of yours. I don't have any very early morning classes; most of my classes are scheduled in the afternoon, which I really prefer. I have many seminars and lectures arranged throughout the daytime, but at least I don't need to rush out of bed in a hurry."
+    ],
+    [
+      "Speaker 1",
+      "Honestly, these early morning classes have completely messed up my daily routine. I'm not used to getting up so early, and I often feel distracted during the first lesson. It's tough to stay energetic and efficient when I haven't had enough rest in the morning."
+    ],
+    [
+      "Speaker 2",
+      "I totally agree with you. Morning classes are such a struggle for me. Even though my classes start at nine o'clock, I still need to get up early to wash up, have breakfast and walk to the teaching building. I basically rely on coffee to stay awake for my whole morning study."
+    ],
+    [
+      "Speaker 3",
+      "I'm really lucky in comparison. Having all my classes in the afternoon allows me to sleep longer in the morning and prepare well for my study. I can finish my revision, preview my courses and organize my notes calmly before heading to class."
+    ],
+    [
+      "Speaker 1",
+      "I wish I could adjust my timetable a little bit. A fully packed schedule with non-stop morning classes makes my semester feel extremely busy and stressful. I barely have time to relax or do extra reading in the morning."
+    ],
+    [
+      "Speaker 2",
+      "Same here. I hope I can gradually get used to this early class routine later. Drinking coffee every morning is not a long-term solution, but for now, it's the only way for me to keep up with my study progress."
+    ],
+    [
+      "Speaker 3",
+      "Although I don't have early classes, my afternoon seminars and lectures are intensive and require lots of concentration. Still, I think studying in the afternoon suits my personal study habit better, making my overall schedule more manageable and comfortable."
+    ]
+  ],
+  "facts": [
+    "The students compare their new semester timetables, especially morning and afternoon classes.",
+    "Speaker 1 has a packed early-morning schedule that disrupts sleep and routine, reduces concentration and leaves little time to relax or read.",
+    "Speaker 1 wishes the timetable could be adjusted.",
+    "Speaker 2 has mostly 9 a.m. classes, feels exhausted and relies on coffee to stay awake after getting ready and walking to class.",
+    "Speaker 2 hopes to adapt and recognises that daily coffee is not a long-term solution.",
+    "Speaker 3 prefers afternoon classes because they allow more sleep, revision and preparation before class.",
+    "Speaker 3 acknowledges that afternoon teaching is demanding but finds the schedule better suited to personal study habits; no timetable change is agreed."
+  ],
+  "sample": "The students compare their new semester timetables. The first speaker has many early classes and finds that the packed schedule disrupts sleep, concentration and time for reading or relaxation, so would like an adjustment. The second also struggles with morning teaching, explaining that even nine o\u2019clock classes require getting up early and relying on coffee. This speaker hopes to adapt but recognises that coffee is not a lasting solution. In contrast, the third prefers afternoon classes, which allow more sleep and time to revise and prepare beforehand. Although afternoon sessions are intensive, they suit this speaker\u2019s study habits. The discussion highlights how class timing affects students differently.",
+  "source": {
+    "kind": "user-supplied-transcript",
+    "date": "2026-10-30",
+    "image": "AdobeExpressPhotos_123ccab49b41462ea7bfcd41e81ac640_CopyEdited.png",
+    "contentStatus": "transcribed-user-provided"
+  },
+  "audioRate": "-17%",
+  "text": "Narration: Three students are discussing the new timetable for this semester.\nSpeaker 1: Hey, guys! Have you checked out the timetable for the new semester yet? I just looked at mine this morning, and I found my schedule is really full this term. I've got several early morning classes, which means I have to get up really early almost every day. My new timetable is quite packed, leaving me little spare time in the morning.\nSpeaker 2: Yeah, I've also switched to a new timetable this semester. Most of my classes start at 9 a.m., and I have to say I really don't like this arrangement. I always feel so tired and sleepy in the morning, so I definitely need a cup of coffee before class to wake myself up, otherwise I can't focus at all. Getting up early every single day has already made me feel exhausted.\nSpeaker 3: Oh, well. I've checked my timetable, and it's quite different from both of yours. I don't have any very early morning classes; most of my classes are scheduled in the afternoon, which I really prefer. I have many seminars and lectures arranged throughout the daytime, but at least I don't need to rush out of bed in a hurry.\nSpeaker 1: Honestly, these early morning classes have completely messed up my daily routine. I'm not used to getting up so early, and I often feel distracted during the first lesson. It's tough to stay energetic and efficient when I haven't had enough rest in the morning.\nSpeaker 2: I totally agree with you. Morning classes are such a struggle for me. Even though my classes start at nine o'clock, I still need to get up early to wash up, have breakfast and walk to the teaching building. I basically rely on coffee to stay awake for my whole morning study.\nSpeaker 3: I'm really lucky in comparison. Having all my classes in the afternoon allows me to sleep longer in the morning and prepare well for my study. I can finish my revision, preview my courses and organize my notes calmly before heading to class.\nSpeaker 1: I wish I could adjust my timetable a little bit. A fully packed schedule with non-stop morning classes makes my semester feel extremely busy and stressful. I barely have time to relax or do extra reading in the morning.\nSpeaker 2: Same here. I hope I can gradually get used to this early class routine later. Drinking coffee every morning is not a long-term solution, but for now, it's the only way for me to keep up with my study progress.\nSpeaker 3: Although I don't have early classes, my afternoon seminars and lectures are intensive and require lots of concentration. Still, I think studying in the afternoon suits my personal study habit better, making my overall schedule more manageable and comfortable."
+}

@@ -1,0 +1,71 @@
+{
+  "kind": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "id": "sgd-user-20261030-07",
+  "type": "sgd",
+  "title": "Making the university more eco-friendly",
+  "narration": "Three students are discussing how to make their university more eco-friendly.",
+  "turns": [
+    [
+      "Speaker 1",
+      "Hey fellas, I think there is still room for improvement when it comes to making our campus more eco-friendly. The staff should install recycling stations on key spots around the university, making it convenient for us to recycle plastic bottles, which can reduce landfill waste."
+    ],
+    [
+      "Speaker 2",
+      "Actually, we should reduce waste from the source, namely, reduce the amount of waste produced by us instead of having more bins. Just the campus cafe alone uses hundreds of paper cups every day. People should use fewer single-use coffee cups at the cafe and bring their own reusable cups."
+    ],
+    [
+      "Speaker 3",
+      "You are right. It is good for the cafeteria to use recycled paper, but they give out too many napkins at one time. Also, some packaging is too excessive, such as five layers of packaging for an apple."
+    ],
+    [
+      "Speaker 1",
+      "Yes, and students can also play a role here. We should take only what we actually need and avoid wasting food, paper, and other resources, by which we would also save money in the long run."
+    ],
+    [
+      "Speaker 3",
+      "If students bring their own bottles and cups, the university could reduce the amount of waste while students could develop more environmentally friendly habits. Another thing is more sustainable transportation. The university should build better bike paths, and provide more bike parking spaces, in order to encourage students to ride bikes with dual benefits, which is eco-friendly and great for their physical health."
+    ],
+    [
+      "Speaker 2",
+      "For students rushing between lectures, bicycles can cut their travel time. But there would be limited impact because few students own bikes. The university should establish a shared bicycle station."
+    ],
+    [
+      "Speaker 3",
+      "That sounds practical because students would not need to buy or maintain their own bicycles. They could simply rent a bike when they need one and return it after class."
+    ],
+    [
+      "Speaker 1",
+      "The university should also encourage carpooling, like having cheap parking to reward carpooling students or even free parking. It can also reduce the number of cars on campus and lower traffic congestion, especially during busy hours in the morning and afternoon."
+    ],
+    [
+      "Speaker 2",
+      "Yes, carpooling allows students to get together. Anyway, better public transport should also be considered, like buses or trains. If public transport is more convenient and reliable, students may be less dependent on private cars. This could make a bigger difference in the long term."
+    ],
+    [
+      "Speaker 1",
+      "We are a part of this green community, and should join in the eco-friendly movement. There are a lot of things to do, but we should start from small ones by ourselves, like bringing our own cups to the cafeteria, and carpooling."
+    ]
+  ],
+  "facts": [
+    "The group discusses reducing university waste and making transport more sustainable.",
+    "Speaker 1 proposes convenient recycling stations, using only needed resources and parking incentives for carpooling.",
+    "Speaker 2 prioritises preventing waste at its source by replacing disposable coffee cups with reusable cups.",
+    "Speaker 3 criticises excessive napkins and packaging and supports reusable bottles and cups.",
+    "Speaker 3 proposes better bike paths and parking; Speaker 2 adds shared bicycles because few students own bikes, and Speaker 3 supports renting them.",
+    "Speaker 2 also advocates reliable public transport to reduce car dependence.",
+    "They support both university improvements and small personal actions such as reusable cups and carpooling."
+  ],
+  "sample": "The students discuss making their university greener through waste reduction and sustainable transport. The first speaker proposes recycling stations, avoiding unnecessary resource use and encouraging carpooling with cheaper parking. The second argues that preventing waste is more useful than adding bins and recommends reusable cups. The third agrees and criticises excessive packaging and napkins, then suggests better cycling facilities. The second adds a bike-sharing scheme because few students own bicycles and calls for more reliable public transport. The third supports shared bikes as a convenient alternative to ownership. Overall, they favour practical campus improvements alongside personal habits such as reusing cups and sharing journeys.",
+  "source": {
+    "kind": "user-supplied-transcript",
+    "date": "2026-10-30",
+    "image": "AdobeExpressPhotos_c034a2a7a7ce4ae7803434ec7f1f8110_CopyEdited.png",
+    "contentStatus": "transcribed-user-provided"
+  },
+  "audioRate": "-17%",
+  "text": "Narration: Three students are discussing how to make their university more eco-friendly.\nSpeaker 1: Hey fellas, I think there is still room for improvement when it comes to making our campus more eco-friendly. The staff should install recycling stations on key spots around the university, making it convenient for us to recycle plastic bottles, which can reduce landfill waste.\nSpeaker 2: Actually, we should reduce waste from the source, namely, reduce the amount of waste produced by us instead of having more bins. Just the campus cafe alone uses hundreds of paper cups every day. People should use fewer single-use coffee cups at the cafe and bring their own reusable cups.\nSpeaker 3: You are right. It is good for the cafeteria to use recycled paper, but they give out too many napkins at one time. Also, some packaging is too excessive, such as five layers of packaging for an apple.\nSpeaker 1: Yes, and students can also play a role here. We should take only what we actually need and avoid wasting food, paper, and other resources, by which we would also save money in the long run.\nSpeaker 3: If students bring their own bottles and cups, the university could reduce the amount of waste while students could develop more environmentally friendly habits. Another thing is more sustainable transportation. The university should build better bike paths, and provide more bike parking spaces, in order to encourage students to ride bikes with dual benefits, which is eco-friendly and great for their physical health.\nSpeaker 2: For students rushing between lectures, bicycles can cut their travel time. But there would be limited impact because few students own bikes. The university should establish a shared bicycle station.\nSpeaker 3: That sounds practical because students would not need to buy or maintain their own bicycles. They could simply rent a bike when they need one and return it after class.\nSpeaker 1: The university should also encourage carpooling, like having cheap parking to reward carpooling students or even free parking. It can also reduce the number of cars on campus and lower traffic congestion, especially during busy hours in the morning and afternoon.\nSpeaker 2: Yes, carpooling allows students to get together. Anyway, better public transport should also be considered, like buses or trains. If public transport is more convenient and reliable, students may be less dependent on private cars. This could make a bigger difference in the long term.\nSpeaker 1: We are a part of this green community, and should join in the eco-friendly movement. There are a lot of things to do, but we should start from small ones by ourselves, like bringing our own cups to the cafeteria, and carpooling."
+}

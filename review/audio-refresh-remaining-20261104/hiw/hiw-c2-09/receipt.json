@@ -1,0 +1,62 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-c2-09",
+  "title": "Conservation and authenticity",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "bbdadf037e0b27af16a61aeed2da69ea6436f79b33ea587d17610d15fef67901",
+  "spokenTextSha256": "bbdadf037e0b27af16a61aeed2da69ea6436f79b33ea587d17610d15fef67901",
+  "audioFile": "hiw-c2-09-neural-review-20261104.mp3",
+  "audioSha256": "31017c2582819c5609f4fa90869f797646c8103115ae78a04270c651b6c821bc",
+  "masterFile": "hiw-c2-09-native.flac",
+  "masterSha256": "d06d6a3e7f558416b7304252f8353a04db7affcddae9d936cb410b0e20caa87d",
+  "bytes": 1166924,
+  "seconds": 58.32,
+  "wordsPerMinuteIncludingPauses": 129.6,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -20.77,
+  "truePeakDbTP": -2.41,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.99,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.32,
+    "sourceTruePeakDbTP": -3.99
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "c38a054503466e75dd6664ddc403c9ed015d9aa7ad77ef55f0e821c232cba644",
+      "textSha256": "bbdadf037e0b27af16a61aeed2da69ea6436f79b33ea587d17610d15fef67901",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_ba58511dc2fb493fbd66db55a98260c1",
+      "masterSha256": "2ce4585e81b669f3c4d4027ced84964cad81b1640b916a50932d4da05e1d5c7d",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_307fe722abcf484a8a77d6736d78c0aa",
+    "audioSha256": "31017c2582819c5609f4fa90869f797646c8103115ae78a04270c651b6c821bc",
+    "sourcePromptProvided": false,
+    "text": "Conserving a historic building involves interpreting continuity rather than simply arresting change. Materials decay, functions evolve, and successive alterations may acquire historical significance of their own. Restoring a structure to an imagined original condition can erase evidence of the very processes that make it valuable. Authenticity is therefore not exhausted by the survival of individual components. It also concerns the intelligibility of relationships between fabric, use, and setting. This broader account does not license unrestricted redevelopment. It calls for a discriminating judgment about which interventions sustain the building's significance and which merely substitute a convenient narrative for its complexity. Documentation should make those judgments traceable, allowing later conservators to distinguish inherited features from deliberate additions, and to reassess decisions whose assumptions may no longer be persuasive.",
+    "differences": [
+      {
+        "expected": "judgement",
+        "heard": "judgment"
+      },
+      {
+        "expected": "judgements",
+        "heard": "judgments"
+      }
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-04",
+  "title": "Defining Need",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "b9a2c2f57610c812994ade14c50f430083092d1ae19eb933ac5a1290f6b8f5b6",
+  "spokenTextSha256": "b9a2c2f57610c812994ade14c50f430083092d1ae19eb933ac5a1290f6b8f5b6",
+  "audioFile": "pred26-sst-04-neural-review-20261104.mp3",
+  "audioSha256": "b87cba853bec015d2d1c80b17e26ad2e7bda7681b999a7b523ded33dc74a383e",
+  "masterFile": "pred26-sst-04-native.flac",
+  "masterSha256": "62467efadb918a444181d628f848512d0d681f80ec6a86b3bc4da0b14b2d5a19",
+  "bytes": 769484,
+  "seconds": 38.448,
+  "wordsPerMinuteIncludingPauses": 149.8,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -18.57,
+  "truePeakDbTP": -2.44,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 4.24,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.36,
+    "sourceTruePeakDbTP": -6.24
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "ade7a53e1caef20bc00c8a52029896cce7a80415621e135a168f9b67e205b2fb",
+      "textSha256": "b9a2c2f57610c812994ade14c50f430083092d1ae19eb933ac5a1290f6b8f5b6",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_46f691a73eae43f3896d59744d4cce53",
+      "masterSha256": "8057489cb94762b3bd6db809aba44b7827bd4ee1e8460596bad4895f3372be79",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_6ec0813a29cd40018a95e9c9fdcc5446",
+    "audioSha256": "b87cba853bec015d2d1c80b17e26ad2e7bda7681b999a7b523ded33dc74a383e",
+    "sourcePromptProvided": false,
+    "text": "The word \"need\" can describe very different things depending on context, from a strong personal desire to an essential condition for survival or function. Saying that someone needs a holiday expresses preference differently from saying that a plant needs water. Social policy adds another layer because communities debate which goods and services should count as basic needs. Psychological needs such as belonging and recognition can also influence behavior, even though they are not physical necessities. Clear communication therefore requires speakers to identify which meaning of need they are using instead of assuming the word is self-explanatory.",
+    "differences": [
+      {
+        "expected": "behaviour",
+        "heard": "behavior"
+      }
+    ]
+  }
+}

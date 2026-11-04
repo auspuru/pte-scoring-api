@@ -1,0 +1,67 @@
+{
+  "kind": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "id": "sgd-user-20261030-04",
+  "type": "sgd",
+  "title": "On-campus and off-campus housing",
+  "narration": "Three students are talking about their living experiences in on-campus dorms and off-campus housing.",
+  "turns": [
+    [
+      "Speaker 1",
+      "I live in a house off campus with my friends. It's quite far from the school, but I am lucky because I live close to bus stops and it is very convenient. Also, our landlord is nice and takes care of things like cleaning and other problems around the house."
+    ],
+    [
+      "Speaker 2",
+      "I live in the school dormitory, which is very convenient, and there are places where I can study. Actually, I'd be quite happy to share a house with friends off campus, but the rent is too expensive. Also, I don't want to get up early, and the dormitory is very close to the teaching buildings."
+    ],
+    [
+      "Speaker 3",
+      "I also live in the school dormitory. If anything in the dorm breaks, it gets repaired soon, so students don't have to bother with it. Some friends living outside have problems with water and have to wait for a long time to have it fixed."
+    ],
+    [
+      "Speaker 1",
+      "That's honestly a huge advantage of living on campus. Even though our landlord is responsible and helpful, off-campus maintenance is really slow in general. We once had a water leakage issue and waited nearly a week for someone to fix it, which was really troublesome."
+    ],
+    [
+      "Speaker 2",
+      "While dorm life has plenty of benefits, it definitely comes with some annoying downsides as well. The fire alarm in our dormitory building often goes off in the middle of the night. Whenever the alarm goes off, we have to leave the building and wait until it has been checked. I'm fed up with being forced to get out of bed and evacuate outside because of fire alarms on cold winter nights."
+    ],
+    [
+      "Speaker 3",
+      "I totally agree with your opinion. I've experienced two fire alarms in the dorm, and both times they were caused by someone using a toaster illegally in the building. Can't they find the people who are cooking illegally and deal with them more quickly? Still, I think the system is quite safe, so I accept this accommodation plan."
+    ],
+    [
+      "Speaker 1",
+      "I had no idea dorm life had such annoying safety issues. Living off-campus definitely gives us more private space and flexible schedules. We can cook freely in our own kitchen without violating any campus rules, and we never suffer from sudden fire alarms at night."
+    ],
+    [
+      "Speaker 2",
+      "That sounds really relaxing, but off-campus accommodation still has obvious drawbacks. Apart from the high rent and slow maintenance, you also have to spend plenty of time on daily housework and commuting every single day."
+    ],
+    [
+      "Speaker 3",
+      "Exactly. Every living option has its own pros and cons. On-campus dorms are affordable, safe and time-saving, while off-campus houses provide more freedom and privacy. It all depends on personal study habits and lifestyle choices."
+    ]
+  ],
+  "facts": [
+    "The students compare on-campus dormitories with off-campus shared housing.",
+    "Speaker 1 values living with friends off campus, nearby buses, privacy, freedom and flexible cooking, but describes slow repairs.",
+    "Speaker 2 values dormitory convenience, study spaces, affordability and proximity to teaching buildings.",
+    "Speakers 2 and 3 complain about night-time fire alarms and evacuations; Speaker 3 still considers the dormitory safe.",
+    "Speaker 3 highlights quick on-campus repairs, unlike some off-campus water problems.",
+    "Speaker 2 notes that off-campus housing adds rent, maintenance, housework and commuting burdens.",
+    "Speaker 3 concludes that each option has trade-offs and the choice depends on study habits and lifestyle."
+  ],
+  "sample": "The students compare university dormitories and off-campus housing. The first speaker enjoys sharing a house with friends, nearby transport and greater privacy and freedom, but acknowledges that repairs can be slow. The second values affordable dormitory accommodation close to classrooms and study spaces, while the third highlights prompt maintenance. However, both dormitory residents complain about disruptive fire alarms at night, although the third still considers the system safe. The second also notes the higher rent, housework and commuting associated with living off campus. They conclude that dormitories offer convenience and affordability, whereas private housing offers independence, and the best choice depends on individual habits and priorities.",
+  "source": {
+    "kind": "user-supplied-transcript",
+    "date": "2026-10-30",
+    "image": "AdobeExpressPhotos_5b59236be7d34fce8617748fa561a571_CopyEdited.png",
+    "contentStatus": "transcribed-user-provided"
+  },
+  "audioRate": "-17%",
+  "text": "Narration: Three students are talking about their living experiences in on-campus dorms and off-campus housing.\nSpeaker 1: I live in a house off campus with my friends. It's quite far from the school, but I am lucky because I live close to bus stops and it is very convenient. Also, our landlord is nice and takes care of things like cleaning and other problems around the house.\nSpeaker 2: I live in the school dormitory, which is very convenient, and there are places where I can study. Actually, I'd be quite happy to share a house with friends off campus, but the rent is too expensive. Also, I don't want to get up early, and the dormitory is very close to the teaching buildings.\nSpeaker 3: I also live in the school dormitory. If anything in the dorm breaks, it gets repaired soon, so students don't have to bother with it. Some friends living outside have problems with water and have to wait for a long time to have it fixed.\nSpeaker 1: That's honestly a huge advantage of living on campus. Even though our landlord is responsible and helpful, off-campus maintenance is really slow in general. We once had a water leakage issue and waited nearly a week for someone to fix it, which was really troublesome.\nSpeaker 2: While dorm life has plenty of benefits, it definitely comes with some annoying downsides as well. The fire alarm in our dormitory building often goes off in the middle of the night. Whenever the alarm goes off, we have to leave the building and wait until it has been checked. I'm fed up with being forced to get out of bed and evacuate outside because of fire alarms on cold winter nights.\nSpeaker 3: I totally agree with your opinion. I've experienced two fire alarms in the dorm, and both times they were caused by someone using a toaster illegally in the building. Can't they find the people who are cooking illegally and deal with them more quickly? Still, I think the system is quite safe, so I accept this accommodation plan.\nSpeaker 1: I had no idea dorm life had such annoying safety issues. Living off-campus definitely gives us more private space and flexible schedules. We can cook freely in our own kitchen without violating any campus rules, and we never suffer from sudden fire alarms at night.\nSpeaker 2: That sounds really relaxing, but off-campus accommodation still has obvious drawbacks. Apart from the high rent and slow maintenance, you also have to spend plenty of time on daily housework and commuting every single day.\nSpeaker 3: Exactly. Every living option has its own pros and cons. On-campus dorms are affordable, safe and time-saving, while off-campus houses provide more freedom and privacy. It all depends on personal study habits and lifestyle choices."
+}

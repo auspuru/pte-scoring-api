@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-15",
+  "uid": "ipt:hiw-15",
+  "type": "hiw",
+  "title": "Memory and retrieval",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "Reading a familiar page can create a strong impression that its contents have been learned. However, recognition while the information remains visible is different from retrieving it without assistance. Students who close the book and attempt to explain an idea may discover gaps that repeated reading had concealed. These difficulties can be useful because they identify what needs further attention. Effective retrieval practice includes feedback, allowing mistaken answers to be corrected before they become established. It also benefits from spacing, with material revisited after an interval instead of rehearsed continuously in a single sitting. The aim is not to make every practice attempt effortless. Some manageable difficulty can strengthen later recall, provided that the learner eventually reaches an accurate understanding and connects individual facts to a coherent explanation.",
+  "passage": "Reading a familiar page can create a strong impression that its contents have been learned. However, recognition while the information remains hidden is different from retrieving it without assistance. Students who close the book and attempt to explain an idea may discover gaps that repeated reading had revealed. These difficulties can be useful because they identify what needs further attention. Effective retrieval practice includes feedback, allowing mistaken answers to be repeated before they become established. It also benefits from spacing, with material revisited after an interval instead of rehearsed occasionally in a single sitting. The aim is not to make every practice attempt demanding. Some manageable difficulty can weaken later recall, provided that the learner eventually reaches an accurate understanding and connects individual facts to a coherent explanation.",
+  "answers": [
+    21,
+    47,
+    70,
+    89,
+    103,
+    108
+  ],
+  "corrections": [
+    {
+      "index": 21,
+      "written": "hidden",
+      "spoken": "visible",
+      "explanation": "Recognition occurs while the information is still in view."
+    },
+    {
+      "index": 47,
+      "written": "revealed.",
+      "spoken": "concealed.",
+      "explanation": "Repeated reading may hide gaps in understanding."
+    },
+    {
+      "index": 70,
+      "written": "repeated",
+      "spoken": "corrected",
+      "explanation": "Feedback helps learners repair wrong answers."
+    },
+    {
+      "index": 89,
+      "written": "occasionally",
+      "spoken": "continuously",
+      "explanation": "The passage contrasts spaced practice with uninterrupted rehearsal."
+    },
+    {
+      "index": 103,
+      "written": "demanding.",
+      "spoken": "effortless.",
+      "explanation": "Practice does not have to feel easy every time."
+    },
+    {
+      "index": 108,
+      "written": "weaken",
+      "spoken": "strengthen",
+      "explanation": "Manageable retrieval difficulty can improve later recall."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

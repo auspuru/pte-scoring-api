@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-c2-09",
+  "uid": "ipt:hiw-c2-09",
+  "type": "hiw",
+  "title": "Conservation and authenticity",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "Conserving a historic building involves interpreting continuity rather than simply arresting change. Materials decay, functions evolve and successive alterations may acquire historical significance of their own. Restoring a structure to an imagined original condition can erase evidence of the very processes that make it valuable. Authenticity is therefore not exhausted by the survival of individual components; it also concerns the intelligibility of relationships between fabric, use and setting. This broader account does not license unrestricted redevelopment. It calls for a discriminating judgement about which interventions sustain the building's significance and which merely substitute a convenient narrative for its complexity. Documentation should make those judgements traceable, allowing later conservators to distinguish inherited features from deliberate additions and to reassess decisions whose assumptions may no longer be persuasive.",
+  "passage": "Conserving a historic building involves interpreting continuity rather than simply accelerating change. Materials decay, functions evolve and successive alterations may acquire historical significance of their own. Restoring a structure to an imagined original condition can authenticate evidence of the very processes that make it valuable. Authenticity is therefore not enhanced by the survival of individual components; it also concerns the intelligibility of relationships between fabric, use and setting. This broader account does not license provisional redevelopment. It calls for a indiscriminate judgement about which interventions sustain the building's significance and which merely substitute a convenient narrative for its complexity. Documentation should make those judgements irretrievable, allowing later conservators to distinguish inherited features from deliberate additions and to reassess decisions whose assumptions may no longer be persuasive.",
+  "answers": [
+    10,
+    35,
+    49,
+    74,
+    80,
+    104
+  ],
+  "corrections": [
+    {
+      "index": 10,
+      "written": "accelerating",
+      "spoken": "arresting",
+      "explanation": "The opening contrasts interpreting continuity with trying to stop change."
+    },
+    {
+      "index": 35,
+      "written": "authenticate",
+      "spoken": "erase",
+      "explanation": "An imagined restoration can remove historical evidence."
+    },
+    {
+      "index": 49,
+      "written": "enhanced",
+      "spoken": "exhausted",
+      "explanation": "Surviving components do not fully define authenticity."
+    },
+    {
+      "index": 74,
+      "written": "provisional",
+      "spoken": "unrestricted",
+      "explanation": "The broader account does not permit unlimited redevelopment."
+    },
+    {
+      "index": 80,
+      "written": "indiscriminate",
+      "spoken": "discriminating",
+      "explanation": "The judgement should distinguish interventions carefully."
+    },
+    {
+      "index": 104,
+      "written": "irretrievable,",
+      "spoken": "traceable,",
+      "explanation": "Documentation lets later conservators follow the reasoning behind decisions."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

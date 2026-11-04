@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "eaf65d8",
+  "baseCommit": "3a82d22e2b51b2d4f85f4490646f275e3c7244be",
   "checkedAt": "2026-11-04",
-  "scope": "Verified image display transport and new graph-majority mock versions. Historical papers, graders, timing, models and saved marks preserved.",
+  "scope": "Approved versioned audio and fixed HIW playback, preserving the image clarity release and all prior assessment snapshots. Native graders, providers, weights, saved marks and frozen papers unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "4996a05bb3e09e78087344e9a3aebbfa300df8e22733bbd0a0d8ec58da6c43c2",
+        "sha256": "65520b5d003e047b80d535a776f3513bbb5fe777abe5eecc7275f2d741f84e00",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -165,7 +165,7 @@
         "version": "essay-unified-2.6"
       },
       "public/reading-mock-tools.js": {
-        "sha256": "09f39d17f156b62a05a7a86677c21671cd8833bd00e4f03b7851353b0039a1ae",
+        "sha256": "c5655a466dad3579cd0faac269b90eafa7c468e413ec3a5a127f80530ad4fdd4",
         "version": null
       },
       "public/reading-practice.js": {
@@ -193,7 +193,7 @@
         "version": null
       },
       "speaking-lab.js": {
-        "sha256": "e145fd88f91c38823251827571279c0762a76ce0bed6ddc8f9d020dfbf745de5",
+        "sha256": "4c94f66a4693c05c655d33f5bdbc5d99de9414f6667d0f820ef1e9460c3bcc7c",
         "version": null
       },
       "speaking-scoring.js": {

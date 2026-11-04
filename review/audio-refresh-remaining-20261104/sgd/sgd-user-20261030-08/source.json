@@ -1,0 +1,67 @@
+{
+  "kind": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "id": "sgd-user-20261030-08",
+  "type": "sgd",
+  "title": "Adjusting to university life",
+  "narration": "three students are discussing the new experience at university.",
+  "turns": [
+    [
+      "Speaker 1",
+      "Hey everyone! Can't believe we've been at university for a month already. How's everyone feeling about it? I come from a small town where there wasn't much to do, mostly just watching movies or playing football with friends. But now that I'm here in the big city, everything feels so fresh and exciting."
+    ],
+    [
+      "Speaker 2",
+      "University life doesn't bring huge changes to me because I spent high school years in a big city. Students in high school organized activities and gatherings, but I wasn't of the outgoing type and seldom went out. I didn't enjoy social or entertainment activities."
+    ],
+    [
+      "Speaker 3",
+      "That is interesting. Personally, I believe the biggest challenge for freshmen is keeping a sensible balance between countless university activities and academic study. There are so many events both on campus and off campus, and many new students easily get overwhelmed by them."
+    ],
+    [
+      "Speaker 1",
+      "Exactly. Now that I have moved to this big city, almost everything around me feels incredibly fresh and exciting. There are concerts, exhibitions and social events I could never access in my small hometown. I am eager to explore as much as I possibly can."
+    ],
+    [
+      "Speaker 2",
+      "To be honest, I rarely took part in those high school social or entertainment events. They never really appealed to me. My daily routine here works in my own way. I tend to go out and hang out with people during weekdays when my study pressure is relatively light."
+    ],
+    [
+      "Speaker 3",
+      "A lot of my classmates burn themselves out from too many activities. They end up feeling worn out, with little energy left to review lessons or finish homework. Some of them can only catch up on proper rest during weekends or official holidays."
+    ],
+    [
+      "Speaker 1",
+      "Still, I realize there is a hidden risk. It is surprisingly easy for newcomers like me to get distracted by all these brand new attractions in the city. I have to remind myself frequently not to neglect my schoolwork while enjoying city life."
+    ],
+    [
+      "Speaker 2",
+      "I save most of my homework, laundry and house chores for weekends. If there is an invitation, I may join my friends' parties on Saturday nights. It serves as a nice little break after a full week of classes and casual outings."
+    ],
+    [
+      "Speaker 3",
+      "My strategy is to finish all my urgent study tasks immediately after class before I go out for fun. This way, I make sure important school assignments will never get delayed. Even so, I run into my own trouble, and I only plan short breaks, yet these breaks often stretch out and become far longer than expected."
+    ]
+  ],
+  "facts": [
+    "The students compare their first month at university and approaches to balancing study and social activities.",
+    "Speaker 1 comes from a small town and is excited by city concerts, exhibitions and social events.",
+    "Speaker 1 recognises the risk of distraction and wants to avoid neglecting coursework.",
+    "Speaker 2 already lived in a city and was not very outgoing, so university is less of a change.",
+    "Speaker 2 socialises on lighter weekdays, reserves most homework and chores for weekends and sometimes attends Saturday parties.",
+    "Speaker 3 warns that too many activities cause burnout and incomplete study, and completes urgent assignments before going out.",
+    "Speaker 3 admits that intended short breaks can become too long; the discussion highlights different routines rather than one agreed schedule."
+  ],
+  "sample": "The students compare their experiences of starting university. The first speaker is excited by the opportunities of city life after growing up in a small town, but recognises that new attractions could distract from coursework. The second finds the transition less dramatic because of a city background and follows a personal routine of weekday outings and weekend homework and chores. The third stresses the danger of overcommitting to activities and becoming too exhausted to study, preferring to finish urgent tasks before socialising. However, even this speaker struggles when short breaks become longer than planned. Their experiences highlight the need to balance enjoyment, rest and academic responsibilities.",
+  "source": {
+    "kind": "user-supplied-transcript",
+    "date": "2026-10-30",
+    "image": "AdobeExpressPhotos_66afbceabb2a4a9eb4192205279345ef_CopyEdited.png",
+    "contentStatus": "transcribed-user-provided"
+  },
+  "audioRate": "-17%",
+  "text": "Narration: three students are discussing the new experience at university.\nSpeaker 1: Hey everyone! Can't believe we've been at university for a month already. How's everyone feeling about it? I come from a small town where there wasn't much to do, mostly just watching movies or playing football with friends. But now that I'm here in the big city, everything feels so fresh and exciting.\nSpeaker 2: University life doesn't bring huge changes to me because I spent high school years in a big city. Students in high school organized activities and gatherings, but I wasn't of the outgoing type and seldom went out. I didn't enjoy social or entertainment activities.\nSpeaker 3: That is interesting. Personally, I believe the biggest challenge for freshmen is keeping a sensible balance between countless university activities and academic study. There are so many events both on campus and off campus, and many new students easily get overwhelmed by them.\nSpeaker 1: Exactly. Now that I have moved to this big city, almost everything around me feels incredibly fresh and exciting. There are concerts, exhibitions and social events I could never access in my small hometown. I am eager to explore as much as I possibly can.\nSpeaker 2: To be honest, I rarely took part in those high school social or entertainment events. They never really appealed to me. My daily routine here works in my own way. I tend to go out and hang out with people during weekdays when my study pressure is relatively light.\nSpeaker 3: A lot of my classmates burn themselves out from too many activities. They end up feeling worn out, with little energy left to review lessons or finish homework. Some of them can only catch up on proper rest during weekends or official holidays.\nSpeaker 1: Still, I realize there is a hidden risk. It is surprisingly easy for newcomers like me to get distracted by all these brand new attractions in the city. I have to remind myself frequently not to neglect my schoolwork while enjoying city life.\nSpeaker 2: I save most of my homework, laundry and house chores for weekends. If there is an invitation, I may join my friends' parties on Saturday nights. It serves as a nice little break after a full week of classes and casual outings.\nSpeaker 3: My strategy is to finish all my urgent study tasks immediately after class before I go out for fun. This way, I make sure important school assignments will never get delayed. Even so, I run into my own trouble, and I only plan short breaks, yet these breaks often stretch out and become far longer than expected."
+}

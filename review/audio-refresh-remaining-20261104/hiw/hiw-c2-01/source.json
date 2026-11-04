@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-c2-01",
+  "uid": "ipt:hiw-c2-01",
+  "type": "hiw",
+  "title": "Standards and discretion",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "Administrative standards are often defended as a means of insulating decisions from personal preference. Their legitimacy, however, remains contingent on the purposes they serve and the circumstances in which they are applied. A rule may constrain discretion without eliminating the judgement required to interpret an unusual case. Treating every classification as provisional does not entail abandoning consistency; it acknowledges that categories can obscure distinctions relevant to a defensible decision. The crucial question is whether departures from routine are authorised through reasons that others can examine. Where decisions are reversible, institutions can learn from objections without presenting every revision as an admission of incompetence. Accountability therefore depends on making interpretations contestable while preserving a coherent explanation of why comparable cases receive comparable treatment.",
+  "passage": "Administrative standards are often defended as a means of insulating decisions from personal preference. Their legitimacy, however, remains inevitable on the purposes they serve and the circumstances in which they are applied. A rule may preclude discretion without eliminating the judgement required to interpret an unusual case. Treating every classification as definitive does not entail abandoning consistency; it acknowledges that categories can obscure distinctions relevant to a defensible decision. The crucial question is whether departures from routine are imposed through reasons that others can examine. Where decisions are irreversible, institutions can learn from objections without presenting every revision as an admission of incompetence. Accountability therefore depends on making interpretations incontestable while preserving a coherent explanation of why comparable cases receive comparable treatment.",
+  "answers": [
+    18,
+    35,
+    51,
+    78,
+    88,
+    109
+  ],
+  "corrections": [
+    {
+      "index": 18,
+      "written": "inevitable",
+      "spoken": "contingent",
+      "explanation": "Legitimacy depends on purposes and circumstances; the speaker does not describe it as inevitable."
+    },
+    {
+      "index": 35,
+      "written": "preclude",
+      "spoken": "constrain",
+      "explanation": "A rule limits discretion without removing the need for judgement."
+    },
+    {
+      "index": 51,
+      "written": "definitive",
+      "spoken": "provisional",
+      "explanation": "The classifications remain open to reconsideration."
+    },
+    {
+      "index": 78,
+      "written": "imposed",
+      "spoken": "authorised",
+      "explanation": "Departures are justified through reasons others can examine."
+    },
+    {
+      "index": 88,
+      "written": "irreversible,",
+      "spoken": "reversible,",
+      "explanation": "The ability to revise decisions enables institutional learning."
+    },
+    {
+      "index": 109,
+      "written": "incontestable",
+      "spoken": "contestable",
+      "explanation": "Accountability requires interpretations to be open to challenge."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

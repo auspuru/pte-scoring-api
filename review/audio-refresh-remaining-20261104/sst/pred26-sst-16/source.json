@@ -1,0 +1,30 @@
+{
+  "kind": "sst",
+  "id": "pred26-sst-16",
+  "type": "sst",
+  "title": "Journalism and Internet",
+  "topic": "Media",
+  "minutes": 10,
+  "voice": "fable",
+  "text": "Online journalism can combine written reporting with photographs, audio, video and links to background material in a single story. Digital tools also make research faster because reporters can search documents, contact sources and check earlier coverage quickly. At the same time, speed increases the risk of publishing unverified information before facts have been confirmed. Traditional news organisations have also faced economic pressure as audiences and advertising moved online. The internet changes the tools and business model of journalism, but careful verification and clear sourcing remain central to credible reporting.",
+  "keyPoints": [
+    "Online journalism can combine written reporting with photographs, audio, video and links to background material in a single story.",
+    "Digital tools also make research faster because reporters can search documents, contact sources and check earlier coverage quickly.",
+    "At the same time, speed increases the risk of publishing unverified information before facts have been confirmed.",
+    "Traditional news organisations have also faced economic pressure as audiences and advertising moved online."
+  ],
+  "sample": "Online journalism can combine written reporting with photographs, audio, video and links to background material in a single story; digital tools also make research faster because reporters can search documents, contact sources and check earlier coverage quickly; and at the same time, speed increases the risk of publishing unverified information before facts have been confirmed.",
+  "predictionSource": {
+    "provider": "PTE Nepal",
+    "week": "21-27 September 2026",
+    "checkedAt": "2026-09-23",
+    "lastReviewed": "2026-09-24",
+    "contentStatus": "adapted",
+    "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+    "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+    "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+    "task": "sst",
+    "sourceId": "13000523",
+    "sourceTitle": "Journalism and Internet"
+  }
+}

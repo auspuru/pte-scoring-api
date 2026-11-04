@@ -1,0 +1,63 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-11",
+  "title": "Computers",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "e76371fe626e547ad8678f0ddbc9a68644f1304ddf7facf71e2c5bc64e8c35c1",
+  "spokenTextSha256": "e76371fe626e547ad8678f0ddbc9a68644f1304ddf7facf71e2c5bc64e8c35c1",
+  "audioFile": "pred26-sst-11-neural-review-20261104.mp3",
+  "audioSha256": "e599dbf14e3b77ea5427b50a82ad9824bea3cff1d9af7f1d0971ca768085a3ca",
+  "masterFile": "pred26-sst-11-native.flac",
+  "masterSha256": "16b049572fddcff331b477cbb22898efa3bb4450fc950b1f143b4357f1b65e15",
+  "bytes": 773804,
+  "seconds": 38.664,
+  "wordsPerMinuteIncludingPauses": 133.5,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -19.85,
+  "truePeakDbTP": -2.44,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 2.26,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -21.66,
+    "sourceTruePeakDbTP": -4.26
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "4d9333a7220e2915e205b00bc28d7adc11d9c6e491d0818aadb087cab909b4fa",
+      "textSha256": "e76371fe626e547ad8678f0ddbc9a68644f1304ddf7facf71e2c5bc64e8c35c1",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_34be064e3e1f43048b134c067da01b85",
+      "masterSha256": "a346a3adcef3c72b6d24cc46bc3f038a4bb97913cf248694a94ba6c40e1617c0",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_e5eb7a7676fc4eb4bed377e8ba54de37",
+    "audioSha256": "e599dbf14e3b77ea5427b50a82ad9824bea3cff1d9af7f1d0971ca768085a3ca",
+    "sourcePromptProvided": false,
+    "text": "Computers support communication, analysis, record-keeping, and automated tasks across education, health, business, and many other fields. Their speed and storage capacity can improve productivity, but greater dependence on digital systems also creates risks. Cybersecurity failures, unequal access, and loss of basic manual processes can become serious problems when organizations digitize without planning. People still need judgment to decide what data means and whether an automated result is appropriate. The value of computers therefore comes from combining technical capability with responsible design, security, and human oversight.",
+    "differences": [
+      {
+        "expected": "organisations digitise",
+        "heard": "organizations digitize"
+      },
+      {
+        "expected": "judgement",
+        "heard": "judgment"
+      }
+    ]
+  }
+}

@@ -323,6 +323,7 @@ async function prewarmNarration(narration, ids, { attempts=3, baseDelayMs=1000, 
   return { total:ids.length, succeeded, failed };
 }
 function installNarration(app, directory, { prewarm=true } = {}) {
+  const approvedAudio=require('./approved-audio');approvedAudio.install(app);
   let openAiNeuralRetryAt = 0;
   const narration=createNarration(directory,async input=>{
     if(input.preferLocal) return createLocalNarration(input);
@@ -390,7 +391,7 @@ function installNarration(app, directory, { prewarm=true } = {}) {
       res.status(e.status||503).json({error:e.status?e.message:'The recording could not be loaded. Please retry shortly.'});
     }
   });
-  const sstIds=(predictions.sst||[]).map(q=>q.id);
+  const sstIds=(predictions.sst||[]).filter(q=>!approvedAudio.entryFor(q)).map(q=>q.id);
   if(prewarm) setImmediate(()=>prewarmNarration(narration,require('./content/listening-mocks').missing.map(q=>q.id),{attempts:1}).catch(error=>
     console.warn('[writing-audio] Listening prewarm task failed:',error.message)));
   if(prewarm) setImmediate(()=>prewarmNarration(narration,sstIds).catch(error=>

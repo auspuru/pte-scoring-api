@@ -1,0 +1,46 @@
+{
+  "kind": "sgd",
+  "id": "sgd-1",
+  "type": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "title": "Extending library opening hours",
+  "narration": "Three students are discussing whether the university library should extend its opening hours.",
+  "turns": [
+    [
+      "Maya",
+      "I think the library should stay open later throughout the semester, not only during exams. Some students work in the evening and need somewhere quiet afterwards. My shared house is noisy, so having access until midnight would make a real difference. What do you both think?"
+    ],
+    [
+      "Ben",
+      "I understand the need, but opening the whole building could be expensive. We would need security, lighting and staff even if only a few students came. I would rather see a limited late-opening area, with student-card access, than promise a service the library cannot sustain."
+    ],
+    [
+      "Clara",
+      "A small area sounds sensible, but getting home safely is another issue. The last bus leaves before midnight. Students without cars might not benefit unless transport is considered too. Perhaps the university could coordinate a shuttle on the busiest nights rather than run it every evening."
+    ],
+    [
+      "Maya",
+      "That is a fair point. I do not need the borrowing desk to stay open; I mainly need a desk, power and internet. We could start with the ground-floor study room. A short survey might tell us which nights working students actually need it most."
+    ],
+    [
+      "Ben",
+      "I would support a trial based on that survey. We could count visits and check the cost for six weeks, then decide whether to continue. Clear rules would matter, especially about noise, visitors and what students should do if they need help after staff leave."
+    ],
+    [
+      "Clara",
+      "Then our recommendation could combine a small supervised study area with a transport check. We should ask students about both demand and travel, and make sure accessibility is included. That gives the university evidence before it commits to opening the entire library later."
+    ]
+  ],
+  "facts": [
+    "The discussion concerns later library access for students.",
+    "Maya supports later opening because work and noisy housing limit study opportunities.",
+    "Ben worries about cost and proposes a small card-access area with rules and a six-week trial.",
+    "Clara raises safe transport and accessibility, suggesting a shuttle on busy nights.",
+    "The group converges on surveying demand and trialling a limited study area alongside transport planning."
+  ],
+  "sample": "The three students discuss extending library opening hours. Maya supports later access because students with jobs or noisy accommodation need a quiet place to study. Ben agrees there may be demand, but questions the cost of keeping the whole building open. He suggests a smaller area with controlled access, clear rules and a six-week trial. Clara adds that safe travel is equally important, since the last bus leaves before midnight, and proposes checking shuttle options and accessibility. Maya accepts the smaller-area idea because she mainly needs a desk and internet, not a borrowing service. The discussion therefore moves from a general request for longer hours towards a more practical proposal: survey students, trial a limited study space and consider transport before expanding the service.",
+  "text": "Narration: Three students are discussing whether the university library should extend its opening hours.\nMaya: I think the library should stay open later throughout the semester, not only during exams. Some students work in the evening and need somewhere quiet afterwards. My shared house is noisy, so having access until midnight would make a real difference. What do you both think?\nBen: I understand the need, but opening the whole building could be expensive. We would need security, lighting and staff even if only a few students came. I would rather see a limited late-opening area, with student-card access, than promise a service the library cannot sustain.\nClara: A small area sounds sensible, but getting home safely is another issue. The last bus leaves before midnight. Students without cars might not benefit unless transport is considered too. Perhaps the university could coordinate a shuttle on the busiest nights rather than run it every evening.\nMaya: That is a fair point. I do not need the borrowing desk to stay open; I mainly need a desk, power and internet. We could start with the ground-floor study room. A short survey might tell us which nights working students actually need it most.\nBen: I would support a trial based on that survey. We could count visits and check the cost for six weeks, then decide whether to continue. Clear rules would matter, especially about noise, visitors and what students should do if they need help after staff leave.\nClara: Then our recommendation could combine a small supervised study area with a transport check. We should ask students about both demand and travel, and make sure accessibility is included. That gives the university evidence before it commits to opening the entire library later."
+}

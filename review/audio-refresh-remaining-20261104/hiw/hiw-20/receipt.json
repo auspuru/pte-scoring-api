@@ -1,0 +1,62 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-20",
+  "title": "Managing river catchments",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "d4aab7e47fd684a3c0c8803608f295eb1783b3de1c789d7e9f8792fabbb976f1",
+  "spokenTextSha256": "d4aab7e47fd684a3c0c8803608f295eb1783b3de1c789d7e9f8792fabbb976f1",
+  "audioFile": "hiw-20-neural-review-20261104.mp3",
+  "audioSha256": "eebb2f9097d5a95f19d52b71a83489f5eb45b6b7ce2a07b4d99712e63f87f761",
+  "masterFile": "hiw-20-native.flac",
+  "masterSha256": "c82994ca64856dd0531b6f463018149e5db85e3cdb41f2c84cb162ea5db71ec5",
+  "bytes": 1039724,
+  "seconds": 51.96,
+  "wordsPerMinuteIncludingPauses": 152.4,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -19.57,
+  "truePeakDbTP": -2.46,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 3.08,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.2,
+    "sourceTruePeakDbTP": -5.08
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "ed0449e16199311996f962f939d0fcc8e65ddb014019de0e8cfdc64cdbf3110c",
+      "textSha256": "d4aab7e47fd684a3c0c8803608f295eb1783b3de1c789d7e9f8792fabbb976f1",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_60b4ffd72c86435eba2e9940a7435c1d",
+      "masterSha256": "0787b7edcc87062b2eaafd03a31fd983389a3b74e5954a227176783f77f5e5c1",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_b06259612bd64ed092988757f61a3b88",
+    "audioSha256": "eebb2f9097d5a95f19d52b71a83489f5eb45b6b7ce2a07b4d99712e63f87f761",
+    "sourcePromptProvided": false,
+    "text": "A river connects places that may be governed by different authorities and used for competing purposes. An action that improves conditions in one location can transfer a problem downstream, especially when drainage works accelerate the movement of water. Managing the catchment as a connected system therefore requires cooperation beyond individual property boundaries. Farmers, residents, and local agencies may agree on the need to reduce flooding while disagreeing about where water should be retained. Evidence about soils, rainfall, and land use can clarify the available options, but it does not eliminate questions about how costs are shared. Effective planning makes these trade-offs explicit and revisits decisions as conditions change. It also recognizes that small interventions can have cumulative effects, so their combined consequences matter as much as the performance of any single project.",
+    "differences": [
+      {
+        "expected": "tradeoffs",
+        "heard": "trade offs"
+      },
+      {
+        "expected": "recognises",
+        "heard": "recognizes"
+      }
+    ]
+  }
+}

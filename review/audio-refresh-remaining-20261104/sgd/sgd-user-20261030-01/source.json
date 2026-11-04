@@ -1,0 +1,70 @@
+{
+  "kind": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "id": "sgd-user-20261030-01",
+  "type": "sgd",
+  "title": "Tackling a college essay",
+  "narration": "Three students are discussing how to tackle the challenge of writing a college essay.",
+  "turns": [
+    [
+      "Speaker 1",
+      "Guys, I'm really struggling with this essay. It's so much more difficult than high school, and I have no idea where to start. It's just overwhelming. I keep rereading the prompt, but I'm still not sure if I'm interpreting it correctly."
+    ],
+    [
+      "Speaker 2",
+      "Hey, don't worry too much about it. The first thing you should do is to make sure you understand the question. Trying to write without a clear idea of what you're supposed to be discussing will just make things harder. Maybe try breaking the prompt down into smaller parts or even talk to your professor after class to clarify what they're looking for."
+    ],
+    [
+      "Speaker 3",
+      "Yeah. You don't need to start by writing the summary or introduction. Just start with the main content first. Get all your ideas down, and then you can organize them into a logical order later. I always do a brain dump first just writing everything I know or think about the topic without worrying about structure."
+    ],
+    [
+      "Speaker 2",
+      "That's true. Once you have your main points, you can write a draft and then go back and revise. You might find it easier to write the summary once you've done that. And don't forget, we're here to help, too. We can proofread your draft and give you some feedback. If you want, we could even set up a study session this weekend to go over your outline together."
+    ],
+    [
+      "Speaker 1",
+      "That sounds like a good plan. I feel much better about this now. I think I'll try the brain dump method tonight and then maybe share my rough points with you tomorrow."
+    ],
+    [
+      "Speaker 3",
+      "The writing center on campus is also a great resource. They can help you brainstorm ideas and even review your essay before you submit it."
+    ],
+    [
+      "Speaker 2",
+      "Exactly, don't hesitate to use the resources available to you. And take breaks too when you find yourself stuck. Sometimes stepping away for a bit can help clear your mind and give you a fresh perspective. I always set a timer like 45 minutes of writing, then a 10-minute break. It keeps me from burning out."
+    ],
+    [
+      "Speaker 1",
+      "Yeah, you guys make a lot of sense. I'll start by understanding the question and then move on from there. And I'll definitely use the writing center's help, too. Thank you so much! I was so stressed earlier, but now I actually have a clear starting point."
+    ],
+    [
+      "Speaker 3",
+      "You're welcome! Just remember to take it one step at a time. Writing an essay doesn't have to be a huge, insurmountable task. You're capable of breaking it down and conquering it, piece by piece. And honestly, your first draft doesn't have to be perfect just getting something on paper is already progress."
+    ],
+    [
+      "Speaker 2",
+      "Exactly, remember we're only a call away. We all struggle at times, but that's how we learn and grow. You've got this!"
+    ]
+  ],
+  "facts": [
+    "The discussion concerns helping a student who feels overwhelmed by a college essay and is unsure about the prompt.",
+    "Speaker 2 recommends understanding the question, breaking it into parts or asking the professor for clarification.",
+    "Speaker 3 recommends brainstorming or a brain dump before organising the main content; the introduction or summary can wait.",
+    "Speaker 2 offers peer proofreading, feedback and a study session, and recommends regular breaks to avoid burnout.",
+    "Speaker 3 recommends the campus writing center and reassures the student that an imperfect first draft is progress.",
+    "Speaker 1 feels reassured and plans to clarify the question, brainstorm, share ideas and use the writing center."
+  ],
+  "sample": "The students discuss how to approach a difficult college essay. The first speaker feels overwhelmed and is unsure how to interpret the prompt. The second recommends breaking down the question or asking the professor for clarification, then drafting and revising with peer feedback. The third suggests getting ideas down before worrying about structure and using the campus writing center. The second also recommends regular breaks to avoid burnout, while the third stresses that an imperfect first draft is still progress. The first speaker accepts this advice and plans to brainstorm, share rough points and seek support. Overall, the discussion moves from anxiety to a manageable writing plan.",
+  "source": {
+    "kind": "user-supplied-transcript",
+    "date": "2026-10-30",
+    "image": "AdobeExpressPhotos_a720df8ed6be4d7fa5bfd18d7ae3c3cf_CopyEdited.png",
+    "contentStatus": "transcribed-user-provided"
+  },
+  "audioRate": "-17%",
+  "text": "Narration: Three students are discussing how to tackle the challenge of writing a college essay.\nSpeaker 1: Guys, I'm really struggling with this essay. It's so much more difficult than high school, and I have no idea where to start. It's just overwhelming. I keep rereading the prompt, but I'm still not sure if I'm interpreting it correctly.\nSpeaker 2: Hey, don't worry too much about it. The first thing you should do is to make sure you understand the question. Trying to write without a clear idea of what you're supposed to be discussing will just make things harder. Maybe try breaking the prompt down into smaller parts or even talk to your professor after class to clarify what they're looking for.\nSpeaker 3: Yeah. You don't need to start by writing the summary or introduction. Just start with the main content first. Get all your ideas down, and then you can organize them into a logical order later. I always do a brain dump first just writing everything I know or think about the topic without worrying about structure.\nSpeaker 2: That's true. Once you have your main points, you can write a draft and then go back and revise. You might find it easier to write the summary once you've done that. And don't forget, we're here to help, too. We can proofread your draft and give you some feedback. If you want, we could even set up a study session this weekend to go over your outline together.\nSpeaker 1: That sounds like a good plan. I feel much better about this now. I think I'll try the brain dump method tonight and then maybe share my rough points with you tomorrow.\nSpeaker 3: The writing center on campus is also a great resource. They can help you brainstorm ideas and even review your essay before you submit it.\nSpeaker 2: Exactly, don't hesitate to use the resources available to you. And take breaks too when you find yourself stuck. Sometimes stepping away for a bit can help clear your mind and give you a fresh perspective. I always set a timer like 45 minutes of writing, then a 10-minute break. It keeps me from burning out.\nSpeaker 1: Yeah, you guys make a lot of sense. I'll start by understanding the question and then move on from there. And I'll definitely use the writing center's help, too. Thank you so much! I was so stressed earlier, but now I actually have a clear starting point.\nSpeaker 3: You're welcome! Just remember to take it one step at a time. Writing an essay doesn't have to be a huge, insurmountable task. You're capable of breaking it down and conquering it, piece by piece. And honestly, your first draft doesn't have to be perfect just getting something on paper is already progress.\nSpeaker 2: Exactly, remember we're only a call away. We all struggle at times, but that's how we learn and grow. You've got this!"
+}
