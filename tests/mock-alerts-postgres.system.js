@@ -50,3 +50,14 @@ test('PostgreSQL unattended Writing claims are exclusive across pools and retain
  at+=180001;assert.equal(await make(second).claim('alice',a.id,0),undefined);
  const held=await second.get('alice',a.id);assert.equal(held.assessmentRecovery[0].status,'held');assert.deepEqual(held.answers,a.answers);assert.equal(await second.get('bob',a.id),null);
 });
+
+test('Speaking deadline scan and upload across PostgreSQL pools retain the reserved recording once',{timeout:20000},async t=>{
+ const express=require('express'),{installSpeakingMock,timing}=require('../speaking-mock');const db=await database(t);let at=9000,calls=0;const servers=[],services=[];
+ const make=async pool=>{const app=express();app.use(express.json());const lab=installSpeakingMock(app,{pool,directory:'/unused',verifyToken:s=>s==='alice'?'alice':null,getAccount:async()=>({}),now:()=>at,backgroundEnabled:true,azureAvailable:false,gradeResponse:async q=>{calls++;return{transcript:'Synthetic response.',content:{scoringMode:'ai',total:0,maximum:require('../speaking-mock-report').contentMaximum(q)}};}});await lab.store.initialise();await lab.progressive.jobs.initialise();const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));servers.push(server);services.push(lab);return{lab,base:'http://127.0.0.1:'+server.address().port+'/api/speaking-mocks/attempts/'};};
+ db.onClose(async()=>{for(const lab of services){await lab.waitForJobs();await lab.stop();}for(const server of servers){server.closeAllConnections();await new Promise(r=>server.close(r));}});
+ const first=await make(db.first),second=await make(db.pool()),id=randomUUID();const q={id:'synthetic-ra',type:'ra',name:'Read Aloud',text:'A synthetic response.',preparation:0,seconds:40};
+ await first.lab.store.update('alice',id,()=>({id,questions:[q],responses:[],questionCount:1,index:0,status:'active',startedAt:1000,questionStartedAt:1000,deadline:10000,assessmentProfile:{mode:'progressive-v1',owner:'alice',diBackend:'portal-gpt'}}));at=10000;
+ await Promise.all([first.lab.progressive.recover(),second.lab.progressive.recover()]);const waiting=await first.lab.store.get('alice',id);assert.equal(waiting.submission.state,'finalizing');assert.deepEqual(waiting.submission.pending,[0]);
+ const body=Buffer.alloc(300,7),post=base=>fetch(base+id+'/recordings/0',{method:'POST',headers:{'x-session-token':'alice','Content-Type':'audio/webm'},body});at=21000;
+ const replies=await Promise.all([post(first.base),post(second.base),first.lab.progressive.recover()]);assert.equal(replies[0].status,200);assert.equal(replies[1].status,200);await Promise.all(services.map(s=>s.waitForJobs()));const saved=await second.lab.store.get('alice',id);assert.equal(saved.submission.state,'complete');assert.equal(saved.responses[0].recording.data,body.toString('base64'));assert.equal(calls,1);
+});

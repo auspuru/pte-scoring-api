@@ -63,6 +63,7 @@ function questionResult(a,q,response,index,provider){
   if(cmax===null)return {...base,status:'pending',missing:['question-rubric']};
   // An explicit skip, or an unvisited item when the timer submitted the test,
   // is zero. An unexplained hole in an already visited response stays pending.
+  if(!response?.recording&&[...(a.submission?.pending||[]),...(a.submission?.missing||[]),...(a.submission?.unattempted||[])].includes(index))return {...base,status:'pending',missing:['recording']};
   const unanswered=!response?.recording&&!response?.transcript?.trim()
     &&(response?.skipped===true||response==null&&Number.isInteger(a.index)&&index>=a.index);
   if(unanswered)return {...base,status:'unanswered',content:0,pronunciation:0,fluency:0,total:0,missing:[]};

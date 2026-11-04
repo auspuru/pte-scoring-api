@@ -384,3 +384,20 @@ test('Old generated-image reports retain their saved image while a new reattempt
  assert.deepEqual((await h.lab.store.get('alice',id)).questions[17],legacy);
  assert.equal(require('../content/speaking-mocks').papers[0].questions[17].id,'di-pred-3000411');
 });
+
+test('Visible overall timer warns once and worker expiry cannot lock out an in-flight upload',{timeout:10000},async t=>{
+ const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});assert.match(h.nodes.get('sm-overall-time').textContent,/^36:00$/);
+ const a=await h.active();await h.lab.store.update('alice',a.id,current=>{current.deadline=h.env.Date.now()+29000;return current;});await h.controller.open();await h.click({sm:'resume',id:a.id});
+ assert.match(h.nodes.get('sm-time-warning').textContent,/One minute/);await h.tick(28100);assert.equal(h.starts(),1);
+ let release,entered;const gate=new Promise(r=>release=r),uploadStarted=new Promise(r=>entered=r),request=h.env.fetch;
+ h.env.fetch=async(url,options)=>{if(url.endsWith('/recordings/0')&&options.method==='POST'){entered();await gate;}return request(url,options);};
+ t.after(()=>release());const expiry=h.tick(1100);await uploadStarted;
+ await h.lab.store.update('alice',a.id,current=>require('../speaking-mock').reconcile(current,h.env.Date.now()));
+ assert.equal((await h.active()).submission.state,'finalizing');release();await expiry;await h.lab.waitForJobs();
+ const saved=await h.active();assert(saved.responses[0].recording);assert.equal(saved.submission.state,'incomplete');assert.match(h.nodes.get('sm-preparing-status').textContent,/Submission incomplete/);assert.doesNotMatch(h.host.innerHTML,/Speaking score report/);
+});
+
+test('A pending deadline upload can be retried from device cache without recording again',{timeout:10000},async t=>{
+ const h=await harness(t,{failUpload:true});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});const a=await h.active();await h.lab.store.update('alice',a.id,current=>{current.deadline=h.env.Date.now()+29000;return current;});await h.controller.open();await h.click({sm:'resume',id:a.id});await h.tick(28100);await h.tick(1100);
+ assert.equal((await h.active()).submission.state,'finalizing');assert.match(h.nodes.get('sm-preparing-status').textContent,/Finishing your recording upload/);const starts=h.starts();await h.rawClick({sm:'reconcile-upload'});const saved=await h.active();assert(saved.responses[0].recording);assert.equal(h.starts(),starts);assert.equal(saved.submission.state,'incomplete');assert.match(h.nodes.get('sm-preparing-status').textContent,/Submission incomplete/);
+});

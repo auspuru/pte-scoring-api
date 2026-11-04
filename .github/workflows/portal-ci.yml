@@ -66,6 +66,7 @@ jobs:
             .cache/reading-history-*.png
             .cache/swt-practice-*.png
             .cache/progress-fast-*.png
+            .cache/speaking-mock-timer-*.png
             public/index.min.js
           include-hidden-files: true
           if-no-files-found: error

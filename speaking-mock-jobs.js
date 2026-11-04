@@ -2,8 +2,9 @@
 const path=require('node:path'),report=require('./speaking-mock-report'),scoring=require('./speaking-scoring');
 const {createJobs,createWorker,stage,disposition,hash}=require('./scoring-jobs');
 const academy=require('./visual-academy-client');
+const submission=require('./speaking-mock-submission');
 const VERSION='progressive-speaking-v1';
-const complete=a=>report.summarize({...a,status:'submitted'}).azure.status==='assessed';
+const complete=a=>!submission.blocked(a)&&report.summarize({...a,status:'submitted'}).azure.status==='assessed';
 const identity=(a,index)=>hash({version:VERSION,id:a.id,index,recording:a.responses[index].recording.hash,question:a.questions[index],profile:a.assessmentProfile?.diBackend||'academy'});
 const missing=(a,i)=>{const result=report.questionResult({...a,status:'submitted'},a.questions[i],a.responses[i],i,'azure');return !result.excluded&&result.total===null;};
 // Retain only bounded diagnostic codes, never model prose or learner answers.
@@ -82,12 +83,12 @@ async function repair(uid,id,{jobId,stage:stageName,stages:stageNames,operation,
       if(complete(current)){current.grading={status:'complete'};current.assessment={status:'ready',version:VERSION,publishedAt:now()};delete current.lease;published=true;}return current;});
     if(published){const scores=report.summarize(saved);console.info('[speaking-mock-published]',JSON.stringify({attemptId:id,questionCount:saved.questionCount,provider:'azure',azure:scores.azure.overallScore,accountedFor:scores.azure.assessedCount+scores.azure.excludedCount,assessedCount:scores.azure.assessedCount,excludedCount:scores.azure.excludedCount}));}
   }
-  async function status(uid,a){const ready=a.status==='submitted'&&complete(a);if(ready)return{status:'ready',ready:true,accountedFor:a.questionCount,total:a.questionCount};
+  async function status(uid,a){if(submission.blocked(a))return submission.progress(a);const ready=a.status==='submitted'&&complete(a);if(ready)return{status:'ready',ready:true,accountedFor:a.questionCount,total:a.questionCount};
     const candidate=await hydrate(uid,a),rows=await jobs.list(uid,a.id),s=report.summarize({...candidate,status:'submitted'}),held=rows.some(r=>r.status==='needs_attention'&&!report.exclusionFor(candidate,candidate.questions[r.data.index],r.data.index));
     const accountedFor=s.azure.assessedCount+s.azure.excludedCount;
     return{status:held?'delayed':'preparing',ready:false,accountedFor,total:a.questionCount,delayed:held||now()-(a.finishedAt||now())>600000};
   }
-  async function sweep(){if(sweeping)return;sweeping=true;try{const rows=await store.scanForScoring(cursor);cursor=rows.length?rows.at(-1).data.id:'';for(const {username,data}of rows){if(!includeLegacy&&data.assessmentProfile?.mode!=='progressive-v1')continue;let a=data;if(a.status==='active'&&now()>=a.deadline)a=await store.update(username,a.id,current=>{if(current.status==='active'&&now()>=current.deadline){current.status='submitted';current.finishedAt=now();current.grading={status:'pending'};}return current;});if(a.assessment?.status!=='ready')await ensure(username,a);}}finally{sweeping=false;}}
+  async function sweep(){if(sweeping)return;sweeping=true;try{const rows=await store.scanForScoring(cursor);cursor=rows.length?rows.at(-1).data.id:'';for(const {username,data}of rows){if(!includeLegacy&&data.assessmentProfile?.mode!=='progressive-v1')continue;let a=data;if(submission.due(a,now()))a=await store.update(username,a.id,current=>{return submission.reconcile(current,now());});if(a.assessment?.status!=='ready')await ensure(username,a);}}finally{sweeping=false;}}
   return{ensure,hydrate,status,publish,jobs,recover:sweep,repair,async diagnostics(uid,id){const a=await store.get(uid,id,{omitMockAudio:true});if(!a)return null;return{attemptId:id,...await status(uid,a),jobs:(await jobs.list(uid,id)).map(r=>({id:r.id,index:r.data.index,status:r.status,...(r.data.assessmentExclusion?{exclusion:{note:r.data.assessmentExclusion.note,operation:r.data.assessmentExclusion.operation}}:{}),updatedAt:Number(r.updated_at),stages:Object.fromEntries(Object.entries(r.data.stages||{}).map(([name,s])=>[name,{status:s.status,attempts:s.attempts||0,code:s.failure||null,...(s.detail?{detail:s.detail}:name==='content'&&r.data.contentRejection?{detail:contentRejection({contentReviewIssue:r.data.contentRejection.code,scoringMode:r.data.contentRejection.mode},a.questions[r.data.index])}:{})}])),remoteFailures:r.data.remoteFailures||[]}))};},async start(){await jobs.initialise();await worker.start();await sweep();sweeper=setInterval(()=>sweep().catch(()=>console.warn('[speaking-jobs] recovery scan will resume')),15000);sweeper.unref?.();},async stop(){clearInterval(sweeper);await worker.stop();},wait:worker.wait};
 }
 module.exports={VERSION,complete,identity,createMockJobs};
