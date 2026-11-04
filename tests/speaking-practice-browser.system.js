@@ -11,7 +11,7 @@ for(const width of [1365,390])test('Speaking practice '+width+'px: RTS modes plu
  t.after(async()=>{await browser?.close();await service.waitForAssessments();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
  browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{}),args:['--autoplay-policy=no-user-gesture-required','--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream','--use-file-for-fake-audio-capture='+mic]});
  const page=await browser.newPage();await page.setViewport({width,height:950});page.setDefaultTimeout(12000);const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:'+server.address().port);
- const click=async selector=>{await page.waitForSelector(selector,{visible:true});await page.$eval(selector,e=>e.scrollIntoView({block:'center'}));await page.click(selector);};
+ const click=async selector=>{await page.locator(selector).click();};
  await click('[data-speaking-mode="untimed"]');await click('[data-speaking-question="rts-original-20261024-01"]');
  await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Ready when you are');assert.equal(await page.evaluate(()=>__plays),1);assert.equal(await page.evaluate(()=>__records),0);
  await page.evaluate(()=>__offset+=120000);assert.equal(await page.$eval('#speaking-clock',e=>e.textContent),'Untimed');await click('#speaking-ready-start');await page.waitForFunction(()=>__bytes>100);

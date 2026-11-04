@@ -1465,7 +1465,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "User approved this exact recording.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_63b1849ec6134a368eebeed616402e56",
@@ -1474,6 +1474,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-02-prompt-20261104-2": {
@@ -1526,7 +1532,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_2a39c06b66414b0ebb8d6fba562de6e1",
@@ -1535,6 +1541,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-03-prompt-20261104-2": {
@@ -1587,7 +1599,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_b0a934b71a444e09b8ede06491e58e6c",
@@ -1596,6 +1608,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-04-prompt-20261104-2": {
@@ -1648,7 +1666,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_8dba831ebf544738bfc128af92e993d8",
@@ -1657,6 +1675,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-05-prompt-20261104-2": {
@@ -1709,7 +1733,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_e946302107864e018ebd8ec793307554",
@@ -1718,6 +1742,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-06-prompt-20261104-2": {
@@ -1770,7 +1800,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_9917dd6c39554124ad82e2caf5ee834b",
@@ -1784,6 +1814,12 @@
         }
       ],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-07-prompt-20261104-2": {
@@ -1836,7 +1872,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_1e1624d5ea5a46cfafb21594f928879c",
@@ -1845,6 +1881,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-08-prompt-20261104-2": {
@@ -1897,7 +1939,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_c8465bfc1277456d939c2808396b94e7",
@@ -1906,6 +1948,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-09-prompt-20261104-2": {
@@ -1957,7 +2005,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "User approved this exact recording.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_fdaed93775f5426c87b7108b296e8c53",
@@ -1975,6 +2023,12 @@
         }
       ],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-10-prompt-20261104-2": {
@@ -2027,7 +2081,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_3f5d3e45a928418fae0faedc23d630d4",
@@ -2041,6 +2095,12 @@
         }
       ],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-11-prompt-20261104-2": {
@@ -2093,7 +2153,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_890cc5cc48fc412298dae42cb7ab6a64",
@@ -2102,6 +2162,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-12-prompt-20261104-2": {
@@ -2154,7 +2220,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_9445008a98a04069923d9d6cf76454f3",
@@ -2163,6 +2229,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-13-prompt-20261104-2": {
@@ -2215,7 +2287,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_30fd077e234c4668a5ab9329bfd29dff",
@@ -2224,6 +2296,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-14-prompt-20261104-2": {
@@ -2276,7 +2354,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_ac04829cac5b4a2fb9d158caa3c2acba",
@@ -2285,6 +2363,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-15-prompt-20261104-2": {
@@ -2337,7 +2421,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_5d8790f7e38b44f6b0394b429d51fcba",
@@ -2346,6 +2430,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-16-prompt-20261104-2": {
@@ -2398,7 +2488,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_50655007a58f4528945df38be136db2a",
@@ -2412,6 +2502,12 @@
         }
       ],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-17-prompt-20261104-2": {
@@ -2464,7 +2560,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_8f77e10f8f9d415890b90311d2204e10",
@@ -2473,6 +2569,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-18-prompt-20261104-2": {
@@ -2525,7 +2627,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_c948d870bcd249bcb7642e72cdb4e111",
@@ -2534,6 +2636,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-19-prompt-20261104-2": {
@@ -2586,7 +2694,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_8200d63100ad4c02b43053ab49c46805",
@@ -2595,6 +2703,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-20-prompt-20261104-2": {
@@ -2647,7 +2761,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_91e3072974d0414b8ab3cc319823b2d3",
@@ -2661,6 +2775,12 @@
         }
       ],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-21-prompt-20261104-2": {
@@ -2713,7 +2833,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_35311f7eae1a497f846418ed3f0dc796",
@@ -2722,6 +2842,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-22-prompt-20261104-2": {
@@ -2774,7 +2900,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_0fb3d183169547d8b4e62a2c441994d1",
@@ -2783,6 +2909,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-23-prompt-20261104-2": {
@@ -2835,7 +2967,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_1313eafe03244e0a9bf2282ae51d07a4",
@@ -2844,6 +2976,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-24-prompt-20261104-2": {
@@ -2896,7 +3034,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_779feffca44645ada9b5c7f3894b0783",
@@ -2905,6 +3043,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-25-prompt-20261104-2": {
@@ -2957,7 +3101,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_42e79d311c88483eb37bece7284b9465",
@@ -2971,6 +3115,12 @@
         }
       ],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-26-prompt-20261104-2": {
@@ -3023,7 +3173,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_9a1a78a646ee4338a0919fa032bf34c4",
@@ -3037,6 +3187,12 @@
         }
       ],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-27-prompt-20261104-2": {
@@ -3089,7 +3245,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_cdb80d811fa7449f842442e8d90406d6",
@@ -3098,6 +3254,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-28-prompt-20261104-2": {
@@ -3148,7 +3310,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_290d179d2ef445038992c9ae5dabbfa9",
@@ -3157,6 +3319,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-29-prompt-20261104-2": {
@@ -3209,7 +3377,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_1ddd27943b0949bea5d0190aa6667f49",
@@ -3218,6 +3386,12 @@
       "sourcePromptProvided": false,
       "differences": [],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   },
   "rts-original-20261024-30-prompt-20261104-2": {
@@ -3270,7 +3444,7 @@
       "profileDecision": "User approved the gain-only 0.95-speed question-09 clip; this processing is applied to the batch.",
       "scope": "Exact bytes approved for questions 01 and 09; other full clips still require listening review."
     },
-    "releaseReview": "Approved processing profile applied; full-clip listening remains unverified.",
+    "releaseReview": "User explicitly approved batch publication; technical release checks still apply.",
     "transcription": {
       "model": "gpt-4o-transcribe",
       "requestId": "req_9b7a2309e1a24ed28e129a52f9c36547",
@@ -3300,6 +3474,12 @@
         }
       ],
       "minorVariancePolicy": "User accepts minor notice/noticed-type variations; source text stays unchanged. Retain final question and situation meaning."
+    },
+    "publicationApproval": {
+      "decision": "approved-by-user",
+      "date": "2026-11-04",
+      "scope": "Publish this RTS batch following approval of the cleaner sample and common processing profile.",
+      "individualListeningEvidence": "Exact question-01 and question-09 clips were heard; do not claim all other clips were individually heard."
     }
   }
 }

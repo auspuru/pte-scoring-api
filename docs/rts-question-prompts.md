@@ -15,7 +15,9 @@ unavailable. The six earlier neural prompts and all frozen mock papers remain in
 
 The user's approval covers the common processing profile and exact pilot files,
 not a claimed full listening pass for unheard clips. The remaining 28 individual
-listening reviews are unverified. This remains a release draft. See the
+listening reviews are unverified. The user explicitly approved publication of
+the batch based on the cleaner sample and common processing profile; this
+does not fabricate individual listening evidence. Final CI remains required. See the
 [batch listening register](../review/rts-neural-20261104/README.md).
 
 The notes below describe the retained October version.

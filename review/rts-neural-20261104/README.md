@@ -6,7 +6,7 @@ Processing uses a constant volume adjustment only, without dynamic loudness norm
 
 The source situations and final questions remain unchanged. Independent transcripts confirm every final question is present. Minor UK/US spelling, number formatting and the user-accepted notice/noticed variation are recorded rather than treated as failed audio. All files fully decode, meet the 5–35 second RTS duration range and peak below -1.5 dBTP.
 
-**Review scope:** the user listened to and approved the exact question-01 and updated question-09 files and the common delivery profile. Individual full-clip listening for the other 28 remains unverified. Attempts to obtain automated acoustic reviews returned refusals or hypothetical observations; none is represented as a listening pass. This draft is not deployed.
+**Review scope:** the user listened to and approved the exact question-01 and updated question-09 files and the common delivery profile. Individual full-clip listening for the other 28 remains unverified. Attempts to obtain automated acoustic reviews returned refusals or hypothetical observations; none is represented as a listening pass. The user has now explicitly approved publication of the batch. Final CI and deployment checks still apply. This approval is recorded separately from individual listening evidence.
 
 Click a recording, then View raw / Download raw file to listen.
 
@@ -51,4 +51,4 @@ The [approved question-09 comparison](q9-quality-repair/) is retained, including
 
 Authoring helper: `python scripts/author-rts-neural.py --verify` checks all current and historical source/media/master hashes and full decoding without a provider call. `--generate QUESTION_ID --output work/rts-review-candidates` explicitly authors one resumable review candidate, using the latest recorded generation profile and gain-only processing.
 
-Release gate from the requested plan: full-clip listening and acceptance before publication, applicable desktop/timing/cache/history checks, successful final-head CI and normal deployment verification. No additional mobile-browser campaign is included.
+Release decision: the user explicitly approved publication of this batch after accepting the cleaner processing. Preserve honest individual-listening status; require applicable desktop/timing/cache/history checks, successful final-head CI and normal deployment verification. No additional mobile-browser campaign is included.
