@@ -1,0 +1,63 @@
+{
+  "status": "prepared-not-generated",
+  "scope": "audition-only-not-for-scored-playback",
+  "exactWords": true,
+  "candidates": [
+    {
+      "id": "sst-marin",
+      "type": "sst",
+      "voice": "marin",
+      "text": "A strong business idea is rarely created from nothing; it usually combines existing knowledge in a way that solves a problem more effectively. Novelty matters, but usefulness matters as well, because an unusual idea has little value if it does not improve an experience, product or process. Entrepreneurs should therefore test whether customers understand the idea, whether it can be delivered reliably and whether competitors can copy it easily. Innovation continues after launch as feedback reveals weaknesses and new possibilities. The central lesson is that uniqueness comes from purposeful improvement and execution, not simply from being different."
+    },
+    {
+      "id": "sst-cedar",
+      "type": "sst",
+      "voice": "cedar",
+      "text": "A strong business idea is rarely created from nothing; it usually combines existing knowledge in a way that solves a problem more effectively. Novelty matters, but usefulness matters as well, because an unusual idea has little value if it does not improve an experience, product or process. Entrepreneurs should therefore test whether customers understand the idea, whether it can be delivered reliably and whether competitors can copy it easily. Innovation continues after launch as feedback reveals weaknesses and new possibilities. The central lesson is that uniqueness comes from purposeful improvement and execution, not simply from being different."
+    },
+    {
+      "id": "sgd-three-voices",
+      "type": "sgd",
+      "sourceId": "sgd-1",
+      "segments": [
+        {
+          "role": "narrator",
+          "voiceCandidate": "marin",
+          "text": "Three students are discussing whether the university library should extend its opening hours."
+        },
+        {
+          "turn": 1,
+          "speaker": "Maya",
+          "voiceCandidate": "marin",
+          "text": "I think the library should stay open later throughout the semester, not only during exams. Some students work in the evening and need somewhere quiet afterwards. My shared house is noisy, so having access until midnight would make a real difference. What do you both think?"
+        },
+        {
+          "turn": 2,
+          "speaker": "Ben",
+          "voiceCandidate": "cedar",
+          "text": "I understand the need, but opening the whole building could be expensive. We would need security, lighting and staff even if only a few students came. I would rather see a limited late-opening area, with student-card access, than promise a service the library cannot sustain."
+        },
+        {
+          "turn": 3,
+          "speaker": "Clara",
+          "voiceCandidate": "coral",
+          "text": "A small area sounds sensible, but getting home safely is another issue. The last bus leaves before midnight. Students without cars might not benefit unless transport is considered too. Perhaps the university could coordinate a shuttle on the busiest nights rather than run it every evening."
+        }
+      ]
+    },
+    {
+      "id": "wfd-cedar",
+      "type": "wfd",
+      "voice": "cedar",
+      "text": "Our department offers practical workshops for students interested in environmental research."
+    }
+  ],
+  "acceptance": [
+    "exact words and technical terms",
+    "clear consonants and word endings",
+    "natural unforced pauses",
+    "stable contrasting SGD voices",
+    "no clipping or heavy processing",
+    "listen on headphones and phone speaker before bulk approval"
+  ]
+}
