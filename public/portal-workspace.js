@@ -14,7 +14,7 @@
   };
   const routes = Object.freeze({
     dashboard: { pane: 'dashboardPane', title: 'Home', path: 'home', eyebrow: 'Your practice workspace', context: '' },
-    progress: { pane:'progressPane',nav:'nav-saved-results',title:'My Progress',path:'progress',eyebrow:'Your activity',context:'' },
+    progress: { pane:'progressPane',nav:'nav-progress',title:'My Progress',path:'progress',eyebrow:'Your activity',context:'' },
     'saved-results': {pane:'savedResultsPane',nav:'nav-saved-results',title:'Results',path:'results',eyebrow:'Saved attempts',context:''},
     'practice-hub': { pane: 'practiceHubPane', nav: 'nav-practice-hub', title: 'Practice', path: 'practice', eyebrow: 'Individual questions', context: '' },
     'mock-tests': { pane: 'mockTestsPane', nav: 'nav-mock-tests', title: 'Mock Tests', path: 'mock-tests', eyebrow: 'Timed tests', context: '' },

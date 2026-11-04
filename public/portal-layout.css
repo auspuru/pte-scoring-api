@@ -1,12 +1,13 @@
 /* Approved layout skeleton. No global tokens, type defaults, report styles or protected-exam rules are replaced. */
 .portal-layout-header{display:none}
+.portal-swt-focus{display:none}
 @media screen {
 body.portal-layout:not(.portal-exam-active) #appShell{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
 body.portal-layout:not(.portal-exam-active) .portal-layout-header{display:block;grid-column:1/-1;background:var(--bg-card);border-bottom:1px solid var(--line);z-index:40}
 body.portal-layout:not(.portal-exam-active) .portal-layout-header-inner{max-width:1400px;min-height:78px;margin:0 auto;padding:0 32px;display:flex;align-items:center;gap:48px}
 body.portal-layout:not(.portal-exam-active) .portal-layout-brand{display:flex;align-items:center;gap:10px;padding:0;border:0;background:none;text-align:left;color:var(--ink);box-shadow:none;min-height:44px;border-radius:5px}
 .portal-layout-brand img{width:45px;height:40px;object-fit:contain}.portal-layout-brand span{font-size:14px;font-weight:650;line-height:1.3;white-space:nowrap}.portal-layout-brand small{display:block;font-size:10px;font-weight:400;color:var(--ink-soft);margin-top:3px}
-body.portal-layout:not(.portal-exam-active) .portal-layout-primary{display:flex;gap:30px;align-self:stretch;align-items:stretch}
+body.portal-layout:not(.portal-exam-active) .portal-layout-primary{display:flex;gap:30px;align-self:stretch;align-items:stretch;min-width:0;overflow-x:auto}
 body.portal-layout:not(.portal-exam-active) .portal-layout-primary .nav-item{position:relative;display:flex;align-items:center;min-height:44px;padding:0 1px;border:0;border-radius:0;background:none;box-shadow:none;color:var(--ink-soft);font-size:13px;font-weight:500;transform:none}
 body.portal-layout:not(.portal-exam-active) .portal-layout-primary .nav-item.active{color:var(--accent);font-weight:650}
 body.portal-layout:not(.portal-exam-active) .portal-layout-primary .nav-item.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--accent)}
@@ -164,5 +165,49 @@ body.portal-layout:not(.portal-exam-active) #portalSidebar [data-layout-assistan
 @media(max-width:640px){body.portal-layout:not(.portal-exam-active) .pane.portal-layout-report{width:100%;margin:0 auto}}
 
 @media(prefers-reduced-motion:reduce){body.portal-layout:not(.portal-exam-active) #portalSidebar{transition:none}}
+
+/* PC SWT workspace: passage, editor and native controls share the viewport. */
+@media(min-width:1000px){
+ body.portal-layout.portal-swt-workspace:not(.portal-exam-active){overflow:hidden}
+ body.portal-layout.portal-swt-workspace:not(.portal-exam-active) #appShell{height:100dvh;min-height:0;overflow:hidden}
+ body.portal-layout.portal-swt-workspace:not(.portal-exam-active) .main-body{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden}
+ body.portal-layout.portal-swt-workspace:not(.portal-exam-active) .topbar{display:none!important}
+ body.portal-layout.portal-swt-workspace:not(.portal-exam-active) #portalContent{flex:1;min-height:0;overflow:hidden}
+ body.portal-layout.portal-swt-workspace:not(.portal-exam-active) #portalContent>#swtPane{height:100%;width:100%;max-width:none!important;padding:14px 24px 18px;overflow:hidden;scrollbar-gutter:auto}
+ body.portal-layout.portal-swt-workspace #swtPane>[data-studio-navigation]{display:none}
+ body.portal-layout.portal-swt-workspace #swtPracticeScreen{display:grid!important;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto minmax(0,1fr);gap:10px 14px;height:100%;min-height:0;max-width:none}
+ body.portal-layout.portal-swt-workspace #swtPracticeScreen>.swt-heading{grid-column:1/-1;flex-direction:row;flex-wrap:nowrap;align-items:center;margin:0;gap:16px;min-height:40px}
+ body.portal-layout.portal-swt-workspace #swtPracticeScreen>.swt-heading .eyebrow,body.portal-layout.portal-swt-workspace #swtModeDescription{display:none}
+ body.portal-layout.portal-swt-workspace #swtPracticeScreen>.swt-heading h2{font-size:22px}
+ body.portal-layout.portal-swt-workspace #swtSummaryRequirements{margin-left:auto;max-width:none;gap:7px}
+ body.portal-layout.portal-swt-workspace #swtSummaryRequirements li{font-size:11px;padding:4px 8px}
+ body.portal-layout.portal-swt-workspace #swtFocusButton{display:inline-flex;align-items:center;flex-shrink:0;min-height:36px;padding:7px 12px;font-size:12px}
+ body.portal-layout.portal-swt-workspace #swtPracticeNav{grid-column:1;display:flex;align-items:center;flex-wrap:nowrap;margin:0;padding:8px 12px;gap:12px}
+ body.portal-layout.portal-swt-workspace #swtPracticeNav .swt-select-label{gap:2px;font-size:10px}
+ body.portal-layout.portal-swt-workspace #swtPracticeNav select{min-height:36px;font-size:13px;padding:6px 28px 6px 10px}
+ body.portal-layout.portal-swt-workspace #swtPracticeNav .timer-toggle{min-height:36px;font-size:12px;padding:7px 10px}
+ body.portal-layout.portal-swt-workspace #swtQuestionNavigation{grid-column:2;align-self:stretch;display:flex;align-items:center;margin:0;padding:8px 12px;min-width:310px}
+ body.portal-layout.portal-swt-workspace #swtQuestionNavigation button{min-height:36px;height:36px;font-size:12px}
+ body.portal-layout.portal-swt-workspace #swtPane #swtPracticeGrid{grid-column:1/-1;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:stretch;gap:18px;max-width:none;min-height:0;height:100%;width:100%;margin:0}
+ body.portal-layout.portal-swt-workspace #swtPracticeGrid>.card{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden;margin:0;padding:18px;border-radius:12px;box-shadow:none}
+ body.portal-layout.portal-swt-workspace #swtPracticeGrid .swt-card-heading{flex:0 0 auto;margin-bottom:10px;gap:9px;align-items:center}
+ body.portal-layout.portal-swt-workspace #swtPracticeGrid .swt-card-heading h2{font-size:16px}
+ body.portal-layout.portal-swt-workspace #swtPracticeGrid .swt-step{flex-basis:26px;height:26px;font-size:12px;border-radius:7px}
+ body.portal-layout.portal-swt-workspace #swtPracticeGrid .passage-meta{flex:0 0 auto;padding-bottom:10px;margin-bottom:12px}
+ body.portal-layout.portal-swt-workspace #passageBody{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding-right:12px;font-size:17px;line-height:1.75;scrollbar-gutter:stable}
+ body.portal-layout.portal-swt-workspace #swtWritePane>.swt-card-heading{display:none}
+ body.portal-layout.portal-swt-workspace #swtWritePane .write-tabs{flex:0 0 auto;margin-bottom:10px;padding:3px}
+ body.portal-layout.portal-swt-workspace #swtWritePane .write-tab{min-height:36px;padding:6px 10px;font-size:13px}
+ body.portal-layout.portal-swt-workspace #swtWritePane :is(#writeTabPane,#planTabPane):not(.hidden){display:flex;flex-direction:column;flex:1;min-height:0}
+ body.portal-layout.portal-swt-workspace #swtWritePane :is(.summary-input,.scratch-input){flex:1;min-height:80px;resize:none;font-size:16px;line-height:1.65;padding:14px}
+ body.portal-layout.portal-swt-workspace #swtWritePane .swt-editor-label{flex:0 0 auto;font-size:12px;margin-bottom:7px}
+ body.portal-layout.portal-swt-workspace #swtWritePane .word-meter{flex:0 0 auto;margin:9px 0 4px;font-size:12px}
+ body.portal-layout.portal-swt-workspace #swtWritePane .swt-editor-status{flex:0 0 auto;font-size:12px}
+ body.portal-layout.portal-swt-workspace #swtEditorHint{display:none}
+ body.portal-layout.portal-swt-workspace #swtWritePane .write-actions{flex:0 0 auto;margin-top:10px;padding-top:10px;gap:6px}
+ body.portal-layout.portal-swt-workspace #swtWritePane .scratch-note{flex:0 0 auto;margin:8px 0;font-size:12px}
+ body.portal-layout.portal-swt-workspace.portal-swt-expanded #appShell{grid-template-rows:minmax(0,1fr)}
+ body.portal-layout.portal-swt-workspace.portal-swt-expanded .portal-layout-header{display:none}
+}
 
 }
