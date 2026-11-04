@@ -119,7 +119,9 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   const base='http://127.0.0.1:'+server.address().port+'/api/speaking-mocks';
   async function request(route,body,user='alice',binary=false){const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':user,'Content-Type':binary?'audio/webm':'application/json'},body:body===undefined?undefined:binary?body:JSON.stringify(body)});return {status:r.status,body:await r.json()};}
   const id=crypto.randomUUID();let a=(await request('/attempts',{id,paperId:'speaking-mock-1',results:[{overallScore:90}]})).body;
-  assert.equal(a.overall,null);assert.equal(a.responses,undefined);assert.equal(a.question.type,'intro');
+  assert.equal(a.overall,null);assert.equal(a.responses,undefined);assert.equal(a.question.type,'intro');assert.equal(a.deadline-a.startedAt,40*60000);
+  await store.update('alice',id,value=>{value.deadline=value.startedAt+36*60000;return value;});
+  assert.equal((await request('/attempts',{id,paperId:'speaking-mock-1'})).body.deadline-a.startedAt,36*60000,'An existing attempt retains its original clock.');
   assert.equal((await request('/attempts/'+id,undefined,'bob')).status,404);assert.equal((await request('/attempts/'+id,undefined,'')).status,401);
   assert.equal((await request('/attempts/'+id+'/recordings/0',Buffer.alloc(200,1),'alice',true)).status,409);
   assert.equal((await request('/attempts/'+id+'/reattempt',{id:crypto.randomUUID()})).status,409);
@@ -146,13 +148,13 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   assert.equal((await request('/attempts/'+id+'/reattempt',{})).status,400);
   const fresh=(await request('/attempts/'+id+'/reattempt',{id:newId,overallScore:90})).body;
   assert.equal(fresh.id,newId);assert.equal(fresh.reattemptOf,id);assert.equal(fresh.status,'active');assert.equal(fresh.index,0);assert.equal(fresh.overall,null);
-  assert.equal(fresh.deadline-fresh.startedAt,saved.deadline-saved.startedAt);assert(fresh.startedAt>saved.startedAt);
+  assert.equal(fresh.deadline-fresh.startedAt,40*60000);assert.equal(saved.deadline-saved.startedAt,36*60000);assert(fresh.startedAt>saved.startedAt);
   const copy=await store.update('alice',newId,value=>value);assert.deepEqual(copy.questions,bank.reattemptQuestions(saved));assert.deepEqual(copy.responses,[]);assert.equal(copy.grading,undefined);
   assert.match(copy.questions.find(q=>q.id==='di-pred-3000411').sample,/October/);assert.equal(saved.questions.find(q=>q.id==='di-pred-3000411').imageReference,undefined);
   assert.equal((await request('/attempts/'+id+'/reattempt',{id:newId})).body.id,newId,'Network retries reuse the same new attempt.');
   assert.equal(JSON.stringify(await store.update('alice',id,value=>value)),before,'Reattempting preserves the prior recordings and result.');
   assert.equal(itemCalls,27);assert.equal(overallCalls,0);
-  for(const paper of bank.papers.slice(1)){const created=(await request('/attempts',{id:crypto.randomUUID(),paperId:paper.id})).body;assert.equal(created.paperId,paper.id);assert.equal(created.questionCount,27);}
+  for(const paper of bank.papers.slice(1)){const created=(await request('/attempts',{id:crypto.randomUUID(),paperId:paper.id})).body;assert.equal(created.paperId,paper.id);assert.equal(created.questionCount,27);assert.equal(created.deadline-created.startedAt,40*60000);}
 
 });
 

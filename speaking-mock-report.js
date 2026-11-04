@@ -20,15 +20,17 @@ function validContent(q,result){
   return maximum!==null&&confirmed(result)&&!unavailable(result)&&result.maximum===maximum&&Number.isInteger(result.total)&&bounded(result.total,maximum);
 }
 function validExclusion(value,q,response,index,attemptId){
-  return !!(value&&q&&value.reason==='feedback-unavailable'&&value.authorizedBy==='administrator'
+  return !!(value&&q&&['feedback-unavailable','deadline-unattempted'].includes(value.reason)&&value.authorizedBy==='administrator'
     &&value.attemptId===attemptId&&value.index===index&&value.questionId===q.id
     &&typeof value.operation==='string'&&/^[a-zA-Z0-9:_-]{1,100}$/.test(value.operation)
     &&typeof value.note==='string'&&value.note.trim()&&value.note.length<=500&&Number.isFinite(value.excludedAt)
-    &&value.questionHash===hash(q)&&response?.recording?.hash&&value.recordingHash===response.recording.hash);
+    &&value.questionHash===hash(q)&&(value.reason==='deadline-unattempted'
+      ?response?.deadlineUnattempted===true&&response.reason==='deadline-unattempted'&&!response.recording&&value.responseHash===hash(response)
+      :response?.recording?.hash&&value.recordingHash===response.recording.hash));
 }
 function exclusionFor(a,q,index){
   const value=a.assessmentExclusions?.[index];
-  return validExclusion(value,q,a.responses?.[index],index,a.id)?value:null;
+  return validExclusion(value,q,a.responses?.[index],index,a.id)&&(value.reason!=='deadline-unattempted'||require('./speaking-mock-submission').validRelease(a))?value:null;
 }
 function deliveryTraits(response,provider){
   const original=response?.[provider],effective=manual.effective(response,provider),values={},missing=[],manualTraits=[];

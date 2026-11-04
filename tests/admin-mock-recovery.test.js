@@ -21,3 +21,13 @@ test('Recovery binds owner/attempt/stage and reuses an operation after an interr
  input.value='another';input.oninput();assert.equal(host.querySelectorAll('[data-mock-job]').length,0);
  await ui.inspect();assert.equal(requests.length,3);
 });
+test('An explicit final unreached-question exclusion retains its operation and verifies preserved evidence',async()=>{
+ const {document}=parseHTML('<html><body><div id="host"></div></body></html>'),host=document.getElementById('host'),requests=[];
+ const before={...diagnostic(),owner:'alice',status:'incomplete',inputsHash:'input',confirmedHash:'marks',jobs:[],deadlineRelease:{eligible:true,number:27,questionId:'rts-2',evidenceHash:'a'.repeat(64)}};let fail=true;
+ const ui=mount(host,{username:'alice',operationId:()=> 'deadline-operation',request:async(path,body)=>{requests.push({path,body});if(!body)return before;if(fail)throw Error('Connection interrupted');return {...before,ready:true,status:'ready',accountedFor:27,deadlineRelease:{eligible:false}};}});
+ host.querySelector('[data-mock-attempt]').value=id;await ui.inspect();const details=host.querySelector('[data-mock-diagnostics]');
+ await details.onclick({target:host.querySelector('[data-mock-deadline-release]')});assert.equal(requests.length,1);
+ host.querySelector('[data-mock-deadline-confirm]').checked=true;
+ await details.onclick({target:host.querySelector('[data-mock-deadline-release]')});fail=false;await details.onclick({target:host.querySelector('[data-mock-deadline-release]')});
+ assert.deepEqual(requests[1],requests[2]);assert.equal(requests[1].body.mode,'release-deadline');assert.equal(requests[1].body.questionId,'rts-2');assert.equal(requests[1].body.confirmInstructorExclusion,true);assert.equal(requests[1].body.acknowledgeUncertain,undefined);assert.match(host.querySelector('[data-mock-notice]').textContent,/26 assessed and 1 excluded/);
+});

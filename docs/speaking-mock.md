@@ -2,6 +2,14 @@
 
 # Speaking mocks
 
+New starts and reattempts have a 40-minute overall clock from 4 November 2026.
+Resumed attempts retain their saved deadline. Individual preparation, prompt and
+recording windows are unchanged. A submitted deadline-incomplete attempt with one
+final unreached question can be released by an instructor-requested exclusion
+through the staff recovery panel when all other 26 assessments are confirmed and
+there are no missing or pending uploads. The original deadline outcome, recordings
+and confirmed marks remain saved; the report identifies the exclusion.
+
 Active overall model (27 October 2026): [task-weighted Speaking](speaking-task-weighted-overall.md).
 The previous blind whole-audio and 6:5:5 blended totals are legacy diagnostics,
 not the active report score.
