@@ -151,6 +151,14 @@ body.portal-layout:not(.portal-exam-active) .topbar{background:transparent!impor
 body.portal-layout:not(.portal-exam-active) .topbar::after,body.portal-layout:not(.portal-exam-active) .topbar .portal-emoji-context-wrap{display:none!important}
 body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .catalogue-heading::before{display:none}
 body.portal-layout:not(.portal-exam-active) #practiceHubPane.portal-layout-catalogue .practice-task-list{padding:0!important;border-top:0!important}
+/* Older catalogue/theme sheets use important declarations and load on demand. */
+body.portal-layout:not(.portal-exam-active) :is(#practiceHubPane,#mockTestsPane) .catalogue-heading h2{display:none!important}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card{padding:23px 25px!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:none!important;box-shadow:none!important}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card:last-child{border-bottom:0!important}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card h3{font-size:17px!important}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card h3 .portal-mini-emoji{display:none}
+body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card footer{padding:0!important;border:0!important}
+@media(max-width:750px){body.portal-layout:not(.portal-exam-active) #mockTestsPane .mock-catalogue-card{padding:21px!important}}
 body.portal-layout:not(.portal-exam-active) .personal-ai-assistant:not(.is-open) .personal-ai-launcher{display:none}
 body.portal-layout:not(.portal-exam-active) #portalSidebar [data-layout-assistant]{display:block;width:100%;text-align:left;font-size:13px;padding:10px 8px;min-height:42px;color:var(--ink-soft)}
 @media(max-width:640px){body.portal-layout:not(.portal-exam-active) .pane.portal-layout-report{width:100%;margin:0 auto}}
