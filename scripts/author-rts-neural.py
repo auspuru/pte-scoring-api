@@ -69,6 +69,10 @@ def main():
     if receipt.exists():
         saved = json.loads(receipt.read_text())
         assert saved['inputHash'] == binding and saved['masterSha256'] == digest(wav.read_bytes())
+        if mp3.exists():
+            if not saved.get('audioSha256'):
+                raise RuntimeError('Unreceipted encoded candidate exists; review it before retrying.')
+            assert saved['audioSha256'] == digest(mp3.read_bytes())
     elif wav.exists() or mp3.exists():
         raise RuntimeError('Unreceipted candidate exists; review it before retrying.')
     else:
