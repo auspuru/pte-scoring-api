@@ -37,3 +37,13 @@ test('Final RS release requires instructor confirmation and retains its exact op
  assert.deepEqual(requests[1],requests[2]);assert.equal(requests[1].path,'/api/admin/full-mocks/student/'+id+'/scoring/exclude-delivery');assert.deepEqual(requests[1].body.questionIds,['rs-final']);assert.equal(requests[1].body.confirmInstructorExclusion,true);assert.equal(requests[1].body.confirmUnusableAudio,undefined);
  assert.match(host.querySelector('[data-full-notice]').textContent,/Result ready/);assert.match(host.querySelector('[data-full-notice]').textContent,/completed marks are unchanged/);
 });
+test('Final ASQ transcription exclusion uses instructor confirmation without a claimed listening review',async()=>{
+ const {document}=parseHTML('<html><body><div id="host"></div></body></html>'),host=document.getElementById('host'),requests=[];
+ const value={...diagnostic(),assessedCount:64,accountedFor:64,questions:[{id:'asq-final',number:28,type:'asq',status:'failed',eligible:true,transcriptionEligible:true,reason:'transcription-unavailable'}]};
+ const ui=mount(host,{username:'student',operationId:()=> 'asq-operation',request:async(path,body)=>{requests.push({path,body});return body?{...value,ready:true,excludedCount:1,accountedFor:65,questions:[]}:value;}});
+ host.querySelector('[data-full-attempt]').value=id;await ui.inspect();const details=host.querySelector('[data-full-diagnostics]'),button=host.querySelector('[data-full-exclude-transcription]');
+ assert.match(button.textContent,/Question 28/);assert.equal(host.querySelector('[data-full-reviewed]'),null);
+ await details.onclick({target:button});assert.equal(requests.length,1);host.querySelector('[data-full-transcription-confirm]').checked=true;
+ await details.onclick({target:button});assert.equal(requests.length,2);assert.equal(requests[1].body.mode,'failed-transcription');assert.equal(requests[1].body.confirmInstructorExclusion,true);assert.equal(requests[1].body.confirmUnusableAudio,undefined);
+ assert.deepEqual(requests[1].body.questionIds,['asq-final']);assert.match(host.querySelector('[data-full-notice]').textContent,/Result ready/);
+});
