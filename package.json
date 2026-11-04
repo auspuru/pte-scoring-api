@@ -32,13 +32,17 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
+    "chart.js": "4.6.1",
     "compression": "^1.7.4",
     "cors": "^2.8.6",
     "express": "^4.22.2",
     "express-rate-limit": "^7.4.0",
+    "fuse.js": "7.5.0",
     "nodemailer": "^10.0.10",
     "pg": "^8.20.0",
-    "puppeteer": "^25.12.0"
+    "puppeteer": "^25.12.0",
+    "tabulator-tables": "6.7.1",
+    "wavesurfer.js": "8.0.5"
   },
   "engines": {
     "node": ">=20.0.0"

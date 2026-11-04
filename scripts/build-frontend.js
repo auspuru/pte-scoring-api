@@ -48,6 +48,7 @@ function assertProductionHtml(html) {
 }
 
 function build() {
+  require('./build-ux-vendor').build();
   const html = fs.readFileSync(htmlPath, 'utf8');
   assertProductionHtml(html);
   fs.writeFileSync(cssPath, css);

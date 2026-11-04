@@ -103,9 +103,10 @@
   }
   function filterMocks(items, { mode = 'sectional', module = 'all', search = '', attempt = 'all' } = {}, progress = {}) {
     const query = search.trim().toLowerCase();
+    const matches=globalThis.PortalUx?new Set(globalThis.PortalUx.search(items,query,['title','description','scope','searchText'])):null;
     return items.filter(m => m.mode === mode && (module === 'all' || module === m.module)
       && (attempt === 'all' || (attempt === 'attempted') === ['Done','In progress'].includes(progress[m.id]?.status))
-      && (!query || [m.title,m.description,m.scope,m.searchText].filter(Boolean).join(' ').toLowerCase().includes(query)))
+      && (!query || (matches?matches.has(m):[m.title,m.description,m.scope,m.searchText].filter(Boolean).join(' ').toLowerCase().includes(query))))
       .sort((a,b) => a.module.localeCompare(b.module) || a.number - b.number);
   }
   function createController({ document: doc, navigate, launchReading, launchWriting, launchSpeaking, canAccessSpeaking=()=>true, getSessionToken=()=>'', fetch: get = fetch, getProgress = async () => ({}) }) {

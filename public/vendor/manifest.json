@@ -1,0 +1,72 @@
+[
+  {
+    "package": "fuse.js",
+    "version": "7.5.0",
+    "path": "vendor/fuse.js/7.5.0/fuse.min.js",
+    "bytes": 26168,
+    "sha256": "369132af2fdc0fe145ef9b535afabbccb71692f38787d3f7c0f5eb5a7ebe4603"
+  },
+  {
+    "package": "fuse.js",
+    "version": "7.5.0",
+    "path": "vendor/fuse.js/7.5.0/LICENSE",
+    "bytes": 11343,
+    "sha256": "cc807e3caa26cdee316bab2ff6fdb508a2f619b74959fe59e513ef6e61635ebe"
+  },
+  {
+    "package": "wavesurfer.js",
+    "version": "8.0.5",
+    "path": "vendor/wavesurfer.js/8.0.5/wavesurfer.min.js",
+    "bytes": 53371,
+    "sha256": "ed10038af7cd8d0c242e2034bb0d7509377aa45455f5f207637db7b37542cc07"
+  },
+  {
+    "package": "wavesurfer.js",
+    "version": "8.0.5",
+    "path": "vendor/wavesurfer.js/8.0.5/LICENSE",
+    "bytes": 1531,
+    "sha256": "0fc992dc27cc34dde78bfeb024b4cadff6320f0dcbee2f1228efaeb533ca1364"
+  },
+  {
+    "package": "chart.js",
+    "version": "4.6.1",
+    "path": "vendor/chart.js/4.6.1/chart.umd.min.js",
+    "bytes": 210082,
+    "sha256": "87364cc2b2a76a6684929e7d6b80b18a897794db38400caff1fcf1791c6925d2"
+  },
+  {
+    "package": "chart.js",
+    "version": "4.6.1",
+    "path": "vendor/chart.js/4.6.1/LICENSE.md",
+    "bytes": 1093,
+    "sha256": "41a84aa2caba645f966a18d9c2056b73e6d3a81d80bc0046bc0011a2634d4cce"
+  },
+  {
+    "package": "@kurkle/color",
+    "version": "0.3.4",
+    "path": "vendor/@kurkle/color/0.3.4/LICENSE.md",
+    "bytes": 1085,
+    "sha256": "89ba0032731489153d552db918b727feb05128cf9eca20092875a9ad14147671"
+  },
+  {
+    "package": "tabulator-tables",
+    "version": "6.7.1",
+    "path": "vendor/tabulator-tables/6.7.1/tabulator.min.js",
+    "bytes": 455489,
+    "sha256": "4e218e8d309e9b704089e7808f5484f5257ea645ba4e4808c0ae13969500d55c"
+  },
+  {
+    "package": "tabulator-tables",
+    "version": "6.7.1",
+    "path": "vendor/tabulator-tables/6.7.1/tabulator.min.css",
+    "bytes": 28383,
+    "sha256": "ff598d8e961398e09a8e52ab21740e5ed952c84feebbdacec8f8a362dd3f73db"
+  },
+  {
+    "package": "tabulator-tables",
+    "version": "6.7.1",
+    "path": "vendor/tabulator-tables/6.7.1/LICENSE",
+    "bytes": 1082,
+    "sha256": "191a2ee554684e1064c897b432f0e1bc6dfa714ca045d3f6ea2cf692cbd398b7"
+  }
+]

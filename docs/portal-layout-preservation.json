@@ -1,6 +1,6 @@
 {
   "baselineCommit": "960d1fd1dc37d5772f24c27286181a0b30d461b2",
-  "scope": "Navigation, catalogue and individual question layout only. Existing assessment, feedback and IPT report components remain unchanged.",
+  "scope": "Presentation enhancements: catalogue search, saved recording waveform and progress charts/table. Native assessment, feedback, timing and IPT report components remain unchanged. The Speaking practice controller has two reviewed presentation-only additions.",
   "files": {
     "server.js": "49b249ffed4307e4daef7a6414c79bc89142ff307e3b1b930730c9b8d4e803f1",
     "full-mock/assessment.js": "5105e55ee9e551e98aa7d82080d0e29d64ed63cce53bdae2272e9f353932f9f3",
@@ -34,7 +34,7 @@
     "public/mock-impact-feedback.js": "0db0538a9d8d7f948135d0dc282ebe02a8721afe1936920fbb0e6214c958beee",
     "public/writing-lab-report.js": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
     "public/writing-lab-client.js": "b804264cc3a48916e19c48dab765858502889dfd7ad15db4eaca253302a0d44a",
-    "public/speaking-practice.js": "6dd0d7457540d00b9407178ba57cf4785e039b581b0a966279d763c39305cf1e",
+    "public/speaking-practice.js": "f7537d24dce9f0e0f82fac095fa2001ffdb1d885b6f28a24c354f0ee3d2d729e",
     "public/speaking-mock-client.js": "a9d80f1de1716b9136b94cd21e5961c1b9a073dd00804441d625b2c41b67883f",
     "public/reading-practice.js": "73894747029a2abb151e8de0dab2dbd6191b6a3e22246d49ac8109a33f7caa48",
     "public/reading-review.js": "98e9c23a186fcc72034d552e0664f1d8ccb420600e21fa27fa6bbf987a1a2872",
@@ -46,5 +46,9 @@
     "content/full-mock/scoring-lock.json": "260a904ebb56e645f1854a23b5ae3c01693e631eec2de35a8623dfc60c57e7c0",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
     "public/reading-mock-tools.js": "c5655a466dad3579cd0faac269b90eafa7c468e413ec3a5a127f80530ad4fdd4"
+  },
+  "presentationUpdates": {
+    "baselineCommit": "728476dedad6eeaba0afbd2fc2963bf194f9a254",
+    "public/speaking-practice.js": "One optional Fuse search path and one optional saved-playback waveform mount. All capture, cue, timing, save and scoring functions unchanged."
   }
 }

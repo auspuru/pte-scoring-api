@@ -15,6 +15,7 @@
   }
   function filterQuestions(questions,type,{search='',category='all',prediction='all'}={}) {
     const query=String(search).trim().toLowerCase();
+    if(globalThis.PortalUx)return globalThis.PortalUx.search(questions.filter(q=>q.type===type&&(prediction==='all'||(prediction==='weekly'?q.predictionSource?.weekly:!q.predictionSource))&&(type!=='di'||category==='all'||imageCategory(q)===category)).map(q=>({q,text:[q.id,q.title,q.topic,q.predictionSource?.sourceId,imageCategories[imageCategory(q)]].filter(Boolean).join(' ')})),query,['text']).map(row=>row.q);
     return questions.filter(q=>q.type===type&&(prediction==='all'||(prediction==='weekly'?q.predictionSource?.weekly:!q.predictionSource))&&(type!=='di'||category==='all'||imageCategory(q)===category)
       &&(!query||[q.id,q.title,q.topic,q.predictionSource?.sourceId,imageCategories[imageCategory(q)]].filter(Boolean).join(' ').toLowerCase().includes(query)));
   }
@@ -184,6 +185,7 @@
     function mountPlayback() {
       const node=doc.getElementById('speaking-playback');if(!node)return;
       node.innerHTML=playbackUrl?'<audio controls src="'+playbackUrl+'" aria-label="Your recorded response"></audio><a class="portal-button" href="'+playbackUrl+'" download="'+attempt.questionId+'-response.'+(attempt.recording?.mime==='audio/mp4'?'mp4':attempt.recording?.mime==='audio/wav'?'wav':attempt.recording?.mime==='audio/mpeg'?'mp3':'webm')+'">Download for teacher review</a>':attempt.recording?'Your recording is saved. Loading playback…':'';
+      env.PortalUx?.recording(node);
     }
     function navigationQuestions() {
       const type=attempt.question.type;
