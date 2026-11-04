@@ -224,3 +224,19 @@ test('Staff releases the final failed Repeat Sentence or ASQ with one explicit e
   assert.equal(await page.$eval('#fullMockRecoveryPanel',e=>e.scrollWidth<=e.clientWidth+1),true);assert.deepEqual(errors,[]);await page.close();
  }
 });
+test('Staff releases the final unreached Speaking question on mobile and desktop',{timeout:60000},async t=>{
+ const f=await fixture(t),username='deadline-release-browser';await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:'deadline-release@example.test'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ for(const width of [390,1440]){
+  const page=await browser.newPage();await page.setViewport({width,height:900});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const id='006d4971-2ad3-4f14-8e2a-0ea3ed450bdd',route='/api/admin/speaking-mocks/'+username+'/'+id+'/scoring',posts=[];let released=false;
+  const diagnostic=()=>({owner:username,attemptId:id,status:released?'ready':'incomplete',ready:released,accountedFor:released?27:26,total:27,assessedCount:26,excludedCount:released?1:0,inputsHash:'retained-inputs',confirmedHash:'retained-marks',jobs:[],deadlineRelease:{eligible:!released,number:27,questionId:'saved-last-rts',evidenceHash:'a'.repeat(64)}});
+  await page.setRequestInterception(true);page.on('request',async req=>{const pathname=new URL(req.url()).pathname;if(pathname===route||pathname===route+'/retry'){if(req.method()==='POST'){posts.push(JSON.parse(req.postData()));released=true;}return req.respond({status:200,contentType:'application/json',body:JSON.stringify(diagnostic())});}await req.continue();});
+  await page.goto(f.base+'/admin');if(await page.$eval('#dashboard',e=>getComputedStyle(e).display==='none')){await page.type('#adminKeyInput','isolated-auth-test-admin');await page.click('#authCard > button');}
+  await page.waitForSelector('#dashboard',{visible:true});await page.type('[aria-label="Search users"]',username);await page.click('button[onclick="viewUser(\''+username+'\')"]');
+  await page.waitForSelector('[data-mock-attempt]',{visible:true});await page.type('[data-mock-attempt]',id);await page.click('[data-mock-inspect]');await page.waitForSelector('[data-mock-deadline-release]');
+  assert.match(await page.$eval('[data-mock-diagnostics]',e=>e.textContent),/Question 27 was not reached/);await page.click('[data-mock-deadline-release]');assert.equal(posts.length,0);
+  await page.click('[data-mock-deadline-confirm]');await page.focus('[data-mock-deadline-release]');await page.keyboard.press('Enter');await page.waitForFunction(()=>document.querySelector('[data-mock-notice]')?.textContent.startsWith('Report ready.'));
+  assert.equal(posts.length,1);assert.equal(posts[0].mode,'release-deadline');assert.equal(posts[0].questionId,'saved-last-rts');assert.equal(posts[0].confirmInstructorExclusion,true);assert.match(await page.$eval('[data-mock-notice]',e=>e.textContent),/26 assessed and 1 excluded/);assert.equal(await page.$eval('#mockRecoveryPanel',e=>e.scrollWidth<=e.clientWidth+1),true);assert.deepEqual(errors,[]);await page.close();
+ }
+});

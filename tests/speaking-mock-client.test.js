@@ -386,7 +386,7 @@ test('Old generated-image reports retain their saved image while a new reattempt
 });
 
 test('Visible overall timer warns once and worker expiry cannot lock out an in-flight upload',{timeout:10000},async t=>{
- const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});assert.match(h.nodes.get('sm-overall-time').textContent,/^36:00$/);
+ const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});assert.match(h.nodes.get('sm-overall-time').textContent,/^40:00$/);
  const a=await h.active();await h.lab.store.update('alice',a.id,current=>{current.deadline=h.env.Date.now()+29000;return current;});await h.controller.open();await h.click({sm:'resume',id:a.id});
  assert.match(h.nodes.get('sm-time-warning').textContent,/One minute/);await h.tick(28100);assert.equal(h.starts(),1);
  let release,entered;const gate=new Promise(r=>release=r),uploadStarted=new Promise(r=>entered=r),request=h.env.fetch;

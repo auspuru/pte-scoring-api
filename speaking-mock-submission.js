@@ -2,8 +2,17 @@
 // One durable deadline transition for request handlers and background workers.
 // This module never reopens an already submitted attempt or replaces an answer.
 const GRACE_MS=90000;
+const {hash}=require('./scoring-jobs');
+function releaseEvidence(a){const {release,...submission}=a.submission||{};return hash({id:a.id,paperId:a.paperId,questions:a.questions,deadline:a.deadline,index:a.index,submission,inputs:(a.responses||[]).map(r=>r?{recording:r.recording?.hash||null,skipped:r.skipped===true,deadlineUnattempted:r.deadlineUnattempted===true,reason:r.reason||null}:null)});}
+function validRelease(a){
+ const s=a?.submission,r=s?.release,i=s?.unattempted?.[0],e=a?.assessmentExclusions?.[i];
+ return !!(a?.status==='submitted'&&s?.version===1&&s.reason==='deadline'&&s.state==='incomplete'&&s.unattempted?.length===1&&!s.pending?.length&&!s.missing?.length
+  &&e&&r?.version===1&&r.authorizedBy==='administrator'&&r.index===i&&r.evidenceHash===releaseEvidence(a)&&r.exclusionHash===hash(e)
+  &&e?.reason==='deadline-unattempted'&&e.operation===r.operation&&e.index===i&&e.attemptId===a.id&&e.questionId===a.questions?.[i]?.id
+  &&a.responses?.[i]?.deadlineUnattempted===true&&a.responses[i].reason==='deadline-unattempted'&&!a.responses[i].recording);
+}
 const due=(a,now)=>a?.status==='active'&&now>=a.deadline&&(a.submission?.state!=='finalizing'||now>a.submission.closesAt);
-const blocked=a=>['finalizing','incomplete'].includes(a?.submission?.state);
+const blocked=a=>a?.submission?.state==='finalizing'||a?.submission?.state==='incomplete'&&!validRelease(a);
 function progress(a){return {status:a.submission.state,ready:false,total:a.questionCount,pendingUploads:a.submission.pending||[],missingUploads:a.submission.missing||[],unattemptedQuestions:a.submission.unattempted||[],uploadClosesAt:a.submission.closesAt};}
 function reconcile(a,now,clock=require('./speaking-mock').timing){
  if(a.status!=='active'||now<a.deadline)return a;
@@ -22,4 +31,4 @@ function reconcile(a,now,clock=require('./speaking-mock').timing){
  return a;
 }
 function canUpload(a,index,now){return a.status==='active'&&a.submission?.state==='finalizing'&&a.submission.pending.includes(index)&&now<=a.submission.closesAt;}
-module.exports={GRACE_MS,due,blocked,progress,reconcile,canUpload};
+module.exports={GRACE_MS,due,blocked,progress,reconcile,canUpload,releaseEvidence,validRelease};

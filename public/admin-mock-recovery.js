@@ -21,6 +21,7 @@
     function paint(){
       const d=diagnostic;
       details.innerHTML='<p><strong>'+esc(d.accountedFor)+'/'+esc(d.total)+' questions accounted for · '+esc(d.status)+'</strong></p>'+(d.jobs||[]).filter(j=>j.status!=='ready').map(job=>'<section><h5>Question index '+esc(job.index)+'</h5>'+Object.entries(job.stages||{}).map(([name,s])=>'<p>'+esc(name)+': '+esc(s.status)+(s.code?' · '+esc(s.code):'')+(s.detail?' · '+esc(JSON.stringify(s.detail)):'')+(canRepair(job,name,s)?' <button type="button" class="btn-sm" data-mock-job="'+esc(job.id)+'" data-mock-stage="'+esc(name)+'">Retry missing '+esc(name)+'</button>':'')+'</p>').join('')+'</section>').join('');
+      if(d.deadlineRelease?.eligible)details.innerHTML+='<h5>Final unreached question</h5><p>Question '+esc(d.deadlineRelease.number)+' was not reached before the overall timer expired. All other 26 assessments are confirmed.</p><label>Exclusion note<textarea data-mock-deadline-note rows="3">This question was not reached before the overall timer expired. Excluded at instructor request; saved recordings and completed marks are retained.</textarea></label><label><input type="checkbox" data-mock-deadline-confirm> I confirm the instructor requested exclusion of Question '+esc(d.deadlineRelease.number)+'.</label><button type="button" class="btn-sm" data-mock-deadline-release>Exclude Question '+esc(d.deadlineRelease.number)+' and release report</button>';
     }
     async function inspect(){
       if(busy)return;const id=input.value.trim();
@@ -33,6 +34,17 @@
     input.oninput=()=>{serial++;diagnostic=null;details.innerHTML='';notice.textContent='';};
     host.querySelector('[data-mock-inspect]').onclick=inspect;
     details.onclick=async event=>{
+      if(event.target.closest('[data-mock-deadline-release]')){
+        if(busy||!diagnostic?.deadlineRelease?.eligible)return;
+        const before=diagnostic,release=before.deadlineRelease,note=details.querySelector('[data-mock-deadline-note]').value.trim();
+        if(!details.querySelector('[data-mock-deadline-confirm]').checked||note.length<10){notice.textContent='Confirm the instructor-requested exclusion and add a note.';return;}
+        const key=JSON.stringify({id:before.attemptId,evidence:release.evidenceHash,note});if(!operations.has(key))operations.set(key,'staff:'+operationId());
+        lock(true);notice.textContent='Releasing the saved report…';
+        try{const value=await request(path(before.attemptId)+'/retry',{mode:'release-deadline',questionId:release.questionId,evidenceHash:release.evidenceHash,operation:operations.get(key),note,confirmInstructorExclusion:true});
+          if(value.owner!==username||value.attemptId!==before.attemptId||value.inputsHash!==before.inputsHash||value.confirmedHash!==before.confirmedHash)throw Error('Retained evidence needs verification. Inspect the attempt again.');
+          diagnostic=value;paint();notice.textContent=value.ready?'Report ready. 26 assessed and 1 excluded; saved recordings and completed marks are unchanged.':'Release saved. Inspect scoring to check publication.';
+        }catch(e){notice.textContent=e.message;}finally{lock(false);}return;
+      }
       const button=event.target.closest('[data-mock-job]');if(!button||button.disabled||busy||!diagnostic)return;
       const id=diagnostic.attemptId,job=diagnostic.jobs.find(j=>j.id===button.dataset.mockJob),name=button.dataset.mockStage;
       if(!job||!canRepair(job,name,job.stages?.[name]||{}))return;
