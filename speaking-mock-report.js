@@ -30,6 +30,7 @@ function validExclusion(value,q,response,index,attemptId){
 }
 function exclusionFor(a,q,index){
   const value=a.assessmentExclusions?.[index];
+  if(value?.reason==='instructor-review-unavailable')return require('./mock-result-review').speakingExclusion(a,q,a.responses?.[index],index,value)?value:null;
   return validExclusion(value,q,a.responses?.[index],index,a.id)&&(value.reason!=='deadline-unattempted'||require('./speaking-mock-submission').validRelease(a))?value:null;
 }
 function deliveryTraits(response,provider){

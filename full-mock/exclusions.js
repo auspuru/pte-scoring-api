@@ -14,6 +14,7 @@ const automaticOperation = (state,candidate,response,job) => 'automatic-final:'+
 const unclearOperation = (state,candidate,response,job) => 'unclear-audio:'+digest({attempt:state.id,question:candidate.id,input:inputHash(response),snapshot:state.assessment.snapshotHash,job:digest(job)}).slice(0,40);
 function validExclusion(state, candidate, response, job) {
   const value = state.assessment?.exclusions?.[candidate.id];
+  if(value?.reason==='instructor-review-unavailable')return require('../mock-result-review').fullExclusion(state,candidate,response,job,value);
   const supported = value && response && job && (value.version === VERSION && value.reason === 'unusable-audio' && candidate.question.type === 'asq'
     || value.version === DELIVERY_VERSION && value.reason === 'instructor-delivery-exclusion' && candidate.question.type === 'rs'
     || value.version === TRANSCRIPTION_VERSION && value.reason === 'instructor-transcription-exclusion' && candidate.question.type === 'asq'
@@ -138,6 +139,7 @@ function createSupport({ store, validate, now = Date.now }) {
       responsesHash:digest(state.responses.map(inputHash)), confirmedHash:digest(Object.fromEntries(Object.entries(state.assessment.items).filter(([, job]) => job.status === 'assessed'))),
       status:state.assessment.status, assessedCount:result.assessedCount, excludedCount:result.excludedCount,
       accountedFor:result.accountedCount, total:paper.questions.length,
+      review:require('../mock-result-review').fullPlan(state,paper,now()),
       recovery:structuredClone(state.assessment.recovery || {}), busy:state.assessment.status === 'processing' || state.assessment.lease?.expiresAt > now(),
       questions:paper.questions.map((candidate, index) => {
         const job = state.assessment.items[candidate.id], response = state.responses[index + 1], row = result.items[index];
@@ -158,6 +160,7 @@ function createSupport({ store, validate, now = Date.now }) {
   }
   async function inspect(owner, id) { return inspectRecord(owner, await read(owner, id)); }
   async function exclude(owner, id, body = {}, kind = 'audio') {
+    const check=await read(owner,id);if(require('../mock-result-review').held(check.state))throw fail('Use Publish results to finish the instructor review.');
     const delivery = kind === 'delivery';
     const transcription = !delivery && body.mode === 'failed-transcription';
     const { operation, questionIds, note, evidenceHash:expected, confirmUnusableAudio, confirmInstructorExclusion } = body;

@@ -240,3 +240,24 @@ test('Staff releases the final unreached Speaking question on mobile and desktop
   assert.equal(posts.length,1);assert.equal(posts[0].mode,'release-deadline');assert.equal(posts[0].questionId,'saved-last-rts');assert.equal(posts[0].confirmInstructorExclusion,true);assert.match(await page.$eval('[data-mock-notice]',e=>e.textContent),/26 assessed and 1 excluded/);assert.equal(await page.$eval('#mockRecoveryPanel',e=>e.scrollWidth<=e.clientWidth+1),true);assert.deepEqual(errors,[]);await page.close();
  }
 });
+test('Staff analyses missing mock results twice and publishes separately on mobile and desktop',{timeout:60000},async t=>{
+ const f=await fixture(t),username='review-publish-browser';await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:'review-publish@example.test'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ for(const width of [390,1440])for(const engine of ['speaking','full']){
+  const page=await browser.newPage();await page.setViewport({width,height:900});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const id='006d4971-2ad3-4f14-8e2a-0ea3ed450bdd',route='/api/admin/'+engine+'-mocks/'+username+'/'+id+'/scoring',posts=[];let retries=0,published=false;
+  const diagnostic=()=>({owner:username,attemptId:id,status:published?'ready':'delayed',ready:published,accountedFor:published?27:26,total:27,assessedCount:26,excludedCount:published?1:0,jobs:[],questions:[],recovery:{},review:{started:retries>0,published,status:published?'published':'analysing',retries,limit:2,busy:false,canAnalyse:retries===0,canRetry:retries<2,canPublish:retries===2&&!published,assessedCount:26,excludedCount:0,evidenceHash:'evidence-'+retries,inputsHash:'saved-inputs',questions:[{id:'missing-question',number:27,type:'rts',reason:'Assessment unavailable',retryable:true}]}});
+  await page.setRequestInterception(true);page.on('request',async req=>{const pathname=new URL(req.url()).pathname;if(pathname===route||pathname===route+(engine==='speaking'?'/retry':'/review')){if(req.method()==='POST'){const body=JSON.parse(req.postData());posts.push(body);if(body.action==='analyse')retries++;else if(body.action==='publish')published=true;}return req.respond({status:200,contentType:'application/json',body:JSON.stringify(diagnostic())});}await req.continue();});
+  await page.goto(f.base+'/admin');if(await page.$eval('#dashboard',e=>getComputedStyle(e).display==='none')){await page.type('#adminKeyInput','isolated-auth-test-admin');await page.click('#authCard > button');}
+  await page.waitForSelector('#dashboard',{visible:true});await page.type('[aria-label="Search users"]',username);await page.click('button[onclick="viewUser(\''+username+'\')"]');
+  const panel=engine==='speaking'?'#mockRecoveryPanel':'#fullMockRecoveryPanel',input=engine==='speaking'?'[data-mock-attempt]':'[data-full-attempt]',inspect=engine==='speaking'?'[data-mock-inspect]':'[data-full-inspect]';
+  await page.waitForSelector(input,{visible:true});await page.type(input,id);await page.click(inspect);await page.waitForSelector(panel+' [data-result-analyse]');await page.click(panel+' [data-result-analyse]');
+  await page.waitForSelector(panel+' [data-result-publish]',{visible:true});await page.waitForFunction(selector=>!document.querySelector(selector).disabled,{},panel+' [data-result-publish]');
+  assert.equal(posts.length,2);assert(posts.every(p=>p.action==='analyse'));assert.match(await page.$eval(panel,e=>e.textContent),/Retry rounds 2\/2/);
+  await page.click(panel+' [data-result-publish]');assert.equal(posts.length,2);await page.click(panel+' [data-result-confirm]');
+  if(engine==='speaking')await page.screenshot({path:'.cache/admin-result-review-'+(width===390?'mobile':'desktop')+'.png',fullPage:true});
+  await page.focus(panel+' [data-result-publish]');await page.keyboard.press('Enter');await page.waitForFunction(selector=>document.querySelector(selector).textContent.includes('Results published.'),{},panel);
+  assert.equal(posts.length,3);assert.equal(posts[2].action,'publish');assert.equal(posts[2].confirmPublish,true);if(engine==='speaking')assert(posts.every(p=>p.mode==='instructor-review'));
+  assert.equal(await page.$eval(panel,e=>e.scrollWidth<=e.clientWidth+1),true);assert.deepEqual(errors,[]);await page.close();
+ }
+});

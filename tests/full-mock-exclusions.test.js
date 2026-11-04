@@ -153,3 +153,19 @@ test('The final RS release endpoint is admin-only and binds the exact owner, att
  assert.equal((await fetch(base+'wrong/'+f.id+'/scoring/exclude-delivery',{method:'POST',headers,body:JSON.stringify(f.body())})).status,404);
  const response=await fetch(base+route,{method:'POST',headers,body:JSON.stringify(f.body())});assert.equal(response.status,200);const done=await response.json();assert.equal(done.ready,true);assert.equal(done.assessedCount,64);assert.equal(done.excludedCount,1);
 });
+test('Two-round analysis and manual publication endpoints require administrator auth and preserve the exact owner',async t=>{
+ const f=await fixture(t,{delivery:true}),express=require('express'),app=express();app.use(express.json());
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'full-review-api-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
+ const service=require('../full-mock/api').installFullMock(app,{directory,paper,now:()=>3000,assessment:{assemble:async()=>({status:'ready',recording:{}}),adapters:{assess:async()=>({status:'failed',reason:'delivery-unavailable'})}},verifyToken:()=>null,getAccount:async()=>null,requireAdmin:(req,res,next)=>req.headers['x-admin-key']==='test-only-admin'?next():res.status(403).json({error:'Forbidden'})});
+ await service.store.create(owner,f.id,paper,()=>f.state,1000);t.after(()=>service.stop());
+ const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(async()=>{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));});
+ const base='http://127.0.0.1:'+server.address().port+'/api/admin/full-mocks/',route=owner+'/'+f.id+'/scoring',headers={'x-admin-key':'test-only-admin','Content-Type':'application/json'};
+ const post=(target,body,auth=headers)=>fetch(base+target,{method:'POST',headers:auth,body:JSON.stringify(body)});
+ assert.equal((await post(route+'/review',{action:'analyse'}, {'Content-Type':'application/json'})).status,403);
+ assert.equal((await post('wrong/'+f.id+'/scoring/review',{action:'analyse'})).status,404);
+ let d=await(await fetch(base+route,{headers})).json();
+ for(let n=1;n<=2;n++){const response=await post(route+'/review',{action:'analyse',operation:'review:api-round-'+n,evidenceHash:d.review.evidenceHash});assert.equal(response.status,200);await service.assessor.drain();d=await(await fetch(base+route,{headers})).json();assert.equal(d.ready,false);}
+ assert.equal(d.review.canPublish,true);const body={action:'publish',operation:'review:api-publish',evidenceHash:d.review.evidenceHash,note:'Instructor analysed the remaining unavailable question and chose publication.',confirmPublish:true};
+ assert.equal((await post(route+'/review',{...body,confirmPublish:false})).status,400);
+ const response=await post(route+'/review',body);assert.equal(response.status,200);const result=await response.json();assert.equal(result.ready,true);assert.equal(result.assessedCount,64);assert.equal(result.excludedCount,1);
+});

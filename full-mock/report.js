@@ -76,6 +76,7 @@ function metadata(paper, state, at) {
     completedCount:state.responses.slice(1).filter(row => row.sealed).length, expectedCount:paper.questions.length, mediaPending:pendingMedia(state) };
 }
 function statusFor(state, result) {
+  if(require('../mock-result-review').held(state))return 'awaiting-instructor';
   return state.assessment?.displayStatus || (state.assessment?.status === 'needs-attention' && state.assessment.recovery?.status === 'scheduled' ? 'processing' : null) || (result.ready ? 'complete' : state.assessment?.status === 'complete' ? 'needs-attention' : state.assessment?.status) || 'not-requested';
 }
 function summary(paper, state, at = Date.now()) {
@@ -102,7 +103,7 @@ function buildReport(paper, state, at = Date.now()) {
     return { ...marks, number:index + 1, label:task.label, section:task.section, skills:[...task.skills], title:clean(q.title), question, reference,
       answer:structuredClone(response.answer), responseReason:clean(response.reason, 80), transcript:transcription, recordings,
       recovered:state.recoveries.filter(row => row.itemToken === response.token).map(row => ({ answer:structuredClone(row.answer), receivedAt:row.receivedAt, status:'needs-review' })),
-      assessment:marks.status === 'assessed' ? { code:'assessed', label:'Assessed' } : marks.status === 'excluded' ? { code:marks.exclusion.reason, label:marks.exclusion.reason === 'automatic-recovery-exhausted' ? 'Excluded · assessment unavailable' : ['instructor-delivery-exclusion','instructor-transcription-exclusion'].includes(marks.exclusion.reason) ? 'Excluded · instructor request' : 'Excluded · unusable audio', action:marks.exclusion.note } : reasonFor(job, trusted, state.assessment?.recovery?.status === 'scheduled'),
+      assessment:marks.status === 'assessed' ? { code:'assessed', label:'Assessed' } : marks.status === 'excluded' ? { code:marks.exclusion.reason, label:marks.exclusion.reason === 'automatic-recovery-exhausted' ? 'Excluded · assessment unavailable' : ['instructor-delivery-exclusion','instructor-transcription-exclusion','instructor-review-unavailable'].includes(marks.exclusion.reason) ? 'Excluded · instructor request' : 'Excluded · unusable audio', action:marks.exclusion.note } : reasonFor(job, trusted, state.assessment?.recovery?.status === 'scheduled'),
       feedback:feedbackFor(q, response, job, marks, trusted, state.assessment?.recovery?.status === 'scheduled'), practice:{ path:'#/' + GUIDANCE[q.type][0], instruction:GUIDANCE[q.type][1] } };
   });
   const groups = TASKS.map(task => ({ type:task.type, label:task.label, section:task.section, skills:[...task.skills], ...result.groups[task.type],
@@ -119,7 +120,7 @@ function buildReport(paper, state, at = Date.now()) {
     possible:result.groups[point.type].possible, path:'#/' + GUIDANCE[point.type][0] }));
   const assessmentStatus = statusFor(state, result);
   return { ...result, ...metadata(paper, state, at), version:VERSION, aggregationVersion:result.version, assessmentStatus,
-    retryAvailable:!Object.values(state.assessment?.items||{}).some(job=>job.status!=='assessed'&&Object.values(job.stages||{}).some(stage=>stage.uncertain)) && !result.ready && assessmentStatus !== 'processing' && assessmentStatus !== 'version-mismatch' && items.some(item => item.status !== 'assessed' && item.assessment.label !== 'Recording needs recovery'),
+    retryAvailable:!require('../mock-result-review').held(state)&&!Object.values(state.assessment?.items||{}).some(job=>job.status!=='assessed'&&Object.values(job.stages||{}).some(stage=>stage.uncertain)) && !result.ready && assessmentStatus !== 'processing' && assessmentStatus !== 'version-mismatch' && items.some(item => item.status !== 'assessed' && item.assessment.label !== 'Recording needs recovery'),
     recoveredEvidenceCount:state.recoveries.length, groups, items, priorities, impactFeedback,
     interpretation:{ label:'Provisional', calibration:'Not yet calibrated', description:'These are IPT practice indices out of 90. They are not official Pearson scores or predictions of an exam result.',
       overall:'Overall is calculated directly from task contributions, independently of the four skill indices. Its range preserves three weights published as <1%; it is not an exam-score confidence interval.',

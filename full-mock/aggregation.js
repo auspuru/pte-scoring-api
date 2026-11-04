@@ -30,7 +30,7 @@ function bounds(profile, fractions) {
   }
   return { low, high, unresolvedWeights: uncertain.map(([type]) => type), publishedNumericWeightSum: denominator };
 }
-function aggregate(paper, state) {
+function aggregate(paper, state, {ignorePublication=false}={}) {
   if (state.status !== 'submitted') throw Object.assign(Error('Submit the test before viewing assessment results.'), { status: 409 });
   const snapshot = state.assessment?.snapshot, configured = snapshot?.weighting || defaults.SNAPSHOT;
   if (digest(paper) !== state.paperHash || snapshot && (digest(snapshot) !== state.assessment.snapshotHash || snapshot.paperHash !== state.paperHash)) throw Object.assign(Error('Saved assessment integrity failed.'), { status:503 });
@@ -62,9 +62,11 @@ function aggregate(paper, state) {
       practiceIndex: interval.unresolvedWeights.length ? null : Math.round(index(interval.low)),
       practiceIndexRange: { low: Math.floor(index(interval.low) + 1e-9), high: Math.ceil(index(interval.high) - 1e-9) } }];
   }));
+  const publicationHeld=!ignorePublication&&require('../mock-result-review').held(state);
+  if(publicationHeld)for(const profile of Object.values(profiles))Object.assign(profile,{status:'pending',practiceIndex:null,practiceIndexRange:null});
   return { version: VERSION, assessmentVersion: state.assessment?.version || null, snapshotHash: state.assessment?.snapshotHash || null,
     paperHash: state.paperHash, assessmentType: 'Provisional IPT practice assessment', calibrated: false, official: false,
-    ready: rows.length === 65 && rows.every(row => row.valid || row.excluded) && Object.values(groups).every(group => group.complete),
+    ready: !publicationHeld && rows.length === 65 && rows.every(row => row.valid || row.excluded) && Object.values(groups).every(group => group.complete),
     assessedCount: rows.filter(row => row.valid).length, excludedCount:rows.filter(row => row.excluded).length,
     accountedCount:rows.filter(row => row.valid || row.excluded).length, expectedCount: 65,
     weightingVersion: configured.version, practiceIndexPolicy: configured.practiceIndex, groups, profiles,

@@ -2,9 +2,10 @@
   const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.AdminFullMockRecovery=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
+  const resultReview=typeof module==='object'&&module.exports?require('./admin-result-review'):globalThis.AdminResultReview;
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function mount(host,{username,request,operationId=()=>crypto.randomUUID()}){
-    let diagnostic=null,busy=false,operation=null;
+    let diagnostic=null,busy=false,operation=null;const reviewOperations=new Map();
     host.innerHTML='<h4>Full mock recording review</h4><p>Inspect the exact submitted attempt. After listening to the saved recordings, exclude only unusable Answer Short Question audio. Completed marks and original recordings are retained.</p><label>Full mock attempt ID<input data-full-attempt autocomplete="off" placeholder="Attempt ID from the alert email"></label><button type="button" class="btn-sm" data-full-inspect>Inspect full mock</button><p role="status" aria-live="polite" data-full-notice></p><div data-full-diagnostics></div>';
     const input=host.querySelector('[data-full-attempt]'),notice=host.querySelector('[data-full-notice]'),details=host.querySelector('[data-full-diagnostics]');
     const path=id=>'/api/admin/full-mocks/'+encodeURIComponent(username)+'/'+encodeURIComponent(id)+'/scoring';
@@ -18,6 +19,7 @@
         +(heldTranscription&&!d.busy?'<h5>Final unavailable transcription</h5><p>Only Question '+esc(heldTranscription.number)+' will be excluded at instructor request. This records an unavailable assessment, without claiming a listening review.</p><label>Transcription exclusion note<textarea data-full-transcription-note rows="3">Excluded at instructor request because automatic transcription could not be completed. The original recording and all other confirmed assessments are retained.</textarea></label><label><input type="checkbox" data-full-transcription-confirm> I confirm the instructor requested exclusion of Question '+esc(heldTranscription.number)+'.</label><button type="button" class="btn-sm" data-full-exclude-transcription>Exclude Question '+esc(heldTranscription.number)+' and release report</button>':'')
         +(held&&!d.busy?'<h5>Final Repeat Sentence delivery assessment</h5><p>Only Question '+esc(held.number)+' will be excluded. Its recording and completed stages stay saved. The other 64 assessments are retained.</p><label>Instructor exclusion note<textarea data-full-delivery-note rows="3">Excluded at instructor request because the delivery assessment could not be completed. The saved response and completed assessment stages are retained.</textarea></label><label><input type="checkbox" data-full-instructor-confirm> I confirm the instructor requested exclusion of Question '+esc(held.number)+'.</label><button type="button" class="btn-sm" data-full-exclude-delivery>Exclude Question '+esc(held.number)+' and release report</button>':'');
     }
+    const legacyPaint=paint;paint=function(){legacyPaint();if(diagnostic.review?.started)details.innerHTML='';if(resultReview)details.innerHTML+=resultReview.render(diagnostic);};
     async function inspect(){
       if(busy)return;const id=input.value.trim();
       if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)){notice.textContent='Enter the exact Full Mock attempt ID.';return;}
@@ -28,6 +30,7 @@
     input.oninput=()=>{diagnostic=null;operation=null;details.innerHTML='';notice.textContent='';};
     host.querySelector('[data-full-inspect]').onclick=inspect;
     details.onclick=async event=>{
+      if(busy)return;if(resultReview&&await resultReview.act(event,{host,diagnostic,operations:reviewOperations,operationId,request:async body=>request(path(diagnostic.attemptId)+(body?'/review':''),body),commit:value=>{diagnostic=value;paint();},lock,notice:value=>{notice.textContent=value;}}))return;
       const delivery=!!event.target.closest('[data-full-exclude-delivery]'),transcription=!!event.target.closest('[data-full-exclude-transcription]');
       if((!delivery&&!transcription&&!event.target.closest('[data-full-exclude]'))||busy||!diagnostic)return;
       const held=diagnostic.questions.find(row=>transcription?row.transcriptionEligible:row.deliveryEligible);

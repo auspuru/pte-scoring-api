@@ -11,6 +11,20 @@ const adapters = require('../full-mock/adapters');
 const paper = loadPaper(), native = q => adapters.result(q, adapters.maxima(q));
 const make = (id, at) => session.create(id, paper, at, { preview:true });
 
+test('PostgreSQL: competing instructor reviews retain a two-retry cap across pools and wait for manual publication',async t=>{
+ const db=await database(t),stores=[createStore({pool:db.first}),createStore({pool:db.pool()})];await Promise.all(stores.map(s=>s.initialise()));
+ let calls=0;const options={paper,now:()=>3000,assemble:async()=>({status:'ready',recording:{}}),adapters:{assess:async()=>{calls++;await new Promise(r=>setImmediate(r));return{status:'failed',reason:'delivery-unavailable'};}}};
+ const engines=stores.map(store=>createEngine({...options,store}));t.after(()=>Promise.all(engines.map(e=>e.stop())));
+ const id=randomUUID(),selected=paper.questions.findIndex(q=>q.question.type==='rs');await stores[0].create('alice',id,paper,make,1000);
+ await stores[0].update('alice',id,state=>{session.end(state,paper,2000);state.assessment=require('../full-mock/assessment').stateFor(engines[0].snapshot);state.assessment.status='needs-attention';
+  paper.questions.forEach((q,i)=>{const response=state.responses[i+1];if(i===selected)response.segments=[{id:randomUUID(),mime:'audio/webm',finished:true,chunkCount:1,chunks:{0:{stored:true,sha256:'a'.repeat(64),bytes:100}}}];state.assessment.items[q.id]={inputHash:require('../full-mock/aggregation').inputHash(response),snapshotHash:state.assessment.snapshotHash,status:i===selected?'failed':'assessed',...(i===selected?{result:{status:'failed',reason:'delivery-unavailable'},stages:{delivery:{status:'partial',uncertain:false}}}:{result:native(q.question),stages:{}})};});return state;
+ });
+ const plan=async()=>{const r=await stores[0].get('alice',id);return require('../mock-result-review').fullPlan(r.state,r.paper,3000);};
+ for(let n=1;n<=2;n++){const p=await plan(),body={action:'analyse',operation:'review:competing-round-'+n,evidenceHash:p.evidenceHash};await Promise.all(engines.map(e=>e.review('alice',id,body)));await Promise.all(engines.map(e=>e.drain()));assert.equal(calls,n);assert.equal((await engines[0].results('alice',id)).ready,false);if(n===1){await engines[1].stop();engines[1]=createEngine({...options,store:stores[1]});}}
+ const p=await plan();assert.equal(p.retries,2);assert(p.canPublish);const body={action:'publish',operation:'review:competing-publish',evidenceHash:p.evidenceHash,note:'Instructor confirmed publication after two unavailable assessment retries.',confirmPublish:true};
+ await Promise.all(engines.map(e=>e.review('alice',id,body)));assert.equal(calls,2);const result=await engines[0].results('alice',id);assert(result.ready);assert.equal(result.assessedCount,64);assert.equal(result.excludedCount,1);
+});
+
 test('PostgreSQL: concurrent startup and attempt creation preserve one active owned attempt', async t => {
   const db = await database(t), stores = [createStore({ pool:db.first }), createStore({ pool:db.pool() })];
   await Promise.all(stores.map(store => store.initialise()));
