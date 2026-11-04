@@ -1,0 +1,67 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-02",
+  "title": "Management",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "341373554753a5d5e50f10c4f0e2eb7e6299bf3dbaa32fda9eafe18c8ced7fdd",
+  "spokenTextSha256": "341373554753a5d5e50f10c4f0e2eb7e6299bf3dbaa32fda9eafe18c8ced7fdd",
+  "audioFile": "pred26-sst-02-neural-review-20261104.mp3",
+  "audioSha256": "19700e3c65eb92f896bccc1d7a664338d484597f4883ca7d9199d05a857bd2fc",
+  "masterFile": "pred26-sst-02-native.flac",
+  "masterSha256": "05aa54c32f61a6e2037b2945135f508a596f1b4718508b56d7533c4889c0bf44",
+  "bytes": 840524,
+  "seconds": 42.0,
+  "wordsPerMinuteIncludingPauses": 131.4,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -18.73,
+  "truePeakDbTP": -2.43,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 4.11,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.39,
+    "sourceTruePeakDbTP": -6.11
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "e007069e7a4dbd4d57a718520bd81588ec692a27f4d1bb8a82b9aa633c51abd4",
+      "textSha256": "341373554753a5d5e50f10c4f0e2eb7e6299bf3dbaa32fda9eafe18c8ced7fdd",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_c793962395f749648bf95baeca175fd7",
+      "masterSha256": "95e19edf4b38cca47d199749e98c2f37de0942527ec6f7457fa26308b90f9e23",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_dc5ce314c02f45cb86abea44d0d0ddfb",
+    "audioSha256": "19700e3c65eb92f896bccc1d7a664338d484597f4883ca7d9199d05a857bd2fc",
+    "sourcePromptProvided": false,
+    "text": "Managers work under time pressure, but continuing education can broaden the perspectives they bring to difficult decisions. Reading outside a narrow professional field exposes leaders to different ways of thinking about people, markets, and organizations. Formal study is valuable when it helps a manager connect experience with concepts such as strategy, motivation, ethics, and organizational design. Experience alone can produce habits that work in one situation but fail in another. Effective managers keep learning so they can explain their decisions, adapt methods, and lead teams with a wider understanding of the organization.",
+    "differences": [
+      {
+        "expected": "organisations",
+        "heard": "organizations"
+      },
+      {
+        "expected": "organisational",
+        "heard": "organizational"
+      },
+      {
+        "expected": "organisation",
+        "heard": "organization"
+      }
+    ]
+  }
+}

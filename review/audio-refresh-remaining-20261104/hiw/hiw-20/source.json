@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-20",
+  "uid": "ipt:hiw-20",
+  "type": "hiw",
+  "title": "Managing river catchments",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "A river connects places that may be governed by different authorities and used for competing purposes. An action that improves conditions in one location can transfer a problem downstream, especially when drainage works accelerate the movement of water. Managing the catchment as a connected system therefore requires cooperation beyond individual property boundaries. Farmers, residents and local agencies may agree on the need to reduce flooding while disagreeing about where water should be retained. Evidence about soils, rainfall and land use can clarify the available options, but it does not eliminate questions about how costs are shared. Effective planning makes these tradeoffs explicit and revisits decisions as conditions change. It also recognises that small interventions can have cumulative effects, so their combined consequences matter as much as the performance of any single project.",
+  "passage": "A river connects places that may be governed by different authorities and used for identical purposes. An action that improves conditions in one location can transfer a problem downstream, especially when drainage works impede the movement of water. Managing the catchment as a connected system therefore requires competition beyond individual property boundaries. Farmers, residents and local agencies may agree on the need to reduce flooding while disagreeing about where water should be released. Evidence about soils, rainfall and land use can clarify the available options, but it does not eliminate questions about how costs are shared. Effective planning makes these tradeoffs implicit and revisits decisions as conditions change. It also recognises that small interventions can have isolated effects, so their combined consequences matter as much as the performance of any single project.",
+  "answers": [
+    14,
+    33,
+    47,
+    72,
+    101,
+    116
+  ],
+  "corrections": [
+    {
+      "index": 14,
+      "written": "identical",
+      "spoken": "competing",
+      "explanation": "Different uses of the river may conflict."
+    },
+    {
+      "index": 33,
+      "written": "impede",
+      "spoken": "accelerate",
+      "explanation": "Drainage works can make water move faster."
+    },
+    {
+      "index": 47,
+      "written": "competition",
+      "spoken": "cooperation",
+      "explanation": "Managing a connected catchment requires people to work together."
+    },
+    {
+      "index": 72,
+      "written": "released.",
+      "spoken": "retained.",
+      "explanation": "People may disagree about where water should be held back."
+    },
+    {
+      "index": 101,
+      "written": "implicit",
+      "spoken": "explicit",
+      "explanation": "Planning should clearly explain the tradeoffs."
+    },
+    {
+      "index": 116,
+      "written": "isolated",
+      "spoken": "cumulative",
+      "explanation": "Small interventions can build up to a combined effect."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

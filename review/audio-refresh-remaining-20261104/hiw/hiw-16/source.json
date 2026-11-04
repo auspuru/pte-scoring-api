@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-16",
+  "uid": "ipt:hiw-16",
+  "type": "hiw",
+  "title": "Museum interpretation",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "A museum label may appear to offer a neutral description of an object, yet its selection of details directs the visitor's attention. Naming a maker, explaining a technique or describing an object's journey into the collection can produce quite different interpretations. Curators increasingly consult communities whose knowledge was excluded from earlier displays. This collaboration can reveal meanings that are absent from written catalogues, although agreement should not be assumed simply because consultation has occurred. Different contributors may understand the same object through distinct histories and responsibilities. A thoughtful exhibition makes these perspectives visible while explaining the evidence behind particular claims. Its purpose is not to remove all uncertainty, but to help visitors recognise how knowledge is assembled and why an apparently familiar object may support more than one account.",
+  "passage": "A museum label may appear to offer a selective description of an object, yet its selection of details directs the visitor's attention. Naming a maker, explaining a technique or describing an object's journey into the collection can produce quite different interpretations. Curators increasingly consult communities whose knowledge was included from earlier displays. This collaboration can reveal meanings that are abundant from written catalogues, although agreement should not be assumed simply because consultation has occurred. Different contributors may understand the same object through identical histories and responsibilities. A thoughtful exhibition makes these perspectives invisible while explaining the evidence behind particular claims. Its purpose is not to remove all certainty, but to help visitors recognise how knowledge is assembled and why an apparently familiar object may support more than one account.",
+  "answers": [
+    8,
+    48,
+    59,
+    82,
+    92,
+    107
+  ],
+  "corrections": [
+    {
+      "index": 8,
+      "written": "selective",
+      "spoken": "neutral",
+      "explanation": "The label can appear impartial despite directing attention."
+    },
+    {
+      "index": 48,
+      "written": "included",
+      "spoken": "excluded",
+      "explanation": "Some communities were left out of earlier displays."
+    },
+    {
+      "index": 59,
+      "written": "abundant",
+      "spoken": "absent",
+      "explanation": "Community knowledge can add meanings missing from catalogues."
+    },
+    {
+      "index": 82,
+      "written": "identical",
+      "spoken": "distinct",
+      "explanation": "Contributors may bring different histories."
+    },
+    {
+      "index": 92,
+      "written": "invisible",
+      "spoken": "visible",
+      "explanation": "The exhibition should show the different perspectives."
+    },
+    {
+      "index": 107,
+      "written": "certainty,",
+      "spoken": "uncertainty,",
+      "explanation": "The purpose is not to eliminate every uncertainty."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-14",
+  "title": "Coastal restoration",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "3bf374d09b85f843031adcd83d47d3c4a95b87c493e784f5e98a44bd9590a468",
+  "spokenTextSha256": "3bf374d09b85f843031adcd83d47d3c4a95b87c493e784f5e98a44bd9590a468",
+  "audioFile": "hiw-14-neural-review-20261104.mp3",
+  "audioSha256": "eeb23036390b1ee2871c2401dc247a8b0dccdae70bddb2bd196d97eb634c82e5",
+  "masterFile": "hiw-14-native.flac",
+  "masterSha256": "eb0eaba57d2e88b3c0c0ec010c4ed8f154ecff2e3c4ac73d93350e7979c1a70e",
+  "bytes": 1120844,
+  "seconds": 56.016,
+  "wordsPerMinuteIncludingPauses": 137.1,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -21.81,
+  "truePeakDbTP": -2.45,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.87,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -23.23,
+    "sourceTruePeakDbTP": -3.87
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "449aa7e3921d4feaa5eefde338ed8fcee48d664fb02fd7eab6368cbc730c2963",
+      "textSha256": "3bf374d09b85f843031adcd83d47d3c4a95b87c493e784f5e98a44bd9590a468",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_e856397c950343be842ad6ce9a80f5ed",
+      "masterSha256": "9858ee65a6aea27fe01ae677d1897da9c1c990456797e1d1eea69c0c2f8e0b16",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_e726bb3d18464e4fbd246be90c2cc35a",
+    "audioSha256": "eeb23036390b1ee2871c2401dc247a8b0dccdae70bddb2bd196d97eb634c82e5",
+    "sourcePromptProvided": false,
+    "text": "Restoring a coastal wetland involves more than planting vegetation in an area that has lost its original habitat. Water must move through the landscape at suitable intervals, carrying sediment and creating conditions in which different species can establish themselves. If an old embankment continues to restrict tidal flow, newly planted vegetation may struggle despite intensive maintenance. Restoration teams therefore begin by investigating the physical processes that sustain the habitat. They also consider neighboring communities whose access routes or drainage systems may be affected by proposed changes. A successful project balances ecological recovery with these practical concerns and monitors outcomes over several seasons. Early fluctuations do not necessarily indicate failure because living systems respond unevenly and may require time to develop the diversity and structure of an established wetland.",
+    "differences": [
+      {
+        "expected": "neighbouring",
+        "heard": "neighboring"
+      }
+    ]
+  }
+}

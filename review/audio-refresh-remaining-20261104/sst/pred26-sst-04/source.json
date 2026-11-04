@@ -1,0 +1,30 @@
+{
+  "kind": "sst",
+  "id": "pred26-sst-04",
+  "type": "sst",
+  "title": "Defining Need",
+  "topic": "Language and society",
+  "minutes": 10,
+  "voice": "fable",
+  "text": "The word need can describe very different things depending on context, from a strong personal desire to an essential condition for survival or function. Saying that someone needs a holiday expresses preference differently from saying that a plant needs water. Social policy adds another layer because communities debate which goods and services should count as basic needs. Psychological needs such as belonging and recognition can also influence behaviour even though they are not physical necessities. Clear communication therefore requires speakers to identify which meaning of need they are using instead of assuming the word is self-explanatory.",
+  "keyPoints": [
+    "The word need can describe very different things depending on context, from a strong personal desire to an essential condition for survival or function.",
+    "Saying that someone needs a holiday expresses preference differently from saying that a plant needs water.",
+    "Social policy adds another layer because communities debate which goods and services should count as basic needs.",
+    "Psychological needs such as belonging and recognition can also influence behaviour even though they are not physical necessities."
+  ],
+  "sample": "The word need can describe very different things depending on context, from a strong personal desire to an essential condition for survival or function; saying that someone needs a holiday expresses preference differently from saying that a plant needs water; and social policy adds another layer because communities debate which goods and services should count as basic needs.",
+  "predictionSource": {
+    "provider": "PTE Nepal",
+    "week": "21-27 September 2026",
+    "checkedAt": "2026-09-23",
+    "lastReviewed": "2026-09-24",
+    "contentStatus": "adapted",
+    "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+    "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+    "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+    "task": "sst",
+    "sourceId": "13000684",
+    "sourceTitle": "Defining Need"
+  }
+}

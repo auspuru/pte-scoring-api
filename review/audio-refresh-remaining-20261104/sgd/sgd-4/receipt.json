@@ -1,0 +1,251 @@
+{
+  "kind": "sgd",
+  "questionId": "sgd-4",
+  "title": "Making lecture recordings useful",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "6432b4714efbcf61a2f6707c3db651d6ded4deedf2684f492f64ad3cf5bc6c5f",
+  "spokenTextSha256": "2c0148f48b25cf69073a048d5a5cfb60fedc03e718a273cd4c9c0c1c418acea1",
+  "audioFile": "sgd-4-neural-review-20261104.mp3",
+  "audioSha256": "319080f5c75db65c311e5318626557c36e249c5019ae88a5c2c7bdbcc54ac1ae",
+  "masterFile": "sgd-4-native.flac",
+  "masterSha256": "d87f169c04c9473c619b5bb88e8dc9004fcc7233a0dbb87e439d94b139675ad1",
+  "bytes": 2303564,
+  "seconds": 115.152,
+  "wordsPerMinuteIncludingPauses": 150.1,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -22.02,
+  "truePeakDbTP": -2.44,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.16,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.74,
+    "sourceTruePeakDbTP": -3.16
+  },
+  "generationReceipts": [
+    {
+      "speaker": "Narrator",
+      "inputHash": "d5fdfde3eef1087a5acde651815bfe2afb76e89685ae98cbedda00cc619a2ec5",
+      "textSha256": "fae0520f9e2224a060e739bea0cb0650778d17cae1bad61fe6047f753bef6653",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_fe0c6f39157c49c39d5d121f9007f391",
+      "masterSha256": "b053cac5638227eddd006c19726e328779af30721e4afdfc8ac4fb4bd87eaaaa",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Ethan",
+      "inputHash": "73d3bd6ace5664a4f870b00c4dd34aba963b6b4ac25953bb406a4b6d34c51be8",
+      "textSha256": "b0406556e9ceca36986913384551a8cf0566616401bc9faf3261f6715a5c65b2",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_b31a9fcd29dd43b6bafcadec060d6e65",
+      "masterSha256": "ff1279762b200e72efbd2866b515c46a3dab23527edba9a68191a124d31341ce",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Nina",
+      "inputHash": "a95ca74b6c88ee231231659dbd7f900fb8dbf97189412f34f516202c21b05235",
+      "textSha256": "1ee41fd34b72f482d96815a953cbb513381e036576e04b4f1ba6743a7a0465e0",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_2eea7b3cdc264c4e96200ce5f1ddfc58",
+      "masterSha256": "8470776a7495adb52d1a317cae544cadcf4b184dc8f1150750643d58db0b106e",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Luis",
+      "inputHash": "c12cb3d42400f44f6303a56e5af0b0140809bc44bd631f03cef4ffe2ed151393",
+      "textSha256": "78c90e7330e3f12a984c189429bff186fdf4b38b0ce349d29b1d8042863ea8fe",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_6f75be21bf024d30a81fca4d66d39118",
+      "masterSha256": "144adf979da525d987993daacf8774357d1b53c6b55e5897a6dc5f8f6c491f5a",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Ethan",
+      "inputHash": "cf1d55b810e2680d863b47649225e78085536f45792415a1d6b4d5ae475c05d6",
+      "textSha256": "44469b5d298551a903fcebf206c7444a6b31e6c160380a9c51dc9e69aa55cf6f",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_6d06106a27c945eaab55f6ffce87e857",
+      "masterSha256": "d508a1a974e76d67136d4ed21ca6c1e388e5c98dda154e38b2a41dad660a1438",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Nina",
+      "inputHash": "a0acf68390698f4aee1661c007d9cf9c998b28764ed73e366b6379404e6afe40",
+      "textSha256": "c5914a0494a786e1d1469f10371f0f3a94ea7d04c082c66ccd18361ba78cedfe",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity. Read the supplied passage once only, then stop. Do not repeat its opening at the end.",
+        "speed": 1.0
+      },
+      "requestId": "req_19c1567652aa4fa5b027d0e153112bb4",
+      "masterSha256": "5be6f15b5e9f6b0617b034a7b63c7fbeefef396345d37f1e66d196891e682fea",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Luis",
+      "inputHash": "a5c01c9b01f255bbcfb04e96dfff4e7e1c60cd8dfdbfbfd0aba53b84207337bd",
+      "textSha256": "857a98735044d09064b10d4aba2f26e994080781f025937819117fb93a8ba15e",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_f3b55177e321453b95fff07743d80e4f",
+      "masterSha256": "d36e8de0b9b579ee27661f55120c12e14e26f41d6b12b16413828ba38d834530",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "narrationIncluded": true,
+  "narrationSha256": "fae0520f9e2224a060e739bea0cb0650778d17cae1bad61fe6047f753bef6653",
+  "speakerVoices": {
+    "Ethan": "marin",
+    "Nina": "cedar",
+    "Luis": "coral"
+  },
+  "requestedAccents": {
+    "Ethan": "British English",
+    "Nina": "General American English",
+    "Luis": "Australian English"
+  },
+  "turnSpeakers": [
+    "Ethan",
+    "Nina",
+    "Luis",
+    "Ethan",
+    "Nina",
+    "Luis"
+  ],
+  "mockDurationEligible": true,
+  "turnCount": 6,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_90a2185f463546aa907f530c34257a0f",
+    "audioSha256": "319080f5c75db65c311e5318626557c36e249c5019ae88a5c2c7bdbcc54ac1ae",
+    "sourcePromptProvided": false,
+    "text": "Three students are discussing how to make lecture recordings more useful for students.\n\nI find lecture recordings very helpful because I can revisit difficult explanations and pause to check my notes. They are also useful if someone misses class for a legitimate reason. I think every lecture should be recorded and made available soon after the class finishes.\n\nI use them too, but I sometimes postpone watching because I know the recording will be there. Then several lectures pile up before a test. Recordings are useful resources, but simply providing them does not mean students will use them effectively or keep up with the course.\n\nPerhaps the course could provide short guides alongside each recording. Time markers for key topics would make revision easier, and a few practice questions could encourage students to check their understanding. Captions are important as well, but they should be checked because technical terms are sometimes transcribed incorrectly.\n\nThose additions would definitely help. I still think recordings should remain available for revision rather than disappear after a few days. Some topics make more sense later in the semester. We should encourage attendance without removing a resource that students use in different ways.\n\nI agree about keeping access. My concern is study habits, not restricting recordings. A weekly reminder and a short self-check could help me stay on schedule. It would also be useful if teachers explained when to review a short section instead of replaying an entire lecture.\n\nSo we could recommend continued access, accurate captions, topic markers, and optional self-checks. Live classes still offer questions and discussion, while recordings support review. The two should complement each other, with some guidance to help students avoid leaving all their viewing until the last minute.",
+    "differences": []
+  },
+  "assemblyVerification": {
+    "status": "passed",
+    "pcmSha256": "ff54fb6b0ae71da6a2340b0746ed666e64d8d0e2118f952a138fbd9b92359d2b",
+    "segments": [
+      {
+        "speaker": "Narrator",
+        "voice": "marin",
+        "startSeconds": 0.0,
+        "endSeconds": 6.25,
+        "textSha256": "fae0520f9e2224a060e739bea0cb0650778d17cae1bad61fe6047f753bef6653",
+        "inputHash": "d5fdfde3eef1087a5acde651815bfe2afb76e89685ae98cbedda00cc619a2ec5",
+        "startSample": 0,
+        "endSample": 150000,
+        "pcmSha256": "fdefc94137b7412d06e54631f2e8988f5c4081c89657b80a20eb2c921d3ef178",
+        "nativeWavSha256": "b053cac5638227eddd006c19726e328779af30721e4afdfc8ac4fb4bd87eaaaa"
+      },
+      {
+        "speaker": "Ethan",
+        "voice": "marin",
+        "startSeconds": 6.85,
+        "endSeconds": 24.7,
+        "textSha256": "b0406556e9ceca36986913384551a8cf0566616401bc9faf3261f6715a5c65b2",
+        "inputHash": "73d3bd6ace5664a4f870b00c4dd34aba963b6b4ac25953bb406a4b6d34c51be8",
+        "startSample": 164400,
+        "endSample": 592800,
+        "pcmSha256": "8bd9142ce85c1b4f8dc7bced853ae8418d8789f0106234951ce172f9c5012833",
+        "nativeWavSha256": "ff1279762b200e72efbd2866b515c46a3dab23527edba9a68191a124d31341ce"
+      },
+      {
+        "speaker": "Nina",
+        "voice": "cedar",
+        "startSeconds": 24.95,
+        "endSeconds": 40.5,
+        "textSha256": "1ee41fd34b72f482d96815a953cbb513381e036576e04b4f1ba6743a7a0465e0",
+        "inputHash": "a95ca74b6c88ee231231659dbd7f900fb8dbf97189412f34f516202c21b05235",
+        "startSample": 598800,
+        "endSample": 972000,
+        "pcmSha256": "645ed22b9a421a88474d0a7f8b35b0c42d930b173ee078e0502406adfb1c23bd",
+        "nativeWavSha256": "8470776a7495adb52d1a317cae544cadcf4b184dc8f1150750643d58db0b106e"
+      },
+      {
+        "speaker": "Luis",
+        "voice": "coral",
+        "startSeconds": 40.75,
+        "endSeconds": 60.85,
+        "textSha256": "78c90e7330e3f12a984c189429bff186fdf4b38b0ce349d29b1d8042863ea8fe",
+        "inputHash": "c12cb3d42400f44f6303a56e5af0b0140809bc44bd631f03cef4ffe2ed151393",
+        "startSample": 978000,
+        "endSample": 1460400,
+        "pcmSha256": "eed2add8bb0ff78e0e0f923f546bc1cef080e22668ad1d920626f7318e229f29",
+        "nativeWavSha256": "144adf979da525d987993daacf8774357d1b53c6b55e5897a6dc5f8f6c491f5a"
+      },
+      {
+        "speaker": "Ethan",
+        "voice": "marin",
+        "startSeconds": 61.1,
+        "endSeconds": 78.2,
+        "textSha256": "44469b5d298551a903fcebf206c7444a6b31e6c160380a9c51dc9e69aa55cf6f",
+        "inputHash": "cf1d55b810e2680d863b47649225e78085536f45792415a1d6b4d5ae475c05d6",
+        "startSample": 1466400,
+        "endSample": 1876800,
+        "pcmSha256": "8e790b3d463a142960d40cd8ea7890f0dcec907b5b51c0a8bfbf4dbf018eccd1",
+        "nativeWavSha256": "d508a1a974e76d67136d4ed21ca6c1e388e5c98dda154e38b2a41dad660a1438"
+      },
+      {
+        "speaker": "Nina",
+        "voice": "cedar",
+        "startSeconds": 78.45,
+        "endSeconds": 93.6,
+        "textSha256": "c5914a0494a786e1d1469f10371f0f3a94ea7d04c082c66ccd18361ba78cedfe",
+        "inputHash": "a0acf68390698f4aee1661c007d9cf9c998b28764ed73e366b6379404e6afe40",
+        "startSample": 1882800,
+        "endSample": 2246400,
+        "pcmSha256": "555506516ebcf7bc19d7457dd73b9993a584e7058dfe971d584638fbb37100b7",
+        "nativeWavSha256": "5be6f15b5e9f6b0617b034a7b63c7fbeefef396345d37f1e66d196891e682fea"
+      },
+      {
+        "speaker": "Luis",
+        "voice": "coral",
+        "startSeconds": 93.85,
+        "endSeconds": 115.1,
+        "textSha256": "857a98735044d09064b10d4aba2f26e994080781f025937819117fb93a8ba15e",
+        "inputHash": "a5c01c9b01f255bbcfb04e96dfff4e7e1c60cd8dfdbfbfd0aba53b84207337bd",
+        "startSample": 2252400,
+        "endSample": 2762400,
+        "pcmSha256": "5426eeca399063ffe8e89c0db41bcfbbd5bf5ff01defb8eab4e23c075d102e7d",
+        "nativeWavSha256": "d36e8de0b9b579ee27661f55120c12e14e26f41d6b12b16413828ba38d834530"
+      }
+    ],
+    "method": "Decoded lossless master equals ordered native segment PCM plus declared turn gaps."
+  }
+}

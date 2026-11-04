@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-c2-02",
+  "uid": "ipt:hiw-c2-02",
+  "type": "hiw",
+  "title": "Models and evidence",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "A model can reproduce an observed pattern without establishing the mechanism that generated it. This distinction is particularly consequential when observational data are used to recommend an intervention. An association may persist because an unmeasured variable influences both the supposed cause and the outcome, leaving confounding unresolved. Even a statistically identifiable relationship need not remain invariant when the circumstances of its production change. The purpose of a useful model is consequently not to conceal these dependencies beneath a precise numerical prediction, but to specify which assumptions permit that prediction to travel. Its conclusions should remain conditional on those assumptions and receptive to evidence that exposes their limits. Precision becomes informative only when accompanied by scrutiny of what has been measured, what has been omitted, and what the analysis can legitimately support.",
+  "passage": "A model can reproduce an observed pattern without establishing the mechanism that generated it. This distinction is particularly consequential when experimental data are used to recommend an intervention. An association may persist because an unmeasured variable influences both the supposed cause and the outcome, leaving corroboration unresolved. Even a statistically inevitable relationship need not remain incidental when the circumstances of its production change. The purpose of a useful model is consequently not to conceal these dependencies beneath a precise numerical prediction, but to specify which assumptions permit that prediction to travel. Its conclusions should remain categorical on those assumptions and receptive to evidence that exposes their limits. Precision becomes informative only when accompanied by deference of what has been measured, what has been omitted, and what the analysis can legitimately support.",
+  "answers": [
+    20,
+    45,
+    50,
+    55,
+    95,
+    114
+  ],
+  "corrections": [
+    {
+      "index": 20,
+      "written": "experimental",
+      "spoken": "observational",
+      "explanation": "The speaker is discussing data observed without the intervention that an experiment would introduce."
+    },
+    {
+      "index": 45,
+      "written": "corroboration",
+      "spoken": "confounding",
+      "explanation": "An unmeasured influence creates confounding rather than confirmation."
+    },
+    {
+      "index": 50,
+      "written": "inevitable",
+      "spoken": "identifiable",
+      "explanation": "Statistical identification does not establish inevitability."
+    },
+    {
+      "index": 55,
+      "written": "incidental",
+      "spoken": "invariant",
+      "explanation": "The issue is whether a relationship remains unchanged across circumstances."
+    },
+    {
+      "index": 95,
+      "written": "categorical",
+      "spoken": "conditional",
+      "explanation": "The conclusions depend on stated assumptions."
+    },
+    {
+      "index": 114,
+      "written": "deference",
+      "spoken": "scrutiny",
+      "explanation": "The speaker calls for examination of the analysis, not deference to it."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "kind": "wfd",
+  "questionId": "pred26-wfd-35",
+  "title": "Applied mathematics",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "c9cfe8a61ae44d501577aa2c28bd3959d45fa80c2cd3cf751b51af658329b51f",
+  "spokenTextSha256": "c9cfe8a61ae44d501577aa2c28bd3959d45fa80c2cd3cf751b51af658329b51f",
+  "audioFile": "pred26-wfd-35-neural-review-20261104.mp3",
+  "audioSha256": "be65ca1600e2189dd8c19c12bf4990a3fba1fa2a5c1eec71d8e756e6a76552bb",
+  "masterFile": "pred26-wfd-35-native.flac",
+  "masterSha256": "e98b71689d54e1cc74e68cee8d8f717c2d4b3b21632220f23924bac4fd98ae2e",
+  "bytes": 101804,
+  "seconds": 5.064,
+  "wordsPerMinuteIncludingPauses": 94.8,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -18.85,
+  "truePeakDbTP": -2.44,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 3.73,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.12,
+    "sourceTruePeakDbTP": -5.73
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "76180b8829fa19bef05e4b8c083e0c5cbd25e9905363bb762e5e769e9bd548fe",
+      "textSha256": "c9cfe8a61ae44d501577aa2c28bd3959d45fa80c2cd3cf751b51af658329b51f",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Read the complete sentence once only; no introductory or closing phrase.",
+        "speed": 1.0
+      },
+      "requestId": "req_b0f39f2da0c042f288afa60e27d809f2",
+      "masterSha256": "17950d6553d49c569a0660a1b4e41c59fe7470f4be17a620c56a372ce9243b5e",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_ef32ed6ec48e4a7e8c405caef73a15eb",
+    "audioSha256": "be65ca1600e2189dd8c19c12bf4990a3fba1fa2a5c1eec71d8e756e6a76552bb",
+    "sourcePromptProvided": false,
+    "text": "The course combines theoretical mathematics with practical applications.",
+    "differences": []
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "kind": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "id": "sgd-user-20261030-02",
+  "type": "sgd",
+  "title": "AI tools for academic assignments",
+  "narration": "Three students are debating over the pros and cons of using AI tools for academic assignments, gathered at a cozy corner table in the library lounge.",
+  "turns": [
+    [
+      "Speaker 1",
+      "I have serious concerns about relying on AI for academic work. Last week, I reviewed a peer's paper that was clearly AI-generated - it sounded polished but completely lacked original thought. What's the point of education if we're not developing our own thinking abilities?"
+    ],
+    [
+      "Speaker 2",
+      "I completely agree. The bigger issue is academic integrity. My professor just announced that any detected AI-generated content will result in automatic failure. It's becoming impossible to trust what's authentic anymore. Remember how we used to spend hours in the library actually engaging with sources? That struggle is where real learning happens."
+    ],
+    [
+      "Speaker 3",
+      "I understand your concerns, but I think you're overlooking the positive aspects. AI tools have been incredibly helpful for overcoming writer's block and organizing my thoughts. The outlining feature alone has saved me hours of frustration. It's not about replacing thinking - it's about enhancing it."
+    ],
+    [
+      "Speaker 1",
+      "But that's exactly the problem! When we rely on AI for organization and structure, we're missing out on developing those crucial skills ourselves. I've noticed my analytical abilities have declined since I started using these tools last semester."
+    ],
+    [
+      "Speaker 2",
+      "And what about the classroom experience? If everyone comes to class with AI-polished contributions, how do we have genuine discussions? The imperfections and hesitations in our conversations are where the most interesting insights often emerge."
+    ],
+    [
+      "Speaker 3",
+      "I see your points, but consider the accessibility benefits. For students with learning differences or those struggling with academic writing, AI tools provide crucial support that might not otherwise be available. It's not about perfect papers - it's about giving everyone a fair chance to express their ideas. These tools can help bridge gaps for neuro diverse students or those writing in a second language, allowing their ideas to be heard more clearly."
+    ],
+    [
+      "Speaker 1",
+      "I appreciate that perspective, but I worry we're creating a dependency. What happens when these tools are no longer available? Will we still know how to think for ourselves? We need to ensure we're not sacrificing fundamental skills for short-term convenience, as true intellectual development comes from working through challenges independently."
+    ],
+    [
+      "Speaker 2",
+      "That's my concern too. The value of education isn't just in the final product - it's in the struggle to get there. If we shortcut that process with AI, we're missing the most important part of learning."
+    ],
+    [
+      "Speaker 3",
+      "I guess we'll have to agree to disagree. I still believe that when used responsibly, AI can be a valuable tool rather than a threat to genuine learning. The key is finding the right balance."
+    ]
+  ],
+  "facts": [
+    "The students debate the benefits and risks of AI tools for academic assignments.",
+    "Speaker 1 worries that polished AI work lacks original thought and that relying on AI weakens analytical and organisational skills.",
+    "Speaker 1 also warns about dependency and sacrificing independent intellectual development for convenience.",
+    "Speaker 2 raises academic integrity, an announced automatic-failure policy and the loss of authentic classroom discussion.",
+    "Speaker 2 believes engaging with sources and struggling through the learning process matter more than the final product alone.",
+    "Speaker 3 values AI for overcoming writer\u2019s block, organising thoughts and supporting students with learning differences or a second language.",
+    "They remain divided: Speaker 3 advocates responsible, balanced use rather than agreeing to reject AI."
+  ],
+  "sample": "The students debate AI use in academic assignments. The first speaker argues that polished AI writing can lack original thought and warns that dependence may weaken students\u2019 analytical and organisational abilities. The second agrees, raising academic integrity, possible failure penalties and the loss of authentic classroom discussion. Both believe that working through difficulties is central to learning. In contrast, the third speaker finds AI useful for overcoming writer\u2019s block and organising ideas, and highlights its accessibility benefits for students with learning differences or language barriers. The discussion ends without full agreement: the first two remain concerned, while the third supports responsible, balanced use.",
+  "source": {
+    "kind": "user-supplied-transcript",
+    "date": "2026-10-30",
+    "image": "AdobeExpressPhotos_c608cedb33034dafb40cf6931a521c44_CopyEdited.png",
+    "contentStatus": "transcribed-user-provided"
+  },
+  "audioRate": "-17%",
+  "text": "Narration: Three students are debating over the pros and cons of using AI tools for academic assignments, gathered at a cozy corner table in the library lounge.\nSpeaker 1: I have serious concerns about relying on AI for academic work. Last week, I reviewed a peer's paper that was clearly AI-generated - it sounded polished but completely lacked original thought. What's the point of education if we're not developing our own thinking abilities?\nSpeaker 2: I completely agree. The bigger issue is academic integrity. My professor just announced that any detected AI-generated content will result in automatic failure. It's becoming impossible to trust what's authentic anymore. Remember how we used to spend hours in the library actually engaging with sources? That struggle is where real learning happens.\nSpeaker 3: I understand your concerns, but I think you're overlooking the positive aspects. AI tools have been incredibly helpful for overcoming writer's block and organizing my thoughts. The outlining feature alone has saved me hours of frustration. It's not about replacing thinking - it's about enhancing it.\nSpeaker 1: But that's exactly the problem! When we rely on AI for organization and structure, we're missing out on developing those crucial skills ourselves. I've noticed my analytical abilities have declined since I started using these tools last semester.\nSpeaker 2: And what about the classroom experience? If everyone comes to class with AI-polished contributions, how do we have genuine discussions? The imperfections and hesitations in our conversations are where the most interesting insights often emerge.\nSpeaker 3: I see your points, but consider the accessibility benefits. For students with learning differences or those struggling with academic writing, AI tools provide crucial support that might not otherwise be available. It's not about perfect papers - it's about giving everyone a fair chance to express their ideas. These tools can help bridge gaps for neuro diverse students or those writing in a second language, allowing their ideas to be heard more clearly.\nSpeaker 1: I appreciate that perspective, but I worry we're creating a dependency. What happens when these tools are no longer available? Will we still know how to think for ourselves? We need to ensure we're not sacrificing fundamental skills for short-term convenience, as true intellectual development comes from working through challenges independently.\nSpeaker 2: That's my concern too. The value of education isn't just in the final product - it's in the struggle to get there. If we shortcut that process with AI, we're missing the most important part of learning.\nSpeaker 3: I guess we'll have to agree to disagree. I still believe that when used responsibly, AI can be a valuable tool rather than a threat to genuine learning. The key is finding the right balance."
+}

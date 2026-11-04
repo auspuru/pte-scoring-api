@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-c2-07",
+  "uid": "ipt:hiw-c2-07",
+  "type": "hiw",
+  "title": "Infrastructure and future choices",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "Infrastructure planning distributes opportunities across time as well as across space. A project that appears efficient under current assumptions may foreclose alternatives that later generations would have preferred. This does not imply that all irreversible investments should be deferred, since postponement also imposes costs and can entrench existing disadvantages. It does require distinguishing uncertainty about future demand from disagreement about whose interests should determine the decision. Appraisal becomes more transparent when these issues are articulated separately instead of being compressed into a single forecast. Where feasible, modular designs can preserve flexibility without requiring planners to predict every subsequent development. Their value lies partly in the options they retain, including the ability to revise a commitment when its original rationale no longer withstands public examination.",
+  "passage": "Infrastructure planning distributes opportunities across time as well as across space. A project that appears efficient under current assumptions may facilitate alternatives that later generations would have preferred. This does not imply that all irreversible investments should be accelerated, since postponement also imposes costs and can eradicate existing disadvantages. It does require distinguishing uncertainty about future demand from disagreement about whose interests should determine the decision. Appraisal becomes more transparent when these issues are articulated collectively instead of being compressed into a single forecast. Where feasible, monolithic designs can preserve flexibility without requiring planners to predict every subsequent development. Their value lies partly in the options they relinquish, including the ability to revise a commitment when its original rationale no longer withstands public examination.",
+  "answers": [
+    20,
+    38,
+    46,
+    75,
+    86,
+    107
+  ],
+  "corrections": [
+    {
+      "index": 20,
+      "written": "facilitate",
+      "spoken": "foreclose",
+      "explanation": "A current investment can close off future alternatives."
+    },
+    {
+      "index": 38,
+      "written": "accelerated,",
+      "spoken": "deferred,",
+      "explanation": "The speaker rejects the view that every irreversible investment should be postponed."
+    },
+    {
+      "index": 46,
+      "written": "eradicate",
+      "spoken": "entrench",
+      "explanation": "Postponement can reinforce disadvantages that already exist."
+    },
+    {
+      "index": 75,
+      "written": "collectively",
+      "spoken": "separately",
+      "explanation": "Different uncertainties and value disagreements should be explained separately."
+    },
+    {
+      "index": 86,
+      "written": "monolithic",
+      "spoken": "modular",
+      "explanation": "Designs with adaptable components can preserve flexibility."
+    },
+    {
+      "index": 107,
+      "written": "relinquish,",
+      "spoken": "retain,",
+      "explanation": "The value includes keeping options available for later decisions."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

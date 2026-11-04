@@ -1,0 +1,30 @@
+{
+  "kind": "sst",
+  "id": "pred26-sst-03",
+  "type": "sst",
+  "title": "Emotions",
+  "topic": "Psychology",
+  "minutes": 10,
+  "voice": "alloy",
+  "text": "People differ in how strongly their moods change, with some experiencing sharp emotional swings and others remaining comparatively steady. Emotional health does not require constant excitement because a calm sense of satisfaction can be more sustainable than repeated extreme highs. A moderate level of challenge can support attention and growth, while excessive stress may reduce judgement and well-being. Contentment also does not mean passivity; it can coexist with ambition and effort. The useful goal is emotional balance, where people can respond to problems without being controlled by every temporary feeling.",
+  "keyPoints": [
+    "People differ in how strongly their moods change, with some experiencing sharp emotional swings and others remaining comparatively steady.",
+    "Emotional health does not require constant excitement because a calm sense of satisfaction can be more sustainable than repeated extreme highs.",
+    "A moderate level of challenge can support attention and growth, while excessive stress may reduce judgement and well-being.",
+    "Contentment also does not mean passivity; it can coexist with ambition and effort."
+  ],
+  "sample": "People differ in how strongly their moods change, with some experiencing sharp emotional swings and others remaining comparatively steady; emotional health does not require constant excitement because a calm sense of satisfaction can be more sustainable than repeated extreme highs; and a moderate level of challenge can support attention and growth, while excessive stress may reduce judgement and well-being.",
+  "predictionSource": {
+    "provider": "PTE Nepal",
+    "week": "21-27 September 2026",
+    "checkedAt": "2026-09-23",
+    "lastReviewed": "2026-09-24",
+    "contentStatus": "adapted",
+    "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+    "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+    "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+    "task": "sst",
+    "sourceId": "13000685",
+    "sourceTitle": "Emotions"
+  }
+}

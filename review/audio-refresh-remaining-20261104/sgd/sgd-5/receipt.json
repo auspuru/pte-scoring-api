@@ -1,0 +1,264 @@
+{
+  "kind": "sgd",
+  "questionId": "sgd-5",
+  "title": "Planning a community volunteering day",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "70a3623ac980412d2751ff8b91a81c7cae225422a0e27e794fd6c173132cd189",
+  "spokenTextSha256": "8df8ed27b961c9900ba2337edc6c813b1c5b1fc54846fa902fdccee6181991b0",
+  "audioFile": "sgd-5-neural-review-20261104.mp3",
+  "audioSha256": "b9430ede92f45ca5d20bafec921689e8e00ea74d1f438f66c8b3d7fc60f38cb0",
+  "masterFile": "sgd-5-native.flac",
+  "masterSha256": "a39a7c8bdde231b64f73addd9643d97d8b028567121ac2578605d933b88e8497",
+  "bytes": 2145644,
+  "seconds": 107.256,
+  "wordsPerMinuteIncludingPauses": 158.9,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -23.31,
+  "truePeakDbTP": -2.44,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 0.56,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -23.42,
+    "sourceTruePeakDbTP": -2.56
+  },
+  "generationReceipts": [
+    {
+      "speaker": "Narrator",
+      "inputHash": "e5c8dd3a0e195aaeaa95a4e4b4d825f73a5d09de48ff85323287dfed4be2094c",
+      "textSha256": "4fd41b3878839432a161680a67d7a5fa1ad434eeb62180f73556fc6ec41eb7cf",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_54485bc62cef4fdcb83023572fe755a2",
+      "masterSha256": "aa2dee878c42b4fca9b4606db2ebf8fb77f28a4df337a135b7a6cd6bbb830d33",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Grace",
+      "inputHash": "fcc069034c0d496ba73cf7618021bc286da88843fb422863494cfb8c21828fcc",
+      "textSha256": "58d3da51f62c8840081c91196d572256be3369a704a23e1ea3e5376537c786da",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_6b517dc5ac524f17b79394b4bfa44a5b",
+      "masterSha256": "68faf1fb0f11e218e934473d160069cf851726267fd6446164ce6fba5d758a50",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Sam",
+      "inputHash": "2ac50ead10d28f11362f79333e17422d3e2a97cfc4664a8cd523733d00aa00d4",
+      "textSha256": "1f3e430bcdbf7f9e5e185527d8def8efc464796187d74a5b273ec61293e2ba89",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_ae1d1237652541a0a38115a24a9a19d6",
+      "masterSha256": "3c84a8c3c3d9baa1091a3dd85d0ddf18b5ada96420e190e2f114776f8aafd829",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Priya",
+      "inputHash": "75e2bfeb95edf920ce40a63f244bb06647568d1bf46380ae52bef2984e7c0217",
+      "textSha256": "c057321eb6ebe84d0445ebaa8c9255a7f8e9e3f73cb3e45ec7c8238c4dc09294",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_d1a0bf1eb771486da5746160f36343c9",
+      "masterSha256": "8437c5161f2521ef0483fa720ef33c5c3377640c1f9c7ce93ac796f99920556e",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Grace",
+      "inputHash": "5dc6263927beafefab93350dfb33a7dcab583d52c0305e1a425dd88f91d99eb0",
+      "textSha256": "a8440ae4022f3889e5c112a9086b0afd1a8428a41779a667d1f6bdbd79a3408a",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_d366d1d593494bc29ffe08da00f5e889",
+      "masterSha256": "15eaf329bf8abf4e005879ea9532d4b46b4e430e9bbce885348ed6f93dc94a76",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Sam",
+      "inputHash": "02060240024d7741e7dcc0c3d6360ba22e303e66275dc6004f2e3e16daa0cd38",
+      "textSha256": "a423dda21104f04f57a069b7af150effb597a634e0fe7d3b5f6286846029de7b",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_56bfb5a9f9ba45bbaeecbb5261cedb9b",
+      "masterSha256": "af28c1533f0baffc57f2c9e88a6daab167502a34d011b1d85d511b985250dbc0",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Priya",
+      "inputHash": "5b2246f324a98ff9ad3031e2a41ba3e3ab32db9238c9b6bed92b7aa8371fcebf",
+      "textSha256": "e1c39b6a17bf632e00935c028d4ba5d9b110fe8d248ecfc25904f4b060a0ea0a",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_15a9add39cd64feb9325dc6a1d7521e4",
+      "masterSha256": "7e3b9c9d0da714370966f08a0dbec3853c7002a60632a20b998e33031027bdbd",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "narrationIncluded": true,
+  "narrationSha256": "4fd41b3878839432a161680a67d7a5fa1ad434eeb62180f73556fc6ec41eb7cf",
+  "speakerVoices": {
+    "Grace": "marin",
+    "Sam": "cedar",
+    "Priya": "coral"
+  },
+  "requestedAccents": {
+    "Grace": "British English",
+    "Sam": "General American English",
+    "Priya": "Australian English"
+  },
+  "turnSpeakers": [
+    "Grace",
+    "Sam",
+    "Priya",
+    "Grace",
+    "Sam",
+    "Priya"
+  ],
+  "mockDurationEligible": true,
+  "turnCount": 6,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_708125060b1f434b9bd4176d007b7d2d",
+    "audioSha256": "b9430ede92f45ca5d20bafec921689e8e00ea74d1f438f66c8b3d7fc60f38cb0",
+    "sourcePromptProvided": false,
+    "text": "Three students are planning a volunteering day at a community garden.\n\nFor our student society's volunteering day, I suggest helping at the community garden. We could do something practical outdoors and meet local residents. A full Saturday would allow us to finish a useful amount of work, rather than spend most of a short visit getting organized.\n\nI like the garden idea, but a full day may exclude students who have weekend jobs or caring responsibilities. We also should not assume that everyone can do heavy outdoor work. I would prefer flexible shifts and a choice of activities so more people can take part.\n\nBefore planning the timetable, we should ask the garden organizers what help they actually need. They may need seed sorting, signs, or publicity, as well as planting. A project is more useful when it supports the community's priorities rather than just offering us an enjoyable day out.\n\nThat is a good reminder. I can contact the coordinator and ask about suitable jobs and the number of volunteers they can manage. Perhaps we could offer a morning and an afternoon shift, with some lighter tasks available under cover if the weather is poor.\n\nTwo shifts would work better for me. We should also explain transport options and any equipment people need. Students could choose activities when signing up, but we should avoid promising a particular task until the coordinator confirms that it is useful and safe.\n\nExactly. Once the coordinator responds, we can publish an accessible plan and arrange a short briefing. Afterwards, we should ask the garden whether our contribution was helpful. We agree on volunteering there, provided the event is flexible, well-organized, and shaped by the garden's needs.",
+    "differences": [
+      {
+        "expected": "organised",
+        "heard": "organized"
+      },
+      {
+        "expected": "organisers",
+        "heard": "organizers"
+      },
+      {
+        "expected": "organised",
+        "heard": "organized"
+      }
+    ]
+  },
+  "assemblyVerification": {
+    "status": "passed",
+    "pcmSha256": "c86456f81c4bff726e5831fa66f2d992f1a96d83eeb3c9f3680f49f6ad0b75bc",
+    "segments": [
+      {
+        "speaker": "Narrator",
+        "voice": "marin",
+        "startSeconds": 0.0,
+        "endSeconds": 4.4,
+        "textSha256": "4fd41b3878839432a161680a67d7a5fa1ad434eeb62180f73556fc6ec41eb7cf",
+        "inputHash": "e5c8dd3a0e195aaeaa95a4e4b4d825f73a5d09de48ff85323287dfed4be2094c",
+        "startSample": 0,
+        "endSample": 105600,
+        "pcmSha256": "ff166267a43eb8a20d57e3446e6197bb8b73b9e0d65131ba96fea4495eaf2ce9",
+        "nativeWavSha256": "aa2dee878c42b4fca9b4606db2ebf8fb77f28a4df337a135b7a6cd6bbb830d33"
+      },
+      {
+        "speaker": "Grace",
+        "voice": "marin",
+        "startSeconds": 5.0,
+        "endSeconds": 20.4,
+        "textSha256": "58d3da51f62c8840081c91196d572256be3369a704a23e1ea3e5376537c786da",
+        "inputHash": "fcc069034c0d496ba73cf7618021bc286da88843fb422863494cfb8c21828fcc",
+        "startSample": 120000,
+        "endSample": 489600,
+        "pcmSha256": "e9137c5ccf03cdb5ea4e86e2d03344f84c41d7c397fd0424dfee47854385616e",
+        "nativeWavSha256": "68faf1fb0f11e218e934473d160069cf851726267fd6446164ce6fba5d758a50"
+      },
+      {
+        "speaker": "Sam",
+        "voice": "cedar",
+        "startSeconds": 20.65,
+        "endSeconds": 36.1,
+        "textSha256": "1f3e430bcdbf7f9e5e185527d8def8efc464796187d74a5b273ec61293e2ba89",
+        "inputHash": "2ac50ead10d28f11362f79333e17422d3e2a97cfc4664a8cd523733d00aa00d4",
+        "startSample": 495600,
+        "endSample": 866400,
+        "pcmSha256": "8894e653bcb789e16e57c8ad7159d23829c7b972b001d577eab08bc1069d956d",
+        "nativeWavSha256": "3c84a8c3c3d9baa1091a3dd85d0ddf18b5ada96420e190e2f114776f8aafd829"
+      },
+      {
+        "speaker": "Priya",
+        "voice": "coral",
+        "startSeconds": 36.35,
+        "endSeconds": 54.45,
+        "textSha256": "c057321eb6ebe84d0445ebaa8c9255a7f8e9e3f73cb3e45ec7c8238c4dc09294",
+        "inputHash": "75e2bfeb95edf920ce40a63f244bb06647568d1bf46380ae52bef2984e7c0217",
+        "startSample": 872400,
+        "endSample": 1306800,
+        "pcmSha256": "8f0a4876a5c035d10f33659440a287c9088fd16c9ec85752183106e6c7e23893",
+        "nativeWavSha256": "8437c5161f2521ef0483fa720ef33c5c3377640c1f9c7ce93ac796f99920556e"
+      },
+      {
+        "speaker": "Grace",
+        "voice": "marin",
+        "startSeconds": 54.7,
+        "endSeconds": 69.05,
+        "textSha256": "a8440ae4022f3889e5c112a9086b0afd1a8428a41779a667d1f6bdbd79a3408a",
+        "inputHash": "5dc6263927beafefab93350dfb33a7dcab583d52c0305e1a425dd88f91d99eb0",
+        "startSample": 1312800,
+        "endSample": 1657200,
+        "pcmSha256": "78d53e9581ecd0f46a38bc0149a0dfa2051fb3826c9f696a94c7271c499acae0",
+        "nativeWavSha256": "15eaf329bf8abf4e005879ea9532d4b46b4e430e9bbce885348ed6f93dc94a76"
+      },
+      {
+        "speaker": "Sam",
+        "voice": "cedar",
+        "startSeconds": 69.3,
+        "endSeconds": 84.8,
+        "textSha256": "a423dda21104f04f57a069b7af150effb597a634e0fe7d3b5f6286846029de7b",
+        "inputHash": "02060240024d7741e7dcc0c3d6360ba22e303e66275dc6004f2e3e16daa0cd38",
+        "startSample": 1663200,
+        "endSample": 2035200,
+        "pcmSha256": "d5bad284500b4653c7295f39ab21ad587fba40bbc0ce0d484680884c0f930c76",
+        "nativeWavSha256": "af28c1533f0baffc57f2c9e88a6daab167502a34d011b1d85d511b985250dbc0"
+      },
+      {
+        "speaker": "Priya",
+        "voice": "coral",
+        "startSeconds": 85.05,
+        "endSeconds": 107.2,
+        "textSha256": "e1c39b6a17bf632e00935c028d4ba5d9b110fe8d248ecfc25904f4b060a0ea0a",
+        "inputHash": "5b2246f324a98ff9ad3031e2a41ba3e3ab32db9238c9b6bed92b7aa8371fcebf",
+        "startSample": 2041200,
+        "endSample": 2572800,
+        "pcmSha256": "6b1871b7fb2b59b9902a2a36f46b123cec74fc253049aed5702a96204ffdd180",
+        "nativeWavSha256": "7e3b9c9d0da714370966f08a0dbec3853c7002a60632a20b998e33031027bdbd"
+      }
+    ],
+    "method": "Decoded lossless master equals ordered native segment PCM plus declared turn gaps."
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-14",
+  "title": "Information Technology",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "7148e73144f498e5c9f256edd98f1507099b404bfa56c4e9e21014fa32a50934",
+  "spokenTextSha256": "7148e73144f498e5c9f256edd98f1507099b404bfa56c4e9e21014fa32a50934",
+  "audioFile": "pred26-sst-14-neural-review-20261104.mp3",
+  "audioSha256": "f64e47cae2751a61214cbac21410277e4c41517123898edd714907242a3265b3",
+  "masterFile": "pred26-sst-14-native.flac",
+  "masterSha256": "9939edb0b21bf50f3d80397b8a18cf30797cb676acf237d61f03ce424fc9e3db",
+  "bytes": 759884,
+  "seconds": 37.968,
+  "wordsPerMinuteIncludingPauses": 124.8,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -20.77,
+  "truePeakDbTP": -2.45,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 2.38,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.7,
+    "sourceTruePeakDbTP": -4.38
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "0b2c26ab77ff98c8496e0f190a99bd591f2880cc512554c70a068959ae470151",
+      "textSha256": "7148e73144f498e5c9f256edd98f1507099b404bfa56c4e9e21014fa32a50934",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_de88f74d3728447ab835ded38f826097",
+      "masterSha256": "b30a1d020bc325ccff60c3f9ae0bf577848b9a2b1523acce9ac3da8498cb89e1",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_4e683cf3494545fc8b949c3200dd2a73",
+    "audioSha256": "f64e47cae2751a61214cbac21410277e4c41517123898edd714907242a3265b3",
+    "sourcePromptProvided": false,
+    "text": "Information technology allows organizations to store, process, and exchange data at a scale that has transformed work and public services. Digital systems can improve access to education, healthcare, and communication across long distances. The same systems create responsibilities around privacy, cybersecurity, reliability, and unequal access. Organizations need clear rules for who can use data and how failures are detected and corrected. Technology creates the greatest benefit when convenience and innovation are matched by security, accountability, and support for users.",
+    "differences": [
+      {
+        "expected": "organisations",
+        "heard": "organizations"
+      },
+      {
+        "expected": "organisations",
+        "heard": "organizations"
+      }
+    ]
+  }
+}

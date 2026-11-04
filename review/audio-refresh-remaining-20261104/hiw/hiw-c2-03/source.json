@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-c2-03",
+  "uid": "ipt:hiw-c2-03",
+  "type": "hiw",
+  "title": "Archival absences",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "An archive is a selective residue of past activity rather than an exhaustive account of what occurred. Documents survive through decisions about preservation, institutional priorities and accidents of material durability. An apparent absence must therefore be interpreted in relation to the processes that produced the collection. Where a claim is corroborated by independent records, confidence may increase, but the provenance of each record still matters. Repetition can reflect a shared administrative source rather than several independent observations. Historians must also distinguish contingent gaps in documentation from the systematic exclusion of people whose experiences were seldom recorded. Silence cannot simply be converted into evidence of consent. A responsible interpretation remains provisional where the surviving material cannot discriminate between plausible explanations, while stating clearly which conclusions the available evidence does sustain.",
+  "passage": "An archive is a comprehensive residue of past activity rather than an exhaustive account of what occurred. Documents survive through decisions about preservation, institutional priorities and accidents of material durability. An apparent absence must therefore be interpreted in relation to the processes that produced the collection. Where a claim is contradicted by independent records, confidence may increase, but the prominence of each record still matters. Repetition can reflect a shared administrative source rather than several independent observations. Historians must also distinguish intrinsic gaps in documentation from the systematic exclusion of people whose experiences were seldom recorded. Silence cannot simply be converted into evidence of dissent. A responsible interpretation remains conclusive where the surviving material cannot discriminate between plausible explanations, while stating clearly which conclusions the available evidence does sustain.",
+  "answers": [
+    4,
+    50,
+    59,
+    81,
+    104,
+    109
+  ],
+  "corrections": [
+    {
+      "index": 4,
+      "written": "comprehensive",
+      "spoken": "selective",
+      "explanation": "The archive preserves only part of past activity."
+    },
+    {
+      "index": 50,
+      "written": "contradicted",
+      "spoken": "corroborated",
+      "explanation": "Agreement from independent records can increase confidence."
+    },
+    {
+      "index": 59,
+      "written": "prominence",
+      "spoken": "provenance",
+      "explanation": "The origin of a record matters, rather than how prominent it is."
+    },
+    {
+      "index": 81,
+      "written": "intrinsic",
+      "spoken": "contingent",
+      "explanation": "Some gaps arise from circumstances rather than being inherent in documentation."
+    },
+    {
+      "index": 104,
+      "written": "dissent.",
+      "spoken": "consent.",
+      "explanation": "The speaker warns against assuming that an absence of records means agreement."
+    },
+    {
+      "index": 109,
+      "written": "conclusive",
+      "spoken": "provisional",
+      "explanation": "An interpretation remains open where the evidence cannot distinguish explanations."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

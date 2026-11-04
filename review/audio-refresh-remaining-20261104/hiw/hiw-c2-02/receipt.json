@@ -1,0 +1,53 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-c2-02",
+  "title": "Models and evidence",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "58a38eb4ad8d3c28e5fa601c647ea2f18a87c515876142823ad0595a528b7d9a",
+  "spokenTextSha256": "58a38eb4ad8d3c28e5fa601c647ea2f18a87c515876142823ad0595a528b7d9a",
+  "audioFile": "hiw-c2-02-neural-review-20261104.mp3",
+  "audioSha256": "2bb0ef177d785718f913ef37681e93d71892fd7a372bc53b4c377480ea8912dc",
+  "masterFile": "hiw-c2-02-native.flac",
+  "masterSha256": "1a60d36cae8632c7f5e379f57f89e8c5b8e62feaa024c02156ac3f7b0e1af293",
+  "bytes": 1129484,
+  "seconds": 56.448,
+  "wordsPerMinuteIncludingPauses": 139.2,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -20.31,
+  "truePeakDbTP": -2.44,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 2.06,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -21.92,
+    "sourceTruePeakDbTP": -4.06
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "1eaa3a67620e9f917df99db2b0c4560e814e351f99ac1bafbb666a8b4767d2c4",
+      "textSha256": "58a38eb4ad8d3c28e5fa601c647ea2f18a87c515876142823ad0595a528b7d9a",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_95328dda901c443083d41d8f6d1bb327",
+      "masterSha256": "27e4778b7662760f74e5c3b2ad65c0dc14d1e8d758709a84d5e9c8a80894dfb4",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_92b27cab594142999df30eff3acbe8ed",
+    "audioSha256": "2bb0ef177d785718f913ef37681e93d71892fd7a372bc53b4c377480ea8912dc",
+    "sourcePromptProvided": false,
+    "text": "A model can reproduce an observed pattern without establishing the mechanism that generated it. This distinction is particularly consequential when observational data are used to recommend an intervention. An association may persist because an unmeasured variable influences both the supposed cause and the outcome, leaving confounding unresolved. Even a statistically identifiable relationship need not remain invariant when the circumstances of its production change. The purpose of a useful model is consequently not to conceal these dependencies beneath a precise numerical prediction, but to specify which assumptions permit that prediction to travel. Its conclusions should remain conditional on those assumptions, and receptive to evidence that exposes their limits. Precision becomes informative only when accompanied by scrutiny of what has been measured, what has been omitted, and what the analysis can legitimately support.",
+    "differences": []
+  }
+}

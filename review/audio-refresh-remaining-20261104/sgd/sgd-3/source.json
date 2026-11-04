@@ -1,0 +1,46 @@
+{
+  "kind": "sgd",
+  "id": "sgd-3",
+  "type": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "title": "Improving campus food choices",
+  "narration": "Three students are discussing ways to improve food choices in the campus cafeteria.",
+  "turns": [
+    [
+      "Aisha",
+      "I would like the cafeteria to offer more affordable plant-based meals. There is usually one option, but it is often the same dish. Students with different diets should have a genuine choice, and some of my friends bring lunch because the available meals are too expensive."
+    ],
+    [
+      "Tom",
+      "More choice sounds good, but the kitchen already throws away food when demand is low. Adding several dishes every day could make that worse. I think the cafeteria should first find out what students would actually buy and whether it can use ingredients across different meals."
+    ],
+    [
+      "Sophie",
+      "Price and information matter too. A meal may look suitable but contain an ingredient someone cannot eat. Clear labels would help. We could ask for one rotating, reasonably priced dish each day and make sure staff can answer questions, instead of expanding the whole menu at once."
+    ],
+    [
+      "Aisha",
+      "A rotating dish would be a useful start, especially if students could suggest recipes. I do not expect every meal to suit everyone. I mainly want variety across the week and a price that makes buying lunch realistic for students who are watching their budgets."
+    ],
+    [
+      "Tom",
+      "Then we should propose a trial rather than a permanent change immediately. The kitchen could record sales and leftovers for a month. If the new option sells well without increasing waste, that would provide evidence for expanding it or adjusting the portion sizes later."
+    ],
+    [
+      "Sophie",
+      "Let us include a simple feedback form and accurate ingredient labels in the trial. Students could comment on taste, value and portion size. We seem to agree that affordable variety is the goal, but it should be introduced gradually and checked against actual demand."
+    ]
+  ],
+  "facts": [
+    "The group wants better campus food choices.",
+    "Aisha asks for varied, affordable plant-based meals.",
+    "Tom warns that adding dishes without demand data could increase waste.",
+    "Sophie emphasises ingredient information and one rotating affordable option.",
+    "They support a month-long trial using sales, leftovers and student feedback to guide changes."
+  ],
+  "sample": "The students discuss improving food choices in the campus cafeteria. Aisha wants more varied and affordable plant-based meals, explaining that limited options and high prices discourage some students from buying lunch. Tom supports choice but worries that a larger menu could increase food waste if demand is uncertain. Sophie adds the need for clear ingredient labels and suggests one reasonably priced rotating dish rather than a major expansion. Aisha accepts this gradual approach, while Tom recommends measuring sales and leftovers during a month-long trial. Sophie proposes collecting feedback on taste, value and portion size. Their shared position is to improve affordable variety through a small, clearly labelled trial and use evidence before making wider changes.",
+  "text": "Narration: Three students are discussing ways to improve food choices in the campus cafeteria.\nAisha: I would like the cafeteria to offer more affordable plant-based meals. There is usually one option, but it is often the same dish. Students with different diets should have a genuine choice, and some of my friends bring lunch because the available meals are too expensive.\nTom: More choice sounds good, but the kitchen already throws away food when demand is low. Adding several dishes every day could make that worse. I think the cafeteria should first find out what students would actually buy and whether it can use ingredients across different meals.\nSophie: Price and information matter too. A meal may look suitable but contain an ingredient someone cannot eat. Clear labels would help. We could ask for one rotating, reasonably priced dish each day and make sure staff can answer questions, instead of expanding the whole menu at once.\nAisha: A rotating dish would be a useful start, especially if students could suggest recipes. I do not expect every meal to suit everyone. I mainly want variety across the week and a price that makes buying lunch realistic for students who are watching their budgets.\nTom: Then we should propose a trial rather than a permanent change immediately. The kitchen could record sales and leftovers for a month. If the new option sells well without increasing waste, that would provide evidence for expanding it or adjusting the portion sizes later.\nSophie: Let us include a simple feedback form and accurate ingredient labels in the trial. Students could comment on taste, value and portion size. We seem to agree that affordable variety is the goal, but it should be introduced gradually and checked against actual demand."
+}

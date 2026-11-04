@@ -1,0 +1,46 @@
+{
+  "kind": "sgd",
+  "id": "sgd-4",
+  "type": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "title": "Making lecture recordings useful",
+  "narration": "Three students are discussing how to make lecture recordings more useful for students.",
+  "turns": [
+    [
+      "Ethan",
+      "I find lecture recordings very helpful because I can revisit difficult explanations and pause to check my notes. They are also useful if someone misses class for a legitimate reason. I think every lecture should be recorded and made available soon after the class finishes."
+    ],
+    [
+      "Nina",
+      "I use them too, but I sometimes postpone watching because I know the recording will be there. Then several lectures pile up before a test. Recordings are useful resources, but simply providing them does not mean students will use them effectively or keep up with the course."
+    ],
+    [
+      "Luis",
+      "Perhaps the course could provide short guides alongside each recording. Time markers for key topics would make revision easier, and a few practice questions could encourage students to check their understanding. Captions are important as well, but they should be checked because technical terms are sometimes transcribed incorrectly."
+    ],
+    [
+      "Ethan",
+      "Those additions would definitely help. I still think recordings should remain available for revision rather than disappear after a few days. Some topics make more sense later in the semester. We should encourage attendance without removing a resource that students use in different ways."
+    ],
+    [
+      "Nina",
+      "I agree about keeping access. My concern is study habits, not restricting recordings. A weekly reminder and a short self-check could help me stay on schedule. It would also be useful if teachers explained when to review a short section instead of replaying an entire lecture."
+    ],
+    [
+      "Luis",
+      "So we could recommend continued access, accurate captions, topic markers and optional self-checks. Live classes still offer questions and discussion, while recordings support review. The two should complement each other, with some guidance to help students avoid leaving all their viewing until the last minute."
+    ]
+  ],
+  "facts": [
+    "The discussion concerns effective use of lecture recordings.",
+    "Ethan values replaying difficult explanations and wants continued access.",
+    "Nina warns recordings can encourage postponement and accumulated work.",
+    "Luis proposes topic markers, checked captions and practice questions.",
+    "They agree recordings should complement attendance and include guidance and self-checks rather than restricted access."
+  ],
+  "sample": "The discussion focuses on making lecture recordings more useful. Ethan values being able to replay difficult material and argues that recordings should remain available for later revision. Nina agrees they are helpful but describes how easy it is to postpone watching and fall behind. Luis suggests topic markers, accurate captions and practice questions to support purposeful review. Ethan supports these improvements but opposes removing recordings after a short period. Nina clarifies that her concern is study habits, and proposes reminders and guidance on reviewing selected sections. The group ultimately agrees on continued access supported by accessible recordings and self-checks. They see recordings as a complement to live participation, not a replacement for attendance or a reason to delay study.",
+  "text": "Narration: Three students are discussing how to make lecture recordings more useful for students.\nEthan: I find lecture recordings very helpful because I can revisit difficult explanations and pause to check my notes. They are also useful if someone misses class for a legitimate reason. I think every lecture should be recorded and made available soon after the class finishes.\nNina: I use them too, but I sometimes postpone watching because I know the recording will be there. Then several lectures pile up before a test. Recordings are useful resources, but simply providing them does not mean students will use them effectively or keep up with the course.\nLuis: Perhaps the course could provide short guides alongside each recording. Time markers for key topics would make revision easier, and a few practice questions could encourage students to check their understanding. Captions are important as well, but they should be checked because technical terms are sometimes transcribed incorrectly.\nEthan: Those additions would definitely help. I still think recordings should remain available for revision rather than disappear after a few days. Some topics make more sense later in the semester. We should encourage attendance without removing a resource that students use in different ways.\nNina: I agree about keeping access. My concern is study habits, not restricting recordings. A weekly reminder and a short self-check could help me stay on schedule. It would also be useful if teachers explained when to review a short section instead of replaying an entire lecture.\nLuis: So we could recommend continued access, accurate captions, topic markers and optional self-checks. Live classes still offer questions and discussion, while recordings support review. The two should complement each other, with some guidance to help students avoid leaving all their viewing until the last minute."
+}

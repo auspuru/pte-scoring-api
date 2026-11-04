@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-18",
+  "uid": "ipt:hiw-18",
+  "type": "hiw",
+  "title": "Seed collections",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "Seed collections provide a reserve of plant diversity that may become valuable when growing conditions change. Their usefulness, however, depends on how representative and well documented the stored material is. Collecting many seeds from a small number of closely related plants can create an impressive inventory while preserving relatively little genetic variation. Collectors therefore sample across populations and record the environments in which the plants were found. Storage also requires continuing attention, because seeds differ in their tolerance of drying and gradually lose viability. Periodic testing helps staff decide when a collection must be renewed. These facilities complement conservation in natural habitats rather than replacing it, since an isolated seed cannot preserve all the relationships between a plant, its pollinators, the soil and the surrounding ecological community.",
+  "passage": "Seed collections provide a reserve of plant diversity that may become valuable when growing conditions change. Their usefulness, however, depends on how repetitive and well documented the stored material is. Collecting many seeds from a small number of closely related plants can create an impressive inventory while preserving relatively extensive genetic variation. Collectors therefore sample within populations and record the environments in which the plants were found. Storage also requires continuing attention, because seeds differ in their tolerance of drying and gradually gain viability. Periodic testing helps staff decide when a collection must be abandoned. These facilities supplant conservation in natural habitats rather than replacing it, since an isolated seed cannot preserve all the relationships between a plant, its pollinators, the soil and the surrounding ecological community.",
+  "answers": [
+    22,
+    49,
+    55,
+    82,
+    94,
+    97
+  ],
+  "corrections": [
+    {
+      "index": 22,
+      "written": "repetitive",
+      "spoken": "representative",
+      "explanation": "The stored seeds should reflect plant diversity."
+    },
+    {
+      "index": 49,
+      "written": "extensive",
+      "spoken": "little",
+      "explanation": "Closely related plants may preserve limited genetic variation."
+    },
+    {
+      "index": 55,
+      "written": "within",
+      "spoken": "across",
+      "explanation": "Sampling spans different populations."
+    },
+    {
+      "index": 82,
+      "written": "gain",
+      "spoken": "lose",
+      "explanation": "Seed viability declines over time."
+    },
+    {
+      "index": 94,
+      "written": "abandoned.",
+      "spoken": "renewed.",
+      "explanation": "Testing indicates when fresh material is needed."
+    },
+    {
+      "index": 97,
+      "written": "supplant",
+      "spoken": "complement",
+      "explanation": "Seed collections support conservation in natural habitats."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

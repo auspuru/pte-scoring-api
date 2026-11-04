@@ -1,0 +1,30 @@
+{
+  "kind": "sst",
+  "id": "pred26-sst-13",
+  "type": "sst",
+  "title": "Travel's Overrated Value",
+  "topic": "Society",
+  "minutes": 10,
+  "voice": "nova",
+  "text": "Travel can broaden experience, but distance alone does not guarantee learning or personal growth. People can pass through many places without reflecting on culture, history or the lives of local residents. Meaningful learning can also happen through local communities, books, digital resources and sustained contact with people from different backgrounds. Tourism may bring economic benefits while also increasing emissions, crowding and pressure on local traditions. The value of travel depends less on how far someone goes than on the attention, respect and reflection they bring to the experience.",
+  "keyPoints": [
+    "Travel can broaden experience, but distance alone does not guarantee learning or personal growth.",
+    "People can pass through many places without reflecting on culture, history or the lives of local residents.",
+    "Meaningful learning can also happen through local communities, books, digital resources and sustained contact with people from different backgrounds.",
+    "Tourism may bring economic benefits while also increasing emissions, crowding and pressure on local traditions."
+  ],
+  "sample": "Travel can broaden experience, but distance alone does not guarantee learning or personal growth; people can pass through many places without reflecting on culture, history or the lives of local residents; and meaningful learning can also happen through local communities, books, digital resources and sustained contact with people from different backgrounds.",
+  "predictionSource": {
+    "provider": "PTE Nepal",
+    "week": "21-27 September 2026",
+    "checkedAt": "2026-09-23",
+    "lastReviewed": "2026-09-24",
+    "contentStatus": "adapted",
+    "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+    "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+    "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+    "task": "sst",
+    "sourceId": "13000668",
+    "sourceTitle": "Travel's Overrated Value"
+  }
+}

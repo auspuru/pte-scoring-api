@@ -1,0 +1,30 @@
+{
+  "kind": "sst",
+  "id": "pred26-sst-14",
+  "type": "sst",
+  "title": "Information Technology",
+  "topic": "Technology",
+  "minutes": 10,
+  "voice": "onyx",
+  "text": "Information technology allows organisations to store, process and exchange data at a scale that has transformed work and public services. Digital systems can improve access to education, healthcare and communication across long distances. The same systems create responsibilities around privacy, cybersecurity, reliability and unequal access. Organisations need clear rules for who can use data and how failures are detected and corrected. Technology creates the greatest benefit when convenience and innovation are matched by security, accountability and support for users.",
+  "keyPoints": [
+    "Information technology allows organisations to store, process and exchange data at a scale that has transformed work and public services.",
+    "Digital systems can improve access to education, healthcare and communication across long distances.",
+    "The same systems create responsibilities around privacy, cybersecurity, reliability and unequal access.",
+    "Organisations need clear rules for who can use data and how failures are detected and corrected."
+  ],
+  "sample": "Information technology allows organisations to store, process and exchange data at a scale that has transformed work and public services; digital systems can improve access to education, healthcare and communication across long distances; and the same systems create responsibilities around privacy, cybersecurity, reliability and unequal access; organisations need clear rules for who can use data and how failures are detected and corrected.",
+  "predictionSource": {
+    "provider": "PTE Nepal",
+    "week": "21-27 September 2026",
+    "checkedAt": "2026-09-23",
+    "lastReviewed": "2026-09-24",
+    "contentStatus": "adapted",
+    "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+    "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+    "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+    "task": "sst",
+    "sourceId": "13000667",
+    "sourceTitle": "Information Technology"
+  }
+}

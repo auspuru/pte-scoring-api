@@ -1,0 +1,66 @@
+{
+  "kind": "sgd",
+  "name": "Summarise Group Discussion",
+  "preparation": 10,
+  "seconds": 120,
+  "instruction": "Listen to three speakers. Summarise the topic, each person\u2019s contribution, and how their views relate to one another.",
+  "id": "sgd-user-20261030-05",
+  "type": "sgd",
+  "title": "Choosing courses for next semester",
+  "narration": "three students are discussing which course to take next semester.",
+  "turns": [
+    [
+      "Speaker 1",
+      "So, have you guys checked out the course list for next semester? I skimmed through it, and I think we should pick something that's actually helpful for our major to make learning more meaningful. I'm considering research or design-survey courses. For me, high grades are not everything. As long as a course brings personal benefits and supports our future careers, that is good enough."
+    ],
+    [
+      "Speaker 2",
+      "Absolutely! I was thinking the exact same thing. There is no value in choosing an easy-high-grade course with no practical relevance. We ought to select subjects that build real-world practical skills. Curiosity will drive us to explore deeper and bring long-term rewards. I am interested in the business course, but it involves statistics, and I am not confident about my data-handling ability."
+    ],
+    [
+      "Speaker 3",
+      "Honestly, I believe personal interest should be the top priority, even if the subject is not tightly linked to our major. As a business student, I am really attracted by languages and cross-cultural content. That is why I plan to sign up for Spanish next semester. I hold the view that genuine interest helps us stay focused and pass assessments, so Spanish is my final pick."
+    ],
+    [
+      "Speaker 1",
+      "I agree interest plays an important role. Still, purely interesting courses with no major-related value can feel like a waste of time. We need to think about input-output efficiency and future job-hunting advantages. Meanwhile, course difficulty cannot be ignored; being able to pass the final exam should be a realistic goal for us."
+    ],
+    [
+      "Speaker 2",
+      "I actually disagree that Spanish has no practical value for business majors. Language skills are great assets in today's global marketplace. Whether you negotiate with overseas clients, cooperate in multicultural teams, or travel for business work, foreign-language communication brings us obvious competitive edges."
+    ],
+    [
+      "Speaker 3",
+      "To be honest, I did not weigh those career-related advantages too carefully when I made my choice. My decision mainly comes from my real passion for Spanish culture and the language itself. When you are truly fascinated by a subject, you naturally pay more attention and devote more energy to your studies. And even if the coursework gets difficult, this inner motivation can help you get through and pass."
+    ],
+    [
+      "Speaker 1",
+      "That makes sense. So there is not just one single correct way to choose courses. We have to balance practical career benefits, personal interest and the difficulty of each subject before we make our final decisions."
+    ],
+    [
+      "Speaker 2",
+      "Right. Everyone's priorities are different. Some people focus more on career preparation, while others value personal interest more. There is no one-size-fits-all answer for course selection."
+    ],
+    [
+      "Speaker 3",
+      "Exactly. The most important thing is that we are clear about our own goals, no matter which subject we end up enrolling in."
+    ]
+  ],
+  "facts": [
+    "The students discuss choosing next semester\u2019s courses by balancing practical relevance, interest and difficulty.",
+    "Speaker 1 prioritises courses useful for their major and career rather than high grades alone, but also considers whether the final exam is manageable.",
+    "Speaker 2 initially supports practical skills and is interested in business but worries about statistics and data handling.",
+    "Speaker 3 chooses Spanish mainly from personal interest and believes genuine motivation supports attention, effort and passing difficult coursework.",
+    "Speaker 2 challenges the idea that Spanish lacks practical value, citing international clients, multicultural teams and business travel.",
+    "They agree there is no single correct course choice and students should understand their own priorities and goals."
+  ],
+  "sample": "The students discuss selecting courses for the next semester. The first speaker values subjects relevant to their major and future career, while also considering difficulty and the ability to pass. The second agrees about practical skills but worries about the statistics involved in a business course. The third prioritises personal interest and chooses Spanish, explaining that enthusiasm sustains motivation even when coursework is difficult. The second also argues that languages have practical benefits for international business, challenging the idea that Spanish lacks career value. They ultimately agree that course selection should balance career benefits, interest and difficulty according to each student\u2019s goals.",
+  "source": {
+    "kind": "user-supplied-transcript",
+    "date": "2026-10-30",
+    "image": "AdobeExpressPhotos_5d900e909af5430d8a6e327577da855a_CopyEdited.png",
+    "contentStatus": "transcribed-user-provided"
+  },
+  "audioRate": "-17%",
+  "text": "Narration: three students are discussing which course to take next semester.\nSpeaker 1: So, have you guys checked out the course list for next semester? I skimmed through it, and I think we should pick something that's actually helpful for our major to make learning more meaningful. I'm considering research or design-survey courses. For me, high grades are not everything. As long as a course brings personal benefits and supports our future careers, that is good enough.\nSpeaker 2: Absolutely! I was thinking the exact same thing. There is no value in choosing an easy-high-grade course with no practical relevance. We ought to select subjects that build real-world practical skills. Curiosity will drive us to explore deeper and bring long-term rewards. I am interested in the business course, but it involves statistics, and I am not confident about my data-handling ability.\nSpeaker 3: Honestly, I believe personal interest should be the top priority, even if the subject is not tightly linked to our major. As a business student, I am really attracted by languages and cross-cultural content. That is why I plan to sign up for Spanish next semester. I hold the view that genuine interest helps us stay focused and pass assessments, so Spanish is my final pick.\nSpeaker 1: I agree interest plays an important role. Still, purely interesting courses with no major-related value can feel like a waste of time. We need to think about input-output efficiency and future job-hunting advantages. Meanwhile, course difficulty cannot be ignored; being able to pass the final exam should be a realistic goal for us.\nSpeaker 2: I actually disagree that Spanish has no practical value for business majors. Language skills are great assets in today's global marketplace. Whether you negotiate with overseas clients, cooperate in multicultural teams, or travel for business work, foreign-language communication brings us obvious competitive edges.\nSpeaker 3: To be honest, I did not weigh those career-related advantages too carefully when I made my choice. My decision mainly comes from my real passion for Spanish culture and the language itself. When you are truly fascinated by a subject, you naturally pay more attention and devote more energy to your studies. And even if the coursework gets difficult, this inner motivation can help you get through and pass.\nSpeaker 1: That makes sense. So there is not just one single correct way to choose courses. We have to balance practical career benefits, personal interest and the difficulty of each subject before we make our final decisions.\nSpeaker 2: Right. Everyone's priorities are different. Some people focus more on career preparation, while others value personal interest more. There is no one-size-fits-all answer for course selection.\nSpeaker 3: Exactly. The most important thing is that we are clear about our own goals, no matter which subject we end up enrolling in."
+}

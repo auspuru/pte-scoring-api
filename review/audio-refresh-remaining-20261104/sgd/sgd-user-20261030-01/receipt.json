@@ -1,0 +1,359 @@
+{
+  "kind": "sgd",
+  "questionId": "sgd-user-20261030-01",
+  "title": "Tackling a college essay",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "fa5d3e64af62908204e4d20670225aa003b4a40f661493c2f010dff98ef6e97c",
+  "spokenTextSha256": "5b70331683dea98ecabfb1b7f4bbff55901c450b4879a363f5cee0ea65d92b42",
+  "audioFile": "sgd-user-20261030-01-neural-review-20261104.mp3",
+  "audioSha256": "5336dbd6dde3d211df02ea6e69e9b1ca901d0cd15d9e6016dcf4b6bf4aceafba",
+  "masterFile": "sgd-user-20261030-01-native.flac",
+  "masterSha256": "c0beb263312541eb73fe1894c74a5753ea99efc7952439a9d5b12adb361caa1d",
+  "bytes": 3210764,
+  "seconds": 160.512,
+  "wordsPerMinuteIncludingPauses": 178.7,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -24.27,
+  "truePeakDbTP": -2.45,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": -1.09,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.74,
+    "sourceTruePeakDbTP": -0.91
+  },
+  "generationReceipts": [
+    {
+      "speaker": "Narrator",
+      "inputHash": "0b2953f4a52210565c5b32842884ac75f74d8c59cda9d586f783f1b99ee5ef8d",
+      "textSha256": "f9e8db614ccd6ce900ac3fc25505ab46d303184ce2ce27f94cbf90d4f456d9fc",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_2a1fb7724f07498ca7b0013f2ca5cba7",
+      "masterSha256": "9ce10b4c83d1445347a48e0ea4626e7127c6406ad2c7e3b0cc40b27e6996e306",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 1",
+      "inputHash": "98742f3b28365c276abaa0705a871ca7cc4d44303583be6c629599e23d03c173",
+      "textSha256": "7e68405865426e3e1061c472fe7ceb241699dcfc9deb4c5a8686e53b1fa6dab5",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_5743019520b84fab8f2f7a8904f06244",
+      "masterSha256": "99a98cb461c033232902c11e7e1142744630928707c235685848bb902ea9c695",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 2",
+      "inputHash": "71769b25501da33167a1c05f5009aedf2e6aea631cc36f4d1be6bf43458cfd14",
+      "textSha256": "676635f5e43f25620e5c71b6a56eeb427e4ca41268bff2047e5d73f96b940878",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_3a09179bdc3743d3b7f90700b429d596",
+      "masterSha256": "e3fdc6642915a36c54d57f7ef37e9743a95b0b5f4578b585dd6e9dffd5bc78e5",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 3",
+      "inputHash": "176468bfdfd6e4ac4a942764fe5a0e02c3dc345d35d42778178b43b09585812e",
+      "textSha256": "cc4da1174503328a5002b9b46fbcc2eabf77cfd4f47111b115e91d7e77c4b462",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_8b06cfbb966146d2bae8fc07b580ec0b",
+      "masterSha256": "1a3c195a040e74ae28724d059fe11c352d3d212bafe46422f0c02f8ee81e5aa9",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 2",
+      "inputHash": "ebcd7ed9537dc8827bd9c619fb1054479579824c09dec024662cdd449f0531a6",
+      "textSha256": "de6760d3d2b37e217c9a9c6f0c92f8354cc6112aa8e0049174ab1533f379da42",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_ba120927b664444b94990c52e4508f58",
+      "masterSha256": "cb091c7aaad0c45c2cd2fc23a31d842dd9119c43c218991ef3828ac777eacb03",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 1",
+      "inputHash": "9765e1fe7c1b91cbbb41b7350fdcf296223b67fb2df9ee3024b732185f399e57",
+      "textSha256": "cd3ad0984ed6d43739dc92ce68c1e1dee9ea8895e15c5b6e9f0e5b2b5d69fd81",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_d7e7b7a9a1f846c592b074b7d3c8182e",
+      "masterSha256": "1e85ea712c51ee45b936260ff0a5c9cf9c1b00581844a7d07fb13dbe1b72c33a",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 3",
+      "inputHash": "b05cfae98c8d8382e105dc4ab6a054c7b56fa5accf98ae619c5f82963382cfc5",
+      "textSha256": "3c024e568aee27618beccf73c5e1e727f869f4aa91e28d94b671db1792599b75",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_3e1ec1d2f36c4379bbf56642426a48cb",
+      "masterSha256": "586de7fb29d49f5ab120837f84b65ec2a335d2b1af1ef15a18cf3c6bbed4f593",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 2",
+      "inputHash": "953f0b09967d49af7ff1049206072df16c868f0c395ea8571e728c4c96e85333",
+      "textSha256": "b5c038b19c649e10917c24ac7fc0734e7c2a79dac75dcae53afde838cc8af822",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_322e2777542a4ea5b5fe4798353314ab",
+      "masterSha256": "cff06af47ace3e04fc4c5e3701f8db6c4d139d69112cc5ff09f87ca65814dac0",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 1",
+      "inputHash": "5f7d47693e6b3552873be4b3b86e6f5df36f53cd6c4081e18776a7d87d87ba53",
+      "textSha256": "d22cdf5a710ed48b8421aaaebe5e321a44a97e194b1d70219b95790ba0d73bf0",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_05a00f2dc5d74fca9eb657dd26c6c40e",
+      "masterSha256": "d77afea01cb9dae1afa651c8e9831c55a5b6337a274f363c559834276f8991fc",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 3",
+      "inputHash": "bb601c42f639fd2f61a2c08e353e6dcbfc8827a08b87c8917e292b5329b7d925",
+      "textSha256": "1101e37a70461853fadd0702da4e38ae69b00e8fb3c4c3c96fec10d413e166cc",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_8e3464fb05a64370b9cfafb0cc85be0c",
+      "masterSha256": "0aecaeaac7fcee5c795b252cbecd4a404c4beba091ae637d216b6315288d299f",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Speaker 2",
+      "inputHash": "2ceb5ca6bcc8f6d9466fce6738497278cee9556382e43e9fded8de6b3477edec",
+      "textSha256": "20e4e73a2c88557d7ad903d820ea8d33d722ec5d07c0890c71494dec4b3ccbfa",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_9ed8e04d094a46de9f28e96ee3477538",
+      "masterSha256": "4a55843c486e6ff3cd08273b2cfdc5dfc357454884db9a1d50467d424eccaa9b",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "narrationIncluded": true,
+  "narrationSha256": "f9e8db614ccd6ce900ac3fc25505ab46d303184ce2ce27f94cbf90d4f456d9fc",
+  "speakerVoices": {
+    "Speaker 1": "marin",
+    "Speaker 2": "cedar",
+    "Speaker 3": "coral"
+  },
+  "requestedAccents": {
+    "Speaker 1": "British English",
+    "Speaker 2": "General American English",
+    "Speaker 3": "Australian English"
+  },
+  "turnSpeakers": [
+    "Speaker 1",
+    "Speaker 2",
+    "Speaker 3",
+    "Speaker 2",
+    "Speaker 1",
+    "Speaker 3",
+    "Speaker 2",
+    "Speaker 1",
+    "Speaker 3",
+    "Speaker 2"
+  ],
+  "mockDurationEligible": true,
+  "turnCount": 10,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_58e8f7115d834e109f5a41f0a3d09531",
+    "audioSha256": "5336dbd6dde3d211df02ea6e69e9b1ca901d0cd15d9e6016dcf4b6bf4aceafba",
+    "sourcePromptProvided": false,
+    "text": "Three students are discussing how to tackle the challenge of writing a college essay.\n\nGuys, I'm really struggling with this essay. It's so much more difficult than high school, and I have no idea where to start. It's just overwhelming. I keep rereading the prompt, but I'm still not sure if I'm interpreting it correctly.\n\nHey, don't worry too much about it. The first thing you should do is to make sure you understand the question. Trying to write without a clear idea of what you're supposed to be discussing will just make things harder. Maybe try breaking the prompt down into smaller parts, or even talk to your professor after class to clarify what they're looking for.\n\nYeah, you don't need to start by writing the summary or introduction. Just start with the main content first. Get all your ideas down, and then you can organize them into a logical order later. I always do a brain dump first, just writing everything I know or think about the topic without worrying about structure.\n\nThat's true. Once you have your main points, you can write a draft and then go back and revise. You might find it easier to write the summary once you've done that. And don't forget, we're here to help too. We can proofread your draft and give you some feedback. If you want, we could even set up a study session this weekend to go over your outline together.\n\nThat sounds like a good plan. I feel much better about this now. I think I'll try the brain dump method tonight, and then maybe share my rough points with you tomorrow.\n\nThe writing center on campus is also a great resource. They can help you brainstorm ideas and even review your essay before you submit it.\n\nExactly. Don't hesitate to use the resources available to you. And take breaks too when you find yourself stuck. Sometimes stepping away for a bit can help clear your mind and give you a fresh perspective. I always set a timer like 45 minutes of writing, then a 10-minute break. It keeps me from burning out.\n\nYeah, you guys make a lot of sense. I'll start by understanding the question and then move on from there. And I'll definitely use the writing center's help too. Thank you so much. I was so stressed earlier, but now I actually have a clear starting point.\n\nYou're welcome. Just remember to take it one step at a time. Writing an essay doesn't have to be a huge, insurmountable task. You're capable of breaking it down and conquering it piece by piece. And honestly, your first draft doesn't have to be perfect. Just getting something on paper is already progress.\n\nExactly. Remember, we're only a call away. We all struggle at times, but that's how we learn and grow. You've got this.",
+    "differences": []
+  },
+  "assemblyVerification": {
+    "status": "passed",
+    "pcmSha256": "6c0ac3a2214720091c9888f0ebe1ddd8c556f90003a958e9fe0b11e973b69be7",
+    "segments": [
+      {
+        "speaker": "Narrator",
+        "voice": "marin",
+        "startSeconds": 0.0,
+        "endSeconds": 5.55,
+        "textSha256": "f9e8db614ccd6ce900ac3fc25505ab46d303184ce2ce27f94cbf90d4f456d9fc",
+        "inputHash": "0b2953f4a52210565c5b32842884ac75f74d8c59cda9d586f783f1b99ee5ef8d",
+        "startSample": 0,
+        "endSample": 133200,
+        "pcmSha256": "4bcada39eb714805ec68d713940b9bfa8085368966ceed09c8b9db67ffff9dbe",
+        "nativeWavSha256": "9ce10b4c83d1445347a48e0ea4626e7127c6406ad2c7e3b0cc40b27e6996e306"
+      },
+      {
+        "speaker": "Speaker 1",
+        "voice": "marin",
+        "startSeconds": 6.15,
+        "endSeconds": 19.65,
+        "textSha256": "7e68405865426e3e1061c472fe7ceb241699dcfc9deb4c5a8686e53b1fa6dab5",
+        "inputHash": "98742f3b28365c276abaa0705a871ca7cc4d44303583be6c629599e23d03c173",
+        "startSample": 147600,
+        "endSample": 471600,
+        "pcmSha256": "0ed593375c6ff82afc22810e682e51a5eea6d9d3fc415f656fc8065bc0ff2234",
+        "nativeWavSha256": "99a98cb461c033232902c11e7e1142744630928707c235685848bb902ea9c695"
+      },
+      {
+        "speaker": "Speaker 2",
+        "voice": "cedar",
+        "startSeconds": 19.9,
+        "endSeconds": 37.8,
+        "textSha256": "676635f5e43f25620e5c71b6a56eeb427e4ca41268bff2047e5d73f96b940878",
+        "inputHash": "71769b25501da33167a1c05f5009aedf2e6aea631cc36f4d1be6bf43458cfd14",
+        "startSample": 477600,
+        "endSample": 907200,
+        "pcmSha256": "ad476ca44725f3893d1fdb72184b23baab2975ee4059e9da2c533d8d015aca01",
+        "nativeWavSha256": "e3fdc6642915a36c54d57f7ef37e9743a95b0b5f4578b585dd6e9dffd5bc78e5"
+      },
+      {
+        "speaker": "Speaker 3",
+        "voice": "coral",
+        "startSeconds": 38.05,
+        "endSeconds": 58.3,
+        "textSha256": "cc4da1174503328a5002b9b46fbcc2eabf77cfd4f47111b115e91d7e77c4b462",
+        "inputHash": "176468bfdfd6e4ac4a942764fe5a0e02c3dc345d35d42778178b43b09585812e",
+        "startSample": 913200,
+        "endSample": 1399200,
+        "pcmSha256": "0ce8d304c8813e438121f21a3bb59c6996b2bf5d1ac188aa3fb49acea1b3142f",
+        "nativeWavSha256": "1a3c195a040e74ae28724d059fe11c352d3d212bafe46422f0c02f8ee81e5aa9"
+      },
+      {
+        "speaker": "Speaker 2",
+        "voice": "cedar",
+        "startSeconds": 58.55,
+        "endSeconds": 76.65,
+        "textSha256": "de6760d3d2b37e217c9a9c6f0c92f8354cc6112aa8e0049174ab1533f379da42",
+        "inputHash": "ebcd7ed9537dc8827bd9c619fb1054479579824c09dec024662cdd449f0531a6",
+        "startSample": 1405200,
+        "endSample": 1839600,
+        "pcmSha256": "c3637a557a2cb4a958c169f57305eb213b0819ebc6fc9e0ccbbdf2be5a2ee39b",
+        "nativeWavSha256": "cb091c7aaad0c45c2cd2fc23a31d842dd9119c43c218991ef3828ac777eacb03"
+      },
+      {
+        "speaker": "Speaker 1",
+        "voice": "marin",
+        "startSeconds": 76.9,
+        "endSeconds": 87.05,
+        "textSha256": "cd3ad0984ed6d43739dc92ce68c1e1dee9ea8895e15c5b6e9f0e5b2b5d69fd81",
+        "inputHash": "9765e1fe7c1b91cbbb41b7350fdcf296223b67fb2df9ee3024b732185f399e57",
+        "startSample": 1845600,
+        "endSample": 2089200,
+        "pcmSha256": "d289b1c1e8d4334461becbeb3e8c04f099e6b8a9f18c46a4351012d507d6d209",
+        "nativeWavSha256": "1e85ea712c51ee45b936260ff0a5c9cf9c1b00581844a7d07fb13dbe1b72c33a"
+      },
+      {
+        "speaker": "Speaker 3",
+        "voice": "coral",
+        "startSeconds": 87.3,
+        "endSeconds": 98.1,
+        "textSha256": "3c024e568aee27618beccf73c5e1e727f869f4aa91e28d94b671db1792599b75",
+        "inputHash": "b05cfae98c8d8382e105dc4ab6a054c7b56fa5accf98ae619c5f82963382cfc5",
+        "startSample": 2095200,
+        "endSample": 2354400,
+        "pcmSha256": "bf6e7d7fc25af20338e5a37af71190655cc306c110354a4124208fa2be576bde",
+        "nativeWavSha256": "586de7fb29d49f5ab120837f84b65ec2a335d2b1af1ef15a18cf3c6bbed4f593"
+      },
+      {
+        "speaker": "Speaker 2",
+        "voice": "cedar",
+        "startSeconds": 98.35,
+        "endSeconds": 116.9,
+        "textSha256": "b5c038b19c649e10917c24ac7fc0734e7c2a79dac75dcae53afde838cc8af822",
+        "inputHash": "953f0b09967d49af7ff1049206072df16c868f0c395ea8571e728c4c96e85333",
+        "startSample": 2360400,
+        "endSample": 2805600,
+        "pcmSha256": "6f4eaa284faa85ead3c6aa126e3d1021ac51149b8c0349e2fc46c48ece4598a6",
+        "nativeWavSha256": "cff06af47ace3e04fc4c5e3701f8db6c4d139d69112cc5ff09f87ca65814dac0"
+      },
+      {
+        "speaker": "Speaker 1",
+        "voice": "marin",
+        "startSeconds": 117.15,
+        "endSeconds": 131.55,
+        "textSha256": "d22cdf5a710ed48b8421aaaebe5e321a44a97e194b1d70219b95790ba0d73bf0",
+        "inputHash": "5f7d47693e6b3552873be4b3b86e6f5df36f53cd6c4081e18776a7d87d87ba53",
+        "startSample": 2811600,
+        "endSample": 3157200,
+        "pcmSha256": "e359d7f5ddec0618856530872530310666cd1aae50a6c6ae2c171bcd08d85c41",
+        "nativeWavSha256": "d77afea01cb9dae1afa651c8e9831c55a5b6337a274f363c559834276f8991fc"
+      },
+      {
+        "speaker": "Speaker 3",
+        "voice": "coral",
+        "startSeconds": 131.8,
+        "endSeconds": 153.1,
+        "textSha256": "1101e37a70461853fadd0702da4e38ae69b00e8fb3c4c3c96fec10d413e166cc",
+        "inputHash": "bb601c42f639fd2f61a2c08e353e6dcbfc8827a08b87c8917e292b5329b7d925",
+        "startSample": 3163200,
+        "endSample": 3674400,
+        "pcmSha256": "bdc52536ff152543be1afa0dbf833c78620b132e51f0aca89c7c73eb6c20723b",
+        "nativeWavSha256": "0aecaeaac7fcee5c795b252cbecd4a404c4beba091ae637d216b6315288d299f"
+      },
+      {
+        "speaker": "Speaker 2",
+        "voice": "cedar",
+        "startSeconds": 153.35,
+        "endSeconds": 160.45,
+        "textSha256": "20e4e73a2c88557d7ad903d820ea8d33d722ec5d07c0890c71494dec4b3ccbfa",
+        "inputHash": "2ceb5ca6bcc8f6d9466fce6738497278cee9556382e43e9fded8de6b3477edec",
+        "startSample": 3680400,
+        "endSample": 3850800,
+        "pcmSha256": "793455e08a2db0a4c4bfc739b72b7efbcd5cc50c0efda3c86c903c3ccde1bb7e",
+        "nativeWavSha256": "4a55843c486e6ff3cd08273b2cfdc5dfc357454884db9a1d50467d424eccaa9b"
+      }
+    ],
+    "method": "Decoded lossless master equals ordered native segment PCM plus declared turn gaps."
+  }
+}

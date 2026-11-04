@@ -1,0 +1,63 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-07",
+  "title": "Threatening with Losses",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "36102900bf6ef1cf10165c28cafc64da82e1fe43046cbcbe55c47baa3472068b",
+  "spokenTextSha256": "36102900bf6ef1cf10165c28cafc64da82e1fe43046cbcbe55c47baa3472068b",
+  "audioFile": "pred26-sst-07-neural-review-20261104.mp3",
+  "audioSha256": "8fec5ff583c83b66509e26114b003ba0c7a1922084c2b039036d8203c0e2814e",
+  "masterFile": "pred26-sst-07-native.flac",
+  "masterSha256": "584f2bba6919943544c9d0182320c6b7ceede3148862aed29147dad90e696493",
+  "bytes": 746924,
+  "seconds": 37.32,
+  "wordsPerMinuteIncludingPauses": 143.1,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -19.99,
+  "truePeakDbTP": -2.42,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 2.96,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.51,
+    "sourceTruePeakDbTP": -4.96
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "25ab8f5db72ab3aff44e9dae0547cb25ebd3c43247a46c912b8c7e4ae54d5f12",
+      "textSha256": "36102900bf6ef1cf10165c28cafc64da82e1fe43046cbcbe55c47baa3472068b",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_a616b8bf782f4db180560a4aae798b7f",
+      "masterSha256": "fbe5db4c6d91aca6a91e146cce248eb4482b9edaebfce352dfe44cb12d44f2e0",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_d6d7fef08fe345cbb9352bba418bb756",
+    "audioSha256": "8fec5ff583c83b66509e26114b003ba0c7a1922084c2b039036d8203c0e2814e",
+    "sourcePromptProvided": false,
+    "text": "People often react more strongly to the possibility of losing something they already have than to an equally sized potential gain. This tendency, commonly described as loss aversion, can influence decisions about money, health, and personal goals. Messages framed around avoiding a loss may therefore attract more attention than messages promising a future benefit. However, communicators should not exaggerate threats, because fear-based messages can become manipulative or reduce trust. Understanding loss aversion is most useful when it helps people notice how framing affects judgment and makes more deliberate choices.",
+    "differences": [
+      {
+        "expected": "judgement",
+        "heard": "judgment"
+      },
+      {
+        "expected": "make",
+        "heard": "makes"
+      }
+    ]
+  }
+}

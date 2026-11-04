@@ -1,0 +1,53 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-18",
+  "title": "Seed collections",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "989b63ae3b27699c7ee57d4a3262a98f40e826d9325fdf191d9ebc80f42ca638",
+  "spokenTextSha256": "989b63ae3b27699c7ee57d4a3262a98f40e826d9325fdf191d9ebc80f42ca638",
+  "audioFile": "hiw-18-neural-review-20261104.mp3",
+  "audioSha256": "a75a06ae9f29b0e428531c68ba1aa61b8d6cee02d9a9db4edab6ccb6939160f8",
+  "masterFile": "hiw-18-native.flac",
+  "masterSha256": "34ea4be58029c927b95ec4d0088e7010a4fab6e6fa28c4e81d0bebfde21da519",
+  "bytes": 1112684,
+  "seconds": 55.608,
+  "wordsPerMinuteIncludingPauses": 137.0,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -19.8,
+  "truePeakDbTP": -2.47,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 2.91,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.26,
+    "sourceTruePeakDbTP": -4.91
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "102ae683aa49520c9a93764e5b917c78f3cfced3c30ced011823d513fd1600df",
+      "textSha256": "989b63ae3b27699c7ee57d4a3262a98f40e826d9325fdf191d9ebc80f42ca638",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_33840af01da9431cab3131827a040706",
+      "masterSha256": "30adc090c5b36e0ab58224df45dc41ff506e8f53fe379f3701f6ff75c1212022",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_0603d2d4e7e748ffb80598f210e63935",
+    "audioSha256": "a75a06ae9f29b0e428531c68ba1aa61b8d6cee02d9a9db4edab6ccb6939160f8",
+    "sourcePromptProvided": false,
+    "text": "Seed collections provide a reserve of plant diversity that may become valuable when growing conditions change. Their usefulness, however, depends on how representative and well-documented the stored material is. Collecting many seeds from a small number of closely related plants can create an impressive inventory while preserving relatively little genetic variation. Collectors therefore sample across populations and record the environments in which the plants were found. Storage also requires continuing attention, because seeds differ in their tolerance of drying and gradually lose viability. Periodic testing helps staff decide when a collection must be renewed. These facilities complement conservation in natural habitats rather than replacing it, since an isolated seed cannot preserve all the relationships between a plant, its pollinators, the soil, and the surrounding ecological community.",
+    "differences": []
+  }
+}

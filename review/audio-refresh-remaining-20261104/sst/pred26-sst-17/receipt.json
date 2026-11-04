@@ -1,0 +1,71 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-17",
+  "title": "Bee Hives",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "f0280e975170325db852e15ca7d85c9dd97ee897943e302159da1cbdfa4c196e",
+  "spokenTextSha256": "f0280e975170325db852e15ca7d85c9dd97ee897943e302159da1cbdfa4c196e",
+  "audioFile": "pred26-sst-17-neural-review-20261104.mp3",
+  "audioSha256": "174e7159781a926fe28c50c30f74e51d967cbce5f30f359886a2a2fff0c0100a",
+  "masterFile": "pred26-sst-17-native.flac",
+  "masterSha256": "263a18d7b12515c027cfb4f2b4cc210900dea02cabda82df13bb2ca5ca3051a9",
+  "bytes": 785804,
+  "seconds": 39.264,
+  "wordsPerMinuteIncludingPauses": 142.1,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -19.39,
+  "truePeakDbTP": -2.43,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 4.13,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -23.07,
+    "sourceTruePeakDbTP": -6.13
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "4538ecc71d9a82a30c0a541e2ce69dfd42ca30d3dbb1e37dbef130a6319fa0f7",
+      "textSha256": "f0280e975170325db852e15ca7d85c9dd97ee897943e302159da1cbdfa4c196e",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_5a46fe140d604dd4a822c6ec3acea6ff",
+      "masterSha256": "a419939c59e321c950c80bac505cdd7947ad21f40760c8a9c1584afa1b24057b",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_07a31b603de74d6e80a1217e61fc07b8",
+    "audioSha256": "174e7159781a926fe28c50c30f74e51d967cbce5f30f359886a2a2fff0c0100a",
+    "sourcePromptProvided": false,
+    "text": "A honeybee colony functions through highly specialized roles that allow thousands of insects to behave as a coordinated system. The queen lays eggs, workers gather food and maintain the hive, and male drones have a narrower reproductive role. Worker bees perform demanding tasks throughout short lives, while new generations continually replace those that die. Communication and division of labor allow the colony to regulate food, temperature, and care for developing bees. Studying the hive shows how cooperation among individuals can produce behavior that is more complex than the actions of any single bee.",
+    "differences": [
+      {
+        "expected": "specialised",
+        "heard": "specialized"
+      },
+      {
+        "expected": "labour",
+        "heard": "labor"
+      },
+      {
+        "expected": "a",
+        "heard": "the"
+      },
+      {
+        "expected": "behaviour",
+        "heard": "behavior"
+      }
+    ]
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-c2-08",
+  "title": "Classification and accountability",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "68e6235e4c39e06c39047d1d8b1f275a0c83439eef7ee3bfd5da637b861b8da6",
+  "spokenTextSha256": "68e6235e4c39e06c39047d1d8b1f275a0c83439eef7ee3bfd5da637b861b8da6",
+  "audioFile": "hiw-c2-08-neural-review-20261104.mp3",
+  "audioSha256": "6a9624d31e9a8160cacd175529b22e3f24b3201234e3b4e456bede988e0108f6",
+  "masterFile": "hiw-c2-08-native.flac",
+  "masterSha256": "33686003727f8439877edefa93d30a0684d8ab2a572190feb0c33a5b8299eb03",
+  "bytes": 1091564,
+  "seconds": 54.552,
+  "wordsPerMinuteIncludingPauses": 140.8,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -22.16,
+  "truePeakDbTP": -2.44,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.33,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -23.04,
+    "sourceTruePeakDbTP": -3.33
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "6209c5f28f2466d4e3b8cfc8648f007c86fed8425c27abda80295b403e08cfca",
+      "textSha256": "68e6235e4c39e06c39047d1d8b1f275a0c83439eef7ee3bfd5da637b861b8da6",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_5a1600cf609e4bc2be0ee7030e0bdffe",
+      "masterSha256": "a2378495fc607279609e2bc11c94c3685e8a209806da28109d3d9ccd7198cffa",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_4f445f3393fd47cd8d75e3c937f7e420",
+    "audioSha256": "6a9624d31e9a8160cacd175529b22e3f24b3201234e3b4e456bede988e0108f6",
+    "sourcePromptProvided": false,
+    "text": "Automated classification acquires an appearance of neutrality when its categories are presented as purely technical. Yet the choice of a target variable already embeds a judgment about which differences matter. A system trained to reproduce previous decisions may faithfully replicate patterns that an institution ought to reconsider. Evaluating its performance therefore requires attention to the provenance of the labels as well as the frequency of predictive errors. Aggregated accuracy can conceal uneven consequences for groups whose circumstances are inadequately represented in the training material. Accountability depends on making these limitations legible to those affected and providing a practicable route for contesting decisions. The central challenge is not simply to increase computational sophistication, but to ensure that the purposes governing classification remain explicit, revisable, and answerable to public reasons.",
+    "differences": [
+      {
+        "expected": "judgement",
+        "heard": "judgment"
+      }
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-c2-01",
+  "title": "Standards and discretion",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "223c5e13f24928e5a665bfb9c4c6278bbec010351d8f276104daa14e07909699",
+  "spokenTextSha256": "223c5e13f24928e5a665bfb9c4c6278bbec010351d8f276104daa14e07909699",
+  "audioFile": "hiw-c2-01-neural-review-20261104.mp3",
+  "audioSha256": "235afbf871a76811eea06c4c066b96365a0ccd8df91580753f885a12f9f8ba9d",
+  "masterFile": "hiw-c2-01-native.flac",
+  "masterSha256": "cf1f71e84dd8228271925814f7368b811454691dd20de195a6069d787772b37b",
+  "bytes": 1098764,
+  "seconds": 54.912,
+  "wordsPerMinuteIncludingPauses": 133.3,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -19.47,
+  "truePeakDbTP": -2.41,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 3.21,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.23,
+    "sourceTruePeakDbTP": -5.21
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "5f3f87625e897f3ab5b59948b9e9c8a2b708d8012de1b7a05f4d487a766895fd",
+      "textSha256": "223c5e13f24928e5a665bfb9c4c6278bbec010351d8f276104daa14e07909699",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_d28036de3ad84efeacb313b59339bb8a",
+      "masterSha256": "4d1a59dff7010f025b036f34daedbbd86a1ebf1488b6915917fc2b910ac44a96",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_20ce8cd1a032411485bd8c1967c81193",
+    "audioSha256": "235afbf871a76811eea06c4c066b96365a0ccd8df91580753f885a12f9f8ba9d",
+    "sourcePromptProvided": false,
+    "text": "Administrative standards are often defended as a means of insulating decisions from personal preference. Their legitimacy, however, remains contingent on the purposes they serve and the circumstances in which they are applied. A rule may constrain discretion without eliminating the judgment required to interpret an unusual case. Treating every classification as provisional does not entail abandoning consistency. It acknowledges that categories can obscure distinctions relevant to a defensible decision. The crucial question is whether departures from routine are authorized through reasons that others can examine. Where decisions are reversible, institutions can learn from objections without presenting every revision as an admission of incompetence. Accountability therefore depends on making interpretations contestable while preserving a coherent explanation of why comparable cases receive comparable treatment.",
+    "differences": [
+      {
+        "expected": "judgement",
+        "heard": "judgment"
+      },
+      {
+        "expected": "authorised",
+        "heard": "authorized"
+      }
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-06",
+  "title": "Science and Human Values",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "bc0c9def83b9022381568dab6663b9a53fea1230f79e62533fa7c716ba0f8d40",
+  "spokenTextSha256": "bc0c9def83b9022381568dab6663b9a53fea1230f79e62533fa7c716ba0f8d40",
+  "audioFile": "pred26-sst-06-neural-review-20261104.mp3",
+  "audioSha256": "59e4cf434c64c950214ab808b8c5d8d71351e72c7cef7cfdd763e20e59d035e6",
+  "masterFile": "pred26-sst-06-native.flac",
+  "masterSha256": "2b81e6840440f7433eeb21dbd0fcf975dc3007c690b747012418fcd81b0d74b6",
+  "bytes": 745484,
+  "seconds": 37.248,
+  "wordsPerMinuteIncludingPauses": 146.6,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -20.5,
+  "truePeakDbTP": -2.45,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 2.81,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.86,
+    "sourceTruePeakDbTP": -4.81
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "9f1852d15b0894c2cdd0d35f3c69364870e97901a3c28fdce49e47af1e86c4e8",
+      "textSha256": "bc0c9def83b9022381568dab6663b9a53fea1230f79e62533fa7c716ba0f8d40",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_4ca3a7018c7f45c9b40026aa71879529",
+      "masterSha256": "0677154fc7224d9226bafb27eaedc9bcaddb9ab818a8355b7b91de00f20dd1e0",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_d22cd0188dd84732a2269d201d23b24d",
+    "audioSha256": "59e4cf434c64c950214ab808b8c5d8d71351e72c7cef7cfdd763e20e59d035e6",
+    "sourcePromptProvided": false,
+    "text": "Scientific research can explain what is possible, but evidence alone does not decide how every discovery should be used. Choices about medicine, artificial intelligence, genetics, and the environment involve values such as fairness, privacy, responsibility, and harm. Ethical debate should be informed by accurate science so that decisions are not based on fear or misinformation. At the same time, technical experts need to hear from communities affected by the consequences of new technologies. Responsible progress combines reliable evidence with transparent discussion about the human purposes that innovation is meant to serve.",
+    "differences": []
+  }
+}

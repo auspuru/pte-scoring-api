@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-13",
+  "uid": "ipt:hiw-13",
+  "type": "hiw",
+  "title": "Repair and product design",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "A product that can be repaired easily may remain useful long after its original warranty has expired. Yet repairability is determined partly by decisions made before manufacturing begins. Components joined with removable fasteners are generally more accessible than those sealed permanently inside a casing. Clear documentation also matters, since a replacement part has limited value if technicians cannot identify the fault. Manufacturers may argue that a compact design improves performance, but this advantage must be weighed against the costs of premature disposal. Designing for repair does not require every component to last indefinitely. Instead, it allows predictable failures to be addressed without discarding the whole device. Such an approach can conserve materials while supporting local services, provided that spare parts and reliable information remain available throughout the product's working life.",
+  "passage": "A product that can be repaired easily may remain useful long after its original warranty has expired. Yet repairability is determined partly by decisions made before manufacturing begins. Components joined with permanent fasteners are generally more concealed than those sealed permanently inside a casing. Clear documentation also matters, since a replacement part has limited value if technicians cannot conceal the fault. Manufacturers may argue that a compact design improves performance, but this advantage must be weighed against the costs of delayed disposal. Designing for repair does not require every component to last indefinitely. Instead, it allows predictable failures to be addressed without preserving the whole device. Such an approach can exhaust materials while supporting local services, provided that spare parts and reliable information remain available throughout the product's working life.",
+  "answers": [
+    31,
+    36,
+    58,
+    80,
+    102,
+    110
+  ],
+  "corrections": [
+    {
+      "index": 31,
+      "written": "permanent",
+      "spoken": "removable",
+      "explanation": "Fasteners that can be removed make components accessible."
+    },
+    {
+      "index": 36,
+      "written": "concealed",
+      "spoken": "accessible",
+      "explanation": "Repairable construction makes parts easier to reach."
+    },
+    {
+      "index": 58,
+      "written": "conceal",
+      "spoken": "identify",
+      "explanation": "Technicians need to find the fault."
+    },
+    {
+      "index": 80,
+      "written": "delayed",
+      "spoken": "premature",
+      "explanation": "The concern is throwing products away too soon."
+    },
+    {
+      "index": 102,
+      "written": "preserving",
+      "spoken": "discarding",
+      "explanation": "Repair avoids throwing away the entire device."
+    },
+    {
+      "index": 110,
+      "written": "exhaust",
+      "spoken": "conserve",
+      "explanation": "Keeping devices working can save materials."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

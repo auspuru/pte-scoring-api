@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-c2-04",
+  "uid": "ipt:hiw-c2-04",
+  "type": "hiw",
+  "title": "Ecological thresholds",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "The apparent stability of an ecosystem can obscure a gradual erosion of its capacity to absorb disturbance. A lake may retain familiar characteristics while accumulating pressures that bring it closer to a threshold. Because the response can involve nonlinearity, a modest additional disturbance may produce a disproportionate change. Restoration then becomes more complicated than merely reversing the final pressure: feedback within the altered system can perpetuate the new condition. This possibility does not make recovery futile, but it qualifies the assumption that degradation and restoration follow symmetrical paths. Effective management attends to early indications of diminishing resilience while acknowledging that their interpretation is uncertain. The objective is to preserve options for intervention before an apparently incremental process produces a transition whose consequences are difficult to reverse.",
+  "passage": "The apparent stability of an ecosystem can obscure a gradual expansion of its capacity to absorb disturbance. A lake may retain familiar characteristics while accumulating pressures that bring it closer to a threshold. Because the response can involve uniformity, a modest additional disturbance may produce a proportionate change. Restoration then becomes more complicated than merely reversing the final pressure: feedback within the altered system can eliminate the new condition. This possibility does not make recovery futile, but it qualifies the assumption that degradation and restoration follow sequential paths. Effective management attends to early indications of increasing resilience while acknowledging that their interpretation is uncertain. The objective is to preserve options for intervention before an apparently incremental process produces a transition whose consequences are difficult to reverse.",
+  "answers": [
+    10,
+    38,
+    46,
+    65,
+    86,
+    95
+  ],
+  "corrections": [
+    {
+      "index": 10,
+      "written": "expansion",
+      "spoken": "erosion",
+      "explanation": "The system is losing some capacity to absorb disturbance."
+    },
+    {
+      "index": 38,
+      "written": "uniformity,",
+      "spoken": "nonlinearity,",
+      "explanation": "The response need not grow in a simple proportion to the disturbance."
+    },
+    {
+      "index": 46,
+      "written": "proportionate",
+      "spoken": "disproportionate",
+      "explanation": "A modest disturbance can trigger a much larger change."
+    },
+    {
+      "index": 65,
+      "written": "eliminate",
+      "spoken": "perpetuate",
+      "explanation": "Feedback can maintain the altered condition."
+    },
+    {
+      "index": 86,
+      "written": "sequential",
+      "spoken": "symmetrical",
+      "explanation": "The speaker questions whether restoration mirrors degradation."
+    },
+    {
+      "index": 95,
+      "written": "increasing",
+      "spoken": "diminishing",
+      "explanation": "The early indications concern a loss of resilience."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

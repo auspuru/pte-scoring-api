@@ -1,0 +1,54 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-15",
+  "title": "Paper Rejection",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "3553fb8de4fed022c8020036921e3668139a441e595492260ce1cf91662be701",
+  "spokenTextSha256": "3553fb8de4fed022c8020036921e3668139a441e595492260ce1cf91662be701",
+  "audioFile": "pred26-sst-15-neural-review-20261104.mp3",
+  "audioSha256": "acd6b72d9618281abbfeb45c309f55675f9ef469e0af75d11e80199aa34e8ab2",
+  "masterFile": "pred26-sst-15-native.flac",
+  "masterSha256": "5419ae38d28c89d39987634aa9b132402632a0b7f42c503a0dbfc52610c7e9eb",
+  "bytes": 750764,
+  "seconds": 37.512,
+  "wordsPerMinuteIncludingPauses": 150.4,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -18.99,
+  "truePeakDbTP": -2.44,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 3.73,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.28,
+    "sourceTruePeakDbTP": -5.73
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "6c6af1de94567df332e94c45f93749c29aaa079c13076fe1711ddb81187636a5",
+      "textSha256": "3553fb8de4fed022c8020036921e3668139a441e595492260ce1cf91662be701",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_d1c7ed10d82f4eb7b97bc05e4839a99a",
+      "masterSha256": "2f22bfe88add212d36ad301effc02b9a5ebc88c2b9d4f4d8dcc1ba1de60f1206",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_9d0f48ba52924d47a3a96f3a3b765483",
+    "audioSha256": "acd6b72d9618281abbfeb45c309f55675f9ef469e0af75d11e80199aa34e8ab2",
+    "sourcePromptProvided": false,
+    "text": "Rejection is common in academic publishing and can be especially discouraging for researchers at the beginning of their careers. A rejected paper is not always worthless, because reviewers may identify weak evidence, unclear argument, or missing literature that can be improved. Researchers should separate useful criticism from comments that are less relevant to the goals of the study. Revising carefully before sending the work to another journal can strengthen both the paper and the author's future research practice. Persistence matters, but so does learning from feedback rather than submitting the same unchanged manuscript repeatedly.",
+    "differences": []
+  }
+}

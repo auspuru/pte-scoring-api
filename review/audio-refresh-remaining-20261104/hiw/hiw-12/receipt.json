@@ -1,0 +1,58 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-12",
+  "title": "Scientific replication",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "1fd205591c148b1e85e327261faf2ca5c4d72bde9f74d605d06e8b70f80ade0c",
+  "spokenTextSha256": "1fd205591c148b1e85e327261faf2ca5c4d72bde9f74d605d06e8b70f80ade0c",
+  "audioFile": "hiw-12-neural-review-20261104.mp3",
+  "audioSha256": "3212f45c562a21edfdbbafc030721b8cd3032f7b5d164c473e5eaf77e3e7af19",
+  "masterFile": "hiw-12-native.flac",
+  "masterSha256": "81c1b4159ea53026081ed32b096daf653113698c420b7a3de8ad1fb6c3a62c75",
+  "bytes": 1089644,
+  "seconds": 54.456,
+  "wordsPerMinuteIncludingPauses": 139.9,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -20.38,
+  "truePeakDbTP": -2.42,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 2.58,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.51,
+    "sourceTruePeakDbTP": -4.58
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "c34df3627c85eb54908101a76d3ac06fe09546f2699b5c1f689b59517bf7484f",
+      "textSha256": "1fd205591c148b1e85e327261faf2ca5c4d72bde9f74d605d06e8b70f80ade0c",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_8c69965e1ddf4f6b843b1b2e789c5aea",
+      "masterSha256": "6f07b38747ceb5c2a98dbe171769e5968ab0bf89f11bc61f4b93da90f10647a9",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_fcac5fd39e9a4d6f820083f6c1080fed",
+    "audioSha256": "3212f45c562a21edfdbbafc030721b8cd3032f7b5d164c473e5eaf77e3e7af19",
+    "sourcePromptProvided": false,
+    "text": "Repeating a scientific study is sometimes treated as a straightforward test of whether the original researchers were correct. In practice, replication requires careful attention to the conditions under which a finding was produced. Differences in equipment, participants, or measurement procedures can influence the result without implying misconduct. Researchers should make these differences explicit and distinguish a failure to reproduce an effect from evidence that the effect is impossible. A useful replication may reveal that an apparent general principle depends on a narrower set of circumstances. This discovery can refine a theory rather than simply discredit it. Open methods and accessible data allow others to examine competing explanations, while several independent investigations provide a stronger basis for judgment than a single dramatic success or failure reported in isolation.",
+    "differences": [
+      {
+        "expected": "judgement",
+        "heard": "judgment"
+      }
+    ]
+  }
+}

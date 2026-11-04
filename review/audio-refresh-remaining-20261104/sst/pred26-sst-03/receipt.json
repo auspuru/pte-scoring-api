@@ -1,0 +1,59 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-03",
+  "title": "Emotions",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "42357ab1358a441d304b20084f2ae030cd67aeb1de5663cf9358706a0ff44142",
+  "spokenTextSha256": "42357ab1358a441d304b20084f2ae030cd67aeb1de5663cf9358706a0ff44142",
+  "audioFile": "pred26-sst-03-neural-review-20261104.mp3",
+  "audioSha256": "8168ec0b63f21e23fdd295a88e174d87eecb18e4b166b3691f3f452ba26440f2",
+  "masterFile": "pred26-sst-03-native.flac",
+  "masterSha256": "c6f8be4a83d5210b1aaf7f1461b87fb06640e981faf591698aac80aa43455275",
+  "bytes": 775724,
+  "seconds": 38.76,
+  "wordsPerMinuteIncludingPauses": 139.3,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -18.56,
+  "truePeakDbTP": -2.44,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 3.62,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -21.73,
+    "sourceTruePeakDbTP": -5.62
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "4aaca2f3f7e28efb85c63fbde4eacc24da99fae203ddcbe61f531626281c2fd1",
+      "textSha256": "42357ab1358a441d304b20084f2ae030cd67aeb1de5663cf9358706a0ff44142",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_f3e91736a6e14792923c674344b567a5",
+      "masterSha256": "5584ba49908030503c6c4f601b4421182d2ea78b57201975a13f1942cf86c2fc",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_147528a4c6634ab6973c60d435708a59",
+    "audioSha256": "8168ec0b63f21e23fdd295a88e174d87eecb18e4b166b3691f3f452ba26440f2",
+    "sourcePromptProvided": false,
+    "text": "People differ in how strongly their moods change, with some experiencing sharp emotional swings and others remaining comparatively steady. Emotional health does not require constant excitement, because a calm sense of satisfaction can be more sustainable than repeated extreme highs. A moderate level of challenge can support attention and growth, while excessive stress may reduce judgment and well-being. Contentment also does not mean passivity; it can coexist with ambition and effort. The useful goal is emotional balance, where people can respond to problems without being controlled by every temporary feeling.",
+    "differences": [
+      {
+        "expected": "judgement",
+        "heard": "judgment"
+      }
+    ]
+  }
+}

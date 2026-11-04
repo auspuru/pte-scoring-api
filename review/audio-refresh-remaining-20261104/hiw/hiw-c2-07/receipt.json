@@ -1,0 +1,53 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-c2-07",
+  "title": "Infrastructure and future choices",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "d9f3d577e013eb9daa1ce064bfb6ae09481e158456f39bfd952d18ccb74b1c9a",
+  "spokenTextSha256": "d9f3d577e013eb9daa1ce064bfb6ae09481e158456f39bfd952d18ccb74b1c9a",
+  "audioFile": "hiw-c2-07-neural-review-20261104.mp3",
+  "audioSha256": "3c7120c50b36a4241f3426040ce5473807b0effbd915e30d78c724dc2d78223d",
+  "masterFile": "hiw-c2-07-native.flac",
+  "masterSha256": "f739a05b60e0066c2059b41ba338140c600e2a9cda750a45172e2e37216d3071",
+  "bytes": 1084844,
+  "seconds": 54.216,
+  "wordsPerMinuteIncludingPauses": 137.2,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -20.51,
+  "truePeakDbTP": -2.43,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.82,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -21.88,
+    "sourceTruePeakDbTP": -3.82
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "87b2d2538cf2d95ed20d7e4815b7fd9fd2ff544b75acd748de20d66f5cbc1a88",
+      "textSha256": "d9f3d577e013eb9daa1ce064bfb6ae09481e158456f39bfd952d18ccb74b1c9a",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_92e1455c86f94f95b50a192733c01a09",
+      "masterSha256": "a8c3eefd0d0fe497abd7114da0029b4f851ef7a0fcb60808f72a1e9223b7c5ec",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_a925db0776a74146b2f314dfb7831d75",
+    "audioSha256": "3c7120c50b36a4241f3426040ce5473807b0effbd915e30d78c724dc2d78223d",
+    "sourcePromptProvided": false,
+    "text": "Infrastructure planning distributes opportunities across time as well as across space. A project that appears efficient under current assumptions may foreclose alternatives that later generations would have preferred. This does not imply that all irreversible investments should be deferred, since postponement also imposes costs and can entrench existing disadvantages. It does require distinguishing uncertainty about future demand from disagreement about whose interests should determine the decision. Appraisal becomes more transparent when these issues are articulated separately, instead of being compressed into a single forecast. Where feasible, modular designs can preserve flexibility without requiring planners to predict every subsequent development. Their value lies partly in the options they retain, including the ability to revise a commitment when its original rationale no longer withstands public examination.",
+    "differences": []
+  }
+}

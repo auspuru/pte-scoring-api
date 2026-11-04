@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-14",
+  "uid": "ipt:hiw-14",
+  "type": "hiw",
+  "title": "Coastal restoration",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "Restoring a coastal wetland involves more than planting vegetation in an area that has lost its original habitat. Water must move through the landscape at suitable intervals, carrying sediment and creating conditions in which different species can establish themselves. If an old embankment continues to restrict tidal flow, newly planted vegetation may struggle despite intensive maintenance. Restoration teams therefore begin by investigating the physical processes that sustain the habitat. They also consider neighbouring communities, whose access routes or drainage systems may be affected by proposed changes. A successful project balances ecological recovery with these practical concerns and monitors outcomes over several seasons. Early fluctuations do not necessarily indicate failure, because living systems respond unevenly and may require time to develop the diversity and structure of an established wetland.",
+  "passage": "Restoring a coastal wetland involves more than planting vegetation in an area that has lost its original habitat. Water must move through the landscape at identical intervals, carrying sediment and creating conditions in which different species can establish themselves. If an old embankment continues to expand tidal flow, newly planted vegetation may struggle despite intensive maintenance. Restoration teams therefore begin by investigating the physical processes that destabilise the habitat. They also consider neighbouring communities, whose access routes or drainage systems may be affected by proposed changes. A successful project separates ecological recovery with these practical concerns and monitors outcomes over several seasons. Early fluctuations do not necessarily indicate failure, because living systems respond uniformly and may require time to develop the simplicity and structure of an established wetland.",
+  "answers": [
+    25,
+    45,
+    66,
+    89,
+    113,
+    121
+  ],
+  "corrections": [
+    {
+      "index": 25,
+      "written": "identical",
+      "spoken": "suitable",
+      "explanation": "The timing must suit the habitat; it need not always be identical."
+    },
+    {
+      "index": 45,
+      "written": "expand",
+      "spoken": "restrict",
+      "explanation": "An embankment can limit tidal movement."
+    },
+    {
+      "index": 66,
+      "written": "destabilise",
+      "spoken": "sustain",
+      "explanation": "Teams investigate the processes that maintain the habitat."
+    },
+    {
+      "index": 89,
+      "written": "separates",
+      "spoken": "balances",
+      "explanation": "Ecological recovery and practical concerns are considered together."
+    },
+    {
+      "index": 113,
+      "written": "uniformly",
+      "spoken": "unevenly",
+      "explanation": "Living systems do not all recover at the same rate."
+    },
+    {
+      "index": 121,
+      "written": "simplicity",
+      "spoken": "diversity",
+      "explanation": "An established wetland contains a variety of organisms and features."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

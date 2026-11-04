@@ -1,0 +1,54 @@
+{
+  "kind": "sst",
+  "questionId": "pred26-sst-13",
+  "title": "Travel's Overrated Value",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "7d0c9cd5e8162f46ef9ac2508a535481f73a7779415008d5e95e928967aee387",
+  "spokenTextSha256": "7d0c9cd5e8162f46ef9ac2508a535481f73a7779415008d5e95e928967aee387",
+  "audioFile": "pred26-sst-13-neural-review-20261104.mp3",
+  "audioSha256": "2f40a2c606466752b9f079fed912562da8af4b77b8c01f26125d0d1e80087ce7",
+  "masterFile": "pred26-sst-13-native.flac",
+  "masterSha256": "77186a2cf4f09eb13a535c54f11183aad9afc01702db08faf97a01f3b2d831bc",
+  "bytes": 703724,
+  "seconds": 35.16,
+  "wordsPerMinuteIncludingPauses": 150.2,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -20.48,
+  "truePeakDbTP": -2.46,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 2.79,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.82,
+    "sourceTruePeakDbTP": -4.79
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "562874888826ee0006bc08bb58669536e9738fc8cf3ada34696c7a702b2bfda0",
+      "textSha256": "7d0c9cd5e8162f46ef9ac2508a535481f73a7779415008d5e95e928967aee387",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_16fa671689e242d9aba86771ff860d7d",
+      "masterSha256": "77ebbcd236003ef0fab93901d646f8c6b3db613ec48937e76345c1d69a67e3db",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "frozenMockDurationEligible": false,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_679bf0db7eac4b03b29bd547a4d2a8fb",
+    "audioSha256": "2f40a2c606466752b9f079fed912562da8af4b77b8c01f26125d0d1e80087ce7",
+    "sourcePromptProvided": false,
+    "text": "Travel can broaden experience, but distance alone does not guarantee learning or personal growth. People can pass through many places without reflecting on culture, history, or the lives of local residents. Meaningful learning can also happen through local communities, books, digital resources, and sustained contact with people from different backgrounds. Tourism may bring economic benefits while also increasing emissions, crowding, and pressure on local traditions. The value of travel depends less on how far someone goes than on the attention, respect, and reflection they bring to the experience.",
+    "differences": []
+  }
+}

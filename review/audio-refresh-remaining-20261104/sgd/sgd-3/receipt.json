@@ -1,0 +1,256 @@
+{
+  "kind": "sgd",
+  "questionId": "sgd-3",
+  "title": "Improving campus food choices",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "58ff071e16b924ad47ebfd9ac4f92f9919b31fb39d42db889474323daa49d8ec",
+  "spokenTextSha256": "917338be663172fd8c29ee5e505d59cbaea5763d5cbdfbac6700cb70a6f942df",
+  "audioFile": "sgd-3-neural-review-20261104.mp3",
+  "audioSha256": "f0ab335e83331c43b06f053bd714079295cdbcf29cec573b5949ee51c51f76fa",
+  "masterFile": "sgd-3-native.flac",
+  "masterSha256": "80c27c9066f3fa165d7d739e2297050478e87dc4fe6880b009cbfe2252f533e9",
+  "bytes": 2099564,
+  "seconds": 104.952,
+  "wordsPerMinuteIncludingPauses": 162.9,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -22.62,
+  "truePeakDbTP": -2.43,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 1.21,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -23.37,
+    "sourceTruePeakDbTP": -3.21
+  },
+  "generationReceipts": [
+    {
+      "speaker": "Narrator",
+      "inputHash": "d101fa7fb7764c6584dafdbc61a85e275018d61b23926eb5c9d919e3e91a1dfe",
+      "textSha256": "c902468d963584dc2a4b556addb40848078a7740c26386052ab077ed0f956c18",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_11a45c91cec94e4f844b168c15c9db3b",
+      "masterSha256": "b246ff44627d88235757c964a2d931724dcaf0c261b08b9a72b745f8a7817e55",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Aisha",
+      "inputHash": "e29829a7dd6356060740f8711093f69a397ac41643968d2566e63d05fcb5433f",
+      "textSha256": "213c1084ce2172b6bf14f5021ffa962e89025f47cc2658d461b0a823edd92b50",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_5c98f035f34d4769a2f1b6892ac73751",
+      "masterSha256": "a6fdabb77c34639794520a16b5233a7721aad97d29a00d9f4742eb8fa5eaa64f",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Tom",
+      "inputHash": "ced5d4e88265f193be0039b6d8ff273ffa52b3ba4c354cbf504e1d9ff1673650",
+      "textSha256": "cf3e53acdc43fd2d40eb5fc88d0b7410c8f0643785f5d56a9fb7499c22b7da87",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_3b1d100cefcc40ce85c6807828b6bf86",
+      "masterSha256": "b48073703979604117cbbb92cad6c6a2c99387cc10c6c6a56cd7d0d168b87e97",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Sophie",
+      "inputHash": "073a0a03ffa09380479bdd638131394eda0e60069c48fa6260056b7ccd525aa3",
+      "textSha256": "e4cff24716207c3641b8c834f187eb52c8e79e88abe355fa39a7a36dc7029b6b",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_10d1637b61b84ff5af77e16f67af2c5a",
+      "masterSha256": "5512f640f34bbde38eadb33753d4f930273a548a0cf03ab2f8d75c2db9464974",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Aisha",
+      "inputHash": "e4e7f2231156e0bfd743f8d9a4a540e2e67a7eef69c0d5c273e01369fa4404bb",
+      "textSha256": "d7dcbff116128c85d612ae8af47216602a0a8f4ef05c4ae7facf7708c7aa4d85",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear educated British English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_df002b97fd404b93a30792b0fa4fece0",
+      "masterSha256": "d7eb5b8c9c8e877e3b406fce41fb84d984182db9ec3765eb4cfaadcc428114a7",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Tom",
+      "inputHash": "278dd5339207f7acfcb19cc12725952aee81cd1fe09a7a6513c1eaa561b69c6d",
+      "textSha256": "62b5dbde0e88b51325da0beec5f4ddaba95ccab7bd54319a3089302dfa647851",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "cedar",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear general American English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_3f2feebc5fb24939a25cbd946df05fd2",
+      "masterSha256": "ac41c58c4438c632b94a46b7ff77158ed02a1bdf091fcf5a892d3bb49d04e51f",
+      "reusedApprovedPilotSegment": false
+    },
+    {
+      "speaker": "Sophie",
+      "inputHash": "fc4d6509ff3a65cdaa4d47393a11221a97762e855f7269f111e22d60efe6d907",
+      "textSha256": "69a0a8edef5377dcf48e2b3b87b61e7bb3eb6c8b7ae835d3c99e51cda66b2098",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "coral",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Speak with clear Australian English. Aim around 160 words per minute with natural phrasing, as a student discussing a practical idea with friends. Keep a stable speaker identity.",
+        "speed": 1.0
+      },
+      "requestId": "req_1ff715da5cf642049f71ce95793188ae",
+      "masterSha256": "350217696e8864e1a44205d47a67638c15e85691b68d26615bab69e45e3272dd",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "narrationIncluded": true,
+  "narrationSha256": "c902468d963584dc2a4b556addb40848078a7740c26386052ab077ed0f956c18",
+  "speakerVoices": {
+    "Aisha": "marin",
+    "Tom": "cedar",
+    "Sophie": "coral"
+  },
+  "requestedAccents": {
+    "Aisha": "British English",
+    "Tom": "General American English",
+    "Sophie": "Australian English"
+  },
+  "turnSpeakers": [
+    "Aisha",
+    "Tom",
+    "Sophie",
+    "Aisha",
+    "Tom",
+    "Sophie"
+  ],
+  "mockDurationEligible": true,
+  "turnCount": 6,
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_a7c68e2ec66f4d7090479a3a690d363e",
+    "audioSha256": "f0ab335e83331c43b06f053bd714079295cdbcf29cec573b5949ee51c51f76fa",
+    "sourcePromptProvided": false,
+    "text": "Three students are discussing ways to improve food choices in the campus cafeteria.\n\nI would like the cafeteria to offer more affordable plant-based meals. There is usually one option, but it is often the same dish. Students with different diets should have a genuine choice, and some of my friends bring lunch because the available meals are too expensive.\n\nMore choice sounds good, but the kitchen already throws away food when demand is low. Adding several dishes every day could make that worse. I think the cafeteria should first find out what students would actually buy, and whether it can use ingredients across different meals.\n\nPrice and information matter too. A meal may look suitable, but contain an ingredient someone cannot eat. Clear labels would help. We could ask for one rotating, reasonably priced dish each day, and make sure staff can answer questions, instead of expanding the whole menu at once.\n\nA rotating dish would be a useful start, especially if students can suggest recipes. I do not expect every meal to suit everyone. I mainly want variety across the week, and a price that makes buying lunch realistic for students who are watching their budgets.\n\nThen, we should propose a trial, rather than a permanent change immediately. The kitchen could record sales and leftovers for a month. If the new option sells well, without increasing waste, that would provide evidence for expanding it or adjusting the portion sizes later.\n\nLet us include a simple feedback form and accurate ingredient labels in the trial. Students could comment on taste, value, and portion size. We seem to agree that affordable variety is the goal, but it should be introduced gradually and checked against actual demand.",
+    "differences": [
+      {
+        "expected": "could",
+        "heard": "can"
+      }
+    ]
+  },
+  "assemblyVerification": {
+    "status": "passed",
+    "pcmSha256": "c29197d4fdb97503d5a3d4bd30649e8852b4214897b9b3efb1636074b2bd6a73",
+    "segments": [
+      {
+        "speaker": "Narrator",
+        "voice": "marin",
+        "startSeconds": 0.0,
+        "endSeconds": 4.85,
+        "textSha256": "c902468d963584dc2a4b556addb40848078a7740c26386052ab077ed0f956c18",
+        "inputHash": "d101fa7fb7764c6584dafdbc61a85e275018d61b23926eb5c9d919e3e91a1dfe",
+        "startSample": 0,
+        "endSample": 116400,
+        "pcmSha256": "3f8c097244f32332a8f2411ff9d8129c2346840eae7df97528e36be3ef826ffe",
+        "nativeWavSha256": "b246ff44627d88235757c964a2d931724dcaf0c261b08b9a72b745f8a7817e55"
+      },
+      {
+        "speaker": "Aisha",
+        "voice": "marin",
+        "startSeconds": 5.45,
+        "endSeconds": 21.65,
+        "textSha256": "213c1084ce2172b6bf14f5021ffa962e89025f47cc2658d461b0a823edd92b50",
+        "inputHash": "e29829a7dd6356060740f8711093f69a397ac41643968d2566e63d05fcb5433f",
+        "startSample": 130800,
+        "endSample": 519600,
+        "pcmSha256": "d165f01ec1c5b3e1e8a383e1576b9b4310bdb8e03d65f3b5427e3fbe2cecd133",
+        "nativeWavSha256": "a6fdabb77c34639794520a16b5233a7721aad97d29a00d9f4742eb8fa5eaa64f"
+      },
+      {
+        "speaker": "Tom",
+        "voice": "cedar",
+        "startSeconds": 21.9,
+        "endSeconds": 36.7,
+        "textSha256": "cf3e53acdc43fd2d40eb5fc88d0b7410c8f0643785f5d56a9fb7499c22b7da87",
+        "inputHash": "ced5d4e88265f193be0039b6d8ff273ffa52b3ba4c354cbf504e1d9ff1673650",
+        "startSample": 525600,
+        "endSample": 880800,
+        "pcmSha256": "e5969a93629fb695806f95ceb2d60cf88ac1073ca820c8772a2c7d75a971c610",
+        "nativeWavSha256": "b48073703979604117cbbb92cad6c6a2c99387cc10c6c6a56cd7d0d168b87e97"
+      },
+      {
+        "speaker": "Sophie",
+        "voice": "coral",
+        "startSeconds": 36.95,
+        "endSeconds": 56.7,
+        "textSha256": "e4cff24716207c3641b8c834f187eb52c8e79e88abe355fa39a7a36dc7029b6b",
+        "inputHash": "073a0a03ffa09380479bdd638131394eda0e60069c48fa6260056b7ccd525aa3",
+        "startSample": 886800,
+        "endSample": 1360800,
+        "pcmSha256": "7375fbe05f29cc6c2612965cdcfe2e3b5798eedaa748765f1cd4200a8067ffcc",
+        "nativeWavSha256": "5512f640f34bbde38eadb33753d4f930273a548a0cf03ab2f8d75c2db9464974"
+      },
+      {
+        "speaker": "Aisha",
+        "voice": "marin",
+        "startSeconds": 56.95,
+        "endSeconds": 72.2,
+        "textSha256": "d7dcbff116128c85d612ae8af47216602a0a8f4ef05c4ae7facf7708c7aa4d85",
+        "inputHash": "e4e7f2231156e0bfd743f8d9a4a540e2e67a7eef69c0d5c273e01369fa4404bb",
+        "startSample": 1366800,
+        "endSample": 1732800,
+        "pcmSha256": "ce2495e9451ec547cf6da3b950ea4b4ea5718b4b1cb541757555a08238d7a0d1",
+        "nativeWavSha256": "d7eb5b8c9c8e877e3b406fce41fb84d984182db9ec3765eb4cfaadcc428114a7"
+      },
+      {
+        "speaker": "Tom",
+        "voice": "cedar",
+        "startSeconds": 72.45,
+        "endSeconds": 87.15,
+        "textSha256": "62b5dbde0e88b51325da0beec5f4ddaba95ccab7bd54319a3089302dfa647851",
+        "inputHash": "278dd5339207f7acfcb19cc12725952aee81cd1fe09a7a6513c1eaa561b69c6d",
+        "startSample": 1738800,
+        "endSample": 2091600,
+        "pcmSha256": "41f79f3ffb5563449ae2493eb6973cf5aef0a1423044e92ec25b4db084202724",
+        "nativeWavSha256": "ac41c58c4438c632b94a46b7ff77158ed02a1bdf091fcf5a892d3bb49d04e51f"
+      },
+      {
+        "speaker": "Sophie",
+        "voice": "coral",
+        "startSeconds": 87.4,
+        "endSeconds": 104.9,
+        "textSha256": "69a0a8edef5377dcf48e2b3b87b61e7bb3eb6c8b7ae835d3c99e51cda66b2098",
+        "inputHash": "fc4d6509ff3a65cdaa4d47393a11221a97762e855f7269f111e22d60efe6d907",
+        "startSample": 2097600,
+        "endSample": 2517600,
+        "pcmSha256": "bbc2cf31639abca76a516b9e15b24114e7a566da3bda9bc89fa8c9ee781a3688",
+        "nativeWavSha256": "350217696e8864e1a44205d47a67638c15e85691b68d26615bab69e45e3272dd"
+      }
+    ],
+    "method": "Decoded lossless master equals ordered native segment PCM plus declared turn gaps."
+  }
+}

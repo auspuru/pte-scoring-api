@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-11",
+  "uid": "ipt:hiw-11",
+  "type": "hiw",
+  "title": "Urban shade and public space",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "Planting trees can reduce the temperature of a city street, but the benefits depend on more than the number of saplings installed. A continuous canopy provides shade along an entire walking route, whereas isolated trees may leave long stretches exposed. Planners must therefore consider where people actually travel and where heat is most persistent. Maintenance is equally important: restricted roots and inadequate watering can undermine an otherwise ambitious planting programme. Residents may also value open space for markets, games and community events, so the design must accommodate several uses. Successful projects combine local knowledge with careful observation of seasonal conditions. Their performance should be evaluated through changes in comfort and access over time, rather than through planting totals alone, because survival and distribution determine who ultimately benefits.",
+  "passage": "Planting trees can reduce the temperature of a city street, but the benefits depend on more than the number of saplings installed. A fragmented canopy provides shade along an entire walking route, whereas isolated trees may leave long stretches sheltered. Planners must therefore consider where people actually travel and where heat is most temporary. Maintenance is equally important: restricted roots and inadequate watering can reinforce an otherwise ambitious planting programme. Residents may also value open space for markets, games and community events, so the design must exclude several uses. Successful projects combine local knowledge with careful observation of seasonal conditions. Their performance should be evaluated through changes in comfort and access over time, rather than through planting totals alone, because survival and uniformity determine who ultimately benefits.",
+  "answers": [
+    23,
+    39,
+    53,
+    64,
+    86,
+    122
+  ],
+  "corrections": [
+    {
+      "index": 23,
+      "written": "fragmented",
+      "spoken": "continuous",
+      "explanation": "A connected canopy shades the whole route."
+    },
+    {
+      "index": 39,
+      "written": "sheltered.",
+      "spoken": "exposed.",
+      "explanation": "Gaps between isolated trees leave pedestrians exposed."
+    },
+    {
+      "index": 53,
+      "written": "temporary.",
+      "spoken": "persistent.",
+      "explanation": "The priority is places where heat continues."
+    },
+    {
+      "index": 64,
+      "written": "reinforce",
+      "spoken": "undermine",
+      "explanation": "Poor growing conditions weaken the planting programme."
+    },
+    {
+      "index": 86,
+      "written": "exclude",
+      "spoken": "accommodate",
+      "explanation": "Public spaces need to support several activities."
+    },
+    {
+      "index": 122,
+      "written": "uniformity",
+      "spoken": "distribution",
+      "explanation": "Where surviving trees are located affects who benefits."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

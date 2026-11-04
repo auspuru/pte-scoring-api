@@ -1,0 +1,59 @@
+{
+  "kind": "hiw",
+  "id": "hiw-19",
+  "uid": "ipt:hiw-19",
+  "type": "hiw",
+  "title": "Digital public records",
+  "instructions": "Listen and select the words in the transcript that differ from the audio. Select a word again to remove it.",
+  "audioText": "Converting public records into digital files can make information easier to locate, but accessibility is not achieved simply by scanning documents. Search systems depend on accurate descriptions, readable text and consistent information about when and how each record was created. A badly indexed collection can remain effectively invisible even when every page is online. Long term preservation presents another challenge, because software formats and storage systems eventually become obsolete. Institutions need procedures for checking files, migrating them to suitable formats and documenting any changes made during that process. They must also consider which personal details should be restricted and which records serve a legitimate public interest. The objective is durable and intelligible access, supported by clear responsibilities, rather than the rapid accumulation of files that nobody can reliably interpret.",
+  "passage": "Converting public records into digital files can make information easier to locate, but accessibility is not achieved simply by scanning documents. Search systems depend on approximate descriptions, readable text and consistent information about when and how each record was created. A badly indexed collection can remain effectively prominent even when every page is online. Long term preservation presents another challenge, because software formats and storage systems eventually become permanent. Institutions need procedures for checking files, migrating them to suitable formats and concealing any changes made during that process. They must also consider which personal details should be advertised and which records serve a legitimate public interest. The objective is durable and ambiguous access, supported by clear responsibilities, rather than the rapid accumulation of files that nobody can reliably interpret.",
+  "answers": [
+    25,
+    47,
+    68,
+    81,
+    97,
+    111
+  ],
+  "corrections": [
+    {
+      "index": 25,
+      "written": "approximate",
+      "spoken": "accurate",
+      "explanation": "Search systems need correct descriptions."
+    },
+    {
+      "index": 47,
+      "written": "prominent",
+      "spoken": "invisible",
+      "explanation": "Poor indexing can keep online records difficult to find."
+    },
+    {
+      "index": 68,
+      "written": "permanent.",
+      "spoken": "obsolete.",
+      "explanation": "Software formats and storage systems can become outdated."
+    },
+    {
+      "index": 81,
+      "written": "concealing",
+      "spoken": "documenting",
+      "explanation": "Changes made during migration need to be recorded."
+    },
+    {
+      "index": 97,
+      "written": "advertised",
+      "spoken": "restricted",
+      "explanation": "Access to some personal details may need limits."
+    },
+    {
+      "index": 111,
+      "written": "ambiguous",
+      "spoken": "intelligible",
+      "explanation": "People should be able to understand the preserved records."
+    }
+  ],
+  "reasoning": {
+    "correct": "Compare the written words with the recording. The explanations below show how each substitution changes the meaning."
+  }
+}

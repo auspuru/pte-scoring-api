@@ -1,0 +1,30 @@
+{
+  "kind": "sst",
+  "id": "pred26-sst-10",
+  "type": "sst",
+  "title": "Recruitment Types",
+  "topic": "Human resources",
+  "minutes": 10,
+  "voice": "onyx",
+  "text": "Organisations can fill vacancies by recruiting internally or by searching for candidates outside the existing workforce. Internal recruitment can reward employees, reduce induction time and use knowledge the organisation already has. External recruitment can widen the talent pool and bring skills or perspectives that are not available inside the company. Both methods have costs, and relying on only one approach can limit fairness or flexibility. A sound recruitment strategy chooses the method that fits the role while using transparent criteria to compare candidates consistently.",
+  "keyPoints": [
+    "Organisations can fill vacancies by recruiting internally or by searching for candidates outside the existing workforce.",
+    "Internal recruitment can reward employees, reduce induction time and use knowledge the organisation already has.",
+    "External recruitment can widen the talent pool and bring skills or perspectives that are not available inside the company.",
+    "Both methods have costs, and relying on only one approach can limit fairness or flexibility."
+  ],
+  "sample": "Organisations can fill vacancies by recruiting internally or by searching for candidates outside the existing workforce; internal recruitment can reward employees, reduce induction time and use knowledge the organisation already has; and external recruitment can widen the talent pool and bring skills or perspectives that are not available inside the company.",
+  "predictionSource": {
+    "provider": "PTE Nepal",
+    "week": "21-27 September 2026",
+    "checkedAt": "2026-09-23",
+    "lastReviewed": "2026-09-24",
+    "contentStatus": "adapted",
+    "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+    "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+    "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+    "task": "sst",
+    "sourceId": "13000672",
+    "sourceTitle": "Recruitment Types"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "kind": "hiw",
+  "questionId": "hiw-13",
+  "title": "Repair and product design",
+  "sourceCommit": "a22fe7a77222ddd68e6864a8329b39a14078df11",
+  "sourceTextSha256": "8f04c60a2e0fa4e62cbe7e2231c28865a5306647e41c5d0de59f81f2fddb2502",
+  "spokenTextSha256": "8f04c60a2e0fa4e62cbe7e2231c28865a5306647e41c5d0de59f81f2fddb2502",
+  "audioFile": "hiw-13-neural-review-20261104.mp3",
+  "audioSha256": "94292fd6657f724c4d94aff8baa883a90ed3e638356d3ea8d5d9b82ee4215874",
+  "masterFile": "hiw-13-native.flac",
+  "masterSha256": "ede18b63b92b9bacd569b4fbcc53b8770ca56642605c657159d8a5900a0837c8",
+  "bytes": 1176524,
+  "seconds": 58.8,
+  "wordsPerMinuteIncludingPauses": 132.7,
+  "sampleRateHz": 24000,
+  "loudnessLUFS": -19.58,
+  "truePeakDbTP": -2.45,
+  "decode": "passed",
+  "processing": {
+    "kind": "constant-gain-only",
+    "constantGainDb": 3.35,
+    "tempoProcessing": "none",
+    "dynamicLoudnessProcessing": "none",
+    "limiting": "none",
+    "sourceLoudnessLUFS": -22.48,
+    "sourceTruePeakDbTP": -5.35
+  },
+  "generationReceipts": [
+    {
+      "inputHash": "ef6fdb9665130db6ca672150e2c2b2a536461e6bcd0e227ca97abdad9ad67ad9",
+      "textSha256": "8f04c60a2e0fa4e62cbe7e2231c28865a5306647e41c5d0de59f81f2fddb2502",
+      "settings": {
+        "model": "gpt-4o-mini-tts-2025-12-15",
+        "voice": "marin",
+        "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice.",
+        "speed": 1.0
+      },
+      "requestId": "req_e11f7ea8fd984c7480451247a63afec7",
+      "masterSha256": "f939adb1b586303be8a11695cf6d9a1613a1946d3348ccbf9f7da8f006f8530c",
+      "reusedApprovedPilotSegment": false
+    }
+  ],
+  "listeningStatus": "unverified; review candidate only",
+  "publication": "not connected to the portal; not deployed",
+  "transcription": {
+    "model": "gpt-4o-transcribe",
+    "requestId": "req_95de4b1bd1dd4ee095f82bfc80c7d1bd",
+    "audioSha256": "94292fd6657f724c4d94aff8baa883a90ed3e638356d3ea8d5d9b82ee4215874",
+    "sourcePromptProvided": false,
+    "text": "A product that can be repaired easily may remain useful long after its original warranty has expired. Yet, repairability is determined partly by decisions made before manufacturing begins. Components joined with removable fasteners are generally more accessible than those sealed permanently inside a casing. Clear documentation also matters, since a replacement part has limited value if technicians cannot identify the fault. Manufacturers may argue that a compact design improves performance, but this advantage must be weighed against the costs of premature disposal. Designing for repair does not require every component to last indefinitely. Instead, it allows predictable failures to be addressed without discarding the whole device. Such an approach can conserve materials while supporting local services, provided that spare parts and reliable information remain available throughout the product's working life.",
+    "differences": []
+  }
+}
