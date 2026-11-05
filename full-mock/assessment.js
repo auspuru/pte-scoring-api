@@ -100,6 +100,19 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Speaking publication adds protected admin wiring and a scoped queue scan.
+  // Frozen Full Mock graders, models and weights remain pinned exactly.
+  const speakingBaseline=require('../content/full-mock/speaking-publication-compatible-sources.json');
+  const speakingPins={"server.js":"5d68f9fb63e3e835bbedbad0a8ee3220b98fc9184449b10eade435734b7f6cd8"};
+  if(digest(speakingBaseline)==='60b5f9e435f71b8c70c5d23cec66c6117b4857d5fe8eeee698624bc6cbf0f486'&&Object.entries(speakingPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(speakingBaseline.files).sort().join()
+    &&Object.entries(speakingBaseline.files).every(([file,pin])=>[...Object.keys(speakingPins),'full-mock/assessment.js'].includes(file)||digest(current.scoringSources.files[file])===digest(pin))){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of [...Object.keys(speakingPins),'full-mock/assessment.js'])sources.files[file]=structuredClone(speakingBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(speakingBaseline))return digest(saved)===digest(current);
+  }
+
   // This exact release adds an explicit, snapshot-bound available-marks policy
   // for new attempts. Older attempts retain their original completion rules.
   const availableBaseline=require('../content/full-mock/available-marks-compatible-sources.json');

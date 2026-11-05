@@ -13,7 +13,7 @@
       +(delivery.provider?.ready===false?'<p role="alert">'+esc(delivery.provider.message)+' Newly available recordings can still receive content assessment.</p>':'')
       +(busy?'<p role="status">Reassessment is running in the background. Refresh status to see saved progress; reloading the page does not resend completed recordings.</p>':'')
       +(review?'<p role="status">A reassessment is ready. Publish or discard it before starting another batch.</p>':'')
-      +'<p>'+available.length+' available recordings · '+(delivery.questions.length-available.length)+' already in a saved reassessment. ASQ, gated answers and unavailable recordings have no replaceable delivery marks.</p>'
+      +'<p>'+available.length+' available recordings · '+(delivery.questions.length-available.length)+' unavailable or already in a saved reassessment. '+(delivery.engine==='speaking'?'Gated answers':'ASQ and gated answers')+' have no replaceable delivery marks.</p>'
       +button('Select all available','data-delivery-select-all',!canSend)+button('Clear selection','data-delivery-select-none',!canSend)
       +delivery.questions.map(q=>'<div style="padding:8px 0"><label style="display:flex;gap:8px;align-items:flex-start;text-transform:none"><input type="checkbox" style="width:auto;margin:2px 0" data-delivery-question value="'+esc(q.id)+'"'+(!canSend||q.blocked?' disabled':'')+'> <span>Q'+esc(q.number)+' · '+esc(q.type.toUpperCase())+' · Pronunciation '+esc(mark(q.previous.pronunciation))+' · Fluency '+esc(mark(q.previous.fluency))+(q.blocked?' · Already in a saved reassessment; see its status below.':'')+'</span></label>'+button('Send this recording','data-delivery-send="'+esc(q.id)+'"',!canSend||q.blocked)+'</div>').join('')
       +button('Send selected recordings','data-delivery-send-selected',!canSend)+button('Send whole mock for reassessment','data-delivery-send-all',!canSend)
@@ -33,7 +33,7 @@
     const target=event.target,load=target.closest('[data-delivery-load]'),single=target.closest('[data-delivery-send]'),selected=target.closest('[data-delivery-send-selected]'),all=target.closest('[data-delivery-send-all]'),publish=target.closest('[data-delivery-publish]'),discard=target.closest('[data-delivery-discard]'),selectAll=target.closest('[data-delivery-select-all]'),clear=target.closest('[data-delivery-select-none]');
     if(selectAll||clear){host.querySelectorAll('[data-delivery-question]').forEach(input=>{if(!input.disabled)input.checked=!!selectAll;});notice(selectAll?'All available recordings selected. Click Send selected recordings.':'Recording selection cleared.');return true;}
     if(!load&&!single&&!selected&&!all&&!publish&&!discard)return false;
-    if(!diagnostic?.ready){notice('Inspect a complete submitted Full Mock before sending saved recordings.');return true;}
+    if(!diagnostic?.ready){notice('Inspect a complete submitted mock before sending saved recordings.');return true;}
     const check=value=>{if(!host.isConnected)throw Error('Review panel closed. Reopen the attempt to see its saved status.');if(value.owner!==diagnostic.owner||value.attemptId!==diagnostic.attemptId)throw Error('The returned account or attempt does not match.');return value;};
     const sending=single||selected||all;let body,suffix='';
     if(sending){

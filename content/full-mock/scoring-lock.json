@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "f3e4ff677cf2e7d97865e836c5a376823a6e8d2d",
+  "baseCommit": "a3a1a6b4ef8952eae8924301f2316f7b6ead22f3",
   "checkedAt": "2026-11-06",
-  "scope": "New Full Mocks publish available confirmed marks and document exclusions. Explicit admin recording reassessments publish verified changes; older saved attempts retain their completion policy.",
+  "scope": "Speaking publication adds protected admin wiring; Full Mock available-mark behavior, native graders, models and weights stay pinned.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "fe7ae7726a69c06de1875e2e272034ee694999c7c5ec8f0c98c1ec5ef90f32ae",
+        "sha256": "ea84e22b20dc451ddc20a45603e8fbdbf68082604f149e9f1ab5ec99e3e8a62d",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -189,7 +189,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "49b249ffed4307e4daef7a6414c79bc89142ff307e3b1b930730c9b8d4e803f1",
+        "sha256": "5d68f9fb63e3e835bbedbad0a8ee3220b98fc9184449b10eade435734b7f6cd8",
         "version": null
       },
       "situation-content-policy.js": {

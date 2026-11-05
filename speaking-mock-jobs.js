@@ -3,6 +3,7 @@ const path=require('node:path'),report=require('./speaking-mock-report'),scoring
 const {createJobs,createWorker,stage:runStage,disposition,hash}=require('./scoring-jobs');
 const academy=require('./visual-academy-client');
 const submission=require('./speaking-mock-submission');
+const completion=require('./speaking-mock-completion');
 const VERSION='progressive-speaking-v1';
 const complete=a=>!require('./mock-result-review').held(a)&&!submission.blocked(a)&&report.summarize({...a,status:'submitted'}).azure.status==='assessed';
 const identity=(a,index)=>hash({version:VERSION,id:a.id,index,recording:a.responses[index].recording.hash,question:a.questions[index],profile:a.assessmentProfile?.diBackend||'academy'});
@@ -14,19 +15,26 @@ function contentRejection(value,question){
     ...(safe(value?.scoringMode)?{mode:value.scoringMode}:{}),
     ...(question?{questionId:safe(question.id)||'unavailable',questionType:safe(question.type)||'unavailable',questionHash:hash(question),sourceFacts:Array.isArray(question.facts)?question.facts.length:0}:{})};
 }
-function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,callModel,gradeResponse,academyClient=academy.createAcademyClient(),includeLegacy=true,now=Date.now}={}){
-  const stage=(ctx,name,call,options)=>runStage(ctx,name,call,{...options,...(ctx.data.instructorRetry?{maxAttempts:1}:{})});
+function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,callModel,gradeResponse,quietRecording=completion.quiet,academyClient=academy.createAcademyClient(),includeLegacy=true,now=Date.now}={}){
+  const stage=(ctx,name,call,options)=>runStage(ctx,name,call,{...options,...(ctx.data.instructorRetry||ctx.data.completionPolicy?{maxAttempts:1}:{})});
   const jobs=createJobs({pool,directory:path.join(directory,'answer-jobs'),table:'speaking_answer_jobs',now});let cursor='',sweeping=false,sweeper;
   const worker=createWorker({store:jobs,now,concurrency:3,onSettled:row=>publish(row.owner,row.group_id),run:async ctx=>{
     const d=ctx.data,saved=await store.getResponse(ctx.row.owner,ctx.row.group_id,d.index);
     if(!saved?.response?.recording||saved.response.recording.hash!==d.recordingHash||hash(saved.question)!==d.questionHash)return{status:'needs_attention'};
     const q=saved.question,original=saved.response,recording=original.recording;
+    const available=!!d.completionPolicy&&saved.profile?.completionPolicy?.version===completion.VERSION&&hash(saved.profile.completionPolicy)===hash(d.completionPolicy);
     if(report.validExclusion(d.assessmentExclusion,q,original,d.index,ctx.row.group_id))return{status:'ready'};
     const response=()=>({...original,...ctx.data.patch,recording});
+    const finish=async reason=>{await ctx.save(data=>{data.patch.assessmentOutcome=completion.receipt(q,response(),reason||(report.validContent(q,response().content)?'available':'assessment-unavailable'),now());});return {status:'ready'};};
     await ctx.save(data=>{for(const name of ['gpt',...(report.validContent(q,response().content)?['academy']:[])])if(data.stages[name])data.stages[name]={...data.stages[name],status:'retired',retirement:'azure-only-v1'};});
-    if(gradeResponse){await stage(ctx,'fixture',()=>gradeResponse(q,recording,response()),{now,accept:(data,value)=>Object.assign(data.patch,value),valid:()=>report.questionResult({status:'submitted'},q,response(),d.index,'azure').total!==null});return disposition(ctx.data,report.questionResult({status:'submitted'},q,response(),d.index,'azure').total!==null,now);}
+    if(gradeResponse){await stage(ctx,'fixture',()=>gradeResponse(q,recording,response()),{now,accept:(data,value)=>Object.assign(data.patch,value),valid:()=>available?report.validContent(q,response().content):report.questionResult({status:'submitted'},q,response(),d.index,'azure').total!==null});return available?finish():disposition(ctx.data,report.questionResult({status:'submitted'},q,response(),d.index,'azure').total!==null,now);}
+    if(available&&!response().transcript&&response().transcriptionStatus!=='assessed'&&!ctx.data.audioChecked){
+      try{if(await quietRecording(recording))return finish('quiet-audio');await ctx.save(data=>{data.audioChecked=true;});}
+      catch{return finish('recording-unavailable');}
+    }
     if(!response().transcript&&response().transcriptionStatus!=='assessed')await stage(ctx,'transcription',()=>transcribe(recording),{now,valid:v=>typeof v==='string',accept:(data,v)=>{if(typeof v==='string'){data.patch.transcript=v;data.patch.transcriptionStatus='assessed';}}});
-    if(response().transcriptionStatus!=='assessed'&&!response().transcript)return disposition(ctx.data,false,now);
+    if(response().transcriptionStatus!=='assessed'&&!response().transcript)return available?finish('assessment-unavailable'):disposition(ctx.data,false,now);
+    if(available&&!response().transcript?.trim())return finish('unintelligible-audio');
     const text=response().transcript||'',tasks=[];
     const retain=(data,provider,value)=>{if(!value)return;const prior={...original,...data.patch},next={...value,status:'assessed',recordingHash:recording.hash,assessedAt:now()};
       for(const name of ['pronunciation','fluency'])if((ctx.data.instructorRetry||report.deliveryTraits({recording,[provider]:next},provider)[name]===null)&&report.deliveryTraits(prior,provider)[name]!==null)next[name]=prior[provider]?.[name];data.patch[provider]=next;};
@@ -51,6 +59,7 @@ function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,c
     }
     if(!contentGated()&&report.deliveryTraits(response(),'azure').missing.length)tasks.push(stage(ctx,'azure',()=>assessAzure(recording,{question:q,transcript:text,transcribe,contentIndependent:true,chunkCache:ctx.data.azureChunks||{},checkpointChunk:(key,value)=>ctx.save(data=>{data.azureChunks||={};data.azureChunks[key]={...data.azureChunks[key],...value};})}),{now,accept:(data,v)=>retain(data,'azure',v),valid:()=>!report.deliveryTraits(response(),'azure').missing.length}));
     await Promise.allSettled(tasks);
+    if(available)return finish();
     return disposition(ctx.data,report.questionResult({status:'submitted'},q,response(),d.index,'azure').total!==null,now);
   }});
   async function recoverHeld(uid,a){
@@ -71,10 +80,10 @@ function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,c
 async function repair(uid,id,body={}){if(body.mode==='score-deadline')return scoreDeadline(uid,id,body);if(body.mode==='instructor-review')return reviewAction(uid,id,body);if(body.mode==='release-deadline')return releaseDeadline(uid,id,body);if(require('./mock-result-review').held(await store.get(uid,id)))throw Object.assign(Error('Use the instructor review controls for this report.'),{status:409});const {jobId,stage:stageName,stages:stageNames,operation,acknowledgeUncertain=false}=body;const row=await jobs.get(uid,jobId);if(!row||row.group_id!==id)throw Object.assign(Error('Job not found.'),{status:404});const attempt=await store.get(uid,id);if(row.data.assessmentExclusion||attempt&&report.exclusionFor(attempt,attempt.questions[row.data.index],row.data.index))throw Object.assign(Error('This question is excluded from the overall assessment.'),{status:409});const selected=stageNames||[stageName];if(!Array.isArray(selected)||!selected.length||selected.length>6||selected.some(name=>!['transcription','content','azure','academy'].includes(name)))throw Object.assign(Error('Invalid repair stage.'),{status:400});if(selected.includes('academy')&&row.data.remote&&row.data.remoteFailures?.length){const remote=await academyClient.poll(row.data.remote,row.data.recordingHash);if(remote.inputReady===false){const saved=await store.getResponse(uid,id,row.data.index);await academyClient.submit({id:row.data.remote.id,requested:row.data.remoteRequest.requested,question:saved.question,recording:saved.response.recording,transcript:row.data.patch.transcript||saved.response.transcript,expected:row.data.remote});}await academyClient.retry(row.data.remote,{stages:row.data.remoteFailures.map(f=>f.stage),operation,acknowledgeUncertain});}await jobs.retry(uid,jobId,{stages:selected,operation,acknowledgeUncertain});await worker.wake();return{status:'queued',jobId};};
   async function ensure(uid,a){if(!a||a.lease?.expiresAt>now())return;for(let i=0;i<a.questions.length;i++){const r=a.responses[i];if(a.questions[i].type==='intro'||!r?.recording||!missing(a,i))continue;
     const patch={};for(const name of ['transcript','transcriptionStatus','content','gpt','azure'])if(r[name]!=null)patch[name]=r[name];
-    const row=await jobs.enqueue({id:identity(a,i),owner:uid,groupId:a.id,inputHash:hash({recording:r.recording.hash,question:a.questions[i]}),data:{index:i,recordingHash:r.recording.hash,questionHash:hash(a.questions[i]),diBackend:a.assessmentProfile?.diBackend||'academy',patch,stages:{},version:VERSION}});
+    const row=await jobs.enqueue({id:identity(a,i),owner:uid,groupId:a.id,inputHash:hash({recording:r.recording.hash,question:a.questions[i]}),data:{index:i,recordingHash:r.recording.hash,questionHash:hash(a.questions[i]),diBackend:a.assessmentProfile?.diBackend||'academy',...(completion.active(a)?{completionPolicy:a.assessmentProfile.completionPolicy}:{}),patch,stages:{},version:VERSION}});
     await jobs.retire(uid,row.id,['gpt',...(report.validContent(a.questions[i],{...a.responses[i],...row.data.patch}.content)?['academy']:[])]);
   }await recoverHeld(uid,a);await publish(uid,a.id);await worker.wake();}
-  async function hydrate(uid,a){if(!a)return a;const result=structuredClone(a),rows=await jobs.list(uid,a.id);for(const row of rows){const d=row.data,i=d.index;if(a.responses[i]?.recording?.hash!==d.recordingHash||hash(a.questions[i])!==d.questionHash)continue;
+  async function hydrate(uid,a){if(!a)return a;const result=structuredClone(a),rows=await jobs.list(uid,a.id);for(const row of rows){const d=row.data,i=d.index;if(completion.replacement(a,i)||a.responses[i]?.recording?.hash!==d.recordingHash||hash(a.questions[i])!==d.questionHash)continue;
     const patch={...d.patch};for(const provider of ['gpt','azure'])if(patch[provider])for(const trait of ['pronunciation','fluency'])if(report.deliveryTraits(a.responses[i],provider)[trait]!==null&&report.deliveryTraits({...a.responses[i],[provider]:patch[provider]},provider)[trait]===null)patch[provider][trait]=a.responses[i][provider]?.[trait];
     Object.assign(result.responses[i],patch);}
     return result;
@@ -106,7 +115,7 @@ async function repair(uid,id,body={}){if(body.mode==='score-deadline')return sco
   async function publish(uid,id){const a=await store.get(uid,id,{omitMockAudio:true});if(!a||require('./mock-result-review').held(a)||a.status!=='submitted'||a.assessment?.status==='ready'&&complete(a))return;
     const candidate=await hydrate(uid,a);if(!complete(candidate))return;
     let published=false;const saved=await store.update(uid,id,current=>{published=false;if(current.status!=='submitted'||current.assessment?.status==='ready'&&complete(current)||hash(current.questions)!==hash(candidate.questions))return current;for(let i=0;i<current.questions.length;i++){const patch=candidate.responses[i];if(!patch||current.responses[i]?.recording?.hash!==patch.recording?.hash)continue;const {recording,manualDeliveryOverrides,...marks}=patch;Object.assign(current.responses[i],marks);}
-      if(complete(current)){current.grading={status:'complete'};current.assessment={status:'ready',version:VERSION,publishedAt:now()};delete current.lease;published=true;}return current;});
+      if(complete(current)){current.grading={status:'complete'};current.assessment={status:'ready',version:VERSION,publishedAt:now(),...(completion.active(current)?{omissions:completion.omissions(current,now())}:{})};delete current.lease;published=true;}return current;});
     if(published){const scores=report.summarize(saved);console.info('[speaking-mock-published]',JSON.stringify({attemptId:id,questionCount:saved.questionCount,provider:'azure',azure:scores.azure.overallScore,accountedFor:scores.azure.assessedCount+scores.azure.excludedCount,assessedCount:scores.azure.assessedCount,excludedCount:scores.azure.excludedCount}));}
   }
   async function status(uid,a){if(require('./mock-result-review').held(a))return{status:'awaiting-instructor',ready:false,total:a.questionCount};if(submission.blocked(a))return submission.progress(a);const ready=a.status==='submitted'&&complete(a);if(ready)return{status:'ready',ready:true,accountedFor:a.questionCount,total:a.questionCount};

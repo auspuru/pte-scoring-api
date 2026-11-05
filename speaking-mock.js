@@ -35,35 +35,45 @@ function present(a,now=Date.now(),{completeOnly=false,progress}={}){
   const currentReport=submitted?speakingReport.summarize(a):null;
   return {serverNow:now,id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
     reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,...(completeOnly?{resultsReady:true,resultStatus:{status:'ready',ready:true}}:{}),grading:a.grading,overall:null,overallAzure:a.overallAzure||null,combinedOverall:null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,
-    speakingReport:currentReport,
+    speakingReport:currentReport,scoreChanges:submitted?require('./speaking-mock-completion').changes(a):[],
     impactFeedback:submitted?require('./mock-feedback').speaking(a,currentReport.azure):null,
     overallFeedback:submitted&&savedContent?{summary:savedContent.summary,strengths:savedContent.strengths||[],nextSteps:savedContent.nextSteps||[]}:null,
     combinedComparisons:null,providerComparisonStatus:null,integrity:a.integrity,
     ...(a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],submitted),timing:timing(a,now)}:{}),
     ...(submitted?{responses:a.questions.map((q,i)=>{
       const r=a.responses[i]||{};
-      const exclusion=speakingReport.exclusionFor(a,q,i);
       const result=speakingReport.questionResult(a,q,r,i,'azure');
+      const exclusion=result.excluded?result.exclusion:null;
+      const delivery=structuredClone(academy.deliveryForClient(r.content,q.type==='rs'?manualDelivery.effective(r,'azure'):r.azure)||{});
+      if(result.unavailableTraits?.length)for(const trait of result.unavailableTraits)delivery[trait]={status:'unavailable',score:null,reason:'Not assessed; omitted from the score calculation.'};
       return {index:i,question:bank.publicQuestion(q,true),recording:!!r.recording,transcript:r.transcript||'',skipped:!r.recording,
         ...(exclusion?{exclusion:{reason:exclusion.reason,note:exclusion.note}}:{}),
         ...(result.deadlineUnattempted?{unanswered:{reason:'deadline-unattempted',note:result.unansweredNote}}:{}),
         ...(result.status==='insufficient-speech'?{deliveryOutcome:{status:result.status,note:result.deliveryNote}}:{}),
-        content:result.deadlineUnattempted?{total:0,maximum:result.contentMaximum,overview:result.unansweredNote,strengths:[],improvements:['Practise pacing to reach every question before the overall timer expires.']}:exclusion?null:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{azure:result.deadlineUnattempted?{pronunciation:{score:0,reason:result.unansweredNote},fluency:{score:0,reason:result.unansweredNote}}:exclusion?null:academy.deliveryForClient(r.content,q.type==='rs'?manualDelivery.effective(r,'azure'):r.azure)||null}};
+        ...(result.unavailableTraits?.length?{unavailableTraits:result.unavailableTraits}:{}),
+        content:result.deadlineUnattempted?{total:0,maximum:result.contentMaximum,overview:result.unansweredNote,strengths:[],improvements:['Practise pacing to reach every question before the overall timer expires.']}:exclusion?null:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{azure:result.deadlineUnattempted?{pronunciation:{score:0,reason:result.unansweredNote},fluency:{score:0,reason:result.unansweredNote}}:exclusion?null:Object.keys(delivery).length?delivery:null}};
     })}:{})};
 }
 function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,
   assessAzure=azure.assessRecording,gradeResponse,
   azureAvailable=azure.isConfigured(),
-  assessAzureOverall=azureWhole.assess,azureOverallAvailable=azureAvailable&&azure.isConfigured(),backgroundEnabled=false,academyClient,contentModel,now=Date.now}={}){
+  assessAzureOverall=azureWhole.assess,azureOverallAvailable=azureAvailable&&azure.isConfigured(),backgroundEnabled=false,academyClient,contentModel,quietRecording,requireAdmin,deliveryReassessment={},now=Date.now}={}){
   require('./approved-audio').install(app);
   const gptAvailable=false;
   const store=createStore(pool,directory,{table:'speaking_mock_attempts'}),router=express.Router(),jobs=new Map(),instance=crypto.randomUUID();
-  const progressive=require('./speaking-mock-jobs').createMockJobs({pool,directory,store,transcribe,assessAzure,callModel,gradeResponse,academyClient,includeLegacy:backgroundEnabled,now});
+  const progressive=require('./speaking-mock-jobs').createMockJobs({pool,directory,store,transcribe,assessAzure,callModel,gradeResponse,quietRecording,academyClient,includeLegacy:backgroundEnabled,now});
+  const deliveryReview=require('./speaking-mock-reassessment').create({store,jobStore:progressive.jobs,transcribe,callModel,quietRecording,now,...deliveryReassessment});let deliverySweep;
   const useProgressive=a=>backgroundEnabled||a?.assessmentProfile?.mode==='progressive-v1';
   const view=a=>present(a,now(),{completeOnly:useProgressive(a)});
-  const profile=uid=>backgroundEnabled?{assessmentProfile:{mode:'progressive-v1',owner:uid,
+  const profile=(uid,questions)=>backgroundEnabled?{assessmentProfile:{mode:'progressive-v1',owner:uid,completionPolicy:require('./speaking-mock-completion').policy(questions),
     diBackend:contentModel?'portal-gpt':'academy',...(contentModel?{contentProvider:'openai',contentModel}:{}),requiredProviders:['azure']}}:{};
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved mock is safe; please retry.'}));
+  if(requireAdmin){const admin=express.Router();admin.use(requireAdmin,(req,res,next)=>{res.set('Cache-Control','no-store');next();});
+    admin.get('/:username/attempts',wrap(async(req,res)=>{if(!await getAccount(req.params.username))throw fail('Account not found.',404);res.json({owner:req.params.username,attempts:(await store.list(req.params.username,{omitMockAudio:true})).filter(a=>a.status==='submitted').map(a=>({id:a.id,paperId:a.paperId,submittedAt:a.finishedAt||a.startedAt}))});}));
+    admin.get('/:username/:id/scoring/delivery',wrap(async(req,res)=>res.json(await deliveryReview.inspect(req.params.username,req.params.id))));
+    for(const action of ['send','publish','discard'])admin.post('/:username/:id/scoring/delivery/'+action,wrap(async(req,res)=>res.json(await deliveryReview[action](req.params.username,req.params.id,req.body||{}))));
+    app.use('/api/admin/speaking-mocks',admin);
+  }
   const read=(uid,id)=>store.update(uid,id,a=>{if(!a)throw fail('Mock attempt not found.',404);return reconcile(a,now());});
   async function readResults(uid,id){
     const a=await store.get(uid,id,{omitMockAudio:true});if(!a)throw fail('Mock attempt not found.',404);
@@ -182,7 +192,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     const paper=bank.papers.find(p=>p.id===req.body?.paperId);if(!paper)throw fail('Speaking mock not found.',404);
     const a=await store.update(req.mockUser,req.body.id,old=>{
       if(old){if(old.paperId!==paper.id)throw fail('This attempt belongs to another paper.',409);return old;}
-      return {...profile(req.mockUser),id:req.body.id,paperId:paper.id,title:paper.title,version:bank.VERSION,questionCount:paper.questionCount,questions:structuredClone(paper.questions),responses:[],index:0,status:'active',startedAt:now(),deadline:now()+paper.minutes*60000,integrity:{protected:true,events:[]}};
+      return {...profile(req.mockUser,paper.questions),id:req.body.id,paperId:paper.id,title:paper.title,version:bank.VERSION,questionCount:paper.questionCount,questions:structuredClone(paper.questions),responses:[],index:0,status:'active',startedAt:now(),deadline:now()+paper.minutes*60000,integrity:{protected:true,events:[]}};
     });res.json(view(a));
   }));
   router.post('/attempts/:id/reattempt',limiter,wrap(async(req,res)=>{
@@ -192,8 +202,9 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     const a=await store.update(req.mockUser,req.body?.id,old=>{
       if(old){if(old.reattemptOf!==original.id)throw fail('This attempt belongs to another mock.',409);return old;}
       const startedAt=now();
-      return {...profile(req.mockUser),id:req.body.id,paperId:original.paperId,title:original.title,version:bank.VERSION,questionCount:original.questionCount,
-        questions:bank.reattemptQuestions(original),reattemptOf:original.id,responses:[],index:0,status:'active',startedAt,
+      const questions=bank.reattemptQuestions(original);
+      return {...profile(req.mockUser,questions),id:req.body.id,paperId:original.paperId,title:original.title,version:bank.VERSION,questionCount:original.questionCount,
+        questions,reattemptOf:original.id,responses:[],index:0,status:'active',startedAt,
         deadline:startedAt+bank.OVERALL_MINUTES*60000,integrity:{protected:true,events:[]}};
     });res.json(view(a));
   }));
@@ -261,6 +272,6 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     const file=path.join(__dirname,'content',legacy.folder==='speaking'?'speaking-audio':'writing-audio',legacy.id+'.mp3');
     await fs.access(file);res.type('audio/mpeg').set('Cache-Control','public,max-age=3600').sendFile(file);
   }));
-  return {store,recoverOverall,progressive,start:()=>progressive.start(),stop:()=>progressive.stop(),waitForJobs:async()=>{await Promise.allSettled([...jobs.values()]);await progressive.wait();}};
+  return {store,recoverOverall,progressive,deliveryReview,start:async()=>{await progressive.start();await deliveryReview.recover();if(!deliverySweep){deliverySweep=setInterval(()=>deliveryReview.recover().catch(()=>{}),15000);deliverySweep.unref?.();}},stop:async()=>{clearInterval(deliverySweep);deliverySweep=null;await progressive.stop();await deliveryReview.drain();},waitForJobs:async()=>{await Promise.allSettled([...jobs.values()]);await progressive.wait();await deliveryReview.drain();}};
 }
 module.exports={timing,reconcile,present,installSpeakingMock};

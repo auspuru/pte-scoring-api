@@ -187,6 +187,21 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
     const values=[];for(const dir of await fs.readdir(directory,{withFileTypes:true})){if(!dir.isDirectory())continue;for(const f of await fs.readdir(path.join(directory,dir.name))){if(!f.endsWith('.json')||f.slice(0,-5)<=cursor)continue;const a=JSON.parse(await fs.readFile(path.join(directory,dir.name,f),'utf8'));if(a.assessmentProfile?.owner&&a.grading?.status!=='complete')values.push({username:a.assessmentProfile.owner,data:a});}}
     return values.sort((a,b)=>a.data.id.localeCompare(b.data.id)).slice(0,limit);
   }
-  return { update, get, list, initialise, getResponse, scanForScoring };
+  async function deliveryQueue(){
+    await initialise();if(table!=='speaking_mock_attempts')return [];
+    if(pool)return(await pool.query(`SELECT username AS owner,data->>'id' AS id,op.key AS operation FROM speaking_mock_attempts
+      CROSS JOIN LATERAL jsonb_each(COALESCE(data->'deliveryReassessments','{}'::jsonb)) op
+      WHERE data->>'status'='submitted' AND op.value->>'autoPublish'='true'
+      AND (op.value->>'status' IN ('queued','running','paused') OR (op.value->>'status' IN ('review','partial')
+        AND COALESCE(op.value->>'autoPublishError','false')<>'true' AND EXISTS (SELECT 1 FROM jsonb_array_elements(op.value->'items') item WHERE item->>'status'='complete')))
+      ORDER BY updated_at LIMIT 100`)).rows;
+    const rows=[];for(const dir of await fs.readdir(directory,{withFileTypes:true})){
+      if(!dir.isDirectory()||!/^[a-f0-9]{64}$/.test(dir.name))continue;
+      for(const name of await fs.readdir(path.join(directory,dir.name))){if(!name.endsWith('.json'))continue;const a=JSON.parse(await fs.readFile(path.join(directory,dir.name,name),'utf8'));
+        if(a.status!=='submitted')continue;for(const [operation,op] of Object.entries(a.deliveryReassessments||{}))if(op.owner&&createHash('sha256').update(op.owner).digest('hex')===dir.name&&op.autoPublish&&(['queued','running','paused'].includes(op.status)||['review','partial'].includes(op.status)&&!op.autoPublishError&&op.items.some(item=>item.status==='complete')))rows.push({owner:op.owner,id:a.id,operation});
+      }
+    }return rows.slice(0,100);
+  }
+  return { update, get, list, initialise, getResponse, scanForScoring, deliveryQueue };
 }
 module.exports = { createStore };
