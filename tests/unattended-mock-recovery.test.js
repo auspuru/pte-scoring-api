@@ -98,6 +98,7 @@ function quietRecording(recording) {
  source=source.replace("uncertain: error ? require('../mock-recovery-policy').failure(error).uncertain : false, ...(error?{failureCode:require('../mock-recovery-policy').failure(error).code,recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked}:{})",'uncertain: !!error?.uncertain');
  assert.equal(sha(source),baseline.files['full-mock/adapters.js'].sha256);
  source=read('server.js').replace("const fullMock = require('./full-mock/api').installFullMock(app, {\n  requireAdmin,", "const fullMock = require('./full-mock/api').installFullMock(app, {")
+   .replace("const speakingMock = require('./speaking-mock').installSpeakingMock(app, {\n  requireAdmin,", "const speakingMock = require('./speaking-mock').installSpeakingMock(app, {")
    .replace("backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING!=='false'","backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'").replace('    await writingLab.start();\n','').replace('    await writingLab.stop();\n','');
  // Reviewed account dates, session revocation and email registration/recovery change this server; the
  // native graders below retain their original hashes. Keep both exact source

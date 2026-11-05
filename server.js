@@ -6469,6 +6469,7 @@ const speakingLab = require('./speaking-lab').installSpeakingLab(app, {
   callModel:speakingContentModel
 });
 const speakingMock = require('./speaking-mock').installSpeakingMock(app, {
+  requireAdmin,
   pool:pgPool,directory:path.join(DATA_DIR,'speaking-mock'),
   verifyToken:token=>verifySessionToken(token)||verifyImpersonationToken(token),
   getAccount:getPracticeAccount,callModel:mockContent.speaking,contentModel:mockContent.configuration.model,

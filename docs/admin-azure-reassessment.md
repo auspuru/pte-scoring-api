@@ -17,3 +17,12 @@ Each item is claimed atomically before provider work. Competing controllers and 
 The API uses existing admin authentication and exact owner/attempt storage. The browser supplies selections and confirmation, never scores. Publication compares the original frozen inputs and native jobs atomically. No student results are changed by deployment or tests.
 
 If a proposed profile is still pending, the panel prevents publication and lists any unverified questions. Keep the saved batch; do not resend its completed recordings. The original report remains published until a verified replacement is explicitly published.
+# Speaking and Full Mock publication
+
+The recording reassessment controls are available for both engines in **Users → View**. Find the saved attempt, inspect its account and attempt ID, then load its recordings. Send one recording, a selected set, or all available recordings. New sends publish their confirmed changes automatically. Older saved Full Mock proposals retain their explicit **Publish replacement scores** action.
+
+The student report shows the updated question numbers and before/after marks, including newly assessed content when a previously missing result is recovered. Confirmed selected questions must be included in the published report. Original scores, recordings, exclusions and instructor-review confirmation ledgers remain in the saved history.
+
+New Speaking and Full Mock attempts publish confirmed content and any confirmed Azure delivery traits after their first assessment pass. Missing traits are labelled unavailable and omitted from the score calculation; missing, effectively silent or unavailable responses receive an explicit exclusion note. An entirely unavailable result has no invented numeric score. Existing saved attempts retain their original completion rules until an administrator explicitly reassesses selected recordings.
+
+Speaking routes use `/api/admin/speaking-mocks/:username/:id/scoring/delivery` with the same protected `send`, `publish` and `discard` actions as Full Mock. Paid-call receipts, operation IDs and worker leases prevent automatic duplicate sends; uncertain requests remain visible for investigation. Completed operations resume publication after restart without resending confirmed recordings.
