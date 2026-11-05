@@ -261,3 +261,35 @@ test('Staff analyses missing mock results twice and publishes separately on mobi
   assert.equal(await page.$eval(panel,e=>e.scrollWidth<=e.clientWidth+1),true);assert.deepEqual(errors,[]);await page.close();
  }
 });
+
+test('User detail opens on one click and stale requests cannot replace scoring controls on mobile and desktop',{timeout:60000},async t=>{
+ const f=await fixture(t),username='detail-request-browser';await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:'detail-request@example.test'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ for(const width of [390,1440]){
+  const page=await browser.newPage();await page.setViewport({width,height:900});const pending=[],errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.setRequestInterception(true);page.on('request',req=>{if(new URL(req.url()).pathname.startsWith('/api/admin/user-data/'))pending.push(req);else req.continue();});
+  await page.goto(f.base+'/admin');if(await page.$eval('#dashboard',e=>getComputedStyle(e).display==='none')){await page.type('#adminKeyInput','isolated-auth-test-admin');await page.click('#authCard > button');}
+  await page.waitForSelector('#dashboard',{visible:true});await page.type('[aria-label="Search users"]',username);
+  const requested=page.waitForRequest(r=>r.url().includes('/api/admin/user-data/'));
+  await page.click('button[onclick="viewUser(\''+username+'\')"]');await requested;
+  await page.waitForSelector('#detailModal.show [role="status"]',{visible:true});assert.match(await page.$eval('#detailContent',e=>e.textContent),/Loading saved progress/);
+  assert.equal(await page.evaluate(name=>{const before=userDetailRequest;viewUser(name);return before===userDetailRequest;},username),true,'Repeated View shares the outstanding request');
+  assert.equal(pending.length,1);
+  // Switch while the first response is outstanding, then deliver it late.
+  const switched=page.waitForRequest(r=>r.url().endsWith('/api/admin/user-data/another-detail-user'));
+  await page.evaluate(()=>{viewUser('another-detail-user');});await switched;
+  await pending[1].respond({status:200,contentType:'application/json',body:JSON.stringify({account:{username:'another-detail-user'},progress:{}})});
+  await page.waitForSelector('[data-mock-inspect]',{visible:true});
+  await page.$eval('[data-mock-attempt]',e=>e.value='retained-inspection-input');
+  await pending[0].respond({status:200,contentType:'application/json',body:JSON.stringify({account:{username},progress:{}})}).catch(()=>{});
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(resolve)));
+  assert.equal(await page.$eval('#detailTitle',e=>e.textContent),'another-detail-user');
+  assert.equal(await page.$eval('[data-mock-attempt]',e=>e.value),'retained-inspection-input');
+  // Closing a pending panel must not reopen it when its request finishes.
+  const closing=page.waitForRequest(r=>r.url().includes('/api/admin/user-data/'+username));
+  await page.evaluate(name=>{viewUser(name);},username);await closing;
+  await page.evaluate(()=>closeUserDetail());
+  await pending[2].respond({status:200,contentType:'application/json',body:JSON.stringify({account:{username},progress:{}})}).catch(()=>{});
+  assert.equal(await page.$eval('#detailModal',e=>e.classList.contains('show')),false);assert.deepEqual(errors,[]);await page.close();
+ }
+});
