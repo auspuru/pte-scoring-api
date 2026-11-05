@@ -2,7 +2,7 @@
 const { randomUUID } = require('node:crypto');
 const { scoringSnapshot } = require('./audit');
 const { digest, deepFreeze, loadPaper, registeredPapers } = require('./paper');
-const { aggregate, inputHash, nativeValid } = require('./aggregation');
+const { aggregate, inputHash, nativeValid, partialValid, availableMarks, COMPLETION_POLICY } = require('./aggregation');
 const { SPOKEN, createAdapters, maxima, VERSION: adapterVersion } = require('./adapters');
 const { fail } = require('./store');
 const media = require('./recording');
@@ -100,6 +100,19 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // This exact release adds an explicit, snapshot-bound available-marks policy
+  // for new attempts. Older attempts retain their original completion rules.
+  const availableBaseline=require('../content/full-mock/available-marks-compatible-sources.json');
+  const availablePins={"full-mock/adapters.js":"940dab4810d9a883e2825583b05af1f755eb98843386123663fa0457ca15281a","full-mock/aggregation.js":"d1cd8b4bdcd50c6a94f3006fbef7a02c0d024a6f57b4a08a4984688d98d17497","full-mock/api.js":"87d1847fa810c357945f36b34692b42be87f942333d6dd8d633805414d008b63","full-mock/delivery-reassessment.js":"5e9acff80ed42df1598ba43f7fe3554dea8b647355c620eb8b00f83c0aaea1fa","full-mock/exclusions.js":"aa6737560dd60f5fa6e063066567f9d884ebacea5597a70bd92abfec3235e374","full-mock/report.js":"2f0a97c79231ffa071e4aaa45fbf8ab655cd4dbbb438e1b5046b60dee9a973c8","full-mock/session.js":"35d81a57f61193d1a94c22ae74cd31cae2cde56e861fd20ec66ae2a050ab5e58","full-mock/store.js":"d338b7204dfc26f3469402d1cef10948ed6a138ade399fe33d64c66722917b32"};
+  if(digest(availableBaseline)==='34e5c0e7efcdf5ed3e7c4114e259bf2bf88e794f92e28b58b687a539628bb2c0'&&Object.entries(availablePins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(availableBaseline.files).sort().join()
+    &&Object.entries(availableBaseline.files).every(([file,pin])=>[...Object.keys(availablePins),'full-mock/assessment.js'].includes(file)||digest(current.scoringSources.files[file])===digest(pin))){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of [...Object.keys(availablePins),'full-mock/assessment.js'])sources.files[file]=structuredClone(availableBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(availableBaseline))return digest(saved)===digest(current);
+  }
+
   // Exact delivery-publication amendment: prior instructor exclusions retain
   // their original inputs and history; native graders and weights do not change.
   const publicationBaseline=require('../content/full-mock/azure-publication-compatible-sources.json');
@@ -510,7 +523,9 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     const record = await store.get(uid, id); if (!record?.state.assessment) return;
     if(require('../mock-result-review').held(record.state))return record.state;
     const changed = record.paper.questions.some((candidate, index) => {
-      const job = record.state.assessment.items[candidate.id]; return SPOKEN.has(candidate.question.type) && ['pending','assessed'].includes(job?.status) && (job.inputHash !== inputHash(record.state.responses[index + 1]) || recoverableUploadDelay(job, record.state.responses[index + 1]));
+      const job = record.state.assessment.items[candidate.id], response=record.state.responses[index+1];
+      if (require('./exclusions').validExclusion(record.state,candidate,response,job)) return false;
+      return SPOKEN.has(candidate.question.type) && ['pending','assessed'].includes(job?.status) && (job.inputHash !== inputHash(response) || recoverableUploadDelay(job, response));
     });
     if (!changed) return record.state;
     const state = await store.update(uid, id, state => { validate(state); if (state.assessment.status !== 'processing') state.assessment.status = 'processing'; return state; });
@@ -565,17 +580,17 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
             if (audio.status !== 'ready') { await persist({ status: 'pending', reason: audio.reason || 'recording-not-ready' }); continue; }
             recording = audio.recording;
           }
-          const value = await activeAdapters.assess(q, response, { recording, previous: stages, run: state.assessment.run,
+          const value = await activeAdapters.assess(q, response, { recording, previous: stages, run: state.assessment.run, ...(availableMarks(state)?{completionPolicy:COMPLETION_POLICY}:{}),
             checkpoint: value => persist({ status: 'processing', stages: value }) });
           const { stages: evidence = stages, ...result } = value;
-          if (!['assessed','pending','failed'].includes(result.status) || result.status === 'assessed' && (result.version !== adapterVersion || !nativeValid(result, maxima(q)))) throw Error('Invalid native assessment result.');
+          if (!['assessed','pending','failed'].includes(result.status) || result.status === 'assessed' && (result.version !== adapterVersion || !(nativeValid(result, maxima(q)) || availableMarks(state) && partialValid(result,maxima(q),evidence,q.type)))) throw Error('Invalid native assessment result.');
           await persist({ status: result.status, result, stages: evidence, assessedAt: now() });
         } catch { try { await persist({ status: 'failed', reason: 'assessment-unavailable' }); } catch { /* Stale workers never overwrite replacements. */ } }
       }
     }
     try {
       await Promise.all([itemWorker(), itemWorker()]);
-      state = await save(current => { if(require('../mock-result-review').held(current)){if(!closing){current.instructorReview.rounds.at(-1).completedAt=now();current.instructorReview.status='awaiting-publication';current.assessment.status='needs-attention';current.assessment.recovery={...current.assessment.recovery,status:'instructor-review'};delete current.assessment.recovery.nextAt;}return;}current.assessment.status = aggregate(savedPaper, current).ready ? 'complete' : closing ? 'processing' : 'needs-attention'; if (!closing) { current.assessment.finishedAt = now(); scheduleRecovery(current.assessment, now()); require('./exclusions').releaseUnclearAudio(current,savedPaper,now(),{leaseId:lease}); require('./exclusions').releaseExhausted(current,savedPaper,now(),{leaseId:lease}); } });
+      state = await save(current => { if(require('../mock-result-review').held(current)){if(!closing){current.instructorReview.rounds.at(-1).completedAt=now();current.instructorReview.status='awaiting-publication';current.assessment.status='needs-attention';current.assessment.recovery={...current.assessment.recovery,status:'instructor-review'};delete current.assessment.recovery.nextAt;}return;}if(!closing)require('./exclusions').releaseAvailable(current,savedPaper,now(),{leaseId:lease});current.assessment.status = aggregate(savedPaper, current).ready ? 'complete' : closing ? 'processing' : 'needs-attention'; if (!closing) { current.assessment.finishedAt = now(); scheduleRecovery(current.assessment, now()); require('./exclusions').releaseUnclearAudio(current,savedPaper,now(),{leaseId:lease}); require('./exclusions').releaseExhausted(current,savedPaper,now(),{leaseId:lease}); } });
       await store.update(uid, id, current => { if (current.assessment.lease?.id === lease) delete current.assessment.lease; return current; });
       const result = aggregate(savedPaper, state);
       console.info('[full-mock-assessment]', JSON.stringify({ uid, id, status:state.assessment.status, assessedCount:result.assessedCount, pendingReasons:[...new Set(Object.values(state.assessment.items).filter(item => item.status !== 'assessed').map(item => item.result?.reason || item.reason || item.status))] }));
@@ -635,6 +650,11 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     if (!trusted) throw fail('Unknown frozen assessment paper.', 409);
     return trusted.current;
   }
-  return { snapshot: currentSnapshot, snapshotFor, review:(uid,id,body)=>require('../mock-result-review').fullAction({store,uid,id,body,at:now(),validate,queue}),request, wakeMedia, results, recover, start, stop, drain, jobs, validate };
+  async function prepareContent(state,q,response,{recording,previous,checkpoint}) {
+    const adapter=validate(state);
+    const run=1+Math.max(0,...Object.values(previous||{}).map(stage=>Number.isInteger(stage?.attemptedRun)?stage.attemptedRun:0));
+    return adapter.assess(q,response,{recording,previous,checkpoint,run,completionPolicy:COMPLETION_POLICY,contentOnly:true});
+  }
+  return { snapshot: currentSnapshot, snapshotFor, prepareContent, review:(uid,id,body)=>require('../mock-result-review').fullAction({store,uid,id,body,at:now(),validate,queue}),request, wakeMedia, results, recover, start, stop, drain, jobs, validate };
 }
 module.exports = { VERSION, configuration, legacyConfiguration, snapshot, stateFor, createEngine };

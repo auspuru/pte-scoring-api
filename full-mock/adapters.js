@@ -47,7 +47,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
   gradeSpeaking = (q, text, call) => speech.grade(q, text, call, { academyDescribeImage: true }),
   assessDelivery = require('../speaking-delivery').assessRecording,
   speakingContentModel, writingContentModel, swtGrader, essayGrader } = {}) {
-  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {} } = {}) {
+  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, contentOnly = false } = {}) {
     const stages = structuredClone(previous);
     const failed = reason => ({ status: 'failed', version: VERSION, reason, stages });
     async function stage(name, call, verify = value => value != null) {
@@ -67,7 +67,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
     if (!response?.sealed) return failed('response-not-sealed');
     if (SPOKEN.has(q.type)) {
       const segments = response.segments.filter(value => !value.cancelled && value.chunkCount !== 0);
-      if (!segments.length && ['skipped','finished-early'].includes(response.reason)) return { ...zero(q, 'Explicitly unanswered'), stages };
+      if (!segments.length && ['skipped','finished-early'].includes(response.reason) && completionPolicy !== require('./aggregation').COMPLETION_POLICY) return { ...zero(q, 'Explicitly unanswered'), stages };
       if (!recording) return { status: 'pending', version: VERSION, reason: 'recording-not-ready', stages };
       const transcript = await stage('transcription', async () => {
         const value = await transcribe(recording);
@@ -88,6 +88,11 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         && (['ra','rs'].includes(q.type) || value.scoringMode === 'ai' && value.contentStatus === 'assessed'));
       if (!content) return failed('content-unavailable');
       if (content.total === 0) return { ...zero(q, 'Native Content gate'), stages };
+      if (contentOnly) {
+        const limits=maxima(q);
+        return {status:'assessed',version:VERSION,scores:{content:content.total,pronunciation:null,fluency:null},maxima:limits,
+          total:content.total,maximum:limits.content,unavailableTraits:['pronunciation','fluency'],partialDelivery:completionPolicy,nativeVersion:content.version,stages};
+      }
       if (stages.delivery?.status !== 'complete' && stages.delivery?.attemptedRun !== run) {
         const traits = { ...(stages.delivery?.traits || {}) }; let raw, error;
         stages.delivery = { status: 'running', attemptedRun: run, traits, uncertain: true };
@@ -104,7 +109,14 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         stages.delivery = { status: Object.keys(traits).length === 2 ? 'complete' : 'partial', attemptedRun: run, traits, uncertain: error ? require('../mock-recovery-policy').failure(error).uncertain : false, ...(!error&&raw?.deliveryEvidence?.sufficient===false?{audioQuality:'insufficient-speech'}:{}), ...(error?{failureCode:require('../mock-recovery-policy').failure(error).code,recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked}:{}) };
         await checkpoint(stages);
       }
-      if (stages.delivery?.status !== 'complete') return failed('delivery-unavailable');
+      if (stages.delivery?.status !== 'complete') {
+        if (completionPolicy !== require('./aggregation').COMPLETION_POLICY) return failed('delivery-unavailable');
+        const traits = stages.delivery?.traits || {}, unavailableTraits = ['pronunciation','fluency'].filter(key => traits[key] == null);
+        const limits = maxima(q), scores = {content:content.total, pronunciation:traits.pronunciation?.score ?? null, fluency:traits.fluency?.score ?? null};
+        const included = Object.keys(limits).filter(key => scores[key] != null);
+        return {status:'assessed',version:VERSION,scores,maxima:limits,total:included.reduce((n,key)=>n+scores[key],0),
+          maximum:included.reduce((n,key)=>n+limits[key],0),unavailableTraits,partialDelivery:completionPolicy,nativeVersion:content.version,stages};
+      }
       return { ...result(q, { content: content.total, pronunciation: stages.delivery.traits.pronunciation.score, fluency: stages.delivery.traits.fluency.score }, { nativeVersion: content.version }), stages };
     }
     const answer = Array.isArray(response.answer) ? response.answer : [];

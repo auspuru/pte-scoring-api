@@ -6,7 +6,7 @@ const { recordingBytes } = require('./report');
 const TYPES = new Set(['ra','rs','di','rl','sgd','rts']);
 const fingerprint = state => digest({paper:state.paperHash,snapshot:state.assessment?.snapshotHash,responses:state.responses,items:state.assessment?.items,exclusions:state.assessment?.exclusions,publication:state.instructorReview});
 const continuous=require('../azure-continuous-delivery');
-function create({store,validate,now=Date.now,assess=continuous.assessRecording,providerConfiguration=()=>assess===continuous.assessRecording?continuous.configuration():{ready:true}}) {
+function create({store,validate,now=Date.now,assess=continuous.assessRecording,assessContent,assemble=require('./recording').assemble,providerConfiguration=()=>assess===continuous.assessRecording?continuous.configuration():{ready:true}}) {
   const jobs=new Map();
   async function read(owner,id) {
     const record=await store.get(owner,id);if(!record)throw fail('Attempt not found.',404);
@@ -17,16 +17,38 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
     if(state.status!=='submitted'||digest(paper)!==state.paperHash||!aggregate(paper,state).ready||state.assessment.status==='processing'||state.assessment.lease?.expiresAt>now())throw fail('A complete, settled Full Mock report is required.',409);
   }
   function eligible(paper,state) {
+    const report=aggregate(paper,state);
     return paper.questions.flatMap((candidate,index)=>{
       const response=state.responses[index+1],job=state.assessment.items[candidate.id];
       const segments=response?.segments.filter(s=>!s.cancelled&&s.chunkCount!==0)||[];
-      return TYPES.has(candidate.question.type)&&job?.status==='assessed'&&!job.result?.gated&&segments.length===1 ? [{id:candidate.id,number:index+1,type:candidate.question.type,previous:job.result.scores,segment:segments[0].id}] : [];
+      const content=job?.stages?.content?.value, limits=require('./adapters').maxima(candidate.question), excluded=report.items[index]?.status==='excluded';
+      const recoverable=excluded&&job?.status==='failed'&&job.inputHash===require('./aggregation').inputHash(response)&&job.snapshotHash===state.assessment.snapshotHash
+        &&job.stages?.transcription?.status==='complete'&&typeof job.stages.transcription.value==='string'&&!!job.stages.transcription.value.trim()
+        &&job.stages?.content?.status==='complete'&&Number.isInteger(content?.total)&&content.total>0&&content.total<=limits.content&&content.maximum===limits.content
+        &&!content.score_provisional&&!content.needs_semantic_review&&(['ra','rs'].includes(candidate.question.type)||content.scoringMode==='ai'&&content.contentStatus==='assessed');
+      const sameInput=job?.inputHash===require('./aggregation').inputHash(response);
+      const needsContent=excluded&&!recoverable&&typeof assessContent==='function'&&require('./aggregation').availableMarks(state)
+        &&['failed','pending'].includes(job?.status)&&job.snapshotHash===state.assessment.snapshotHash
+        &&(!sameInput||!Object.values(job.stages||{}).some(stage=>stage?.uncertain||stage?.status==='running'));
+      return TYPES.has(candidate.question.type)&&(job?.status==='assessed'&&!job.result?.gated||recoverable||needsContent)&&segments.length===1 ? [{id:candidate.id,number:index+1,type:candidate.question.type,previous:recoverable?{content:content.total,pronunciation:null,fluency:null}:needsContent?{content:null,pronunciation:null,fluency:null}:job.result.scores,segment:segments[0].id,needsContent,sameInput}] : [];
     });
   }
-  function replace(state,op) {
+  function replace(state,op,paper) {
     const job=state.assessment.items[op.questionId];
+    if(op.preparedResult){
+      job.status='assessed';job.inputHash=op.inputHash;job.result=structuredClone(op.preparedResult);job.stages=structuredClone(op.preparedStages);delete job.reason;
+      if(job.result.gated)return;
+      if(op.result.contentOnly){job.stages.delivery={status:'partial',traits:{},uncertain:!!op.deliveryUncertain};return;}
+    }
+    if(job.status==='failed'){
+      const candidate=paper.questions.find(q=>q.id===op.questionId),content=job.stages.content.value;
+      job.result=require('./adapters').result(candidate.question,{content:content.total,pronunciation:op.result.pronunciation.score,fluency:op.result.fluency.score},{nativeVersion:content.version});
+      job.status='assessed';delete job.reason;
+    }
     for(const key of ['pronunciation','fluency'])job.result.scores[key]=op.result[key].score;
     job.result.total=Object.keys(job.result.maxima).reduce((sum,key)=>sum+job.result.scores[key],0);
+    job.result.maximum=Object.values(job.result.maxima).reduce((sum,value)=>sum+value,0);
+    delete job.result.partialDelivery;delete job.result.unavailableTraits;
     job.stages.delivery={status:'complete',uncertain:false,traits:Object.fromEntries(['pronunciation','fluency'].map(key=>[key,{score:op.result[key].score,raw:op.result[key].raw,version:op.result.version,provider:'azure',evidence:[]}]))};
   }
   // A published instructor review seals the hashes of confirmed jobs. When an
@@ -34,7 +56,7 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
   // hashes and archive both ledgers with the operation. This preserves the
   // original exclusion and its publication evidence without weakening review
   // validation for any unrelated question or stage.
-  function applyReplacement(state,items,{operation,at}={}) {
+  function applyReplacement(state,items,{operation,at,paper}={}) {
     const policy=require('../mock-result-review'),review=state.instructorReview;
     const published=review?.version===policy.VERSION&&review.status==='published';
     let before;
@@ -42,7 +64,7 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
       if(!policy.publicationValid(state,'full'))throw fail('The earlier instructor publication cannot be verified. Original marks are retained.',409);
       before=structuredClone(review.confirmed);
     }
-    for(const item of items)replace(state,item);
+    for(const item of items)replace(state,item,paper);
     if(!published)return null;
     const ids=items.map(item=>item.questionId),inScope=key=>ids.some(id=>key===id||key===id+':delivery'||key.startsWith(id+':delivery:'));
     const current=policy.confirmed(state,'full'),after=structuredClone(before);
@@ -55,11 +77,17 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
       originalPublicationOperation:review.publication.operation,beforeConfirmed:before,beforeHash:hash(before),
       afterConfirmed:structuredClone(after),afterHash:hash(after)};
   }
-  function view(owner,id,record) {
-    return {owner,attemptId:id,paperId:record.paper.id,paperVersion:record.paper.version,evidenceHash:fingerprint(record.state),profiles:aggregate(record.paper,record.state).profiles,questions:eligible(record.paper,record.state),operations:Object.fromEntries(Object.entries(record.state.deliveryReassessments||{}).map(([id,op])=>{const value=structuredClone(op);if(op.batch){value.completedCount=op.items.filter(item=>item.status==='complete').length;value.failedCount=op.items.filter(item=>['failed','confirmation-pending'].includes(item.status)).length;}if(['review','partial'].includes(op.status)&&op.evidenceHash===fingerprint(record.state)){try{const proposed=structuredClone(record.state),items=op.batch?op.items.filter(item=>item.status==='complete'):[op];applyReplacement(proposed,items);const preview=aggregate(record.paper,proposed);value.proposedProfiles=preview.profiles;value.proposalReady=preview.ready;value.proposalIssues=preview.items.filter(item=>!['assessed','excluded'].includes(item.status)).map(item=>({id:item.id,number:record.paper.questions.findIndex(candidate=>candidate.id===item.id)+1,type:item.type,status:item.status}));}catch(error){value.proposalReady=false;value.proposalError=error.status?error.message:'The proposed report could not be verified. Original marks are retained.';}}return [id,value];}))};
+  function selectedIssues(paper,report,items) {
+    const selected=new Set(items.map(item=>item.questionId));
+    return report.items.filter(item=>selected.has(item.id)&&item.status!=='assessed')
+      .map(item=>({id:item.id,number:paper.questions.findIndex(candidate=>candidate.id===item.id)+1,type:item.type,status:item.status}));
   }
-  async function inspect(owner,id){const record=await read(owner,id);for(const [operation,op] of Object.entries(record.state.deliveryReassessments||{}))if(op.batch&&['queued','running','paused'].includes(op.status))schedule(owner,id,operation);const value=view(owner,id,record);value.provider=providerConfiguration();value.questions=value.questions.map(q=>({...q,blocked:blocked(record.state,q.id)}));return value;}
+  function view(owner,id,record) {
+    return {owner,attemptId:id,paperId:record.paper.id,paperVersion:record.paper.version,evidenceHash:fingerprint(record.state),profiles:aggregate(record.paper,record.state).profiles,questions:eligible(record.paper,record.state),operations:Object.fromEntries(Object.entries(record.state.deliveryReassessments||{}).map(([id,op])=>{const value=structuredClone(op);if(op.batch){value.completedCount=op.items.filter(item=>item.status==='complete').length;value.failedCount=op.items.filter(item=>['failed','confirmation-pending'].includes(item.status)).length;}if(['review','partial'].includes(op.status)&&op.evidenceHash===fingerprint(record.state)){try{const proposed=structuredClone(record.state),items=op.batch?op.items.filter(item=>item.status==='complete'):[op];applyReplacement(proposed,items,{paper:record.paper});const preview=aggregate(record.paper,proposed);value.proposedProfiles=preview.profiles;value.proposalIssues=[...preview.items.filter(item=>!['assessed','excluded'].includes(item.status)).map(item=>({id:item.id,number:record.paper.questions.findIndex(candidate=>candidate.id===item.id)+1,type:item.type,status:item.status})),...selectedIssues(record.paper,preview,items)];value.proposalReady=preview.ready&&value.proposalIssues.length===0;if(preview.ready&&value.proposalIssues.length)value.proposalError='A confirmed selected recording would remain excluded. Its replacement was not published.';}catch(error){value.proposalReady=false;value.proposalError=error.status?error.message:'The proposed report could not be verified. Original marks are retained.';}}return [id,value];}))};
+  }
+  async function inspect(owner,id){const record=await read(owner,id);for(const [operation,op] of Object.entries(record.state.deliveryReassessments||{}))if(op.batch&&(['queued','running','paused'].includes(op.status)||op.autoPublish&&!op.autoPublishError&&['review','partial'].includes(op.status)))schedule(owner,id,operation);const value=view(owner,id,record);value.provider=providerConfiguration();value.questions=value.questions.map(q=>({...q,blocked:blocked(record.state,q.id)||value.provider.ready===false&&!q.needsContent}));return value;}
   function blocked(state,questionId) {
+    const job=state.assessment?.items?.[questionId];if(job?.result?.partialDelivery&&job.stages?.delivery?.uncertain)return true;
     return Object.values(state.deliveryReassessments||{}).some(op=>op.batch
       ? op.items.some(item=>item.questionId===questionId&&((['running','confirmation-pending'].includes(item.status)||item.status==='queued'&&['queued','running','paused'].includes(op.status))||['review','partial'].includes(op.status)&&item.status==='complete'&&op.evidenceHash===fingerprint(state)))
       : op.questionId===questionId&&(['running','confirmation-pending'].includes(op.status)||op.status==='review'&&op.evidenceHash===fingerprint(state)));
@@ -81,22 +109,43 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
         if(!item){op.status=op.items.every(item=>item.status==='complete')?'review':'partial';op.completedAt=now();return state;}
         item.status='running';item.startedAt=now();item.leaseExpiresAt=now()+10*60*1000;op.status='running';claimed=structuredClone(item);return state;
       });
-      if(!claimed)return;
-      let result,audio,sent=false,error;
+      if(!claimed){
+        const saved=await store.get(owner,id),op=saved?.state.deliveryReassessments?.[operation];
+        if(op?.autoPublish&&!op.autoPublishError&&['review','partial'].includes(op.status)&&op.items.some(item=>item.status==='complete')){
+          try{await publishBatch(owner,id,{operation,confirmPublish:true,confirmPartial:true});}
+          catch(error){await store.update(owner,id,state=>{const current=state.deliveryReassessments?.[operation];if(current&&['review','partial'].includes(current.status)){current.autoPublishError=true;current.message=error.status?error.message:'The updated report could not be verified. Original marks are retained.';}return state;});}
+        }
+        return;
+      }
+      let result,audio,sent=false,error,preparedResult,preparedStages,deliveryUncertain=false,deliveryMessage;
+      const contentOnly=()=>({version:'content-only',contentOnly:true,pronunciation:{score:null,raw:null},fluency:{score:null,raw:null}});
       try{
         const candidate=record.paper.questions.find(q=>q.id===claimed.questionId),number=record.paper.questions.indexOf(candidate)+1;
         audio=await recordingBytes(owner,id,record.state.responses[number],claimed.segment,store.getChunk);
-        const configured=providerConfiguration();if(!configured.ready)throw Object.assign(Error(configured.message),{providerStarted:false});
-        await store.update(owner,id,state=>{const op=state.deliveryReassessments[operation];if(fingerprint(state)!==op.evidenceHash)throw fail('Saved inputs changed before sending.',409);const item=op.items.find(item=>item.questionId===claimed.questionId);item.providerStartedAt=now();return state;});
-        sent=true;result=await assess({mime:audio.mime,data:audio.bytes.toString('base64')});
-        if(!result?.version||!['pronunciation','fluency'].every(k=>Number.isFinite(result[k]?.score)&&result[k].score>=0&&result[k].score<=5))throw Error('Invalid Azure result');
-      }catch(caught){error=caught;}
+        if(claimed.needsContent){
+          const decoded=await assemble(owner,id,candidate.question,record.state.responses[number],{getChunk:store.getChunk});
+          if(decoded.status!=='ready')throw Object.assign(Error('The recording could not be prepared for assessment.'),{providerStarted:false});
+          const value=await assessContent(record.state,candidate.question,record.state.responses[number],{recording:decoded.recording,previous:claimed.contentStages||{},checkpoint:async stages=>store.update(owner,id,state=>{
+            const op=state.deliveryReassessments[operation],item=op?.items.find(row=>row.questionId===claimed.questionId);
+            if(fingerprint(state)!==op.evidenceHash||item?.status!=='running'||item.startedAt!==claimed.startedAt)throw fail('Saved evidence changed during reassessment.',409);
+            item.contentStages=structuredClone(stages);return state;
+          })});
+          const {stages,...prepared}=value;preparedStages=stages;preparedResult=prepared;
+          const valid=prepared.version===require('./adapters').VERSION&&(require('./aggregation').nativeValid(prepared,require('./adapters').maxima(candidate.question))||require('./aggregation').partialValid(prepared,require('./adapters').maxima(candidate.question),stages,candidate.question.type));
+          if(!valid)throw Object.assign(Error('The content assessment could not be confirmed.'),{providerStarted:false,uncertain:Object.values(stages||{}).some(stage=>stage?.uncertain)});
+          if(prepared.gated)result={version:'native-content-gate',pronunciation:{score:0,raw:null},fluency:{score:0,raw:null}};
+        }
+        const configured=providerConfiguration();if(!configured.ready&&!result){if(preparedResult){result=contentOnly();deliveryMessage='Content assessment confirmed. Azure delivery marks were unavailable.';}else throw Object.assign(Error(configured.message),{providerStarted:false});}
+        if(!result){await store.update(owner,id,state=>{const op=state.deliveryReassessments[operation];if(fingerprint(state)!==op.evidenceHash)throw fail('Saved inputs changed before sending.',409);const item=op.items.find(item=>item.questionId===claimed.questionId);item.providerStartedAt=now();return state;});
+          sent=true;result=await assess({mime:audio.mime,data:audio.bytes.toString('base64')});}
+        if(!result?.version||!result.contentOnly&&!['pronunciation','fluency'].every(k=>Number.isFinite(result[k]?.score)&&result[k].score>=0&&result[k].score<=5))throw Error('Invalid Azure result');
+      }catch(caught){if(preparedResult&&!preparedResult.gated&&caught.status!==409){result=contentOnly();deliveryUncertain=sent&&caught.providerStarted!==false;deliveryMessage='Content assessment confirmed. Azure delivery marks were unavailable.';}else error=caught;}
       await store.update(owner,id,state=>{
         const op=state.deliveryReassessments[operation],item=op.items.find(item=>item.questionId===claimed.questionId);
         if(!['running','confirmation-pending'].includes(item.status)||item.startedAt!==claimed.startedAt)throw fail('Reassessment operation changed.',409);
         if(['published','discarded','stale'].includes(op.status)){if(result){item.lateResult=result;item.lateCompletedAt=now();}return state;}
-        if(error){const uncertain=sent&&error.providerStarted!==false;item.status=uncertain?'confirmation-pending':'failed';item.message=uncertain?'Azure did not return a confirmed result. This recording will not be sent again automatically; its original marks are retained.':'The saved recording could not be sent. Its original marks are retained. Check recording availability and Azure configuration.';}
-        else{item.status='complete';item.result=result;item.recordingHash=require('./store').hash(audio.bytes);}
+        if(error){const uncertain=error.uncertain===true||sent&&error.providerStarted!==false;item.status=uncertain?'confirmation-pending':'failed';item.message=uncertain?'The assessment did not return a confirmed result. This recording will not be sent again automatically; its original marks are retained.':'The saved recording could not be assessed. Its original marks are retained. Check recording availability and provider configuration.';}
+        else{item.status='complete';item.result=result;item.recordingHash=require('./store').hash(audio.bytes);if(preparedResult){item.preparedResult=preparedResult;item.preparedStages=preparedStages;}if(deliveryMessage){item.message=deliveryMessage;item.deliveryUncertain=deliveryUncertain;}}
         item.completedAt=now();
         if(!op.items.some(item=>['queued','running'].includes(item.status))){op.status=op.items.every(item=>item.status==='complete')?'review':'partial';op.completedAt=now();}
         return state;
@@ -107,10 +156,10 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
     const {operation,evidenceHash}=body;
     if(!/^[a-zA-Z0-9:-]{8,100}$/.test(operation||''))throw fail('A stable reassessment operation is required.',400);
     const record=await read(owner,id),available=eligible(record.paper,record.state),previous=record.state.deliveryReassessments?.[operation];
-    if(previous){if(!previous.batch||body.all===true&&!previous.all||body.all!==true&&digest(previous.questionIds)!==digest(body.questionIds))throw fail('Operation belongs to another selection.',409);return inspect(owner,id);}
+    if(previous){if(!previous.batch||body.all===true&&!previous.all||body.all!==true&&digest(previous.questionIds)!==digest(body.questionIds)||!!previous.autoPublish!==(body.autoPublish===true))throw fail('Operation belongs to another selection.',409);return inspect(owner,id);}
     const questionIds=body.all===true?available.filter(q=>!blocked(record.state,q.id)).map(q=>q.id):body.questionIds;
     if(!Array.isArray(questionIds)||!questionIds.length||questionIds.length>65||new Set(questionIds).size!==questionIds.length||questionIds.some(id=>typeof id!=='string'))throw fail('Select at least one available saved speaking recording.',400);
-    const configured=providerConfiguration();if(!configured.ready)throw fail(configured.message,409);
+    const configured=providerConfiguration();if(!configured.ready&&!questionIds.some(id=>available.find(q=>q.id===id)?.needsContent))throw fail(configured.message,409);
     await store.update(owner,id,state=>{
       check(state,record.paper);state.deliveryReassessments||={};const old=state.deliveryReassessments[operation];
       if(old){if(!old.batch||digest(old.questionIds)!==digest(questionIds))throw fail('Operation belongs to another selection.',409);return state;}
@@ -118,7 +167,7 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
       if(Object.values(state.deliveryReassessments).some(op=>(op.batch&&['queued','running','paused','review','partial'].includes(op.status)||!op.batch&&op.status==='review')&&op.evidenceHash===evidenceHash))throw fail('Finish or discard the current reassessment before starting another batch.',409);
       const rows=eligible(record.paper,state);
       if(questionIds.some(id=>!rows.some(q=>q.id===id)||blocked(state,id)))throw fail('A selected recording is unavailable or has an earlier unconfirmed request. Refresh its status.',409);
-      state.deliveryReassessments[operation]={batch:true,all:body.all===true,questionIds:[...questionIds],evidenceHash,status:'queued',at:now(),items:questionIds.map(questionId=>{const row=rows.find(q=>q.id===questionId);return{questionId,number:row.number,type:row.type,segment:row.segment,status:'queued',previous:structuredClone(state.assessment.items[questionId])};})};return state;
+      state.deliveryReassessments[operation]={batch:true,all:body.all===true,autoPublish:body.autoPublish===true,questionIds:[...questionIds],evidenceHash,status:'queued',at:now(),items:questionIds.map(questionId=>{const row=rows.find(q=>q.id===questionId);return{questionId,number:row.number,type:row.type,segment:row.segment,status:'queued',previous:structuredClone(state.assessment.items[questionId]),previousScores:structuredClone(row.previous),...(row.needsContent?{needsContent:true,inputHash:require('./aggregation').inputHash(state.responses[row.number]),contentStages:row.sameInput?structuredClone(state.assessment.items[questionId].stages||{}):{}}:{})};})};return state;
     });
     schedule(owner,id,operation);return inspect(owner,id);
   }
@@ -132,8 +181,9 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
       if(!completed.length||op.status==='partial'&&confirmPartial!==true)throw fail('Confirm publication of only the completed recordings; unavailable recordings keep their original marks.',409);
       if(completed.some(item=>digest(item.previous)!==digest(state.assessment.items[item.questionId])))throw fail('Previous scores changed. Reload the saved attempt.',409);
       const before=aggregate(record.paper,state).profiles,at=now();
-      const instructorReviewAmendment=applyReplacement(state,completed,{operation,at});
-      const after=aggregate(record.paper,state);if(!after.ready)throw fail('The replacement report could not be verified.',409);
+      const instructorReviewAmendment=applyReplacement(state,completed,{operation,at,paper:record.paper});
+      const after=aggregate(record.paper,state),issues=selectedIssues(record.paper,after,completed);if(issues.length)throw fail('Confirmed recordings would remain excluded or unassessed: '+issues.map(row=>'Q'+row.number).join(', ')+'. Original marks are retained.',409);if(!after.ready)throw fail('The replacement report could not be verified.',409);
+      for(const item of completed)item.publishedScores=structuredClone(state.assessment.items[item.questionId].result.scores);
       Object.assign(op,{status:'published',publishedAt:at,beforeProfiles:before,afterProfiles:after.profiles,...(instructorReviewAmendment?{instructorReviewAmendment}:{})});return state;
     });return inspect(owner,id);
   }
@@ -152,6 +202,7 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
       if(Object.values(state.deliveryReassessments).some(op=>['running','confirmation-pending'].includes(op.status)))throw fail('An earlier Azure request needs confirmation before another can start.',409);
       if(Object.values(state.deliveryReassessments).some(op=>op.status==='review'&&op.evidenceHash===evidenceHash))throw fail('Publish or discard the proposed replacement before sending another recording.',409);
       const row=eligible(record.paper,state).find(q=>q.id===questionId);if(!row)throw fail('This question is not eligible for delivery replacement.',409);
+      if(row.needsContent)throw fail('Use the selected-recordings control to assess and publish this saved recording.',409);
       state.deliveryReassessments[operation]={questionId,segment:row.segment,evidenceHash,status:'running',at:now(),previous:structuredClone(state.assessment.items[questionId])};claimed=true;return state;
     });
     if(!claimed)return inspect(owner,id);
@@ -175,8 +226,9 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
       if(op?.status==='published')return state;
       if(op?.status!=='review'||op.evidenceHash!==fingerprint(state)||digest(op.previous)!==digest(state.assessment.items[op.questionId]))throw fail('Scores or inputs changed. Inspect the saved attempt again.',409);
       const before=aggregate(record.paper,state).profiles,at=now();
-      const instructorReviewAmendment=applyReplacement(state,[op],{operation,at});
-      const after=aggregate(record.paper,state);if(!after.ready)throw fail('The replacement report could not be verified.',409);
+      const instructorReviewAmendment=applyReplacement(state,[op],{operation,at,paper:record.paper});
+      const after=aggregate(record.paper,state),issues=selectedIssues(record.paper,after,[op]);if(issues.length)throw fail('Confirmed recording would remain excluded or unassessed: Q'+issues[0].number+'. Original marks are retained.',409);if(!after.ready)throw fail('The replacement report could not be verified.',409);
+      op.publishedScores=structuredClone(state.assessment.items[op.questionId].result.scores);
       Object.assign(op,{status:'published',publishedAt:at,beforeProfiles:before,afterProfiles:after.profiles,...(instructorReviewAmendment?{instructorReviewAmendment}:{})});return state;
     });return inspect(owner,id);
   }
@@ -185,6 +237,7 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
     await store.update(owner,id,state=>{const op=state.deliveryReassessments?.[operation];if(!op||!['review','partial','stale','discarded'].includes(op.status))throw fail('Only a completed, unpublished review can be discarded.',409);op.status='discarded';op.discardedAt=now();return state;});
     return inspect(owner,id);
   }
-  return {inspect,send,publish,discard,drain:async()=>{while(jobs.size)await Promise.allSettled([...jobs.values()]);}};
+  async function recover(){for(const row of await store.deliveryQueue())schedule(row.uid,row.id,row.operation);}
+  return {inspect,send,publish,discard,recover,drain:async()=>{while(jobs.size)await Promise.allSettled([...jobs.values()]);}};
 }
 module.exports={create,fingerprint};

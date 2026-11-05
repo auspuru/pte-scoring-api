@@ -2,24 +2,25 @@
   'use strict';
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const index=value=>value?.practiceIndex??(value?.practiceIndexRange?value.practiceIndexRange.low+'–'+value.practiceIndexRange.high:'pending');
+  const mark=value=>value==null?'Not assessed':value+'/5';
   function render(diagnostic,delivery){
     if(!diagnostic)return '';
     if(!diagnostic.ready)return '<section><h5>Azure delivery reassessment</h5><p>The saved report must finish its original assessment before confirmed delivery marks can be replaced. Use the missing-result controls below.</p></section>';
     if(!delivery)return '<section><h5>Azure delivery reassessment</h5><button type="button" class="btn-sm" data-delivery-load>Load saved recordings for reassessment</button></section>';
-    const ops=Object.entries(delivery.operations||{}),busy=ops.some(([,op])=>op.batch&&['queued','running','paused'].includes(op.status)),review=ops.some(([,op])=>['review','partial'].includes(op.status)&&op.evidenceHash===delivery.evidenceHash),available=delivery.questions.filter(q=>!q.blocked),canSend=!busy&&!review&&delivery.provider?.ready!==false&&available.length>0;
+    const ops=Object.entries(delivery.operations||{}),busy=ops.some(([,op])=>op.batch&&['queued','running','paused'].includes(op.status)),review=ops.some(([,op])=>['review','partial'].includes(op.status)&&op.evidenceHash===delivery.evidenceHash),available=delivery.questions.filter(q=>!q.blocked),canSend=!busy&&!review&&available.length>0;
     const button=(text,attribute,disabled=false)=>'<button type="button" class="btn-sm" '+attribute+(disabled?' style="opacity:.55;cursor:not-allowed" disabled':'')+'>'+text+'</button>';
-    return '<section data-azure-panel><h5>Azure delivery reassessment</h5><p><strong>Account '+esc(delivery.owner)+' · '+esc(delivery.paperId)+' v'+esc(delivery.paperVersion)+'</strong><br>Attempt '+esc(delivery.attemptId)+'</p><p>Select several recordings or send all available speaking recordings from this saved mock. Azure reassesses pronunciation and fluency. Content, Writing, Reading and Listening answers stay unchanged. Each recording requests a paid assessment.</p>'
-      +(delivery.provider?.ready===false?'<p role="alert">'+esc(delivery.provider.message)+'</p>':'')
+    return '<section data-azure-panel><h5>Azure delivery reassessment</h5><p><strong>Account '+esc(delivery.owner)+' · '+esc(delivery.paperId)+' v'+esc(delivery.paperVersion)+'</strong><br>Attempt '+esc(delivery.attemptId)+'</p><p>Select several recordings or send all available speaking recordings from this saved mock. Azure reassesses pronunciation and fluency. Confirmed scores are published automatically and the student can see what changed. Previously assessed content and other answers stay unchanged; a newly available recording first receives a content assessment. Each recording requests a paid assessment.</p>'
+      +(delivery.provider?.ready===false?'<p role="alert">'+esc(delivery.provider.message)+' Newly available recordings can still receive content assessment.</p>':'')
       +(busy?'<p role="status">Reassessment is running in the background. Refresh status to see saved progress; reloading the page does not resend completed recordings.</p>':'')
       +(review?'<p role="status">A reassessment is ready. Publish or discard it before starting another batch.</p>':'')
       +'<p>'+available.length+' available recordings · '+(delivery.questions.length-available.length)+' already in a saved reassessment. ASQ, gated answers and unavailable recordings have no replaceable delivery marks.</p>'
       +button('Select all available','data-delivery-select-all',!canSend)+button('Clear selection','data-delivery-select-none',!canSend)
-      +delivery.questions.map(q=>'<div style="padding:8px 0"><label style="display:flex;gap:8px;align-items:flex-start;text-transform:none"><input type="checkbox" style="width:auto;margin:2px 0" data-delivery-question value="'+esc(q.id)+'"'+(!canSend||q.blocked?' disabled':'')+'> <span>Q'+esc(q.number)+' · '+esc(q.type.toUpperCase())+' · Pronunciation '+esc(q.previous.pronunciation)+'/5 · Fluency '+esc(q.previous.fluency)+'/5'+(q.blocked?' · Already in a saved reassessment; see its status below.':'')+'</span></label>'+button('Send this recording','data-delivery-send="'+esc(q.id)+'"',!canSend||q.blocked)+'</div>').join('')
+      +delivery.questions.map(q=>'<div style="padding:8px 0"><label style="display:flex;gap:8px;align-items:flex-start;text-transform:none"><input type="checkbox" style="width:auto;margin:2px 0" data-delivery-question value="'+esc(q.id)+'"'+(!canSend||q.blocked?' disabled':'')+'> <span>Q'+esc(q.number)+' · '+esc(q.type.toUpperCase())+' · Pronunciation '+esc(mark(q.previous.pronunciation))+' · Fluency '+esc(mark(q.previous.fluency))+(q.blocked?' · Already in a saved reassessment; see its status below.':'')+'</span></label>'+button('Send this recording','data-delivery-send="'+esc(q.id)+'"',!canSend||q.blocked)+'</div>').join('')
       +button('Send selected recordings','data-delivery-send-selected',!canSend)+button('Send whole mock for reassessment','data-delivery-send-all',!canSend)
       +ops.map(([id,op])=>{
         const items=op.batch?op.items:[{...op,status:op.result?'complete':op.status}],completed=items.filter(item=>item.status==='complete'),failed=items.filter(item=>['failed','confirmation-pending'].includes(item.status)),previewCurrent=['review','partial'].includes(op.status)&&op.evidenceHash===delivery.evidenceHash,ready=previewCurrent&&op.proposalReady!==false;
         return '<section style="padding:12px 0"><h5>'+(op.batch?'Batch reassessment':'Earlier recording request')+' · '+esc(op.status)+'</h5><p>'+completed.length+'/'+items.length+' confirmed'+(failed.length?' · '+failed.length+' unavailable; original marks retained':'')+'</p>'
-          +items.map(item=>'<p>Q'+esc(item.number??item.questionId)+' · '+esc(item.status)+(item.result?' · Pronunciation '+esc(item.previous.result.scores.pronunciation)+' → '+esc(item.result.pronunciation.score)+'/5 · Fluency '+esc(item.previous.result.scores.fluency)+' → '+esc(item.result.fluency.score)+'/5':'')+(item.message?'<br>'+esc(item.message):'')+'</p>').join('')
+          +items.map(item=>'<p>Q'+esc(item.number??item.questionId)+' · '+esc(item.status)+(item.result?' · Pronunciation '+esc(mark((item.previousScores||item.previous?.result?.scores||{}).pronunciation))+' → '+esc(mark(item.result.pronunciation.score))+' · Fluency '+esc(mark((item.previousScores||item.previous?.result?.scores||{}).fluency))+' → '+esc(mark(item.result.fluency.score)):'')+(item.message?'<br>'+esc(item.message):'')+'</p>').join('')
           +(op.message?'<p role="status">'+esc(op.message)+'</p>':'')
           +(op.proposedProfiles?'<p>Report indices: '+Object.entries(op.proposedProfiles).map(([name,value])=>esc(name)+' '+esc(index(delivery.profiles[name]))+' → '+esc(index(value))).join(' · ')+'</p>':'')
           +(previewCurrent&&op.proposalReady===false?'<p role="alert">'+esc(op.proposalError||'The proposed report is incomplete. Publication is unavailable until its saved assessments can be verified; original marks are retained.')+'</p>':'')
@@ -39,7 +40,7 @@
       if(!delivery){notice('Load saved recordings first.');return true;}
       const questionIds=single?[single.dataset.deliverySend]:all?delivery.questions.filter(q=>!q.blocked).map(q=>q.id):[...host.querySelectorAll('[data-delivery-question]')].filter(input=>input.checked&&!input.disabled).map(input=>input.value);
       if(!questionIds.length){notice('Select at least one available recording to send.');return true;}
-      const key=delivery.evidenceHash+':'+[...questionIds].sort().join(',');if(!operations.has(key))operations.set(key,'delivery:'+operationId());body={operation:operations.get(key),questionIds,evidenceHash:delivery.evidenceHash};suffix='/send';
+      const key=delivery.evidenceHash+':'+[...questionIds].sort().join(',');if(!operations.has(key))operations.set(key,'delivery:'+operationId());body={operation:operations.get(key),questionIds,evidenceHash:delivery.evidenceHash,autoPublish:true};suffix='/send';
     }
     if(publish){const op=delivery.operations[publish.dataset.deliveryPublish],confirmation=[...host.querySelectorAll('[data-delivery-confirm]')].find(input=>input.dataset.deliveryConfirm===publish.dataset.deliveryPublish);if(!confirmation?.checked){notice('Confirm replacement of the published marks first.');return true;}body={operation:publish.dataset.deliveryPublish,confirmPublish:true,...(op.status==='partial'?{confirmPartial:true}:{})};suffix='/publish';}
     if(discard){body={operation:discard.dataset.deliveryDiscard};suffix='/discard';}
@@ -49,12 +50,14 @@
       let current=reconcile(check(await request(suffix,body)));
       if(discard)for(const [key,value] of operations)if(value===body.operation)operations.delete(key);
       await commit(current,!!publish);lock(true);
-      for(let poll=0;poll<900&&host.isConnected&&Object.values(current.operations||{}).some(op=>op.batch&&['queued','running'].includes(op.status));poll++){
-        const running=Object.values(current.operations).find(op=>op.batch&&['queued','running'].includes(op.status));notice('Azure reassessment: '+running.items.filter(item=>item.status==='complete').length+'/'+running.items.length+' confirmed. Progress is saved; you may reopen this attempt later.');
+      const active=op=>op.batch&&(['queued','running'].includes(op.status)||op.autoPublish&&!op.autoPublishError&&['review','partial'].includes(op.status)&&op.items.some(item=>item.status==='complete'));
+      for(let poll=0;poll<900&&host.isConnected&&Object.values(current.operations||{}).some(active);poll++){
+        const running=Object.values(current.operations).find(active);notice('Azure reassessment: '+running.items.filter(item=>item.status==='complete').length+'/'+running.items.length+' confirmed. Progress is saved; you may reopen this attempt later.');
         await pause();if(!host.isConnected)return true;current=reconcile(check(await request('',undefined)));await commit(current,false);lock(true);
       }
-      const unfinished=Object.values(current.operations||{}).some(op=>op.batch&&['queued','running'].includes(op.status));
-      notice(publish?'Replacement scores published. The report was recalculated and original scores remain in history.':discard?'Proposed replacement discarded. Published scores are unchanged.':unfinished?'The saved reassessment is still running. Reopen this attempt or refresh status to continue watching.':'Reassessment status loaded. Review confirmed scores below before publishing. Any unavailable recordings keep their original marks.');
+      const unfinished=Object.values(current.operations||{}).some(active),published=sending&&current.operations?.[body.operation]?.status==='published';
+      if(published)await commit(current,true);
+      notice(publish||published?'Replacement scores published. The report was recalculated and the student can see what changed.':discard?'Proposed replacement discarded. Published scores are unchanged.':unfinished?'The saved reassessment is still running. Reopen this attempt or refresh status to continue watching.':'Reassessment status loaded. Review the status below. Any unavailable recordings keep their original marks.');
     }catch(error){if(host.isConnected)notice(error.message+' Refresh reassessment status to check saved work before sending again.');}
     finally{if(host.isConnected)lock(false);}
     return true;

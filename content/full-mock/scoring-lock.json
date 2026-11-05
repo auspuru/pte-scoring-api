@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "8aacb515a1a4f6547b2068a84a31ded4779f8e4b",
+  "baseCommit": "f3e4ff677cf2e7d97865e836c5a376823a6e8d2d",
   "checkedAt": "2026-11-06",
-  "scope": "Azure delivery publication preserves prior instructor exclusions and archives the exact confirmation-ledger amendment; native graders and weights are unchanged.",
+  "scope": "New Full Mocks publish available confirmed marks and document exclusions. Explicit admin recording reassessments publish verified changes; older saved attempts retain their completion policy.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -84,15 +84,15 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "b60ac3338309a30713914e855167ecd97d3c0df2a777a67981d28a9a69e04a2c",
+        "sha256": "940dab4810d9a883e2825583b05af1f755eb98843386123663fa0457ca15281a",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
-        "sha256": "95b6aa39dc1f070d22ad95ecb65e19d391dacdac406b6291130797ed10d1e8af",
+        "sha256": "d1cd8b4bdcd50c6a94f3006fbef7a02c0d024a6f57b4a08a4984688d98d17497",
         "version": "full-mock-aggregation-2026-10-29.1"
       },
       "full-mock/api.js": {
-        "sha256": "a95b1dd3bb77f9c54f934923276fe4d60dedb6d2bf513ab67235a0d374385952",
+        "sha256": "87d1847fa810c357945f36b34692b42be87f942333d6dd8d633805414d008b63",
         "version": null
       },
       "full-mock/asq-scoring.js": {
@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "5846b3249349846db64c3e40352ad0911948564594863b10c7b2117ecc6ed01a",
+        "sha256": "603ae73edbfd18ddffb71bafa949b032c79d14a10f2bd6cfda31e2645e9bfc52",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -112,11 +112,11 @@
         "version": null
       },
       "full-mock/delivery-reassessment.js": {
-        "sha256": "6c260da8f359d6346051b231e249afec3f9cf6a3b8d282d0f781f1d19aa37604",
+        "sha256": "5e9acff80ed42df1598ba43f7fe3554dea8b647355c620eb8b00f83c0aaea1fa",
         "version": null
       },
       "full-mock/exclusions.js": {
-        "sha256": "cf2fccd5f69eb17b8f100253b94b7e2ad6c994c89f6e5c4bc4488f9fc8cf7e98",
+        "sha256": "aa6737560dd60f5fa6e063066567f9d884ebacea5597a70bd92abfec3235e374",
         "version": null
       },
       "full-mock/paper.js": {
@@ -132,7 +132,7 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "87662d144407dd632ee54da6ffa77c08e232dfded2b712521c8c1c3239a83668",
+        "sha256": "2f0a97c79231ffa071e4aaa45fbf8ab655cd4dbbb438e1b5046b60dee9a973c8",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
@@ -140,11 +140,11 @@
         "version": null
       },
       "full-mock/session.js": {
-        "sha256": "bbfcaf22b86e780a7351136b6f7b8f1bc6404109e62260c1ecd957aff3a88a50",
+        "sha256": "35d81a57f61193d1a94c22ae74cd31cae2cde56e861fd20ec66ae2a050ab5e58",
         "version": "full-mock-session-2026-10-29.2"
       },
       "full-mock/store.js": {
-        "sha256": "0726a6228d628ca13dee22ae39d4efb27f6b889c32c9d28bd21c8d035a768630",
+        "sha256": "d338b7204dfc26f3469402d1cef10948ed6a138ade399fe33d64c66722917b32",
         "version": null
       },
       "gpt-speaking-delivery.js": {
