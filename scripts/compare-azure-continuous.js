@@ -8,8 +8,8 @@ async function main() {
   if (!file || !['audio/webm', 'audio/wav', 'audio/mp4', 'audio/ogg', 'audio/mpeg'].includes(mime)) {
     throw Error('Usage: node scripts/compare-azure-continuous.js <original recording> <audio MIME>');
   }
-  if (!process.env.AZURE_SPEECH_KEY || !process.env.AZURE_SPEECH_REGION) {
-    throw Error('Set AZURE_SPEECH_KEY and AZURE_SPEECH_REGION through the approved secret environment.');
+  if (!continuous.configuration().ready) {
+    throw Error('Configure the Azure Speech key and endpoint or region through the approved secret environment.');
   }
   const result = await continuous.assessRecording({ mime, data: (await fs.readFile(file)).toString('base64') });
   console.log(JSON.stringify(result));

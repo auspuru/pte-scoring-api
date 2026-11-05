@@ -1,21 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),{randomUUID}=require('node:crypto');
 const {create}=require('../full-mock/delivery-reassessment'),{loadPaper}=require('../full-mock/paper'),session=require('../full-mock/session'),assessment=require('../full-mock/assessment'),adapters=require('../full-mock/adapters'),{inputHash,aggregate}=require('../full-mock/aggregation');
-async function fixture(t,assess){
- const directory=await fs.mkdtemp(path.join(os.tmpdir(),'delivery-review-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
- const store=require('../full-mock/store').createStore({directory}),paper=loadPaper(),id=randomUUID(),owner='synthetic-student',snap=assessment.snapshot(),bytes=Buffer.from('original synthetic recording'),segment=randomUUID();
- await store.create(owner,id,paper,(id,at)=>session.create(id,paper,at,{preview:true,assessmentSnapshot:snap}),1000);
- const q=paper.questions.find(c=>c.question.type==='di'),number=paper.questions.indexOf(q)+1;
- await store.putChunk(owner,id,segment,0,'audio/webm',bytes);
- await store.update(owner,id,s=>{session.end(s,paper,1000);s.assessment.status='complete';
-  for(let i=0;i<paper.questions.length;i++){
-   const item=paper.questions[i],r=s.responses[i+1];
-   if(item.id===q.id)r.segments.push({id:segment,chunkCount:1,finished:true,cancelled:false,mime:'audio/webm',chunks:{0:{stored:true,bytes:bytes.length,sha256:require('../full-mock/store').hash(bytes)}}});
-   s.assessment.items[item.id]={status:'assessed',inputHash:inputHash(r),snapshotHash:s.assessment.snapshotHash,result:adapters.result(item.question,adapters.maxima(item.question)),stages:{delivery:{status:'complete',traits:{pronunciation:{score:5},fluency:{score:5}}}}};
-  }return s;});
- const engine=assessment.createEngine({store});const api=create({store,validate:engine.validate,assess});
- return {store,paper,id,owner,q,number,api,bytes,directory};
-}
+const {fixture,secondRecording}=require('./helpers/delivery-reassessment-fixture');
 const result={version:'synthetic-continuous',pronunciation:{score:3,raw:60},fluency:{score:2,raw:40}};
 test('Original recording is sent once; publication replaces only delivery with archived results and recalculated profiles',async t=>{
  let calls=0;const f=await fixture(t,async recording=>{calls++;assert.equal(Buffer.from(recording.data,'base64').toString(),f.bytes.toString());return result;});
@@ -93,4 +79,57 @@ test('Tampered recording chunks never reach the provider or change published mar
  const v=await f.api.inspect(f.owner,f.id),body={operation:'delivery:bad-chunks',questionId:f.q.id,evidenceHash:v.evidenceHash};
  const value=await f.api.send(f.owner,f.id,body);assert.equal(value.operations[body.operation].status,'confirmation-pending');assert.equal(calls,0);
  assert.equal((await f.store.get(f.owner,f.id)).state.assessment.items[f.q.id].result.scores.fluency,5);
+});
+async function waitFor(check){const end=Date.now()+5000;while(!check()){if(Date.now()>end)throw Error('Expected background checkpoint was not reached');await new Promise(resolve=>setTimeout(resolve,5));}}
+test('Batch send returns promptly, checkpoints each original recording once, then publishes both atomically',async t=>{
+ let finish,calls=0;const sent=[];const f=await fixture(t,async recording=>{sent.push(Buffer.from(recording.data,'base64').toString());calls++;if(calls===1)return new Promise(resolve=>{finish=resolve;});return result;});
+ const second=await secondRecording(f),before=(await f.store.get(f.owner,f.id)).state,v=await f.api.inspect(f.owner,f.id),body={operation:'delivery:batch-two',questionIds:[f.q.id,second.candidate.id],evidenceHash:v.evidenceHash};
+ const queued=await f.api.send(f.owner,f.id,body);assert(['queued','running'].includes(queued.operations[body.operation].status));await waitFor(()=>!!finish);
+ await f.api.send(f.owner,f.id,body);assert.equal(calls,1);finish(result);await f.api.drain();
+ const review=await f.api.inspect(f.owner,f.id);assert.equal(review.operations[body.operation].status,'review');assert.equal(review.operations[body.operation].completedCount,2);assert.deepEqual(sent,[f.bytes.toString(),second.bytes.toString()]);
+ assert.deepEqual((await f.store.get(f.owner,f.id)).state.assessment,before.assessment);
+ await f.api.publish(f.owner,f.id,{operation:body.operation,confirmPublish:true});await f.api.publish(f.owner,f.id,{operation:body.operation,confirmPublish:true});
+ const after=(await f.store.get(f.owner,f.id)).state;assert.equal(calls,2);assert.deepEqual(after.responses,before.responses);assert.equal(after.assessment.snapshotHash,before.assessment.snapshotHash);
+ for(const question of f.paper.questions)if(!body.questionIds.includes(question.id))assert.deepEqual(after.assessment.items[question.id],before.assessment.items[question.id]);
+ for(const id of body.questionIds){assert.equal(after.assessment.items[id].result.scores.pronunciation,3);assert.equal(after.assessment.items[id].result.scores.content,before.assessment.items[id].result.scores.content);}
+ assert.deepEqual(after.deliveryReassessments[body.operation].beforeProfiles,aggregate(f.paper,before).profiles);
+});
+test('Whole-mock selection is stable on retry and missing Azure configuration gives a visible error before queuing',async t=>{
+ let calls=0;const f=await fixture(t,async()=>{calls++;return result;}),second=await secondRecording(f),v=await f.api.inspect(f.owner,f.id);
+ const unavailable=create({store:f.store,validate:assessment.createEngine({store:f.store}).validate,assess:async()=>result,providerConfiguration:()=>({ready:false,message:'Configure Azure endpoint first.'})});
+ await assert.rejects(unavailable.send(f.owner,f.id,{operation:'delivery:no-config',all:true,evidenceHash:v.evidenceHash}),/Configure Azure endpoint/);
+ assert.equal((await f.store.get(f.owner,f.id)).state.deliveryReassessments,undefined);
+ const body={operation:'delivery:whole-mock',all:true,evidenceHash:v.evidenceHash};await f.api.send(f.owner,f.id,body);await f.api.drain();await f.api.send(f.owner,f.id,body);await f.api.drain();assert.equal(calls,2);
+ const op=(await f.api.inspect(f.owner,f.id)).operations[body.operation];assert.deepEqual(op.questionIds,[second.candidate.id,f.q.id]);assert.equal(op.status,'review');
+});
+test('Partial batch preserves unavailable marks and requires explicit partial publication',async t=>{
+ let calls=0;const f=await fixture(t,async()=>{calls++;if(calls===1)throw Object.assign(Error('timeout'),{uncertain:true});return result;}),second=await secondRecording(f),v=await f.api.inspect(f.owner,f.id),body={operation:'delivery:partial-batch',questionIds:[f.q.id,second.candidate.id],evidenceHash:v.evidenceHash};
+ await f.api.send(f.owner,f.id,body);await f.api.drain();const review=await f.api.inspect(f.owner,f.id);assert.equal(review.operations[body.operation].status,'partial');assert.equal(review.operations[body.operation].completedCount,1);
+ await assert.rejects(f.api.publish(f.owner,f.id,{operation:body.operation,confirmPublish:true}),/only the completed/);
+ await f.api.publish(f.owner,f.id,{operation:body.operation,confirmPublish:true,confirmPartial:true});const after=(await f.store.get(f.owner,f.id)).state;
+ assert.equal(after.assessment.items[f.q.id].result.scores.fluency,5);assert.equal(after.assessment.items[second.candidate.id].result.scores.fluency,2);
+ await f.api.send(f.owner,f.id,body);await f.api.drain();assert.equal(calls,2);
+ assert.equal((await f.api.inspect(f.owner,f.id)).questions.find(q=>q.id===f.q.id).blocked,true);
+});
+test('Restart resumes unsent recordings after an expired worker without repeating the uncertain request',async t=>{
+ let firstCalls=0,late;const f=await fixture(t,async()=>{firstCalls++;return new Promise(resolve=>{late=resolve;});}),second=await secondRecording(f),v=await f.api.inspect(f.owner,f.id),body={operation:'delivery:restart-batch',questionIds:[f.q.id,second.candidate.id],evidenceHash:v.evidenceHash};
+ await f.api.send(f.owner,f.id,body);await waitFor(()=>!!late);
+ await f.store.update(f.owner,f.id,s=>{s.deliveryReassessments[body.operation].items[0].leaseExpiresAt=0;return s;});
+ let resumedCalls=0;const resumed=create({store:f.store,validate:assessment.createEngine({store:f.store}).validate,assess:async()=>{resumedCalls++;return result;}});
+ await resumed.inspect(f.owner,f.id);await resumed.drain();const review=await resumed.inspect(f.owner,f.id);assert.equal(firstCalls,1);assert.equal(resumedCalls,1);assert.equal(review.operations[body.operation].status,'partial');
+ await resumed.publish(f.owner,f.id,{operation:body.operation,confirmPublish:true,confirmPartial:true});late(result);await f.api.drain();
+ const op=(await resumed.inspect(f.owner,f.id)).operations[body.operation];assert.equal(op.status,'published');assert.deepEqual(op.items[0].lateResult,result);assert.equal((await f.store.get(f.owner,f.id)).state.assessment.items[f.q.id].result.scores.fluency,5);
+});
+test('Batch controls accept the exact previous deployed snapshot and still reject native scorer drift',async t=>{
+ const f=await fixture(t,async()=>result);
+ await f.store.update(f.owner,f.id,s=>{s.assessment.snapshot.scoringSources=require('../content/full-mock/azure-batch-compatible-sources.json');s.assessment.snapshotHash=require('../full-mock/paper').digest(s.assessment.snapshot);for(const job of Object.values(s.assessment.items))job.snapshotHash=s.assessment.snapshotHash;return s;});
+ assert.equal((await f.api.inspect(f.owner,f.id)).questions.length,1);
+ await f.store.update(f.owner,f.id,s=>{s.assessment.snapshot.scoringSources.files['speaking-scoring.js'].sha256='0'.repeat(64);s.assessment.snapshotHash=require('../full-mock/paper').digest(s.assessment.snapshot);for(const job of Object.values(s.assessment.items))job.snapshotHash=s.assessment.snapshotHash;return s;});
+ await assert.rejects(f.api.inspect(f.owner,f.id),/different assessment version/);
+});
+test('Independent batch controllers and storage instances send every selected recording once',async t=>{
+ let calls=0;const assess=async()=>{calls++;await new Promise(resolve=>setTimeout(resolve,15));return result;},f=await fixture(t,assess),second=await secondRecording(f),v=await f.api.inspect(f.owner,f.id);
+ const store=require('../full-mock/store').createStore({directory:f.directory}),other=create({store,validate:assessment.createEngine({store}).validate,assess}),body={operation:'delivery:two-controllers',questionIds:[f.q.id,second.candidate.id],evidenceHash:v.evidenceHash};
+ await Promise.all([f.api.send(f.owner,f.id,body),other.send(f.owner,f.id,body)]);await Promise.all([f.api.drain(),other.drain()]);
+ assert.equal(calls,2);assert.equal((await other.inspect(f.owner,f.id)).operations[body.operation].status,'review');
 });

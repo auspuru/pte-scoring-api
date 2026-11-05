@@ -69,3 +69,14 @@ test('continuous Speech waits for session completion and rejects partial output 
     recognizer.sessionStopped();
   }) }), { uncertain: true });
 });
+
+test('continuous Speech supports the portal endpoint configuration without a region', async()=>{
+ const sdk=fakeSdk(recognizer=>{emitSpeech(recognizer);recognizer.sessionStopped();});let endpoint;
+ sdk.SpeechConfig.fromSubscription=()=>{throw Error('Region must not be required');};
+ sdk.SpeechConfig.fromEndpoint=url=>{endpoint=url.toString();return {};};
+ await continuous.assessWav(wav(2),{sdk,key:'synthetic-key',region:'',endpoint:'https://synthetic.cognitiveservices.azure.com/stt/speech/recognition/conversation/cognitiveservices/v1',timeoutMs:1000});
+ assert.equal(endpoint,'wss://synthetic.cognitiveservices.azure.com/stt/speech/recognition/conversation/cognitiveservices/v1');
+ assert.equal(continuous.configuration({AZURE_SPEECH_KEY:'synthetic-key',AZURE_SPEECH_RESOURCE:'synthetic'}).ready,true);
+ assert.equal(continuous.configuration({AZURE_SPEECH_KEY:'synthetic-key',AZURE_SPEECH_ENDPOINT:'invalid'}).ready,false);
+ assert.throws(()=>continuous.assessWav(wav(2),{sdk,key:'',region:'',endpoint:''}),{providerStarted:false,code:'AZURE_CONFIGURATION'});
+});

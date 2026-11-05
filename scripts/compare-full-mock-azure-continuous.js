@@ -13,8 +13,8 @@ async function main() {
   }
   const connectionString = process.env.PGURL || process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL;
   if (!connectionString) throw Error('The portal database must be connected through the runtime environment.');
-  if (mode === '--send' && (!process.env.AZURE_SPEECH_KEY || !process.env.AZURE_SPEECH_REGION)) {
-    throw Error('The runtime must have the Azure Speech key and region configured.');
+  if (mode === '--send' && !continuous.configuration().ready) {
+    throw Error('The runtime must have the Azure Speech key and endpoint or region configured.');
   }
   const isLocal = /(\blocalhost\b|127\.0\.0\.1|@\/|host=\/)/.test(connectionString);
   const sslDisabled = process.env.PGSSL === 'disable' || (isLocal && process.env.PGSSL !== 'require');

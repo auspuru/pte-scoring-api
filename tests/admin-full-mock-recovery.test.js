@@ -62,6 +62,6 @@ test('Admin can select a submitted attempt, send saved audio, review changes and
  assert(host.querySelector('[data-delivery-send]'),host.querySelector('[data-full-notice]').textContent+JSON.stringify(requests));await details.onclick({target:host.querySelector('[data-delivery-send]')});assert.match(details.textContent,/70 → 65/);assert.equal(published,false);
  await details.onclick({target:host.querySelector('[data-delivery-publish]')});assert.equal(published,false);
  host.querySelector('[data-delivery-confirm]').checked=true;await details.onclick({target:host.querySelector('[data-delivery-publish]')});assert.equal(published,true);
- assert.deepEqual(requests.find(r=>r.path.endsWith('/send')).body,{questionId:'di-1',evidenceHash:'evidence',operation:op});
+ assert.deepEqual(requests.find(r=>r.path.endsWith('/send')).body,{questionIds:['di-1'],evidenceHash:'evidence',operation:op});
  assert.match(host.querySelector('[data-full-notice]').textContent,/Replacement scores published/);
 });

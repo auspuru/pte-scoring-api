@@ -100,6 +100,18 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Exact opt-in background/batch delivery transport; frozen native graders stay pinned.
+  const batchBaseline=require('../content/full-mock/azure-batch-compatible-sources.json');
+  const batchPins={"full-mock/delivery-reassessment.js":"78fca47bf5aa7c3ec6cda8d931333ba665f7f6959e1cbf613082015b401a2162","azure-continuous-delivery.js":"63533d41e2a176c765ff82e4b9c301fe6e9ad4d431d699afa3917cdc7701aa65","full-mock/api.js":"a95b1dd3bb77f9c54f934923276fe4d60dedb6d2bf513ab67235a0d374385952"};
+  if(digest(batchBaseline)==='4437c577163cc57a6da18b06cd42deb12aabec2b6dad5f2021c5915649af77e8'&&Object.entries(batchPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(batchBaseline.files).sort().join()
+    &&Object.entries(batchBaseline.files).every(([file,pin])=>[...Object.keys(batchPins),'full-mock/assessment.js'].includes(file)||digest(current.scoringSources.files[file])===digest(pin))){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of [...Object.keys(batchPins),'full-mock/assessment.js'])sources.files[file]=structuredClone(batchBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(batchBaseline))return digest(saved)===digest(current);
+  }
+
   // Opt-in Azure replacement controls: project only these exact audited sources.
   // Ordinary graders and all other dependencies must still match the prior lock.
   const deliveryBaseline=require('../content/full-mock/delivery-reassessment-compatible-sources.json');
