@@ -124,3 +124,15 @@ test('PostgreSQL: competing restart workers publish the final exhausted question
  await stores[0].create('bob',held.state.id,paper,()=>held.state,1000);await engines[0].recover();
  assert.equal((await stores[1].get('bob',held.state.id)).state.assessment.recovery.finalQuestionReview.status,'held');assert.equal((await stores[1].assessmentQueue(3000)).length,0);
 });
+
+test('PostgreSQL: competing Speaking timeout publications preserve 17 marks and ten zeroes across pools and restart',async t=>{
+ const db=await database(t),{attempt,command}=require('./helpers/speaking-deadline-zero-fixture'),a=attempt();
+ const create=pool=>require('../writing-lab-store').createStore(pool,'unused',{table:'speaking_mock_attempts'});
+ const stores=[create(db.first),create(db.pool())];await Promise.all(stores.map(s=>s.initialise()));await stores[0].update('alice',a.id,()=>a);
+ const services=stores.map(store=>require('../speaking-mock-jobs').createMockJobs({pool:store===stores[0]?db.first:db.pool(),directory:'unused',store,now:()=>3000}));db.onClose(()=>Promise.all(services.map(s=>s.stop())));
+ const body=command((await services[0].diagnostics('alice',a.id)).deadlineScore);
+ await assert.rejects(services[1].repair('bob',a.id,body),{status:404});await Promise.all(services.map(s=>s.repair('alice',a.id,body)));
+ const restarted=create(db.pool()),saved=await restarted.get('alice',a.id);assert.deepEqual(saved.responses,a.responses);assert.equal(saved.deadlineZeroPublication.indices.length,10);
+ const result=require('../speaking-mock-report').summarize(saved).azure;assert.equal(result.assessedCount,27);assert.equal(result.excludedCount,0);assert.equal(result.deadlineUnattemptedCount,10);
+ const again=await services[1].repair('alice',a.id,body);assert(again.ready);assert.equal((await restarted.get('alice',a.id)).deadlineZeroPublication.at,3000);
+});

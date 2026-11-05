@@ -293,3 +293,30 @@ test('User detail opens on one click and stale requests cannot replace scoring c
   assert.equal(await page.$eval('#detailModal',e=>e.classList.contains('show')),false);assert.deepEqual(errors,[]);await page.close();
  }
 });
+
+test('Staff publishes confirmed timed-out Speaking answers as zero on desktop and mobile through protected routes',{timeout:60000},async t=>{
+ const f=await fixture(t),username='deadline-zero-browser';await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:username+'@example.test'});
+ const store=require('../writing-lab-store').createStore(null,require('node:path').join(f.directory,'speaking-mock'),{table:'speaking_mock_attempts'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ for(const width of [390,1440]){
+  const a=require('./helpers/speaking-deadline-zero-fixture').attempt();a.assessmentProfile.owner=username;await store.update(username,a.id,()=>a);
+  const route='/api/admin/speaking-mocks/'+username+'/'+a.id+'/scoring',posts=[];
+  assert.equal((await f.request(route)).status,403);assert.equal((await f.request(route+'/retry',{mode:'score-deadline'})).status,403);
+  assert.equal((await f.request(route.replace(username,'another-owner'),undefined,null,true)).status,404);
+  const page=await browser.newPage();await page.setViewport({width,height:900});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  page.on('request',req=>{if(req.method()==='POST'&&new URL(req.url()).pathname===route+'/retry')posts.push(JSON.parse(req.postData()));});
+  await page.goto(f.base+'/admin');if(await page.$eval('#dashboard',e=>getComputedStyle(e).display==='none')){await page.type('#adminKeyInput','isolated-auth-test-admin');await page.click('#authCard > button');}
+  await page.waitForSelector('#dashboard',{visible:true});await page.type('[aria-label="Search users"]',username);await page.click('button[onclick="viewUser(\''+username+'\')"]');
+  await page.waitForSelector('[data-mock-attempt]',{visible:true});await page.type('[data-mock-attempt]',a.id);await page.click('[data-mock-inspect]');
+  await page.waitForSelector('[data-mock-zero-publish]',{visible:true});assert.match(await page.$eval('[data-deadline-score]',e=>e.textContent),/17 assessed answers retained/);assert.equal(await page.$('[data-result-analyse]'),null);
+  await page.locator('[data-mock-zero-publish]').click();assert.equal(posts.length,0);await page.locator('[data-mock-zero-confirm]').click();
+  await page.screenshot({path:'.cache/admin-deadline-zero-'+(width===390?'mobile':'desktop')+'.png',fullPage:true});
+  const published=page.waitForResponse(r=>new URL(r.url()).pathname===route+'/retry'&&r.request().method()==='POST');await page.locator('[data-mock-zero-publish]').click();const response=await published;assert.equal(response.status(),200);
+  await page.waitForFunction(()=>document.querySelector('[data-mock-notice]').textContent.includes('Results published.'));
+  assert.equal(posts.length,1);assert.equal(posts[0].mode,'score-deadline');assert.equal(posts[0].confirmDeadlineZeros,true);
+  const saved=await store.get(username,a.id);assert.deepEqual(saved.responses,a.responses);assert.equal(saved.deadlineZeroPublication.indices.length,10);
+  const result=require('../speaking-mock-report').summarize(saved).azure;assert.equal(result.assessedCount,27);assert.equal(result.excludedCount,0);assert.equal(result.deadlineUnattemptedCount,10);
+  assert.equal((await f.request(route+'/retry',posts[0],null,true)).status,200,'Lost responses can replay without another publication');
+  assert.equal(await page.$eval('[data-mock-diagnostics]',e=>e.scrollWidth<=e.clientWidth+1),true);assert.deepEqual(errors,[]);await page.close();
+ }
+});

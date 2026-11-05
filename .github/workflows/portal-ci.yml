@@ -68,6 +68,7 @@ jobs:
             .cache/progress-fast-*.png
             .cache/speaking-mock-timer-*.png
             .cache/admin-result-review-*.png
+            .cache/admin-deadline-zero-*.png
             .cache/portal-layout-*.png
             public/index.min.js
           include-hidden-files: true
