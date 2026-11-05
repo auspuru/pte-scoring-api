@@ -41,6 +41,7 @@ function create({store,validate,now=Date.now,assess=require('../azure-continuous
       if(existing){if(existing.questionId!==questionId)throw fail('Operation belongs to another question.',409);return state;}
       if(fingerprint(state)!==evidenceHash)throw fail('Saved evidence changed. Inspect again.',409);
       if(Object.values(state.deliveryReassessments).some(op=>['running','confirmation-pending'].includes(op.status)))throw fail('An earlier Azure request needs confirmation before another can start.',409);
+      if(Object.values(state.deliveryReassessments).some(op=>op.status==='review'&&op.evidenceHash===evidenceHash))throw fail('Publish or discard the proposed replacement before sending another recording.',409);
       const row=eligible(record.paper,state).find(q=>q.id===questionId);if(!row)throw fail('This question is not eligible for delivery replacement.',409);
       state.deliveryReassessments[operation]={questionId,segment:row.segment,evidenceHash,status:'running',at:now(),previous:structuredClone(state.assessment.items[questionId])};claimed=true;return state;
     });
@@ -69,6 +70,11 @@ function create({store,validate,now=Date.now,assess=require('../azure-continuous
       Object.assign(op,{status:'published',publishedAt:now(),beforeProfiles:before,afterProfiles:after.profiles});return state;
     });return inspect(owner,id);
   }
-  return {inspect,send,publish};
+  async function discard(owner,id,{operation}) {
+    await read(owner,id);
+    await store.update(owner,id,state=>{const op=state.deliveryReassessments?.[operation];if(!op||!['review','discarded'].includes(op.status))throw fail('Only a completed, unpublished review can be discarded.',409);op.status='discarded';op.discardedAt=now();return state;});
+    return inspect(owner,id);
+  }
+  return {inspect,send,publish,discard};
 }
 module.exports={create,fingerprint};

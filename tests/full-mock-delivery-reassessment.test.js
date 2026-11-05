@@ -79,3 +79,18 @@ test('Admin endpoints require authentication and bind the account and exact subm
  assert.equal((await fetch(base+'another-student/'+f.id+'/scoring/delivery',{headers})).status,404);
  assert.equal((await fetch(base+f.owner+'/'+f.id+'/scoring/delivery',{headers})).status,200);
 });
+test('A proposal must be published or discarded before another paid send; discarded receipts remain available',async t=>{
+ let calls=0;const f=await fixture(t,async()=>{calls++;return result;}),v=await f.api.inspect(f.owner,f.id),body={operation:'delivery:discard-first',questionId:f.q.id,evidenceHash:v.evidenceHash};
+ await f.api.send(f.owner,f.id,body);
+ await assert.rejects(f.api.send(f.owner,f.id,{...body,operation:'delivery:discard-second'}),/discard/);assert.equal(calls,1);
+ const value=await f.api.discard(f.owner,f.id,{operation:body.operation});assert.equal(value.operations[body.operation].status,'discarded');assert.deepEqual(value.operations[body.operation].result,result);
+ assert.equal((await f.store.get(f.owner,f.id)).state.assessment.items[f.q.id].result.scores.fluency,5);
+ await f.api.send(f.owner,f.id,{...body,operation:'delivery:discard-second'});assert.equal(calls,2);
+});
+test('Tampered recording chunks never reach the provider or change published marks',async t=>{
+ let calls=0;const f=await fixture(t,async()=>{calls++;return result;});
+ await f.store.update(f.owner,f.id,s=>{s.responses[f.number].segments[0].chunks[0].sha256='0'.repeat(64);s.assessment.items[f.q.id].inputHash=inputHash(s.responses[f.number]);return s;});
+ const v=await f.api.inspect(f.owner,f.id),body={operation:'delivery:bad-chunks',questionId:f.q.id,evidenceHash:v.evidenceHash};
+ const value=await f.api.send(f.owner,f.id,body);assert.equal(value.operations[body.operation].status,'confirmation-pending');assert.equal(calls,0);
+ assert.equal((await f.store.get(f.owner,f.id)).state.assessment.items[f.q.id].result.scores.fluency,5);
+});

@@ -27,6 +27,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     admin.get('/:username/:id/scoring/delivery', wrap(async(req,res)=>res.json(await deliveryReview.inspect(req.params.username,req.params.id))));
     admin.post('/:username/:id/scoring/delivery/send', wrap(async(req,res)=>res.json(await deliveryReview.send(req.params.username,req.params.id,req.body||{}))));
     admin.post('/:username/:id/scoring/delivery/publish', wrap(async(req,res)=>res.json(await deliveryReview.publish(req.params.username,req.params.id,req.body||{}))));
+    admin.post('/:username/:id/scoring/delivery/discard', wrap(async(req,res)=>res.json(await deliveryReview.discard(req.params.username,req.params.id,req.body||{}))));
     app.use('/api/admin/full-mocks', admin);
   }
   router.use(wrap(async (req, res, next) => {
