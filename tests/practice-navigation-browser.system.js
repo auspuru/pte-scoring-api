@@ -401,6 +401,7 @@ for(const adminView of [false,true])for(const width of [1363,390,320])test('Read
  // Admin entry restores the Reading route while its entrance animation is
  // running. Measure the completed layout; narrow screens use normal scrolling.
  await page.evaluate(async admin=>{
+  await document.fonts.ready;await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
   const pane=document.getElementById('readingPane');
   await Promise.all(pane.getAnimations({subtree:true}).filter(a=>Number.isFinite(a.effect.getComputedTiming().iterations)).map(a=>a.finished.catch(()=>{})));
   if(admin)pane.querySelector('[data-saved-mock="latest-result"] button').scrollIntoView({block:'nearest',behavior:'instant'});
