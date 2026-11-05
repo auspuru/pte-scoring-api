@@ -884,7 +884,7 @@ test('Question practice supports searching, paging, draft recovery, feedback and
 test('New HIW practice autoplays its fixed recording and saves highlights with full feedback',async()=>{
  const h=client(),clock=clockFor(h),audio=speechHarness(),recordings=[];Object.assign(h.ctx,audio.env);h.ctx.Audio=class{constructor(url){this.url=url;recordings.push(this);}play(){return Promise.resolve();}pause(){}};
  await h.ctx.ReadingPractice.open();h.click({browseLibrary:'hiw'});assert.equal((h.host.innerHTML.match(/data-practice-uid=/g)||[]).length,10);
- const q=bank.practiceLibraries.find(l=>l.id==='hiw').questions[0];await h.click({practiceUid:q.uid});assert.match(h.host.innerHTML,/<h2>Highlight Incorrect Words<\/h2>/);
+ const q=bank.practiceLibraries.find(l=>l.id==='hiw').questions[0];await h.click({practiceUid:q.uid});assert.match(h.host.innerHTML,/<h2>Standards and discretion<\/h2>/);
  clock.add(10000);h.timers.at(-1)();assert.equal(recordings.length,1);assert.equal(recordings[0].url,h.ctx.ReadingMockTools.approvedQuestion(q).audioUrl);assert.equal(audio.utterances.length,0);
  recordings[0].onplaying();q.answers.forEach(index=>h.click({hiwWord:String(index)}));recordings[0].onended();h.click({action:'submit'});
  assert.equal(snapshot(h).practiceResults[q.uid].earned,6);assert.equal(snapshot(h).history[0].excluded,0);assert.match(h.host.innerHTML,/Meaning in context/);assert.match(h.host.innerHTML,/Legitimacy depends on purposes/);
@@ -906,7 +906,7 @@ test('Reading results remain visible and completed practice keeps navigation', (
  assert.match(source,/data-reading-recent-results/);
  assert.doesNotMatch(source,/recentResultsOpen/);
  assert.match(source,/Completed mocks/);
- assert.match(source,/reading-review-navigation/);
+ assert.match(source,/reading-practice-dock/);
  assert.match(source,/Time mode: Untimed/);
  assert.match(source,/data-move="-1"/);
  assert.match(source,/reading-next-action/);
@@ -935,7 +935,7 @@ test('Reorder practice uses Source/Target panels and supports transfer, ordering
  assert.deepEqual(snapshot(h).session.answers[q.uid],keys.slice(0,2));
  await h.click({orderStep:'-1'});assert.deepEqual(snapshot(h).session.answers[q.uid],[keys[1],keys[0]]);
  await h.click({transfer:'source'});assert.deepEqual(snapshot(h).session.answers[q.uid],[keys[0]]);
- await h.click({action:'retry-question'});assert.deepEqual(snapshot(h).session.answers[q.uid],[]);
+ const previous=snapshot(h).session.id;await h.click({action:'retry-question'});assert.notEqual(snapshot(h).session.id,previous);assert.deepEqual(snapshot(h).session.answers[q.uid]||[],[]);assert.deepEqual(snapshot(h).drafts.find(a=>a.id===previous).answers[q.uid],[keys[0]]);
  assert.match(h.host.innerHTML,/Move paragraphs here/);
 });
 
@@ -994,7 +994,7 @@ test('Reading saved responses with empty or stale context cannot jump into the b
   const items=h.ctx.PracticeCatalogue.readingLibraries(bank).find(l=>l.id==='dropdown').questions;
   await h.click({practiceUid:items[4].uid});
   const saved=snapshot(h);saved.session.practiceContext={id:'dropdown',queue};
-  h.values.set(storageKey('first'),JSON.stringify(saved));h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open({libraryId:'dropdown'});
+  h.values.set(storageKey('first'),JSON.stringify(saved));h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open({attemptId:saved.session.id});
   await h.click({move:'1'});assert.equal(snapshot(h).session.practiceUid,items[4].uid);
   assert.match(h.host.innerHTML,/data-move="1" disabled/);
  }
@@ -1027,4 +1027,19 @@ test('Reading answers use the shared durable practice adapter when native localS
  await h.ctx.ReadingPractice.open();await h.click({start:'practice'});h.host.onchange({target:{dataset:{answer:'0'},value:'Calm'}});
  const saved=backups.get(storageKey('first'));assert(saved?.session);assert(JSON.stringify(saved.session.answers).includes('Calm'));
  h.ctx.ReadingPractice.reset();await h.ctx.ReadingPractice.open();assert.match(h.host.innerHTML,/option selected value="Calm"/);
+});
+
+test('All five Reading task menus reopen the same attempt; Reattempt retains the old saved session',async()=>{
+ for(const id of ['dropdown','mcma','reorder','wordbank','mcsa']){
+  const h=client();await h.ctx.ReadingPractice.open({libraryId:id});const item=h.ctx.PracticeCatalogue.readingLibraries(bank).find(l=>l.id===id).questions[0];
+  await h.click({practiceUid:item.uid});const first=snapshot(h).session.id;
+  await h.click({action:'home'});await h.click({practiceUid:item.uid});assert.equal(snapshot(h).session.id,first,id+' question menu restores the attempt');
+  await h.click({action:'retry-question'});const fresh=snapshot(h).session.id;assert.notEqual(fresh,first);assert(snapshot(h).drafts.some(a=>a.id===first));assert.match(h.host.innerHTML,/Previous attempts/);assert.match(h.host.innerHTML,new RegExp('data-saved-practice-attempt="'+first+'"'));
+  await h.click({savedPracticeAttempt:first});assert.equal(snapshot(h).session.id,first);assert(snapshot(h).drafts.some(a=>a.id===fresh));
+ }
+});
+test('A completed Reading answer keeps its confirmed result when a fresh attempt opens',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open({libraryId:'dropdown'});const item=h.ctx.PracticeCatalogue.readingLibraries(bank).find(l=>l.id==='dropdown').questions[0];await h.click({practiceUid:item.uid});
+ item.answers.forEach((value,i)=>h.host.onchange({target:{dataset:{answer:String(i)},value}}));await h.click({action:'submit'});const result=snapshot(h).history[0],original=JSON.stringify(result.answers);assert.equal(result.earned,result.possible);
+ await h.click({action:'retry-question'});assert.notEqual(snapshot(h).session.id,result.id);assert.equal(JSON.stringify(snapshot(h).history.find(a=>a.id===result.id).answers),original);await h.click({savedPracticeAttempt:result.id});assert.equal(snapshot(h).session.id,result.id);assert.equal(snapshot(h).session.earned,result.earned);
 });

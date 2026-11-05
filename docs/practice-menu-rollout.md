@@ -8,3 +8,7 @@ Scope: individual practice only. Keep native controllers, question identities, s
 4. Listening: apply the common dock/list/history and a five-second lead-in to individual timed audio questions; preserve each task's playback, response and grading rules and all sectional/full mocks.
 
 Each phase requires its focused native browser checks, regression/build checks and final-head Portal CI before publication. Deployment is verified against the merged commit and served assets. No sample prototype questions or simulated scores are imported.
+
+Phase 2 uses a standalone presentation adapter around the existing SWT/Essay handlers. It does not replace submitters, graders, saved feedback or report renderers. SWT selection is a separate menu; per-question drafts and clocks return to their original question, and saved-result actions carry the exact timestamp/attempt ID.
+
+Phase 3 retains every Reading practice session on explicit Reattempt, reuses the selected saved session from its menu, and exposes exact historical answers beneath the native question. Five current Reading task types share the dock; native graders and protected mock players remain unchanged.

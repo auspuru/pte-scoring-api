@@ -128,11 +128,11 @@ test('AUTH-01/03/04: real login, keyboard double-submit and expired-session draf
  await page.goto(f.base);await page.waitForSelector('#loginUsername');await page.type('#loginUsername','browser-alice');await page.type('#loginPassword','Wrong-pass-123');await page.click('#loginSubmitBtn');await page.waitForSelector('#loginError.show');assert.equal(await page.$eval('#loginSubmitBtn',e=>e.disabled),false);await page.$eval('#loginPassword',e=>e.value='');await page.type('#loginPassword','Password123');
  await page.evaluate(()=>{const form=document.getElementById('loginSubmitForm');form.dispatchEvent(new Event('submit',{cancelable:true}));form.dispatchEvent(new Event('submit',{cancelable:true}));});
  await workspace('first account');assert.equal(logins,2);
- await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput',{visible:true});await page.type('#summaryInput','A recoverable first-account summary.');assert.equal(await page.$eval('#summaryInput',e=>e.value),'A recoverable first-account summary.');assert.equal(await page.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('pte_browser-alice_summaries')||'{}')).some(entry=>entry.text==='A recoverable first-account summary.')),true,'The draft is saved before expiry');
+ await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('[data-swt-open]',{visible:true});await page.locator('[data-swt-open="1"]').click();await page.waitForSelector('#summaryInput',{visible:true});await page.type('#summaryInput','A recoverable first-account summary.');assert.equal(await page.$eval('#summaryInput',e=>e.value),'A recoverable first-account summary.');assert.equal(await page.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('pte_browser-alice_summaries')||'{}')).some(entry=>entry.text==='A recoverable first-account summary.')),true,'The draft is saved before expiry');
  await f.clock(31*24*60*60*1000);await page.evaluate(()=>refreshPracticeHistory({force:true}));await page.waitForFunction(()=>document.getElementById('loginScreen')?.style.display==='flex');
  await f.clock(0);await page.type('#loginUsername','browser-bob');await page.type('#loginPassword','Password123');await page.click('#loginSubmitBtn');await workspace('second account');
- await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'');
- await page.evaluate(()=>signOut());await page.type('#loginUsername','browser-alice');await page.type('#loginPassword','Password123');await page.click('#loginSubmitBtn');await workspace('original account recovery');await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'A recoverable first-account summary.');
+ await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('[data-swt-open]',{visible:true});await page.locator('[data-swt-open="1"]').click();await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'');
+ await page.evaluate(()=>signOut());await page.type('#loginUsername','browser-alice');await page.type('#loginPassword','Password123');await page.click('#loginSubmitBtn');await workspace('original account recovery');await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('[data-swt-open]',{visible:true});await page.locator('[data-swt-open="1"]').click();await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'A recoverable first-account summary.');
 });
 
 test('SWT practice submits with the signed-in session after login and reload',{timeout:60000},async t=>{
@@ -162,7 +162,7 @@ test('SWT practice submits with the signed-in session after login and reload',{t
   const ready=()=>page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
   await ready();const login=receipts['/api/auth/login'];assert.equal(login.success,true);
   if(reload){await page.reload();await ready();}
-  await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput',{visible:true});
+  await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('[data-swt-open]',{visible:true});await page.locator('[data-swt-open="1"]').click();await page.waitForSelector('#summaryInput',{visible:true});
   // Two sentences exercise the real server's deterministic form gate after
   // authentication, without any external scoring provider or mocked HTTP reply.
   const text='Bees support plants. Flowers grow.';await page.type('#summaryInput',text);

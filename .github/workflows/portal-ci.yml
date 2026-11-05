@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     # Complete media, PostgreSQL and browser coverage now approaches 15 minutes.
     # Leave time for evidence upload and container cleanup without dropping checks.
-    timeout-minutes: 20
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:16
@@ -71,6 +71,8 @@ jobs:
             .cache/admin-deadline-zero-*.png
             .cache/portal-layout-*.png
             .cache/practice-speaking-*.png
+            .cache/practice-writing-*.png
+            .cache/practice-reading-*.png
             public/index.min.js
           include-hidden-files: true
           if-no-files-found: error
