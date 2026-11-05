@@ -133,3 +133,96 @@ test('Independent batch controllers and storage instances send every selected re
  await Promise.all([f.api.send(f.owner,f.id,body),other.send(f.owner,f.id,body)]);await Promise.all([f.api.drain(),other.drain()]);
  assert.equal(calls,2);assert.equal((await other.inspect(f.owner,f.id)).operations[body.operation].status,'review');
 });
+
+test('Previously published instructor exclusions remain valid during a delivery batch preview and publication',async t=>{
+ const f=await fixture(t,async()=>result),review=require('../mock-result-review'),{hash}=require('../scoring-jobs');
+ // This simulates a batch already saved by the previously deployed version.
+ await f.store.update(f.owner,f.id,state=>{state.assessment.snapshot.scoringSources=require('../content/full-mock/azure-publication-compatible-sources.json');state.assessment.snapshotHash=require('../full-mock/paper').digest(state.assessment.snapshot);for(const job of Object.values(state.assessment.items))job.snapshotHash=state.assessment.snapshotHash;return state;});
+ const excluded=f.paper.questions.find(q=>q.question.type==='rs');
+ await f.store.update(f.owner,f.id,state=>{
+  const job=state.assessment.items[excluded.id],response=state.responses[f.paper.questions.indexOf(excluded)+1];
+  job.status='failed';job.reason='content-unavailable';
+  const plan=review.fullPlan(state,f.paper,Date.now());
+  state.instructorReview={version:review.VERSION,status:'published',operation:'review:started',startedAt:1,inputsHash:plan.inputsHash,confirmed:review.confirmed(state,'full'),rounds:[]};
+  state.assessment.exclusions={[excluded.id]:{reason:'instructor-review-unavailable',operation:'review:publication',at:2,note:'Unavailable assessment excluded by instructor.',inputHash:inputHash(response),snapshotHash:state.assessment.snapshotHash,previousJobHash:hash(job)}};
+  state.instructorReview.publication={operation:'review:publication',at:2,questionIds:[excluded.id],exclusionsHash:hash(state.assessment.exclusions)};
+  return state;
+ });
+ const before=(await f.store.get(f.owner,f.id)).state;assert.equal(aggregate(f.paper,before).ready,true);assert.equal(review.publicationValid(before,'full'),true);
+ const view=await f.api.inspect(f.owner,f.id),body={operation:'delivery:excluded-review',questionIds:[f.q.id],evidenceHash:view.evidenceHash};
+ await f.api.send(f.owner,f.id,body);await f.api.drain();
+ let repeatedCalls=0;const reopened=create({store:f.store,validate:assessment.createEngine({store:f.store}).validate,assess:async()=>{repeatedCalls++;throw Error('Saved results must not be sent again');}});
+ const proposal=await reopened.inspect(f.owner,f.id),op=proposal.operations[body.operation];
+ assert.equal(op.proposalReady,true);for(const profile of Object.values(op.proposedProfiles))assert.equal(profile.status,'complete');
+ await reopened.publish(f.owner,f.id,{operation:body.operation,confirmPublish:true});assert.equal(repeatedCalls,0);
+ const after=(await f.store.get(f.owner,f.id)).state;assert.equal(aggregate(f.paper,after).ready,true);assert.equal(review.publicationValid(after,'full'),true);
+ assert.deepEqual(after.assessment.exclusions,before.assessment.exclusions);assert.deepEqual(after.instructorReview.publication,before.instructorReview.publication);assert.deepEqual(after.responses,before.responses);assert.equal(after.assessment.items[f.q.id].result.scores.pronunciation,3);
+ for(const q of f.paper.questions)if(q.id!==f.q.id)assert.deepEqual(after.assessment.items[q.id],before.assessment.items[q.id]);
+ const audit=after.deliveryReassessments[body.operation].instructorReviewAmendment;
+ assert.deepEqual(audit.beforeConfirmed,before.instructorReview.confirmed);assert.deepEqual(audit.afterConfirmed,after.instructorReview.confirmed);
+ assert.equal(audit.beforeHash,hash(audit.beforeConfirmed));assert.equal(audit.afterHash,hash(audit.afterConfirmed));
+ assert.deepEqual(after.deliveryReassessments[body.operation].beforeProfiles,aggregate(f.paper,before).profiles);
+ assert.deepEqual(after.deliveryReassessments[body.operation].afterProfiles,op.proposedProfiles);
+ const express=require('express'),app=express();app.use(express.json());
+ require('../full-mock/api').installFullMock(app,{directory:f.directory,assessment:{},verifyToken:token=>token==='student-session'?f.owner:token==='other-session'?'other-student':null,getAccount:async()=>({role:'user'}),canPreview:()=>true});
+ const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(()=>new Promise(resolve=>server.close(resolve)));
+ const url='http://127.0.0.1:'+server.address().port,headers={'x-session-token':'student-session'};
+ const detail=await fetch(url+'/api/full-mocks/attempts/'+f.id+'/report',{headers}),history=await fetch(url+'/api/full-mocks/attempts',{headers});
+ assert.equal(detail.status,200);assert.equal(history.status,200);const report=await detail.json(),rows=await history.json(),row=rows.find(value=>value.id===f.id);
+ assert.equal(report.ready,true);assert.deepEqual(report.profiles,op.proposedProfiles);assert.equal(report.items.find(item=>item.id===excluded.id).status,'excluded');
+ assert.equal(report.items.find(item=>item.id===f.q.id).scores.pronunciation,3);assert.equal(row.ready,true);assert.equal(row.profiles.speaking.practiceIndex,report.profiles.speaking.practiceIndex);
+ assert.deepEqual(row.profiles.overall.practiceIndexRange,report.profiles.overall.practiceIndexRange);
+ assert.equal((await fetch(url+'/api/full-mocks/attempts/'+f.id+'/report',{headers:{'x-session-token':'other-session'}})).status,404);assert.equal(repeatedCalls,0);
+});
+
+
+test('An invalid prior publication blocks the proposal and keeps all saved marks unchanged',async t=>{
+ const f=await fixture(t,async()=>result),review=require('../mock-result-review');
+ await f.store.update(f.owner,f.id,state=>{const plan=review.fullPlan(state,f.paper,Date.now());state.instructorReview={version:review.VERSION,status:'published',inputsHash:plan.inputsHash,confirmed:{[f.q.id]:'incorrect-hash'},rounds:[],publication:{operation:'review:invalid',questionIds:[],exclusionsHash:require('../scoring-jobs').hash({})}};return state;});
+ const before=(await f.store.get(f.owner,f.id)).state;assert.equal(aggregate(f.paper,before).ready,true);assert.equal(review.publicationValid(before,'full'),false);
+ const view=await f.api.inspect(f.owner,f.id),body={operation:'delivery:invalid-history',questionIds:[f.q.id],evidenceHash:view.evidenceHash};await f.api.send(f.owner,f.id,body);await f.api.drain();
+ const proposal=await f.api.inspect(f.owner,f.id);assert.equal(proposal.operations[body.operation].proposalReady,false);assert.match(proposal.operations[body.operation].proposalError,/earlier instructor publication/);
+ await assert.rejects(f.api.publish(f.owner,f.id,{operation:body.operation,confirmPublish:true}),/earlier instructor publication/);
+ const after=(await f.store.get(f.owner,f.id)).state;assert.deepEqual(after.assessment,before.assessment);assert.deepEqual(after.instructorReview,before.instructorReview);
+});
+test('The replacement total follows the saved native maxima when historical results contain additional score metadata',async t=>{
+ const f=await fixture(t,async()=>result);
+ await f.store.update(f.owner,f.id,state=>{state.assessment.items[f.q.id].result.scores.diagnosticOnly=7;return state;});
+ const before=(await f.store.get(f.owner,f.id)).state;assert.equal(aggregate(f.paper,before).ready,true);
+ const view=await f.api.inspect(f.owner,f.id),body={operation:'delivery:extra-score-metadata',questionIds:[f.q.id],evidenceHash:view.evidenceHash};
+ await f.api.send(f.owner,f.id,body);await f.api.drain();const proposal=await f.api.inspect(f.owner,f.id);assert.equal(proposal.operations[body.operation].proposalReady,true);
+ await f.api.publish(f.owner,f.id,{operation:body.operation,confirmPublish:true});const after=(await f.store.get(f.owner,f.id)).state;
+ assert.equal(aggregate(f.paper,after).ready,true);assert.equal(after.assessment.items[f.q.id].result.scores.diagnosticOnly,7);
+ assert.equal(after.assessment.items[f.q.id].result.total,after.assessment.items[f.q.id].result.scores.content+3+2);
+});
+
+async function publishInstructorExclusion(f,avoid=[]){
+ const review=require('../mock-result-review'),{hash}=require('../scoring-jobs'),excluded=f.paper.questions.find(q=>q.question.type==='rs'&&!avoid.includes(q.id));
+ await f.store.update(f.owner,f.id,state=>{
+  const job=state.assessment.items[excluded.id],response=state.responses[f.paper.questions.indexOf(excluded)+1];job.status='failed';job.reason='content-unavailable';
+  const plan=review.fullPlan(state,f.paper,Date.now());
+  state.instructorReview={version:review.VERSION,status:'published',operation:'review:started',startedAt:1,inputsHash:plan.inputsHash,confirmed:review.confirmed(state,'full'),rounds:[]};
+  state.assessment.exclusions={[excluded.id]:{reason:'instructor-review-unavailable',operation:'review:publication',at:2,note:'Unavailable assessment excluded by instructor.',inputHash:inputHash(response),snapshotHash:state.assessment.snapshotHash,previousJobHash:hash(job)}};
+  state.instructorReview.publication={operation:'review:publication',at:2,questionIds:[excluded.id],exclusionsHash:hash(state.assessment.exclusions)};return state;
+ });return excluded;
+}
+test('A delivery batch updates only the confirmed review hashes for selected questions and is idempotent across concurrent publications',async t=>{
+ let calls=0;const f=await fixture(t,async()=>{calls++;return result;}),second=await secondRecording(f);await publishInstructorExclusion(f,[second.candidate.id]);
+ const review=require('../mock-result-review'),before=(await f.store.get(f.owner,f.id)).state,view=await f.api.inspect(f.owner,f.id),body={operation:'delivery:instructor-two',questionIds:[f.q.id,second.candidate.id],evidenceHash:view.evidenceHash};
+ await f.api.send(f.owner,f.id,body);await f.api.drain();const proposed=await f.api.inspect(f.owner,f.id);assert.equal(proposed.operations[body.operation].proposalReady,true);
+ const store=require('../full-mock/store').createStore({directory:f.directory}),other=create({store,validate:assessment.createEngine({store}).validate,assess:async()=>{throw Error('No further provider request');}});
+ await Promise.all([f.api.publish(f.owner,f.id,{operation:body.operation,confirmPublish:true}),other.publish(f.owner,f.id,{operation:body.operation,confirmPublish:true})]);
+ const after=(await f.store.get(f.owner,f.id)).state;assert.equal(review.publicationValid(after,'full'),true);assert.equal(aggregate(f.paper,after).ready,true);assert.equal(calls,2);
+ const beforeKeys=before.instructorReview.confirmed,afterKeys=after.instructorReview.confirmed;
+ const changed=[...new Set([...Object.keys(beforeKeys),...Object.keys(afterKeys)])].filter(key=>beforeKeys[key]!==afterKeys[key]).sort();
+ assert.deepEqual(changed,[f.q.id,f.q.id+':delivery',second.candidate.id,second.candidate.id+':delivery'].sort());
+ assert.deepEqual(after.assessment.exclusions,before.assessment.exclusions);assert.deepEqual(after.instructorReview.publication,before.instructorReview.publication);
+ assert.deepEqual(after.deliveryReassessments[body.operation].instructorReviewAmendment.beforeConfirmed,beforeKeys);assert.deepEqual(after.deliveryReassessments[body.operation].afterProfiles,proposed.operations[body.operation].proposedProfiles);
+});
+test('An earlier instructor exclusion is also preserved when a single-recording result is published',async t=>{
+ const f=await fixture(t,async()=>result);await publishInstructorExclusion(f);const before=(await f.store.get(f.owner,f.id)).state,view=await f.api.inspect(f.owner,f.id),body={operation:'delivery:instructor-single',questionId:f.q.id,evidenceHash:view.evidenceHash};
+ const proposal=await f.api.send(f.owner,f.id,body);assert.equal(proposal.operations[body.operation].proposalReady,true);
+ await f.api.publish(f.owner,f.id,{operation:body.operation,confirmPublish:true});const after=(await f.store.get(f.owner,f.id)).state;
+ assert.equal(require('../mock-result-review').publicationValid(after,'full'),true);assert.equal(aggregate(f.paper,after).ready,true);
+ assert.deepEqual(after.assessment.exclusions,before.assessment.exclusions);assert.deepEqual(after.deliveryReassessments[body.operation].instructorReviewAmendment.beforeConfirmed,before.instructorReview.confirmed);
+});
