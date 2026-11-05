@@ -7,7 +7,7 @@ const { createStore, fail } = require('./store');
 const session = require('./session');
 const reports = require('./report');
 
-function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper(), papers = registeredPapers({ activeOnly: true }), sectionTransitions = true, assessment, requireAdmin } = {}) {
+function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper(), papers = registeredPapers({ activeOnly: true }), sectionTransitions = true, assessment, requireAdmin, deliveryReassessment = {} } = {}) {
   const selectedPapers = new Map(papers.map(value => [value.id, value]));
   selectedPapers.set(paper.id, paper);
   const store = createStore({ pool, directory }), router = express.Router();
@@ -23,7 +23,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     admin.post('/:username/:id/scoring/exclude-audio', wrap(async (req, res) => res.json(await support.exclude(req.params.username, req.params.id, req.body))));
     admin.post('/:username/:id/scoring/exclude-delivery', wrap(async (req, res) => res.json(await support.excludeDelivery(req.params.username, req.params.id, req.body))));
     admin.post('/:username/:id/scoring/review', wrap(async(req,res)=>{await assessor.review(req.params.username,req.params.id,req.body||{});res.json(await support.inspect(req.params.username,req.params.id));}));
-    const deliveryReview = require('./delivery-reassessment').create({store, now, validate:assessor.validate});
+    const deliveryReview = require('./delivery-reassessment').create({...deliveryReassessment, store, now, validate:assessor.validate});
     admin.get('/:username/:id/scoring/delivery', wrap(async(req,res)=>res.json(await deliveryReview.inspect(req.params.username,req.params.id))));
     admin.post('/:username/:id/scoring/delivery/send', wrap(async(req,res)=>res.json(await deliveryReview.send(req.params.username,req.params.id,req.body||{}))));
     admin.post('/:username/:id/scoring/delivery/publish', wrap(async(req,res)=>res.json(await deliveryReview.publish(req.params.username,req.params.id,req.body||{}))));

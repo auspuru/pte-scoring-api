@@ -2,6 +2,7 @@
   const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.AdminFullMockRecovery=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
+  const azureReview=typeof module==='object'&&module.exports?require('./admin-azure-reassessment'):globalThis.AdminAzureReassessment;
   const resultReview=typeof module==='object'&&module.exports?require('./admin-result-review'):globalThis.AdminResultReview;
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function mount(host,{username,request,operationId=()=>crypto.randomUUID()}){
@@ -19,13 +20,7 @@
         +(heldTranscription&&!d.busy?'<h5>Final unavailable transcription</h5><p>Only Question '+esc(heldTranscription.number)+' will be excluded at instructor request. This records an unavailable assessment, without claiming a listening review.</p><label>Transcription exclusion note<textarea data-full-transcription-note rows="3">Excluded at instructor request because automatic transcription could not be completed. The original recording and all other confirmed assessments are retained.</textarea></label><label><input type="checkbox" data-full-transcription-confirm> I confirm the instructor requested exclusion of Question '+esc(heldTranscription.number)+'.</label><button type="button" class="btn-sm" data-full-exclude-transcription>Exclude Question '+esc(heldTranscription.number)+' and release report</button>':'')
         +(held&&!d.busy?'<h5>Final Repeat Sentence delivery assessment</h5><p>Only Question '+esc(held.number)+' will be excluded. Its recording and completed stages stay saved. The other 64 assessments are retained.</p><label>Instructor exclusion note<textarea data-full-delivery-note rows="3">Excluded at instructor request because the delivery assessment could not be completed. The saved response and completed assessment stages are retained.</textarea></label><label><input type="checkbox" data-full-instructor-confirm> I confirm the instructor requested exclusion of Question '+esc(held.number)+'.</label><button type="button" class="btn-sm" data-full-exclude-delivery>Exclude Question '+esc(held.number)+' and release report</button>':'');
     }
-    function deliveryPaint(){
-      if(!diagnostic?.ready)return '';
-      if(!delivery)return '<section><h5>Azure delivery reassessment</h5><p>Send original saved recordings to Azure, review the proposed marks, then publish replacements. Content and original recordings are retained.</p><button type="button" class="btn-sm" data-delivery-load>Load saved recordings for reassessment</button></section>';
-      const ops=Object.entries(delivery.operations),pending=ops.some(([,op])=>['running','confirmation-pending'].includes(op.status)||op.status==='review'&&op.evidenceHash===delivery.evidenceHash);
-      return '<section><h5>Azure delivery reassessment</h5><p>Account '+esc(delivery.owner)+' · '+esc(delivery.paperId)+' v'+esc(delivery.paperVersion)+' · '+esc(delivery.attemptId)+'</p><p>Each send requests a paid Azure assessment. Publish replaces pronunciation and fluency and recalculates the report. Content marks stay unchanged. Gated answers, ASQ and responses with multiple recordings are excluded.</p>'+delivery.questions.map(q=>'<p>Q'+esc(q.number)+' · '+esc(q.type.toUpperCase())+' · Pronunciation '+esc(q.previous.pronunciation)+'/5 · Fluency '+esc(q.previous.fluency)+'/5 <button type="button" class="btn-sm" data-delivery-send="'+esc(q.id)+'" '+(pending?'disabled':'')+'>Send saved recording to Azure</button></p>').join('')+ops.map(([id,op])=>'<div><p>'+esc(op.questionId)+' · '+esc(op.status)+(op.result?' · Pronunciation '+esc(op.previous.result.scores.pronunciation)+' → '+esc(op.result.pronunciation.score)+'/5 · Fluency '+esc(op.previous.result.scores.fluency)+' → '+esc(op.result.fluency.score)+'/5':'')+'</p>'+(op.proposedProfiles?'<p>Report indices: '+Object.entries(op.proposedProfiles).map(([key,value])=>esc(key)+' '+esc(delivery.profiles[key].practiceIndex??(delivery.profiles[key].practiceIndexRange.low+'–'+delivery.profiles[key].practiceIndexRange.high))+' → '+esc(value.practiceIndex??(value.practiceIndexRange.low+'–'+value.practiceIndexRange.high))).join(' · ')+'</p>':'')+(op.message?'<p>'+esc(op.message)+'</p>':'')+(op.status==='review'&&op.evidenceHash===delivery.evidenceHash?'<label><input type="checkbox" data-delivery-confirm="'+esc(id)+'"> Replace this question’s published delivery marks and recalculate the report.</label><button type="button" class="btn-sm" data-delivery-publish="'+esc(id)+'">Publish replacement scores</button>':'')+(op.status==='review'?'<button type="button" class="btn-sm" data-delivery-discard="'+esc(id)+'">Discard proposed replacement</button>':'')+'</div>').join('')+'<button type="button" class="btn-sm" data-delivery-load>Refresh reassessment status</button></section>';
-    }
-    const legacyPaint=paint;paint=function(){legacyPaint();if(diagnostic.review?.started)details.innerHTML='';if(resultReview)details.innerHTML+=resultReview.render(diagnostic);details.innerHTML+=deliveryPaint();};
+    const legacyPaint=paint;paint=function(){if(!diagnostic)return;legacyPaint();const saved=details.innerHTML;details.innerHTML=azureReview.render(diagnostic,delivery)+(diagnostic.review?.started?'':saved)+(resultReview?resultReview.render(diagnostic):'');};
     async function inspect(){
       if(busy)return;const id=input.value.trim();
       if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)){notice.textContent='Enter the exact Full Mock attempt ID.';return;}
@@ -44,26 +39,10 @@
     host.querySelector('[data-full-inspect]').onclick=inspect;
     details.onclick=async event=>{
       if(busy)return;
-      const load=event.target.closest('[data-delivery-load]'),send=event.target.closest('[data-delivery-send]'),publish=event.target.closest('[data-delivery-publish]'),discard=event.target.closest('[data-delivery-discard]');
-      if(load||send||publish||discard){
-        const before=diagnostic;if(!before?.ready)return;
-        if(publish&&!Array.from(details.querySelectorAll('[data-delivery-confirm]')).find(el=>el.dataset.deliveryConfirm===publish.dataset.deliveryPublish)?.checked){notice.textContent='Confirm replacement of the published marks first.';return;}
-        lock(true);notice.textContent=send?'Sending the original saved recording to Azure…':publish?'Publishing replacement marks…':'Loading saved recording evidence…';
-        try{
-          let suffix='',body;
-          if(send){const questionId=send.dataset.deliverySend,key=delivery.evidenceHash+':'+questionId;if(!deliveryOperations.has(key))deliveryOperations.set(key,'delivery:'+operationId());suffix='/send';body={questionId,evidenceHash:delivery.evidenceHash,operation:deliveryOperations.get(key)};}
-          if(discard){suffix='/discard';body={operation:discard.dataset.deliveryDiscard};}
-          if(publish){suffix='/publish';body={operation:publish.dataset.deliveryPublish,confirmPublish:true};}
-          const value=await request(path(before.attemptId)+'/delivery'+suffix,body);
-          if(!host.isConnected)return;
-          if(value.owner!==username||value.attemptId!==before.attemptId)throw Error('The returned attempt does not match.');
-          if(discard)deliveryOperations.delete(delivery.evidenceHash+':'+delivery.operations[discard.dataset.deliveryDiscard].questionId);
-          delivery=value;
-          if(publish)diagnostic=await request(path(before.attemptId));
-          paint();notice.textContent=publish?'Replacement scores published. The report has been recalculated; original marks remain in reassessment history.':'Reassessment status loaded. Review the results before publishing replacement scores.';
-        }catch(error){notice.textContent=error.message+' Refresh reassessment status before retrying.';}finally{if(host.isConnected){lock(false);paint();}}
-        return;
-      }
+      if(await azureReview.act(event,{host:details,diagnostic,delivery,operations:deliveryOperations,operationId,
+        request:(suffix,body)=>request(path(diagnostic.attemptId)+'/delivery'+suffix,body),
+        commit:async(value,published)=>{delivery=value;if(published){const current=await request(path(value.attemptId));if(current.owner!==username||current.attemptId!==value.attemptId)throw Error('The updated report does not match the selected attempt.');diagnostic=current;}paint();},
+        lock:value=>{lock(value);if(!value)paint();},notice:value=>{notice.textContent=value;}}))return;
       if(resultReview&&await resultReview.act(event,{host,diagnostic,operations:reviewOperations,operationId,request:async body=>request(path(diagnostic.attemptId)+(body?'/review':''),body),commit:value=>{diagnostic=value;paint();},lock,notice:value=>{notice.textContent=value;}}))return;
       const deliveryExclusion=!!event.target.closest('[data-full-exclude-delivery]'),transcription=!!event.target.closest('[data-full-exclude-transcription]');
       if((!deliveryExclusion&&!transcription&&!event.target.closest('[data-full-exclude]'))||busy||!diagnostic)return;
