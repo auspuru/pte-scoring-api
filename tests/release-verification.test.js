@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const { releaseEnvironment, verifyRelease } = require('../scripts/verify-release');
 
 test('Release checks cannot use production storage, paid providers or mail', () => {
-  const source = { PGURL:'private', DATABASE_URL:'private', DATABASE_PUBLIC_URL:'public', ANTHROPIC_API_KEY:'private', OPENAI_API_KEY:'private', AZURE_SPEECH_KEY:'private',
+  const source = { PGURL:'private', DATABASE_URL:'private', DATABASE_PUBLIC_URL:'public', ANTHROPIC_API_KEY:'private', OPENAI_API_KEY:'private', AZURE_SPEECH_KEY:'private', AZURE_SPEECH_ENDPOINT:'https://synthetic.cognitiveservices.azure.com', AZURE_SPEECH_RESOURCE:'synthetic', AZURE_SPEECH_REGION:'synthetic', AZURE_SPEECH_LOCALE:'en-US',
     GMAIL_USER:'operator', GMAIL_APP_PASSWORD:'private', GMAIL_USER_PASSWORD:'private', RESEND_API_KEY:'private', FULL_MOCK_PREVIEW_USERS:'mahabir1', FULL_MOCK_PREVIEW_ALL:'true', SPEAKING_MOCK_ALERT_TEST:'test-request', RAILWAY_VOLUME_MOUNT_PATH:'/student-data', PATH:'/bin', NODE_ENV:'production' };
   const sanitized = releaseEnvironment(source);
   for (const key of Object.keys(source).filter(k => !['PATH', 'NODE_ENV', 'RAILWAY_VOLUME_MOUNT_PATH'].includes(k))) assert.equal(sanitized[key], '');
