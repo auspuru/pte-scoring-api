@@ -2,7 +2,9 @@
  'use strict';
  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  function render(d){const r=d.review;if(!r||d.ready||r.published)return '';
+  const deadlineOnly=r.questions.length>0&&r.questions.every(q=>q.reason==='Not reached before time expired');
   return '<section data-result-review><h5>Analyse and publish results</h5><p>'+esc(r.assessedCount)+' assessed · '+esc(r.questions.length)+' unresolved · Retry rounds '+esc(r.retries)+'/'+esc(r.limit)+'</p><ul>'+r.questions.map(q=>'<li>Question '+esc(q.number)+' · '+esc(q.type.toUpperCase())+' — '+esc(q.reason)+(q.retryable?'':' (cannot safely retry)')+'</li>').join('')+'</ul>'+(r.problem?'<p>'+esc(r.problem)+'</p>':'')
+   +(deadlineOnly?'<p>These questions were not reached before the overall timer expired. There are no recorded answers to retry. Analysis cannot recover answers that were never recorded.</p>':'')
    +'<p>Only missing assessments are retried, up to twice. Your final publication remains a separate action. Unresolved questions are clearly excluded; saved answers and completed marks are retained.</p>'
    +(!r.started||r.canRetry||r.busy?'<button type="button" class="btn-sm" data-result-analyse>'+(!r.started?'Analyse and retry up to twice':'Continue analysis')+'</button>':'')
    +(r.canPublish?'<p>Analysis complete. Review the unresolved questions above before publishing.</p><label>Report note<textarea data-result-note rows="3">Published at instructor request after review of the available assessments. Unavailable questions are excluded; saved answers, recordings and completed marks are retained.</textarea></label><label><input type="checkbox" data-result-confirm> I confirm publication with the listed exclusions.</label><button type="button" class="btn-sm" data-result-publish>Publish results</button>':'')+'</section>';

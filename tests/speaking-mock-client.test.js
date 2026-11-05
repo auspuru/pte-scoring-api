@@ -401,3 +401,11 @@ test('A pending deadline upload can be retried from device cache without recordi
  const h=await harness(t,{failUpload:true});await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});const a=await h.active();await h.lab.store.update('alice',a.id,current=>{current.deadline=h.env.Date.now()+29000;return current;});await h.controller.open();await h.click({sm:'resume',id:a.id});await h.tick(28100);await h.tick(1100);
  assert.equal((await h.active()).submission.state,'finalizing');assert.match(h.nodes.get('sm-preparing-status').textContent,/Finishing your recording upload/);const starts=h.starts();await h.rawClick({sm:'reconcile-upload'});const saved=await h.active();assert(saved.responses[0].recording);assert.equal(h.starts(),starts);assert.equal(saved.submission.state,'incomplete');assert.match(h.nodes.get('sm-preparing-status').textContent,/Submission incomplete/);
 });
+
+test('Published timed-out answers display zero traits and a visible explanation in the normal report',async t=>{
+ const h=await harness(t,{backgroundEnabled:true}),a=require('./helpers/speaking-deadline-zero-fixture').attempt(),policy=require('../speaking-mock-deadline-score');
+ const next=policy.apply(a,a,[],require('./helpers/speaking-deadline-zero-fixture').command(policy.inspect(a,a,[],3000)),3000);await h.lab.store.update('alice',a.id,()=>next);
+ await h.controller.open();await h.click({sm:'resume',id:a.id});
+ assert.match(h.nodes.get('sm-results-summary').innerHTML,/10 questions count as zero/);
+ await h.click({sm:'review',index:18});assert.match(h.nodes.get('sm-review-details').innerHTML,/Unattempted before time expired/);
+});

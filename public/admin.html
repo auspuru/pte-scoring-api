@@ -531,12 +531,12 @@ tr:hover td { background: var(--surface-dim); }
 </div>
 
 <!-- User Detail Modal -->
-<div class="modal" id="detailModal" onclick="if(event.target===this)this.classList.remove('show')">
+<div class="modal" id="detailModal" onclick="if(event.target===this)closeUserDetail()">
   <div class="modal-box">
     <h3 id="detailTitle">User Details</h3>
     <div id="detailContent"></div>
     <div class="modal-actions">
-      <button class="btn-sm" onclick="document.getElementById('detailModal').classList.remove('show')">Close</button>
+      <button class="btn-sm" onclick="closeUserDetail()">Close</button>
       <button class="btn-sm btn-accent" id="impersonateBtn" onclick="">Open Portal as User</button>
     </div>
   </div>
@@ -819,9 +819,24 @@ async function openPortalAsUser(username) {
   }
 }
 
+let userDetailRequest=null,userDetailSerial=0;
+function closeUserDetail(){
+  userDetailSerial++;userDetailRequest?.controller.abort();userDetailRequest=null;
+  document.getElementById('detailModal').classList.remove('show');
+}
 function viewUser(username){
-  fetch(API+'/api/admin/user-data/'+encodeURIComponent(username),{headers:{'x-admin-key':adminKey}})
-    .then(r=>r.json()).then(data=>{
+  if(userDetailRequest?.username===username)return userDetailRequest.promise;
+  userDetailRequest?.controller.abort();
+  const ticket=++userDetailSerial,controller=new AbortController();
+  const modal=document.getElementById('detailModal'),content=document.getElementById('detailContent');
+  document.getElementById('detailTitle').textContent=username;
+  document.getElementById('impersonateBtn').style.display='none';
+  content.innerHTML='<p role="status">Loading saved progress…</p>';
+  content.setAttribute('aria-busy','true');modal.classList.add('show');
+  const current=()=>ticket===userDetailSerial&&modal.classList.contains('show');
+  const promise=fetch(API+'/api/admin/user-data/'+encodeURIComponent(username),{signal:controller.signal,cache:'no-store',headers:{'x-admin-key':adminKey}})
+    .then(async r=>{const data=await r.json();if(!r.ok)throw Error(data.error||'Could not load saved progress.');return data;}).then(data=>{
+      if(!current())return;
       const hasAccount=!!data.account;
       const acct=data.account||{};
       const prog=data.progress||{};
@@ -871,8 +886,16 @@ function viewUser(username){
         const r=await fetch(API+path,{method:body===undefined?'GET':'POST',cache:'no-store',headers:{'x-admin-key':adminKey,'Content-Type':'application/json'},...(body===undefined?{}:{body:JSON.stringify(body)})});
         const value=await r.json();if(!r.ok)throw Error(value.error||'Full mock review failed.');return value;
       }});
-      document.getElementById('detailModal').classList.add('show');
+    }).catch(error=>{
+      if(!current()||error.name==='AbortError')return;
+      content.replaceChildren();
+      const status=document.createElement('p');status.setAttribute('role','alert');status.textContent=error.message;
+      const retry=document.createElement('button');retry.type='button';retry.className='btn-sm';retry.textContent='Retry loading saved progress';retry.onclick=()=>viewUser(username);
+      content.append(status,retry);
+    }).finally(()=>{
+      if(ticket===userDetailSerial){userDetailRequest=null;content.removeAttribute('aria-busy');}
     });
+  userDetailRequest={username,controller,promise};return promise;
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -1398,8 +1421,8 @@ document.addEventListener('DOMContentLoaded', updateThemeToggles);
 </script>
 <script src="/practice-catalogue.js?v=sha256-31a5fcdba1dd"></script>
 <script src="/admin-learning.js?v=1"></script>
-<script src="/admin-result-review.js?v=sha256-1be9689324e3"></script>
+<script src="/admin-result-review.js?v=sha256-9c2a41071444"></script>
 <script src="/admin-full-mock-recovery.js?v=sha256-485dc9f492d0"></script>
-<script src="/admin-mock-recovery.js?v=sha256-400be5929e98"></script>
+<script src="/admin-mock-recovery.js?v=sha256-6f7112b749f5"></script>
 </body>
 </html>

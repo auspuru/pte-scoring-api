@@ -31,3 +31,12 @@ test('An explicit final unreached-question exclusion retains its operation and v
  await details.onclick({target:host.querySelector('[data-mock-deadline-release]')});fail=false;await details.onclick({target:host.querySelector('[data-mock-deadline-release]')});
  assert.deepEqual(requests[1],requests[2]);assert.equal(requests[1].body.mode,'release-deadline');assert.equal(requests[1].body.questionId,'rts-2');assert.equal(requests[1].body.confirmInstructorExclusion,true);assert.equal(requests[1].body.acknowledgeUncertain,undefined);assert.match(host.querySelector('[data-mock-notice]').textContent,/26 assessed and 1 excluded/);
 });
+test('Timeout zero publication needs its own confirmation and reuses the operation after a lost response',async()=>{
+ const {document}=parseHTML('<html><body><div id="host"></div></body></html>'),host=document.getElementById('host'),requests=[];
+ const before={...diagnostic(),owner:'alice',inputsHash:'saved-input',confirmedHash:'saved-marks',jobs:[],deadlineScore:{eligible:true,zeroCount:10,assessedCount:17,evidenceHash:'a'.repeat(64),questions:Array.from({length:10},(_,i)=>({number:18+i}))}};let interrupted=true;
+ const ui=mount(host,{username:'alice',operationId:()=> 'zero-publication',request:async(path,body)=>{requests.push({path,body});if(!body)return before;if(interrupted)throw Error('Connection interrupted');return {...before,ready:true,accountedFor:27,deadlineScore:{...before.deadlineScore,eligible:false,published:true}};}});
+ host.querySelector('[data-mock-attempt]').value=id;await ui.inspect();const details=host.querySelector('[data-mock-diagnostics]');
+ await details.onclick({target:host.querySelector('[data-mock-zero-publish]')});assert.equal(requests.length,1);
+ host.querySelector('[data-mock-zero-confirm]').checked=true;await details.onclick({target:host.querySelector('[data-mock-zero-publish]')});interrupted=false;await details.onclick({target:host.querySelector('[data-mock-zero-publish]')});
+ assert.deepEqual(requests[1],requests[2]);assert.equal(requests[1].body.mode,'score-deadline');assert.equal(requests[1].body.confirmDeadlineZeros,true);assert.match(host.querySelector('[data-mock-notice]').textContent,/10 timed-out, unattempted questions count as zero/);
+});

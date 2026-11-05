@@ -64,6 +64,7 @@ function questionResult(a,q,response,index,provider){
   const exclusion=exclusionFor(a,q,index);
   if(exclusion)return {...base,status:'excluded',excluded:true,exclusion:{reason:exclusion.reason,note:exclusion.note},missing:[]};
   if(cmax===null)return {...base,status:'pending',missing:['question-rubric']};
+  if(require('./speaking-mock-deadline-score').credited(a,index))return {...base,status:'unanswered',deadlineUnattempted:true,unansweredNote:require('./speaking-mock-deadline-score').NOTE,content:0,pronunciation:0,fluency:0,total:0,missing:[]};
   // An explicit skip, or an unvisited item when the timer submitted the test,
   // is zero. An unexplained hole in an already visited response stays pending.
   if(!response?.recording&&[...(a.submission?.pending||[]),...(a.submission?.missing||[]),...(a.submission?.unattempted||[])].includes(index))return {...base,status:'pending',missing:['recording']};
@@ -105,6 +106,8 @@ function providerReport(a,provider){
     overallScore:complete?Math.round(10+80*ratio):null,maximum:90,performancePercent:complete?100*ratio:null,
     questionCount:included.length,originalQuestionCount:rows.length,assessedCount:included.filter(r=>r.total!==null).length,
     excludedCount:excluded.length,excludedQuestions:excluded.map(r=>({index:r.index,number:a.questions.slice(0,r.index+1).filter(q=>q.type!=='intro').length,questionId:r.questionId,title:a.questions[r.index].title,note:r.exclusion.note})),
+    deadlineUnattemptedCount:rows.filter(r=>r.deadlineUnattempted).length,
+    deadlinePublicationNote:require('./speaking-mock-deadline-score').valid(a)?a.deadlineZeroPublication.note:null,
     unansweredCount:rows.filter(r=>r.status==='unanswered').length,contentGatedCount:rows.filter(r=>r.status==='content-gated').length,
     insufficientSpeechCount:rows.filter(r=>r.status==='insufficient-speech').length,
     manualOverrideCount:rows.filter(r=>r.manualTraits.length).length,
