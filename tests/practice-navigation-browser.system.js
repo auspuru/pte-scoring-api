@@ -408,7 +408,12 @@ for(const adminView of [false,true])for(const width of [1363,390,320])test('Read
  },adminView);
  assert.deepEqual(await page.$$eval('[data-saved-mock]',nodes=>nodes.map(n=>n.dataset.savedMock)),['latest-result','older-result']);
  assert(await page.$eval('[data-saved-mock="latest-result"]',n=>n.textContent.includes('Latest completed mock')&&n.textContent.includes('3 Nov 2026')&&n.textContent.includes('AEST')));
- assert(await page.$eval('[data-saved-mock="latest-result"] button',n=>{const r=n.getBoundingClientRect();return r.height>=44&&r.top>=0&&r.bottom<=innerHeight;}),'The result action is at least 44px and visible after the route settles');
+ if(adminView&&width<=390)assert(await page.$eval('#impersonateBanner',banner=>{
+  const text=banner.querySelector('.imp-text').getBoundingClientRect(),exit=banner.querySelector('.imp-exit').getBoundingClientRect();
+  return text.width>=banner.clientWidth*.6&&exit.top>=text.bottom;
+ }),'The narrow admin warning keeps its message readable and places Exit on a separate row');
+ const resultAction=await page.$eval('[data-saved-mock="latest-result"] button',n=>{const r=n.getBoundingClientRect();return {height:r.height,top:r.top,bottom:r.bottom,viewport:Math.min(innerHeight,document.getElementById('readingPane').getBoundingClientRect().bottom)};});
+ assert(resultAction.height>=44&&resultAction.top>=0&&resultAction.bottom<=resultAction.viewport,'The result action is at least 44px and visible after the route settles: '+JSON.stringify(resultAction));
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'History overflows at '+width);
  if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','reading-history-'+(adminView?'admin-':'')+width+'.png'),fullPage:true});}
  await page.locator('[data-saved-mock="latest-result"] button').click();await page.waitForSelector('.reading-report');
