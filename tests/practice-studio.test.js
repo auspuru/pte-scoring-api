@@ -120,3 +120,9 @@ test('Shared SWT library renderer provides one accessible structure with escaped
  for(const skill of ['Speaking','Writing','Reading','Listening']){const html=studio.questionLibrary({skill,title:'Task',rows,search:'"<',total:1});assert.match(html,/practice-question-library/);assert.match(html,/Find a question/);assert.match(html,/Show<select/);assert.match(html,/value="&quot;&lt;"/);assert.match(html,/Not attempted/);assert.match(html,/Completed/);}
  assert.match(studio.libraryRows([]),/role="status"/);
 });
+
+test('Legacy embedded Listening uses the same versioned shared renderer and styles',()=>{
+ const fs=require('node:fs'),path=require('node:path'),{createHash}=require('node:crypto'),root=path.join(__dirname,'..'),html=fs.readFileSync(path.join(root,'public/writing-lab.html'),'utf8');
+ for(const file of ['practice-studio.js','practice-studio.css','listening-studio.js']){const hash=createHash('sha256').update(fs.readFileSync(path.join(root,'public',file))).digest('hex').slice(0,12);assert(html.includes('/'+file+'?v=sha256-'+hash),file);}
+ assert(html.indexOf('/practice-studio.js?')<html.indexOf('/listening-studio.js?'));
+});
