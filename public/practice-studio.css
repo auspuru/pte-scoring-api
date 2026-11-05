@@ -1,4 +1,9 @@
 /* Shared individual-practice layout. Protected mock players keep their own UI. */
+.practice-question-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;text-align:left}
+.practice-question-context{min-width:0;flex:1}.practice-question-context>strong{display:block;font-size:14px;line-height:1.5;overflow-wrap:anywhere}.practice-question-context>div{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--practice-muted,var(--ink-soft));font-variant-numeric:tabular-nums}.practice-attempt-status{color:var(--accent,#34655a)}
+.practice-question-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.practice-question-actions .practice-reattempt{border-color:var(--accent,#34655a)!important;color:var(--accent,#34655a)!important;background:var(--accent-soft,#e8f2ed)!important}
+.practice-attempt-history{margin:24px 0 0;padding:18px 20px;border:1px solid var(--practice-line,var(--line));border-radius:12px;background:var(--practice-surface,var(--bg-card));min-width:0}.practice-attempt-history>header{display:block;margin-bottom:12px}.practice-attempt-history h3{font-size:15px;font-weight:600;margin:0 0 5px}.practice-attempt-history h3 span{font-size:11px;padding:2px 6px;background:var(--accent-soft,#e8f2ed);border-radius:4px;margin-left:4px}.practice-attempt-history header p,.practice-attempt-empty{font-size:12px;line-height:1.7;color:var(--practice-muted,var(--ink-soft));margin:0}.practice-attempt-table-scroll{overflow:auto;scrollbar-width:thin;max-height:260px}.practice-attempt-history table{width:100%;border-collapse:collapse;text-align:left;font-size:12px}.practice-attempt-history th{font-size:11px;color:var(--practice-muted,var(--ink-soft));font-weight:500;background:var(--practice-surface,var(--bg-card));position:sticky;top:0}.practice-attempt-history :is(th,td){padding:10px 8px;border-bottom:1px solid var(--practice-line,var(--line));white-space:nowrap}.practice-attempt-history td:last-child{text-align:right}.practice-attempt-history .portal-button{min-height:34px!important;font-size:12px!important;padding:6px 10px!important}.practice-attempt-history tr:last-child td{border-bottom:0}
+@media(max-width:760px){.practice-question-toolbar{flex-wrap:wrap}.practice-question-context{flex-basis:100%}.practice-question-actions{width:100%}.practice-attempt-history{padding:14px}}
 .practice-studio, .practice-studio-surface {
   --practice-blue: #2458ce;
   --practice-navy: #172e50;
@@ -200,3 +205,9 @@ body[data-section="practice"] #practiceScreen.practice-studio-surface .practice-
 }
 
 #swtPane .btn-primary { background: #2458ce; color: #fff; }
+
+/* A question opens from its task menu; its own dock is the sole action bar. */
+#speakingPane .speaking-workspace[data-practice-question]{max-width:1480px}
+#speakingPane [data-practice-question]>.practice-studio-taskbar{display:none}
+#speakingPane [data-practice-question]>.practice-studio-content{padding-top:0}
+#speakingPane .practice-question-context{min-width:200px}

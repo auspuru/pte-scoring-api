@@ -10,3 +10,12 @@ test('Layout reuses existing controls, isolates native reports and routes saved 
  assert(doc.getElementById('speakingPane').classList.contains('portal-layout-question'));const marker=doc.createElement('section');marker.className='speaking-result-card';marker.innerHTML='<div class="ipr-score-report">Existing report</div>';doc.getElementById('speakingPane').appendChild(marker);api.refresh();assert(doc.getElementById('speakingPane').classList.contains('portal-layout-report'));assert(!doc.getElementById('speakingPane').classList.contains('portal-layout-question'));assert.equal(marker.textContent,'Existing report');
  api.openResults();doc.querySelector('[data-saved-route="reading"]').click();assert.deepEqual(calls.pop(),['reading',{readingRequest:{history:true}}]);assert.equal(workspace.routeFromHash('#/results'),'saved-results');assert.equal(workspace.routes['speaking-history'].nav,'nav-saved-results');
 });
+
+test('Approved practice navigation preserves the original Speaking grading, upload and feedback functions',()=>{
+ const source=fs.readFileSync(path.join(__dirname,'../public/speaking-practice.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceWorkspaceUpdates.preservedFunctions;
+ for(const [name,expected] of Object.entries(pins)){
+  const match=new RegExp('^    (?:async )?function '+name+'\\(','m').exec(source);assert(match,name);
+  const offset=match.index+match[0].length,next=/^    (?:async )?function /m.exec(source.slice(offset));
+  const body=source.slice(match.index,next?offset+next.index:source.length).trim();assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);
+ }
+});

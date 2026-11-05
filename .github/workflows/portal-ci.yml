@@ -70,6 +70,7 @@ jobs:
             .cache/admin-result-review-*.png
             .cache/admin-deadline-zero-*.png
             .cache/portal-layout-*.png
+            .cache/practice-speaking-*.png
             public/index.min.js
           include-hidden-files: true
           if-no-files-found: error

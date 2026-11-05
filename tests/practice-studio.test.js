@@ -105,3 +105,10 @@ test('Saved navigation preserves empty, stale and stable ordered selections',()=
  for(const ids of [undefined,null,[],['b'],['removed']])assert.deepEqual(selectedQueue(items,ids,'a'),[]);
  assert.deepEqual(selectedQueue(items,['c','removed','a','c'],'a').map(q=>q.id),['c','a']);
 });
+
+test('Shared practice dock and attempt history retain exact result actions and escape saved metadata',()=>{
+ const toolbar=studio.questionToolbar({title:'Read <Aloud>',position:'Question 2 of 5',mode:'Timed practice',status:'In progress',actions:'<button data-native-action="next">Next</button>'});
+ assert.match(toolbar,/Read &lt;Aloud&gt;/);assert.match(toolbar,/Question 2 of 5/);assert.match(toolbar,/data-native-action="next"/);
+ const history=studio.attemptHistory([{id:'saved-1',label:'Attempt 1',date:'4 Nov',mode:'Timed',status:'<img src=x>',actions:'<button data-native-attempt="saved-1">Answer &amp; feedback</button>'}]);
+ assert.match(history,/data-practice-attempt="saved-1"/);assert.match(history,/data-native-attempt="saved-1"/);assert.doesNotMatch(history,/<img/);assert.match(history,/Previous attempts/);
+});

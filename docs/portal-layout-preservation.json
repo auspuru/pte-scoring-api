@@ -34,7 +34,7 @@
     "public/mock-impact-feedback.js": "0db0538a9d8d7f948135d0dc282ebe02a8721afe1936920fbb0e6214c958beee",
     "public/writing-lab-report.js": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
     "public/writing-lab-client.js": "b804264cc3a48916e19c48dab765858502889dfd7ad15db4eaca253302a0d44a",
-    "public/speaking-practice.js": "f7537d24dce9f0e0f82fac095fa2001ffdb1d885b6f28a24c354f0ee3d2d729e",
+    "public/speaking-practice.js": "23de89ada814b58b9645309f2c7816b24330cc92e4b36c435549358a7dee80d4",
     "public/speaking-mock-client.js": "84fd2b9f953748e68f4d3873c9e7ed30e6444a8ed06bb644cf5fa0fb73866eba",
     "public/reading-practice.js": "73894747029a2abb151e8de0dab2dbd6191b6a3e22246d49ac8109a33f7caa48",
     "public/reading-review.js": "98e9c23a186fcc72034d552e0664f1d8ccb420600e21fa27fa6bbf987a1a2872",
@@ -71,6 +71,26 @@
       "public/speaking-mock-client.js": "84fd2b9f953748e68f4d3873c9e7ed30e6444a8ed06bb644cf5fa0fb73866eba",
       "speaking-mock.js": "81a086feb709e1641b600710e36d5f08d9e787d44ab530c6c1cfafcc3f5dd0ad",
       "speaking-mock-deadline-score.js": "97bb9719d82ec8c9ab592e22b4ef41a8aa1fc61239551209354293919a8c9b10"
+    }
+  },
+  "practiceWorkspaceUpdates": {
+    "baselineCommit": "17e8b3522e4e492806674458974768b25651afa4",
+    "phase": 1,
+    "scope": "User-approved Speaking practice dock, question-menu round trip, per-question saved history, paused practice lead-in/playback/preparation, and five-second lead-in for all timed Speaking prompt audio. Existing native grading, response upload and feedback functions remain byte-identical; protected mocks and all marks are unchanged.",
+    "before": {
+      "public/speaking-practice.js": "f7537d24dce9f0e0f82fac095fa2001ffdb1d885b6f28a24c354f0ee3d2d729e"
+    },
+    "after": {
+      "public/speaking-practice.js": "23de89ada814b58b9645309f2c7816b24330cc92e4b36c435549358a7dee80d4"
+    },
+    "preservedFunctions": {
+      "feedback": "1d17c9a2a8e7d61dd6f880a9bef6218a0c2ef41910b443f0658c2e5f5060a665",
+      "requestAssessment": "5d17ab1b790ded488db21442b88f7d1dd5e60c22330890b34145dbc14f45872e",
+      "uploadRecording": "d40267168f60b934fa045aaa573b21178be4c80298bac051a4eccc2061b6b8d2",
+      "saveTranscript": "662ab9265813f6de911c3bbe0d0a19f9da74f9be757c44f20d2c102416de4a21",
+      "loadPlayback": "ffead9fca4ff63b3d44a627a9acb0384db935cdad3007349c17b665f354e20b0",
+      "mountPlayback": "d2fb09a6ee03715e54c40a99266b17615ffe5d33a32c6840f4189852664de17f",
+      "pollAssessment": "e5e84580f1fda7cb76341bfaf5da5281b3b083a24b8fe51ef36225cf5e1dc1df"
     }
   }
 }
