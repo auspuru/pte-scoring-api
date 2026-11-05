@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     # Complete media, PostgreSQL and browser coverage now approaches 15 minutes.
     # Leave time for evidence upload and container cleanup without dropping checks.
-    timeout-minutes: 20
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:16
