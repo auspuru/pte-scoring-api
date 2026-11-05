@@ -14,7 +14,21 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,a
   }
   function check(state,paper) {
     validate(state);
-    if(state.status!=='submitted'||digest(paper)!==state.paperHash||!aggregate(paper,state).ready||state.assessment.status==='processing'||state.assessment.lease?.expiresAt>now())throw fail('A complete, settled Full Mock report is required.',409);
+    if(state.status!=='submitted'||digest(paper)!==state.paperHash||require('../mock-result-review').held(state)||state.assessment.status==='processing'||state.assessment.lease?.expiresAt>now())throw fail('A submitted, settled Full Mock attempt is required.',409);
+    aggregate(paper,state);
+  }
+  function activateEarlier(state,paper){
+    const marks=require('./aggregation');if(marks.availableMarks(state)&&aggregate(paper,state).ready)return null;
+    const review=require('../mock-result-review'),ledger=state.instructorReview;
+    if(ledger?.status==='published'&&!review.publicationValid(state,'full'))throw fail('The earlier instructor publication cannot be verified. Original marks are retained.');
+    const before={assessment:structuredClone(state.assessment),instructorReview:structuredClone(ledger||null),profiles:aggregate(paper,state).profiles};
+    state.assessment.completionPolicy={version:marks.COMPLETION_POLICY,snapshotHash:state.assessment.snapshotHash};
+    for(const [index,q]of paper.questions.entries())if(!state.assessment.items[q.id]){const response=state.responses[index+1];if(!response?.sealed)throw fail('A saved response is not sealed.');state.assessment.items[q.id]={status:'pending',inputHash:marks.inputHash(response),snapshotHash:state.assessment.snapshotHash,reason:'assessment-unavailable',stages:{}};}
+    require('./exclusions').releaseAvailable(state,paper,now());
+    if(ledger?.status==='published')ledger.publication.exclusionsHash=require('../scoring-jobs').hash(state.assessment.exclusions||{});
+    if(!aggregate(paper,state).ready)throw fail('The saved attempt has an input or assessment integrity issue. Original marks are retained.');
+    state.assessment.status='complete';state.assessment.recovery={...state.assessment.recovery,status:'complete'};delete state.assessment.recovery.nextAt;
+    return {...before,activatedAt:now(),policy:structuredClone(state.assessment.completionPolicy)};
   }
   function eligible(paper,state) {
     const report=aggregate(paper,state);
@@ -27,10 +41,10 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,a
         &&job.stages?.content?.status==='complete'&&Number.isInteger(content?.total)&&content.total>0&&content.total<=limits.content&&content.maximum===limits.content
         &&!content.score_provisional&&!content.needs_semantic_review&&(['ra','rs'].includes(candidate.question.type)||content.scoringMode==='ai'&&content.contentStatus==='assessed');
       const sameInput=job?.inputHash===require('./aggregation').inputHash(response);
-      const needsContent=excluded&&!recoverable&&typeof assessContent==='function'&&require('./aggregation').availableMarks(state)
-        &&['failed','pending'].includes(job?.status)&&job.snapshotHash===state.assessment.snapshotHash
+      const needsContent=typeof assessContent==='function'&&(!job||['failed','pending'].includes(job.status))&&response?.sealed
+        &&(!job||job.snapshotHash===state.assessment.snapshotHash)
         &&(!sameInput||!Object.values(job.stages||{}).some(stage=>stage?.uncertain||stage?.status==='running'));
-      return TYPES.has(candidate.question.type)&&(job?.status==='assessed'&&!job.result?.gated||recoverable||needsContent)&&segments.length===1 ? [{id:candidate.id,number:index+1,type:candidate.question.type,previous:recoverable?{content:content.total,pronunciation:null,fluency:null}:needsContent?{content:null,pronunciation:null,fluency:null}:job.result.scores,segment:segments[0].id,needsContent,sameInput}] : [];
+      return TYPES.has(candidate.question.type)&&(job?.status==='assessed'&&!job.result?.gated||recoverable||needsContent)&&segments.length===1 ? [{id:candidate.id,number:index+1,type:candidate.question.type,previous:recoverable?{content:content.total,pronunciation:null,fluency:null}:needsContent?{content:job?.stages?.content?.status==='complete'?content?.total:null,pronunciation:null,fluency:null}:job.result.scores,segment:segments[0].id,needsContent,sameInput}] : [];
     });
   }
   function replace(state,op,paper) {
@@ -38,7 +52,7 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,a
     if(op.preparedResult){
       job.status='assessed';job.inputHash=op.inputHash;job.result=structuredClone(op.preparedResult);job.stages=structuredClone(op.preparedStages);delete job.reason;
       if(job.result.gated)return;
-      if(op.result.contentOnly){job.stages.delivery={status:'partial',traits:{},uncertain:!!op.deliveryUncertain};return;}
+      if(op.result.contentOnly){job.stages.delivery={status:'partial',traits:structuredClone(op.preparedStages.delivery?.traits||{}),uncertain:!!op.deliveryUncertain};return;}
     }
     if(job.status==='failed'){
       const candidate=paper.questions.find(q=>q.id===op.questionId),content=job.stages.content.value;
@@ -66,7 +80,7 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,a
     }
     for(const item of items)replace(state,item,paper);
     if(!published)return null;
-    const ids=items.map(item=>item.questionId),inScope=key=>ids.some(id=>key===id||key===id+':delivery'||key.startsWith(id+':delivery:'));
+    const ids=items.map(item=>item.questionId),inScope=key=>ids.some(id=>key===id||key===id+':delivery'||key.startsWith(id+':delivery:')||items.some(item=>item.questionId===id&&item.preparedResult&&(key===id+':content'||key===id+':transcription')));
     const current=policy.confirmed(state,'full'),after=structuredClone(before);
     for(const key of Object.keys(after))if(inScope(key))delete after[key];
     for(const [key,value] of Object.entries(current))if(inScope(key))after[key]=value;
@@ -88,8 +102,9 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,a
   async function inspect(owner,id){const record=await read(owner,id);for(const [operation,op] of Object.entries(record.state.deliveryReassessments||{}))if(op.batch&&(['queued','running','paused'].includes(op.status)||op.autoPublish&&!op.autoPublishError&&['review','partial'].includes(op.status)))schedule(owner,id,operation);const value=view(owner,id,record);value.provider=providerConfiguration();value.questions=value.questions.map(q=>({...q,blocked:blocked(record.state,q.id)||value.provider.ready===false&&!q.needsContent}));return value;}
   function blocked(state,questionId) {
     const job=state.assessment?.items?.[questionId];if(job?.result?.partialDelivery&&job.stages?.delivery?.uncertain)return true;
+    if(['failed','pending'].includes(job?.status)&&Object.values(job.stages||{}).some(stage=>stage?.uncertain||stage?.status==='running'))return true;
     return Object.values(state.deliveryReassessments||{}).some(op=>op.batch
-      ? op.items.some(item=>item.questionId===questionId&&((['running','confirmation-pending'].includes(item.status)||item.status==='queued'&&['queued','running','paused'].includes(op.status))||['review','partial'].includes(op.status)&&item.status==='complete'&&op.evidenceHash===fingerprint(state)))
+      ? op.items.some(item=>item.questionId===questionId&&((['running','confirmation-pending'].includes(item.status)||item.status==='queued'&&['queued','running','paused'].includes(op.status))||['review','partial'].includes(op.status)&&item.status==='complete'&&op.evidenceHash===fingerprint(state)||op.status==='published'&&item.deliveryUncertain))
       : op.questionId===questionId&&(['running','confirmation-pending'].includes(op.status)||op.status==='review'&&op.evidenceHash===fingerprint(state)));
   }
   function schedule(owner,id,operation) {
@@ -118,7 +133,7 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,a
         return;
       }
       let result,audio,sent=false,error,preparedResult,preparedStages,deliveryUncertain=false,deliveryMessage;
-      const contentOnly=()=>({version:'content-only',contentOnly:true,pronunciation:{score:null,raw:null},fluency:{score:null,raw:null}});
+      const contentOnly=()=>({version:'content-only',contentOnly:true,pronunciation:{score:preparedResult?.scores?.pronunciation??null,raw:null},fluency:{score:preparedResult?.scores?.fluency??null,raw:null}});
       try{
         const candidate=record.paper.questions.find(q=>q.id===claimed.questionId),number=record.paper.questions.indexOf(candidate)+1;
         audio=await recordingBytes(owner,id,record.state.responses[number],claimed.segment,store.getChunk);
@@ -131,6 +146,8 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,a
             item.contentStages=structuredClone(stages);return state;
           })});
           const {stages,...prepared}=value;preparedStages=stages;preparedResult=prepared;
+          if(prepared.partialDelivery&&!prepared.gated){for(const key of ['pronunciation','fluency']){const trait=stages.delivery?.traits?.[key];if(Number.isFinite(trait?.score)&&trait.score>=0&&trait.score<=5)prepared.scores[key]=trait.score;}
+            const included=Object.keys(prepared.maxima).filter(key=>prepared.scores[key]!=null);prepared.total=included.reduce((n,key)=>n+prepared.scores[key],0);prepared.maximum=included.reduce((n,key)=>n+prepared.maxima[key],0);prepared.unavailableTraits=['pronunciation','fluency'].filter(key=>prepared.scores[key]==null);if(!prepared.unavailableTraits.length){delete prepared.partialDelivery;delete prepared.unavailableTraits;}}
           const valid=prepared.version===require('./adapters').VERSION&&(require('./aggregation').nativeValid(prepared,require('./adapters').maxima(candidate.question))||require('./aggregation').partialValid(prepared,require('./adapters').maxima(candidate.question),stages,candidate.question.type));
           if(!valid)throw Object.assign(Error('The content assessment could not be confirmed.'),{providerStarted:false,uncertain:Object.values(stages||{}).some(stage=>stage?.uncertain)});
           if(prepared.gated)result={version:'native-content-gate',pronunciation:{score:0,raw:null},fluency:{score:0,raw:null}};
@@ -167,7 +184,10 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,a
       if(Object.values(state.deliveryReassessments).some(op=>(op.batch&&['queued','running','paused','review','partial'].includes(op.status)||!op.batch&&op.status==='review')&&op.evidenceHash===evidenceHash))throw fail('Finish or discard the current reassessment before starting another batch.',409);
       const rows=eligible(record.paper,state);
       if(questionIds.some(id=>!rows.some(q=>q.id===id)||blocked(state,id)))throw fail('A selected recording is unavailable or has an earlier unconfirmed request. Refresh its status.',409);
-      state.deliveryReassessments[operation]={batch:true,all:body.all===true,autoPublish:body.autoPublish===true,questionIds:[...questionIds],evidenceHash,status:'queued',at:now(),items:questionIds.map(questionId=>{const row=rows.find(q=>q.id===questionId);return{questionId,number:row.number,type:row.type,segment:row.segment,status:'queued',previous:structuredClone(state.assessment.items[questionId]),previousScores:structuredClone(row.previous),...(row.needsContent?{needsContent:true,inputHash:require('./aggregation').inputHash(state.responses[row.number]),contentStages:row.sameInput?structuredClone(state.assessment.items[questionId].stages||{}):{}}:{})};})};return state;
+      const needsEarlierPublication=!aggregate(record.paper,state).ready||!require('./aggregation').availableMarks(state)&&questionIds.some(id=>rows.find(q=>q.id===id).needsContent);
+      if(needsEarlierPublication&&body.autoPublish!==true)throw fail('Use the current admin recording controls to reassess and publish this earlier attempt.');
+      const earlierPublication=needsEarlierPublication?activateEarlier(state,record.paper):null;
+      state.deliveryReassessments[operation]={batch:true,all:body.all===true,autoPublish:body.autoPublish===true,questionIds:[...questionIds],evidenceHash:fingerprint(state),status:'queued',at:now(),...(earlierPublication?{earlierPublication}:{}),items:questionIds.map(questionId=>{const row=rows.find(q=>q.id===questionId);return{questionId,number:row.number,type:row.type,segment:row.segment,status:'queued',previous:structuredClone(state.assessment.items[questionId]),previousScores:structuredClone(row.previous),...(row.needsContent?{needsContent:true,inputHash:require('./aggregation').inputHash(state.responses[row.number]),contentStages:row.sameInput?structuredClone(state.assessment.items[questionId].stages||{}):{}}:{})};})};return state;
     });
     schedule(owner,id,operation);return inspect(owner,id);
   }
@@ -180,7 +200,7 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,a
       const completed=op.items.filter(item=>item.status==='complete');
       if(!completed.length||op.status==='partial'&&confirmPartial!==true)throw fail('Confirm publication of only the completed recordings; unavailable recordings keep their original marks.',409);
       if(completed.some(item=>digest(item.previous)!==digest(state.assessment.items[item.questionId])))throw fail('Previous scores changed. Reload the saved attempt.',409);
-      const before=aggregate(record.paper,state).profiles,at=now();
+      const before=op.earlierPublication?.profiles||aggregate(record.paper,state).profiles,at=now();
       const instructorReviewAmendment=applyReplacement(state,completed,{operation,at,paper:record.paper});
       const after=aggregate(record.paper,state),issues=selectedIssues(record.paper,after,completed);if(issues.length)throw fail('Confirmed recordings would remain excluded or unassessed: '+issues.map(row=>'Q'+row.number).join(', ')+'. Original marks are retained.',409);if(!after.ready)throw fail('The replacement report could not be verified.',409);
       for(const item of completed)item.publishedScores=structuredClone(state.assessment.items[item.questionId].result.scores);

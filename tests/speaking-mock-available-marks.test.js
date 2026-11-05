@@ -117,3 +117,20 @@ test('Speaking admin routes require authentication and the student only sees the
  const own=await fetch(base+'/api/speaking-mocks/attempts/'+f.id,{headers:{'x-session-token':f.owner}});assert.equal(own.status,200);const student=await own.json();assert.equal(student.scoreChanges[0].changes.length,1);assert.equal(JSON.stringify(student).includes('recording.data'),false);assert.equal(student.deliveryReassessments,undefined);
  assert.equal((await fetch(base+'/api/speaking-mocks/attempts/'+f.id,{headers:{'x-session-token':'other-user'}})).status,401);
 });
+
+test('An earlier pending Speaking recording can publish its existing content when Azure is unavailable',async t=>{
+ let contentCalls=0;const f=await fixture(t,{policy:false,deliveryReassessment:{gradeContent:async()=>{contentCalls++;throw Error('Reuse saved content');},assess:async()=>{throw Object.assign(Error('Azure timeout'),{uncertain:true});}}});
+ await f.store.update(f.owner,f.id,a=>{delete a.responses[f.index].azure;a.assessment.status='needs-attention';a.grading.status='pending';return a;});
+ const before=await f.store.get(f.owner,f.id);assert.equal(report.summarize(before).azure.status,'pending');const v=await f.service.deliveryReview.inspect(f.owner,f.id),body={operation:'delivery:earlier-speaking',questionIds:[f.questions[f.index].id],evidenceHash:v.evidenceHash,autoPublish:true};await assert.rejects(f.service.deliveryReview.send(f.owner,f.id,{...body,autoPublish:false}),/current admin/);assert.deepEqual(await f.store.get(f.owner,f.id),before);await f.service.deliveryReview.send(f.owner,f.id,body);await f.service.deliveryReview.drain();
+ const after=await f.store.get(f.owner,f.id),op=after.deliveryReassessments[body.operation],row=report.summarize(after).azure.questions.find(q=>q.index===f.index);assert.equal(op.status,'published');assert.equal(row.status,'available-marks');assert.equal(row.content,6);assert.equal(row.pronunciation,null);assert.equal(contentCalls,0);
+ assert.deepEqual(op.earlierPublication.responses,before.responses.map(require('../speaking-mock-reassessment').metadata));assert.deepEqual(after.responses[f.index].recording,before.responses[f.index].recording);assert.equal(op.beforeProfiles.speaking.practiceIndex,null);
+});
+
+test('Earlier Speaking job receipts are reused instead of buying another content assessment',async t=>{
+ let contentCalls=0;const f=await fixture(t,{policy:false,deliveryReassessment:{gradeContent:async()=>{contentCalls++;throw Error('Reuse the confirmed job');},assess:async()=>raw}});
+ await f.store.update(f.owner,f.id,a=>{delete a.responses[f.index].content;delete a.responses[f.index].azure;a.assessment.status='needs-attention';a.grading.status='pending';return a;});
+ await f.service.progressive.jobs.enqueue({id:'saved-earlier-content',owner:f.owner,groupId:f.id,inputHash:hash({id:f.id,index:f.index}),data:{index:f.index,recordingHash:f.recording.hash,questionHash:hash(f.questions[f.index]),patch:{content:content(f.questions[f.index])},stages:{content:{status:'ready'},azure:{status:'needs_attention',failure:503}}}});
+ const job=await f.service.progressive.jobs.claim();await f.service.progressive.jobs.save(job,job.data,{status:'needs_attention'});
+ const v=await f.service.deliveryReview.inspect(f.owner,f.id),body={operation:'delivery:reuse-earlier-job',questionIds:[f.questions[f.index].id],evidenceHash:v.evidenceHash,autoPublish:true};await f.service.deliveryReview.send(f.owner,f.id,body);await f.service.deliveryReview.drain();const a=await f.store.get(f.owner,f.id);
+ assert.equal(a.deliveryReassessments[body.operation].status,'published');assert.equal(contentCalls,0);assert.equal(a.responses[f.index].content.total,6);assert.equal(a.responses[f.index].azure.pronunciation.score,4);assert.equal(present(a).scoreChanges[0].changes[0].traits[0].trait,'Content');
+});

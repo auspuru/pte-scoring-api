@@ -100,6 +100,19 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Explicit admin resends may adopt available-mark publication for one saved
+  // attempt. Existing attempts are never migrated by a read or deployment.
+  const earlierBaseline=require('../content/full-mock/earlier-recordings-compatible-sources.json');
+  const earlierPins={"full-mock/delivery-reassessment.js":"d9bb5485265457c79211200996ab6a3a85e07b359d2020d94e1980bd628276c6"};
+  if(digest(earlierBaseline)==='83cd2cb86c8a001d0d185cfd1c7a5ac528ca56b6774946bde489c2b84af9e962'&&Object.entries(earlierPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(earlierBaseline.files).sort().join()
+    &&Object.entries(earlierBaseline.files).every(([file,pin])=>[...Object.keys(earlierPins),'full-mock/assessment.js'].includes(file)||digest(current.scoringSources.files[file])===digest(pin))){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of [...Object.keys(earlierPins),'full-mock/assessment.js'])sources.files[file]=structuredClone(earlierBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(earlierBaseline))return digest(saved)===digest(current);
+  }
+
   // Speaking publication adds protected admin wiring and a scoped queue scan.
   // Frozen Full Mock graders, models and weights remain pinned exactly.
   const speakingBaseline=require('../content/full-mock/speaking-publication-compatible-sources.json');
