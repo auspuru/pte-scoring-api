@@ -21,3 +21,8 @@ test('Closing the review panel stops the next retry and reuses the same operatio
  const event={target:{closest:selector=>selector==='[data-result-analyse]'}};await ui.act(event,options);await ui.act(event,options);assert.deepEqual(posts[0],posts[1]);assert.equal(posts.length,2);assert.match(notices.at(-1),/Connection interrupted/);
  options.request=async body=>{posts.push(body);return{...diagnostic(1),review:{...diagnostic(1).review,busy:true,canRetry:false}};};await ui.act(event,options);assert.equal(posts.length,3);
 });
+test('Deadline-only gaps explain that no recorded answers can be recovered',()=>{
+ const d=diagnostic();d.review.questions=[{number:18,type:'di',reason:'Not reached before time expired',retryable:false}];
+ assert.match(ui.render(d),/There are no recorded answers to retry/);
+ d.review.questions[0].reason='Assessment unavailable';assert.doesNotMatch(ui.render(d),/There are no recorded answers to retry/);
+});

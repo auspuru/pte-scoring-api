@@ -23,3 +23,13 @@ Speaking mocks use the existing **40-minute overall clock** for new starts and r
 - Existing historical snapshot compatibility is exact and source-pinned. Native graders, models, task weights and frozen papers do not change.
 
 Use `tests/mock-result-review.test.js`, `tests/admin-result-review.test.js`, the protected-route tests, the competing PostgreSQL case and the desktop/mobile staff analysis case. Production credentials and live student records are outside these tests.
+
+## Timed-out Speaking attempts: zero credit for confirmed unattempted questions
+
+Instructors can publish a scored report when the saved version-1 deadline submission proves that questions were never reached. Inspect the exact attempt and use **Count unattempted questions as zero and publish**, add the visible report note and confirm the listed questions. This is a separate publication action; inspection and analysis do not publish it.
+
+Each confirmed unattempted question receives zero content, pronunciation and fluency credit. All 27 questions and every task weight remain in the denominator, including whole task types that were not reached. The student report explains the timeout, zero credit and instructor note. No provider is called, and the saved timeout outcome, original responses, recordings, paper and previously confirmed marks stay unchanged. Existing historical exclusions remain unchanged.
+
+This action requires matching saved `deadlineUnattempted` markers and submission indices, a submitted deadline outcome, no missing or pending uploads, no active assessment/lease and valid results for every other question. A missing recording, provider failure, conflicting response, stale evidence or changed confirmed mark does not qualify. It can finish an opted-in instructor review without spending fake retry rounds. It does not automatically publish other attempts.
+
+The existing protected Speaking `/scoring/retry` route accepts `{mode:'score-deadline',operation,evidenceHash,note,confirmDeadlineZeros:true}`. Diagnostics expose `deadlineScore` with the exact question numbers, zero count and eligibility. Reuse the same operation/body after a lost response. The owner-bound transaction writes an input/result-bound `deadlineZeroPublication` ledger; replay is idempotent, including competing PostgreSQL writers and restart.
