@@ -128,7 +128,7 @@ test('PostgreSQL: competing restart workers publish the final exhausted question
 test('PostgreSQL: competing Speaking timeout publications preserve 17 marks and ten zeroes across pools and restart',async t=>{
  const db=await database(t),{attempt,command}=require('./helpers/speaking-deadline-zero-fixture'),a=attempt();
  const create=pool=>require('../writing-lab-store').createStore(pool,'unused',{table:'speaking_mock_attempts'});
- const stores=[create(db.first),create(db.pool())];await Promise.all(stores.map(s=>s.initialise()));await stores[0].update('alice',a.id,()=>a);
+ const stores=[create(db.first),create(db.pool())];for(const store of stores)await store.initialise();await stores[0].update('alice',a.id,()=>a);
  const services=stores.map(store=>require('../speaking-mock-jobs').createMockJobs({pool:store===stores[0]?db.first:db.pool(),directory:'unused',store,now:()=>3000}));db.onClose(()=>Promise.all(services.map(s=>s.stop())));
  const body=command((await services[0].diagnostics('alice',a.id)).deadlineScore);
  await assert.rejects(services[1].repair('bob',a.id,body),{status:404});await Promise.all(services.map(s=>s.repair('alice',a.id,body)));
