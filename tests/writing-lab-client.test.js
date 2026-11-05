@@ -187,7 +187,7 @@ test('Writing mocks show only forward navigation and release exam mode after sub
   const completed=attempt(0); completed.status='submitted'; completed.questions=structuredClone(bank.mocks[0].questions); completed.results=completed.questions.map(q=>({total:0,maximum:report.maximumFor(q),maxima:{content:report.maximumFor(q)},scores:{content:0},feedback:{},reasons:[]}));
   h.hooks.set(completed); h.hooks.showAttempt(); assert.equal(calls.at(-1).enabled,false);
   const practice=attempt(3); practice.kind='sst'; open(h,practice);
-  assert.equal(calls.at(-1).enabled,false); assert.match(h.nodes.get('lab').innerHTML,/data-leave="1"/);
+  assert.equal(calls.at(-1).enabled,false); assert.doesNotMatch(h.nodes.get('lab').innerHTML,/data-leave="1"/);
 });
 
 test('Task pages and saved attempts stay scoped to individual practice or mocks',async()=>{
@@ -199,10 +199,10 @@ test('Task pages and saved attempts stay scoped to individual practice or mocks'
  await h.hooks.handleRequest({tab:'history',requestId:'mock-history'});
  assert.match(h.nodes.get('history-list').innerHTML,/Mock saved/);assert.doesNotMatch(h.nodes.get('history-list').innerHTML,/Dictation saved|Spoken saved/);
 });
-test('Returning to an active task preserves its attempt and deadline without another start',async()=>{
+test('Returning to a task opens its question menu without creating another attempt',async()=>{
  const h=harness(),a=attempt(3);a.kind='sst';open(h,a);h.hooks.setCatalog({mocks:[],spoken:bank.spoken,dictation:[]});
  await h.hooks.handleRequest({tab:'sst',requestId:'return-sst'});
- assert.equal(h.hooks.current().id,a.id);assert.equal(h.hooks.current().deadline,a.deadline);
+ assert.equal(h.hooks.current(),null);assert.match(h.nodes.get('lab').innerHTML,/Choose a question|Listen to a short lecture/);
  assert(!h.requests.some(r=>r.url.endsWith('/attempts')));
  const n=h.requests.length;await h.hooks.handleRequest({tab:'sst',requestId:'return-sst'});assert.equal(h.requests.length,n);
 });
@@ -218,7 +218,7 @@ test('A delayed navigation cannot reopen a suspended lab',async()=>{
 
 for(const action of ['resume','reattempt']) {
   test('A delayed '+action+' cannot reopen the task after leaving the workspace',async()=>{
-    const h=harness(), original=attempt();open(h,original);
+    const h=harness(), original=attempt();original.kind='sst';open(h,original);
     const fetchNormally=h.context.fetch;
     let release;
     h.context.fetch=(url,options)=>url.endsWith('/answer')?fetchNormally(url,options):new Promise(resolve=>{
@@ -260,7 +260,7 @@ test('The most recent Resume selection wins when responses arrive out of order',
 
 test('Play can start loading when a browser defers preloading, without starting the timer early',async()=>{
   const h=harness({audioReadyState:0}), a=attempt();
-  Object.assign(a,{kind:'sst',status:'ready',deadline:null});open(h,a);
+  Object.assign(a,{kind:'sst',testId:'sst-test',status:'ready',deadline:null,mode:'practice'});open(h,a);
   const button=h.nodes.get('audio-start'),player=h.recordings[0];
   assert.equal(button.disabled,false,'The learner must be able to supply the gesture that loads audio');
   let allowPlayback;
@@ -279,14 +279,14 @@ test('Play can start loading when a browser defers preloading, without starting 
 });
 
 test('A stale start response cannot pause audio after returning to the same question',async()=>{
-  const h=harness(), a=attempt();Object.assign(a,{kind:'sst',status:'ready',deadline:null});
+  const h=harness(), a=attempt();Object.assign(a,{kind:'sst',testId:'sst-test',status:'ready',deadline:null,mode:'practice'});
   h.hooks.setCatalog({mocks:[],spoken:bank.spoken,dictation:[]});open(h,a);
   let release;
   const fetchNormally=h.context.fetch;
   h.context.fetch=()=>new Promise(resolve=>{release=()=>resolve({ok:true,json:async()=>({...a,status:'active',deadline:700000})});});
   const oldClick=h.nodes.get('audio-start').onclick();await flush();
   await h.hooks.suspend();
-  await h.hooks.handleRequest({tab:'sst',requestId:'returned'});
+  await h.hooks.handleRequest({tab:'sst',requestId:'returned',testId:a.testId});
   h.context.fetch=fetchNormally;h.context.reply={...a,status:'active',deadline:700000};h.context.replyOnce=true;
   await h.nodes.get('audio-start').onclick();
   assert.equal(h.recordings[0].paused,false);
@@ -310,7 +310,7 @@ test('The standalone SST Play button starts through the real API, saves playback
     return fetch(base+url,options);
   };
   const id=require('node:crypto').randomUUID();
-  const response=await fetch(base+'/api/writing-lab/attempts',{method:'POST',headers:{'Content-Type':'application/json','x-session-token':'tester'},body:JSON.stringify({id,testId:require('../content/writing-predictions-sep-2026').sst[0].id})});
+  const response=await fetch(base+'/api/writing-lab/attempts',{method:'POST',headers:{'Content-Type':'application/json','x-session-token':'tester'},body:JSON.stringify({id,testId:require('../content/writing-predictions-sep-2026').sst[0].id,mode:'practice'})});
   const a=await response.json();assert.equal(a.status,'ready');
   h.hooks.set(a);h.hooks.showAttempt();
   const button=h.nodes.get('audio-start'), player=h.recordings[0];
@@ -332,7 +332,7 @@ test('The standalone SST Play button starts through the real API, saves playback
 });
 
 test('A rejected browser play leaves SST ready and does not consume its timer',async()=>{
-  const h=harness(), a=attempt(3);Object.assign(a,{kind:'sst',status:'ready',deadline:null});
+  const h=harness(), a=attempt(3);Object.assign(a,{kind:'sst',testId:'sst-test',status:'ready',deadline:null,mode:'practice'});
   open(h,a);
   const player=h.recordings[0];
   player.play=async()=>{throw Object.assign(Error('A user gesture is required'),{name:'NotAllowedError'});};
@@ -345,7 +345,7 @@ test('A rejected browser play leaves SST ready and does not consume its timer',a
 });
 
 test('A start API failure pauses playback and permits a fresh click to retry',async()=>{
-  const h=harness(), a=attempt(3);Object.assign(a,{kind:'sst',status:'ready',deadline:null});
+  const h=harness(), a=attempt(3);Object.assign(a,{kind:'sst',testId:'sst-test',status:'ready',deadline:null,mode:'practice'});
   open(h,a);
   const fetchNormally=h.context.fetch;
   h.context.fetch=async()=>({ok:false,json:async()=>({error:'Your attempt could not be started.'})});
@@ -411,7 +411,7 @@ test('Refresh resumes the current question from server progress without inheriti
 
 test('SST retries a failed load in one click and starts its timer only after playback begins',async()=>{
   const h=harness({audioReadyState:1}), a=attempt(3);
-  Object.assign(a,{kind:'sst',status:'ready',deadline:null});
+  Object.assign(a,{kind:'sst',testId:'sst-test',status:'ready',deadline:null,mode:'practice'});
   open(h,a);
   const player=h.recordings[0], button=h.nodes.get('audio-start');
   player.onloadedmetadata();
@@ -542,7 +542,7 @@ test('Supported listening practice renders the shared workspace, begins untimed 
  h.hooks.setCatalog({mocks:[],spoken:[],dictation:[],listeningPractice:[{id:source.id,type:source.type,minutes:5}]});
  const a=present({id:'studio-attempt',testId:source.id,title:source.title,kind:'lfi',module:'listening',mode:'practice',index:0,status:'ready',startedAt:100000,deadline:null,questions:[source],answers:[''],notes:'',revisions:[0],completed:[null],results:[null],playback:[null]});
  open(h,a);const html=h.nodes.get('lab').innerHTML;
- assert.match(html,/Listening practice/);assert.match(html,/data-listening-mode="practice" aria-pressed="true"/);assert.match(html,/Check answer/);assert.match(html,/Next question/);
+ assert.match(html,/Listening practice/);assert.match(html,/data-listening-mode="practice" aria-pressed="true"/);assert.match(html,/Check answer/);assert.match(html,/Next →/);
  const inputs=h.nodes.get('lab').controls.filter(c=>c.dataset.listeningBlank!==undefined);assert.equal(inputs.length,5);assert(inputs.every(i=>i.disabled));
  h.context.reply={...a,status:'active',deadline:null};h.context.replyOnce=true;
  await h.nodes.get('audio-start').onclick();await flush();assert(inputs.every(i=>!i.disabled));
@@ -707,4 +707,16 @@ test('Volume remains available on silent questions and applies to current and su
  assert.equal(audio.volume,0.4);assert.equal(h.memory.get('ipt-exam-volume'),'0.4');assert.equal(h.hooks.current().deadline,deadline);
  open(h,attempt(0));assert(h.nodes.get('audio-volume'));assert.match(h.nodes.get('lab').innerHTML,/id="audio-volume"[^>]*value="0.4"/);
  open(h,attempt(4));assert.equal(h.recordings.at(-1).volume,0.4);
+});
+
+for(const type of ['sst','wfd','lmcma','lfi','hcs','lmcsa','smw','hiw'])test('Timed Listening '+type+': five-second lead-in survives navigation without changing its answer or deadline',async()=>{
+ const h=harness({studioMode:true,portal:true}),source=type==='sst'?bank.spoken[0]:type==='wfd'?bank.dictation[0]:require('../content/listening-mocks').mocks[0].questions.find(q=>q.type===type),q={...source,id:source.id||'fixture-'+type};
+ h.hooks.setCatalog({mocks:[],spoken:type==='sst'?[q]:[],dictation:type==='wfd'?[q]:[],listeningPractice:['sst','wfd'].includes(type)?[]:[q]});h.hooks.setContext({type,queue:[q.id],selectedId:q.id});
+ const a=present({id:'lead-'+type,testId:q.id,title:q.title,kind:type,module:'listening',mode:'exam',index:0,status:'ready',startedAt:100000,deadline:null,questions:[q],answers:[''],notes:'',revisions:[0],completed:[null],results:[null],playback:[null]});open(h,a);
+ assert.match(h.nodes.get('audio-status').textContent,/starts in 5/);assert.equal(h.recordings[0].plays,0);assert.match(h.nodes.get('lab').innerHTML,/Return to questions/);assert.doesNotMatch(h.nodes.get('lab').innerHTML,/studio-question-library/);
+ h.setNow(102000);for(const task of [...h.intervals.values()])if(task.ms===200)await task.fn();await h.hooks.suspend();assert.equal(h.recordings[0].plays,0);
+ h.setNow(150000);await h.hooks.handleRequest({tab:type,testId:q.id,requestId:'resume-'+type});assert.match(h.nodes.get('audio-status').textContent,/starts in 3/);
+ h.context.reply={...a,status:'active',deadline:750000,serverNow:153000};h.context.replyOnce=true;h.setNow(153000);for(const task of [...h.intervals.values()])if(task.ms===200)await task.fn();await flush();assert.equal(h.recordings[0].plays,1);assert.equal(h.hooks.current().status,'active');assert.equal(h.hooks.current().deadline,750000);
+ const deadline=h.hooks.current().deadline;h.nodes.get('answer').value='Saved response';h.recordings[0].currentTime=2;await h.hooks.suspend();assert(h.recordings[0].paused);
+ await h.hooks.handleRequest({tab:type,testId:q.id,requestId:'resume-audio-'+type});assert.equal(h.hooks.current().deadline,deadline);assert.equal(h.recordings[0].currentTime,2);assert.equal(h.recordings[0].plays,1);assert.equal(h.nodes.get('answer').value,'Saved response');
 });
