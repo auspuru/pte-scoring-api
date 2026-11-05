@@ -15,9 +15,9 @@
     "full-mock/recording.js": "480756dcae089f44f6153f6a45ff849a713d8e68b2076df0a4d34a41d9060f63",
     "speaking-scoring.js": "0c673372149fe2732f7aa6b950862ea01ce4c6473e5df4a55daf49d2740ca3a2",
     "speaking-judge-format.js": "09d30d083c0171ad3aa3a571ea15bc9b16176253733fe1ca8c895e0685fd252c",
-    "speaking-mock-report.js": "e454e0f9431848392740c45dfd99955be21ae72d575a13faed03d6df7fc083db",
-    "speaking-mock-jobs.js": "87321dcd9c4a87497035e686c4a93e6ffbc420bdae8cb5f684d51d5f20c22dee",
-    "speaking-mock-submission.js": "90d6f74dd0fcf54a902e0bd3c8664539001f3ae53d3df866626d74ff600927a8",
+    "speaking-mock-report.js": "ad8d24fa736b22bca3de963050b3421fa056788f812f8bb2ee928a7ac835b87e",
+    "speaking-mock-jobs.js": "b627cd53d7798b96dc670e694bcf3d9b4ad6308acaddaf3cda9da2fbb8936432",
+    "speaking-mock-submission.js": "05209533750d8135d2cfce1fcbe988026a9a33d302ec297679b26e049bc192f9",
     "speaking-lab.js": "4c94f66a4693c05c655d33f5bdbc5d99de9414f6667d0f820ef1e9460c3bcc7c",
     "writing-lab-scoring.js": "a130307d850613728d40a36634b3aef337ea211a620695cc9e2217f0bbb1fad6",
     "writing-mock-overall.js": "49aed6b2d7a4bef9283ee3998190a594d0f6beafa97a53ae4110dfef253b7ce0",
@@ -35,7 +35,7 @@
     "public/writing-lab-report.js": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
     "public/writing-lab-client.js": "b804264cc3a48916e19c48dab765858502889dfd7ad15db4eaca253302a0d44a",
     "public/speaking-practice.js": "f7537d24dce9f0e0f82fac095fa2001ffdb1d885b6f28a24c354f0ee3d2d729e",
-    "public/speaking-mock-client.js": "a9d80f1de1716b9136b94cd21e5961c1b9a073dd00804441d625b2c41b67883f",
+    "public/speaking-mock-client.js": "84fd2b9f953748e68f4d3873c9e7ed30e6444a8ed06bb644cf5fa0fb73866eba",
     "public/reading-practice.js": "73894747029a2abb151e8de0dab2dbd6191b6a3e22246d49ac8109a33f7caa48",
     "public/reading-review.js": "98e9c23a186fcc72034d552e0664f1d8ccb420600e21fa27fa6bbf987a1a2872",
     "public/essay-scoring.js": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
@@ -45,10 +45,32 @@
     "public/swt-mock-feedback.js": "a935db09aa1ad2cd37ddad0df7e26e43b1b0d62a1270740365d7f201cf78b947",
     "content/full-mock/scoring-lock.json": "260a904ebb56e645f1854a23b5ae3c01693e631eec2de35a8623dfc60c57e7c0",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
-    "public/reading-mock-tools.js": "c5655a466dad3579cd0faac269b90eafa7c468e413ec3a5a127f80530ad4fdd4"
+    "public/reading-mock-tools.js": "c5655a466dad3579cd0faac269b90eafa7c468e413ec3a5a127f80530ad4fdd4",
+    "speaking-mock.js": "81a086feb709e1641b600710e36d5f08d9e787d44ab530c6c1cfafcc3f5dd0ad",
+    "speaking-mock-deadline-score.js": "97bb9719d82ec8c9ab592e22b4ef41a8aa1fc61239551209354293919a8c9b10"
   },
   "presentationUpdates": {
     "baselineCommit": "728476dedad6eeaba0afbd2fc2963bf194f9a254",
     "public/speaking-practice.js": "One optional Fuse search path and one optional saved-playback waveform mount. All capture, cue, timing, save and scoring functions unchanged."
+  },
+  "authorizedPolicyUpdates": {
+    "baselineCommit": "1f8da31a467dfe76ad468f804c529a78eec62d32",
+    "scope": "Instructor-authorized Speaking deadline-zero publication only: validate saved timeout markers, preserve recorded answers and confirmed marks, retain every task denominator, and expose zero credit with a visible report note. New ledger and protected existing repair mode; no paid-provider calls. Existing exclusions and Full Mock graders, models, weights, sources and locks are unchanged.",
+    "before": {
+      "speaking-mock-report.js": "e454e0f9431848392740c45dfd99955be21ae72d575a13faed03d6df7fc083db",
+      "speaking-mock-jobs.js": "87321dcd9c4a87497035e686c4a93e6ffbc420bdae8cb5f684d51d5f20c22dee",
+      "speaking-mock-submission.js": "90d6f74dd0fcf54a902e0bd3c8664539001f3ae53d3df866626d74ff600927a8",
+      "public/speaking-mock-client.js": "a9d80f1de1716b9136b94cd21e5961c1b9a073dd00804441d625b2c41b67883f",
+      "speaking-mock.js": null,
+      "speaking-mock-deadline-score.js": null
+    },
+    "after": {
+      "speaking-mock-report.js": "ad8d24fa736b22bca3de963050b3421fa056788f812f8bb2ee928a7ac835b87e",
+      "speaking-mock-jobs.js": "b627cd53d7798b96dc670e694bcf3d9b4ad6308acaddaf3cda9da2fbb8936432",
+      "speaking-mock-submission.js": "05209533750d8135d2cfce1fcbe988026a9a33d302ec297679b26e049bc192f9",
+      "public/speaking-mock-client.js": "84fd2b9f953748e68f4d3873c9e7ed30e6444a8ed06bb644cf5fa0fb73866eba",
+      "speaking-mock.js": "81a086feb709e1641b600710e36d5f08d9e787d44ab530c6c1cfafcc3f5dd0ad",
+      "speaking-mock-deadline-score.js": "97bb9719d82ec8c9ab592e22b4ef41a8aa1fc61239551209354293919a8c9b10"
+    }
   }
 }
