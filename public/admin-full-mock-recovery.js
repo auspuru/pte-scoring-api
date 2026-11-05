@@ -5,8 +5,8 @@
   const resultReview=typeof module==='object'&&module.exports?require('./admin-result-review'):globalThis.AdminResultReview;
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function mount(host,{username,request,operationId=()=>crypto.randomUUID()}){
-    let diagnostic=null,busy=false,operation=null;const reviewOperations=new Map();
-    host.innerHTML='<h4>Full mock recording review</h4><p>Inspect the exact submitted attempt. After listening to the saved recordings, exclude only unusable Answer Short Question audio. Completed marks and original recordings are retained.</p><label>Full mock attempt ID<input data-full-attempt autocomplete="off" placeholder="Attempt ID from the alert email"></label><button type="button" class="btn-sm" data-full-inspect>Inspect full mock</button><p role="status" aria-live="polite" data-full-notice></p><div data-full-diagnostics></div>';
+    let diagnostic=null,busy=false,operation=null,delivery=null;const deliveryOperations=new Map();const reviewOperations=new Map();
+    host.innerHTML='<h4>Full mock recording review</h4><p>Choose and inspect the exact submitted attempt. Reassess saved speaking recordings or resolve unavailable assessments. Review proposed changes before publishing; original recordings and score history are retained.</p><button type="button" class="btn-sm" data-full-list>Find submitted Full Mocks</button><div data-full-attempts></div><label>Full mock attempt ID<input data-full-attempt autocomplete="off" placeholder="Choose a saved attempt or enter its ID"></label><button type="button" class="btn-sm" data-full-inspect>Inspect full mock</button><p role="status" aria-live="polite" data-full-notice></p><div data-full-diagnostics></div>';
     const input=host.querySelector('[data-full-attempt]'),notice=host.querySelector('[data-full-notice]'),details=host.querySelector('[data-full-diagnostics]');
     const path=id=>'/api/admin/full-mocks/'+encodeURIComponent(username)+'/'+encodeURIComponent(id)+'/scoring';
     function lock(value){busy=value;input.disabled=value;host.querySelectorAll('button').forEach(button=>button.disabled=value);}
@@ -19,30 +19,62 @@
         +(heldTranscription&&!d.busy?'<h5>Final unavailable transcription</h5><p>Only Question '+esc(heldTranscription.number)+' will be excluded at instructor request. This records an unavailable assessment, without claiming a listening review.</p><label>Transcription exclusion note<textarea data-full-transcription-note rows="3">Excluded at instructor request because automatic transcription could not be completed. The original recording and all other confirmed assessments are retained.</textarea></label><label><input type="checkbox" data-full-transcription-confirm> I confirm the instructor requested exclusion of Question '+esc(heldTranscription.number)+'.</label><button type="button" class="btn-sm" data-full-exclude-transcription>Exclude Question '+esc(heldTranscription.number)+' and release report</button>':'')
         +(held&&!d.busy?'<h5>Final Repeat Sentence delivery assessment</h5><p>Only Question '+esc(held.number)+' will be excluded. Its recording and completed stages stay saved. The other 64 assessments are retained.</p><label>Instructor exclusion note<textarea data-full-delivery-note rows="3">Excluded at instructor request because the delivery assessment could not be completed. The saved response and completed assessment stages are retained.</textarea></label><label><input type="checkbox" data-full-instructor-confirm> I confirm the instructor requested exclusion of Question '+esc(held.number)+'.</label><button type="button" class="btn-sm" data-full-exclude-delivery>Exclude Question '+esc(held.number)+' and release report</button>':'');
     }
-    const legacyPaint=paint;paint=function(){legacyPaint();if(diagnostic.review?.started)details.innerHTML='';if(resultReview)details.innerHTML+=resultReview.render(diagnostic);};
+    function deliveryPaint(){
+      if(!diagnostic?.ready)return '';
+      if(!delivery)return '<section><h5>Azure delivery reassessment</h5><p>Send original saved recordings to Azure, review the proposed marks, then publish replacements. Content and original recordings are retained.</p><button type="button" class="btn-sm" data-delivery-load>Load saved recordings for reassessment</button></section>';
+      const ops=Object.entries(delivery.operations),pending=ops.some(([,op])=>['running','confirmation-pending'].includes(op.status));
+      return '<section><h5>Azure delivery reassessment</h5><p>Account '+esc(delivery.owner)+' · '+esc(delivery.paperId)+' v'+esc(delivery.paperVersion)+' · '+esc(delivery.attemptId)+'</p><p>Each send requests a paid Azure assessment. Publish replaces pronunciation and fluency and recalculates the report. Content marks stay unchanged. Gated answers, ASQ and responses with multiple recordings are excluded.</p>'+delivery.questions.map(q=>'<p>Q'+esc(q.number)+' · '+esc(q.type.toUpperCase())+' · Pronunciation '+esc(q.previous.pronunciation)+'/5 · Fluency '+esc(q.previous.fluency)+'/5 <button type="button" class="btn-sm" data-delivery-send="'+esc(q.id)+'" '+(pending?'disabled':'')+'>Send saved recording to Azure</button></p>').join('')+ops.map(([id,op])=>'<div><p>'+esc(op.questionId)+' · '+esc(op.status)+(op.result?' · Pronunciation '+esc(op.previous.result.scores.pronunciation)+' → '+esc(op.result.pronunciation.score)+'/5 · Fluency '+esc(op.previous.result.scores.fluency)+' → '+esc(op.result.fluency.score)+'/5':'')+'</p>'+(op.proposedProfiles?'<p>Report indices: '+Object.entries(op.proposedProfiles).map(([key,value])=>esc(key)+' '+esc(delivery.profiles[key].practiceIndex??(delivery.profiles[key].practiceIndexRange.low+'–'+delivery.profiles[key].practiceIndexRange.high))+' → '+esc(value.practiceIndex??(value.practiceIndexRange.low+'–'+value.practiceIndexRange.high))).join(' · ')+'</p>':'')+(op.message?'<p>'+esc(op.message)+'</p>':'')+(op.status==='review'&&op.evidenceHash===delivery.evidenceHash?'<label><input type="checkbox" data-delivery-confirm="'+esc(id)+'"> Replace this question’s published delivery marks and recalculate the report.</label><button type="button" class="btn-sm" data-delivery-publish="'+esc(id)+'">Publish replacement scores</button>':'')+'</div>').join('')+'<button type="button" class="btn-sm" data-delivery-load>Refresh reassessment status</button></section>';
+    }
+    const legacyPaint=paint;paint=function(){legacyPaint();if(diagnostic.review?.started)details.innerHTML='';if(resultReview)details.innerHTML+=resultReview.render(diagnostic);details.innerHTML+=deliveryPaint();};
     async function inspect(){
       if(busy)return;const id=input.value.trim();
       if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)){notice.textContent='Enter the exact Full Mock attempt ID.';return;}
       lock(true);notice.textContent='Loading saved Full Mock evidence…';
-      try{const value=await request(path(id));if(!host.isConnected)return;if(value.owner!==username||value.attemptId!==id)throw Error('The returned attempt does not match.');diagnostic=value;operation=null;paint();notice.textContent=value.ready?'The complete report is ready.':'Review loaded. No marks or recordings have changed.';}
+      try{const value=await request(path(id));if(!host.isConnected)return;if(value.owner!==username||value.attemptId!==id)throw Error('The returned attempt does not match.');diagnostic=value;delivery=null;operation=null;paint();notice.textContent=value.ready?'The complete report is ready.':'Review loaded. No marks or recordings have changed.';}
       catch(error){diagnostic=null;details.innerHTML='';notice.textContent=error.message;}finally{lock(false);}
     }
-    input.oninput=()=>{diagnostic=null;operation=null;details.innerHTML='';notice.textContent='';};
+    host.querySelector('[data-full-list]').onclick=async()=>{
+      if(busy)return;lock(true);notice.textContent='Finding submitted Full Mocks…';
+      try{const value=await request('/api/admin/full-mocks/'+encodeURIComponent(username)+'/attempts');if(!host.isConnected)return;if(value.owner!==username)throw Error('The account does not match.');
+        const list=host.querySelector('[data-full-attempts]');list.innerHTML=value.attempts.length?'<label>Saved Full Mock<select data-full-select><option value="">Choose an attempt</option>'+value.attempts.sort((a,b)=>(b.submittedAt||0)-(a.submittedAt||0)).map(a=>'<option value="'+esc(a.id)+'">'+esc(a.paperId||'Full Mock')+' · '+esc(a.submittedAt?new Intl.DateTimeFormat('en-AU',{timeZone:'Australia/Brisbane',dateStyle:'medium',timeStyle:'short'}).format(new Date(a.submittedAt)):a.id)+' · '+esc(a.id)+'</option>').join('')+'</select></label>':'<p>No submitted Full Mocks found for this account.</p>';
+        const select=list.querySelector('select');if(select)select.onchange=()=>{input.value=select.value;input.oninput();};notice.textContent='Choose the exact saved attempt, then inspect it.';
+      }catch(error){notice.textContent=error.message;}finally{if(host.isConnected)lock(false);}
+    };
+    input.oninput=()=>{diagnostic=null;delivery=null;operation=null;details.innerHTML='';notice.textContent='';};
     host.querySelector('[data-full-inspect]').onclick=inspect;
     details.onclick=async event=>{
-      if(busy)return;if(resultReview&&await resultReview.act(event,{host,diagnostic,operations:reviewOperations,operationId,request:async body=>request(path(diagnostic.attemptId)+(body?'/review':''),body),commit:value=>{diagnostic=value;paint();},lock,notice:value=>{notice.textContent=value;}}))return;
-      const delivery=!!event.target.closest('[data-full-exclude-delivery]'),transcription=!!event.target.closest('[data-full-exclude-transcription]');
-      if((!delivery&&!transcription&&!event.target.closest('[data-full-exclude]'))||busy||!diagnostic)return;
+      if(busy)return;
+      const load=event.target.closest('[data-delivery-load]'),send=event.target.closest('[data-delivery-send]'),publish=event.target.closest('[data-delivery-publish]');
+      if(load||send||publish){
+        const before=diagnostic;if(!before?.ready)return;
+        if(publish&&!Array.from(details.querySelectorAll('[data-delivery-confirm]')).find(el=>el.dataset.deliveryConfirm===publish.dataset.deliveryPublish)?.checked){notice.textContent='Confirm replacement of the published marks first.';return;}
+        lock(true);notice.textContent=send?'Sending the original saved recording to Azure…':publish?'Publishing replacement marks…':'Loading saved recording evidence…';
+        try{
+          let suffix='',body;
+          if(send){const questionId=send.dataset.deliverySend,key=delivery.evidenceHash+':'+questionId;if(!deliveryOperations.has(key))deliveryOperations.set(key,'delivery:'+operationId());suffix='/send';body={questionId,evidenceHash:delivery.evidenceHash,operation:deliveryOperations.get(key)};}
+          if(publish){suffix='/publish';body={operation:publish.dataset.deliveryPublish,confirmPublish:true};}
+          const value=await request(path(before.attemptId)+'/delivery'+suffix,body);
+          if(!host.isConnected)return;
+          if(value.owner!==username||value.attemptId!==before.attemptId)throw Error('The returned attempt does not match.');
+          delivery=value;
+          if(publish)diagnostic=await request(path(before.attemptId));
+          paint();notice.textContent=publish?'Replacement scores published. The report has been recalculated; original marks remain in reassessment history.':'Reassessment status loaded. Review the results before publishing replacement scores.';
+        }catch(error){notice.textContent=error.message+' Refresh reassessment status before retrying.';}finally{if(host.isConnected){lock(false);paint();}}
+        return;
+      }
+      if(resultReview&&await resultReview.act(event,{host,diagnostic,operations:reviewOperations,operationId,request:async body=>request(path(diagnostic.attemptId)+(body?'/review':''),body),commit:value=>{diagnostic=value;paint();},lock,notice:value=>{notice.textContent=value;}}))return;
+      const deliveryExclusion=!!event.target.closest('[data-full-exclude-delivery]'),transcription=!!event.target.closest('[data-full-exclude-transcription]');
+      if((!deliveryExclusion&&!transcription&&!event.target.closest('[data-full-exclude]'))||busy||!diagnostic)return;
       const held=diagnostic.questions.find(row=>transcription?row.transcriptionEligible:row.deliveryEligible);
-      const questionIds=delivery||transcription?(held?[held.id]:[]):[...details.querySelectorAll('[data-full-question]:checked')].map(input=>input.value),note=details.querySelector(delivery?'[data-full-delivery-note]':transcription?'[data-full-transcription-note]':'[data-full-note]').value.trim();
-      if(!questionIds.length||note.length<10||!details.querySelector(delivery?'[data-full-instructor-confirm]':transcription?'[data-full-transcription-confirm]':'[data-full-reviewed]').checked){notice.textContent=delivery||transcription?'Confirm the exact instructor-requested question exclusion and add a note.':'Select the exact recordings, add a note and confirm the audio review.';return;}
-      const before=diagnostic,key=JSON.stringify({evidenceHash:before.evidenceHash,questionIds,note,delivery,transcription});
+      const questionIds=deliveryExclusion||transcription?(held?[held.id]:[]):[...details.querySelectorAll('[data-full-question]:checked')].map(input=>input.value),note=details.querySelector(deliveryExclusion?'[data-full-delivery-note]':transcription?'[data-full-transcription-note]':'[data-full-note]').value.trim();
+      if(!questionIds.length||note.length<10||!details.querySelector(deliveryExclusion?'[data-full-instructor-confirm]':transcription?'[data-full-transcription-confirm]':'[data-full-reviewed]').checked){notice.textContent=deliveryExclusion||transcription?'Confirm the exact instructor-requested question exclusion and add a note.':'Select the exact recordings, add a note and confirm the audio review.';return;}
+      const before=diagnostic,key=JSON.stringify({evidenceHash:before.evidenceHash,questionIds,note,deliveryExclusion,transcription});
       if(!operation||operation.key!==key)operation={key,id:'staff:'+operationId()};
       lock(true);notice.textContent='Saving the selected exclusions…';
       try{
-        const value=await request(path(before.attemptId)+(delivery?'/exclude-delivery':'/exclude-audio'),{operation:operation.id,evidenceHash:before.evidenceHash,questionIds,note,...(delivery||transcription?{confirmInstructorExclusion:true,...(transcription?{mode:'failed-transcription'}:{})}:{confirmUnusableAudio:true})});
+        const value=await request(path(before.attemptId)+(deliveryExclusion?'/exclude-delivery':'/exclude-audio'),{operation:operation.id,evidenceHash:before.evidenceHash,questionIds,note,...(deliveryExclusion||transcription?{confirmInstructorExclusion:true,...(transcription?{mode:'failed-transcription'}:{})}:{confirmUnusableAudio:true})});
         if(value.owner!==username||value.attemptId!==before.attemptId||value.responsesHash!==before.responsesHash||value.confirmedHash!==before.confirmedHash)throw Error('The retained evidence requires verification. Inspect the saved record.');
-        diagnostic=value;paint();notice.textContent=value.ready?(delivery||transcription?'Result ready. The selected question is excluded at instructor request; saved responses and completed marks are unchanged.':'Result ready. Selected unusable recordings are excluded; original recordings and completed marks are unchanged.'):'Exclusions saved. Other missing assessments remain pending.';
+        diagnostic=value;paint();notice.textContent=value.ready?(deliveryExclusion||transcription?'Result ready. The selected question is excluded at instructor request; saved responses and completed marks are unchanged.':'Result ready. Selected unusable recordings are excluded; original recordings and completed marks are unchanged.'):'Exclusions saved. Other missing assessments remain pending.';
       }catch(error){notice.textContent=error.message;}finally{lock(false);}
     };
     return {inspect};

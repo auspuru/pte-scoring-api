@@ -100,6 +100,22 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Opt-in Azure replacement controls: project only these exact audited sources.
+  // Ordinary graders and all other dependencies must still match the prior lock.
+  const deliveryBaseline=require('../content/full-mock/delivery-reassessment-compatible-sources.json');
+  const deliveryPins={"full-mock/api.js":"5895d3f00df64778898ff2f840d4876b0f511aa4521fa0966ae1adf44f121f78","full-mock/audit.js":"c114a950b4c7d858146b50fb88851cc804ef6a8911f67369046a56b852258203","full-mock/delivery-reassessment.js":"6802b9e135555b43345006ac274ac139de043c5eee0c0718787663923fa32209","azure-continuous-delivery.js":"d3a0cb04f88afcfb70016d657f346e74eb9d999617d8667cc2ff227c5b3aad65"};
+  if(digest(deliveryBaseline)==='e6769e6c4f35be8731171fafa2c4721609b8cf24b9b3779d04cca5329fd7eddd'&&Object.entries(deliveryPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)
+    &&Object.keys(current.scoringSources.files).length===Object.keys(deliveryBaseline.files).length+2
+    &&Object.entries(deliveryBaseline.files).every(([file,pin])=>[...Object.keys(deliveryPins),'full-mock/assessment.js'].includes(file)||digest(current.scoringSources.files[file])===digest(pin))){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of Object.keys(deliveryPins)){
+      if(deliveryBaseline.files[file])sources.files[file]=structuredClone(deliveryBaseline.files[file]);else delete sources.files[file];
+    }
+    sources.files['full-mock/assessment.js']=structuredClone(deliveryBaseline.files['full-mock/assessment.js']);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(deliveryBaseline))return digest(saved)===digest(current);
+  }
+
   // Shared practice-library presentation only. Require this exact reviewed
   // Reading revision and every other native dependency pin before projecting.
   const libraryBaseline=require('../content/full-mock/library-compatible-sources.json');

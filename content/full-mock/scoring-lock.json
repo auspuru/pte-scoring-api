@@ -2,11 +2,15 @@
   "schemaVersion": 1,
   "baseCommit": "8aacb515a1a4f6547b2068a84a31ded4779f8e4b",
   "checkedAt": "2026-11-05",
-  "scope": "Shared individual-practice libraries and fresh response selection; byte-identical native Reading graders and feedback. Exact previous snapshot projection preserves frozen papers, successful marks, providers, models and mock timing.",
+  "scope": "Explicit admin Azure delivery reassessment with original marks retained and exact historical source compatibility.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
     "files": {
+      "azure-continuous-delivery.js": {
+        "sha256": "d3a0cb04f88afcfb70016d657f346e74eb9d999617d8667cc2ff227c5b3aad65",
+        "version": null
+      },
       "delivery-rubric.js": {
         "sha256": "ff0deff2081f49d45387d72be41f8f952938e813ae0399317c601e876a9147b3",
         "version": "intelligibility-delivery-v5"
@@ -88,7 +92,7 @@
         "version": "full-mock-aggregation-2026-10-29.1"
       },
       "full-mock/api.js": {
-        "sha256": "9643c74eb5e52295e2c78fd37f81a6d9ff9f47fa67c8c3ee6798fc903617bae1",
+        "sha256": "5895d3f00df64778898ff2f840d4876b0f511aa4521fa0966ae1adf44f121f78",
         "version": null
       },
       "full-mock/asq-scoring.js": {
@@ -96,15 +100,19 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "62719e2199403e4103d83a5874c70140068a4183b10197fde011d41d22da7408",
+        "sha256": "263a5386187b00608eae293a79ff73aada68963c56e4631988eabbfc9e32a14d",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
-        "sha256": "b92fe040ae104387d589d493ff3f5513c20ce4f3f1219729f7b1ccb4a0e584d7",
+        "sha256": "c114a950b4c7d858146b50fb88851cc804ef6a8911f67369046a56b852258203",
         "version": null
       },
       "full-mock/blueprint.js": {
         "sha256": "ee5f56f160821e6f3bd8ead5a797f4d46114aef0b14b06bbfeabdc6665e0330e",
+        "version": null
+      },
+      "full-mock/delivery-reassessment.js": {
+        "sha256": "6802b9e135555b43345006ac274ac139de043c5eee0c0718787663923fa32209",
         "version": null
       },
       "full-mock/exclusions.js": {

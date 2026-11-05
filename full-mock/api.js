@@ -18,10 +18,15 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     const support = require('./exclusions').createSupport({ store, now, validate:assessor.validate });
     const admin = express.Router();
     admin.use(requireAdmin, (req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
+    admin.get('/:username/attempts', wrap(async(req,res)=>{if(!await getAccount(req.params.username))throw fail('Account not found.',404);res.json({owner:req.params.username,attempts:(await store.list(req.params.username)).filter(s=>s.status==='submitted').map(s=>({id:s.id,submittedAt:s.submittedAt,paperId:s.paperId,paperVersion:s.paperVersion}))});}));
     admin.get('/:username/:id/scoring', wrap(async (req, res) => res.json(await support.inspect(req.params.username, req.params.id))));
     admin.post('/:username/:id/scoring/exclude-audio', wrap(async (req, res) => res.json(await support.exclude(req.params.username, req.params.id, req.body))));
     admin.post('/:username/:id/scoring/exclude-delivery', wrap(async (req, res) => res.json(await support.excludeDelivery(req.params.username, req.params.id, req.body))));
     admin.post('/:username/:id/scoring/review', wrap(async(req,res)=>{await assessor.review(req.params.username,req.params.id,req.body||{});res.json(await support.inspect(req.params.username,req.params.id));}));
+    const deliveryReview = require('./delivery-reassessment').create({store, now, validate:assessor.validate});
+    admin.get('/:username/:id/scoring/delivery', wrap(async(req,res)=>res.json(await deliveryReview.inspect(req.params.username,req.params.id))));
+    admin.post('/:username/:id/scoring/delivery/send', wrap(async(req,res)=>res.json(await deliveryReview.send(req.params.username,req.params.id,req.body||{}))));
+    admin.post('/:username/:id/scoring/delivery/publish', wrap(async(req,res)=>res.json(await deliveryReview.publish(req.params.username,req.params.id,req.body||{}))));
     app.use('/api/admin/full-mocks', admin);
   }
   router.use(wrap(async (req, res, next) => {

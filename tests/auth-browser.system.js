@@ -320,3 +320,22 @@ test('Staff publishes confirmed timed-out Speaking answers as zero on desktop an
   assert.equal(await page.$eval('[data-mock-diagnostics]',e=>e.scrollWidth<=e.clientWidth+1),true);assert.deepEqual(errors,[]);await page.close();
  }
 });
+test('Staff reviews Azure replacement scores and publishes separately on mobile and desktop',{timeout:60000},async t=>{
+ const f=await fixture(t),username='azure-review-browser';await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:'azure-review@example.test'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ for(const width of [390,1440]){
+  const page=await browser.newPage();await page.setViewport({width,height:900});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const id='006d4971-2ad3-4f14-8e2a-0ea3ed450bdd',route='/api/admin/full-mocks/'+username+'/'+id+'/scoring',posts=[];let reviewed=false,published=false;
+  const diagnostic=()=>({owner:username,attemptId:id,ready:true,accountedFor:65,total:65,assessedCount:65,excludedCount:0,questions:[],recovery:{}});
+  const delivery=()=>({owner:username,attemptId:id,paperId:'full-mock-1',paperVersion:1,evidenceHash:'saved-evidence',profiles:{speaking:{practiceIndex:70}},questions:[{id:'saved-di',number:17,type:'di',previous:{pronunciation:4,fluency:4}}],operations:reviewed?{'delivery:browser-operation':{questionId:'saved-di',status:published?'published':'review',evidenceHash:'saved-evidence',previous:{result:{scores:{pronunciation:4,fluency:4}}},result:{pronunciation:{score:3},fluency:{score:2}},proposedProfiles:{speaking:{practiceIndex:65}}}}:{}});
+  await page.setRequestInterception(true);page.on('request',async req=>{const pathname=new URL(req.url()).pathname;if(pathname===route||pathname.startsWith(route+'/delivery')){if(req.method()==='POST'){posts.push(JSON.parse(req.postData()));if(pathname.endsWith('/send'))reviewed=true;else if(pathname.endsWith('/publish'))published=true;}return req.respond({status:200,contentType:'application/json',body:JSON.stringify(pathname===route?diagnostic():delivery())});}await req.continue();});
+  await page.goto(f.base+'/admin');if(await page.$eval('#dashboard',e=>getComputedStyle(e).display==='none')){await page.type('#adminKeyInput','isolated-auth-test-admin');await page.click('#authCard > button');}
+  await page.waitForSelector('#dashboard',{visible:true});await page.type('[aria-label="Search users"]',username);await page.click('button[onclick="viewUser(\''+username+'\')"]');
+  await page.waitForSelector('[data-full-attempt]',{visible:true});await page.type('[data-full-attempt]',id);await page.click('[data-full-inspect]');await page.waitForSelector('[data-delivery-load]');await page.click('[data-delivery-load]');await page.waitForSelector('[data-delivery-send]');await page.click('[data-delivery-send]');await page.waitForSelector('[data-delivery-publish]');
+  assert.equal(posts.length,1);assert.equal(published,false);assert.match(await page.$eval('[data-full-diagnostics]',e=>e.textContent),/70 → 65/);
+  await page.click('[data-delivery-publish]');assert.equal(published,false);await page.click('[data-delivery-confirm]');
+  await require('node:fs/promises').mkdir('.cache',{recursive:true});await page.screenshot({path:'.cache/admin-azure-review-'+(width===390?'mobile':'desktop')+'.png',fullPage:true});
+  await page.focus('[data-delivery-publish]');await page.keyboard.press('Enter');await page.waitForFunction(()=>document.querySelector('[data-full-notice]')?.textContent.startsWith('Replacement scores published.'));
+  assert.equal(posts.length,2);assert.equal(posts[1].confirmPublish,true);assert.equal(published,true);assert.equal(await page.$eval('#fullMockRecoveryPanel',e=>e.scrollWidth<=e.clientWidth+1),true);assert.deepEqual(errors,[]);await page.close();
+ }
+});
