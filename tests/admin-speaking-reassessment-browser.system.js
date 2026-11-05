@@ -5,7 +5,8 @@ test('Admin Speaking selected and whole-mock resends publish automatically on mo
  const browser=await puppeteer.launch({headless:true,executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH||'/usr/bin/chromium'});t.after(()=>browser.close());
  for(const width of [390,1440])await t.test(String(width),async t=>{
   let calls=0;const requireAdmin=(req,res,next)=>req.headers['x-admin-key']==='synthetic-admin'?next():res.sendStatus(403);
-  const f=await fixture(t,{requireAdmin,deliveryReassessment:{assess:async()=>{calls++;await new Promise(resolve=>setTimeout(resolve,35));return raw;},gradeContent:async q=>content(q)}}),app=f.app;
+  const f=await fixture(t,{policy:false,requireAdmin,deliveryReassessment:{assess:async()=>{calls++;await new Promise(resolve=>setTimeout(resolve,35));return raw;},gradeContent:async q=>content(q)}}),app=f.app;
+  if(width===1440)await f.store.update(f.owner,f.id,a=>{delete a.responses[1].azure;a.assessment.status='needs-attention';a.grading.status='pending';return a;});
   app.get('/api/admin/users',requireAdmin,(req,res)=>res.json([{username:f.owner,hasAccount:true,createdAt:new Date().toISOString()}]));
   app.get('/api/admin/user-data/:username',requireAdmin,(req,res)=>res.json({account:{username:f.owner},progress:{}}));
   app.get('/api/admin/speaking-mocks/:owner/:id/scoring',requireAdmin,async(req,res)=>res.json(await f.service.progressive.diagnostics(req.params.owner,req.params.id)));

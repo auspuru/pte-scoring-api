@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "a3a1a6b4ef8952eae8924301f2316f7b6ead22f3",
+  "baseCommit": "f8deceb33497fc529f9271f6885130112f5ebaf4",
   "checkedAt": "2026-11-06",
-  "scope": "Speaking publication adds protected admin wiring; Full Mock available-mark behavior, native graders, models and weights stay pinned.",
+  "scope": "Explicit admin reassessment supports earlier settled attempts and archives their adoption of available-mark publication; native graders and saved inputs remain pinned.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "ea84e22b20dc451ddc20a45603e8fbdbf68082604f149e9f1ab5ec99e3e8a62d",
+        "sha256": "5a10c85f77d70663c2a2cfec816b284d5453101ce456b17c2791bd2fc7ff5732",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -112,7 +112,7 @@
         "version": null
       },
       "full-mock/delivery-reassessment.js": {
-        "sha256": "5e9acff80ed42df1598ba43f7fe3554dea8b647355c620eb8b00f83c0aaea1fa",
+        "sha256": "d9bb5485265457c79211200996ab6a3a85e07b359d2020d94e1980bd628276c6",
         "version": null
       },
       "full-mock/exclusions.js": {

@@ -5,11 +5,11 @@
   const mark=value=>value==null?'Not assessed':value+'/5';
   function render(diagnostic,delivery){
     if(!diagnostic)return '';
-    if(!diagnostic.ready)return '<section><h5>Azure delivery reassessment</h5><p>The saved report must finish its original assessment before confirmed delivery marks can be replaced. Use the missing-result controls below.</p></section>';
     if(!delivery)return '<section><h5>Azure delivery reassessment</h5><button type="button" class="btn-sm" data-delivery-load>Load saved recordings for reassessment</button></section>';
     const ops=Object.entries(delivery.operations||{}),busy=ops.some(([,op])=>op.batch&&['queued','running','paused'].includes(op.status)),review=ops.some(([,op])=>['review','partial'].includes(op.status)&&op.evidenceHash===delivery.evidenceHash),available=delivery.questions.filter(q=>!q.blocked),canSend=!busy&&!review&&available.length>0;
     const button=(text,attribute,disabled=false)=>'<button type="button" class="btn-sm" '+attribute+(disabled?' style="opacity:.55;cursor:not-allowed" disabled':'')+'>'+text+'</button>';
     return '<section data-azure-panel><h5>Azure delivery reassessment</h5><p><strong>Account '+esc(delivery.owner)+' · '+esc(delivery.paperId)+' v'+esc(delivery.paperVersion)+'</strong><br>Attempt '+esc(delivery.attemptId)+'</p><p>Select several recordings or send all available speaking recordings from this saved mock. Azure reassesses pronunciation and fluency. Confirmed scores are published automatically and the student can see what changed. Previously assessed content and other answers stay unchanged; a newly available recording first receives a content assessment. Each recording requests a paid assessment.</p>'
+      +'<p>Earlier recordings are supported. Sending from a pending attempt publishes its available confirmed marks; unavailable questions are identified and omitted from the calculation.</p>'
       +(delivery.provider?.ready===false?'<p role="alert">'+esc(delivery.provider.message)+' Newly available recordings can still receive content assessment.</p>':'')
       +(busy?'<p role="status">Reassessment is running in the background. Refresh status to see saved progress; reloading the page does not resend completed recordings.</p>':'')
       +(review?'<p role="status">A reassessment is ready. Publish or discard it before starting another batch.</p>':'')
@@ -33,7 +33,7 @@
     const target=event.target,load=target.closest('[data-delivery-load]'),single=target.closest('[data-delivery-send]'),selected=target.closest('[data-delivery-send-selected]'),all=target.closest('[data-delivery-send-all]'),publish=target.closest('[data-delivery-publish]'),discard=target.closest('[data-delivery-discard]'),selectAll=target.closest('[data-delivery-select-all]'),clear=target.closest('[data-delivery-select-none]');
     if(selectAll||clear){host.querySelectorAll('[data-delivery-question]').forEach(input=>{if(!input.disabled)input.checked=!!selectAll;});notice(selectAll?'All available recordings selected. Click Send selected recordings.':'Recording selection cleared.');return true;}
     if(!load&&!single&&!selected&&!all&&!publish&&!discard)return false;
-    if(!diagnostic?.ready){notice('Inspect a complete submitted mock before sending saved recordings.');return true;}
+    if(!diagnostic){notice('Inspect the exact saved mock before sending its recordings.');return true;}
     const check=value=>{if(!host.isConnected)throw Error('Review panel closed. Reopen the attempt to see its saved status.');if(value.owner!==diagnostic.owner||value.attemptId!==diagnostic.attemptId)throw Error('The returned account or attempt does not match.');return value;};
     const sending=single||selected||all;let body,suffix='';
     if(sending){

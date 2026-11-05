@@ -3,7 +3,7 @@
   "scope": "Reviewed available-mark publication and explicit recording reassessment for Speaking and Full Mocks, preserving native rubrics and older attempt rules.",
   "files": {
     "server.js": "5d68f9fb63e3e835bbedbad0a8ee3220b98fc9184449b10eade435734b7f6cd8",
-    "full-mock/assessment.js": "ea84e22b20dc451ddc20a45603e8fbdbf68082604f149e9f1ab5ec99e3e8a62d",
+    "full-mock/assessment.js": "5a10c85f77d70663c2a2cfec816b284d5453101ce456b17c2791bd2fc7ff5732",
     "full-mock/adapters.js": "ec18ac8f954632f91432158fdcae9a6079ac183e80e226b3f99ec0b9cd590fec",
     "full-mock/aggregation.js": "d1cd8b4bdcd50c6a94f3006fbef7a02c0d024a6f57b4a08a4984688d98d17497",
     "full-mock/profiles.js": "8e9659f3d82839a445ec6cb0212d3e7456bb3c4442146a56a0ba721b1994df18",
@@ -43,13 +43,13 @@
     "public/swt-feedback.js": "6ad1bbb440e4d6ea29e93c6293107e3ce9af20c79b247bb97d643558b45ad930",
     "public/swt-feedback-review.js": "61dc962856a96342cb062ed4c11a65e2cfd523e38d52e4b1822936f8cac3e751",
     "public/swt-mock-feedback.js": "a935db09aa1ad2cd37ddad0df7e26e43b1b0d62a1270740365d7f201cf78b947",
-    "content/full-mock/scoring-lock.json": "6dd935728a1a0b6aa0a9a59ad2055ac135338ae74bce01aa5bcbaba309e2bce1",
+    "content/full-mock/scoring-lock.json": "e2ec36b60308335cc54ce4af0d8b177dff7f4984b2e92c2086949de5f1dc5608",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
     "public/reading-mock-tools.js": "c5655a466dad3579cd0faac269b90eafa7c468e413ec3a5a127f80530ad4fdd4",
     "speaking-mock.js": "b578e8ea8c38f4b5232728587302a651084d893114b67f560ef99a8548d7ced5",
     "speaking-mock-deadline-score.js": "97bb9719d82ec8c9ab592e22b4ef41a8aa1fc61239551209354293919a8c9b10",
     "speaking-mock-completion.js": "880d440996216a193d566d75065e5c096e5e620aa9cc0b078206cc5d095e940a",
-    "speaking-mock-reassessment.js": "e8801625607653989b7b496d5c0608b438563006b115eab5d8acf85b82a8513a"
+    "speaking-mock-reassessment.js": "02bfeb514949998838b7a435a16bf5bba0f2e2a6a64ae9cc126d4149609546d8"
   },
   "presentationUpdates": {
     "baselineCommit": "728476dedad6eeaba0afbd2fc2963bf194f9a254",

@@ -6,13 +6,14 @@ test('Admin real HTTP clicks queue selected and whole-mock audio, show progress 
  const browser=await puppeteer.launch({headless:true,executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH||'/usr/bin/chromium'});t.after(()=>browser.close());
  for(const width of [390,1440])await t.test(String(width),async t=>{
   const f=await fixture(t,async()=>result);await secondRecording(f);const before=(await f.store.get(f.owner,f.id)).state;
+  if(width===1440)await f.store.update(f.owner,f.id,state=>{const job=state.assessment.items[f.q.id];job.status='failed';job.result={status:'failed',reason:'delivery-unavailable'};job.stages={transcription:{status:'complete',value:'The chart shows a change over time.'},content:{status:'complete',value:{total:6,maximum:6,version:'synthetic',scoringMode:'ai',contentStatus:'assessed'}},delivery:{status:'partial',uncertain:false,traits:{}}};state.assessment.status='needs-attention';return state;});
   const app=express(),posts=[];app.use(express.json());
   const requireAdmin=(req,res,next)=>req.headers['x-admin-key']==='isolated-auth-test-admin'?next():res.sendStatus(403);
   app.get('/api/admin/users',requireAdmin,(req,res)=>res.json([{username:f.owner,hasAccount:true,createdAt:new Date().toISOString()}]));
   app.get('/api/admin/user-data/:username',requireAdmin,(req,res)=>res.json({account:{username:f.owner},progress:{}}));
   app.use((req,res,next)=>{if(req.method==='POST'&&req.path.endsWith('/delivery/send'))posts.push(req.body);next();});
   let calls=0;
-  require('../full-mock/api').installFullMock(app,{directory:f.directory,assessment:{},verifyToken:()=>null,getAccount:async username=>username===f.owner?{username}:null,requireAdmin,deliveryReassessment:{assess:async()=>{calls++;await new Promise(resolve=>setTimeout(resolve,80));return result;}}});
+  require('../full-mock/api').installFullMock(app,{directory:f.directory,assessment:{},verifyToken:()=>null,getAccount:async username=>username===f.owner?{username}:null,requireAdmin,deliveryReassessment:{assemble:async()=>({status:'ready',recording:{mime:'audio/wav',data:'synthetic'}}),assess:async()=>{calls++;await new Promise(resolve=>setTimeout(resolve,80));return result;}}});
   app.get('/admin',(req,res)=>res.sendFile(path.resolve('public/admin.html')));app.use(express.static(path.resolve('public')));
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(()=>new Promise(resolve=>server.close(resolve)));
   const page=await browser.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));t.after(()=>page.close());await page.setViewport({width,height:900});
