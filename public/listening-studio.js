@@ -1,4 +1,4 @@
-(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.ListeningStudio=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
+(function(root,factory){const api=factory(typeof module==='object'&&module.exports?require('./practice-studio'):root.PracticeStudio);if(typeof module==='object'&&module.exports)module.exports=api;else root.ListeningStudio=api;})(typeof globalThis!=='undefined'?globalThis:this,function(practice){
   'use strict';
   const tasks=[['sst','SST','Summarise Spoken Text','spoken-text'],['lmcma','MA','Multiple Choice, Multiple Answers','listening-lmcma'],['lfi','FIB','Fill in the Blanks','listening-lfi'],['hcs','HCS','Highlight Correct Summary','listening-hcs'],['lmcsa','SA','Multiple Choice, Single Answer','listening-lmcsa'],['smw','SMW','Select Missing Word','listening-smw'],['hiw','HIW','Highlight Incorrect Words','listening-hiw'],['wfd','WFD','Write From Dictation','dictation']];
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -12,13 +12,13 @@
   function visibleQuestions({items,history=[],bookmarks=[],search='',filter='all',mode='practice'}){
     const query=search.trim().toLowerCase();
     const matches=globalThis.PortalUx?new Set(globalThis.PortalUx.search(items.map((q,index)=>({q,text:[index+1,q.id,q.title,q.topic].join(' ')})),query,['text']).map(row=>row.q)):null;
-    return items.map((q,index)=>({q,index,last:latest(history,q.id,mode)})).filter(({q,index,last})=>
+    return items.map((q,index)=>({q,index,last:latest(history,q.id,mode),records:history.filter(a=>String(a.testId)===String(q.id)&&attemptMode(a)===mode)})).filter(({q,index,last,records})=>
       (!query||(matches?matches.has(q):[index+1,q.id,q.title,q.topic].join(' ').toLowerCase().includes(query)))&&
-      (filter==='all'||filter==='new'&&!last||filter==='draft'&&last&&last.status!=='submitted'||filter==='done'&&last?.status==='submitted'||filter==='bookmarked'&&bookmarks.includes(q.id)));
+      (filter==='all'||filter==='new'&&!records.length||filter==='draft'&&records.some(a=>a.status!=='submitted')||filter==='done'&&records.some(a=>a.status==='submitted')||filter==='bookmarked'&&bookmarks.includes(q.id)));
   }
   function rows({items,history=[],bookmarks=[],activeId,search='',filter='all',mode='practice',compact=false}){
     const visible=visibleQuestions({items,history,bookmarks,search,filter,mode});
-    return visible.length?visible.map(({q,index,last})=>'<button type="button" class="studio-question-row '+(q.id===activeId?'is-current':'')+'" data-listening-open="'+esc(q.id)+'"><span class="studio-number">'+(last?.status==='submitted'?'✓':index+1)+'</span><span><b>Question '+(index+1)+'</b>'+(q.prediction?'<em>Prediction</em>':'')+'<small>'+(last?(last.status==='submitted'?'Attempted':'Draft saved'):'Not attempted')+'</small></span>'+(bookmarks.includes(q.id)?'<span class="studio-star">★</span>':'')+'<span class="studio-row-arrow" aria-hidden="true">→</span></button>').join(''):'<p class="studio-empty">No questions match this filter.</p>';
+    return practice.libraryRows(visible.map(({q,index,last})=>{const records=history.filter(a=>String(a.testId)===String(q.id)&&attemptMode(a)===mode),draft=records.filter(a=>a.status!=='submitted').sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt))[0],done=records.filter(a=>a.status==='submitted').length;return {id:q.id,number:index+1,title:q.title,status:done?'Completed · '+done+' saved attempts':draft?'In progress':'Not attempted',detail:[q.prediction?'Prediction':'',bookmarks.includes(q.id)?'Bookmarked':''].filter(Boolean).join(' · '),actions:'<button type="button" class="portal-button" data-listening-open="'+esc(q.id)+'">Practise →</button>'+(draft?'<button type="button" class="portal-button practice-library-resume" data-listening-attempt="'+esc(draft.id)+'" data-listening-question="'+esc(q.id)+'">Resume draft</button>':'')};}));
   }
   function wrap(content,{type,mode='practice',mock=false,items=[],history=[],bookmarks=[],activeId,search='',filter='all',library=false}){
     const task=tasks.find(t=>t[0]===type), title=task?.[2]||'Listening sectional mock';

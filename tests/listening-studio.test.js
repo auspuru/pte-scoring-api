@@ -81,3 +81,9 @@ test('NAV-07: Listening badges and filters use the selected mode, including lega
  assert.equal(studio.latest(history,'28','exam').id,'legacy28');
  assert.match(studio.rows({items,history,mode:'practice',search:'28'}),/Question 3/);
 });
+
+test('Completed and unfinished Listening responses remain discoverable after a fresh response is created',()=>{
+ const items=[{id:'one',title:'Lecture'}],history=[{id:'old',testId:'one',mode:'practice',status:'submitted',startedAt:1},{id:'new',testId:'one',mode:'practice',status:'active',startedAt:2}];
+ assert.equal(studio.visibleQuestions({items,history,filter:'done'}).length,1);assert.equal(studio.visibleQuestions({items,history,filter:'draft'}).length,1);assert.equal(studio.visibleQuestions({items,history,filter:'new'}).length,0);
+ assert.match(studio.rows({items,history}),/Completed · 1 saved attempts/);assert.match(studio.rows({items,history}),/data-listening-attempt="new"/);
+});

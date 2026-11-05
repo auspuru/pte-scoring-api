@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "aec826a7e14f9087f2ce41e8bc49895a12ccd7f7",
+  "baseCommit": "8aacb515a1a4f6547b2068a84a31ded4779f8e4b",
   "checkedAt": "2026-11-05",
-  "scope": "Individual Reading workspace UI with byte-identical native score/feedback functions. Exact frozen snapshot compatibility retains saved marks, models, weights, papers and protected mock clocks.",
+  "scope": "Shared individual-practice libraries and fresh response selection; byte-identical native Reading graders and feedback. Exact previous snapshot projection preserves frozen papers, successful marks, providers, models and mock timing.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "a50f06ed0aa6f1345fb804c044e6f9a97398a38be31d559f7f4eea80bd1b0a98",
+        "sha256": "85b7d12f81a4331e093d4f5f25a8893ea6a398ab7e3e442bac52328746abac85",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -173,7 +173,7 @@
         "version": null
       },
       "public/reading-practice.js": {
-        "sha256": "33da5a971faaf84561f23afe000b9891e3d8e9041575be0eb29eb0956f521832",
+        "sha256": "3ac047610c2d187156b170e435d97fb6993a66495a26c47f44be6c58c7613813",
         "version": null
       },
       "public/writing-lab-report.js": {

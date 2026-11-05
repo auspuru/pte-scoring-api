@@ -112,3 +112,11 @@ test('Shared practice dock and attempt history retain exact result actions and e
  const history=studio.attemptHistory([{id:'saved-1',label:'Attempt 1',date:'4 Nov',mode:'Timed',status:'<img src=x>',actions:'<button data-native-attempt="saved-1">Answer &amp; feedback</button>'}]);
  assert.match(history,/data-practice-attempt="saved-1"/);assert.match(history,/data-native-attempt="saved-1"/);assert.doesNotMatch(history,/<img/);assert.match(history,/Previous attempts/);
 });
+
+test('Shared SWT library renderer provides one accessible structure with escaped question metadata and separate actions',()=>{
+ const studio=require('../public/practice-studio');
+ const rows=studio.libraryRows([{id:'<unsafe>',number:7,title:'<script>',status:'Completed · 2 saved attempts',actions:'<button data-fresh="yes">Practise →</button><button data-resume="draft">Resume draft</button>'}]);
+ assert.match(rows,/Question 7 · &lt;unsafe&gt;/);assert.match(rows,/<h3>&lt;script&gt;<\/h3>/);assert.doesNotMatch(rows,/<script>/);assert.match(rows,/role="group"/);assert.match(rows,/data-fresh/);assert.match(rows,/data-resume/);
+ for(const skill of ['Speaking','Writing','Reading','Listening']){const html=studio.questionLibrary({skill,title:'Task',rows,search:'"<',total:1});assert.match(html,/practice-question-library/);assert.match(html,/Find a question/);assert.match(html,/Show<select/);assert.match(html,/value="&quot;&lt;"/);assert.match(html,/Not attempted/);assert.match(html,/Completed/);}
+ assert.match(studio.libraryRows([]),/role="status"/);
+});

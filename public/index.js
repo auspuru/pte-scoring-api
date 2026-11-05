@@ -12517,7 +12517,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-exam-player.js?v=sha256-784ef20c0524', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=sha256-98e9c23a186f', 'reading review'],
-      ['reading-practice.js?v=sha256-33da5a971faa', 'reading practice']
+      ['reading-practice.js?v=sha256-3ac047610c2d', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
     // downloads overlap. Initialise the practice client only after all succeed.
@@ -12548,7 +12548,7 @@ function ensureSpeakingRuntimeLoaded() {
   if (window.SpeakingPractice) return Promise.resolve(window.SpeakingPractice);
   if (speakingRuntimeLoadPromise) return speakingRuntimeLoadPromise;
 
-  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-23de89ada814', 'speaking practice'))
+  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-dde3aecae877', 'speaking practice'))
     .then(() => {
       if (!window.SpeakingPractice) throw new Error('Speaking practice did not initialise.');
       return window.SpeakingPractice;
@@ -12580,7 +12580,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-4671e105b369', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-129cc6cc84fb', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -12803,7 +12803,7 @@ function switchSection(section, options = {}) {
     return;
   }
   savePortalEssayDraft();
-  if (section === 'practice') { openPractice(false, options); return; }
+  if (section === 'practice') { openPractice(false, options);if(options.essayRequest?.questionId)window.PracticeWritingWorkspace?.openEssayQuestion(options.essayRequest.questionId,{resume:true});else if(!options.essayRequest)window.PracticeWritingWorkspace?.openEssayMenu();return; }
   if (section === 'vocab') { openVocab(options); return; }
   if (section === 'test-centre') section = 'mock-tests';
   // Older teacher assignments retain their original reading-engine question identity.
