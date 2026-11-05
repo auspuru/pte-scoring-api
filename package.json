@@ -38,6 +38,7 @@
     "express": "^4.22.2",
     "express-rate-limit": "^7.4.0",
     "fuse.js": "7.5.0",
+    "microsoft-cognitiveservices-speech-sdk": "1.53.0",
     "nodemailer": "^10.0.10",
     "pg": "^8.20.0",
     "puppeteer": "^25.12.0",
