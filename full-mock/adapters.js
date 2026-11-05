@@ -8,6 +8,17 @@ const asq = require('./asq-scoring');
 const { nativeValid } = require('./aggregation');
 const VERSION = 'full-mock-adapters-2026-10-29.2';
 const SPOKEN = new Set(['ra','rs','di','rl','asq','sgd','rts']);
+// The assembly path creates canonical 16-bit mono WAV. Only classify an almost
+// silent signal; unknown formats and merely short responses are not silence.
+function quietRecording(recording) {
+  if (recording?.mime!=='audio/wav' || typeof recording.data!=='string') return false;
+  const wav=Buffer.from(recording.data,'base64');
+  if(wav.length<46||wav.toString('ascii',0,4)!=='RIFF'||wav.toString('ascii',8,12)!=='WAVE'||wav.toString('ascii',12,16)!=='fmt '
+    ||wav.readUInt16LE(20)!==1||wav.readUInt16LE(22)!==1||wav.readUInt16LE(34)!==16||wav.toString('ascii',36,40)!=='data')return false;
+  const size=wav.readUInt32LE(40);if(size<2||size%2||size+44!==wav.length)return false;
+  for(let offset=44;offset<wav.length;offset+=2)if(Math.abs(wav.readInt16LE(offset))>32)return false;
+  return true;
+}
 function maxima(q) {
   if (q.type === 'ra') return { content: speech.tokens(q.text).length, pronunciation: 5, fluency: 5 };
   if (SPOKEN.has(q.type)) return q.type === 'asq' ? { content: 1 } : { content: q.type === 'rs' ? 3 : 6, pronunciation: 5, fluency: 5 };
@@ -47,7 +58,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
   gradeSpeaking = (q, text, call) => speech.grade(q, text, call, { academyDescribeImage: true }),
   assessDelivery = require('../speaking-delivery').assessRecording,
   speakingContentModel, writingContentModel, swtGrader, essayGrader } = {}) {
-  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {} } = {}) {
+  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, contentOnly = false } = {}) {
     const stages = structuredClone(previous);
     const failed = reason => ({ status: 'failed', version: VERSION, reason, stages });
     async function stage(name, call, verify = value => value != null) {
@@ -67,8 +78,12 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
     if (!response?.sealed) return failed('response-not-sealed');
     if (SPOKEN.has(q.type)) {
       const segments = response.segments.filter(value => !value.cancelled && value.chunkCount !== 0);
-      if (!segments.length && ['skipped','finished-early'].includes(response.reason)) return { ...zero(q, 'Explicitly unanswered'), stages };
+      if (!segments.length && ['skipped','finished-early'].includes(response.reason) && completionPolicy !== require('./aggregation').COMPLETION_POLICY) return { ...zero(q, 'Explicitly unanswered'), stages };
       if (!recording) return { status: 'pending', version: VERSION, reason: 'recording-not-ready', stages };
+      if(completionPolicy===require('./aggregation').COMPLETION_POLICY&&stages.transcription?.status!=='complete'&&quietRecording(recording)){
+        stages.transcription={status:'failed',attemptedRun:run,uncertain:false,failureCode:'quiet_audio'};
+        return failed('transcription-unavailable');
+      }
       const transcript = await stage('transcription', async () => {
         const value = await transcribe(recording);
         // A successful recogniser response containing no words is audio evidence,
@@ -88,6 +103,11 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         && (['ra','rs'].includes(q.type) || value.scoringMode === 'ai' && value.contentStatus === 'assessed'));
       if (!content) return failed('content-unavailable');
       if (content.total === 0) return { ...zero(q, 'Native Content gate'), stages };
+      if (contentOnly) {
+        const limits=maxima(q);
+        return {status:'assessed',version:VERSION,scores:{content:content.total,pronunciation:null,fluency:null},maxima:limits,
+          total:content.total,maximum:limits.content,unavailableTraits:['pronunciation','fluency'],partialDelivery:completionPolicy,nativeVersion:content.version,stages};
+      }
       if (stages.delivery?.status !== 'complete' && stages.delivery?.attemptedRun !== run) {
         const traits = { ...(stages.delivery?.traits || {}) }; let raw, error;
         stages.delivery = { status: 'running', attemptedRun: run, traits, uncertain: true };
@@ -104,7 +124,14 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         stages.delivery = { status: Object.keys(traits).length === 2 ? 'complete' : 'partial', attemptedRun: run, traits, uncertain: error ? require('../mock-recovery-policy').failure(error).uncertain : false, ...(!error&&raw?.deliveryEvidence?.sufficient===false?{audioQuality:'insufficient-speech'}:{}), ...(error?{failureCode:require('../mock-recovery-policy').failure(error).code,recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked}:{}) };
         await checkpoint(stages);
       }
-      if (stages.delivery?.status !== 'complete') return failed('delivery-unavailable');
+      if (stages.delivery?.status !== 'complete') {
+        if (completionPolicy !== require('./aggregation').COMPLETION_POLICY) return failed('delivery-unavailable');
+        const traits = stages.delivery?.traits || {}, unavailableTraits = ['pronunciation','fluency'].filter(key => traits[key] == null);
+        const limits = maxima(q), scores = {content:content.total, pronunciation:traits.pronunciation?.score ?? null, fluency:traits.fluency?.score ?? null};
+        const included = Object.keys(limits).filter(key => scores[key] != null);
+        return {status:'assessed',version:VERSION,scores,maxima:limits,total:included.reduce((n,key)=>n+scores[key],0),
+          maximum:included.reduce((n,key)=>n+limits[key],0),unavailableTraits,partialDelivery:completionPolicy,nativeVersion:content.version,stages};
+      }
       return { ...result(q, { content: content.total, pronunciation: stages.delivery.traits.pronunciation.score, fluency: stages.delivery.traits.fluency.score }, { nativeVersion: content.version }), stages };
     }
     const answer = Array.isArray(response.answer) ? response.answer : [];
@@ -126,4 +153,4 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
   }
   return { assess };
 }
-module.exports = { VERSION, SPOKEN, maxima, result, zero, normalise, objective, createAdapters };
+module.exports = { VERSION, SPOKEN, quietRecording, maxima, result, zero, normalise, objective, createAdapters };

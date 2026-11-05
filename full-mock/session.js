@@ -27,12 +27,13 @@ function enter(state, paper, at) {
   state.responses[state.index] = { token: state.current.token, type: q.type, draft: SPEECH.has(q.type) ? null : [], draftSequence: -1, segments: [], sealed: false,
     ...(SPEECH.has(q.type) ? { permit: { id: randomUUID(), token: randomUUID(), responseAt, deadline: endsAt } } : {}) };
 }
-function create(id, paper, at, { preview = false, assessmentSnapshot, sectionTransitions = false } = {}) {
+function create(id, paper, at, { preview = false, assessmentSnapshot, sectionTransitions = false, availableMarks = false } = {}) {
   if (!preview) assertReleased(paper);
   const state = { id, version: VERSION, paperId: paper.id, paperVersion: paper.version, paperHash: digest(paper), preview,
     title: paper.title, createdAt: at, status: 'active', index: 0, clocks: {}, responses: [], events: [], recoveries: [] };
   if (sectionTransitions) { state.sectionTransitions = 1; state.sectionStarts = {}; }
   if (assessmentSnapshot) state.assessment = require('./assessment').stateFor(assessmentSnapshot);
+  if (availableMarks && state.assessment) state.assessment.completionPolicy = {version:require('./aggregation').COMPLETION_POLICY,snapshotHash:state.assessment.snapshotHash};
   enter(state, paper, at); return state;
 }
 function responseStatus(response) {

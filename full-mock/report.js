@@ -52,9 +52,9 @@ function feedbackFor(q, response, job, marks, trusted, recovering) {
   const gated = result.gated === true;
   const overview = gated ? clean(result.reason) + '. All native marks are zero under this task gate.' : clean(content.overview || native.overallVerdict || native.overview);
   const criteria = Object.entries(marks.maxima).map(([key, maximum]) => {
-    const delivery = job.stages?.delivery?.status === 'complete' ? job.stages.delivery.traits?.[key] : null;
+    const delivery = job.stages?.delivery?.traits?.[key];
     return { key, label:LABELS[key] || key.replace(/_/g, ' '), earned:marks.scores[key], maximum,
-      feedback:gated ? 'The task gate applies; this trait was not independently awarded.' : clean(native.feedback?.[key] || native.rationale?.[key] || (key === 'content' ? content.overview : '')) ||
+      feedback:marks.unavailableTraits?.includes(key) ? 'Not assessed; omitted from the score calculation.' : gated ? 'The task gate applies; this trait was not independently awarded.' : clean(native.feedback?.[key] || native.rationale?.[key] || (key === 'content' ? content.overview : '')) ||
         [clean(delivery?.descriptor), clean(delivery?.coaching)].filter(Boolean).join(' ') || (marks.scores[key] === maximum ? 'Full native marks awarded for this criterion.' : 'Review this criterion alongside the saved response and reference material.'),
       evidence:gated ? [] : texts(delivery?.evidence), practiceWords:gated || !Array.isArray(delivery?.words) ? [] : delivery.words.slice(0, 20).map(row => clean(row.word, 200)).filter(Boolean) };
   });
@@ -86,6 +86,19 @@ function summary(paper, state, at = Date.now()) {
   return { ...common, ready:result.ready, assessmentStatus:statusFor(state, result), assessedCount:result.assessedCount,
     calibrated:false, official:false, profiles:Object.fromEntries(Object.entries(result.profiles).map(([key, profile]) => [key, { status:profile.status, practiceIndex:profile.practiceIndex, practiceIndexRange:profile.practiceIndexRange }])) };
 }
+function scoreChanges(paper,state) {
+  return Object.values(state.deliveryReassessments||{}).filter(op=>op.status==='published'&&Number.isFinite(op.publishedAt)).sort((a,b)=>b.publishedAt-a.publishedAt).map(op=>{
+    const entries=op.batch?op.items.filter(item=>item.status==='complete'):[op];
+    const changes=entries.flatMap(item=>{
+      const index=paper.questions.findIndex(candidate=>candidate.id===item.questionId);if(index<0)return [];
+      const before=item.previousScores||item.previous?.result?.scores||{},after=item.publishedScores||{pronunciation:item.result?.pronunciation?.score,fluency:item.result?.fluency?.score};
+      const keys=item.needsContent?['content','pronunciation','fluency']:['pronunciation','fluency'];
+      const traits=keys.filter(key=>Number.isFinite(after[key])&&before[key]!==after[key]).map(key=>({trait:LABELS[key],before:Number.isFinite(before[key])?before[key]:null,after:after[key],maximum:state.assessment.snapshot.nativeMaxima?.[item.questionId]?.[key]||5}));
+      return traits.length?[{number:index+1,label:TASKS.find(task=>task.type===paper.questions[index].question.type)?.label||'Speaking',traits}]:[];
+    });
+    return {publishedAt:op.publishedAt,changes};
+  }).filter(op=>op.changes.length);
+}
 function buildReport(paper, state, at = Date.now()) {
   const result = aggregate(paper, state); // Enforces submission, paper and snapshot integrity.
   const items = result.items.map((marks, index) => {
@@ -103,7 +116,7 @@ function buildReport(paper, state, at = Date.now()) {
     return { ...marks, number:index + 1, label:task.label, section:task.section, skills:[...task.skills], title:clean(q.title), question, reference,
       answer:structuredClone(response.answer), responseReason:clean(response.reason, 80), transcript:transcription, recordings,
       recovered:state.recoveries.filter(row => row.itemToken === response.token).map(row => ({ answer:structuredClone(row.answer), receivedAt:row.receivedAt, status:'needs-review' })),
-      assessment:marks.status === 'assessed' ? { code:'assessed', label:'Assessed' } : marks.status === 'excluded' ? { code:marks.exclusion.reason, label:marks.exclusion.reason === 'automatic-recovery-exhausted' ? 'Excluded · assessment unavailable' : ['instructor-delivery-exclusion','instructor-transcription-exclusion','instructor-review-unavailable'].includes(marks.exclusion.reason) ? 'Excluded · instructor request' : 'Excluded · unusable audio', action:marks.exclusion.note } : reasonFor(job, trusted, state.assessment?.recovery?.status === 'scheduled'),
+      assessment:marks.status === 'assessed' ? { code:'assessed', label:marks.unavailableTraits?.length?'Assessed · some marks unavailable':'Assessed' } : marks.status === 'excluded' ? { code:marks.exclusion.reason, label:['automatic-recovery-exhausted','assessment-unavailable'].includes(marks.exclusion.reason) ? 'Excluded · assessment unavailable' : ['recording-missing','recording-incomplete'].includes(marks.exclusion.reason)?'Excluded · recording unavailable':['instructor-delivery-exclusion','instructor-transcription-exclusion','instructor-review-unavailable'].includes(marks.exclusion.reason) ? 'Excluded · instructor request' : 'Excluded · unusable audio', action:marks.exclusion.note } : reasonFor(job, trusted, state.assessment?.recovery?.status === 'scheduled'),
       feedback:feedbackFor(q, response, job, marks, trusted, state.assessment?.recovery?.status === 'scheduled'), practice:{ path:'#/' + GUIDANCE[q.type][0], instruction:GUIDANCE[q.type][1] } };
   });
   const groups = TASKS.map(task => ({ type:task.type, label:task.label, section:task.section, skills:[...task.skills], ...result.groups[task.type],
@@ -112,7 +125,7 @@ function buildReport(paper, state, at = Date.now()) {
   const impactFeedback = impact.build({ groups, profiles:sourceProfiles, items:items.map(item => {
     const responseText = item.transcript || (Array.isArray(item.answer) ? item.answer.join(' ') : '');
     const issue = item.feedback.issues.find(issue => issue.affectsScore && issue.evidence && responseText.includes(issue.evidence));
-    const criterion=item.feedback.gated?null:item.feedback.criteria.filter(row=>row.earned<row.maximum && row.feedback && !/^Review this criterion/.test(row.feedback)).sort((a,b)=>a.earned/a.maximum-b.earned/b.maximum)[0];
+    const criterion=item.feedback.gated?null:item.feedback.criteria.filter(row=>Number.isFinite(row.earned)&&row.earned<row.maximum && row.feedback && !/^Review this criterion/.test(row.feedback)).sort((a,b)=>a.earned/a.maximum-b.earned/b.maximum)[0];
     return { type:item.type, number:item.number, status:item.status, total:item.total, maximum:item.maximum,
       advice:issue?.suggestedChange || criterion?.feedback || item.feedback.improvements[0], strength:item.feedback.strengths[0], quote:issue?.evidence };
   }) });
@@ -121,10 +134,10 @@ function buildReport(paper, state, at = Date.now()) {
   const assessmentStatus = statusFor(state, result);
   return { ...result, ...metadata(paper, state, at), version:VERSION, aggregationVersion:result.version, assessmentStatus,
     retryAvailable:!require('../mock-result-review').held(state)&&!Object.values(state.assessment?.items||{}).some(job=>job.status!=='assessed'&&Object.values(job.stages||{}).some(stage=>stage.uncertain)) && !result.ready && assessmentStatus !== 'processing' && assessmentStatus !== 'version-mismatch' && items.some(item => item.status !== 'assessed' && item.assessment.label !== 'Recording needs recovery'),
-    recoveredEvidenceCount:state.recoveries.length, groups, items, priorities, impactFeedback,
+    recoveredEvidenceCount:state.recoveries.length, scoreChanges:scoreChanges(paper,state), groups, items, priorities, impactFeedback,
     interpretation:{ label:'Provisional', calibration:'Not yet calibrated', description:'These are IPT practice indices out of 90. They are not official Pearson scores or predictions of an exam result.',
       overall:'Overall is calculated directly from task contributions, independently of the four skill indices. Its range preserves three weights published as <1%; it is not an exam-score confidence interval.',
-      incomplete:'The report is complete when every response has a verified assessment or an explicit instructor exclusion. Excluded recordings are noted and removed from the scoring denominator. Required missing assessments keep the affected indices pending.' } };
+      incomplete:require('./aggregation').availableMarks(state)?'Scores use the available assessed marks. Unavailable traits and excluded questions do not count in the score calculation. An entirely unavailable task is omitted from the affected indices.':'The report is complete when every response has a verified assessment or an explicit instructor exclusion. Excluded recordings are noted and removed from the scoring denominator. Required missing assessments keep the affected indices pending.' } };
 }
 function reviewItem(paper, state, questionId) {
   if (state.status !== 'submitted') throw fail('Submit the test before reviewing its media.');
