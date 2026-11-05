@@ -132,7 +132,11 @@ body.portal-layout:not(.portal-exam-active) #savedResultsPane article p{font-siz
  body.portal-layout:not(.portal-exam-active) #savedResultsPane .portal-layout-result-list article{padding:20px;gap:16px}
  body.portal-layout:not(.portal-exam-active) #savedResultsPane article p{font-size:11px}
  body.portal-layout:not(.portal-exam-active) #savedResultsPane .portal-layout-result-list .portal-button{font-size:12px;white-space:normal}
- body.portal-layout:not(.portal-exam-active) #impersonateBanner{width:calc(100% - 40px)}
+ /* Keep the warning readable without a fixed-width Exit button squeezing its text. */
+ body.portal-layout:not(.portal-exam-active) #impersonateBanner{width:calc(100% - 40px);flex-wrap:wrap;gap:8px 12px;padding:12px 16px}
+ body.portal-layout:not(.portal-exam-active) #impersonateBanner .imp-eye{width:20px}
+ body.portal-layout:not(.portal-exam-active) #impersonateBanner .imp-text{flex:1 1 calc(100% - 32px);min-width:0;overflow-wrap:anywhere}
+ body.portal-layout:not(.portal-exam-active) #impersonateBanner .imp-exit{margin-left:32px}
  body.portal-layout:not(.portal-exam-active) .portal-skip-link{left:20px}
 }
 
