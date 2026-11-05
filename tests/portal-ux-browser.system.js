@@ -30,6 +30,9 @@ test('UX audio review uses the saved native player and releases it when leaving;
  const audio=await fs.readFile(path.join(root,'content/speaking-audio/rs-1.mp3'));
  const saved=await fetch(f.base+'/api/speaking/attempts/'+id+'/recording',{method:'POST',headers:{'x-session-token':token,'content-type':'audio/mpeg'},body:audio});assert.equal(saved.status,200);
  await page.evaluate(id=>switchSection('speaking-ra',{speakingRequest:{attemptId:id,questionId:'ra-1'}}),id);await page.waitForSelector('#speaking-playback audio');
+ // Resume and render can both load saved playback. Finish that initial media
+ // loading before testing whether the optional waveform preserves the player.
+ await page.waitForNetworkIdle({idleTime:100});
  await page.$eval('#speaking-playback audio',audio=>{window.__nativeReviewAudio=audio;});await page.locator('.portal-ux-wave summary').click();await page.waitForFunction(()=>document.querySelector('.portal-ux-waveform')?.querySelector('div')?.shadowRoot?.querySelector('canvas'));
  assert.equal(await page.evaluate(()=>document.querySelector('#speaking-playback audio')===window.__nativeReviewAudio),true);
  await page.$eval('#speaking-playback audio',audio=>audio.play());await page.waitForFunction(()=>window.__nativeReviewAudio.currentTime>0);await page.$eval('.portal-ux-wave input',slider=>{slider.value='2';slider.dispatchEvent(new Event('input',{bubbles:true}));});await page.waitForFunction(()=>window.__nativeReviewAudio.currentTime>=2);
