@@ -104,7 +104,7 @@ function compatibleTransportUpgrade(saved, current) {
   // Reading revision and every other native dependency pin before projecting.
   const libraryBaseline=require('../content/full-mock/library-compatible-sources.json');
   if(digest(libraryBaseline)==='1d664c50e459243e94949cb5298f9e7e9992191443b1ff9d2531fa3e03c64ee0'
-    &&current.scoringSources.files['public/reading-practice.js']?.sha256==='3ac047610c2d187156b170e435d97fb6993a66495a26c47f44be6c58c7613813'
+    &&current.scoringSources.files['public/reading-practice.js']?.sha256==='d7e67dea4258894ebbe63c64fa1463700ad7146c334f85ce1c486a2aeb263bef'
     &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(libraryBaseline.files).sort().join()
     &&Object.entries(libraryBaseline.files).every(([file,pin])=>['public/reading-practice.js','full-mock/assessment.js'].includes(file)||digest(current.scoringSources.files[file])===digest(pin))){
     const sources=structuredClone(current.scoringSources);

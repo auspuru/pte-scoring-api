@@ -427,7 +427,7 @@
       + (drafts.length?`<details class="reading-home-help"><summary>Saved question drafts <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><strong>${escape(r.name)}</strong><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:'')
       + (history.length?`<details class="reading-home-help"><summary>Question attempts <span>${history.length}</span></summary><ul class="reading-history">${history.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${r.earned}/${r.possible} points</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul></details>`:'');
     host.innerHTML=studio.wrap(practiceSkill(id),practiceRoute(id),studio.questionLibrary({skill:practiceSkill(id)==='listening'?'Listening':'Reading',title:library.name,total:libraryQuestions().length,searchAttrs:'data-library-search',search:query,filterAttrs:'data-library-status',filter:libraryView.status||'all',rowsAttrs:'data-library-list',rowsClass:'reading-library-rows',rows:libraryList(),extras:saved+'<p data-start-status role="status" aria-live="polite"></p>'}));
-    if(practiceSkill(id)==='listening'){const source=document.createElement?.('p');if(source){source.className='reading-note';source.innerHTML='Question source: Earlier bank · <button type="button" class="portal-button" data-action="current-listening-bank">Current bank</button>';host.querySelector?.('.practice-studio-library')?.prepend(source);}}
+    if(practiceSkill(id)==='listening'){const source=document.createElement?.('p');if(source){source.className='reading-note';source.innerHTML='Question source: Earlier bank · <button type="button" class="portal-button" data-action="current-listening-bank">Current bank</button>';host.querySelector?.('.practice-library-extras')?.prepend(source);}}
     const selected=[...(host.querySelectorAll?.('[data-practice-uid]')||[])].find(b=>b.dataset.practiceUid===libraryView.selectedUid);
     selected?.setAttribute('aria-current','true');selected?.focus({preventScroll:true});
     if(Number.isFinite(libraryView.scrollTop))host.scrollTop=libraryView.scrollTop;const rows=host.querySelector?.('[data-library-list]');if(rows)rows.scrollTop=libraryView.libraryScrollTop||0;
@@ -852,7 +852,7 @@
       if(s&&!s.done){parkSession(s);state.drafts=[s,...(state.drafts||[]).filter(r=>r.id!==s.id)];if(!persist())return;}
       return start('practice',d.practiceUid);
     }
-    if(d.readingResume){if(s&&!s.done&&!persist())return;return showRequested({attemptId:d.readingResume,context:libraryView});}
+    if(d.readingResume){if(libraryView)Object.assign(libraryView,{queue:libraryQuestions().map(q=>q.uid),libraryScrollTop:host.querySelector?.('[data-library-list]')?.scrollTop||0});if(s&&!s.done&&!persist())return;return showRequested({attemptId:d.readingResume,context:libraryView});}
     if(d.savedPracticeAttempt&&s?.practiceUid){if(s&&!s.done&&!persist())return;return showRequested({attemptId:d.savedPracticeAttempt,context:s?.practiceContext||libraryView});}
     if(d.action==='current-listening-bank')return typeof switchSection==='function'?switchSection('listening-'+libraryView.id):home();
     if(d.action==='practice-home')return typeof switchSection==='function'?switchSection('practice-hub'):home();

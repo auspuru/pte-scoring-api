@@ -1043,3 +1043,10 @@ test('A completed Reading answer keeps its confirmed result when a fresh attempt
  item.answers.forEach((value,i)=>h.host.onchange({target:{dataset:{answer:String(i)},value}}));await h.click({action:'submit'});const result=snapshot(h).history[0],original=JSON.stringify(result.answers);assert.equal(result.earned,result.possible);
  await h.click({action:'retry-question'});assert.notEqual(snapshot(h).session.id,result.id);assert.equal(JSON.stringify(snapshot(h).history.find(a=>a.id===result.id).answers),original);await h.click({savedPracticeAttempt:result.id});assert.equal(snapshot(h).session.id,result.id);assert.equal(snapshot(h).session.earned,result.earned);
 });
+
+test('Reading Resume draft uses the selected menu filter after practising another task',async()=>{
+ const h=client(),libraries=h.ctx.PracticeCatalogue.readingLibraries(bank),first=libraries.find(l=>l.id==='dropdown').questions[0],other=libraries.find(l=>l.id==='mcma').questions[0];
+ await h.ctx.ReadingPractice.open({libraryId:'dropdown'});await h.click({practiceUid:first.uid});const id=snapshot(h).session.id;
+ await h.ctx.ReadingPractice.open({libraryId:'mcma'});await h.click({practiceUid:other.uid});await h.ctx.ReadingPractice.open({libraryId:'dropdown'});h.host.oninput({target:{dataset:{librarySearch:''},value:first.title}});
+ await h.click({readingResume:id});assert.equal(snapshot(h).session.id,id);assert.deepEqual(snapshot(h).session.practiceContext.queue,[first.uid]);assert.match(h.host.innerHTML,/data-move="1" disabled/);
+});

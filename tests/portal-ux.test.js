@@ -32,6 +32,6 @@ test('Practice controllers retain the reviewed standalone navigation and exact n
  const sha=s=>crypto.createHash('sha256').update(s).digest('hex');
  const speaking=fs.readFileSync(path.join(root,'public/speaking-practice.js'),'utf8').split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')&&!line.includes('env.PortalUx?.recording(node);')).join('\n');
  const reading=fs.readFileSync(path.join(root,'public/reading-practice.js'),'utf8').split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')).join('\n');
- assert.equal(sha(speaking),'4f97044b94c873729105b55a683790252709a33ea7024f0c604bcdc478578a37');
- assert.equal(sha(reading),'3ac047610c2d187156b170e435d97fb6993a66495a26c47f44be6c58c7613813');
+ assert.equal(sha(speaking),'dd68ccd3d1172e33c71105a832bad584c3dad9d22b1345ca0f7eb673b88f68c9');
+ assert.equal(sha(reading),'d7e67dea4258894ebbe63c64fa1463700ad7146c334f85ce1c486a2aeb263bef');
 });

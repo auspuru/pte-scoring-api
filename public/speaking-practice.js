@@ -151,7 +151,7 @@
       const node=doc.getElementById('speaking-library-list');if(!node||attempt)return;
       const all=catalog.questions.filter(q=>q.type===activeType),matches=visibleLibraryQuestions();
       const count=host.querySelector?.('.practice-library-count');if(count)count.textContent=matches.length+' questions';
-      node.innerHTML=studio.libraryRows(matches.map(q=>{const rows=questionRecords(q.id),draft=rows.find(a=>a.status!=='submitted'),done=rows.filter(a=>a.status==='submitted').length;return {id:q.id,number:all.findIndex(item=>item.id===q.id)+1,title:q.title,status:done?'Completed · '+done+' saved attempts':draft?'In progress':'Not attempted',detail:q.predictionSource?'Weekly Prediction · '+q.predictionSource.week:'',actions:'<button type="button" class="portal-button" data-speaking-question="'+esc(q.id)+'">Practise →</button>'+(draft?'<button type="button" class="portal-button practice-library-resume" data-speaking-attempt="'+esc(draft.id)+'">Resume draft</button>':'')};}));
+      node.innerHTML=studio.libraryRows(matches.map(q=>{const rows=questionRecords(q.id),draft=rows.find(a=>a.status!=='submitted'),done=rows.filter(a=>a.status==='submitted').length;return {id:q.id,number:all.findIndex(item=>item.id===q.id)+1,title:q.title,status:done?'Completed · '+done+' saved attempts':draft?'In progress':'Not attempted',detail:q.predictionSource?'Weekly Prediction · '+q.predictionSource.week:'',actions:'<button type="button" class="portal-button" data-speaking-question="'+esc(q.id)+'">Practise →</button>'+(draft?'<button type="button" class="portal-button practice-library-resume" data-speaking-resume-question="'+esc(q.id)+'" data-speaking-attempt="'+esc(draft.id)+'">Resume draft</button>':'')};}));
     }
     async function library() {
       const type=activeType,ticket=serial,user=owner,f=filters(),questions=catalog.questions.filter(q=>q.type===type);
@@ -620,7 +620,7 @@
       if(d.speakingAction==='clear-filters'&&!attempt){libraryFilters.delete(activeType);return library();}
       if(d.speakingMove!==undefined)return moveQuestion(Number(d.speakingMove));
       if(d.speakingQuestion){const fresh=true;Object.assign(filters(),{...(!attempt?{queue:visibleLibraryQuestions().map(q=>q.id)}:{}),selectedId:d.speakingQuestion,scrollTop:host.scrollTop||0,libraryScrollTop:doc.getElementById('speaking-library-list')?.scrollTop||0});return openSelectedQuestion(d.speakingQuestion,{fresh});}
-      if(d.speakingAttempt){if(attempt&&!await prepareNavigation())return;return resume(d.speakingAttempt,{capture:false});}
+      if(d.speakingAttempt){if(!attempt&&d.speakingResumeQuestion)Object.assign(filters(),{queue:visibleLibraryQuestions().map(q=>q.id),selectedId:d.speakingResumeQuestion,scrollTop:host.scrollTop||0,libraryScrollTop:doc.getElementById('speaking-library-list')?.scrollTop||0});if(attempt&&!await prepareNavigation())return;return resume(d.speakingAttempt,{capture:false});}
       const action=d.speakingAction;
       if(action==='reattempt')return openSelectedQuestion(attempt.questionId,{fresh:true});
       if(action==='zoom-image')return imageViewer.open(doc.getElementById('speaking-image-dialog'),attempt?.question);

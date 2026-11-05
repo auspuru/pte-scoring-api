@@ -564,3 +564,8 @@ test('Primary Practise starts a fresh Speaking response while explicit Resume pr
  await h.click({speakingQuestion:'ra-1'});assert.equal(h.attempts.size,2);assert.equal([...h.attempts.values()][1].transcript,'');assert.equal(original.transcript,'An earlier saved response.');
  await h.click({speakingAction:'list'});await h.click({speakingAttempt:original.id});assert.equal(h.attempts.size,2);assert(h.requests.some(r=>r.url.endsWith('/attempts/'+original.id)));assert.equal(original.transcript,'An earlier saved response.');h.controller.reset();
 });
+
+test('Resume draft from the Speaking row adopts the current filtered question queue',async()=>{
+ const h=harness();await h.controller.open('di');await h.click({speakingQuestion:'di-3'});const id=[...h.attempts.keys()][0];await h.click({speakingAction:'list'});await h.host.onchange({target:{id:'speaking-image-category',value:'line'}});
+ await h.click({speakingAttempt:id,speakingResumeQuestion:'di-3'});assert.match(h.host.innerHTML,/Question 1 of 1/);assert.match(h.host.innerHTML,/data-speaking-move="1" disabled/);assert.equal(h.attempts.size,1);h.controller.reset();
+});
