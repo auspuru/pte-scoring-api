@@ -35,7 +35,11 @@ test('UX audio review uses the saved native player and releases it when leaving;
  await page.$eval('#speaking-playback audio',audio=>audio.play());await page.waitForFunction(()=>window.__nativeReviewAudio.currentTime>0);await page.$eval('.portal-ux-wave input',slider=>{slider.value='2';slider.dispatchEvent(new Event('input',{bubbles:true}));});await page.waitForFunction(()=>window.__nativeReviewAudio.currentTime>=2);
  await page.screenshot({path:path.join(root,'.cache/portal-layout-ux-waveform.png')});await page.locator('#nav-progress').click();await page.waitForFunction(()=>window.__nativeReviewAudio.paused);await page.waitForSelector('.portal-ux-history:not([hidden])');
  await page.locator('#nav-practice-hub').click();await page.evaluate(()=>{window.Chart=undefined;window.Tabulator=undefined;});await page.setRequestInterception(true);page.on('request',request=>request.url().includes('/vendor/chart.js/')||request.url().includes('/vendor/tabulator-tables/')?request.abort():request.continue());
- await page.reload();await page.waitForSelector('.portal-layout-skills');await page.locator('#nav-progress').click();await page.waitForSelector('.progress-attempts:not([hidden]) [data-progress-attempt]');assert(await page.$('.portal-ux-chart-summary'));assert.deepEqual(errors,[]);
+ await page.reload();await page.waitForSelector('.portal-layout-skills');await page.locator('#nav-progress').click();await page.waitForSelector('.progress-attempts:not([hidden]) [data-progress-attempt]');
+ // The native list renders before the deferred enhancements finish loading.
+ // Wait for their rejected assets to settle before checking fallback content.
+ await page.waitForFunction(()=>document.querySelector('.portal-ux-chart')?.hidden===true&&!document.querySelector('.portal-ux-history'));
+ assert.match(await page.$eval('.portal-ux-chart-summary',node=>node.textContent),/\d+ \w+: \d+/);assert.deepEqual(errors,[]);
 });
 test('UX history keeps a focused saved response usable when the optional table finishes loading',{timeout:90000},async t=>{
  const {page,errors,history}=await setup(t);let release;const held=new Promise(resolve=>release=resolve);
