@@ -87,3 +87,9 @@ test('Completed and unfinished Listening responses remain discoverable after a f
  assert.equal(studio.visibleQuestions({items,history,filter:'done'}).length,1);assert.equal(studio.visibleQuestions({items,history,filter:'draft'}).length,1);assert.equal(studio.visibleQuestions({items,history,filter:'new'}).length,0);
  assert.match(studio.rows({items,history}),/Completed · 1 saved attempts/);assert.match(studio.rows({items,history}),/data-listening-attempt="new"/);
 });
+
+test('The shared Listening library supplies its sole heading and mode selector',()=>{
+ const shared='<section class="practice-question-library"><h2>Task</h2><button data-listening-mode="practice">Practice</button><button data-listening-mode="exam">Exam-style</button></section>';
+ const library=studio.wrap(shared,{type:'sst',library:true});assert.doesNotMatch(library,/studio-heading/);assert.equal((library.match(/data-listening-mode=/g)||[]).length,2);
+ assert.match(studio.wrap('<p>Question</p>',{type:'sst'}),/studio-heading/);assert.match(studio.wrap('<p>Mock</p>',{type:'sst',mock:true}),/studio-heading/);
+});
