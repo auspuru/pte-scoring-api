@@ -38,10 +38,50 @@ test('Writing and Listening finish assessments without a browser and retry only 
  await restarted.recover();await restarted.recover();await restarted.waitForJobs();assert.equal((await restarted.store.get('bob',listening.id)).results[0].total,4);assert.equal(calls,2);
 });
 
-test('Reviewed recovery transport changes keep native graders, models and score calculations byte-identical',()=>{
+test('Available-mark policy is exactly pinned and its legacy adapter projects to the prior native grader',()=>{
  const read=name=>require('node:fs').readFileSync(require.resolve('../'+name),'utf8'),sha=s=>require('node:crypto').createHash('sha256').update(s).digest('hex');
  const baseline=require('../content/full-mock/unattended-recovery-compatible-sources.json');
  let source=read('full-mock/adapters.js');
+ // This user-requested policy changes new-attempt completion only. Pin the
+ // entire new source, then remove only the explicit policy branches and verify
+ // that the historical adapter is exactly the previously deployed revision.
+ assert.equal(sha(source),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/adapters.js'].sha256);
+ const project=(from,to='')=>{assert(source.includes(from),'Expected available-marks projection');source=source.replace(from,to);};
+ project(`// The assembly path creates canonical 16-bit mono WAV. Only classify an almost
+// silent signal; unknown formats and merely short responses are not silence.
+function quietRecording(recording) {
+  if (recording?.mime!=='audio/wav' || typeof recording.data!=='string') return false;
+  const wav=Buffer.from(recording.data,'base64');
+  if(wav.length<46||wav.toString('ascii',0,4)!=='RIFF'||wav.toString('ascii',8,12)!=='WAVE'||wav.toString('ascii',12,16)!=='fmt '
+    ||wav.readUInt16LE(20)!==1||wav.readUInt16LE(22)!==1||wav.readUInt16LE(34)!==16||wav.toString('ascii',36,40)!=='data')return false;
+  const size=wav.readUInt32LE(40);if(size<2||size%2||size+44!==wav.length)return false;
+  for(let offset=44;offset<wav.length;offset+=2)if(Math.abs(wav.readInt16LE(offset))>32)return false;
+  return true;
+}
+`);
+ project(', completionPolicy, contentOnly = false','');
+ project(" && completionPolicy !== require('./aggregation').COMPLETION_POLICY",'');
+ project(`      if(completionPolicy===require('./aggregation').COMPLETION_POLICY&&stages.transcription?.status!=='complete'&&quietRecording(recording)){
+        stages.transcription={status:'failed',attemptedRun:run,uncertain:false,failureCode:'quiet_audio'};
+        return failed('transcription-unavailable');
+      }
+`);
+ project(`      if (contentOnly) {
+        const limits=maxima(q);
+        return {status:'assessed',version:VERSION,scores:{content:content.total,pronunciation:null,fluency:null},maxima:limits,
+          total:content.total,maximum:limits.content,unavailableTraits:['pronunciation','fluency'],partialDelivery:completionPolicy,nativeVersion:content.version,stages};
+      }
+`);
+ project(`      if (stages.delivery?.status !== 'complete') {
+        if (completionPolicy !== require('./aggregation').COMPLETION_POLICY) return failed('delivery-unavailable');
+        const traits = stages.delivery?.traits || {}, unavailableTraits = ['pronunciation','fluency'].filter(key => traits[key] == null);
+        const limits = maxima(q), scores = {content:content.total, pronunciation:traits.pronunciation?.score ?? null, fluency:traits.fluency?.score ?? null};
+        const included = Object.keys(limits).filter(key => scores[key] != null);
+        return {status:'assessed',version:VERSION,scores,maxima:limits,total:included.reduce((n,key)=>n+scores[key],0),
+          maximum:included.reduce((n,key)=>n+limits[key],0),unavailableTraits,partialDelivery:completionPolicy,nativeVersion:content.version,stages};
+      }`,"      if (stages.delivery?.status !== 'complete') return failed('delivery-unavailable');");
+ project('VERSION, SPOKEN, quietRecording, maxima','VERSION, SPOKEN, maxima');
+ assert.equal(sha(source),require('../content/full-mock/available-marks-compatible-sources.json').files['full-mock/adapters.js'].sha256);
  // Remove only the reviewed empty-recognition classification and quality
  // receipt. The remaining adapter must match its exact previous revision
  // before projecting the older recovery metadata below.
