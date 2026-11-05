@@ -92,5 +92,19 @@
       "mountPlayback": "d2fb09a6ee03715e54c40a99266b17615ffe5d33a32c6840f4189852664de17f",
       "pollAssessment": "e5e84580f1fda7cb76341bfaf5da5281b3b083a24b8fe51ef36225cf5e1dc1df"
     }
+  },
+  "practiceWritingUpdates": {
+    "baselineCommit": "fc1b9244f20f6e56939fb2de0f608379c7744d73",
+    "scope": "Phase 2 presentation adapter: separate SWT question selection; shared return/reattempt/navigation and per-question history; restore Essay drafts rather than clear them when returning. Native graders, submissions, saved results and report renderers are byte-identical.",
+    "nativeFunctions": {
+      "submitPracticeEssay": "b8289edfb5837b64cb8d9d7ba055ff0e1389dbaf858dce8b199d61539db604ed",
+      "requestSwtGrade": "2c97d3fda76ae2473b466617b395bd9ba5171da7d89c4e7c4b7264c7feeac8a3",
+      "scoreSummary": "8773b69f1a336128aadd511bab37def14ff7f932ad8146ac0d8b7625810159db",
+      "saveAttempt": "f865a0a6e77244135e4237102789aabb526dd3724e40362cd109f507aac83b18",
+      "showResults": "4ed0df2e2d45200cb7d056666c4fc46be53f0fea251e5df98eaf61c5717023b4",
+      "resultsView": "3ea349c5aa8d56d3f5629a71f1fadd947ec61a65e21f2eb48948ffa6b35e60c9",
+      "renderSwtFeedbackReview": "543087a25f06672ad0f3d65247fde5e582c21f005b8630766c079c1613a6a90e"
+    },
+    "adapterSha256": "6996ce1442df59a30002ef1f26045542398555da3e97913eb568f398371de8ed"
   }
 }

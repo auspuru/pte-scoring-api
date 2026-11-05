@@ -71,6 +71,7 @@ jobs:
             .cache/admin-deadline-zero-*.png
             .cache/portal-layout-*.png
             .cache/practice-speaking-*.png
+            .cache/practice-writing-*.png
             public/index.min.js
           include-hidden-files: true
           if-no-files-found: error

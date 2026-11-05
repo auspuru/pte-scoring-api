@@ -19,3 +19,10 @@ test('Approved practice navigation preserves the original Speaking grading, uplo
   const body=source.slice(match.index,next?offset+next.index:source.length).trim();assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);
  }
 });
+
+test('Writing workspace keeps the native submitters, graders and feedback renderers byte-identical',()=>{
+ const source=fs.readFileSync(path.join(__dirname,'../public/index.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceWritingUpdates.nativeFunctions;
+ for(const [name,expected] of Object.entries(pins)){
+  const match=new RegExp('^(?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^(?:async )?function /m.exec(source.slice(offset));const body=source.slice(match.index,next?offset+next.index:source.length).trim();assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);
+ }
+});

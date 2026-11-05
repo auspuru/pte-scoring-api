@@ -26,12 +26,12 @@ for(const width of [1363,390,320])test('Practice choices are usable before slow 
  assert.equal(await page.evaluate(()=>document.activeElement===window.__practiceButton),true);
  console.log('Practice choices '+width+'px: '+Math.round(initial.elapsed)+'ms before metadata');
 });
-for(const width of [1363,390,320])test('SWT opens directly with unobstructed passage and summary at '+width+'px',{timeout:45000},async t=>{
+for(const width of [1363,390,320])test('SWT question selection opens an unobstructed passage and summary at '+width+'px',{timeout:45000},async t=>{
  const f=await fixture(t),username='swt-layout-'+width,password='Synthetic-pass-123';await f.request('/api/auth/register',{username,password,email:username+'@example.test'});
  const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
  const page=await browser.newPage();await page.setViewport({width,height:900});await page.goto(f.base);await page.waitForSelector('#loginUsername',{visible:true});await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.click('#loginSubmitBtn');
  await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
- await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#summaryInput',{visible:true});
+ await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('[data-swt-open]',{visible:true});await page.locator('[data-swt-open="1"]').click();await page.waitForSelector('#summaryInput',{visible:true});
  const layout=await page.evaluate(()=>{const nav=document.getElementById('swtQuestionNavigation'),grid=document.getElementById('swtPracticeGrid');return{position:getComputedStyle(nav).position,bottom:nav.getBoundingClientRect().bottom,gridTop:grid.getBoundingClientRect().top,highlight:!!document.querySelector('[data-swt-mode="highlight"],#swtHighlightPane'),overflow:document.documentElement.scrollWidth>innerWidth+1};});
  assert.equal(layout.position,'static');assert(layout.bottom<=layout.gridTop+1,'Navigation cannot cover the passage or editor');assert.equal(layout.highlight,false);assert.equal(layout.overflow,false);
  await page.evaluate(()=>setSwtPracticeMode('highlight'));assert.equal(await page.evaluate(()=>swtPracticeMode),'summary');

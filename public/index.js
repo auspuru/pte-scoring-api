@@ -12868,6 +12868,7 @@ function switchSection(section, options = {}) {
 
   if (active === 'progress') openStudentProgress();
   if (active === 'swt' && options.swtRequest) openSavedSwtResponse(options.swtRequest);
+  else if (active === 'swt') window.PracticeWritingWorkspace?.openSwtMenu();
   if (active === 'practice-hub') portalCatalogue.openPractice();
   if(activeRoute?.speakingMock)ensureSpeakingMockRuntimeLoaded().then(mock=>{if(portalWorkspace.current()===active)mock.open({...options.mockRequest,history:activeRoute.mockHistory});}).catch(error=>{const host=document.getElementById('speakingMockPane');if(host)host.innerHTML='<p role="alert">Speaking mock could not load. Return to Mock Tests and retry.</p>';toast(error.message,true);});
   if (activeRoute?.fullMock) ensureFullMockRuntimeLoaded().then(mock => { if (portalWorkspace.current() === active) mock.open(options.mockRequest || {}); }).catch(error => { const host = document.getElementById('fullMockPane'); if (host) host.innerHTML = '<p role="alert">Full Mock could not load. Return to Mock Tests and retry.</p>'; toast(error.message, true); });
