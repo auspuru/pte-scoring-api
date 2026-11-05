@@ -235,15 +235,17 @@ for(const width of [1363,390,320])test('Progress opens exact saved responses and
   throw error;
  }
 });
-async function fixture(t,width,reportUI=false){
+async function fixture(t,width,reportUI=false,taskType='sst',seedHistory=false){
  const app=express();app.use(express.json());const attempts=new Map();let historyReads=0,failSave=false;
- const questions=Array.from({length:30},(_,i)=>({id:'sst-'+(i+1),type:'sst',title:'Lecture '+(i+1),minutes:10,audioUrl:'/fixture.mp3'}));
- app.get('/api/writing-lab/catalog',(_,res)=>res.json({mocks:[],spoken:questions,dictation:[],listeningPractice:[]}));
+ const source=taskType==='sst'?require('../content/writing-lab.json').spoken[0]:taskType==='wfd'?require('../content/writing-lab.json').dictation[0]:require('../content/listening-mocks').mocks[0].questions.find(q=>q.type===taskType);
+ const questions=Array.from({length:30},(_,i)=>({...source,id:taskType+'-'+(i+1),type:taskType,title:'Lecture '+(i+1),minutes:10,audioUrl:'/fixture.mp3'}));
+ if(seedHistory){const q={...questions[7],title:'Saved feedback question '+taskType},maximum=require('../public/writing-lab-report').maximumFor(q);attempts.set('saved-feedback-'+taskType,{id:'saved-feedback-'+taskType,testId:q.id,kind:taskType,mode:'practice',title:q.title,status:'submitted',startedAt:1,finishedAt:2,serverNow:Date.now(),index:0,questions:[q],answers:['Exact older saved response'],notes:'',revisions:[1],completed:[{reason:'Submitted'}],results:[{total:maximum,maximum,maxima:{content:maximum},scores:{content:maximum},feedback:{content:'Exact older feedback'},reasons:[]}],playback:[{position:3,finished:true,plays:1}],deadline:null,total:maximum,maximum});}
+ app.get('/api/writing-lab/catalog',(_,res)=>res.json({mocks:[],spoken:taskType==='sst'?questions:[],dictation:taskType==='wfd'?questions:[],listeningPractice:['sst','wfd'].includes(taskType)?[]:questions}));
  app.get('/api/writing-lab/session',(_,res)=>res.json({username:'navigation-fixture'}));
  app.get('/api/writing-lab/attempts',(_,res)=>{historyReads++;res.json([...attempts.values()].map(a=>({...a,questions:1})));});
  app.post('/api/writing-lab/attempts',(req,res)=>{
    const q=questions.find(q=>q.id===req.body.testId);if(!q)return res.sendStatus(404);
-   const a={id:req.body.id,testId:q.id,kind:'sst',mode:req.body.mode,title:q.title,status:'ready',startedAt:Date.now(),serverNow:Date.now(),index:0,questions:[q],answers:[''],notes:'',revisions:[0],completed:[null],results:[null],playback:[null],deadline:null};attempts.set(a.id,a);res.json(a);
+   const a={id:req.body.id,testId:q.id,kind:taskType,mode:req.body.mode,title:q.title,status:'ready',startedAt:Date.now(),serverNow:Date.now(),index:0,questions:[q],answers:[''],notes:'',revisions:[0],completed:[null],results:[null],playback:[null],deadline:null};attempts.set(a.id,a);res.json(a);
  });
  app.get('/api/writing-lab/attempts/:id',(req,res)=>{const a=attempts.get(req.params.id);if(!a)return res.sendStatus(404);res.json({...a,serverNow:Date.now()});});
  app.post('/api/writing-lab/attempts/:id/:action',(req,res)=>{
@@ -254,7 +256,7 @@ async function fixture(t,width,reportUI=false){
    res.json({...a,serverNow:Date.now()});
  });
  app.get('/fixture.mp3',(_,res)=>res.sendFile(path.join(root,'content/speaking-audio/rs-1.mp3')));
- app.get('/spoken-text',(_,res)=>res.type('html').send(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/writing-lab-portal.css"><link rel="stylesheet" href="/listening-studio.css"><link rel="stylesheet" href="/question-navigation.css">${reportUI?'<link rel="stylesheet" href="/mock-report-ui.css">':''}</head><body><div id="lab" tabindex="-1"></div><div id="notice" role="status"></div><dialog id="confirm-dialog"><h2 id="confirm-title"></h2><p id="confirm-text"></p><button id="confirm-ok">Continue</button><button id="confirm-cancel">Cancel</button></dialog><script>localStorage.setItem('pte_session_token','fixture-only');</script><script src="/practice-catalogue.js"></script><script src="/practice-studio.js"></script><script src="/listening-studio.js"></script><script src="/listening-tasks.js"></script><script src="/writing-lab-report.js"></script>${reportUI?'<script src="/mock-impact-feedback.js"></script><script src="/swt-mock-feedback.js"></script><script src="/mock-report-ui.js"></script>':''}<script src="/writing-lab-client.js"></script></body></html>`));
+ app.get('/spoken-text',(_,res)=>res.type('html').send(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/writing-lab-portal.css"><link rel="stylesheet" href="/listening-studio.css"><link rel="stylesheet" href="/question-navigation.css"><link rel="stylesheet" href="/practice-studio.css">${reportUI?'<link rel="stylesheet" href="/mock-report-ui.css">':''}</head><body><div id="lab" tabindex="-1"></div><div id="notice" role="status"></div><dialog id="confirm-dialog"><h2 id="confirm-title"></h2><p id="confirm-text"></p><button id="confirm-ok">Continue</button><button id="confirm-cancel">Cancel</button></dialog><script>localStorage.setItem('pte_session_token','fixture-only');</script><script src="/practice-catalogue.js"></script><script src="/practice-studio.js"></script><script src="/listening-studio.js"></script><script src="/listening-tasks.js"></script><script src="/writing-lab-report.js"></script>${reportUI?'<script src="/mock-impact-feedback.js"></script><script src="/swt-mock-feedback.js"></script><script src="/mock-report-ui.js"></script>':''}<script src="/writing-lab-client.js"></script></body></html>`));
  app.use(express.static(path.join(root,'public')));
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
  t.after(async()=>{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));});
@@ -262,7 +264,7 @@ async function fixture(t,width,reportUI=false){
  t.after(async()=>{await browser.close();});
  const page=await browser.newPage();await page.setViewport({width,height:900});
  await page.goto('http://127.0.0.1:'+server.address().port+'/spoken-text');
- await page.waitForSelector('#studio-search');return {page,attempts,historyReads:()=>historyReads,setFailSave:value=>failSave=value};
+ await page.waitForSelector('#studio-search');if(taskType!=='sst'){await page.evaluate(type=>window.WritingLab.open({tab:type,requestId:'fixture-'+type}),taskType);await page.waitForSelector('#studio-search');}return {page,browser,attempts,historyReads:()=>historyReads,setFailSave:value=>failSave=value};
 }
 for(const width of [1363,390,320])test('NAV-05/06/08/11/12: Listening queue, draft, focus and dock at '+width+'px',async t=>{
  const f=await fixture(t,width),{page}=f;await page.type('#studio-search','8');
@@ -460,4 +462,19 @@ for(const width of [1366,390])test('Reading workspace: all five task menus prese
   }
  }
  const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','practice-reading-'+width+'.png')});assert.deepEqual(grades,[]);assert.deepEqual(errors,[]);
+});
+
+for(const width of [1366,390])test('Listening workspace: all eight timed audio tasks allow return, reattempt and history during preparation and playback at '+width+'px',{timeout:150000},async t=>{
+ for(const type of ['sst','wfd','lmcma','lfi','hcs','lmcsa','smw','hiw']){
+  const f=await fixture(t,width,false,type,true),{page}=f;await page.evaluate(()=>localStorage.setItem('ipt-listening-mode:navigation-fixture','exam'));await page.reload();await page.waitForSelector('#studio-search');if(type!=='sst'){await page.evaluate(type=>WritingLab.open({tab:type,requestId:'timed-'+type}),type);await page.waitForSelector('#studio-search');}
+  await page.locator('[data-listening-mode="exam"]').click();await page.type('#studio-search','8');await page.locator('[data-listening-open="'+type+'-8"]').click();await page.waitForFunction(()=>/starts in [1-5]/.test(document.getElementById('audio-status')?.textContent||''));
+  const activeCount=()=>[...f.attempts.values()].filter(a=>a.status!=='submitted').length;const id=[...f.attempts.keys()].find(id=>!id.startsWith('saved-feedback-'));assert.equal(await page.$eval('[data-practice-move="1"]',n=>n.disabled),false);assert.equal(await page.$('.studio-question-library'),null);
+  await page.locator('.listening-practice-dock [data-tab="'+type+'"]').click();await page.waitForSelector('#studio-search');assert.equal(await page.$eval('#studio-search',n=>n.value),'8');await page.locator('[data-listening-open="'+type+'-8"]').click();assert.equal(activeCount(),1);
+  await page.waitForFunction(()=>document.getElementById('audio-status')?.textContent==='Playing…');await page.waitForFunction(()=>!document.getElementById('answer').disabled);
+  await page.$eval('#answer',n=>{n.value='A retained response';n.dispatchEvent(new Event('input',{bubbles:true}));});await page.locator('[data-practice-move="1"]').click();await page.waitForFunction(()=>document.querySelector('.exam-strip')?.textContent.includes('Question 2 of 3'));await page.locator('[data-practice-move="-1"]').click();await page.waitForFunction(()=>document.getElementById('answer')?.value==='A retained response');assert.equal(activeCount(),2);
+  await page.locator('.listening-practice-dock [data-reattempt]').click();await page.waitForFunction(()=>document.getElementById('answer')?.value==='');assert.equal(activeCount(),3);assert.equal(f.attempts.get(id).answers[0],'A retained response');await page.locator('[data-listening-attempt="'+id+'"]').click();await page.waitForFunction(()=>document.getElementById('answer')?.value==='A retained response');assert.equal(activeCount(),3);
+  if(type==='sst'){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','practice-listening-'+width+'.png')});}
+  await page.locator('[data-listening-attempt="saved-feedback-'+type+'"]').click();await page.waitForSelector('.results');assert.equal(await page.$eval('.results',n=>n.textContent.includes('Saved feedback question')),true);assert.equal(f.attempts.get('saved-feedback-'+type).results[0].total,f.attempts.get('saved-feedback-'+type).results[0].maximum);assert.equal(activeCount(),3);
+  await f.browser.close();
+ }
 });

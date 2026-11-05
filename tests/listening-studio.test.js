@@ -20,14 +20,14 @@ test('Search and status filters preserve question numbers, current state and esc
  assert.match(studio.rows({items,bookmarks:['<unsafe>'],filter:'bookmarked'}),/data-listening-open="&lt;unsafe&gt;"/);
  assert.doesNotMatch(studio.rows({items,search:'2'}),/Question 1/);assert.match(studio.rows({items,search:'99'}),/No questions match/);
 });
-test('Listening tools collapse while the current response stays visible and the library never duplicates its list',()=>{
+test('Listening keeps question selection in the preceding menu and the response visible',()=>{
  const content='<textarea id="answer">Saved response</textarea><button id="submit">Submit</button>';
  const html=studio.wrap(content,{type:'sst',activeId:'one',items:[{id:'one'}],search:'"<&'});
  const panels=[...html.matchAll(/<details\b[^>]*>[\s\S]*?<\/details>/g)].map(m=>m[0]);
- assert.equal(panels.length,3);assert(panels.every(p=>!/<details[^>]*\bopen\b/.test(p)));
+ assert.equal(panels.length,1);assert(panels.every(p=>!/<details[^>]*\bopen\b/.test(p)));
  const main=panels.reduce((remaining,p)=>remaining.replace(p,''),html);
- assert(main.includes(content));assert.match(html,/id="studio-search"[^>]*value="&quot;&lt;&amp;"/);
- assert.match(studio.wrap(content,{type:'sst',activeId:'one',items:[{id:'one'}]}),/data-listening-open="one"/);
+ assert(main.includes(content));assert.doesNotMatch(html,/studio-side|studio-search|data-listening-open=/);
+ assert.doesNotMatch(studio.wrap(content,{type:'sst',activeId:'one',items:[{id:'one'}]}),/data-listening-open="one"/);
  const library=studio.wrap('<p>Question choices</p>',{type:'sst',library:true,items:[{id:'one'}]});
  assert.doesNotMatch(library,/studio-search|data-listening-open=/);
  const mock=studio.wrap(content,{type:'sst',mock:true});

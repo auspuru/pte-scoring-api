@@ -33,7 +33,7 @@
     "public/full-mock-report.js": "518b1d455ebf44d931408735cbb7388aaaf2d1da8244d58fbfb5b41255e7e76b",
     "public/mock-impact-feedback.js": "0db0538a9d8d7f948135d0dc282ebe02a8721afe1936920fbb0e6214c958beee",
     "public/writing-lab-report.js": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
-    "public/writing-lab-client.js": "b804264cc3a48916e19c48dab765858502889dfd7ad15db4eaca253302a0d44a",
+    "public/writing-lab-client.js": "4671e105b36973146ce0899e528519834fb938026368096b5050d5af6933faed",
     "public/speaking-practice.js": "23de89ada814b58b9645309f2c7816b24330cc92e4b36c435549358a7dee80d4",
     "public/speaking-mock-client.js": "84fd2b9f953748e68f4d3873c9e7ed30e6444a8ed06bb644cf5fa0fb73866eba",
     "public/reading-practice.js": "33da5a971faaf84561f23afe000b9891e3d8e9041575be0eb29eb0956f521832",
@@ -123,5 +123,25 @@
       "persist": "c76d79e9341f2e4eab9d44338511763e42dca0ab31ce268ebc399df7246a2a7a"
     },
     "frozenSnapshotCompatibility": "Exact reviewed Reading UI revision projects to practice-workspace-compatible-sources.json only with every other native dependency unchanged. Existing snapshot, successful marks, providers and weights remain pinned."
+  },
+  "practiceListeningUpdates": {
+    "baselineCommit": "e40b84b8dc3e7993b1b928e98c7996a858d8d350",
+    "scope": "Individual Listening navigation, historical attempts and five-second timed audio lead-in. Protected mock navigation, timers, graders, native save and report renderers preserved.",
+    "nativeFunctions": {
+      "saveAnswer": "2d2caf5923c6cc920ea8ce2b0b76940ad3ab4bc0fb4279265bd080fbc750b832",
+      "nextQuestion": "580b8f57cfe0bc1f8b452d9168019e9c00e7c3d1f8e7e4d87529b03104664edd",
+      "tick": "a299b5b989f9c1b3b528bd59a62abce9aeb705e33a5e2f88eeeedd557fce6355",
+      "reviewCard": "389affe589aae31740f485bd4596922c9388e6496216bdc9a97a1874f656c641",
+      "mockReviewCard": "9e09a87905ecdeee5b12494ada86211fc44806ca68cdd875b2fbe40ac5d24cc6",
+      "scoreRemaining": "ce33e717031daedcc21d3af95647ac81cfae3bc537c53422f5ba0927d9795261",
+      "scoreFeedbackHTML": "560d27929c62edb9e2948aa987626847751752299a7a948e193785b7ae637de2",
+      "overallHTML": "f27ffa51fd5d0310335fa1da1f1af2f473c43f6476efa498d3d1751827c92376",
+      "refreshOverall": "eb1872238220a1a8673dccadb17a3a13fec0dffa40ca6dfe6b6a0cd208dc6c2f",
+      "recordInterruption": "8529c1e23c4fd91dfef749813a41497b08b9fcc4d00957352300792be0b71d3d",
+      "flushIntegrity": "3ea28f133ea4ba509675349f6c0e4d5051b6e2fc099a7196d05fb2f53b96e916",
+      "setMockMode": "5ebf56fb8ce9ca30f1fd71f7db3ab3714dc4c297cbf33330dc1b6263c02f6fc1",
+      "api": "977b6f5c5b464fbaff895613027cc6d677f01476f98e7b09aa5a0d5bc52a1d3f"
+    },
+    "reviewedControllerSha256": "4671e105b36973146ce0899e528519834fb938026368096b5050d5af6933faed"
   }
 }

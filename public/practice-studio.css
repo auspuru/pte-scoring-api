@@ -215,3 +215,10 @@ body[data-section="practice"] #practiceScreen.practice-studio-surface .practice-
 #readingPane .reading-practice-legacy-bar{display:none}
 #readingPane .reading-practice-submit{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:1px solid var(--practice-line)}
 #readingPane .reading-practice-submit [data-save-status]{margin-left:auto;font-size:11px;color:var(--practice-muted)}
+
+/* Individual Listening questions use their menu before entry. */
+#writingLabScreen .studio-focused:not(:has(.studio-library)) .studio-tools{display:none}
+#writingLabScreen .studio-focused .studio-layout{display:block}
+#writingLabScreen .studio-focused .studio-center{max-width:1480px;margin:0 auto;width:100%}
+#writingLabScreen .studio-focused .results-actions [data-reattempt],#writingLabScreen .studio-focused .results-actions [data-tab="history"]{display:none}
+#writingLabScreen .studio-focused .exam-strip{display:flex;justify-content:space-between}

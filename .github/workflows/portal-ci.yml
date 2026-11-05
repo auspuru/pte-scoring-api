@@ -73,6 +73,7 @@ jobs:
             .cache/practice-speaking-*.png
             .cache/practice-writing-*.png
             .cache/practice-reading-*.png
+            .cache/practice-listening-*.png
             public/index.min.js
           include-hidden-files: true
           if-no-files-found: error

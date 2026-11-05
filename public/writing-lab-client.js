@@ -24,7 +24,7 @@
   const grading = new Set();
   let overallTimer, overallPollId = null, overallPollCount = 0;
   const overallPending = new Set();
-  let audio = null, audioAttempt = null, audioFinished = false, audioCountdown, audioSaveAt = 0;
+  let audio = null, audioAttempt = null, audioFinished = false, audioCountdown, audioSaveAt = 0, leadDeadline = 0, leadStorageKey = '';
   const questionKey = () => attempt ? attempt.id + ':' + attempt.index + ':' + attempt.questions[attempt.index].id : '';
   const audioQuestion = q => ['sst','wfd','lmcma','lfi','hcs','lmcsa','smw','hiw'].includes(q.type);
   const practiceTypes=['sst','wfd','lmcma','lfi','hcs','lmcsa','smw','hiw'];
@@ -63,7 +63,7 @@
   }
   async function openPracticeId(testId,button,serial=++navigationSerial,allowCreate=true){
     if(!username){notify('Sign in to your workspace first.');return;}
-    try{writeDraft();await saveAnswer(false);await saving;if(saveConflict)return;}catch(e){notify('Your answer has not saved. Retry before changing questions.');return;}
+    try{writeDraft();stopAudio();await saveAnswer(false);await saving;if(saveConflict)return;}catch(e){notify('Your answer has not saved. Retry before changing questions.');return;}
     if(!attempt)rememberContext(view);
     const rows=await api('/attempts');if(serial!==navigationSerial||!workspaceVisible)return;
     listeningHistory=rows;
@@ -81,7 +81,10 @@
     if(testId){rememberContext(attempt.kind);return openPracticeId(testId,button);}
     return hub(view);
   }
-  function stopAudio() { clearInterval(audioCountdown); if(audio) audio.pause(); }
+  function stopAudio() {
+    if(leadDeadline&&leadStorageKey)storage.put(leadStorageKey,String(Math.max(0,Math.ceil((leadDeadline-Date.now())/1000))));
+    leadDeadline=0;clearInterval(audioCountdown);if(audio)audio.pause();
+  }
   function setMockMode(enabled) {
     window.PortalExamMode?.set('writing', enabled && workspaceVisible, portalShell || root, enabled ? {
       onEvent:recordInterruption,
@@ -309,8 +312,10 @@
   }
   async function reattempt(testId,button,serial=++navigationSerial) {
     if(!username || !testId) return;
+    if(attempt?.kind==='mock')return;
     button.disabled=true;
     try {
+      writeDraft();stopAudio();await saveAnswer(false);await saving;if(saveConflict||serial!==navigationSerial||!workspaceVisible){button.disabled=false;return;}
       // A new UUID keeps the completed attempt and its feedback in My attempts.
       const value=await api('/attempts',{id:crypto.randomUUID(),testId,...(studio?{mode:attempt?.mode||listeningMode}:{})});
       if(serial!==navigationSerial || !workspaceVisible) return;
@@ -333,8 +338,8 @@
     const instruction=q.prompt || (q.type==='wfd'?'Listen and type the sentence.' :sst?'Listen and write a summary of 50–70 words.':q.type==='swt'?'Summarise the passage in one sentence of 5–75 words.':'Write an essay of 200–300 words.');
     const questionHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?(attempt.module==='listening'?'Listening sectional mock':'Writing sectional mock'):'Listening practice')+'</strong><small>'+esc(username)+'</small><label class="mock-volume">Volume <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="'+volume+'" aria-label="Mock volume"></label></div><div class="timer-wrap"><span>'+(q.timeGroup==='listening'?'LISTENING TIME REMAINING':q.timeGroup?'DICTATION TIME REMAINING':'QUESTION TIME REMAINING')+'</span><strong id="timer">'+(supportedPractice()?'Untimed':q.minutes+':00')+'</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main exam-main-'+esc(q.type)+'"><p class="instruction">'+instruction+'</p>'+
       (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Play':'Play')+'</button> '+(supportedPractice()?'<button type="button" id="audio-replay">↻ Replay</button>':'')+'</div><details class="studio-notes"><summary>Notes</summary><label class="answer-label" for="notes">Notes</label><textarea id="notes" '+(attempt.status==='ready'?'disabled':'')+' class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea></details>':'<div class="passage">'+esc(q.text)+'</div>')+
-      (studio&&listening&&supportedPractice()?'<details class="studio-help"><summary>How to answer</summary><p>'+esc(studio.help[q.type])+'</p></details>':'')+(objective?listeningTasks.render(q,attempt.answers[attempt.index]):'')+'<label class="answer-label" for="answer" '+(objective?'hidden':'')+'>Your response</label><textarea id="answer" '+(objective?'hidden':'')+' spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools" '+(objective?'hidden':'')+'><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Words: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'Ready to begin':'Your current answer is saved on this device')+'</p></div><footer class="exam-footer">'+(attempt.kind==='mock'?'':'<button class="secondary" data-leave="1">Exit</button>')+practiceNavigation(true)+'<button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.kind!=='mock'?'Check answer':attempt.index===attempt.questions.length-1?'Finish test':'Submit & next')+'</button></footer>'+practiceNavigation()+'</section>';
-    root.innerHTML=studio&&listeningWorkspace?studioWrap(questionHTML,q.type,attempt.kind==='mock'):questionHTML;
+      (studio&&listening&&supportedPractice()?'<details class="studio-help"><summary>How to answer</summary><p>'+esc(studio.help[q.type])+'</p></details>':'')+(objective?listeningTasks.render(q,attempt.answers[attempt.index]):'')+'<label class="answer-label" for="answer" '+(objective?'hidden':'')+'>Your response</label><textarea id="answer" '+(objective?'hidden':'')+' spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools" '+(objective?'hidden':'')+'><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Words: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'Ready to begin':'Your current answer is saved on this device')+'</p></div><footer class="exam-footer">'+''+'<button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.kind!=='mock'?'Check answer':attempt.index===attempt.questions.length-1?'Finish test':'Submit & next')+'</button></footer></section>';
+    root.innerHTML=studio&&listeningWorkspace?studioWrap((attempt.kind==='mock'?'':practiceNavigation())+questionHTML+practiceHistory(),q.type,attempt.kind==='mock'):(attempt.kind==='mock'?'':practiceNavigation())+questionHTML+practiceHistory();
     if(studio&&listeningWorkspace){bindStudioLibrary();const strip=root.querySelector?.('.exam-strip');if(strip&&attempt.kind!=='mock')strip.insertAdjacentHTML('beforeend','<button type="button" class="studio-bookmark" data-listening-bookmark="'+esc(q.id)+'" aria-label="Bookmark question" aria-pressed="'+bookmarks().includes(q.id)+'">'+(bookmarks().includes(q.id)?'★':'☆')+'</button>');}
     document.getElementById('answer').addEventListener('input',onInput);
     if(objective)listeningTasks.bind(root,q,document.getElementById('answer'),onInput,()=>attempt?.status==='active'&&!moving&&!saveConflict&&!document.getElementById('answer').readOnly&&beforeDeadline()&&!window.PortalExamMode?.isLocked?.('writing'));
@@ -449,6 +454,9 @@
       audio=new Audio(q.audioUrl); audio.volume=volume; audio.preload='auto'; audioAttempt=key; audioSaveAt=0;
       audioFinished=(!!saved?.finished && saved.position>0) || (!!local?.audioFinished && local.audioTime>0);
     }
+    const timedPractice=attempt.kind!=='mock'&&attempt.mode==='exam';
+    const cueKey='ipt-listening-lead:'+username+':'+key;
+    const cueRemaining=()=>{const savedCue=storage.get(cueKey);return savedCue===null?5:Math.max(0,Math.min(5,Number(savedCue)||0));};
     const player=audio, startButton=document.getElementById('audio-start'), status=document.getElementById('audio-status');
     const current=()=>workspaceVisible && attempt?.id===id && attempt.index===index && attempt.status!=='submitted' && audioAttempt===key && status.isConnected;
     // Reopening the same question reuses its player. An old request must not
@@ -512,8 +520,20 @@
       update(); writeDraft();
       if(Date.now()-audioSaveAt>5000) { audioSaveAt=Date.now(); saveAnswer(false); }
     };
+    const leadIn=()=>{
+      if(!current()||document.hidden)return;
+      const remaining=cueRemaining();if(!remaining)return play();
+      leadStorageKey=cueKey;leadDeadline=Date.now()+remaining*1000;
+      const updateCue=()=>{const left=Math.max(0,Math.ceil((leadDeadline-Date.now())/1000));status.textContent='Recording starts in '+left+'…';return left;};
+      startButton.disabled=true;startButton.textContent='Preparing…';updateCue();clearInterval(audioCountdown);
+      audioCountdown=setInterval(()=>{
+        if(!current()||document.hidden){stopAudio();return;}
+        if(updateCue()<=0){leadDeadline=0;storage.put(cueKey,'0');clearInterval(audioCountdown);play();}
+      },200);
+    };
+    const needsLead=()=>timedPractice&&!audioFinished&&player.currentTime===0&&!saved?.plays;
     const ready=()=>{
-      if(!current()) return;
+      if(!current()||leadDeadline) return;
       restorePosition();
       if(audioFinished) { status.textContent=completeText; startButton.classList.add('hidden'); update(); return; }
       startButton.disabled=starting; status.textContent=player.paused?'Ready to play':'Playing…';
@@ -533,6 +553,7 @@
           else status.textContent='Recording starts in '+remaining+'…';
         },1000);
       }
+      if(!prepared&&!starting&&player.paused&&needsLead())leadIn();
       prepared=true;
     };
     player.onloadedmetadata=()=>{restorePosition();update();};
@@ -569,13 +590,19 @@
         player.pause(); writeDraft(); saveAnswer(false);
         return;
       }
+      if(needsLead()&&cueRemaining()>0)return leadIn();
       return play();
     };
   }
-  function practiceNavigation(compact = false) {
-    if(!catalog||!attempt||!practiceTypes.includes(attempt.kind)||(!compact&&attempt.status!=='submitted')||(attempt.mode==='exam'&&attempt.status!=='submitted'))return '';
+  function practiceNavigation() {
+    if(!catalog||!attempt||attempt.kind==='mock'||!practiceTypes.includes(attempt.kind))return '';
     const questions=practiceQueue(attempt.kind),index=questions.findIndex(q=>q.id===attempt.testId);
-    return '<nav class="'+(compact?'question-links':'exam-footer')+'" aria-label="Practice questions"><button class="secondary" data-practice-move="-1" '+(index<=0?'disabled':'')+'>← Previous question</button><button class="secondary" data-tab="'+attempt.kind+'">Question list</button><span>'+(index<0?'Open the question list to select a queue':'Question '+(index+1)+' of '+questions.length)+'</span><button class="secondary" data-practice-move="1" '+(index<0||index>=questions.length-1?'disabled':'')+'>Next question →</button></nav>';
+    return window.PracticeStudio.questionToolbar({title:report.labels[attempt.kind],position:index<0?'Choose a question from the list':'Question '+(index+1)+' of '+questions.length,mode:attempt.mode==='practice'?'Untimed practice':'Timed practice',status:attempt.status==='submitted'?'Completed':'In progress',className:'listening-practice-dock',actions:'<button type="button" class="secondary" data-tab="'+esc(attempt.kind)+'">← Return to questions</button><button type="button" class="secondary" data-reattempt="'+esc(attempt.testId)+'">↻ Reattempt</button><button type="button" class="secondary" data-practice-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><button type="button" class="secondary" data-practice-move="1" '+(index<0||index>=questions.length-1?'disabled':'')+'>Next →</button>'});
+  }
+  function practiceHistory() {
+    if(!attempt||attempt.kind==='mock'||!practiceTypes.includes(attempt.kind))return '';
+    const rows=listeningHistory.filter(a=>a.testId===attempt.testId&&a.id!==attempt.id).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));
+    return window.PracticeStudio.attemptHistory(rows.map((a,i)=>({id:a.id,label:'Attempt '+(rows.length-i),date:window.PracticeStudio.brisbaneDate(a.startedAt),mode:a.mode==='practice'?'Untimed practice':'Timed practice',status:a.status==='submitted'?(a.total==null?'Feedback pending':a.total+'/'+a.maximum+' marks'):'In progress',actions:'<button type="button" class="secondary" data-listening-attempt="'+esc(a.id)+'">'+(a.status==='submitted'?'Answer &amp; feedback':'Resume saved attempt')+'</button>'})));
   }
   async function movePractice(direction,button) {
     if(moving||saveConflict||!attempt)return;
@@ -652,7 +679,7 @@
     const summary=report.summarize(attempt.questions,attempt.results,attempt), scored=summary.complete;
     const scoreNote='Practice results.';
     const retry=practiceTypes.includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
-    let resultsHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?scoreNote:'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="overall-feedback"></div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+practiceNavigation()+'</section>';
+    let resultsHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?scoreNote:'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="overall-feedback"></div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+'</section>';
     if(attempt.kind==='mock'&&window.MockReportUI){
       const layout=window.MockReportUI,skill=attempt.module==='listening'?'Listening':'Writing';
       const taskFilters='<div class="ipr-section-tabs" role="group" aria-label="Filter answers by task"><button type="button" data-mock-filter="all" aria-pressed="true">All tasks</button>'+[...new Set(attempt.questions.map(q=>q.type))].map(type=>'<button type="button" data-mock-filter="'+esc(type)+'" aria-pressed="false">'+esc(report.labels[type])+'</button>').join('')+'</div>';
@@ -665,7 +692,7 @@
         status:'<div id="scoring-status" class="scoring-status"></div>'})+'</section>';
     }
     const listeningOnly=attempt.module==='listening'||(attempt.kind!=='mock'&&practiceTypes.includes(attempt.kind));setListeningStyle(listeningOnly);
-    root.innerHTML=studio&&listeningOnly?studioWrap(resultsHTML,attempt.questions[0].type,attempt.kind==='mock'):resultsHTML;bindStudioLibrary();
+    root.innerHTML=studio&&listeningOnly?studioWrap((attempt.kind==='mock'?'':practiceNavigation())+resultsHTML+practiceHistory(),attempt.questions[0].type,attempt.kind==='mock'):resultsHTML;bindStudioLibrary();
     questionChanged();
     const overallTarget=document.getElementById('overall-feedback');
     if(overallTarget){overallTarget.innerHTML=overallHTML();bindOverall();}
@@ -770,7 +797,7 @@
     if (tab==='history') { historyKind=request.kind||'mock'; return hub(tab); }
     const kind=tab==='mocks'?'mock':tab;
     historyKind=kind;
-    if (attempt?.kind===kind && ['active','ready'].includes(attempt.status)) return showAttempt();
+    if (kind==='mock' && attempt?.kind===kind && ['active','ready'].includes(attempt.status)) return showAttempt();
     return hub(tab);
   }
   async function suspend() {
@@ -820,12 +847,13 @@
     if(b.disabled)return;
     if(b.dataset.listeningMode)return changeListeningMode(b.dataset.listeningMode,b);
     if(b.dataset.listeningType){studioSearch='';studioFilter='all';writeDraft();await saveAnswer(false);if(saveConflict)return;stopAudio();return returnToPortal(b.dataset.listeningRoute);}
+    if(b.dataset.listeningAttempt){if(attempt?.kind==='mock')return;const serial=++navigationSerial;writeDraft();stopAudio();await saveAnswer(false);try{await saving;}catch{notify('Your answer has not saved. Retry before changing attempts.');return;}if(saveConflict||serial!==navigationSerial||!workspaceVisible)return;return resume(b.dataset.listeningAttempt,b,serial);}
     if(b.dataset.listeningOpen){rememberContext(attempt?.kind||view);practiceContext.selectedId=b.dataset.listeningOpen;return openPracticeId(b.dataset.listeningOpen,b);}
     if(b.dataset.listeningBookmark){const id=b.dataset.listeningBookmark,items=bookmarks(),selected=!items.includes(id);storage.put('ipt-listening-bookmarks:'+username,JSON.stringify(selected?[...items,id]:items.filter(x=>x!==id)));b.textContent=selected?'★':'☆';b.setAttribute('aria-pressed',String(selected));return;}
     if(b.dataset.libraryPage!==undefined){libraryPage=Math.max(0,Number(b.dataset.libraryPage));rememberContext(view);if(studio)renderPracticeCards();else return hub(view);return;}
     if(b.dataset.practiceMove!==undefined)return movePractice(Number(b.dataset.practiceMove),b);
     if(b.dataset.portal) { writeDraft();await saveAnswer(false);try{await saving;}catch{notify('Your answer has not saved. Retry before leaving.');return;}if(saveConflict)return;stopAudio();return returnToPortal(b.dataset.portal); }
-    if(b.dataset.tab){writeDraft();await saveAnswer(false);try{await saving;}catch{notify('Your answer has not saved. Retry before leaving.');return;}if(saveConflict)return;return hub(b.dataset.tab);}
+    if(b.dataset.tab){writeDraft();stopAudio();await saveAnswer(false);try{await saving;}catch{notify('Your answer has not saved. Retry before leaving.');return;}if(saveConflict)return;return hub(b.dataset.tab);}
     if(b.dataset.start) return studio?openPracticeId(b.dataset.start,b):start(b.dataset.start,b);
     if(b.dataset.reattempt) return reattempt(b.dataset.reattempt,b);
     if(b.dataset.resume) return resume(b.dataset.resume,b);

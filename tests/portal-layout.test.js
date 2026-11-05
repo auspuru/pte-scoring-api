@@ -31,3 +31,8 @@ test('Reading workspace keeps the native answer scoring, explanations, completio
  const source=fs.readFileSync(path.join(__dirname,'../public/reading-practice.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceReadingUpdates.nativeFunctions;
  for(const [name,expected] of Object.entries(pins)){const match=new RegExp('^  (?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^  (?:async )?function /m.exec(source.slice(offset));const body=source.slice(match.index,next?offset+next.index:source.length).trim();assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);}
 });
+
+test('Listening workspace preserves native saving, grading, feedback, mock timer and integrity functions',()=>{
+ const source=fs.readFileSync(path.join(__dirname,'../public/writing-lab-client.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceListeningUpdates.nativeFunctions;
+ for(const [name,expected] of Object.entries(pins)){const match=new RegExp('^  (?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^  (?:async )?function /m.exec(source.slice(offset));const body=source.slice(match.index,next?offset+next.index:source.length).trim();assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);}
+});

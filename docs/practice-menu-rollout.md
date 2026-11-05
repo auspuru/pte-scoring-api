@@ -12,3 +12,5 @@ Each phase requires its focused native browser checks, regression/build checks a
 Phase 2 uses a standalone presentation adapter around the existing SWT/Essay handlers. It does not replace submitters, graders, saved feedback or report renderers. SWT selection is a separate menu; per-question drafts and clocks return to their original question, and saved-result actions carry the exact timestamp/attempt ID.
 
 Phase 3 retains every Reading practice session on explicit Reattempt, reuses the selected saved session from its menu, and exposes exact historical answers beneath the native question. Five current Reading task types share the dock; native graders and protected mock players remain unchanged.
+
+Phase 4 removes the second Listening question chooser, applies the common dock to active and completed individual attempts, and links exact historical response IDs. Timed audio has an owner/attempt-scoped five-second lead-in that pauses on departure. Native server deadlines, single playback, saved answers, graders and report renderers are preserved.
