@@ -47,7 +47,7 @@ test('Final ASQ transcription exclusion uses instructor confirmation without a c
  await details.onclick({target:button});assert.equal(requests.length,2);assert.equal(requests[1].body.mode,'failed-transcription');assert.equal(requests[1].body.confirmInstructorExclusion,true);assert.equal(requests[1].body.confirmUnusableAudio,undefined);
  assert.deepEqual(requests[1].body.questionIds,['asq-final']);assert.match(host.querySelector('[data-full-notice]').textContent,/Result ready/);
 });
-test('Admin can select a submitted attempt, send saved audio, review changes and explicitly publish',async()=>{
+test('Admin can send saved audio and still explicitly publish an older saved proposal',async()=>{
  const {document}=parseHTML('<html><body><div id="host"></div></body></html>'),host=document.getElementById('host'),requests=[];
  const d={...diagnostic(),ready:true,questions:[]},op='delivery:fixed-operation';
  let reviewed=false,published=false;
@@ -62,7 +62,7 @@ test('Admin can select a submitted attempt, send saved audio, review changes and
  assert(host.querySelector('[data-delivery-send]'),host.querySelector('[data-full-notice]').textContent+JSON.stringify(requests));await details.onclick({target:host.querySelector('[data-delivery-send]')});assert.match(details.textContent,/70 → 65/);assert.equal(published,false);
  await details.onclick({target:host.querySelector('[data-delivery-publish]')});assert.equal(published,false);
  host.querySelector('[data-delivery-confirm]').checked=true;await details.onclick({target:host.querySelector('[data-delivery-publish]')});assert.equal(published,true);
- assert.deepEqual(requests.find(r=>r.path.endsWith('/send')).body,{questionIds:['di-1'],evidenceHash:'evidence',operation:op});
+ assert.deepEqual(requests.find(r=>r.path.endsWith('/send')).body,{questionIds:['di-1'],evidenceHash:'evidence',operation:op,autoPublish:true});
  assert.match(host.querySelector('[data-full-notice]').textContent,/Replacement scores published/);
 });
 test('An incomplete proposed report shows the reason and does not offer publication',()=>{

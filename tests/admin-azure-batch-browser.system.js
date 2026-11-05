@@ -21,11 +21,9 @@ test('Admin real HTTP clicks queue selected and whole-mock audio, show progress 
   assert.equal(await page.$$eval('[data-delivery-question]',inputs=>inputs.length),2);
   if(width===390)await page.locator('[data-delivery-send-all]').click();else{await page.locator('[data-delivery-select-all]').click();assert.equal(await page.$$eval('[data-delivery-question]',inputs=>inputs.filter(input=>input.checked).length),2);await page.locator('[data-delivery-send-selected]').click();}
   await page.waitForFunction(()=>document.querySelector('[data-full-notice]').textContent.includes('Azure reassessment:'));
-  await page.waitForSelector('[data-delivery-publish]',{timeout:15000});assert.equal(posts.length,1);assert.equal(posts[0].questionIds.length,2);assert.equal(calls,2);
-  assert.deepEqual((await f.store.get(f.owner,f.id)).state.assessment,before.assessment);
-  await page.locator('[data-delivery-publish]').click();assert.match(await page.$eval('[data-full-notice]',node=>node.textContent),/Confirm replacement/);
-  await page.locator('[data-delivery-confirm]').click();await fs.mkdir('.cache',{recursive:true});await page.screenshot({path:'.cache/admin-azure-batch-'+width+'.png',fullPage:true});
-  await page.locator('[data-delivery-publish]').click();await page.waitForFunction(()=>document.querySelector('[data-full-notice]').textContent.startsWith('Replacement scores published.'));
+  await page.waitForFunction(()=>document.querySelector('[data-full-notice]').textContent.startsWith('Replacement scores published.'),{timeout:15000});
+  assert.equal(posts.length,1);assert.equal(posts[0].questionIds.length,2);assert.equal(posts[0].autoPublish,true);assert.equal(calls,2);
+  await fs.mkdir('.cache',{recursive:true});await page.screenshot({path:'.cache/admin-azure-batch-'+width+'.png',fullPage:true});
   const after=(await f.store.get(f.owner,f.id)).state;assert.equal(after.assessment.items[f.q.id].result.scores.fluency,2);assert.deepEqual(after.responses,before.responses);assert.equal(await page.$eval('#fullMockRecoveryPanel',el=>el.scrollWidth<=el.clientWidth+1),true);assert.deepEqual(errors,[]);
  });
 });

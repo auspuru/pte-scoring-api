@@ -199,6 +199,24 @@ function createStore({ pool, directory }) {
     }
     return rows.slice(0, 100);
   }
-  return { initialise, create, get, update, list, active, putChunk, getChunk, assessmentQueue };
+  async function deliveryQueue() {
+    await initialise();
+    if (pool) return (await pool.query(`SELECT username,state->>'id' AS id,op.key AS operation FROM full_mock_attempts
+      CROSS JOIN LATERAL jsonb_each(CASE WHEN jsonb_typeof(state->'deliveryReassessments')='object' THEN state->'deliveryReassessments' ELSE '{}'::jsonb END) op
+      WHERE state->>'status'='submitted' AND op.value->>'batch'='true' AND op.value->>'autoPublish'='true'
+      AND (op.value->>'status' IN ('queued','running','paused') OR (op.value->>'status' IN ('review','partial')
+        AND COALESCE(op.value->>'autoPublishError','false')<>'true' AND EXISTS (SELECT 1 FROM jsonb_array_elements(CASE WHEN jsonb_typeof(op.value->'items')='array' THEN op.value->'items' ELSE '[]'::jsonb END) item WHERE item->>'status'='complete')))
+      ORDER BY updated_at LIMIT 100`)).rows.map(row=>({uid:row.username,id:row.id,operation:row.operation}));
+    const rows=[];
+    for(const dir of await fs.readdir(directory,{withFileTypes:true})){
+      if(!dir.isDirectory())continue;const index=await readVersion(path.join(directory,dir.name,'index'));if(!index)continue;
+      for(const id of index.value.ids.slice(-100)){
+        const saved=await readVersion(path.join(directory,dir.name,id,'state'));if(saved?.value.status!=='submitted')continue;
+        for(const [operation,op] of Object.entries(saved.value.deliveryReassessments||{}))if(op.batch&&op.autoPublish&&(['queued','running','paused'].includes(op.status)||['review','partial'].includes(op.status)&&!op.autoPublishError&&op.items?.some(item=>item.status==='complete')))rows.push({uid:index.value.owner,id,operation});
+      }
+    }
+    return rows.slice(0,100);
+  }
+  return { initialise, create, get, update, list, active, putChunk, getChunk, assessmentQueue, deliveryQueue };
 }
 module.exports = { createStore, casFile, readVersion, hash, uuid, fail };

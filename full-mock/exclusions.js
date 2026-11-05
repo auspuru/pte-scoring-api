@@ -6,14 +6,20 @@ const DELIVERY_VERSION = 'full-mock-instructor-delivery-exclusion-2026-11-02.1';
 const AUTOMATIC_VERSION = 'full-mock-final-question-release-2026-11-02.1';
 const UNCLEAR_AUDIO_VERSION = 'full-mock-unclear-audio-release-2026-11-04.1';
 const TRANSCRIPTION_VERSION = 'full-mock-instructor-transcription-exclusion-2026-11-04.1';
+const AVAILABLE_VERSION = 'full-mock-available-marks-exclusion-2026-11-06.1';
 const automaticRetries = require('../mock-recovery-policy').DELAYS.length;
 const spoken = new Set(['ra','rs','di','rl','asq','sgd','rts']);
 const failedStage = {'transcription-unavailable':'transcription','content-unavailable':'content','delivery-unavailable':'delivery','writing-unavailable':'writing'};
 const inputHash = response => require('./aggregation').inputHash(response);
 const automaticOperation = (state,candidate,response,job) => 'automatic-final:'+digest({attempt:state.id,question:candidate.id,input:inputHash(response),snapshot:state.assessment.snapshotHash,job:digest(job)}).slice(0,40);
 const unclearOperation = (state,candidate,response,job) => 'unclear-audio:'+digest({attempt:state.id,question:candidate.id,input:inputHash(response),snapshot:state.assessment.snapshotHash,job:digest(job)}).slice(0,40);
+const responseIdentity = response => digest({token:response.token,sealed:response.sealed,reason:response.reason,answer:response.answer});
 function validExclusion(state, candidate, response, job) {
   const value = state.assessment?.exclusions?.[candidate.id];
+  if (value?.version === AVAILABLE_VERSION) return !!(require('./aggregation').availableMarks(state)
+    && response?.sealed && job && value.responseIdentity === responseIdentity(response) && value.snapshotHash === state.assessment.snapshotHash
+    && value.previousJobHash === digest(job) && typeof value.inputHash === 'string' && typeof value.note === 'string'
+    && value.note.length >= 10 && Number.isFinite(value.at) && value.operation === 'available-marks:'+digest({attempt:state.id,question:candidate.id,input:value.inputHash,snapshot:value.snapshotHash,job:value.previousJobHash}).slice(0,40));
   if(value?.reason==='instructor-review-unavailable')return require('../mock-result-review').fullExclusion(state,candidate,response,job,value);
   const supported = value && response && job && (value.version === VERSION && value.reason === 'unusable-audio' && candidate.question.type === 'asq'
     || value.version === DELIVERY_VERSION && value.reason === 'instructor-delivery-exclusion' && candidate.question.type === 'rs'
@@ -26,6 +32,34 @@ function validExclusion(state, candidate, response, job) {
     && response?.sealed && job?.status === 'failed' && value.inputHash === inputHash(response)
     && value.snapshotHash === state.assessment.snapshotHash && value.previousJobHash === digest(job)
     && typeof value.note === 'string' && value.note.length >= 10 && !!value.operation && Number.isFinite(value.at);
+}
+// Record the exact assessment and input at publication. Later audio uploads are
+// retained but cannot silently change this report; an explicit reassessment can.
+function releaseAvailable(state,paper,at,{leaseId}={}) {
+  const a=state.assessment;
+  if (!require('./aggregation').availableMarks(state) || state.status!=='submitted'
+    || a.lease?.expiresAt>at && a.lease.id!==leaseId) return false;
+  const result=require('./aggregation').aggregate(paper,state), pending=result.items.filter(row=>!['assessed','excluded'].includes(row.status));
+  if (!pending.length) return false;
+  for (const row of pending) {
+    const index=paper.questions.findIndex(q=>q.id===row.id),candidate=paper.questions[index],response=state.responses[index+1],job=a.items[row.id];
+    if (!response?.sealed || !job || job.status==='processing' || job.snapshotHash!==a.snapshotHash || job.inputHash!==inputHash(response)) return false;
+  }
+  a.exclusions||={};a.exclusionOperations||={};
+  for (const row of pending) {
+    const index=paper.questions.findIndex(q=>q.id===row.id),candidate=paper.questions[index],response=state.responses[index+1],job=a.items[row.id];
+    const segments=(response.segments||[]).filter(s=>!s.cancelled&&s.chunkCount!==0);
+    const empty=['unintelligible_audio','quiet_audio'].includes(job.stages?.transcription?.failureCode) && job.stages.transcription.uncertain===false;
+    const quiet=job.stages?.transcription?.failureCode==='quiet_audio';
+    const missing=spoken.has(candidate.question.type)&&!segments.length;
+    const incomplete=spoken.has(candidate.question.type)&&segments.some(s=>!s.finished||!s.chunkCount||Object.keys(s.chunks||{}).length!==s.chunkCount);
+    const reason=missing?'recording-missing':empty?'unintelligible-audio':incomplete?'recording-incomplete':'assessment-unavailable';
+    const note=missing?'No recording was available when this report was prepared. The question does not contribute to the score.':quiet?'This recording was too quiet to assess. The question does not contribute to the score.':empty?'No intelligible speech was recognised in this recording. The question does not contribute to the score.':incomplete?'The recording was incomplete when this report was prepared. The question does not contribute to the score.':'The assessment was unavailable when this report was prepared. The saved response is retained and the question does not contribute to the score.';
+    const savedInput=inputHash(response),previousJobHash=digest(job),operation='available-marks:'+digest({attempt:state.id,question:row.id,input:savedInput,snapshot:a.snapshotHash,job:previousJobHash}).slice(0,40);
+    a.exclusions[row.id]={version:AVAILABLE_VERSION,reason,note,operation,at,inputHash:savedInput,responseIdentity:responseIdentity(response),snapshotHash:a.snapshotHash,previousJobHash};
+    a.exclusionOperations[operation]={at,questionIds:[row.id],automatic:true,inputHash:savedInput,previousJobHash};
+  }
+  return true;
 }
 function deliveryEligible(state, paper, candidate, response, job) {
   if (candidate.question.type !== 'rs' || !response?.sealed || job?.status !== 'failed'
@@ -206,4 +240,4 @@ function createSupport({ store, validate, now = Date.now }) {
   }
   return { inspect, exclude:(owner,id,body)=>exclude(owner,id,body), excludeDelivery:(owner,id,body)=>exclude(owner,id,body,'delivery') };
 }
-module.exports = { VERSION, DELIVERY_VERSION, AUTOMATIC_VERSION, UNCLEAR_AUDIO_VERSION, TRANSCRIPTION_VERSION, validExclusion, evidenceHash, releaseUnclearAudio, releaseExhausted, eligible, deliveryEligible, transcriptionEligible, createSupport };
+module.exports = { VERSION, DELIVERY_VERSION, AUTOMATIC_VERSION, UNCLEAR_AUDIO_VERSION, TRANSCRIPTION_VERSION, AVAILABLE_VERSION, validExclusion, evidenceHash, releaseAvailable, releaseUnclearAudio, releaseExhausted, eligible, deliveryEligible, transcriptionEligible, createSupport };

@@ -12,7 +12,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
   selectedPapers.set(paper.id, paper);
   const store = createStore({ pool, directory }), router = express.Router();
   const assessor = assessment ? require('./assessment').createEngine({ store, now, paper, ...assessment }) : null;
-  let sweep;
+  let sweep, deliveryReview;
   const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(error => res.status(error.status || 503).json({ error: error.status ? error.message : 'This action could not finish. Your saved responses are retained; retry when connected.' }));
   if (requireAdmin && assessor) {
     const support = require('./exclusions').createSupport({ store, now, validate:assessor.validate });
@@ -23,7 +23,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     admin.post('/:username/:id/scoring/exclude-audio', wrap(async (req, res) => res.json(await support.exclude(req.params.username, req.params.id, req.body))));
     admin.post('/:username/:id/scoring/exclude-delivery', wrap(async (req, res) => res.json(await support.excludeDelivery(req.params.username, req.params.id, req.body))));
     admin.post('/:username/:id/scoring/review', wrap(async(req,res)=>{await assessor.review(req.params.username,req.params.id,req.body||{});res.json(await support.inspect(req.params.username,req.params.id));}));
-    const deliveryReview = require('./delivery-reassessment').create({...deliveryReassessment, store, now, validate:assessor.validate});
+    deliveryReview = require('./delivery-reassessment').create({assessContent:assessor.prepareContent,...deliveryReassessment, store, now, validate:assessor.validate});
     admin.get('/:username/:id/scoring/delivery', wrap(async(req,res)=>res.json(await deliveryReview.inspect(req.params.username,req.params.id))));
     admin.post('/:username/:id/scoring/delivery/send', wrap(async(req,res)=>res.json(await deliveryReview.send(req.params.username,req.params.id,req.body||{}))));
     admin.post('/:username/:id/scoring/delivery/publish', wrap(async(req,res)=>res.json(await deliveryReview.publish(req.params.username,req.params.id,req.body||{}))));
@@ -86,7 +86,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     if (!selected) throw fail('Unknown full mock.', 400);
     if (!available(req.fullMock, selected)) throw fail('This full mock is not available for student attempts yet.', 403);
     if (req.body?.checks?.microphone !== true || req.body?.checks?.playback !== true) throw fail('Complete the microphone and playback checks first.', 400);
-    const make = (id, at) => session.create(id, selected, at, { preview: selected.status !== 'released' && req.fullMock.preview, assessmentSnapshot: assessor?.snapshotFor(selected), sectionTransitions });
+    const make = (id, at) => session.create(id, selected, at, { preview: selected.status !== 'released' && req.fullMock.preview, assessmentSnapshot: assessor?.snapshotFor(selected), sectionTransitions, availableMarks:true });
     let record = await store.create(req.fullMock.uid, req.body.id, selected, make, now());
     record = await read(req.fullMock.uid, record.state.id, req.fullMock);
     if (record.state.status === 'submitted' && record.state.id !== req.body.id) record = await store.create(req.fullMock.uid, req.body.id, selected, make, now());
@@ -182,7 +182,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
   async function reconcileAll() {
     for (const value of await store.active(now())) { try { await read(value.uid, value.id); } catch { /* A transient failure retains the existing attempt. */ } }
   }
-  function start() { assessor?.start(); if (!sweep) { sweep = setInterval(() => reconcileAll().catch(() => {}), 10000); sweep.unref?.(); } }
+  function start() { assessor?.start(); if (!sweep) { const tick=()=>Promise.allSettled([reconcileAll(),deliveryReview?.recover()]);sweep = setInterval(tick, 10000); sweep.unref?.();deliveryReview?.recover().catch(()=>{}); } }
   function stop() { clearInterval(sweep); sweep = null; return assessor?.stop(); }
   return { store, assessor, start, stop, reconcileAll };
 }
