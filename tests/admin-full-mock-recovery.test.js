@@ -47,3 +47,21 @@ test('Final ASQ transcription exclusion uses instructor confirmation without a c
  await details.onclick({target:button});assert.equal(requests.length,2);assert.equal(requests[1].body.mode,'failed-transcription');assert.equal(requests[1].body.confirmInstructorExclusion,true);assert.equal(requests[1].body.confirmUnusableAudio,undefined);
  assert.deepEqual(requests[1].body.questionIds,['asq-final']);assert.match(host.querySelector('[data-full-notice]').textContent,/Result ready/);
 });
+test('Admin can select a submitted attempt, send saved audio, review changes and explicitly publish',async()=>{
+ const {document}=parseHTML('<html><body><div id="host"></div></body></html>'),host=document.getElementById('host'),requests=[];
+ const d={...diagnostic(),ready:true,questions:[]},op='delivery:fixed-operation';
+ let reviewed=false,published=false;
+ const delivery=()=>({owner:'student',attemptId:id,paperId:'full-mock-1',paperVersion:1,evidenceHash:'evidence',profiles:{speaking:{practiceIndex:70}},questions:[{id:'di-1',number:17,type:'di',previous:{pronunciation:4,fluency:4}}],operations:reviewed?{[op]:{questionId:'di-1',status:published?'published':'review',evidenceHash:'evidence',previous:{result:{scores:{pronunciation:4,fluency:4}}},result:{pronunciation:{score:3},fluency:{score:2}},proposedProfiles:{speaking:{practiceIndex:65}}}}:{}});
+ const ui=mount(host,{username:'student',operationId:()=> 'fixed-operation',request:async(path,body)=>{
+  requests.push({path,body});if(path.endsWith('/attempts'))return {owner:'student',attempts:[{id,paperId:'full-mock-1',submittedAt:1000}]};
+  if(path.endsWith('/send'))reviewed=true;if(path.endsWith('/publish'))published=true;
+  return path.includes('/delivery')?delivery():d;
+ }});
+ await host.querySelector('[data-full-list]').onclick();const select=host.querySelector('[data-full-select]');select.querySelector('option[value="'+id+'"]').setAttribute('selected','');select.onchange();await ui.inspect();
+ const details=host.querySelector('[data-full-diagnostics]');await details.onclick({target:host.querySelector('[data-delivery-load]')});
+ assert(host.querySelector('[data-delivery-send]'),host.querySelector('[data-full-notice]').textContent+JSON.stringify(requests));await details.onclick({target:host.querySelector('[data-delivery-send]')});assert.match(details.textContent,/70 → 65/);assert.equal(published,false);
+ await details.onclick({target:host.querySelector('[data-delivery-publish]')});assert.equal(published,false);
+ host.querySelector('[data-delivery-confirm]').checked=true;await details.onclick({target:host.querySelector('[data-delivery-publish]')});assert.equal(published,true);
+ assert.deepEqual(requests.find(r=>r.path.endsWith('/send')).body,{questionId:'di-1',evidenceHash:'evidence',operation:op});
+ assert.match(host.querySelector('[data-full-notice]').textContent,/Replacement scores published/);
+});
