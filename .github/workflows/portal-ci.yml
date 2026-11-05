@@ -69,6 +69,7 @@ jobs:
             .cache/speaking-mock-timer-*.png
             .cache/admin-result-review-*.png
             .cache/portal-layout-*.png
+            .cache/practice-speaking-*.png
             public/index.min.js
           include-hidden-files: true
           if-no-files-found: error

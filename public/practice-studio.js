@@ -62,5 +62,15 @@
     const byId = new Map(items.map(item => [item[key], item]));
     return [...new Set(ids)].map(id => byId.get(id)).filter(Boolean);
   }
-  return { navigation, heading, wrap, install, focusQuestion, pinNavigation, selectedQueue };
+  function questionToolbar({title='',position='',mode='',status='',attempt='',actions='',className='',label='Practice questions'}={}) {
+    return '<nav class="practice-question-toolbar '+esc(className)+'" aria-label="'+esc(label)+'"><div class="practice-question-context"><strong>'+esc(title)+'</strong><div><span>'+esc(position)+'</span>'+(attempt?'<span>'+esc(attempt)+'</span>':'')+(mode?'<span>'+esc(mode)+'</span>':'')+(status?'<span class="practice-attempt-status">'+esc(status)+'</span>':'')+'</div></div><div class="practice-question-actions">'+actions+'</div></nav>';
+  }
+  function attemptHistory(rows,{empty='No earlier attempts for this question.',label='Previous attempts'}={}) {
+    return '<section class="practice-attempt-history" aria-label="'+esc(label)+'"><header><h3>'+esc(label)+' <span>'+rows.length+'</span></h3><p>For this question · Newest first · Your saved responses and feedback remain separate.</p></header>'+(rows.length?'<div class="practice-attempt-table-scroll"><table><thead><tr><th>Attempt</th><th>Saved · Brisbane</th><th>Mode</th><th>Status</th><th><span class="sr-only">Open result</span></th></tr></thead><tbody>'+rows.map(row=>'<tr data-practice-attempt="'+esc(row.id)+'"><td>'+esc(row.label)+'</td><td>'+esc(row.date)+'</td><td>'+esc(row.mode)+'</td><td>'+esc(row.status)+'</td><td>'+row.actions+'</td></tr>').join('')+'</tbody></table></div>':'<p class="practice-attempt-empty">'+esc(empty)+'</p>')+'</section>';
+  }
+  function brisbaneDate(value) {
+    const date=new Date(value);if(!Number.isFinite(date.getTime()))return 'Saved attempt';
+    return date.toLocaleString('en-AU',{timeZone:'Australia/Brisbane',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  }
+  return { navigation, heading, wrap, install, focusQuestion, pinNavigation, selectedQueue, questionToolbar, attemptHistory, brisbaneDate };
 });

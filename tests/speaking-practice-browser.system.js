@@ -17,7 +17,7 @@ for(const width of [1365,390])test('Speaking practice '+width+'px: RTS modes plu
  await page.evaluate(()=>__offset+=120000);assert.equal(await page.$eval('#speaking-clock',e=>e.textContent),'Untimed');await click('#speaking-ready-start');await page.waitForFunction(()=>__bytes>100);
  await page.evaluate(()=>__offset+=120000);assert.equal(await page.$eval('#speaking-phase',e=>e.textContent),'● Recording');await click('#speaking-finish');
  await until(async()=>!!(await service.store.list('fixture'))[0]?.recording,'Untimed response did not save');await page.waitForFunction(()=>!document.querySelector('[data-speaking-action="list"]').disabled);await click('[data-speaking-action="list"]');
- await click('[data-speaking-mode="timed"]');await click('[data-speaking-question="rts-original-20261024-01"]');await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Preparation');
+ await click('[data-speaking-mode="timed"]');await click('[data-speaking-question="rts-original-20261024-01"]');await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Audio starts in');assert.equal(await page.$eval('#speaking-clock',e=>e.textContent),'0:05');await page.evaluate(()=>__offset+=5001);await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Preparation');
  assert.equal(await page.$eval('#speaking-clock',e=>e.textContent),'0:10');assert.equal(await page.evaluate(()=>__records),1);await page.evaluate(()=>__offset+=9000);assert.equal(await page.evaluate(()=>__records),1);await page.evaluate(()=>__offset+=1100);await page.waitForFunction(()=>__records===2);
  const previousBytes=await page.evaluate(()=>__bytes);await page.waitForFunction(bytes=>__bytes>bytes+100,{},previousBytes);await page.evaluate(()=>__offset+=40001);await until(async()=>(await service.store.list('fixture')).filter(a=>a.recording).length===2,'Timed response did not stop and save');
  for(const [type,questionId,seconds] of [['rl','rl-1',40],['sgd','sgd-1',120]]){
@@ -38,7 +38,14 @@ for(const width of [1365,390])test('Speaking practice '+width+'px: RTS modes plu
   await until(async()=>(await service.store.list('fixture')).some(a=>a.questionId===questionId&&a.recording),'Buffered response did not stop and save');
   await page.waitForFunction(()=>!document.querySelector('[data-speaking-action="list"]').disabled);await click('[data-speaking-action="list"]');
  }
- const attempts=await service.store.list('fixture');assert.equal(attempts.length,4);assert.deepEqual(attempts.filter(a=>a.questionId==='rts-original-20261024-01').map(a=>a.practiceMode).sort(),['timed','untimed']);assert.deepEqual(errors,[]);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+ const attempts=await service.store.list('fixture');assert.equal(attempts.length,4);assert.deepEqual(attempts.filter(a=>a.questionId==='rts-original-20261024-01').map(a=>a.practiceMode).sort(),['timed','untimed']);await page.evaluate(()=>SpeakingPractice.open('rs'));await click('[data-speaking-question="rs-1"]');await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Audio starts in');
+ const draft=(await service.store.list('fixture')).find(a=>a.questionId==='rs-1');await page.evaluate(()=>__offset+=2000);await click('[data-speaking-action="list"]');await click('[data-speaking-question="rs-1"]');
+ await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent.includes('paused'));assert.equal((await service.store.list('fixture')).filter(a=>a.questionId==='rs-1').length,1);assert.match(await page.$eval('#speaking-clock',e=>e.textContent),/0:0[23]/);
+ await click('#speaking-record');await page.evaluate(()=>__offset+=3500);await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Listening');assert.equal(await page.$eval('[data-speaking-action="reattempt"]',e=>e.disabled),false);assert.equal(await page.$eval('[data-speaking-move="1"]',e=>e.disabled),false);
+ await click('[data-speaking-action="reattempt"]');await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Audio starts in');await page.waitForFunction(()=>document.querySelector('#speaking-question-history [data-speaking-attempt]'));
+ assert.equal((await service.store.list('fixture')).filter(a=>a.questionId==='rs-1').length,2);assert(await page.$eval('#speaking-question-history',e=>e.textContent.includes('Previous attempts')));assert((await service.store.get('fixture',draft.id)));
+ await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','practice-speaking-'+width+'.png')});
+ assert.deepEqual(errors,[]);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
 });
 
 

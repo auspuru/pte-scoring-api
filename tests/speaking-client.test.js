@@ -87,14 +87,14 @@ test('Describe Image practice uses a matching clear file and retains the saved o
  h.controller.reset();
 });
 test('Repeat Sentence practice waits for one beep, then records the complete 15-second response',async()=>{
- const h=harness({audioCue:true});await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});
+ const h=harness({audioCue:true});await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.tick(5000);await flush();
  assert.equal(h.cueAudio.tones.length,0);assert.equal(h.recorders.length,0);
  const ended=h.audio[0].onended;ended();ended();assert.equal(h.cueAudio.tones.length,1);assert.equal(h.recorders.length,0);assert.equal(h.nodes.get('speaking-phase').textContent,'Get ready');
  h.tick(299);assert.equal(h.recorders.length,0);h.tick(1);assert.equal(h.recorders.length,1);
  assert(h.recorders[0].startedAt>=h.cueAudio.tones[0].stoppedAt*1000);h.tick(14999);assert.equal(h.recorders[0].state,'recording');h.tick(1);assert.equal(h.recorders[0].state,'inactive');await flush();
 });
 test('leaving practice during the beep prevents a late microphone start',async()=>{
- const h=harness({audioCue:true});await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.audio[0].onended();
+ const h=harness({audioCue:true});await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.tick(5000);await flush();h.audio[0].onended();
  h.controller.leave();h.tick(1000);assert.equal(h.recorders.length,0);assert.equal(h.requests.filter(r=>r.url.endsWith('/recording')).length,0);
 });
 
@@ -167,7 +167,7 @@ test('Preparation expiry opens the microphone automatically without a second cli
 });
 
 test('Repeat Sentence hides the transcript prompt, plays once automatically, then records and submits automatically',async()=>{
-  const h=harness();await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});
+  const h=harness();await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.tick(5000);await flush();
   assert.doesNotMatch(h.host.innerHTML,/university library will remain/);
   assert.equal(h.audio.length,1);assert.equal(h.nodes.get('speaking-phase').textContent,'Listening');assert.equal(h.recorders.length,0);
   h.audio[0].onended();assert.equal(h.recorders[0].state,'recording');
@@ -252,9 +252,9 @@ test('A mobile autoplay denial keeps the microphone ready and exposes one Play p
  const h=harness(),Base=h.env.Audio;let grants=0;const acquire=h.env.navigator.mediaDevices.getUserMedia;
  h.env.navigator.mediaDevices.getUserMedia=()=>{grants++;return acquire();};
  h.env.Audio=class extends Base {async play(){if(h.audio.length===1)throw Object.assign(Error('Gesture required'),{name:'NotAllowedError'});return super.play();}};
- await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});
+ await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.tick(5000);await flush();
  assert.match(h.nodes.get('speaking-notice').textContent,/blocked automatic prompt audio/);assert.equal(h.nodes.get('speaking-record').hidden,false);assert.equal(h.nodes.get('speaking-record').textContent,'Play prompt');
- await h.click({speakingAction:'record'});assert.equal(grants,1);h.audio[1].onended();assert.equal(h.recorders[0].state,'recording');
+ await h.click({speakingAction:'record'});h.tick(5000);await flush();assert.equal(grants,1);h.audio[1].onended();assert.equal(h.recorders[0].state,'recording');
  h.tick(15001);await flush();assert.equal([...h.attempts.values()][0].status,'submitted');
 });
 
@@ -267,7 +267,7 @@ test('A completed timed recording is transcribed and assessed without showing an
 });
 
 test('Assessment failure preserves the saved recording and offers Retry assessment',async()=>{
- const h=harness();h.env.rejectTranscription=true;await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.audio[0].onended();
+ const h=harness();h.env.rejectTranscription=true;await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.tick(5000);await flush();h.audio[0].onended();
  h.tick(15001);await flush();
  const a=[...h.attempts.values()][0];assert(a.recording);assert.equal(a.status,'draft');assert.equal(h.nodes.get('speaking-assess-retry').hidden,false);
  assert.match(h.host.innerHTML,/recording is saved/i);
@@ -366,7 +366,7 @@ test('Next during recording saves the audio and stops the old timer',async()=>{
 });
 
 test('Respond now stops the situation audio and starts exactly one recording',async()=>{
- const h=harness();await h.controller.open('rts');await h.click({speakingQuestion:'rts-1'});
+ const h=harness();await h.controller.open('rts');await h.click({speakingQuestion:'rts-1'});h.tick(5000);await flush();
  assert.equal(h.nodes.get('speaking-respond').hidden,false);const ended=h.audio[0].onended;
  await h.click({speakingAction:'respond'});assert.equal(h.audio[0].paused,true);
  assert.equal(h.nodes.get('speaking-phase').textContent,'● Recording');assert.equal(h.nodes.get('speaking-respond').hidden,true);
@@ -375,9 +375,9 @@ test('Respond now stops the situation audio and starts exactly one recording',as
 });
 
 test('Skipping a listening question ignores late audio completion',async()=>{
- const h=harness();await h.controller.open('rts');await h.click({speakingQuestion:'rts-1'});const ended=h.audio[0].onended;
+ const h=harness();await h.controller.open('rts');await h.click({speakingQuestion:'rts-1'});h.tick(5000);await flush();const ended=h.audio[0].onended;
  await h.click({speakingMove:'1'});ended();assert.equal(h.audio[0].paused,true);
- assert.match(h.host.innerHTML,/Question 2 of/);assert.equal(h.nodes.get('speaking-phase').textContent,'Listening');assert.equal(h.recorders.length,0);
+ assert.match(h.host.innerHTML,/Question 2 of/);assert.equal(h.nodes.get('speaking-phase').textContent,'Audio starts in');h.tick(5000);await flush();assert.equal(h.nodes.get('speaking-phase').textContent,'Listening');assert.equal(h.recorders.length,0);
 });
 
 test('Question list remains accessible on the last unattempted question',async()=>{
@@ -459,7 +459,7 @@ test('NAV-08: Adjacent Speaking moves reuse one account-scoped history index',as
  const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});
  const reads=()=>h.requests.filter(r=>r.url==='/api/speaking/attempts'&&!r.body).length,before=reads();
  await h.click({speakingMove:'1'});await h.click({speakingMove:'1'});assert.equal(reads(),before);
- const count=h.attempts.size;await h.click({speakingMove:'-1'});assert.equal(h.attempts.size,count);assert.match(h.host.innerHTML,/<h2>Question 2<\/h2>/);
+ const count=h.attempts.size;await h.click({speakingMove:'-1'});assert.equal(h.attempts.size,count);assert.match(h.host.innerHTML,/Question 2 of 5/);assert.match(h.host.innerHTML,/<h2>Learning through retrieval<\/h2>/);
  h.controller.reset();
 });
 test('NAV-09: Opening a copied Speaking question link never creates an attempt or opens the microphone',async()=>{
@@ -496,7 +496,7 @@ test('Mode-specific navigation does not resume a timed attempt as untimed, and p
 });
 test('A failed RTS prompt keeps recording stopped and exposes a retry action',async()=>{
  const h=harness();h.env.Audio=class{constructor(){h.audio.push(this);}async play(){throw Error('Recording unavailable');}pause(){}};
- await h.controller.open('rts');await h.click({speakingQuestion:'rts-original-20261024-03'});assert.equal(h.recorders.length,0);assert.equal(h.nodes.get('speaking-record').hidden,false);assert.match(h.nodes.get('speaking-notice').textContent,/prompt.*retry/i);h.controller.reset();
+ await h.controller.open('rts');await h.click({speakingQuestion:'rts-original-20261024-03'});h.tick(5000);await flush();assert.equal(h.recorders.length,0);assert.equal(h.nodes.get('speaking-record').hidden,false);assert.match(h.nodes.get('speaking-notice').textContent,/prompt.*retry/i);h.controller.reset();
 });
 
 test('Speaking direct saved response retains feedback with navigation disabled until a list selection exists',async()=>{
@@ -538,4 +538,23 @@ for(const type of ['rl','sgd'])test(type+': leaving or backgrounding during the 
 
 test('Leaving exactly when the pre-audio countdown expires cancels queued playback',async()=>{
  const h=harness(),q=bank.questions.find(q=>q.type==='rl');await h.controller.open('rl');await h.click({speakingQuestion:q.id});h.tick(5000);h.controller.leave();await flush();assert.equal(h.audio[0].paused,true);assert.equal(h.recorders.length,0);
+});
+
+for(const type of ['rs','rl','sgd','rts'])test(type+': timed prompt has the full five-second lead-in while question movement stays available',async()=>{
+ const h=harness(),q=bank.questions.find(q=>q.type===type);await h.controller.open(type);await h.click({speakingQuestion:q.id});
+ assert.equal(h.nodes.get('speaking-phase').textContent,'Audio starts in');assert.equal(h.nodes.get('speaking-clock').textContent,'0:05');assert.equal(h.audio[0].paused,true);
+ h.tick(4999);await flush();assert.equal(h.audio[0].paused,true);h.tick(1);await flush();assert.equal(h.audio[0].paused,false);
+ const ended=h.audio[0].onended,id=[...h.attempts.keys()][0];await h.click({speakingMove:'1'});assert.equal(h.audio[0].paused,true);ended();assert.equal(h.recorders.length,0);
+ await h.click({speakingMove:'-1'});assert.equal([...h.attempts.keys()].filter(a=>a===id).length,1);assert.match(h.nodes.get('speaking-phase').textContent,/paused/);assert.equal(h.nodes.get('speaking-record').textContent,'Resume practice');h.controller.reset();
+});
+test('Return to questions reopens the same draft with the retained preparation time; only Reattempt creates another',async()=>{
+ const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});const id=[...h.attempts.keys()][0];h.tick(12000);
+ await h.click({speakingAction:'list'});h.tick(100000);await h.click({speakingQuestion:'ra-1'});assert.equal(h.attempts.size,1);assert.equal(h.nodes.get('speaking-clock').textContent,'0:23');assert.match(h.nodes.get('speaking-phase').textContent,/paused/);
+ await h.click({speakingAction:'record'});assert.equal(h.nodes.get('speaking-clock').textContent,'0:23');h.tick(22000);assert.equal(h.recorders.length,0);
+ await h.click({speakingAction:'reattempt'});await flush();assert.equal(h.attempts.size,2);assert(h.attempts.has(id));assert.equal(h.nodes.get('speaking-clock').textContent,'0:35');assert.match(h.nodes.get('speaking-question-history').innerHTML,/Previous attempts|Saved draft/);h.controller.reset();
+});
+test('A lead-in resumes with remaining time and a fresh reattempt cancels outgoing playback callbacks',async()=>{
+ const h=harness();await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.tick(2000);await h.click({speakingAction:'list'});
+ await h.click({speakingQuestion:'rs-1'});assert.equal(h.nodes.get('speaking-clock').textContent,'0:03');await h.click({speakingAction:'record'});h.tick(2999);await flush();assert.equal(h.audio.at(-1).paused,true);h.tick(1);await flush();assert.equal(h.audio.at(-1).paused,false);
+ const audio=h.audio.at(-1),ended=audio.onended,previous=[...h.attempts.keys()][0];await h.click({speakingAction:'reattempt'});assert.equal(audio.paused,true);ended();assert.equal(h.recorders.length,0);assert.equal(h.nodes.get('speaking-clock').textContent,'0:05');assert(h.attempts.has(previous));assert.equal(h.attempts.size,2);h.controller.reset();
 });
