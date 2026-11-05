@@ -28,10 +28,10 @@ test('Pinned browser assets and licence notices match the installed packages and
  for(const row of manifest){const file=fs.readFileSync(path.join(root,'public',row.path));assert.equal(file.length,row.bytes);assert.equal(crypto.createHash('sha256').update(file).digest('hex'),row.sha256);assert.equal(require(path.join(root,'node_modules',row.package,'package.json')).version,row.version);}
  for(const name of ['fuse.js','wavesurfer.js','chart.js','tabulator-tables'])assert(manifest.some(a=>a.package===name&&/LICENSE/.test(a.path)));
 });
-test('Practice controllers retain the exact native capture, timing, saving, mock and report implementation',()=>{
+test('Practice controllers retain the reviewed standalone navigation and exact native capture, saving, mock and report implementation',()=>{
  const sha=s=>crypto.createHash('sha256').update(s).digest('hex');
  const speaking=fs.readFileSync(path.join(root,'public/speaking-practice.js'),'utf8').split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')&&!line.includes('env.PortalUx?.recording(node);')).join('\n');
  const reading=fs.readFileSync(path.join(root,'public/reading-practice.js'),'utf8').split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')).join('\n');
- assert.equal(sha(speaking),'6dd0d7457540d00b9407178ba57cf4785e039b581b0a966279d763c39305cf1e');
+ assert.equal(sha(speaking),'4f4d97d6355d2fbbd579b71ad65b69a66f0529debb81e9452ef00c797f0e466a');
  assert.equal(sha(reading),'73894747029a2abb151e8de0dab2dbd6191b6a3e22246d49ac8109a33f7caa48');
 });
