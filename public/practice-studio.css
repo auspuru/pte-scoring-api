@@ -222,3 +222,5 @@ body[data-section="practice"] #practiceScreen.practice-studio-surface .practice-
 #writingLabScreen .studio-focused .studio-center{max-width:1480px;margin:0 auto;width:100%}
 #writingLabScreen .studio-focused .results-actions [data-reattempt],#writingLabScreen .studio-focused .results-actions [data-tab="history"]{display:none}
 #writingLabScreen .studio-focused .exam-strip{display:flex;justify-content:space-between}
+/* Keep new question actions visible inside the pane's own scroll area. */
+body.portal-layout:not(.portal-exam-active) :is(#speakingPane,#readingPane,#writingLabScreen).portal-layout-question .practice-question-toolbar.practice-question-dock{position:sticky!important;top:0!important;z-index:35}
