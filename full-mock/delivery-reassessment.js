@@ -26,11 +26,37 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
   function replace(state,op) {
     const job=state.assessment.items[op.questionId];
     for(const key of ['pronunciation','fluency'])job.result.scores[key]=op.result[key].score;
-    job.result.total=Object.values(job.result.scores).reduce((a,b)=>a+b,0);
+    job.result.total=Object.keys(job.result.maxima).reduce((sum,key)=>sum+job.result.scores[key],0);
     job.stages.delivery={status:'complete',uncertain:false,traits:Object.fromEntries(['pronunciation','fluency'].map(key=>[key,{score:op.result[key].score,raw:op.result[key].raw,version:op.result.version,provider:'azure',evidence:[]}]))};
   }
+  // A published instructor review seals the hashes of confirmed jobs. When an
+  // admin explicitly replaces delivery marks, update only those job/delivery
+  // hashes and archive both ledgers with the operation. This preserves the
+  // original exclusion and its publication evidence without weakening review
+  // validation for any unrelated question or stage.
+  function applyReplacement(state,items,{operation,at}={}) {
+    const policy=require('../mock-result-review'),review=state.instructorReview;
+    const published=review?.version===policy.VERSION&&review.status==='published';
+    let before;
+    if(published){
+      if(!policy.publicationValid(state,'full'))throw fail('The earlier instructor publication cannot be verified. Original marks are retained.',409);
+      before=structuredClone(review.confirmed);
+    }
+    for(const item of items)replace(state,item);
+    if(!published)return null;
+    const ids=items.map(item=>item.questionId),inScope=key=>ids.some(id=>key===id||key===id+':delivery'||key.startsWith(id+':delivery:'));
+    const current=policy.confirmed(state,'full'),after=structuredClone(before);
+    for(const key of Object.keys(after))if(inScope(key))delete after[key];
+    for(const [key,value] of Object.entries(current))if(inScope(key))after[key]=value;
+    review.confirmed=after;
+    if(!policy.publicationValid(state,'full'))throw fail('The earlier instructor publication could not be preserved. Original marks are retained.',409);
+    const hash=require('../scoring-jobs').hash;
+    return {version:'full-mock-instructor-delivery-amendment-2026-11-06.1',operation,at,questionIds:ids,
+      originalPublicationOperation:review.publication.operation,beforeConfirmed:before,beforeHash:hash(before),
+      afterConfirmed:structuredClone(after),afterHash:hash(after)};
+  }
   function view(owner,id,record) {
-    return {owner,attemptId:id,paperId:record.paper.id,paperVersion:record.paper.version,evidenceHash:fingerprint(record.state),profiles:aggregate(record.paper,record.state).profiles,questions:eligible(record.paper,record.state),operations:Object.fromEntries(Object.entries(record.state.deliveryReassessments||{}).map(([id,op])=>{const value=structuredClone(op);if(op.batch){value.completedCount=op.items.filter(item=>item.status==='complete').length;value.failedCount=op.items.filter(item=>['failed','confirmation-pending'].includes(item.status)).length;}if(['review','partial'].includes(op.status)&&op.evidenceHash===fingerprint(record.state)){const proposed=structuredClone(record.state);if(op.batch){for(const item of op.items.filter(item=>item.status==='complete'))replace(proposed,item);}else replace(proposed,op);value.proposedProfiles=aggregate(record.paper,proposed).profiles;}return [id,value];}))};
+    return {owner,attemptId:id,paperId:record.paper.id,paperVersion:record.paper.version,evidenceHash:fingerprint(record.state),profiles:aggregate(record.paper,record.state).profiles,questions:eligible(record.paper,record.state),operations:Object.fromEntries(Object.entries(record.state.deliveryReassessments||{}).map(([id,op])=>{const value=structuredClone(op);if(op.batch){value.completedCount=op.items.filter(item=>item.status==='complete').length;value.failedCount=op.items.filter(item=>['failed','confirmation-pending'].includes(item.status)).length;}if(['review','partial'].includes(op.status)&&op.evidenceHash===fingerprint(record.state)){try{const proposed=structuredClone(record.state),items=op.batch?op.items.filter(item=>item.status==='complete'):[op];applyReplacement(proposed,items);const preview=aggregate(record.paper,proposed);value.proposedProfiles=preview.profiles;value.proposalReady=preview.ready;value.proposalIssues=preview.items.filter(item=>!['assessed','excluded'].includes(item.status)).map(item=>({id:item.id,number:record.paper.questions.findIndex(candidate=>candidate.id===item.id)+1,type:item.type,status:item.status}));}catch(error){value.proposalReady=false;value.proposalError=error.status?error.message:'The proposed report could not be verified. Original marks are retained.';}}return [id,value];}))};
   }
   async function inspect(owner,id){const record=await read(owner,id);for(const [operation,op] of Object.entries(record.state.deliveryReassessments||{}))if(op.batch&&['queued','running','paused'].includes(op.status))schedule(owner,id,operation);const value=view(owner,id,record);value.provider=providerConfiguration();value.questions=value.questions.map(q=>({...q,blocked:blocked(record.state,q.id)}));return value;}
   function blocked(state,questionId) {
@@ -105,9 +131,10 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
       const completed=op.items.filter(item=>item.status==='complete');
       if(!completed.length||op.status==='partial'&&confirmPartial!==true)throw fail('Confirm publication of only the completed recordings; unavailable recordings keep their original marks.',409);
       if(completed.some(item=>digest(item.previous)!==digest(state.assessment.items[item.questionId])))throw fail('Previous scores changed. Reload the saved attempt.',409);
-      const before=aggregate(record.paper,state).profiles;for(const item of completed)replace(state,item);
+      const before=aggregate(record.paper,state).profiles,at=now();
+      const instructorReviewAmendment=applyReplacement(state,completed,{operation,at});
       const after=aggregate(record.paper,state);if(!after.ready)throw fail('The replacement report could not be verified.',409);
-      Object.assign(op,{status:'published',publishedAt:now(),beforeProfiles:before,afterProfiles:after.profiles});return state;
+      Object.assign(op,{status:'published',publishedAt:at,beforeProfiles:before,afterProfiles:after.profiles,...(instructorReviewAmendment?{instructorReviewAmendment}:{})});return state;
     });return inspect(owner,id);
   }
   async function send(owner,id,body) {
@@ -147,10 +174,10 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,p
       check(state,record.paper);const op=state.deliveryReassessments?.[operation];
       if(op?.status==='published')return state;
       if(op?.status!=='review'||op.evidenceHash!==fingerprint(state)||digest(op.previous)!==digest(state.assessment.items[op.questionId]))throw fail('Scores or inputs changed. Inspect the saved attempt again.',409);
-      const before=aggregate(record.paper,state).profiles;
-      replace(state,op);
+      const before=aggregate(record.paper,state).profiles,at=now();
+      const instructorReviewAmendment=applyReplacement(state,[op],{operation,at});
       const after=aggregate(record.paper,state);if(!after.ready)throw fail('The replacement report could not be verified.',409);
-      Object.assign(op,{status:'published',publishedAt:now(),beforeProfiles:before,afterProfiles:after.profiles});return state;
+      Object.assign(op,{status:'published',publishedAt:at,beforeProfiles:before,afterProfiles:after.profiles,...(instructorReviewAmendment?{instructorReviewAmendment}:{})});return state;
     });return inspect(owner,id);
   }
   async function discard(owner,id,{operation}) {

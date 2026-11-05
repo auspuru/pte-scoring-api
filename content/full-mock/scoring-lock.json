@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "baseCommit": "8aacb515a1a4f6547b2068a84a31ded4779f8e4b",
   "checkedAt": "2026-11-06",
-  "scope": "Explicit background batch Azure delivery reassessment with immutable audio, durable provider receipts, atomic publication and exact previous snapshot compatibility.",
+  "scope": "Azure delivery publication preserves prior instructor exclusions and archives the exact confirmation-ledger amendment; native graders and weights are unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "39d01e39a5594cf5fc762ab88388e2e8d598d18d07fa3b7908d5d22f595e7969",
+        "sha256": "5846b3249349846db64c3e40352ad0911948564594863b10c7b2117ecc6ed01a",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -112,7 +112,7 @@
         "version": null
       },
       "full-mock/delivery-reassessment.js": {
-        "sha256": "78fca47bf5aa7c3ec6cda8d931333ba665f7f6959e1cbf613082015b401a2162",
+        "sha256": "6c260da8f359d6346051b231e249afec3f9cf6a3b8d282d0f781f1d19aa37604",
         "version": null
       },
       "full-mock/exclusions.js": {

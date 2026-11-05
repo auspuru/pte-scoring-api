@@ -65,3 +65,7 @@ test('Admin can select a submitted attempt, send saved audio, review changes and
  assert.deepEqual(requests.find(r=>r.path.endsWith('/send')).body,{questionIds:['di-1'],evidenceHash:'evidence',operation:op});
  assert.match(host.querySelector('[data-full-notice]').textContent,/Replacement scores published/);
 });
+test('An incomplete proposed report shows the reason and does not offer publication',()=>{
+ const {render}=require('../public/admin-azure-reassessment'),diagnostic={ready:true},delivery={owner:'student',attemptId:id,paperId:'paper',paperVersion:1,evidenceHash:'evidence',provider:{ready:true},questions:[],profiles:{speaking:{practiceIndex:59}},operations:{'delivery:pending':{batch:true,status:'review',evidenceHash:'evidence',proposalReady:false,proposalError:'The proposed report is incomplete.',proposalIssues:[{number:8,type:'rs'}],items:[{questionId:'q1',number:1,status:'complete',previous:{result:{scores:{pronunciation:1,fluency:2}}},result:{pronunciation:{score:5},fluency:{score:5}}}],proposedProfiles:{speaking:{status:'pending'}}}}};
+ const html=render(diagnostic,delivery);assert.match(html,/The proposed report is incomplete/);assert.match(html,/Q8 · RS/);assert.doesNotMatch(html,/data-delivery-publish/);assert.match(html,/data-delivery-discard/);
+});

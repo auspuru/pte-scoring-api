@@ -100,6 +100,19 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Exact delivery-publication amendment: prior instructor exclusions retain
+  // their original inputs and history; native graders and weights do not change.
+  const publicationBaseline=require('../content/full-mock/azure-publication-compatible-sources.json');
+  const publicationPins={"full-mock/delivery-reassessment.js":"6c260da8f359d6346051b231e249afec3f9cf6a3b8d282d0f781f1d19aa37604"};
+  if(digest(publicationBaseline)==='36f57f111a2c0d6eb26630c7fef30078107e1a9fc263a94d7255f7a3f7763f1e'&&Object.entries(publicationPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(publicationBaseline.files).sort().join()
+    &&Object.entries(publicationBaseline.files).every(([file,pin])=>[...Object.keys(publicationPins),'full-mock/assessment.js'].includes(file)||digest(current.scoringSources.files[file])===digest(pin))){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of [...Object.keys(publicationPins),'full-mock/assessment.js'])sources.files[file]=structuredClone(publicationBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(publicationBaseline))return digest(saved)===digest(current);
+  }
+
   // Exact opt-in background/batch delivery transport; frozen native graders stay pinned.
   const batchBaseline=require('../content/full-mock/azure-batch-compatible-sources.json');
   const batchPins={"full-mock/delivery-reassessment.js":"78fca47bf5aa7c3ec6cda8d931333ba665f7f6959e1cbf613082015b401a2162","azure-continuous-delivery.js":"63533d41e2a176c765ff82e4b9c301fe6e9ad4d431d699afa3917cdc7701aa65","full-mock/api.js":"a95b1dd3bb77f9c54f934923276fe4d60dedb6d2bf513ab67235a0d374385952"};
