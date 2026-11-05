@@ -209,10 +209,10 @@
     if (request.attemptId) {
       const saved = [state.session,...state.history,...state.drafts].find(a=>a?.id===request.attemptId);
       if (!saved) { home(); const notice=document.createElement('p');notice.setAttribute('role','status');notice.textContent='This saved result is unavailable. Refresh My Progress and try again.';host.prepend(notice);return; }
-      if (state.session?.id===saved.id) { if(resumeParkedSession(state.session))persist(); return render(); }
+      if (state.session?.id===saved.id) { if(request.context&&state.session.practiceUid)state.session.practiceContext={...request.context};if(resumeParkedSession(state.session))persist(); return render(); }
       if (state.session && !state.session.done) { parkSession(state.session); state.drafts=[state.session,...state.drafts.filter(a=>a.id!==state.session.id)]; }
       cancelAudio();
-      state.session=JSON.parse(JSON.stringify(saved));repairSession(state.session);resumeParkedSession(state.session);persist();render();resumeSwtAssessments();return;
+      state.session=JSON.parse(JSON.stringify(saved));if(request.context&&state.session.practiceUid)state.session.practiceContext={...request.context};repairSession(state.session);resumeParkedSession(state.session);persist();render();resumeSwtAssessments();return;
     }
     if (request.practiceUid) {
       const target=practiceLibraries().flatMap(l=>l.questions||[]).find(item=>String(item.uid)===String(request.practiceUid));
@@ -228,7 +228,6 @@
       return start('practice',target.uid);
     }
     if (request.libraryId) {
-      if (state.session?.practiceUid && !state.session.done && state.session.questions[0].type === request.libraryId) return render();
       return browseLibrary(request.libraryId);
     }
     if (request.mockId) {
@@ -441,6 +440,15 @@
   }
   function refreshLibraryList() { const node=host.querySelector('[data-library-list]');if(node)node.innerHTML=libraryList(); }
   function renderHomeView() { if(starting)return;if(libraryView)browseLibrary(libraryView.id,libraryView.query,libraryView.page);else home(); }
+  function readingPracticeToolbar(s) {
+    const items=practiceQueue(s),index=items.findIndex(q=>q.uid===s.practiceUid),q=s.questions[s.index]||s.questions[0];
+    return studio.questionToolbar({title:taskLabels[q.type],position:index<0?'Open the question list to select a queue':'Question '+(index+1)+' of '+items.length,mode:timeModeText(s),status:s.done?'Completed':'In progress',className:'reading-actions reading-practice-dock',actions:'<button class="portal-button" data-action="home" aria-label="Question list">← Return to questions</button><button class="portal-button practice-reattempt" data-action="retry-question">↻ Reattempt</button><button class="portal-button" data-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><button class="portal-button reading-next-action" data-move="1" '+(index<0||index>=items.length-1?'disabled':'')+'>Next →</button>'});
+  }
+  function readingQuestionHistory(s) {
+    const unique=new Map();for(const a of [state.session,...state.history,...(state.drafts||[])])if(a?.practiceUid===s.practiceUid&&!unique.has(a.id))unique.set(a.id,a);
+    const ordered=[...unique.values()].sort((a,b)=>a.startedAt-b.startedAt);
+    return studio.attemptHistory(ordered.map((a,i)=>({a,i})).filter(({a})=>a.id!==s.id).reverse().map(({a,i})=>({id:a.id,label:'Attempt '+(i+1),date:studio.brisbaneDate(a.finishedAt||a.startedAt),mode:timeModeText(a),status:a.done?'Completed':'Saved draft',actions:'<button class="portal-button" data-saved-practice-attempt="'+escape(a.id)+'">'+(a.done?'Answer &amp; feedback':'Open saved attempt')+'</button>'})));
+  }
   function render() { if (!state.session) return home(); renderSession(); }
   function renderSession() {
     if (state.session && !state.session.done && state.session.questions.some(q => q.optionOrderVersion !== 1)) {
@@ -467,14 +475,14 @@
     const navigationIndex=s.practiceUid?libraryQuestions.findIndex(item=>item.uid===s.practiceUid):s.index;
     const allQuestions=s.practiceUid?practiceLibraries().find(l=>l.id===q.type)?.questions||[]:s.questions,stableIndex=s.practiceUid?allQuestions.findIndex(item=>item.uid===s.practiceUid):s.index;
     const review=s.done || s.checked.includes(q.uid);
-    const content = `<div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to questions</button><strong>${escape(s.name)}</strong><span class="reading-timer reading-time-mode" data-time-mode>${timeModeText(s)}</span><span class="reading-timer" data-timer>${timerText()}</span><span data-save-status role="status">${escape(saveNotice)}</span></div>
+    const content = (s.practiceUid?readingPracticeToolbar(s):'')+`<div class="reading-session-toolbar ${s.practiceUid?'reading-practice-legacy-bar':''}"><button class="portal-button" data-action="home">← Back to questions</button><strong>${escape(s.name)}</strong><span class="reading-timer reading-time-mode" data-time-mode>${timeModeText(s)}</span><span class="reading-timer" data-timer>${timerText()}</span><span data-save-status role="status">${escape(saveNotice)}</span></div>
       ${s.done ? summary() : ''}
       <div class="reading-layout ${s.practiceUid?'reading-individual-layout':''}"><aside class="reading-card reading-nav" ${s.practiceUid?'hidden':''} aria-label="Reading questions"><h3>${s.done ? 'Review answers' : 'Your questions'}</h3><div class="reading-question-grid">${s.questions.map((item,i)=>`<button class="portal-button ${i===s.index?'primary':''}" data-question="${i}" ${i===s.index?'aria-current="step"':''} aria-label="Question ${i+1}${s.flags.includes(item.uid)?', flagged':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?', answered':''}">${i+1}${s.flags.includes(item.uid)?' ⚑':''}${s.answers[item.uid]?.some(x=>x!==''&&x!=null)?' •':''}</button>`).join('')}</div><p class="reading-note">• Answered · ⚑ Flagged</p></aside>
-      <article class="reading-card reading-question"><div class="reading-question-heading"><span class="portal-eyebrow">Question ${stableIndex+1} of ${allQuestions.length} · ${taskLabels[q.type]}</span><button class="portal-button" data-action="flag" aria-pressed="${s.flags.includes(q.uid)}">${s.flags.includes(q.uid)?'Unflag':'Flag for review'}</button></div><h2>${taskLabels[q.type]}</h2>${sourceMeta(q)?`<p class="reading-source-meta">${escape(sourceMeta(q))}</p>`:''}<p>${escape(q.instructions)}</p>
+      <article class="reading-card reading-question"><div class="reading-question-heading"><span class="portal-eyebrow">Question ${stableIndex+1} of ${allQuestions.length} · ${taskLabels[q.type]}</span><button class="portal-button" data-action="flag" aria-pressed="${s.flags.includes(q.uid)}">${s.flags.includes(q.uid)?'Unflag':'Flag for review'}</button></div><h2>${s.practiceUid&&q.title?escape(q.title):taskLabels[q.type]}</h2>${sourceMeta(q)?`<p class="reading-source-meta">${escape(sourceMeta(q))}</p>`:''}<p>${escape(q.instructions)}</p>
       ${mock.isAudio(q)?audioHTML(q):''}
       <fieldset ${review?'disabled':''}><legend class="sr-only">Your answer</legend>${questionHTML(q,a)}</fieldset>
       ${review?explanation(q,a):''}
-      <div class="reading-actions">${s.practiceUid?'<button class="portal-button" data-action="home">Question list</button><span>Selection '+(navigationIndex+1)+' of '+libraryQuestions.length+'</span>':''}<button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done&&review&&s.practiceUid?'<button class="portal-button" data-action="retry-question">Retry this question</button>':''}${!s.done?'<button class="portal-button" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex<0||navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`;
+      ${s.practiceUid?'<div class="reading-practice-submit">'+(!review?'<button class="portal-button primary" data-action="check">Check answer</button>':'')+'<button class="portal-button" data-action="submit">Finish and review</button><span data-save-status role="status">'+escape(saveNotice)+'</span></div></article></div>'+readingQuestionHistory(s):`<div class="reading-actions">${s.practiceUid?'<button class="portal-button" data-action="home">Question list</button><span>Selection '+(navigationIndex+1)+' of '+libraryQuestions.length+'</span>':''}<button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done&&review&&s.practiceUid?'<button class="portal-button" data-action="retry-question">Retry this question</button>':''}${!s.done?'<button class="portal-button" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex<0||navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`}`;
     host.innerHTML=s.practiceUid?studio.wrap(practiceSkill(q.type),practiceRoute(q.type),content):content;
     questionChanged(s);
   }
@@ -593,7 +601,7 @@
     const currentQuestion=s.questions[s.index]||s.questions[0];
     const practiceItems=s.practiceUid?practiceQueue(s):[];
     const practiceIndex=s.practiceUid?practiceItems.findIndex(item=>item.uid===s.practiceUid):-1;
-    const practiceNavigation=s.practiceUid?'<div class="reading-actions reading-review-navigation"><button class="portal-button" data-action="home">Question list</button><button class="portal-button" data-move="-1" '+(practiceIndex<=0?'disabled':'')+'>← Back</button><span class="reading-timer reading-time-mode" data-time-mode>'+escape(timeModeText(s))+'</span><button class="portal-button reading-next-action" data-move="1" '+(practiceIndex<0||practiceIndex>=practiceItems.length-1?'disabled':'')+'>Next <span aria-hidden="true">→</span></button></div>':'';
+    const practiceNavigation=s.practiceUid?readingPracticeToolbar(s):'';
     setExamMode(false);
     if(reviewView.id!==s.id)reviewView={id:s.id,filter:'all',type:'all'};
     const model=review.models(s,score),pending=model.filter(item=>item.points.pending);
@@ -610,13 +618,13 @@
         if(node)node.outerHTML=question(item);
       }
     }else{
-      const content='<section class="reading-results-view" data-review-session="'+encodeURIComponent(s.id)+'"><div class="reading-session-toolbar"><button class="portal-button" data-action="home">← Back to attempts</button><strong>'+escape(s.name)+'</strong><span class="reading-timer reading-time-mode" data-time-mode>'+escape(timeModeText(s))+'</span><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
+      const content='<section class="reading-results-view" data-review-session="'+encodeURIComponent(s.id)+'"><div class="reading-session-toolbar '+(s.practiceUid?'reading-practice-legacy-bar':'')+'"><button class="portal-button" data-action="home">← Back to attempts</button><strong>'+escape(s.name)+'</strong><span class="reading-timer reading-time-mode" data-time-mode>'+escape(timeModeText(s))+'</span><span data-save-status role="status">'+escape(saveNotice)+'</span></div>'
         + practiceNavigation
         + (typeof window !== 'undefined' ? window.PortalExamMode?.reportHTML?.(s.integrity)||'' : '')
         + '<div data-review-overview>'+summary(model)+'</div><div class="reading-review-intro"><div><h2>All answers &amp; feedback</h2><p>Read the full passages with your answers and corrections in context.</p></div><div data-review-retry>'+retry+'</div></div>'
         + review.controls(model,taskLabels,reviewView)
         + '<div class="reading-review-empty reading-card" data-review-empty hidden><h3>No answers match these filters.</h3><p>Choose another task or reset your filters to see every answer.</p><button class="portal-button" data-review-reset>Show all answers</button></div>'
-        + '<div class="reading-complete-review">'+model.map(question).join('')+'</div></section>';
+        + '<div class="reading-complete-review">'+model.map(question).join('')+'</div>'+(s.practiceUid?readingQuestionHistory(s):'')+'</section>';
       host.innerHTML=s.practiceUid?studio.wrap(practiceSkill(currentQuestion.type),practiceRoute(currentQuestion.type),content):content;
       questionChanged(s);
     }
@@ -843,7 +851,14 @@
       const page=Number(d.libraryPage),max=Math.ceil(libraryQuestions().length/10);
       if(Number.isInteger(page)&&page>=0&&page<max){const next=page+(page>libraryView.page?1:-1);libraryView.page=page;refreshLibraryList();(host.querySelector('[data-library-page="'+next+'"]:not([disabled])')||host.querySelector('[data-library-page]:not([disabled])'))?.focus();}return;
     }
-    if(d.practiceUid){if(libraryView)Object.assign(libraryView,{queue:libraryQuestions().map(q=>q.uid),scrollTop:host.scrollTop||0,scrollY:globalThis.scrollY||0,selectedUid:d.practiceUid});if(s&&!s.done){parkSession(s);state.drafts=[s,...(state.drafts||[]).filter(r=>r.id!==s.id)];persist();}return start('practice',d.practiceUid);}
+    if(d.practiceUid){
+      if(libraryView)Object.assign(libraryView,{queue:libraryQuestions().map(q=>q.uid),scrollTop:host.scrollTop||0,scrollY:globalThis.scrollY||0,selectedUid:d.practiceUid});
+      if(s&&!s.done){parkSession(s);state.drafts=[s,...(state.drafts||[]).filter(r=>r.id!==s.id)];if(!persist())return;}
+      const saved=[s,...(state.drafts||[]),...state.history].filter(a=>a?.practiceUid===d.practiceUid).sort((a,b)=>b.startedAt-a.startedAt)[0];
+      if(saved)return showRequested({attemptId:saved.id,context:libraryView});
+      return start('practice',d.practiceUid);
+    }
+    if(d.savedPracticeAttempt&&s?.practiceUid){if(s&&!s.done&&!persist())return;return showRequested({attemptId:d.savedPracticeAttempt,context:s?.practiceContext||libraryView});}
     if(d.action==='current-listening-bank')return typeof switchSection==='function'?switchSection('listening-'+libraryView.id):home();
     if(d.action==='practice-home')return typeof switchSection==='function'?switchSection('practice-hub'):home();
     if(d.action==='mock-home')return typeof switchSection==='function'?switchSection('mock-tests'):home();
@@ -892,6 +907,12 @@
         : Promise.resolve(true));
       if(accepted)finish();return;
     }
+    if(d.action==='retry-question'&&s.practiceUid){
+      if(starting)return;cancelAudio();if(!persist())return;
+      libraryView=s.practiceContext?{...s.practiceContext,selectedUid:s.practiceUid}:null;
+      if(!s.done)state.drafts=[JSON.parse(JSON.stringify(s)),...(state.drafts||[]).filter(item=>item.id!==s.id)];
+      return start('practice',s.practiceUid);
+    }
     if(!editable())return;
     if(q.type==='reorder'){
       if(d.paragraph!==undefined){selectedParagraph={key:d.paragraph,panel:d.panel};renderSession();focusParagraph();return;}
@@ -903,16 +924,6 @@
     }
     if(d.hiwWord!==undefined&&q.type==='hiw'){const index=Number(d.hiwWord),a=s.answers[q.uid]||[];s.answers[q.uid]=a.includes(index)?a.filter(x=>x!==index):[...a,index];b.setAttribute('aria-pressed',String(s.answers[q.uid].includes(index)));persist();return;}
     if(d.action==='check'){s.checked.push(q.uid);persist();return renderSession();}
-    if(d.action==='retry-question'&&s.practiceUid){
-      cancelAudio();
-      s.answers[q.uid]=[];
-      s.checked=s.checked.filter(id=>id!==q.uid);
-      delete s.assessments?.[q.uid];
-      delete s.audioStates?.[q.uid];
-      selectedWord='';selectedParagraph={};persist();renderSession();
-      host.querySelector('select,input,button[data-word],textarea')?.focus();
-      return;
-    }
     if(d.word!==undefined){selectedWord=d.word;host.querySelectorAll('[data-word]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.word===selectedWord)));return;}
     if(d.blank!==undefined)return place(Number(d.blank),selectedWord);
     if(d.clear!==undefined){(s.answers[q.uid]||[])[Number(d.clear)]='';persist();return renderSession();}

@@ -36,7 +36,7 @@
     "public/writing-lab-client.js": "b804264cc3a48916e19c48dab765858502889dfd7ad15db4eaca253302a0d44a",
     "public/speaking-practice.js": "23de89ada814b58b9645309f2c7816b24330cc92e4b36c435549358a7dee80d4",
     "public/speaking-mock-client.js": "84fd2b9f953748e68f4d3873c9e7ed30e6444a8ed06bb644cf5fa0fb73866eba",
-    "public/reading-practice.js": "73894747029a2abb151e8de0dab2dbd6191b6a3e22246d49ac8109a33f7caa48",
+    "public/reading-practice.js": "33da5a971faaf84561f23afe000b9891e3d8e9041575be0eb29eb0956f521832",
     "public/reading-review.js": "98e9c23a186fcc72034d552e0664f1d8ccb420600e21fa27fa6bbf987a1a2872",
     "public/essay-scoring.js": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
     "public/essay-feedback.js": "215ad91cc24acbdb5637cc50f18e0af5e8ed8135aeb27439560bb125f36170f3",
@@ -106,5 +106,21 @@
       "renderSwtFeedbackReview": "543087a25f06672ad0f3d65247fde5e582c21f005b8630766c079c1613a6a90e"
     },
     "adapterSha256": "6996ce1442df59a30002ef1f26045542398555da3e97913eb568f398371de8ed"
+  },
+  "practiceReadingUpdates": {
+    "baselineCommit": "18c7a5a87710b5bbb745cebc3551f4b28b4871cb",
+    "scope": "Phase 3 individual Reading dock, library restoration, explicit fresh reattempts retaining prior sessions and exact saved-result links. All native answer scoring, explanation, grading, persistence and completion functions remain byte-identical. Protected mocks retain their existing player and restrictions.",
+    "before": "73894747029a2abb151e8de0dab2dbd6191b6a3e22246d49ac8109a33f7caa48",
+    "after": "33da5a971faaf84561f23afe000b9891e3d8e9041575be0eb29eb0956f521832",
+    "nativeFunctions": {
+      "score": "3998d5c54514d46ffbfddf893667574bee7a06b729f01a1da4a74248962f629b",
+      "totals": "6b9cd01e4dbb9b4ebd1e0029b490e63b687cc99fbc4a27b2a55dcb6c20d4a671",
+      "questionHTML": "09efe035c30887befc4082b51bf5d09be7ca87b6cc914300a9b7c55a69f0fcc0",
+      "explanation": "79ec3e884612cd6e7491774614b413bb327c6a9fd0711e552f6138faa83f899e",
+      "gradeSwt": "f2e22b72a79935088b9cad75ea105a6f7b96aa7a680242c962fa32fc64e87f6c",
+      "syncHistory": "6c07365e1dcba8dc22a40cc6bc393bcce4c6d2f444ba2913c8517ab23eb62f06",
+      "finish": "8f1de40b0350f1614363edd8745174523453f3743bf6172b70f0c4ef5eb0b30a",
+      "persist": "c76d79e9341f2e4eab9d44338511763e42dca0ab31ce268ebc399df7246a2a7a"
+    }
   }
 }

@@ -211,3 +211,7 @@ body[data-section="practice"] #practiceScreen.practice-studio-surface .practice-
 #speakingPane [data-practice-question]>.practice-studio-taskbar{display:none}
 #speakingPane [data-practice-question]>.practice-studio-content{padding-top:0}
 #speakingPane .practice-question-context{min-width:200px}
+/* Reading individual practice uses its dock; protected mock controls stay native. */
+#readingPane .reading-practice-legacy-bar{display:none}
+#readingPane .reading-practice-submit{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:1px solid var(--practice-line)}
+#readingPane .reading-practice-submit [data-save-status]{margin-left:auto;font-size:11px;color:var(--practice-muted)}

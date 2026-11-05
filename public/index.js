@@ -12517,7 +12517,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-exam-player.js?v=sha256-784ef20c0524', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=sha256-98e9c23a186f', 'reading review'],
-      ['reading-practice.js?v=sha256-73894747029a', 'reading practice']
+      ['reading-practice.js?v=sha256-33da5a971faa', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
     // downloads overlap. Initialise the practice client only after all succeed.
