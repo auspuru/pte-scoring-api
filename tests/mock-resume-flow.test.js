@@ -31,6 +31,7 @@ test('Writing mocks explain forward-only navigation once and submit Next without
 test('Reading checked practice offers a direct retry without changing scoring logic', () => {
   assert.match(reading, /data-action="retry-question">Retry this question/);
   assert.match(reading, /d\.action==='retry-question'&&s\.practiceUid/);
-  assert.match(reading, /s\.answers\[q\.uid\]=\[\]/);
-  assert.match(reading, /s\.checked=s\.checked\.filter/);
+  assert.match(reading, /state\.drafts=\[s,/);
+  assert.match(reading, /start\('practice',s\.practiceUid\)/);
+  assert.equal(require('node:crypto').createHash('sha256').update(require('../public/reading-practice').score.toString()).digest('hex'),'3998d5c54514d46ffbfddf893667574bee7a06b729f01a1da4a74248962f629b');
 });

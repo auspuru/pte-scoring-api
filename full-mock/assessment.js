@@ -100,6 +100,19 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Approved individual Reading workspace: only this exact UI revision may
+  // project to the deployed source pins. Native score/feedback functions are
+  // byte-identical, and all other dependency pins must match the frozen record.
+  const workspaceBaseline=require('../content/full-mock/practice-workspace-compatible-sources.json');
+  if(digest(workspaceBaseline)==='90a2253fad8fe48e7cff88512863e4075722cba754f9a6a34c097dbe046feb87'
+    &&current.scoringSources.files['public/reading-practice.js']?.sha256==='33da5a971faaf84561f23afe000b9891e3d8e9041575be0eb29eb0956f521832'
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(workspaceBaseline.files).sort().join()
+    &&Object.entries(workspaceBaseline.files).every(([file,pin])=>['public/reading-practice.js','full-mock/assessment.js'].includes(file)||digest(current.scoringSources.files[file])===digest(pin))){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of ['public/reading-practice.js','full-mock/assessment.js'])sources.files[file]=structuredClone(workspaceBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(workspaceBaseline))return digest(saved)===digest(current);
+  }
   // Exact opt-in instructor recovery/publication wiring. Old papers keep
   // their native graders, models, weights, answers and confirmed stages.
   const reviewBaseline=require('../content/full-mock/admin-review-compatible-sources.json');

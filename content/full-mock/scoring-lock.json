@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "32f66b0",
-  "checkedAt": "2026-11-04",
-  "scope": "Opt-in administrator analysis, at most two retry rounds and explicit report publication. Approved audio, native graders, models, weights, frozen papers and confirmed marks retained.",
+  "baseCommit": "aec826a7e14f9087f2ce41e8bc49895a12ccd7f7",
+  "checkedAt": "2026-11-05",
+  "scope": "Individual Reading workspace UI with byte-identical native score/feedback functions. Exact frozen snapshot compatibility retains saved marks, models, weights, papers and protected mock clocks.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -96,7 +96,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "5105e55ee9e551e98aa7d82080d0e29d64ed63cce53bdae2272e9f353932f9f3",
+        "sha256": "a50f06ed0aa6f1345fb804c044e6f9a97398a38be31d559f7f4eea80bd1b0a98",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -160,6 +160,10 @@
         "sha256": "3efa737c0e2a8ae047bd24b0c140f6cc2c67e2329cb3184950ef38bb1f5e8492",
         "version": null
       },
+      "mock-result-review.js": {
+        "sha256": "6b129f42dfebb0b46fb0f99d582398540ea1b96c3c0a37f1c459fc3841581878",
+        "version": null
+      },
       "public/essay-scoring.js": {
         "sha256": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
         "version": "essay-unified-2.6"
@@ -169,7 +173,7 @@
         "version": null
       },
       "public/reading-practice.js": {
-        "sha256": "73894747029a2abb151e8de0dab2dbd6191b6a3e22246d49ac8109a33f7caa48",
+        "sha256": "33da5a971faaf84561f23afe000b9891e3d8e9041575be0eb29eb0956f521832",
         "version": null
       },
       "public/writing-lab-report.js": {
@@ -227,10 +231,6 @@
       "writing-lab-scoring.js": {
         "sha256": "a130307d850613728d40a36634b3aef337ea211a620695cc9e2217f0bbb1fad6",
         "version": "exam-practice-2026-10-09.1"
-      },
-      "mock-result-review.js": {
-        "sha256": "6b129f42dfebb0b46fb0f99d582398540ea1b96c3c0a37f1c459fc3841581878",
-        "version": null
       }
     }
   }
