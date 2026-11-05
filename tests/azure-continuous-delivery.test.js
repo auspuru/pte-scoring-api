@@ -55,7 +55,7 @@ function emitSpeech(recognizer) {
 }
 
 test('continuous Speech waits for session completion and rejects partial output on cancellation', async () => {
-  const options = { key: 'test', region: 'test', timeoutMs: 1000 };
+  const options = { key: 'test', region: 'test', endpoint: '', timeoutMs: 1000 };
   const segments = await continuous.assessWav(wav(40), { ...options, sdk: fakeSdk(recognizer => {
     emitSpeech(recognizer);
     emitSpeech(recognizer);
