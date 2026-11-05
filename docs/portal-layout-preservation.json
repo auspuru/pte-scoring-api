@@ -3,7 +3,7 @@
   "scope": "Presentation enhancements: catalogue search, saved recording waveform and progress charts/table. Native assessment, feedback, timing and IPT report components remain unchanged. The Speaking practice controller has two reviewed presentation-only additions.",
   "files": {
     "server.js": "49b249ffed4307e4daef7a6414c79bc89142ff307e3b1b930730c9b8d4e803f1",
-    "full-mock/assessment.js": "a50f06ed0aa6f1345fb804c044e6f9a97398a38be31d559f7f4eea80bd1b0a98",
+    "full-mock/assessment.js": "62719e2199403e4103d83a5874c70140068a4183b10197fde011d41d22da7408",
     "full-mock/adapters.js": "b60ac3338309a30713914e855167ecd97d3c0df2a777a67981d28a9a69e04a2c",
     "full-mock/aggregation.js": "95b6aa39dc1f070d22ad95ecb65e19d391dacdac406b6291130797ed10d1e8af",
     "full-mock/profiles.js": "8e9659f3d82839a445ec6cb0212d3e7456bb3c4442146a56a0ba721b1994df18",
@@ -33,17 +33,17 @@
     "public/full-mock-report.js": "518b1d455ebf44d931408735cbb7388aaaf2d1da8244d58fbfb5b41255e7e76b",
     "public/mock-impact-feedback.js": "0db0538a9d8d7f948135d0dc282ebe02a8721afe1936920fbb0e6214c958beee",
     "public/writing-lab-report.js": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
-    "public/writing-lab-client.js": "4671e105b36973146ce0899e528519834fb938026368096b5050d5af6933faed",
-    "public/speaking-practice.js": "23de89ada814b58b9645309f2c7816b24330cc92e4b36c435549358a7dee80d4",
+    "public/writing-lab-client.js": "129cc6cc84fb58fe101bd2a7985e37c4ce6c5dd1dca769464c33b75b7774acc9",
+    "public/speaking-practice.js": "20bdac5c77a57c9d00d3d6604383d133c4d4b8696b1f2ab15e267ee4eafb2916",
     "public/speaking-mock-client.js": "84fd2b9f953748e68f4d3873c9e7ed30e6444a8ed06bb644cf5fa0fb73866eba",
-    "public/reading-practice.js": "33da5a971faaf84561f23afe000b9891e3d8e9041575be0eb29eb0956f521832",
+    "public/reading-practice.js": "d7e67dea4258894ebbe63c64fa1463700ad7146c334f85ce1c486a2aeb263bef",
     "public/reading-review.js": "98e9c23a186fcc72034d552e0664f1d8ccb420600e21fa27fa6bbf987a1a2872",
     "public/essay-scoring.js": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
     "public/essay-feedback.js": "215ad91cc24acbdb5637cc50f18e0af5e8ed8135aeb27439560bb125f36170f3",
     "public/swt-feedback.js": "6ad1bbb440e4d6ea29e93c6293107e3ce9af20c79b247bb97d643558b45ad930",
     "public/swt-feedback-review.js": "61dc962856a96342cb062ed4c11a65e2cfd523e38d52e4b1822936f8cac3e751",
     "public/swt-mock-feedback.js": "a935db09aa1ad2cd37ddad0df7e26e43b1b0d62a1270740365d7f201cf78b947",
-    "content/full-mock/scoring-lock.json": "17bd929d306fbd31cce0012d22992393471c6883e12c159b737464921daf147c",
+    "content/full-mock/scoring-lock.json": "dbe0692052b1e35446ad88d750e4eaedfc467cb23fcac508b41b734c29f631b6",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
     "public/reading-mock-tools.js": "c5655a466dad3579cd0faac269b90eafa7c468e413ec3a5a127f80530ad4fdd4",
     "speaking-mock.js": "81a086feb709e1641b600710e36d5f08d9e787d44ab530c6c1cfafcc3f5dd0ad",
@@ -143,5 +143,23 @@
       "api": "977b6f5c5b464fbaff895613027cc6d677f01476f98e7b09aa5a0d5bc52a1d3f"
     },
     "reviewedControllerSha256": "4671e105b36973146ce0899e528519834fb938026368096b5050d5af6933faed"
+  },
+  "practiceLibraryUpdates": {
+    "baselineCommit": "8aacb515a1a4f6547b2068a84a31ded4779f8e4b",
+    "scope": "One SWT-style renderer across 21 individual task libraries. Primary Practise starts fresh, explicit Resume draft retains unfinished work. Existing native assessment and feedback function pins remain unchanged. Exact frozen Full Mock compatibility maps only the reviewed source hashes.",
+    "before": {
+      "full-mock/assessment.js": "a50f06ed0aa6f1345fb804c044e6f9a97398a38be31d559f7f4eea80bd1b0a98",
+      "public/reading-practice.js": "33da5a971faaf84561f23afe000b9891e3d8e9041575be0eb29eb0956f521832",
+      "public/speaking-practice.js": "23de89ada814b58b9645309f2c7816b24330cc92e4b36c435549358a7dee80d4",
+      "public/writing-lab-client.js": "4671e105b36973146ce0899e528519834fb938026368096b5050d5af6933faed",
+      "content/full-mock/scoring-lock.json": "17bd929d306fbd31cce0012d22992393471c6883e12c159b737464921daf147c"
+    },
+    "after": {
+      "full-mock/assessment.js": "62719e2199403e4103d83a5874c70140068a4183b10197fde011d41d22da7408",
+      "public/reading-practice.js": "d7e67dea4258894ebbe63c64fa1463700ad7146c334f85ce1c486a2aeb263bef",
+      "public/speaking-practice.js": "20bdac5c77a57c9d00d3d6604383d133c4d4b8696b1f2ab15e267ee4eafb2916",
+      "public/writing-lab-client.js": "129cc6cc84fb58fe101bd2a7985e37c4ce6c5dd1dca769464c33b75b7774acc9",
+      "content/full-mock/scoring-lock.json": "dbe0692052b1e35446ad88d750e4eaedfc467cb23fcac508b41b734c29f631b6"
+    }
   }
 }

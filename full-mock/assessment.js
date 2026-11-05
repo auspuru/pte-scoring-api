@@ -100,6 +100,19 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Shared practice-library presentation only. Require this exact reviewed
+  // Reading revision and every other native dependency pin before projecting.
+  const libraryBaseline=require('../content/full-mock/library-compatible-sources.json');
+  if(digest(libraryBaseline)==='1d664c50e459243e94949cb5298f9e7e9992191443b1ff9d2531fa3e03c64ee0'
+    &&current.scoringSources.files['public/reading-practice.js']?.sha256==='d7e67dea4258894ebbe63c64fa1463700ad7146c334f85ce1c486a2aeb263bef'
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(libraryBaseline.files).sort().join()
+    &&Object.entries(libraryBaseline.files).every(([file,pin])=>['public/reading-practice.js','full-mock/assessment.js'].includes(file)||digest(current.scoringSources.files[file])===digest(pin))){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of ['public/reading-practice.js','full-mock/assessment.js'])sources.files[file]=structuredClone(libraryBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(libraryBaseline))return digest(saved)===digest(current);
+  }
+
   // Approved individual Reading workspace: only this exact UI revision may
   // project to the deployed source pins. Native score/feedback functions are
   // byte-identical, and all other dependency pins must match the frozen record.

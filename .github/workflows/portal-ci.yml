@@ -72,6 +72,7 @@ jobs:
             .cache/portal-layout-*.png
             .cache/practice-speaking-*.png
             .cache/practice-writing-*.png
+            .cache/practice-library-*.png
             .cache/practice-reading-*.png
             .cache/practice-listening-*.png
             public/index.min.js

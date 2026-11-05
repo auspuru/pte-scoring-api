@@ -57,7 +57,7 @@
    for(const id of ['speakingPane','readingPane','writingLabScreen','swtPane','practiceScreen','speakingMockPane','fullMockPane']){
     const host=doc.getElementById(id);if(!host)continue;
     const report=[...host.querySelectorAll(reports)].some(node=>{const swt=node.closest('#swtResultsScreen');return !node.closest('[hidden]')&&(!swt||swt.classList.contains('active'));})||!!host.querySelector('#swtResultsScreen.active');mark(host,'portal-layout-report',report);
-    const library=!report&&!!host.querySelector('.speaking-question-list,.reading-library-list,.studio-library');
+    const library=!report&&([...host.querySelectorAll('.practice-question-library')].some(node=>!node.closest('[hidden]')&&(!node.closest('.swt-sub-screen')||node.closest('.swt-sub-screen').classList.contains('active')))||!!host.querySelector('.speaking-question-list,.reading-library-list,.studio-library'));
     mark(host,'portal-layout-library',library&&!exam);if(library){wrapFilters(host);const disclosure=host.querySelector('.speaking-exam-disclosure');if(disclosure&&!disclosure.closest('.portal-layout-help')){const details=doc.createElement('details');details.className='portal-layout-help';const summary=doc.createElement('summary');summary.textContent='Timing & saving';details.appendChild(summary);disclosure.before(details);details.appendChild(disclosure);}}
     // Apply question styling only to known individual-practice surfaces, never protected mocks or review output.
     const question=!report&&!exam&&!!host.querySelector('.speaking-exam-panel,.reading-individual-layout,.listening-studio.studio-focused .exam,#swtPracticeScreen.active,#practiceEssayInput');

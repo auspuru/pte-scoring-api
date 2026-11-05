@@ -51,7 +51,7 @@
   }
   function rememberContext(type){
     if(practiceContext?.type!==type)practiceContext={type};
-    Object.assign(practiceContext,{search:studioSearch,filter:studioFilter,page:libraryPage,mode:listeningMode,scrollTop:root.scrollTop||0,queue:visiblePractice(type).map(({q})=>q.id)});
+    Object.assign(practiceContext,{search:studioSearch,filter:studioFilter,page:libraryPage,mode:listeningMode,scrollTop:root.scrollTop||0,libraryScrollTop:document.getElementById('studio-question-list')?.scrollTop??practiceContext.libraryScrollTop??0,queue:visiblePractice(type).map(({q})=>q.id)});
     storage.put('ipt-listening-list:'+username+':'+type,JSON.stringify(practiceContext));
   }
   function questionChanged(){
@@ -211,10 +211,8 @@
   }
   function renderPracticeCards(){
     const target=document.getElementById('studio-question-list');if(!target)return;
-    const rows=visiblePractice(view),pages=Math.max(1,Math.ceil(rows.length/12));libraryPage=Math.min(libraryPage,pages-1);
-    target.innerHTML=(studio?studio.rows({items:questionsFor(view),history:listeningHistory,bookmarks:bookmarks(),activeId:practiceContext?.selectedId,search:studioSearch,filter:studioFilter,mode:listeningMode}):'');
-    if(studio){const buttons=[...(target.querySelectorAll?.('[data-listening-open]')||[])];buttons.forEach((b,i)=>b.hidden=i<libraryPage*12||i>=(libraryPage+1)*12);}
-    const pager=document.getElementById('listening-library-pages');if(pager)pager.innerHTML='<button class="secondary" data-library-page="'+(libraryPage-1)+'" '+(libraryPage===0?'disabled':'')+'>Previous page</button><span>'+(libraryPage+1)+' / '+pages+'</span><button class="secondary" data-library-page="'+(libraryPage+1)+'" '+(libraryPage>=pages-1?'disabled':'')+'>Next page</button>';
+    const rows=visiblePractice(view);target.innerHTML=studio?studio.rows({items:questionsFor(view),history:listeningHistory,bookmarks:bookmarks(),activeId:practiceContext?.selectedId,search:studioSearch,filter:studioFilter,mode:listeningMode}):'';
+    const count=root.querySelector?.('.practice-library-count');if(count)count.textContent=rows.length+' questions';
   }
   async function hub(tab=view) {
     navigationSerial++;
@@ -247,10 +245,8 @@
     setListeningStyle(practiceTypes.includes(tab)||(tab==='history'&&practiceTypes.includes(historyKind)));bindStudioLibrary();
     if(practiceTypes.includes(tab)&&studio){
       const library=root.querySelector?.('.studio-library');
-      if(library){const old=library.querySelector('.cards');const pager=library.querySelector('nav.exam-footer');
-        if(old){old.outerHTML='<div class="studio-library-controls"><label for="studio-search">Find a question</label><input id="studio-search" type="search" value="'+esc(studioSearch)+'" placeholder="Search number, ID or title"><label for="studio-filter">Status</label><select id="studio-filter">'+[['all','All questions'],['new','Not attempted'],['draft','Draft'],['done','Attempted'],['bookmarked','Bookmarked']].map(([v,label])=>'<option value="'+v+'" '+(v===studioFilter?'selected':'')+'>'+label+'</option>').join('')+'</select></div><div id="studio-question-list"></div>';}
-        if(pager)pager.outerHTML='<nav class="exam-footer" id="listening-library-pages" aria-label="Question pages"></nav>';renderPracticeCards();bindStudioLibrary();
-        const selected=[...(root.querySelectorAll?.('[data-listening-open]')||[])].find(b=>b.dataset.listeningOpen===practiceContext?.selectedId);selected?.focus({preventScroll:true});root.scrollTop=practiceContext?.scrollTop||0;
+      if(library){library.innerHTML=window.PracticeStudio.questionLibrary({skill:'Listening',title:report.labels[tab],total:visiblePractice(tab).length,searchId:'studio-search',search:studioSearch,filterId:'studio-filter',filter:studioFilter,filters:[['all','All questions'],['new','Not attempted'],['draft','In progress'],['done','Completed'],['bookmarked','Bookmarked']],rowsId:'studio-question-list',options:'<div class="studio-modes" role="group" aria-label="Practice mode"><button type="button" data-listening-mode="practice" aria-pressed="'+(listeningMode==='practice')+'">Practice</button><button type="button" data-listening-mode="exam" aria-pressed="'+(listeningMode==='exam')+'">Exam-style</button></div>',extras:'<details><summary>Saved responses &amp; practice help</summary><p>'+esc(studio.help[tab])+'</p><button type="button" class="secondary" data-tab="history">Saved responses</button>'+(['hcs','hiw'].includes(tab)?'<button type="button" class="secondary" data-portal="listening-'+tab+'-bank">Earlier question bank</button>':'')+'</details>'});renderPracticeCards();bindStudioLibrary();
+        const selected=[...(root.querySelectorAll?.('[data-listening-open]')||[])].find(b=>b.dataset.listeningOpen===practiceContext?.selectedId);selected?.focus({preventScroll:true});root.scrollTop=practiceContext?.scrollTop||0;const rows=document.getElementById('studio-question-list');if(rows)rows.scrollTop=practiceContext?.libraryScrollTop||0;
       }
     }
     if(tab==='history') {
@@ -847,8 +843,8 @@
     if(b.disabled)return;
     if(b.dataset.listeningMode)return changeListeningMode(b.dataset.listeningMode,b);
     if(b.dataset.listeningType){studioSearch='';studioFilter='all';writeDraft();await saveAnswer(false);if(saveConflict)return;stopAudio();return returnToPortal(b.dataset.listeningRoute);}
-    if(b.dataset.listeningAttempt){if(attempt?.kind==='mock')return;const serial=++navigationSerial;writeDraft();stopAudio();await saveAnswer(false);try{await saving;}catch{notify('Your answer has not saved. Retry before changing attempts.');return;}if(saveConflict||serial!==navigationSerial||!workspaceVisible)return;return resume(b.dataset.listeningAttempt,b,serial);}
-    if(b.dataset.listeningOpen){rememberContext(attempt?.kind||view);practiceContext.selectedId=b.dataset.listeningOpen;return openPracticeId(b.dataset.listeningOpen,b);}
+    if(b.dataset.listeningAttempt){if(attempt?.kind==='mock')return;if(!attempt){rememberContext(view);practiceContext.selectedId=b.dataset.listeningQuestion;}const serial=++navigationSerial;writeDraft();stopAudio();await saveAnswer(false);try{await saving;}catch{notify('Your answer has not saved. Retry before changing attempts.');return;}if(saveConflict||serial!==navigationSerial||!workspaceVisible)return;return resume(b.dataset.listeningAttempt,b,serial);}
+    if(b.dataset.listeningOpen){rememberContext(attempt?.kind||view);practiceContext.selectedId=b.dataset.listeningOpen;return reattempt(b.dataset.listeningOpen,b);}
     if(b.dataset.listeningBookmark){const id=b.dataset.listeningBookmark,items=bookmarks(),selected=!items.includes(id);storage.put('ipt-listening-bookmarks:'+username,JSON.stringify(selected?[...items,id]:items.filter(x=>x!==id)));b.textContent=selected?'★':'☆';b.setAttribute('aria-pressed',String(selected));return;}
     if(b.dataset.libraryPage!==undefined){libraryPage=Math.max(0,Number(b.dataset.libraryPage));rememberContext(view);if(studio)renderPracticeCards();else return hub(view);return;}
     if(b.dataset.practiceMove!==undefined)return movePractice(Number(b.dataset.practiceMove),b);

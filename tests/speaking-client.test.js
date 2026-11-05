@@ -5,10 +5,10 @@ function harness({includePredictions=false,audioCue=false}={}) {
   const nodes=new Map(),events={},intervals=new Map(),attempts=new Map(),requests=[],recorders=[],audio=[],storage=new Map();let seq=0,now=1000,stops=0,uid='alice';
   class Element {
     constructor(id){this.id=id;this.value='';this.dataset={};this.disabled=false;this.hidden=false;this.textContent='';nodes.set(id,this);}
-    set innerHTML(value){this.html=value;if(this.id==='speakingPane'){for(const id of [...nodes.keys()])if(id!=='speakingPane')nodes.delete(id);for(const m of value.matchAll(/id="([^"]+)"/g))new Element(m[1]);}}
+    set innerHTML(value){this.html=value;if(this.id==='speakingPane'){for(const id of [...nodes.keys()])if(id!=='speakingPane')nodes.delete(id);for(const m of value.matchAll(/id="([^"]+)"/g))new Element(m[1]);if(value.includes('practice-library-count'))new Element('library-count');}}
     get innerHTML(){return this.html||'';}replaceChildren(){this.innerHTML='';}
   }
-  const host=new Element('speakingPane'),doc={hidden:false,getElementById:id=>nodes.get(id)||null,addEventListener:(name,fn)=>events[name]=fn};
+  const host=new Element('speakingPane');host.querySelector=selector=>selector==='.practice-library-count'?nodes.get('library-count'):null;const doc={hidden:false,getElementById:id=>nodes.get(id)||null,addEventListener:(name,fn)=>events[name]=fn};
   class Recorder {
     static isTypeSupported(t){return t==='audio/webm;codecs=opus';}
     constructor(stream,opts){this.state='inactive';this.mimeType=opts?.mimeType||'audio/webm';recorders.push(this);}
@@ -281,11 +281,11 @@ test('Image filters and search intersect without starting an attempt or requesti
   await h.host.onchange({target:{id:'speaking-image-category',value:'line'}});
   assert.match(h.nodes.get('speaking-library-list').innerHTML,/di-3/);
   assert.doesNotMatch(h.nodes.get('speaking-library-list').innerHTML,/di-1/);
-  assert.equal(h.nodes.get('speaking-match-count').textContent,'1 of 5 questions');
+  assert.equal(h.nodes.get('library-count').textContent,'1 questions');
   h.host.oninput({target:{id:'speaking-search',value:'budget'}});
   assert.match(h.nodes.get('speaking-library-list').innerHTML,/No questions match/);
   await h.click({speakingAction:'clear-filters'});
-  assert.equal(h.nodes.get('speaking-match-count').textContent,'5 of 5 questions');
+  assert.equal(h.nodes.get('library-count').textContent,'5 questions');
   assert.equal(h.attempts.size,0);assert.equal(h.recorders.length,0);
 });
 
@@ -293,21 +293,20 @@ test('Question filters survive task changes and are cleared when the account cha
   const h=harness();await h.controller.open('di');
   await h.host.onchange({target:{id:'speaking-image-category',value:'pie'}});
   await h.controller.open('rts');assert.doesNotMatch(h.host.innerHTML,/id="speaking-image-category"/);
-  await h.controller.open('di');assert.equal(h.nodes.get('speaking-match-count').textContent,'1 of 5 questions');
-  h.user('bob');await h.controller.open('di');assert.equal(h.nodes.get('speaking-match-count').textContent,'5 of 5 questions');
+  await h.controller.open('di');assert.equal(h.nodes.get('library-count').textContent,'1 questions');
+  h.user('bob');await h.controller.open('di');assert.equal(h.nodes.get('library-count').textContent,'5 questions');
 });
 
-test('Every catalogue page is reachable and search resets pagination',async()=>{
+test('The SWT-style scrolling list includes the entire catalogue and search filters it',async()=>{
   const h=harness(),fetch=h.env.fetch;
   h.env.fetch=async(url,options)=>{if(url.endsWith('/catalog'))return {ok:true,json:async()=>({types:bank.types,questions:Array.from({length:45},(_,i)=>({id:'di-page-'+(i+1),type:'di',title:'Image '+(i+1),imageCategory:'line'}))})};return fetch(url,options);};
   await h.controller.open('di');
-  assert.equal((h.nodes.get('speaking-library-list').innerHTML.match(/data-speaking-question=/g)||[]).length,20);
-  await h.click({speakingPage:'2'});
+  assert.equal((h.nodes.get('speaking-library-list').innerHTML.match(/data-speaking-question=/g)||[]).length,45);
   assert.match(h.nodes.get('speaking-library-list').innerHTML,/di-page-45/);
-  assert.equal((h.nodes.get('speaking-library-list').innerHTML.match(/data-speaking-question=/g)||[]).length,5);
+  assert.equal((h.nodes.get('speaking-library-list').innerHTML.match(/data-speaking-question=/g)||[]).length,45);
   h.host.oninput({target:{id:'speaking-search',value:'di-page-1'}});
   assert.match(h.nodes.get('speaking-library-list').innerHTML,/di-page-1"/);
-  assert.equal(h.nodes.get('speaking-match-count').textContent,'11 of 45 questions');
+  assert.equal(h.nodes.get('library-count').textContent,'11 questions');
 });
 
 test('Filtered result navigation stays within the selected image category',async()=>{
@@ -320,7 +319,7 @@ test('Filtered result navigation stays within the selected image category',async
   assert.equal(next.disabled,true);assert.equal(back.disabled,true);
   assert.match(h.host.innerHTML,/Question 1 of 1/);
   await h.click({speakingMove:'1'});assert.equal(h.attempts.size,1);
-  await h.click({speakingAction:'list'});assert.equal(h.nodes.get('speaking-match-count').textContent,'1 of 5 questions');
+  await h.click({speakingAction:'list'});assert.equal(h.nodes.get('library-count').textContent,'1 questions');
 });
 
 test('Unknown visual kinds are never guessed to be photographs; aliases and source IDs are searchable',()=>{
@@ -336,14 +335,14 @@ test('Unknown visual kinds are never guessed to be photographs; aliases and sour
  test('Supplied weekly DI items intersect with chart filters and search and clear correctly',async()=>{
  const h=harness({includePredictions:true});await h.controller.open('di');
  await h.host.onchange({target:{id:'speaking-prediction',value:'weekly'}});
- assert.equal(h.nodes.get('speaking-match-count').textContent,'49 of 54 questions');
+ assert.equal(h.nodes.get('library-count').textContent,'49 questions');
  await h.host.onchange({target:{id:'speaking-image-category',value:'photo'}});
- assert.equal(h.nodes.get('speaking-match-count').textContent,'4 of 54 questions');
+ assert.equal(h.nodes.get('library-count').textContent,'4 questions');
  h.host.oninput({target:{id:'speaking-search',value:'3000125'}});
- assert.equal(h.nodes.get('speaking-match-count').textContent,'1 of 54 questions');
+ assert.equal(h.nodes.get('library-count').textContent,'1 questions');
  assert.match(h.nodes.get('speaking-library-list').innerHTML,/Weekly Prediction/);
  await h.click({speakingAction:'clear-filters'});
- assert.equal(h.nodes.get('speaking-match-count').textContent,'54 of 54 questions');
+ assert.equal(h.nodes.get('library-count').textContent,'54 questions');
  assert.equal(h.attempts.size,0);
  });
 test('Skipping preparation opens the next question without submitting an empty attempt',async()=>{
@@ -382,7 +381,7 @@ test('Skipping a listening question ignores late audio completion',async()=>{
 
 test('Question list remains accessible on the last unattempted question',async()=>{
  const h=harness();await h.controller.open('di');await h.click({speakingQuestion:'di-5'});
- await h.click({speakingAction:'list'});assert.match(h.host.innerHTML,/speaking-question-list/);assert.equal(h.recorders.length,0);
+ await h.click({speakingAction:'list'});assert.match(h.host.innerHTML,/practice-question-library/);assert.equal(h.recorders.length,0);
 });
 
 
@@ -547,14 +546,26 @@ for(const type of ['rs','rl','sgd','rts'])test(type+': timed prompt has the full
  const ended=h.audio[0].onended,id=[...h.attempts.keys()][0];await h.click({speakingMove:'1'});assert.equal(h.audio[0].paused,true);ended();assert.equal(h.recorders.length,0);
  await h.click({speakingMove:'-1'});assert.equal([...h.attempts.keys()].filter(a=>a===id).length,1);assert.match(h.nodes.get('speaking-phase').textContent,/paused/);assert.equal(h.nodes.get('speaking-record').textContent,'Resume practice');h.controller.reset();
 });
-test('Return to questions reopens the same draft with the retained preparation time; only Reattempt creates another',async()=>{
+test('Resume draft retains preparation time while Practise and Reattempt create fresh responses',async()=>{
  const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});const id=[...h.attempts.keys()][0];h.tick(12000);
- await h.click({speakingAction:'list'});h.tick(100000);await h.click({speakingQuestion:'ra-1'});assert.equal(h.attempts.size,1);assert.equal(h.nodes.get('speaking-clock').textContent,'0:23');assert.match(h.nodes.get('speaking-phase').textContent,/paused/);
+ await h.click({speakingAction:'list'});h.tick(100000);await h.click({speakingAttempt:id});assert.equal(h.attempts.size,1);assert.equal(h.nodes.get('speaking-clock').textContent,'0:23');assert.match(h.nodes.get('speaking-phase').textContent,/paused/);
  await h.click({speakingAction:'record'});assert.equal(h.nodes.get('speaking-clock').textContent,'0:23');h.tick(22000);assert.equal(h.recorders.length,0);
  await h.click({speakingAction:'reattempt'});await flush();assert.equal(h.attempts.size,2);assert(h.attempts.has(id));assert.equal(h.nodes.get('speaking-clock').textContent,'0:35');assert.match(h.nodes.get('speaking-question-history').innerHTML,/Previous attempts|Saved draft/);h.controller.reset();
 });
 test('A lead-in resumes with remaining time and a fresh reattempt cancels outgoing playback callbacks',async()=>{
  const h=harness();await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.tick(2000);await h.click({speakingAction:'list'});
- await h.click({speakingQuestion:'rs-1'});assert.equal(h.nodes.get('speaking-clock').textContent,'0:03');await h.click({speakingAction:'record'});h.tick(2999);await flush();assert.equal(h.audio.at(-1).paused,true);h.tick(1);await flush();assert.equal(h.audio.at(-1).paused,false);
+ await h.click({speakingAttempt:[...h.attempts.keys()][0]});assert.equal(h.nodes.get('speaking-clock').textContent,'0:03');await h.click({speakingAction:'record'});h.tick(2999);await flush();assert.equal(h.audio.at(-1).paused,true);h.tick(1);await flush();assert.equal(h.audio.at(-1).paused,false);
  const audio=h.audio.at(-1),ended=audio.onended,previous=[...h.attempts.keys()][0];await h.click({speakingAction:'reattempt'});assert.equal(audio.paused,true);ended();assert.equal(h.recorders.length,0);assert.equal(h.nodes.get('speaking-clock').textContent,'0:05');assert(h.attempts.has(previous));assert.equal(h.attempts.size,2);h.controller.reset();
+});
+
+test('Primary Practise starts a fresh Speaking response while explicit Resume preserves the earlier transcript',async()=>{
+ const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});const original=[...h.attempts.values()][0];original.transcript='An earlier saved response.';
+ await h.click({speakingAction:'list'});assert.match(h.nodes.get('speaking-library-list').innerHTML,new RegExp('data-speaking-attempt="'+original.id+'"'));
+ await h.click({speakingQuestion:'ra-1'});assert.equal(h.attempts.size,2);assert.equal([...h.attempts.values()][1].transcript,'');assert.equal(original.transcript,'An earlier saved response.');
+ await h.click({speakingAction:'list'});await h.click({speakingAttempt:original.id});assert.equal(h.attempts.size,2);assert(h.requests.some(r=>r.url.endsWith('/attempts/'+original.id)));assert.equal(original.transcript,'An earlier saved response.');h.controller.reset();
+});
+
+test('Resume draft from the Speaking row adopts the current filtered question queue',async()=>{
+ const h=harness();await h.controller.open('di');await h.click({speakingQuestion:'di-3'});const id=[...h.attempts.keys()][0];await h.click({speakingAction:'list'});await h.host.onchange({target:{id:'speaking-image-category',value:'line'}});
+ await h.click({speakingAttempt:id,speakingResumeQuestion:'di-3'});assert.match(h.host.innerHTML,/Question 1 of 1/);assert.match(h.host.innerHTML,/data-speaking-move="1" disabled/);assert.equal(h.attempts.size,1);h.controller.reset();
 });

@@ -405,19 +405,14 @@
     return [status,origin,reviewed?'Reviewed '+reviewed:''].filter(Boolean).join(' · ');
   }
 
+  function questionRecords(uid){return [...new Map([state.session,...(state.drafts||[]),...state.history].filter(a=>a?.practiceUid===uid).map(a=>[a.id,a])).values()].sort((a,b)=>b.startedAt-a.startedAt);}
   function libraryQuestions() {
-    const library=practiceLibraries().find(l=>l.id===libraryView?.id),query=(libraryView?.query||'').trim().toLowerCase();
-    return (library?.questions||[]).filter(q=>!query||[q.title,q.topic,q.id].join(' ').toLowerCase().includes(query));
+    const library=practiceLibraries().find(l=>l.id===libraryView?.id),query=(libraryView?.query||'').trim().toLowerCase(),status=libraryView?.status||'all';
+    return (library?.questions||[]).filter((q,i)=>{const rows=questionRecords(q.uid);return (!query||[i+1,q.title,q.topic,q.id].join(' ').toLowerCase().includes(query))&&(status==='all'||status==='new'&&!rows.length||status==='done'&&rows.some(a=>a.done)||status==='draft'&&rows.some(a=>!a.done));});
   }
   function libraryList() {
-    const questions=libraryQuestions(),page=libraryView.page,pages=Math.max(1,Math.ceil(questions.length/10));
-    const numbers=new Map((practiceLibraries().find(l=>l.id===libraryView.id)?.questions||[]).map((q,i)=>[q.uid,i+1]));
-    return `<p class="reading-note" role="status">${questions.length} questions</p><ul class="reading-library-list">${questions.slice(page*10,page*10+10).map(q=>{
-      const result=state.practiceResults[q.uid];
-      const number=numbers.get(q.uid);
-      const meta=sourceMeta(q);
-      return `<li><div><strong>Question ${number}${q.title?` · ${escape(q.title)}`:''}</strong><span class="reading-question-id">${escape(q.id)}</span>${meta?`<span class="reading-source-meta">${escape(meta)}</span>`:''}${result?`<span>${escape(result.earned)}/${escape(result.possible)} points · Completed</span>`:''}</div><button class="portal-button" data-practice-uid="${escape(q.uid)}" aria-label="Practise question ${number}">Practise <span aria-hidden="true">→</span></button></li>`;
-    }).join('')}</ul>${questions.length?'':'<p>No questions match your search.</p>'}${pages>1?`<div class="reading-catalogue-pages"><button class="portal-button" data-library-page="${page-1}" ${page===0?'disabled':''}>Previous</button><span>${page+1} / ${pages}</span><button class="portal-button" data-library-page="${page+1}" ${page===pages-1?'disabled':''}>Next</button></div>`:''}`;
+    const questions=libraryQuestions(),numbers=new Map((practiceLibraries().find(l=>l.id===libraryView.id)?.questions||[]).map((q,i)=>[q.uid,i+1]));
+    return studio.libraryRows(questions.map(q=>{const rows=questionRecords(q.uid),draft=rows.find(a=>!a.done),done=rows.filter(a=>a.done).length;return {id:q.id,number:numbers.get(q.uid),title:q.title,status:done?'Completed · '+done+' saved attempts':draft?'In progress':'Not attempted',actions:'<button type="button" class="portal-button" data-practice-uid="'+escape(q.uid)+'">Practise →</button>'+(draft?'<button type="button" class="portal-button practice-library-resume" data-reading-resume="'+escape(draft.id)+'">Resume draft</button>':'')};}));
   }
   function browseLibrary(id, query, page, selectedUid) {
     const library=practiceLibraries().find(l=>l.id===id);if(!library)return;
@@ -431,14 +426,14 @@
     const saved=(matches(state.session||{})&&!state.session.done?`<div class="portal-resume"><strong>${escape(state.session.name)}</strong><button class="portal-button" data-action="resume">Continue question</button></div>`:'')
       + (drafts.length?`<details class="reading-home-help"><summary>Saved question drafts <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><strong>${escape(r.name)}</strong><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:'')
       + (history.length?`<details class="reading-home-help"><summary>Question attempts <span>${history.length}</span></summary><ul class="reading-history">${history.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${r.earned}/${r.possible} points</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul></details>`:'');
-    host.innerHTML=studio.wrap(practiceSkill(id),practiceRoute(id),studio.heading(practiceSkill(id)==='listening'?'Listening':'Reading',library.name,'Choose a question, practise at your own pace and review each answer.',library.questions.length+' questions')+`<section class="practice-studio-library">${saved}<label class="reading-library-search">Find a question<input type="search" data-library-search value="${escape(query)}" placeholder="Search titles, topics or question IDs"></label><p data-start-status role="status" aria-live="polite"></p><div data-library-list>${libraryList()}</div></section>`);
-    if(practiceSkill(id)==='listening'){const source=document.createElement?.('p');if(source){source.className='reading-note';source.innerHTML='Question source: Earlier bank · <button type="button" class="portal-button" data-action="current-listening-bank">Current bank</button>';host.querySelector?.('.practice-studio-library')?.prepend(source);}}
+    host.innerHTML=studio.wrap(practiceSkill(id),practiceRoute(id),studio.questionLibrary({skill:practiceSkill(id)==='listening'?'Listening':'Reading',title:library.name,total:libraryQuestions().length,searchAttrs:'data-library-search',search:query,filterAttrs:'data-library-status',filter:libraryView.status||'all',rowsAttrs:'data-library-list',rowsClass:'reading-library-rows',rows:libraryList(),extras:saved+'<p data-start-status role="status" aria-live="polite"></p>'}));
+    if(practiceSkill(id)==='listening'){const source=document.createElement?.('p');if(source){source.className='reading-note';source.innerHTML='Question source: Earlier bank · <button type="button" class="portal-button" data-action="current-listening-bank">Current bank</button>';host.querySelector?.('.practice-library-extras')?.prepend(source);}}
     const selected=[...(host.querySelectorAll?.('[data-practice-uid]')||[])].find(b=>b.dataset.practiceUid===libraryView.selectedUid);
     selected?.setAttribute('aria-current','true');selected?.focus({preventScroll:true});
-    if(Number.isFinite(libraryView.scrollTop))host.scrollTop=libraryView.scrollTop;
+    if(Number.isFinite(libraryView.scrollTop))host.scrollTop=libraryView.scrollTop;const rows=host.querySelector?.('[data-library-list]');if(rows)rows.scrollTop=libraryView.libraryScrollTop||0;
     if(Number.isFinite(libraryView.scrollY))globalThis.scrollTo?.(0,libraryView.scrollY);
   }
-  function refreshLibraryList() { const node=host.querySelector('[data-library-list]');if(node)node.innerHTML=libraryList(); }
+  function refreshLibraryList() { const node=host.querySelector('[data-library-list]');if(node)node.innerHTML=libraryList();const count=host.querySelector?.('.practice-library-count');if(count)count.textContent=libraryQuestions().length+' questions'; }
   function renderHomeView() { if(starting)return;if(libraryView)browseLibrary(libraryView.id,libraryView.query,libraryView.page);else home(); }
   function readingPracticeToolbar(s) {
     const items=practiceQueue(s),index=items.findIndex(q=>q.uid===s.practiceUid),q=s.questions[s.index]||s.questions[0];
@@ -719,6 +714,7 @@
   function editable() { if(expireSession())return false; const s=state?.session; return s&&!s.done&&!s.checked.includes(s.questions[s.index].uid); }
   function change(e) {
     if(!owner||identity()!==owner)return;
+    if(e.target.hasAttribute?.('data-library-status')&&libraryView){libraryView.status=e.target.value;libraryView.page=0;refreshLibraryList();return;}
     if(state.session?.done&&e.target.dataset.reviewTask!==undefined){
       reviewView.type=Object.hasOwn(taskLabels,e.target.value)?e.target.value:'all';applyReviewFilters();return;
     }
@@ -852,12 +848,11 @@
       if(Number.isInteger(page)&&page>=0&&page<max){const next=page+(page>libraryView.page?1:-1);libraryView.page=page;refreshLibraryList();(host.querySelector('[data-library-page="'+next+'"]:not([disabled])')||host.querySelector('[data-library-page]:not([disabled])'))?.focus();}return;
     }
     if(d.practiceUid){
-      if(libraryView)Object.assign(libraryView,{queue:libraryQuestions().map(q=>q.uid),scrollTop:host.scrollTop||0,scrollY:globalThis.scrollY||0,selectedUid:d.practiceUid});
+      if(libraryView)Object.assign(libraryView,{queue:libraryQuestions().map(q=>q.uid),scrollTop:host.scrollTop||0,libraryScrollTop:host.querySelector?.('[data-library-list]')?.scrollTop||0,scrollY:globalThis.scrollY||0,selectedUid:d.practiceUid});
       if(s&&!s.done){parkSession(s);state.drafts=[s,...(state.drafts||[]).filter(r=>r.id!==s.id)];if(!persist())return;}
-      const saved=[s,...(state.drafts||[]),...state.history].filter(a=>a?.practiceUid===d.practiceUid).sort((a,b)=>b.startedAt-a.startedAt)[0];
-      if(saved)return showRequested({attemptId:saved.id,context:libraryView});
       return start('practice',d.practiceUid);
     }
+    if(d.readingResume){if(libraryView)Object.assign(libraryView,{queue:libraryQuestions().map(q=>q.uid),libraryScrollTop:host.querySelector?.('[data-library-list]')?.scrollTop||0});if(s&&!s.done&&!persist())return;return showRequested({attemptId:d.readingResume,context:libraryView});}
     if(d.savedPracticeAttempt&&s?.practiceUid){if(s&&!s.done&&!persist())return;return showRequested({attemptId:d.savedPracticeAttempt,context:s?.practiceContext||libraryView});}
     if(d.action==='current-listening-bank')return typeof switchSection==='function'?switchSection('listening-'+libraryView.id):home();
     if(d.action==='practice-home')return typeof switchSection==='function'?switchSection('practice-hub'):home();

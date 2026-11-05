@@ -8,7 +8,7 @@
     const pending=new Map(),backups=new Map(),writes=new Map(),versions=new Map();let db=null,clock=Date.now();
     const area=get=>{try{return typeof get==='function'?get():get;}catch{return null;}};
     const read=(get,key)=>{try{return area(get)?.getItem(key)??null;}catch{return null;}};
-    const scoped=key=>/^pte_.+_(?:attempted|summaries|scores|history|essays|essayLibraryDeleted|vocabProgress|scratch|scratchUpdatedAt|essay-question-drafts|practiceHistory|practiceHistoryDeleted|syncPending|currentId|studyPlan)$/.test(key)||/^ipt_(?:essay_draft|reading)_v1:/.test(key);
+    const scoped=key=>/^pte_.+_(?:attempted|summaries|scores|history|essays|essayLibraryDeleted|vocabProgress|scratch|scratchUpdatedAt|essay-question-drafts|question-drafts|practiceHistory|practiceHistoryDeleted|syncPending|currentId|studyPlan)$/.test(key)||/^ipt_(?:essay_draft|reading)_v1:/.test(key);
     const backupKey=key=>PREFIX+encodeURIComponent(key);
     const ready=new Promise(resolve=>{
       try{
