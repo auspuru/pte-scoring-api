@@ -8,7 +8,7 @@ async function fixture(t,width,admin){
  const app=express(),paper=structuredClone(mocks[0]),attempts=new Map(),requests=[],posts=[];
  const answers=paper.questions.map(q=>scoring.TYPES.has(q.type)?JSON.stringify(q.answers||[q.answer]):q.sample);
  // Retain awkward whitespace exactly as it can occur in a historic saved answer.
- answers[0]=summary+'\n'.repeat(150)+'End of saved summary.';
+ answers[0]='.0'+'\n'.repeat(150)+summary+'\n'.repeat(150)+'End of saved summary.';
  const results=paper.questions.map((q,i)=>q.type==='sst'?structuredClone(native):q.type==='wfd'?{scores:{content:q.text.split(/\s+/).length},maxima:{content:q.text.split(/\s+/).length},total:q.text.split(/\s+/).length,maximum:q.text.split(/\s+/).length,feedback:{content:'Saved dictation feedback.'},reasons:[]}:scoring.grade(q,answers[i]));
  const saved={id:'earlier-listening-feedback',testId:paper.id,kind:'mock',module:'listening',title:paper.title,status:'submitted',startedAt:Date.parse('2026-10-01T10:00:00Z'),index:paper.questions.length-1,questions:paper.questions.map(q=>({...q,audioUrl:'/fixture.mp3'})),answers,results,completed:paper.questions.map(()=>({reason:'Submitted'})),playback:paper.questions.map(()=>null),deadline:null};
  attempts.set(saved.id,saved);const before=JSON.stringify(saved),token=admin?'synthetic-admin-view':'synthetic-student-session';
@@ -33,10 +33,11 @@ for(const width of [1363,390,320])for(const admin of [false,true])test('Saved SS
  const feedback=await page.$eval('#review-0 .sst-mock-feedback',e=>({text:e.innerText,collapsed:!!e.closest('details:not([open])'),overflow:e.scrollWidth>e.clientWidth+1,heading:e.querySelector('h3')?.textContent}));
  assert.match(feedback.heading,/Spoken Text feedback/);assert.match(feedback.text,/design choices support/);assert.match(feedback.text,/Use the plural verb/);assert.match(feedback.text,/spelling of the two highlighted words/);assert.match(feedback.text,/Students also need/);assert.equal(feedback.collapsed,false);assert.equal(feedback.overflow,false);
  assert.equal(await page.$('#review-0 .sst-mock-feedback script'),null);
- const answer=await page.$eval('#review-0 .sst-saved-summary',e=>({text:e.textContent,height:e.clientHeight,scrollHeight:e.scrollHeight,tabIndex:e.tabIndex,afterFeedback:!!(document.querySelector('#review-0 .sst-mock-feedback').compareDocumentPosition(e)&Node.DOCUMENT_POSITION_FOLLOWING)}));
- assert.equal(answer.text,f.saved.answers[0]);assert(answer.height<=340);assert(answer.scrollHeight>answer.height);assert.equal(answer.tabIndex,0);assert(answer.afterFeedback);
+ const answer=await page.$eval('#review-0 .sst-saved-summary',e=>{const range=document.createRange(),start=e.textContent.indexOf('The lecture');range.setStart(e.firstChild,start);range.setEnd(e.firstChild,start+20);const body=range.getBoundingClientRect(),box=e.getBoundingClientRect();return {text:e.textContent,height:e.clientHeight,scrollHeight:e.scrollHeight,tabIndex:e.tabIndex,bodyStartVisible:body.top>=box.top&&body.bottom<=box.bottom,afterFeedback:!!(document.querySelector('#review-0 .sst-mock-feedback').compareDocumentPosition(e)&Node.DOCUMENT_POSITION_FOLLOWING)};});
+ assert.equal(answer.text,f.saved.answers[0]);assert(answer.height<=340);assert(answer.bodyStartVisible,'Saved line breaks must not hide the beginning of the summary below a blank scroll area.');assert.equal(answer.tabIndex,0);assert(answer.afterFeedback);
  await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.$eval('#review-0',e=>e.scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:path.join(root,'.cache','sst-listening-answers-'+width+'-'+(admin?'admin':'student')+'.png')});
- await page.focus('#review-0 .sst-saved-summary');await page.keyboard.press('End');await page.waitForFunction(()=>document.querySelector('#review-0 .sst-saved-summary').scrollTop>0,{timeout:2000});
+ await (await page.$('#review-0 .sst-saved-summary')).screenshot({path:path.join(root,'.cache','sst-listening-summary-'+width+'-'+(admin?'admin':'student')+'.png')});
+ await page.focus('#review-0 .sst-saved-summary');if(answer.scrollHeight>answer.height){await page.keyboard.press('End');await page.waitForFunction(()=>document.querySelector('#review-0 .sst-saved-summary').scrollTop>0,{timeout:2000});}
  await page.click('[data-mock-tab="feedback"]');await page.waitForSelector('[data-mock-panel="feedback"] .sst-mock-feedback',{visible:true});
  assert.match(await page.$eval('[data-mock-panel="feedback"] .sst-mock-feedback',e=>e.innerText),/Use the plural verb/);
  assert.equal(await page.$$eval('[id]',nodes=>{const ids=nodes.map(e=>e.id);return ids.length===new Set(ids).size;}),true);
