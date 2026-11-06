@@ -1,15 +1,15 @@
 {
   "baselineCommit": "960d1fd1dc37d5772f24c27286181a0b30d461b2",
-  "scope": "Reviewed available-mark publication and explicit recording reassessment for Speaking and Full Mocks, preserving native rubrics and older attempt rules.",
+  "scope": "Reviewed available-mark publication, explicit recording reassessment and provider-429 recovery for Speaking and Full Mocks, preserving native rubrics and older attempt rules.",
   "files": {
     "server.js": "5d68f9fb63e3e835bbedbad0a8ee3220b98fc9184449b10eade435734b7f6cd8",
-    "full-mock/assessment.js": "5a10c85f77d70663c2a2cfec816b284d5453101ce456b17c2791bd2fc7ff5732",
+    "full-mock/assessment.js": "a03554fe4bbe30eccced781f43e861ee5ba678142ec551a7427fa2e91d34d3a0",
     "full-mock/adapters.js": "ec18ac8f954632f91432158fdcae9a6079ac183e80e226b3f99ec0b9cd590fec",
     "full-mock/aggregation.js": "d1cd8b4bdcd50c6a94f3006fbef7a02c0d024a6f57b4a08a4984688d98d17497",
     "full-mock/profiles.js": "8e9659f3d82839a445ec6cb0212d3e7456bb3c4442146a56a0ba721b1994df18",
     "full-mock/rubrics.js": "117c51a483f49d5f4127055001698aedc2ddb4004940751b4fe25cf66959e02a",
     "full-mock/report.js": "2f0a97c79231ffa071e4aaa45fbf8ab655cd4dbbb438e1b5046b60dee9a973c8",
-    "full-mock/api.js": "87d1847fa810c357945f36b34692b42be87f942333d6dd8d633805414d008b63",
+    "full-mock/api.js": "0062761943bf43a420fdb1b89b9d0c41d86823a7a2d0bf352ebe794d81cfde9d",
     "full-mock/session.js": "35d81a57f61193d1a94c22ae74cd31cae2cde56e861fd20ec66ae2a050ab5e58",
     "full-mock/store.js": "d338b7204dfc26f3469402d1cef10948ed6a138ade399fe33d64c66722917b32",
     "full-mock/recording.js": "480756dcae089f44f6153f6a45ff849a713d8e68b2076df0a4d34a41d9060f63",

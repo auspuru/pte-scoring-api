@@ -100,6 +100,21 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Allow this bounded retry control to read the exact pre-recovery frozen
+  // source manifest. Native graders, paper, provider models and marks stay pinned.
+  const creditBaseline=require('../content/full-mock/credit-recovery-compatible-sources.json');
+  const creditPins={'full-mock/api.js':'0062761943bf43a420fdb1b89b9d0c41d86823a7a2d0bf352ebe794d81cfde9d',
+    'full-mock/exclusions.js':'0d7637d2109e93d80a99e8a4997a93a482d78e37a00480d047d3816932877ed4'};
+  if(digest(creditBaseline)==='0ce0c3aa2bf5072ff2cc4ca63dfc6e90dd79b24c29117b2fe1472cdff61cf14c'
+    &&Object.entries(creditPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(creditBaseline.files).sort().join()
+    &&Object.entries(creditBaseline.files).every(([file,pin])=>[...Object.keys(creditPins),'full-mock/assessment.js'].includes(file)
+      ||digest(current.scoringSources.files[file])===digest(pin))){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of [...Object.keys(creditPins),'full-mock/assessment.js'])sources.files[file]=structuredClone(creditBaseline.files[file]);
+    current={...current,scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(creditBaseline))return digest(saved)===digest(current);
+  }
   // Explicit admin resends may adopt available-mark publication for one saved
   // attempt. Existing attempts are never migrated by a read or deployment.
   const earlierBaseline=require('../content/full-mock/earlier-recordings-compatible-sources.json');
@@ -545,6 +560,42 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     if (state.assessment.status === 'processing') queue(uid, id);
     return state;
   }
+  async function retryUnavailable(uid,id,body={}) {
+    const {operation,evidenceHash:expected,questionIds,confirmRetry}=body;
+    if(!/^[a-zA-Z0-9:_-]{8,100}$/.test(operation||'') || !/^[a-f0-9]{64}$/.test(expected||'')
+      || !Array.isArray(questionIds) || !questionIds.length || questionIds.length>65
+      || new Set(questionIds).size!==questionIds.length || questionIds.some(value=>typeof value!=='string')
+      || confirmRetry!==true)throw fail('Confirm the exact unavailable questions to retry.',400);
+    const record=await store.get(uid,id);if(!record)throw fail('Attempt not found.',404);
+    const exclusions=require('./exclusions');
+    const requestHash=digest({expected,questionIds:[...questionIds].sort(),confirmRetry});
+    const state=await store.update(uid,id,state=>{
+      validate(state);
+      const a=state.assessment,previous=a.retryUnavailableOperations?.[operation];
+      if(previous){if(previous.requestHash!==requestHash)throw fail('This operation belongs to a different retry.',409);return state;}
+      if(state.status!=='submitted'||a.status!=='complete'||a.lease?.expiresAt>now()
+        ||require('../mock-result-review').held(state)||!aggregate(record.paper,state).ready)
+        throw fail('Inspect the settled published attempt before retrying unavailable scores.',409);
+      if(exclusions.evidenceHash(state)!==expected)throw fail('Saved evidence changed. Inspect the attempt again.',409);
+      for(const questionId of questionIds){
+        const index=record.paper.questions.findIndex(candidate=>candidate.id===questionId);
+        if(index<0||!exclusions.retryableUnavailable(state,record.paper.questions[index],state.responses[index+1],a.items[questionId]))
+          throw fail('Only saved, certain provider failures can be retried.',409);
+      }
+      const beforeResponsesHash=digest(state.responses.map(inputHash));
+      const beforeConfirmedHash=digest(Object.fromEntries(Object.entries(a.items).filter(([,job])=>job.status==='assessed')));
+      a.retryUnavailableOperations||={};
+      a.retryUnavailableOperations[operation]={requestHash,at:now(),questionIds:[...questionIds],beforeEvidenceHash:expected,
+        beforeResponsesHash,beforeConfirmedHash,priorExclusions:Object.fromEntries(questionIds.map(key=>[key,a.exclusions[key]]))};
+      for(const questionId of questionIds)delete a.exclusions[questionId];
+      a.recovery||={version:1,retries:0};a.recovery.retries=0;a.recovery.status='armed';
+      delete a.recovery.nextAt;delete a.recovery.automaticRun;
+      a.status='processing';a.run++;a.requestedAt=now();
+      return state;
+    });
+    if(state.assessment.status==='processing')queue(uid,id);
+    return state;
+  }
   async function wakeMedia(uid, id) {
     const record = await store.get(uid, id); if (!record?.state.assessment) return;
     if(require('../mock-result-review').held(record.state))return record.state;
@@ -681,6 +732,6 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     const run=1+Math.max(0,...Object.values(previous||{}).map(stage=>Number.isInteger(stage?.attemptedRun)?stage.attemptedRun:0));
     return adapter.assess(q,response,{recording,previous,checkpoint,run,completionPolicy:COMPLETION_POLICY,contentOnly:true});
   }
-  return { snapshot: currentSnapshot, snapshotFor, prepareContent, review:(uid,id,body)=>require('../mock-result-review').fullAction({store,uid,id,body,at:now(),validate,queue}),request, wakeMedia, results, recover, start, stop, drain, jobs, validate };
+  return { snapshot: currentSnapshot, snapshotFor, prepareContent, review:(uid,id,body)=>require('../mock-result-review').fullAction({store,uid,id,body,at:now(),validate,queue}),request,retryUnavailable, wakeMedia, results, recover, start, stop, drain, jobs, validate };
 }
 module.exports = { VERSION, configuration, legacyConfiguration, snapshot, stateFor, createEngine };
