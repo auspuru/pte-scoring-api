@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "baseCommit": "f8deceb33497fc529f9271f6885130112f5ebaf4",
   "checkedAt": "2026-11-06",
-  "scope": "Explicit admin reassessment supports earlier settled attempts and archives their adoption of available-mark publication; native graders and saved inputs remain pinned.",
+  "scope": "Explicit admin reassessment and provider-429 recovery support settled available-mark reports; native graders and saved inputs remain pinned.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -92,7 +92,7 @@
         "version": "full-mock-aggregation-2026-10-29.1"
       },
       "full-mock/api.js": {
-        "sha256": "87d1847fa810c357945f36b34692b42be87f942333d6dd8d633805414d008b63",
+        "sha256": "0062761943bf43a420fdb1b89b9d0c41d86823a7a2d0bf352ebe794d81cfde9d",
         "version": null
       },
       "full-mock/asq-scoring.js": {
@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "5a10c85f77d70663c2a2cfec816b284d5453101ce456b17c2791bd2fc7ff5732",
+        "sha256": "a03554fe4bbe30eccced781f43e861ee5ba678142ec551a7427fa2e91d34d3a0",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -116,7 +116,7 @@
         "version": null
       },
       "full-mock/exclusions.js": {
-        "sha256": "5f30710de5bcb527b5ad614b6728d996c1093309aa180889037d4ed482cf2b8a",
+        "sha256": "0d7637d2109e93d80a99e8a4997a93a482d78e37a00480d047d3816932877ed4",
         "version": null
       },
       "full-mock/paper.js": {
