@@ -1,10 +1,10 @@
 {
   "baselineCommit": "960d1fd1dc37d5772f24c27286181a0b30d461b2",
-  "scope": "Reviewed available-mark publication, explicit recording reassessment and bounded unavailable-score recovery for Speaking and Full Mocks, preserving native rubrics and older attempt rules.",
+  "scope": "Reviewed task-specific Azure delivery bands, frozen older attempt policies and explicit saved-recording reassessment, preserving content rubrics and confirmed marks.",
   "files": {
     "server.js": "5d68f9fb63e3e835bbedbad0a8ee3220b98fc9184449b10eade435734b7f6cd8",
-    "full-mock/assessment.js": "4ee9c0781a95bbf800cee19aec5d3bfb0d6583e78a201fdb20164c0400a6f5a7",
-    "full-mock/adapters.js": "ec18ac8f954632f91432158fdcae9a6079ac183e80e226b3f99ec0b9cd590fec",
+    "full-mock/assessment.js": "64476bd2c6057db0d67bc46e2ebbe1a7ccbb514862549107d186921409d74823",
+    "full-mock/adapters.js": "1f985cc0859c56d177f78aeb15e1316efd84a9641e752eafbb2c73ba97cfd4dd",
     "full-mock/aggregation.js": "d1cd8b4bdcd50c6a94f3006fbef7a02c0d024a6f57b4a08a4984688d98d17497",
     "full-mock/profiles.js": "8e9659f3d82839a445ec6cb0212d3e7456bb3c4442146a56a0ba721b1994df18",
     "full-mock/rubrics.js": "117c51a483f49d5f4127055001698aedc2ddb4004940751b4fe25cf66959e02a",
@@ -16,7 +16,7 @@
     "speaking-scoring.js": "0c673372149fe2732f7aa6b950862ea01ce4c6473e5df4a55daf49d2740ca3a2",
     "speaking-judge-format.js": "09d30d083c0171ad3aa3a571ea15bc9b16176253733fe1ca8c895e0685fd252c",
     "speaking-mock-report.js": "38e2694fe247469eda1a6c1ea217929cf377426bc9a1fcddbe6f5310aea8c073",
-    "speaking-mock-jobs.js": "f9824fadd48652639641e5b7bfad8589464b68aec17a95c72fe443a3b203cdd9",
+    "speaking-mock-jobs.js": "57492599c63a35375281799407fe5a3741d563d9f5799309b091c07801600fc1",
     "speaking-mock-submission.js": "1d4b8793bbb606bd5e7243199aedbd8aa9b6c3f47ba04be42ded38d17c7d301c",
     "speaking-lab.js": "4c94f66a4693c05c655d33f5bdbc5d99de9414f6667d0f820ef1e9460c3bcc7c",
     "writing-lab-scoring.js": "a130307d850613728d40a36634b3aef337ea211a620695cc9e2217f0bbb1fad6",
@@ -43,13 +43,15 @@
     "public/swt-feedback.js": "6ad1bbb440e4d6ea29e93c6293107e3ce9af20c79b247bb97d643558b45ad930",
     "public/swt-feedback-review.js": "61dc962856a96342cb062ed4c11a65e2cfd523e38d52e4b1822936f8cac3e751",
     "public/swt-mock-feedback.js": "a935db09aa1ad2cd37ddad0df7e26e43b1b0d62a1270740365d7f201cf78b947",
-    "content/full-mock/scoring-lock.json": "963bd45da470c6e739d4ed57810a0c94bc72b8ddb36eafab4924eea3b410e039",
+    "content/full-mock/scoring-lock.json": "5d3b36114dc7493a00c84fa7f741fa46bb1e7274710f132607d464b749ac4e8c",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
     "public/reading-mock-tools.js": "c5655a466dad3579cd0faac269b90eafa7c468e413ec3a5a127f80530ad4fdd4",
-    "speaking-mock.js": "b578e8ea8c38f4b5232728587302a651084d893114b67f560ef99a8548d7ced5",
+    "speaking-mock.js": "263dc10550d94596360aa32563883549f207c66a97515eed3cbf3479c2728d84",
     "speaking-mock-deadline-score.js": "97bb9719d82ec8c9ab592e22b4ef41a8aa1fc61239551209354293919a8c9b10",
     "speaking-mock-completion.js": "880d440996216a193d566d75065e5c096e5e620aa9cc0b078206cc5d095e940a",
-    "speaking-mock-reassessment.js": "02bfeb514949998838b7a435a16bf5bba0f2e2a6a64ae9cc126d4149609546d8"
+    "speaking-mock-reassessment.js": "434684e662b8e4c5eaf39eb1dbda2a3199ed85bdbc10e1a9fedde7d98755786e",
+    "speaking-delivery.js": "e0065e9fc096530358d936e3354d02d91d3d73bc11f6976ec98d1df37c379c4c",
+    "full-mock/delivery-reassessment.js": "d25837e3c0809e390a1c0bd9d3f48e6b4dea5bf8b527c00b5a332e52524cfecf"
   },
   "presentationUpdates": {
     "baselineCommit": "728476dedad6eeaba0afbd2fc2963bf194f9a254",

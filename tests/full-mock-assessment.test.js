@@ -15,6 +15,24 @@ const media = require('../full-mock/recording');
 const { installFullMock } = require('../full-mock/api');
 const paper = loadPaper();
 const accessBase = require('../content/full-mock/access-compatible-sources.json');
+test('An unfinished saved mock retains its original delivery bands while a new mock uses the stricter bands',async t=>{
+  const delivery=require('../speaking-delivery');
+  const bands=[];
+  const f=await fixture(t,{adapters:{assess:async (q,response,{deliveryPolicy})=>{
+    bands.push(deliveryPolicy);
+    if(q.type==='ra')assert.equal(delivery.band5(84,deliveryPolicy,{trait:'pronunciation',type:q.type}),4);
+    return full(q);
+  }}});
+  const original=structuredClone(f.engine.snapshot);
+  original.configuration.delivery.version=delivery.PREVIOUS_VERSION;
+  original.scoringSources=require('../content/full-mock/delivery-bands-compatible-sources.json');
+  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+  await f.engine.request('alice',f.id);await f.engine.drain();
+  assert.equal((await f.engine.results('alice',f.id)).ready,true);
+  assert(bands.includes(delivery.PREVIOUS_VERSION));
+  assert.deepEqual((await f.state()).assessment.snapshot,original);
+  assert.equal(delivery.band5(84,delivery.VERSION,{trait:'fluency',type:'di'}),3);
+});
 for(const baseline of ['session-security','account-email','image-clarity','audio-refresh'])test(baseline+' upgrade preserves old Full Mock snapshots and confirmed marks',async t=>{
  let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
  const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/'+baseline+'-compatible-sources.json')};

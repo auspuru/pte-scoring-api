@@ -6,7 +6,9 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const run = promisify(execFile);
 
-const VERSION = 'azure-delivery-2026-10-27.1';
+const VERSION = 'azure-delivery-2026-11-06.1';
+const PREVIOUS_VERSION = 'azure-delivery-2026-10-27.1';
+const CALIBRATED_TASKS = new Set(['di','rl','sgd','rts']);
 const DELIVERY_RUBRIC_VERSION = require('./delivery-rubric').RUBRIC_VERSION;
 const CHUNK_SECONDS = 28;
 const WAV_MIME = 'audio/wav';
@@ -42,18 +44,39 @@ function configurationSummary(env=process.env) {
   };
 }
 
-function band5(raw) {
+function band5(raw,policy=VERSION,{trait,type}={}) {
   if(raw==null||raw==='')return null;
   const value=Number(raw);
   if(!Number.isFinite(value)) return null;
-  // Conservative practice calibration. Azure's 0-100 acoustic scale is not
-  // Pearson's proprietary 0-5 trait scale, so high bands require stronger evidence.
-  if(value>=94)return 5;
-  if(value>=84)return 4;
-  if(value>=72)return 3;
-  if(value>=58)return 2;
+  if(policy!==VERSION&&policy!==PREVIOUS_VERSION)throw Error('Unknown Azure delivery calibration.');
+  // Read Aloud, Repeat Sentence, whole-audio diagnostics and saved older
+  // attempts keep their existing bands. Only the four reviewed free-response
+  // tasks use the new, trait-specific calibration.
+  if(policy===PREVIOUS_VERSION||!CALIBRATED_TASKS.has(type)){
+    if(value>=94)return 5;
+    if(value>=84)return 4;
+    if(value>=72)return 3;
+    if(value>=58)return 2;
+    if(value>=40)return 1;
+    return 0;
+  }
+  if(trait!=='pronunciation'&&trait!=='fluency')throw Error('Unknown Azure delivery trait.');
+  if(value>=(trait==='pronunciation'?97:94))return 5;
+  if(value>=(trait==='pronunciation'?94:89))return 4;
+  if(value>=84)return 3;
+  if(value>=75)return 2;
   if(value>=40)return 1;
   return 0;
+}
+
+// Whole-recording reassessment returns native Azure raw values. Apply the
+// attempt's frozen item policy before proposing a replacement mark, without
+// sending the recording to Azure again or changing an existing saved result.
+function reband(result,{questionType,bandPolicy=VERSION}={}) {
+  if(!result||!['pronunciation','fluency'].every(key=>Number.isFinite(result[key]?.raw)))return result;
+  return {...result,bandPolicy,
+    pronunciation:{...result.pronunciation,score:band5(result.pronunciation.raw,bandPolicy,{trait:'pronunciation',type:questionType})},
+    fluency:{...result.fluency,score:band5(result.fluency.raw,bandPolicy,{trait:'fluency',type:questionType})}};
 }
 
 function descriptor(kind,score) {
@@ -166,7 +189,7 @@ function extractAssessment(json) {
   };
 }
 
-function aggregate(chunks,{evidence}={}) {
+function aggregate(chunks,{evidence,bandPolicy=VERSION,questionType}={}) {
   const usable=chunks.filter(item=>Number.isFinite(item?.fluency)||Number.isFinite(item?.accuracy));
   if(!usable.length) throw Error('Azure pronunciation assessment returned no usable delivery scores.');
   const weight=item=>item.weight>0?item.weight:1;
@@ -190,25 +213,27 @@ function aggregate(chunks,{evidence}={}) {
   }
   const weakest=usefulPracticeWords([...new Map(issues.sort((a,b)=>(a.accuracy??101)-(b.accuracy??101)).map(item=>[item.word.toLowerCase(),item])).values()]);
   const enough=evidence?.sufficient!==false;
+  const pronunciationBand=enough?band5(pronunciationRaw,bandPolicy,{trait:'pronunciation',type:questionType}):null;
+  const fluencyBand=enough?band5(fluencyRaw,bandPolicy,{trait:'fluency',type:questionType}):null;
   const evidenceText=evidence&&!enough
     ? (Number.isFinite(evidence.coverage)
       ? 'Only '+evidence.matchedWords+' of '+evidence.referenceWords+' reference words were matched in '+evidence.durationSeconds+' seconds.'
       : 'Only '+evidence.spokenWords+' words were available in '+evidence.durationSeconds+' seconds.')
     : '';
   return {
-    deliveryVersion:VERSION,
+    deliveryVersion:bandPolicy,
     deliveryRubricVersion:DELIVERY_RUBRIC_VERSION,
     deliveryCalibration:'Independent Azure trait signals; prosody and weak-word flags are diagnostic only.',
     pronunciation:{
-      score:enough?band5(pronunciationRaw):null,maximum:5,raw:pronunciationRaw,
-      descriptor:enough?descriptor('pronunciation',band5(pronunciationRaw)):'',
-      coaching:enough?coaching('pronunciation',{score:band5(pronunciationRaw),accuracy,prosody,words:weakest}):'',
+      score:pronunciationBand,maximum:5,raw:pronunciationRaw,
+      descriptor:enough?descriptor('pronunciation',pronunciationBand):'',
+      coaching:enough?coaching('pronunciation',{score:pronunciationBand,accuracy,prosody,words:weakest}):'',
       accuracy,prosody,completeness,words:weakest
     },
     fluency:{
-      score:enough?band5(fluencyRaw):null,maximum:5,raw:fluencyRaw,
-      descriptor:enough?descriptor('fluency',band5(fluencyRaw)):'',
-      coaching:enough?coaching('fluency',{score:band5(fluencyRaw),fluency,prosody}):'',
+      score:fluencyBand,maximum:5,raw:fluencyRaw,
+      descriptor:enough?descriptor('fluency',fluencyBand):'',
+      coaching:enough?coaching('fluency',{score:fluencyBand,fluency,prosody}):'',
       acousticFluency:fluency,prosody
     },
     deliveryEvidence:evidence||null,
@@ -287,7 +312,7 @@ async function assessRecording(recording,{
   locale=process.env.AZURE_SPEECH_LOCALE||'en-AU',
   ffmpeg='ffmpeg',
   directory,
-  chunkCache={},checkpointChunk=async()=>{},contentIndependent=false
+  chunkCache={},checkpointChunk=async()=>{},contentIndependent=false,bandPolicy=VERSION
 }={}) {
   if(!recording?.data||!recording?.mime)throw Error('A saved recording is required for delivery assessment.');
   if(!apiKey||!endpoint)return null;
@@ -314,7 +339,7 @@ async function assessRecording(recording,{
     assessed.weight=seconds;
     results.push(assessed);
   }
-  return aggregate(results,{evidence:deliveryEvidence(question,confirmed,totalSeconds,{contentIndependent})});
+  return aggregate(results,{evidence:deliveryEvidence(question,confirmed,totalSeconds,{contentIndependent}),bandPolicy,questionType:question?.type});
 }
 
-module.exports={VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,descriptor,coaching,usefulPracticeWords,tokens,lcsLength,deliveryEvidence,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds,pcmData,pcmWav,balanceShortTail};
+module.exports={VERSION,PREVIOUS_VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,reband,descriptor,coaching,usefulPracticeWords,tokens,lcsLength,deliveryEvidence,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds,pcmData,pcmWav,balanceShortTail};

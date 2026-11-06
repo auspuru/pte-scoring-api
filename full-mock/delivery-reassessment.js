@@ -6,6 +6,8 @@ const { recordingBytes } = require('./report');
 const TYPES = new Set(['ra','rs','di','rl','sgd','rts']);
 const fingerprint = state => digest({paper:state.paperHash,snapshot:state.assessment?.snapshotHash,responses:state.responses,items:state.assessment?.items,exclusions:state.assessment?.exclusions,publication:state.instructorReview});
 const continuous=require('../azure-continuous-delivery');
+const delivery=require('../speaking-delivery');
+const savedPolicy=state=>state.assessment?.snapshot?.configuration?.delivery?.version||delivery.PREVIOUS_VERSION;
 function create({store,validate,now=Date.now,assess=continuous.assessRecording,assessContent,assemble=require('./recording').assemble,providerConfiguration=()=>assess===continuous.assessRecording?continuous.configuration():{ready:true}}) {
   const jobs=new Map();
   async function read(owner,id) {
@@ -154,7 +156,8 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,a
         }
         const configured=providerConfiguration();if(!configured.ready&&!result){if(preparedResult){result=contentOnly();deliveryMessage='Content assessment confirmed. Azure delivery marks were unavailable.';}else throw Object.assign(Error(configured.message),{providerStarted:false});}
         if(!result){await store.update(owner,id,state=>{const op=state.deliveryReassessments[operation];if(fingerprint(state)!==op.evidenceHash)throw fail('Saved inputs changed before sending.',409);const item=op.items.find(item=>item.questionId===claimed.questionId);item.providerStartedAt=now();return state;});
-          sent=true;result=await assess({mime:audio.mime,data:audio.bytes.toString('base64')});}
+          sent=true;result=await assess({mime:audio.mime,data:audio.bytes.toString('base64')});
+          if(assess===continuous.assessRecording)result=delivery.reband(result,{questionType:candidate.question.type,bandPolicy:savedPolicy(record.state)});}
         if(!result?.version||!result.contentOnly&&!['pronunciation','fluency'].every(k=>Number.isFinite(result[k]?.score)&&result[k].score>=0&&result[k].score<=5))throw Error('Invalid Azure result');
       }catch(caught){if(preparedResult&&!preparedResult.gated&&caught.status!==409){result=contentOnly();deliveryUncertain=sent&&caught.providerStarted!==false;deliveryMessage='Content assessment confirmed. Azure delivery marks were unavailable.';}else error=caught;}
       await store.update(owner,id,state=>{
@@ -229,7 +232,8 @@ function create({store,validate,now=Date.now,assess=continuous.assessRecording,a
     try {
       const row=eligible(record.paper,record.state).find(q=>q.id===questionId);
       const audio=await recordingBytes(owner,id,record.state.responses[row.number],row.segment,store.getChunk);
-      const result=await assess({mime:audio.mime,data:audio.bytes.toString('base64')});
+      let result=await assess({mime:audio.mime,data:audio.bytes.toString('base64')});
+      if(assess===continuous.assessRecording)result=delivery.reband(result,{questionType:row.type,bandPolicy:savedPolicy(record.state)});
       if(!result.version||!['pronunciation','fluency'].every(k=>Number.isFinite(result[k]?.score)&&result[k].score>=0&&result[k].score<=5))throw Error('Invalid Azure result');
       await store.update(owner,id,state=>{const op=state.deliveryReassessments[operation];if(op.status!=='running')throw fail('Operation changed.',409);op.result=result;op.recordingHash=require('./store').hash(audio.bytes);op.status='review';op.completedAt=now();return state;});
     } catch(error) {

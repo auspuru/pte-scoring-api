@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "f8deceb33497fc529f9271f6885130112f5ebaf4",
+  "baseCommit": "452e99836edb75c8de07b6f2e9b0a9dc74ee546f",
   "checkedAt": "2026-11-06",
-  "scope": "Explicit admin reassessment and bounded retry of unavailable provider and Writing assessments support settled available-mark reports; native graders and saved inputs remain pinned.",
+  "scope": "Reviewed task-specific Azure pronunciation and fluency bands for new DI, RL, SGD and RTS assessments; RA, RS and unfinished older Full Mocks retain their earlier bands and saved marks.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -84,7 +84,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "ec18ac8f954632f91432158fdcae9a6079ac183e80e226b3f99ec0b9cd590fec",
+        "sha256": "1f985cc0859c56d177f78aeb15e1316efd84a9641e752eafbb2c73ba97cfd4dd",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "4ee9c0781a95bbf800cee19aec5d3bfb0d6583e78a201fdb20164c0400a6f5a7",
+        "sha256": "64476bd2c6057db0d67bc46e2ebbe1a7ccbb514862549107d186921409d74823",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -112,7 +112,7 @@
         "version": null
       },
       "full-mock/delivery-reassessment.js": {
-        "sha256": "d9bb5485265457c79211200996ab6a3a85e07b359d2020d94e1980bd628276c6",
+        "sha256": "d25837e3c0809e390a1c0bd9d3f48e6b4dea5bf8b527c00b5a332e52524cfecf",
         "version": null
       },
       "full-mock/exclusions.js": {
@@ -197,7 +197,7 @@
         "version": "functional-situation-content-2026-10-24.1"
       },
       "speaking-delivery.js": {
-        "sha256": "3eff2225f3daa16d85cf45e2fc88acff043e8212397fcb76b7a206092a55be0b",
+        "sha256": "e0065e9fc096530358d936e3354d02d91d3d73bc11f6976ec98d1df37c379c4c",
         "version": null
       },
       "speaking-judge-format.js": {
