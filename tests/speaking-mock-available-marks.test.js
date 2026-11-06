@@ -2,6 +2,20 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto'),express=require('express');
 const completion=require('../speaking-mock-completion'),report=require('../speaking-mock-report'),{hash}=require('../scoring-jobs'),{installSpeakingMock,present}=require('../speaking-mock');
 const {fixture,content,raw}=require('./helpers/speaking-reassessment-fixture');
+test('An older Speaking Mock publishes current bands after explicit Azure reassessment',async t=>{
+ const delivery=require('../speaking-delivery'),assessed={version:'synthetic-continuous',pronunciation:{score:5,raw:94},fluency:{score:5,raw:90}};
+ const f=await fixture(t,{deliveryReassessment:{assess:async()=>assessed,rebandCurrent:true,gradeContent:async q=>content(q)}});
+ const before=await f.store.get(f.owner,f.id),view=await f.service.deliveryReview.inspect(f.owner,f.id);
+ const body={operation:'delivery:current-bands',questionIds:[f.questions[f.index].id],evidenceHash:view.evidenceHash,autoPublish:true};
+ await f.service.deliveryReview.send(f.owner,f.id,body);await f.service.deliveryReview.drain();
+ const proposal=(await f.service.deliveryReview.inspect(f.owner,f.id)).operations[body.operation];
+ assert.equal(proposal.status,'published');assert.equal(proposal.items[0].result.bandPolicy,delivery.VERSION);
+ assert.deepEqual([proposal.items[0].result.pronunciation.score,proposal.items[0].result.fluency.score],[4,4]);
+ const after=await f.store.get(f.owner,f.id);
+ assert.equal(after.assessmentProfile.deliveryPolicy,undefined);
+ assert.deepEqual([after.responses[f.index].azure.pronunciation.score,after.responses[f.index].azure.fluency.score],[4,4]);
+ assert.deepEqual(after.responses[f.index+1],before.responses[f.index+1]);
+});
 test('New Speaking mocks publish confirmed content while missing Azure traits stay unavailable',async t=>{
  const f=await fixture(t);await f.store.update(f.owner,f.id,a=>{a.responses[f.index].azure={status:'unavailable'};a.assessment.status='processing';a.grading.status='pending';return a;});
  const before=await f.store.get(f.owner,f.id);await f.service.progressive.ensure(f.owner,before);await f.service.waitForJobs();

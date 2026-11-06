@@ -3,6 +3,27 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const {create}=require('../full-mock/delivery-reassessment'),{loadPaper}=require('../full-mock/paper'),session=require('../full-mock/session'),assessment=require('../full-mock/assessment'),adapters=require('../full-mock/adapters'),{inputHash,aggregate}=require('../full-mock/aggregation');
 const {fixture,secondRecording}=require('./helpers/delivery-reassessment-fixture');
 const result={version:'synthetic-continuous',pronunciation:{score:3,raw:60},fluency:{score:2,raw:40}};
+test('An older Full Mock keeps its snapshot while explicit Azure reassessment publishes current bands',async t=>{
+ const raw={version:'synthetic-continuous',pronunciation:{score:5,raw:94},fluency:{score:5,raw:90}};
+ const f=await fixture(t,async()=>raw),delivery=require('../speaking-delivery');
+ await f.store.update(f.owner,f.id,state=>{
+  state.assessment.snapshot.configuration.delivery.version=delivery.PREVIOUS_VERSION;
+  state.assessment.snapshot.scoringSources=require('../content/full-mock/delivery-bands-compatible-sources.json');
+  state.assessment.snapshotHash=require('../full-mock/paper').digest(state.assessment.snapshot);
+  for(const job of Object.values(state.assessment.items))job.snapshotHash=state.assessment.snapshotHash;
+  return state;
+ });
+ const controller=create({store:f.store,validate:assessment.createEngine({store:f.store}).validate,assess:async()=>raw,rebandCurrent:true});
+ const view=await controller.inspect(f.owner,f.id),body={operation:'delivery:current-bands',questionIds:[f.q.id],evidenceHash:view.evidenceHash,autoPublish:true};
+ assert.equal((await f.store.get(f.owner,f.id)).state.assessment.items[f.q.id].result.scores.pronunciation,5);
+ await controller.send(f.owner,f.id,body);await controller.drain();
+ const published=(await controller.inspect(f.owner,f.id)).operations[body.operation];
+ assert.equal(published.status,'published');assert.equal(published.items[0].result.bandPolicy,delivery.VERSION);
+ assert.deepEqual([published.items[0].result.pronunciation.score,published.items[0].result.fluency.score],[4,4]);
+ const after=(await f.store.get(f.owner,f.id)).state;
+ assert.equal(after.assessment.snapshot.configuration.delivery.version,delivery.PREVIOUS_VERSION);
+ assert.deepEqual([after.assessment.items[f.q.id].result.scores.pronunciation,after.assessment.items[f.q.id].result.scores.fluency],[4,4]);
+});
 test('Original recording is sent once; publication replaces only delivery with archived results and recalculated profiles',async t=>{
  let calls=0;const f=await fixture(t,async recording=>{calls++;assert.equal(Buffer.from(recording.data,'base64').toString(),f.bytes.toString());return result;});
  const before=(await f.store.get(f.owner,f.id)).state,view=await f.api.inspect(f.owner,f.id),body={operation:'delivery:test-one',questionId:f.q.id,evidenceHash:view.evidenceHash};
