@@ -2,7 +2,8 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path');
 const {createController}=require('../public/speaking-mock-client'),{installSpeakingMock}=require('../speaking-mock');
 async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,gradeGate=Promise.resolve(),audioCue=false,autoCheck=true}={}){
-  let at=1000000,uid='alice',recorderStarts=0,permissionCalls=0,full=false;const nodes=new Map(),intervals=new Map(),requests=[],audios=[];let seq=0;
+  let at=1000000,uid='alice',recorderStarts=0,permissionCalls=0,full=false;const nodes=new Map(),intervals=new Map(),requests=[],audios=[],events={window:new Map(),document:new Map()};let seq=0;
+  const listen=(scope,name,fn)=>{const rows=events[scope].get(name)||[];rows.push(fn);events[scope].set(name,rows);};
   class Element{constructor(id){this.id=id;this.hidden=false;this.disabled=false;this.textContent='';this.style={};nodes.set(id,this);}set innerHTML(text){this.html=text;if(this.id==='speakingMockPane'){for(const id of [...nodes.keys()])if(id!==this.id)nodes.delete(id);}for(const m of text.matchAll(/id="([^"]+)"/g))new Element(m[1]);}get innerHTML(){return this.html||'';}replaceChildren(){this.innerHTML='';}}
   const host=new Element('speakingMockPane');
   class Recorder{static isTypeSupported(type){return type==='audio/webm;codecs=opus';}constructor(){this.state='inactive';this.mimeType='audio/webm';}start(){this.state='recording';if(!nodes.has('sm-check-record'))recorderStarts++;}stop(){if(this.state!=='recording')return;this.state='inactive';this.ondataavailable?.({data:new Blob([Buffer.alloc(200,2)],{type:this.mimeType})});this.onstop?.();}}
@@ -13,7 +14,7 @@ async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,
     assessOverall:async()=>({status:'assessed',overallScore:90,summary:'Clear across the mock.',pronunciation:{score:5},fluency:{score:5}})});
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
   const base='http://127.0.0.1:'+server.address().port;
-  const env={document:{getElementById:id=>nodes.get(id)||null,hidden:false},Date:{now:()=>at},MediaRecorder:Recorder,Audio,Blob,crypto:require('node:crypto').webcrypto,
+  const env={document:{getElementById:id=>nodes.get(id)||null,hidden:false,addEventListener:(name,fn)=>listen('document',name,fn)},addEventListener:(name,fn)=>listen('window',name,fn),Date:{now:()=>at},MediaRecorder:Recorder,Audio,Blob,crypto:require('node:crypto').webcrypto,
     localStorage:{getItem:key=>key==='pte_session_token'?'alice':null},sessionStorage:{getItem:()=>null},
     navigator:{mediaDevices:{getUserMedia:async()=>{permissionCalls++;return {getTracks:()=>[{stop(){}}]};}}},
     URL:{createObjectURL:()=> 'blob:mock-'+(++seq),revokeObjectURL(){}},confirm:()=>true,
@@ -28,7 +29,7 @@ async function harness(t,{prepare=true,failUpload=false,backgroundEnabled=false,
   const tick=async ms=>{at+=ms;for(const audio of audios)if(audio.played&&!audio.paused&&!audio.ended&&audio.duration&&at>=audio.playedAt+(audio.duration-audio.offset)*1000){audio.ended=true;audio.onended?.();}cueAudio?.run();for(const fn of [...intervals.values()])await fn();await flush();const ends=Date.now()+3000;while(nodes.get('sm-record-status')?.textContent==='Preparing your response…'&&Date.now()<ends)await new Promise(resolve=>setTimeout(resolve,1));};
   const rawClick=data=>host.onclick({target:{closest:()=>({dataset:data,disabled:false})}});
   const finishCheck=async()=>{await rawClick({sm:'check-record'});await tick(10001);await rawClick({sm:'check-play'});await tick(3001);host.onchange({target:{id:'sm-check-heard',checked:true}});await rawClick({sm:'check-begin'});};
-  return {env,host,nodes,requests,audios,controller,lab,flush,cueAudio,finishCheck,rawClick,
+  return {env,host,nodes,requests,audios,controller,lab,flush,cueAudio,finishCheck,rawClick,fire:async(name,scope='window')=>{await Promise.all((events[scope].get(name)||[]).map(fn=>fn()));await flush();},
     click:async data=>{await rawClick(data);if(autoCheck&&['start','reattempt'].includes(data.sm)&&nodes.has('sm-check-record'))await finishCheck();},tick,
     active:async()=>{const [row]=await lab.store.list('alice');return row&&lab.store.update('alice',row.id,a=>a);},
     starts:()=>recorderStarts,permissions:()=>permissionCalls,protected:()=>full,user:value=>uid=value};
@@ -212,7 +213,7 @@ test('An aborted result fetch keeps saved results visible and automatically reco
   assert.doesNotMatch(h.nodes.get('sm-notice').textContent,/Fetch is aborted/);assert.match(h.host.innerHTML,/Individual question feedback/);
   await h.lab.store.update('alice',id,a=>{a.grading.status='complete';a.overall={overallScore:82,summary:'Saved complete assessment.'};return a;});
   await h.tick(3000);assert.match(h.nodes.get('sm-results-summary').innerHTML,/Pending/);assert.doesNotMatch(h.nodes.get('sm-results-summary').innerHTML,/>82</);assert.equal(h.nodes.get('sm-notice').textContent,'');
-  const reads=h.requests.length;await h.tick(30000);assert.equal(h.requests.length,reads,'Completed results stop polling.');
+  const reads=h.requests.length;await h.tick(29999);assert.equal(h.requests.length,reads);await h.tick(1);assert.equal(h.requests.length,reads+1,'Completed results refresh saved marks every 30 seconds.');assert.equal(h.requests.at(-1).method,'GET');
 });
 
 test('Transient server errors back off, while an expired sign-in stops result polling',async t=>{
@@ -291,6 +292,51 @@ test('Task-weighted reports update with question marks and never fall back to a 
  await h.tick(3000);const html=h.nodes.get('sm-results-summary').innerHTML;
  for(const text of ['Overall score','85','27 of 27 responses assessed'])assert(html.includes(text));assert.doesNotMatch(html,/Task weights|31%|101%|weighted task accuracy/);
  assert.doesNotMatch(html,/37\.5%|31\.25%|>75</);assert.match(h.nodes.get('sm-assessment-status').textContent,/27 of 27 content scores available/);
+});
+
+for(const sameOverall of [false,true])test('A completed Speaking report refreshes a restored DI on focus, including unchanged rounded scores: '+sameOverall,async t=>{
+ const h=await harness(t),{id,questions}=await sampleReport(h),index=questions.findIndex(q=>q.type==='di'),hash=require('../scoring-jobs').hash;
+ await h.lab.store.update('alice',id,a=>{const q=a.questions[index],r=a.responses[index];a.assessmentExclusions={[index]:{attemptId:id,index,questionId:q.id,questionHash:hash(q),recordingHash:r.recording.hash,operation:'excluded-di-refresh-test',note:'This saved image response was previously unavailable.',reason:'feedback-unavailable',authorizedBy:'administrator',excludedAt:1}};return a;});
+ await h.controller.open({history:true});await h.click({sm:'resume',id});assert.match(h.nodes.get('sm-results-summary').innerHTML,/26 of 26 responses assessed/);assert.match(h.nodes.get('sm-results-summary').innerHTML,/>85</);
+ await h.lab.store.update('alice',id,a=>{delete a.assessmentExclusions[index];if(!sameOverall){a.responses[index].content.total=1;a.responses[index].azure.pronunciation.score=1;a.responses[index].azure.fluency.score=1;}return a;});
+ const saved=await h.lab.store.get('alice',id),expected=require('../speaking-mock-report').summarize(saved).azure.overallScore;assert.equal(expected===85,sameOverall);
+ h.requests.length=0;await h.fire('focus');const html=h.nodes.get('sm-results-summary').innerHTML;
+ assert.match(html,/27 of 27 responses assessed/);assert(html.includes('>'+expected+'<'));assert.doesNotMatch(html,/previously unavailable/);assert.equal(h.requests.filter(r=>r.url==='/api/speaking-mocks/attempts/'+id).length,1);assert(h.requests.every(r=>(r.method||'GET')==='GET'));assert.deepEqual((await h.lab.store.get('alice',id)).responses,saved.responses);
+});
+
+test('Manual Speaking report refresh and returning to Score report read saved results without another assessment',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h);h.requests.length=0;
+ await h.click({sm:'refresh-report'});assert.match(h.nodes.get('sm-notice').textContent,/Report refreshed/);
+ await h.click({sm:'section',section:'answers'});await h.click({sm:'section',section:'overview'});
+ assert.equal(h.requests.filter(r=>r.url==='/api/speaking-mocks/attempts/'+id).length,2);assert(h.requests.every(r=>(r.method||'GET')==='GET'));
+ h.controller.leave();h.requests.length=0;await h.fire('focus');await h.fire('visibilitychange','document');assert.equal(h.requests.length,0);
+});
+
+test('A visible completed Speaking report picks up saved changes automatically after thirty seconds',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h);await h.lab.store.update('alice',id,a=>{a.responses[1].content.total=1;return a;});
+ const expected=require('../speaking-mock-report').summarize(await h.lab.store.get('alice',id)).azure.overallScore;h.requests.length=0;
+ await h.tick(29999);assert.equal(h.requests.length,0);await h.tick(1);assert.equal(h.requests.length,1);assert.equal(h.requests[0].method,'GET');assert(h.nodes.get('sm-results-summary').innerHTML.includes('>'+expected+'<'));
+ h.env.document.hidden=true;h.requests.length=0;await h.tick(30000);assert.equal(h.requests.length,0);
+});
+
+test('An expired sign-in stops completed report refreshes and retains the saved report',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h);let reads=0;const original=h.env.fetch,html=h.nodes.get('sm-results-summary').innerHTML;
+ h.env.fetch=async(url,options)=>url==='/api/speaking-mocks/attempts/'+id?(reads++,{ok:false,status:401,json:async()=>({error:'Sign in again to view the saved report.'})}):original(url,options);
+ await h.tick(30000);assert.equal(reads,1);assert.match(h.nodes.get('sm-notice').textContent,/Sign in again/);assert.equal(h.nodes.get('sm-results-summary').innerHTML,html);await h.tick(30000);assert.equal(reads,1);
+});
+
+test('A completed report refresh can resume preparing-result polling and then reopen the current report',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h),original=h.env.fetch;let pending=true;
+ h.env.fetch=async(url,options)=>{const reply=await original(url,options);if(pending&&url==='/api/speaking-mocks/attempts/'+id){pending=false;const value=await reply.json();return {ok:true,json:async()=>({...value,resultsReady:false,grading:{status:'processing'},resultStatus:{status:'preparing',ready:false},speakingReport:null})};}return reply;};
+ await h.tick(30000);assert(h.nodes.get('sm-preparing-status'));assert.equal(h.nodes.get('sm-results-summary'),undefined);
+ await h.tick(3000);assert(h.nodes.get('sm-results-summary'));assert.match(h.nodes.get('sm-results-summary').innerHTML,/27 of 27 responses assessed/);assert(h.requests.every(r=>(r.method||'GET')==='GET'));
+});
+
+test('Report refresh coalesces focus events and ignores a response after the session changes',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h),original=h.env.fetch;let release,reads=0;
+ h.env.fetch=async(url,options)=>{if(url==='/api/speaking-mocks/attempts/'+id){reads++;const reply=await original(url,options),saved=await reply.json();await new Promise(resolve=>release=resolve);return {ok:true,json:async()=>({...saved,title:'Late report must not appear',speakingReport:{...saved.speakingReport,azure:{...saved.speakingReport.azure,overallScore:11}}})};}return original(url,options);};
+ const first=h.fire('focus');await h.flush();const second=h.fire('visibilitychange','document');await h.flush();assert.equal(reads,1);
+ h.env.sessionStorage.getItem=()=> 'new-session';release();await Promise.all([first,second]);assert.doesNotMatch(h.nodes.get('sm-results-summary').innerHTML,/>11</);
 });
 
 test('a completed short response explains withheld delivery estimates while showing the published practice score',async t=>{
@@ -373,7 +419,7 @@ test('Report sections, providers and response tabs preserve the loaded recording
  for(const provider of ['azure','all','gpt']){h.host.onchange({target:{id:'sm-review-provider',value:provider}});assert.doesNotMatch(h.nodes.get('sm-review-feedback').innerHTML,/GPT Audio|Compare both|<select/);}
  await h.click({sm:'response-pane',pane:'sample'});assert.match(h.nodes.get('sm-review-feedback').innerHTML,/id="sm-response-sample"[^>]*aria-labelledby="sm-response-tab-sample">/);
  await h.click({sm:'response-pane',pane:'transcript'});assert.match(h.nodes.get('sm-review-feedback').innerHTML,/id="sm-response-transcript"[^>]*aria-labelledby="sm-response-tab-transcript">/);
- assert.equal(h.nodes.get('sm-review-audio'),audio);assert.equal(audio.innerHTML,markup);assert.equal(h.requests.length,requests);
+ assert.equal(h.nodes.get('sm-review-audio'),audio);assert.equal(audio.innerHTML,markup);assert.equal(h.requests.length,requests+1);assert.equal(h.requests.at(-1).method,'GET');assert.match(h.requests.at(-1).url,/\/api\/speaking-mocks\/attempts\/[^/]+$/);
 });
 
 test('Old generated-image reports retain their saved image while a new reattempt uses the supplied prediction image',async t=>{

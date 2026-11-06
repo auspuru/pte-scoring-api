@@ -35,7 +35,7 @@
     "public/writing-lab-report.js": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
     "public/writing-lab-client.js": "9d009ad6d71b61bbe000fbfbcd3df6583c21381c59d2732d76efd31cc924dcfd",
     "public/speaking-practice.js": "20bdac5c77a57c9d00d3d6604383d133c4d4b8696b1f2ab15e267ee4eafb2916",
-    "public/speaking-mock-client.js": "22d705058781594fc0bc2fb7fbbf3b95bfe6834eca670452a56475e07065954a",
+    "public/speaking-mock-client.js": "56d0e8537736cd35ccc03369cd92586929c8146f9f84c2093c6356e597298850",
     "public/reading-practice.js": "d7e67dea4258894ebbe63c64fa1463700ad7146c334f85ce1c486a2aeb263bef",
     "public/reading-review.js": "98e9c23a186fcc72034d552e0664f1d8ccb420600e21fa27fa6bbf987a1a2872",
     "public/essay-scoring.js": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
@@ -171,5 +171,11 @@
     "controllerAfter": "9d009ad6d71b61bbe000fbfbcd3df6583c21381c59d2732d76efd31cc924dcfd",
     "mockReviewCardAfter": "2dc407ea2d67a221c47ecf7f2c5e613db571b87cfaa226b0310c28728ed1d578",
     "mockReviewCardBefore": "9e09a87905ecdeee5b12494ada86211fc44806ca68cdd875b2fbe40ac5d24cc6"
+  },
+  "speakingReportRefreshUpdate": {
+    "baselineCommit": "5dd2a88494816a3572ae963e63c8a489ab805adc",
+    "scope": "Refresh completed saved reports while visible, on return and through Refresh report. Owner, attempt, session and read-version guards preserve current audio, report navigation and all saved marks. Native scoring sources and provider work are unchanged.",
+    "controllerBefore": "22d705058781594fc0bc2fb7fbbf3b95bfe6834eca670452a56475e07065954a",
+    "controllerAfter": "56d0e8537736cd35ccc03369cd92586929c8146f9f84c2093c6356e597298850"
   }
 }
