@@ -3,6 +3,20 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const bank=require('../content/speaking-mocks'),report=require('../speaking-mock-report'),{installSpeakingMock,present}=require('../speaking-mock'),{createMockJobs}=require('../speaking-mock-jobs'),{createStore}=require('../writing-lab-store');
 const delivery=()=>({status:'assessed',pronunciation:{status:'scored',score:5,maximum:5},fluency:{status:'scored',score:4,maximum:5}});
 function fixture(){const questions=structuredClone(bank.papers[0].questions);return{id:crypto.randomUUID(),title:'Speaking mock',paperId:bank.papers[0].id,status:'submitted',startedAt:1,deadline:999999,index:questions.length,questionCount:27,questions,responses:questions.map(()=>({skipped:true})),assessmentProfile:{mode:'progressive-v1',owner:'student',diBackend:'academy'},integrity:{events:[]},grading:{status:'pending'}};}
+test('A saved Speaking mock keeps its delivery calibration when a new attempt uses the revised one',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-delivery-policy-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
+ const store=createStore(null,directory,{table:'speaking_mock_attempts'}),policies=[];
+ const jobs=createMockJobs({directory,store,transcribe:()=>assert.fail('Reuse saved transcript'),callModel:()=>assert.fail('Reuse saved content'),
+  assessAzure:async(recording,options)=>{policies.push(options.bandPolicy);return delivery();}});t.after(()=>jobs.stop());
+ const saved=fixture(),newer=fixture();newer.assessmentProfile.deliveryPolicy=require('../speaking-delivery').VERSION;
+ for(const attempt of [saved,newer]){
+  const i=attempt.questions.findIndex(q=>q.type==='di');
+  attempt.responses[i]={recording:recording(),transcript:'The chart shows a clear increase across the period.',transcriptionStatus:'assessed',content:{total:6,maximum:6,scoringMode:'ai'}};
+  await store.update('student',attempt.id,()=>attempt);
+  await jobs.ensure('student',attempt);await jobs.wait();
+ }
+ assert.deepEqual(policies,[require('../speaking-delivery').PREVIOUS_VERSION,require('../speaking-delivery').VERSION]);
+});
 test('New mock DI jobs use the selected GPT reviewer with the Academy rubric and keep Azure delivery independent',async t=>{
  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-gpt-content-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
  const store=createStore(null,directory,{table:'speaking_mock_attempts'}),a=fixture(),index=a.questions.findIndex(q=>q.type==='di');

@@ -120,6 +120,7 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   async function request(route,body,user='alice',binary=false){const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':user,'Content-Type':binary?'audio/webm':'application/json'},body:body===undefined?undefined:binary?body:JSON.stringify(body)});return {status:r.status,body:await r.json()};}
   const id=crypto.randomUUID();let a=(await request('/attempts',{id,paperId:'speaking-mock-1',results:[{overallScore:90}]})).body;
   assert.equal(a.overall,null);assert.equal(a.responses,undefined);assert.equal(a.question.type,'intro');assert.equal(a.deadline-a.startedAt,40*60000);
+  assert.equal((await store.get('alice',id)).assessmentProfile.deliveryPolicy,require('../speaking-delivery').VERSION);
   await store.update('alice',id,value=>{value.deadline=value.startedAt+36*60000;return value;});
   assert.equal((await request('/attempts',{id,paperId:'speaking-mock-1'})).body.deadline-a.startedAt,36*60000,'An existing attempt retains its original clock.');
   assert.equal((await request('/attempts/'+id,undefined,'bob')).status,404);assert.equal((await request('/attempts/'+id,undefined,'')).status,401);

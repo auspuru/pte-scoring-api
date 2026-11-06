@@ -100,6 +100,26 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Existing Full Mocks retain their original acoustic bands when pending
+  // delivery work resumes. This exact projection is for validation only;
+  // the worker passes the saved delivery policy to the Azure adapter.
+  const deliveryBandsBaseline=require('../content/full-mock/delivery-bands-compatible-sources.json');
+  const deliveryBandsPins={'speaking-delivery.js':'e0065e9fc096530358d936e3354d02d91d3d73bc11f6976ec98d1df37c379c4c',
+    'full-mock/adapters.js':'1f985cc0859c56d177f78aeb15e1316efd84a9641e752eafbb2c73ba97cfd4dd',
+    'full-mock/delivery-reassessment.js':'d25837e3c0809e390a1c0bd9d3f48e6b4dea5bf8b527c00b5a332e52524cfecf'};
+  if(digest(deliveryBandsBaseline)==='d1e945dae7b97024da23f8b00d1e6e6c3e10058c74637b23266a2f81fa8e1d1f'
+    &&[require('../speaking-delivery').PREVIOUS_VERSION,require('../speaking-delivery').VERSION].includes(saved.configuration.delivery.version)
+    &&current.configuration.delivery.version===require('../speaking-delivery').VERSION
+    &&Object.entries(deliveryBandsPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(deliveryBandsBaseline.files).sort().join()
+    &&Object.entries(deliveryBandsBaseline.files).every(([file,pin])=>[...Object.keys(deliveryBandsPins),'full-mock/assessment.js'].includes(file)
+      ||digest(current.scoringSources.files[file])===digest(pin))){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of [...Object.keys(deliveryBandsPins),'full-mock/assessment.js'])sources.files[file]=structuredClone(deliveryBandsBaseline.files[file]);
+    current={...current,configuration:{...current.configuration,delivery:{...current.configuration.delivery,
+      version:saved.configuration.delivery.version}},scoringSources:sources};
+    if(digest(saved.scoringSources)===digest(deliveryBandsBaseline))return digest(saved)===digest(current);
+  }
   // The explicit SWT/SST retry accepts the exact pre-upgrade source set. It
   // changes recovery eligibility, not the frozen grader, answer or weights.
   const writingBaseline=require('../content/full-mock/writing-retry-compatible-sources.json');
@@ -671,7 +691,8 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
             if (audio.status !== 'ready') { await persist({ status: 'pending', reason: audio.reason || 'recording-not-ready' }); continue; }
             recording = audio.recording;
           }
-          const value = await activeAdapters.assess(q, response, { recording, previous: stages, run: state.assessment.run, ...(availableMarks(state)?{completionPolicy:COMPLETION_POLICY}:{}),
+          const value = await activeAdapters.assess(q, response, { recording, previous: stages, run: state.assessment.run,
+            deliveryPolicy:state.assessment.snapshot.configuration.delivery.version, ...(availableMarks(state)?{completionPolicy:COMPLETION_POLICY}:{}),
             checkpoint: value => persist({ status: 'processing', stages: value }) });
           const { stages: evidence = stages, ...result } = value;
           if (!['assessed','pending','failed'].includes(result.status) || result.status === 'assessed' && (result.version !== adapterVersion || !(nativeValid(result, maxima(q)) || availableMarks(state) && partialValid(result,maxima(q),evidence,q.type)))) throw Error('Invalid native assessment result.');

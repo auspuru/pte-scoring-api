@@ -1,6 +1,7 @@
 'use strict';
 const {hash}=require('./scoring-jobs'),report=require('./speaking-mock-report'),completion=require('./speaking-mock-completion');
 const continuous=require('./azure-continuous-delivery');
+const delivery=require('./speaking-delivery');
 const fail=(message,status=409)=>Object.assign(Error(message),{status});
 function metadata(response){const r=structuredClone(response||{});if(r.recording)delete r.recording.data;return r;}
 const fingerprint=a=>hash({id:a.id,questions:a.questions,profile:a.assessmentProfile,responses:a.responses.map(metadata),exclusions:a.assessmentExclusions,review:a.instructorReview,submission:a.submission});
@@ -83,7 +84,9 @@ function create({store,jobStore,transcribe,callModel,gradeContent=(q,text)=>requ
    }
    if(content.total===0){result={version:'native-content-gate',pronunciation:{score:0},fluency:{score:0}};}
    else try{const config=providerConfiguration();if(!config.ready)throw Object.assign(Error('Azure delivery is unavailable.'),{providerStarted:false});await saveStage('azure',{status:'calling',at:now()});sent=true;
-    result=await assess(recording);if(!result?.version||!['pronunciation','fluency'].every(key=>Number.isFinite(result[key]?.score)&&result[key].score>=0&&result[key].score<=5))throw Error('Azure delivery was not confirmed.');
+    result=await assess(recording);
+    if(assess===continuous.assessRecording)result=delivery.reband(result,{questionType:q.type,bandPolicy:saved?.profile?.deliveryPolicy||delivery.PREVIOUS_VERSION});
+    if(!result?.version||!['pronunciation','fluency'].every(key=>Number.isFinite(result[key]?.score)&&result[key].score>=0&&result[key].score<=5))throw Error('Azure delivery was not confirmed.');
     proposed.azure={status:'assessed',recordingHash:recording.hash,assessedAt:now(),deliveryVersion:result.version,deliveryProvider:'azure',pronunciation:result.pronunciation,fluency:result.fluency};await saveStage('azure',{status:'ready',at:now()});
    }catch(caught){deliveryUncertain=sent&&caught.providerStarted!==false;if(!claimed.needsContent&&!claimed.restore)throw caught;
     const traits=report.deliveryTraits(r,'azure');result={version:'available-content',contentOnly:true,pronunciation:{score:traits.pronunciation},fluency:{score:traits.fluency}};await saveStage('azure',{status:'failed',uncertain:deliveryUncertain,at:now()});

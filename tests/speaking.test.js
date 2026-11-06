@@ -45,11 +45,12 @@ test('Describe Image does not require arithmetic that is not printed in the visu
 
 test('Delivery feedback includes actionable coaching and filters noisy numeric/function-word practice tokens',()=>{
   const evidence={sufficient:true,durationSeconds:39,spokenWords:70};
-  const r=delivery.aggregate([{accuracy:95,fluency:86,prosody:69,weight:39,words:[
+  const r=delivery.aggregate([{accuracy:95,fluency:90,prosody:69,weight:39,words:[
     {word:'for',accuracy:4,errorType:'Mispronunciation'},{word:'120',accuracy:17,errorType:'Mispronunciation'},{word:'transport',accuracy:62,errorType:'Mispronunciation'}
-  ]}],{evidence});
-  assert.equal(r.pronunciation.score,5);assert.equal(r.fluency.score,4);
-  assert.match(r.pronunciation.coaching,/stress|emphasis/i);assert.match(r.fluency.coaching,/meaning groups|steady pace|pause/i);
+  ]}],{evidence,questionType:'di'});
+  assert.equal(r.pronunciation.score,4);assert.equal(r.fluency.score,4);
+  assert.match(r.pronunciation.coaching,/Check transport in the recording.*isolated|Check transport in the recording.*optional/i);
+  assert.match(r.fluency.coaching,/meaning groups|steady pace|pause/i);
   assert.deepEqual(r.pronunciation.words.map(w=>w.word),['transport']);
 });
 
@@ -97,9 +98,33 @@ test('Short incomplete Read Aloud responses do not receive misleading pronunciat
   assert.match(result.deliveryStatus,/Not enough speech/);assert.equal(result.deliveryEvidence.spokenWords,4);
 });
 
-test('Delivery band calibration is deliberately stricter than raw Azure percentages',()=>{
-  assert.equal(delivery.band5(93),4);assert.equal(delivery.band5(94),5);
-  assert.equal(delivery.band5(83),3);assert.equal(delivery.band5(84),4);
+test('Reviewed free-response tasks use trait-specific bands while scripted and saved attempts retain their bands',()=>{
+  const pronunciation={trait:'pronunciation',type:'di'},fluency={trait:'fluency',type:'di'};
+  for(const [raw,expected] of [[97,5],[96.9,4],[94,4],[93.9,3],[84,3],[83.9,2],[75,2],[74.9,1],[40,1],[39.9,0]])
+    assert.equal(delivery.band5(raw,delivery.VERSION,pronunciation),expected,`pronunciation raw ${raw}`);
+  for(const [raw,expected] of [[94,5],[93.9,4],[89,4],[88.9,3],[84,3],[83.9,2],[75,2],[74.9,1],[40,1],[39.9,0]])
+    assert.equal(delivery.band5(raw,delivery.VERSION,fluency),expected,`fluency raw ${raw}`);
+  for(const type of ['rl','sgd','rts'])assert.equal(delivery.band5(94,delivery.VERSION,{trait:'pronunciation',type}),4);
+  for(const type of ['ra','rs'])assert.equal(delivery.band5(94,delivery.VERSION,{trait:'pronunciation',type}),5);
+  assert.equal(delivery.band5(84,delivery.PREVIOUS_VERSION),4);
+  assert.equal(delivery.band5(72,delivery.PREVIOUS_VERSION),3);
+  assert.equal(delivery.band5(58,delivery.PREVIOUS_VERSION),2);
+  assert.throws(()=>delivery.band5(84,'unknown-policy'),/Unknown Azure delivery calibration/);
+  const evidence={sufficient:true,durationSeconds:20,spokenWords:20};
+  const current=delivery.aggregate([{accuracy:94,fluency:90,weight:20,words:[]}],{evidence,questionType:'di'});
+  assert.equal(current.pronunciation.score,4);
+  assert.equal(current.fluency.score,4);
+  const saved=delivery.aggregate([{accuracy:94,fluency:90,weight:20,words:[]}],{evidence,questionType:'di',bandPolicy:delivery.PREVIOUS_VERSION});
+  assert.equal(saved.pronunciation.score,5);
+  assert.equal(saved.fluency.score,4);
+  assert.equal(saved.deliveryVersion,delivery.PREVIOUS_VERSION);
+  const lower=delivery.aggregate([{accuracy:88,fluency:90,weight:20,words:[]}],{evidence,questionType:'di'});
+  assert.equal(lower.pronunciation.score,3);
+  const native={version:'whole-audio',pronunciation:{raw:94,score:5},fluency:{raw:90,score:4}};
+  const revised=delivery.reband(native,{questionType:'di',bandPolicy:delivery.VERSION});
+  assert.deepEqual([revised.pronunciation.score,revised.fluency.score],[4,4]);
+  assert.deepEqual([native.pronunciation.score,native.fluency.score],[5,4]);
+  assert.equal(delivery.reband(native,{questionType:'di',bandPolicy:delivery.PREVIOUS_VERSION}).pronunciation.score,5);
   assert.equal(delivery.descriptor('pronunciation',4),'Advanced');assert.equal(delivery.descriptor('fluency',3),'Good');
 });
 

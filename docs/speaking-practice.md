@@ -1,4 +1,4 @@
-> Current policy (27 October 2026): Microsoft Azure is the sole pronunciation and fluency scorer. Current mock totals and publication use content plus Azure only. GPT delivery comparisons and pilot recovery sections below describe archived implementations. See [background scoring](speaking-background-scoring.md#azure-only-delivery-policy) for the active integration and migration.
+> Current policy (6 November 2026): Microsoft Azure is the sole pronunciation and fluency scorer. Current mock totals and publication use content plus Azure only. GPT delivery comparisons and pilot recovery sections below describe archived implementations. See [background scoring](speaking-background-scoring.md#azure-only-delivery-policy) for the active integration and migration.
 
 # Speaking practice
 
@@ -32,8 +32,22 @@ signal. Prosody and weak-word flags remain diagnostic and do not create extra
 trait deductions. The portal uses a conservative mapping
 from Azure's 0–100 signals to the six Pearson-style descriptor levels rather than
 treating Azure percentages as Pearson marks. Without Azure
-configuration, delivery remains available for teacher review. If the semantic
-content reviewer is unavailable, content marks are withheld: keyword similarity
+configuration, delivery remains available for teacher review.
+
+From 6 November 2026, new Describe Image, Retell Lecture, Summarise Group
+Discussion and Respond to a Situation assessments use task-specific bands.
+Azure accuracy maps to pronunciation: 97–100 gives 5/5, 94–<97 gives 4/5,
+84–<94 gives 3/5, 75–<84 gives 2/5, 40–<75 gives 1/5, and below 40 gives 0/5.
+Azure fluency maps to oral fluency: 94–100 gives 5/5, 89–<94 gives 4/5,
+84–<89 gives 3/5, 75–<84 gives 2/5, 40–<75 gives 1/5, and below 40 gives 0/5.
+Read Aloud and Repeat Sentence keep their earlier bands. The thresholds are an
+institute calibration, not a Pearson conversion. Saved results retain their marks.
+New Speaking Mocks record their policy at creation; unfinished older Speaking
+Mocks without that field use the previous bands. Unfinished older Full Mocks use
+their frozen assessment snapshot. Transcript edits affect Read Aloud content and
+do not directly deduct either audio trait.
+
+If the semantic content reviewer is unavailable, content marks are withheld: keyword similarity
 cannot verify negation, numerical relationships or speaker attribution. The
 transcript, recording and separate audio feedback remain available, and content
 review can be retried without another recording. RA and RS still use deterministic

@@ -58,7 +58,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
   gradeSpeaking = (q, text, call) => speech.grade(q, text, call, { academyDescribeImage: true }),
   assessDelivery = require('../speaking-delivery').assessRecording,
   speakingContentModel, writingContentModel, swtGrader, essayGrader } = {}) {
-  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, contentOnly = false } = {}) {
+  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, deliveryPolicy, contentOnly = false } = {}) {
     const stages = structuredClone(previous);
     const failed = reason => ({ status: 'failed', version: VERSION, reason, stages });
     async function stage(name, call, verify = value => value != null) {
@@ -112,7 +112,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         const traits = { ...(stages.delivery?.traits || {}) }; let raw, error;
         stages.delivery = { status: 'running', attemptedRun: run, traits, uncertain: true };
         await checkpoint(stages);
-        try { raw = await assessDelivery(recording, { question: q, transcript, transcribe: async () => transcript, contentIndependent: true }); }
+        try { raw = await assessDelivery(recording, { question: q, transcript, transcribe: async () => transcript, contentIndependent: true, bandPolicy:deliveryPolicy }); }
         catch (caught) { error = caught; }
         for (const key of ['pronunciation','fluency']) {
           const trait = raw?.[key];

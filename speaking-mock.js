@@ -65,8 +65,9 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   const deliveryReview=require('./speaking-mock-reassessment').create({store,jobStore:progressive.jobs,transcribe,callModel,quietRecording,now,...deliveryReassessment});let deliverySweep;
   const useProgressive=a=>backgroundEnabled||a?.assessmentProfile?.mode==='progressive-v1';
   const view=a=>present(a,now(),{completeOnly:useProgressive(a)});
-  const profile=(uid,questions)=>backgroundEnabled?{assessmentProfile:{mode:'progressive-v1',owner:uid,completionPolicy:require('./speaking-mock-completion').policy(questions),
-    diBackend:contentModel?'portal-gpt':'academy',...(contentModel?{contentProvider:'openai',contentModel}:{}),requiredProviders:['azure']}}:{};
+  const profile=(uid,questions)=>({assessmentProfile:{deliveryPolicy:azure.VERSION,
+    ...(backgroundEnabled?{mode:'progressive-v1',owner:uid,completionPolicy:require('./speaking-mock-completion').policy(questions),
+      diBackend:contentModel?'portal-gpt':'academy',...(contentModel?{contentProvider:'openai',contentModel}:{}),requiredProviders:['azure']}: {})}});
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved mock is safe; please retry.'}));
   if(requireAdmin){const admin=express.Router();admin.use(requireAdmin,(req,res,next)=>{res.set('Cache-Control','no-store');next();});
     admin.get('/:username/attempts',wrap(async(req,res)=>{if(!await getAccount(req.params.username))throw fail('Account not found.',404);res.json({owner:req.params.username,attempts:(await store.list(req.params.username,{omitMockAudio:true})).filter(a=>a.status==='submitted').map(a=>({id:a.id,paperId:a.paperId,submittedAt:a.finishedAt||a.startedAt}))});}));
@@ -115,7 +116,8 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       };
       const providerFailure=provider=>current[provider]?.status==='assessed'?{...current[provider],retryStatus:'unavailable'}:unavailable();
       if(!speakingReport.validContent(q,current.content)||(q.type==='di'&&academy.needsReview(current.content)))tasks.push(scoring.grade(q,current.transcript,callModel,{academyDescribeImage:true}).then(content=>patch({content})));
-      if(!contentGated&&azureAvailable&&speakingReport.deliveryTraits(current,'azure').missing.length)tasks.push(assessAzure(r.recording,{question:q,transcript:current.transcript,transcribe}).then(result=>patch({azure:result?retainDelivery('azure',result):providerFailure('azure')}),()=>patch({azure:providerFailure('azure')})));
+      if(!contentGated&&azureAvailable&&speakingReport.deliveryTraits(current,'azure').missing.length)tasks.push(assessAzure(r.recording,{question:q,transcript:current.transcript,transcribe,
+        bandPolicy:a.assessmentProfile?.deliveryPolicy||azure.PREVIOUS_VERSION}).then(result=>patch({azure:result?retainDelivery('azure',result):providerFailure('azure')}),()=>patch({azure:providerFailure('azure')})));
       await Promise.allSettled(tasks);
     }
     const overallJob=Promise.resolve();
