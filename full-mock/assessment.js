@@ -104,7 +104,7 @@ function compatibleTransportUpgrade(saved, current) {
   // source manifest. Native graders, paper, provider models and marks stay pinned.
   const creditBaseline=require('../content/full-mock/credit-recovery-compatible-sources.json');
   const creditPins={'full-mock/api.js':'0062761943bf43a420fdb1b89b9d0c41d86823a7a2d0bf352ebe794d81cfde9d',
-    'full-mock/exclusions.js':'0d7637d2109e93d80a99e8a4997a93a482d78e37a00480d047d3816932877ed4'};
+    'full-mock/exclusions.js':'d4a6fde15200b0d13fb4f170badc780bbc076bda2de7b4c3adf38be7fd4cef6e'};
   if(digest(creditBaseline)==='0ce0c3aa2bf5072ff2cc4ca63dfc6e90dd79b24c29117b2fe1472cdff61cf14c'
     &&Object.entries(creditPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)
     &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(creditBaseline.files).sort().join()

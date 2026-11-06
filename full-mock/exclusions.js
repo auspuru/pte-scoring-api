@@ -39,7 +39,7 @@ function retryableUnavailable(state, candidate, response, job) {
     || !validExclusion(state,candidate,response,job) || job?.status!=='failed'
     || job.inputHash!==inputHash(response) || job.snapshotHash!==state.assessment.snapshotHash) return false;
   const stages=Object.values(job.stages||{});
-  return stages.some(stage=>stage.status==='failed' && String(stage.failureCode)==='429')
+  return stages.some(stage=>stage?.status==='failed' && String(stage.failureCode)==='429')
     && stages.every(stage=>stage && stage.status!=='running' && !stage.uncertain && !stage.recoveryBlocked);
 }
 // Record the exact assessment and input at publication. Later audio uploads are

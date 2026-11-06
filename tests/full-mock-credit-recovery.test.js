@@ -48,7 +48,7 @@ test('Retry refuses uncertain, blocked, unrecorded and stale selections',async t
     state.assessment.run=1;
     state.assessment.completionPolicy={version:COMPLETION_POLICY,snapshotHash:state.assessment.snapshotHash};
     const job=state.assessment.items[f.q.id];job.status='failed';job.result={status:'failed',reason:'transcription-unavailable'};
-    job.stages={transcription:{status:'failed',failureCode:429,uncertain:true}};
+    job.stages={transcription:{status:'failed',failureCode:429,uncertain:true},malformed:null};
     assert(exclusions.releaseAvailable(state,f.paper,1234));return state;
   });
   const engine=assessment.createEngine({store:f.store,paper:f.paper,adapters:{assess:async()=>{throw Error('No provider call allowed');}}});
