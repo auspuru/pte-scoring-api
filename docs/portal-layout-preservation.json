@@ -33,7 +33,7 @@
     "public/full-mock-report.js": "ee5bf1beefb5a4d5a6b2cb4f84bb109e07f79a917f83e544576f6d0c63da77b5",
     "public/mock-impact-feedback.js": "0db0538a9d8d7f948135d0dc282ebe02a8721afe1936920fbb0e6214c958beee",
     "public/writing-lab-report.js": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
-    "public/writing-lab-client.js": "129cc6cc84fb58fe101bd2a7985e37c4ce6c5dd1dca769464c33b75b7774acc9",
+    "public/writing-lab-client.js": "9d009ad6d71b61bbe000fbfbcd3df6583c21381c59d2732d76efd31cc924dcfd",
     "public/speaking-practice.js": "20bdac5c77a57c9d00d3d6604383d133c4d4b8696b1f2ab15e267ee4eafb2916",
     "public/speaking-mock-client.js": "22d705058781594fc0bc2fb7fbbf3b95bfe6834eca670452a56475e07065954a",
     "public/reading-practice.js": "d7e67dea4258894ebbe63c64fa1463700ad7146c334f85ce1c486a2aeb263bef",
@@ -134,7 +134,7 @@
       "nextQuestion": "580b8f57cfe0bc1f8b452d9168019e9c00e7c3d1f8e7e4d87529b03104664edd",
       "tick": "a299b5b989f9c1b3b528bd59a62abce9aeb705e33a5e2f88eeeedd557fce6355",
       "reviewCard": "389affe589aae31740f485bd4596922c9388e6496216bdc9a97a1874f656c641",
-      "mockReviewCard": "9e09a87905ecdeee5b12494ada86211fc44806ca68cdd875b2fbe40ac5d24cc6",
+      "mockReviewCard": "2dc407ea2d67a221c47ecf7f2c5e613db571b87cfaa226b0310c28728ed1d578",
       "scoreRemaining": "ce33e717031daedcc21d3af95647ac81cfae3bc537c53422f5ba0927d9795261",
       "scoreFeedbackHTML": "560d27929c62edb9e2948aa987626847751752299a7a948e193785b7ae637de2",
       "overallHTML": "f27ffa51fd5d0310335fa1da1f1af2f473c43f6476efa498d3d1751827c92376",
@@ -163,5 +163,13 @@
       "public/writing-lab-client.js": "129cc6cc84fb58fe101bd2a7985e37c4ce6c5dd1dca769464c33b75b7774acc9",
       "content/full-mock/scoring-lock.json": "dbe0692052b1e35446ad88d750e4eaedfc467cb23fcac508b41b734c29f631b6"
     }
+  },
+  "sstFeedbackDisplayUpdate": {
+    "baselineCommit": "3adf3187ee31382a47152c768341e4f48f979a31",
+    "scope": "Display saved SST feedback before the complete read-only summary and in the Feedback tab. Bound the displayed summary height without changing saved text, question snapshots or marks. Grading, saving, playback, exam timing, recovery and ownership functions remain unchanged.",
+    "controllerBefore": "129cc6cc84fb58fe101bd2a7985e37c4ce6c5dd1dca769464c33b75b7774acc9",
+    "controllerAfter": "9d009ad6d71b61bbe000fbfbcd3df6583c21381c59d2732d76efd31cc924dcfd",
+    "mockReviewCardAfter": "2dc407ea2d67a221c47ecf7f2c5e613db571b87cfaa226b0310c28728ed1d578",
+    "mockReviewCardBefore": "9e09a87905ecdeee5b12494ada86211fc44806ca68cdd875b2fbe40ac5d24cc6"
   }
 }
