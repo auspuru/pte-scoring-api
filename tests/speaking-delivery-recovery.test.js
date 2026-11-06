@@ -13,7 +13,8 @@ test('partial content coverage cannot prevent an independent delivery judgment w
 });
 test('Azure retains its own acoustic marks for a partially repeated sentence instead of withholding them for content omissions',async()=>{
   let calls=0;const result=await azure.assessRecording({mime:'audio/wav',data:wav(9.3).toString('base64')},{question,transcript,contentIndependent:true,apiKey:'test',endpoint:'https://speech.test',request:async()=>{calls++;return native();}});
-  assert.equal(calls,1);assert.equal(result.pronunciation.raw,90);assert.equal(result.pronunciation.score,4);assert.equal(result.fluency.raw,91);assert.equal(result.fluency.score,4);assert.equal(result.deliveryEvidence.sufficient,true);
+  assert.equal(calls,1);assert.equal(result.pronunciation.raw,90);assert.equal(result.pronunciation.score,3);assert.equal(result.fluency.raw,91);assert.equal(result.fluency.score,4);assert.equal(result.deliveryEvidence.sufficient,true);
+  assert.equal(azure.band5(90,azure.FREE_RESPONSE_VERSION,{trait:'pronunciation',type:'rs'}),4);
 });
 for(const seconds of [28.7,29.5,58.6])test(`Azure recovery preserves every audio sample and pause in a ${seconds}-second recording without a tiny terminal request`,async()=>{
   const original=wav(seconds),recording={mime:'audio/wav',data:original.toString('base64')},parts=await azure.splitToWav(recording);
