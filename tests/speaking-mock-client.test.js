@@ -333,10 +333,11 @@ test('A completed report refresh can resume preparing-result polling and then re
 });
 
 test('Report refresh coalesces focus events and ignores a response after the session changes',async t=>{
- const h=await harness(t),{id}=await sampleReport(h),original=h.env.fetch;let release,reads=0;
- h.env.fetch=async(url,options)=>{if(url==='/api/speaking-mocks/attempts/'+id){reads++;const reply=await original(url,options),saved=await reply.json();await new Promise(resolve=>release=resolve);return {ok:true,json:async()=>({...saved,title:'Late report must not appear',speakingReport:{...saved.speakingReport,azure:{...saved.speakingReport.azure,overallScore:11}}})};}return original(url,options);};
+ const h=await harness(t),{id}=await sampleReport(h),original=h.env.fetch;let release,reads=0,signalReady;
+ const requestReady=new Promise(resolve=>signalReady=resolve);
+ h.env.fetch=async(url,options)=>{if(url==='/api/speaking-mocks/attempts/'+id){reads++;const reply=await original(url,options),saved=await reply.json();await new Promise(resolve=>{release=resolve;signalReady();});return {ok:true,json:async()=>({...saved,title:'Late report must not appear',speakingReport:{...saved.speakingReport,azure:{...saved.speakingReport.azure,overallScore:11}}})};}return original(url,options);};
  const first=h.fire('focus');await h.flush();const second=h.fire('visibilitychange','document');await h.flush();assert.equal(reads,1);
- h.env.sessionStorage.getItem=()=> 'new-session';release();await Promise.all([first,second]);assert.doesNotMatch(h.nodes.get('sm-results-summary').innerHTML,/>11</);
+ await requestReady;h.env.sessionStorage.getItem=()=> 'new-session';release();await Promise.all([first,second]);assert.doesNotMatch(h.nodes.get('sm-results-summary').innerHTML,/>11</);
 });
 
 test('a completed short response explains withheld delivery estimates while showing the published practice score',async t=>{

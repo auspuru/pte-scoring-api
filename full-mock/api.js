@@ -20,6 +20,10 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     admin.use(requireAdmin, (req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
     admin.get('/:username/attempts', wrap(async(req,res)=>{if(!await getAccount(req.params.username))throw fail('Account not found.',404);res.json({owner:req.params.username,attempts:(await store.list(req.params.username)).filter(s=>s.status==='submitted').map(s=>({id:s.id,submittedAt:s.submittedAt,paperId:s.paperId,paperVersion:s.paperVersion}))});}));
     admin.get('/:username/:id/scoring', wrap(async (req, res) => res.json(await support.inspect(req.params.username, req.params.id))));
+    admin.post('/:username/:id/scoring/retry-unavailable', wrap(async(req,res)=>{
+      await assessor.retryUnavailable(req.params.username,req.params.id,req.body||{});
+      res.json(await support.inspect(req.params.username,req.params.id));
+    }));
     admin.post('/:username/:id/scoring/exclude-audio', wrap(async (req, res) => res.json(await support.exclude(req.params.username, req.params.id, req.body))));
     admin.post('/:username/:id/scoring/exclude-delivery', wrap(async (req, res) => res.json(await support.excludeDelivery(req.params.username, req.params.id, req.body))));
     admin.post('/:username/:id/scoring/review', wrap(async(req,res)=>{await assessor.review(req.params.username,req.params.id,req.body||{});res.json(await support.inspect(req.params.username,req.params.id));}));

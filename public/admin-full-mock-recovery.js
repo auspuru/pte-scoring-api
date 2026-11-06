@@ -6,16 +6,17 @@
   const resultReview=typeof module==='object'&&module.exports?require('./admin-result-review'):globalThis.AdminResultReview;
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   function mount(host,{username,request,operationId=()=>crypto.randomUUID()}){
-    let diagnostic=null,busy=false,operation=null,delivery=null;const deliveryOperations=new Map();const reviewOperations=new Map();
+    let diagnostic=null,busy=false,operation=null,delivery=null;const deliveryOperations=new Map();const reviewOperations=new Map();const unavailableOperations=new Map();
     host.innerHTML='<h4>Full mock recording review</h4><p>Choose and inspect the exact submitted attempt. Reassess saved speaking recordings or resolve unavailable assessments. Review proposed changes before publishing; original recordings and score history are retained.</p><button type="button" class="btn-sm" data-full-list>Find submitted Full Mocks</button><div data-full-attempts></div><label>Full mock attempt ID<input data-full-attempt autocomplete="off" placeholder="Choose a saved attempt or enter its ID"></label><button type="button" class="btn-sm" data-full-inspect>Inspect full mock</button><p role="status" aria-live="polite" data-full-notice></p><div data-full-diagnostics></div>';
     const input=host.querySelector('[data-full-attempt]'),notice=host.querySelector('[data-full-notice]'),details=host.querySelector('[data-full-diagnostics]');
     const path=id=>'/api/admin/full-mocks/'+encodeURIComponent(username)+'/'+encodeURIComponent(id)+'/scoring';
     function lock(value){busy=value;input.disabled=value;host.querySelectorAll('button, select').forEach(button=>button.disabled=value);}
     function paint(){
-      const d=diagnostic,eligible=d.questions.filter(row=>row.eligible&&!row.transcriptionEligible),held=d.questions.find(row=>row.deliveryEligible),heldTranscription=d.questions.find(row=>row.transcriptionEligible);
+      const d=diagnostic,eligible=d.questions.filter(row=>row.eligible&&!row.transcriptionEligible),held=d.questions.find(row=>row.deliveryEligible),heldTranscription=d.questions.find(row=>row.transcriptionEligible),unavailable=d.questions.filter(row=>row.retryableUnavailable);
       details.innerHTML='<p><strong>'+esc(d.assessedCount)+' assessed · '+esc(d.excludedCount)+' excluded · '+esc(d.accountedFor)+'/'+esc(d.total)+' accounted for</strong></p>'
         +(d.busy?'<p>Assessment work is active. Inspect again when it has settled.</p>':d.recovery.status==='scheduled'?'<p>Automatic recovery is scheduled. An explicit audio exclusion replaces recovery only for the selected recordings.</p>':'')
         +d.questions.map(row=>'<p>'+(row.eligible&&!row.transcriptionEligible&&!d.busy?'<label><input type="checkbox" data-full-question value="'+esc(row.id)+'"> ':'')+'Q'+esc(row.number)+' · '+esc(row.type)+' · '+esc(row.status)+(row.reason?' · '+esc(row.reason):'')+(row.exclusion?' · '+esc(row.exclusion.note):'')+(row.eligible&&!row.transcriptionEligible&&!d.busy?'</label>':'')+'</p>').join('')
+        +(unavailable.length&&!d.busy?'<h5>Retry unavailable scores</h5><p>'+esc(unavailable.length)+' saved responses have a confirmed provider 429 failure. Retry their missing assessments after API credit is available. Existing confirmed marks stay saved.</p><label><input type="checkbox" data-full-retry-confirm> API credit is available; retry these exact unavailable questions.</label><button type="button" class="btn-sm" data-full-retry-unavailable>Retry '+esc(unavailable.length)+' unavailable assessments</button>':'')
         +(eligible.length&&!d.busy?'<label>Exclusion note<textarea data-full-note rows="3">Recording too quiet to assess. Excluded at instructor request; the original recording is retained.</textarea></label><label><input type="checkbox" data-full-reviewed> I reviewed the selected saved recordings and confirm the audio is unusable.</label><button type="button" class="btn-sm" data-full-exclude>Exclude selected unusable recordings</button>':'')
         +(heldTranscription&&!d.busy?'<h5>Final unavailable transcription</h5><p>Only Question '+esc(heldTranscription.number)+' will be excluded at instructor request. This records an unavailable assessment, without claiming a listening review.</p><label>Transcription exclusion note<textarea data-full-transcription-note rows="3">Excluded at instructor request because automatic transcription could not be completed. The original recording and all other confirmed assessments are retained.</textarea></label><label><input type="checkbox" data-full-transcription-confirm> I confirm the instructor requested exclusion of Question '+esc(heldTranscription.number)+'.</label><button type="button" class="btn-sm" data-full-exclude-transcription>Exclude Question '+esc(heldTranscription.number)+' and release report</button>':'')
         +(held&&!d.busy?'<h5>Final Repeat Sentence delivery assessment</h5><p>Only Question '+esc(held.number)+' will be excluded. Its recording and completed stages stay saved. The other 64 assessments are retained.</p><label>Instructor exclusion note<textarea data-full-delivery-note rows="3">Excluded at instructor request because the delivery assessment could not be completed. The saved response and completed assessment stages are retained.</textarea></label><label><input type="checkbox" data-full-instructor-confirm> I confirm the instructor requested exclusion of Question '+esc(held.number)+'.</label><button type="button" class="btn-sm" data-full-exclude-delivery>Exclude Question '+esc(held.number)+' and release report</button>':'');
@@ -39,6 +40,18 @@
     host.querySelector('[data-full-inspect]').onclick=inspect;
     details.onclick=async event=>{
       if(busy)return;
+      if(event.target.closest('[data-full-retry-unavailable]')){
+        if(!diagnostic)return;
+        const before=diagnostic,questionIds=before.questions.filter(row=>row.retryableUnavailable).map(row=>row.id);
+        if(!questionIds.length||!details.querySelector('[data-full-retry-confirm]')?.checked){notice.textContent='Confirm API credit is available before retrying saved unavailable assessments.';return;}
+        const key=JSON.stringify({id:before.attemptId,evidenceHash:before.evidenceHash,questionIds});
+        if(!unavailableOperations.has(key))unavailableOperations.set(key,'staff:'+operationId());
+        lock(true);notice.textContent='Starting retries for the saved unavailable assessments…';
+        try{const value=await request(path(before.attemptId)+'/retry-unavailable',{operation:unavailableOperations.get(key),evidenceHash:before.evidenceHash,questionIds,confirmRetry:true});
+          if(value.owner!==username||value.attemptId!==before.attemptId||value.responsesHash!==before.responsesHash)throw Error('The saved responses changed. Inspect the attempt again.');
+          diagnostic=value;paint();notice.textContent='Retry started. Inspect this attempt again after assessment settles to see recovered scores.';
+        }catch(error){notice.textContent=error.message;}finally{lock(false);}return;
+      }
       if(await azureReview.act(event,{host:details,diagnostic,delivery,operations:deliveryOperations,operationId,
         request:(suffix,body)=>request(path(diagnostic.attemptId)+'/delivery'+suffix,body),
         commit:async(value,published)=>{delivery=value;if(published){const current=await request(path(value.attemptId));if(current.owner!==username||current.attemptId!==value.attemptId)throw Error('The updated report does not match the selected attempt.');diagnostic=current;}paint();},

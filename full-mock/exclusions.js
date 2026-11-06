@@ -33,6 +33,15 @@ function validExclusion(state, candidate, response, job) {
     && value.snapshotHash === state.assessment.snapshotHash && value.previousJobHash === digest(job)
     && typeof value.note === 'string' && value.note.length >= 10 && !!value.operation && Number.isFinite(value.at);
 }
+function retryableUnavailable(state, candidate, response, job) {
+  const excluded=state.assessment?.exclusions?.[candidate.id];
+  if (excluded?.version!==AVAILABLE_VERSION || excluded.reason!=='assessment-unavailable'
+    || !validExclusion(state,candidate,response,job) || job?.status!=='failed'
+    || job.inputHash!==inputHash(response) || job.snapshotHash!==state.assessment.snapshotHash) return false;
+  const stages=Object.values(job.stages||{});
+  return stages.some(stage=>stage?.status==='failed' && String(stage.failureCode)==='429')
+    && stages.every(stage=>stage && stage.status!=='running' && !stage.uncertain && !stage.recoveryBlocked);
+}
 // Record the exact assessment and input at publication. Later audio uploads are
 // retained but cannot silently change this report; an explicit reassessment can.
 function releaseAvailable(state,paper,at,{leaseId}={}) {
@@ -182,6 +191,7 @@ function createSupport({ store, validate, now = Date.now }) {
           deliveryEligible:deliveryEligible(state, paper, candidate, response, job),
           transcriptionEligible:transcriptionEligible(state,paper,candidate,response,job),
           reason:job?.result?.reason || job?.reason || null, exclusion:row.exclusion || null,
+          retryableUnavailable:retryableUnavailable(state,candidate,response,job),
           transcription:job?.stages?.transcription ? { status:job.stages.transcription.status, code:job.stages.transcription.failureCode || null, uncertain:!!job.stages.transcription.uncertain } : null };
       }).filter(row => row.status !== 'assessed') };
   }
@@ -240,4 +250,4 @@ function createSupport({ store, validate, now = Date.now }) {
   }
   return { inspect, exclude:(owner,id,body)=>exclude(owner,id,body), excludeDelivery:(owner,id,body)=>exclude(owner,id,body,'delivery') };
 }
-module.exports = { VERSION, DELIVERY_VERSION, AUTOMATIC_VERSION, UNCLEAR_AUDIO_VERSION, TRANSCRIPTION_VERSION, AVAILABLE_VERSION, validExclusion, evidenceHash, releaseAvailable, releaseUnclearAudio, releaseExhausted, eligible, deliveryEligible, transcriptionEligible, createSupport };
+module.exports = { VERSION, DELIVERY_VERSION, AUTOMATIC_VERSION, UNCLEAR_AUDIO_VERSION, TRANSCRIPTION_VERSION, AVAILABLE_VERSION, validExclusion, retryableUnavailable, evidenceHash, releaseAvailable, releaseUnclearAudio, releaseExhausted, eligible, deliveryEligible, transcriptionEligible, createSupport };

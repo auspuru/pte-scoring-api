@@ -3,6 +3,23 @@ const test=require('node:test'),assert=require('node:assert/strict'),{parseHTML}
 const {mount}=require('../public/admin-full-mock-recovery');
 const id='006d4971-2ad3-4f14-8e2a-0ea3ed450bdd';
 const diagnostic=()=>({owner:'student',attemptId:id,ready:false,assessedCount:62,excludedCount:0,accountedFor:62,total:65,recovery:{status:'scheduled'},evidenceHash:'a'.repeat(64),responsesHash:'responses',confirmedHash:'marks',questions:[{id:'asq-1',number:24,type:'asq',status:'failed',eligible:true,reason:'transcription-unavailable'}]});
+test('Published unavailable provider failures require credit confirmation and reuse a lost retry operation',async()=>{
+ const {document}=parseHTML('<html><body><div id="host"></div></body></html>'),host=document.getElementById('host'),requests=[];
+ const value={...diagnostic(),ready:true,assessedCount:64,excludedCount:1,accountedFor:65,recovery:{status:'complete'},
+   questions:[{id:'di-credit',number:17,type:'di',status:'excluded',eligible:false,retryableUnavailable:true,reason:'transcription-unavailable'}]};
+ const ui=mount(host,{username:'student',operationId:()=> 'credit-operation',request:async(path,body)=>{
+   requests.push({path,body});if(!body)return value;throw Error('Connection interrupted');
+ }});
+ host.querySelector('[data-full-attempt]').value=id;await ui.inspect();
+ const details=host.querySelector('[data-full-diagnostics]'),button=host.querySelector('[data-full-retry-unavailable]');
+ assert.match(button.textContent,/Retry 1 unavailable/);
+ await details.onclick({target:button});assert.equal(requests.length,1);
+ host.querySelector('[data-full-retry-confirm]').checked=true;
+ await details.onclick({target:button});await details.onclick({target:button});
+ assert.deepEqual(requests[1],requests[2]);
+ assert.equal(requests[1].path,'/api/admin/full-mocks/student/'+id+'/scoring/retry-unavailable');
+ assert.deepEqual(requests[1].body.questionIds,['di-credit']);assert.equal(requests[1].body.confirmRetry,true);
+});
 test('Full Mock exclusion requires explicit audio review and reuses the exact operation after a lost response',async()=>{
   const {document}=parseHTML('<html><body><div id="host"></div></body></html>'),host=document.getElementById('host'),requests=[];
   const ui=mount(host,{username:'student',operationId:()=> 'one-operation',request:async(path,body)=>{requests.push({path,body});if(body)throw Error('Connection interrupted');return diagnostic();}});
