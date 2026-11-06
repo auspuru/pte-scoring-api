@@ -1,9 +1,9 @@
 {
   "baselineCommit": "960d1fd1dc37d5772f24c27286181a0b30d461b2",
-  "scope": "Reviewed available-mark publication, explicit recording reassessment and provider-429 recovery for Speaking and Full Mocks, preserving native rubrics and older attempt rules.",
+  "scope": "Reviewed available-mark publication, explicit recording reassessment and bounded unavailable-score recovery for Speaking and Full Mocks, preserving native rubrics and older attempt rules.",
   "files": {
     "server.js": "5d68f9fb63e3e835bbedbad0a8ee3220b98fc9184449b10eade435734b7f6cd8",
-    "full-mock/assessment.js": "f7792b6eae34937c97cfebbdb424d5644d01a27fd4285f2231b7fdcb7adfc9d2",
+    "full-mock/assessment.js": "4ee9c0781a95bbf800cee19aec5d3bfb0d6583e78a201fdb20164c0400a6f5a7",
     "full-mock/adapters.js": "ec18ac8f954632f91432158fdcae9a6079ac183e80e226b3f99ec0b9cd590fec",
     "full-mock/aggregation.js": "d1cd8b4bdcd50c6a94f3006fbef7a02c0d024a6f57b4a08a4984688d98d17497",
     "full-mock/profiles.js": "8e9659f3d82839a445ec6cb0212d3e7456bb3c4442146a56a0ba721b1994df18",
@@ -43,7 +43,7 @@
     "public/swt-feedback.js": "6ad1bbb440e4d6ea29e93c6293107e3ce9af20c79b247bb97d643558b45ad930",
     "public/swt-feedback-review.js": "61dc962856a96342cb062ed4c11a65e2cfd523e38d52e4b1822936f8cac3e751",
     "public/swt-mock-feedback.js": "a935db09aa1ad2cd37ddad0df7e26e43b1b0d62a1270740365d7f201cf78b947",
-    "content/full-mock/scoring-lock.json": "f1e0c130651fcd1084875d443f4884a71cd2c7a982081cab806f58c1b33d0d68",
+    "content/full-mock/scoring-lock.json": "963bd45da470c6e739d4ed57810a0c94bc72b8ddb36eafab4924eea3b410e039",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
     "public/reading-mock-tools.js": "c5655a466dad3579cd0faac269b90eafa7c468e413ec3a5a127f80530ad4fdd4",
     "speaking-mock.js": "b578e8ea8c38f4b5232728587302a651084d893114b67f560ef99a8548d7ced5",
