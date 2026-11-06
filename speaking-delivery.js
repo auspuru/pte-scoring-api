@@ -6,9 +6,11 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 const run = promisify(execFile);
 
-const VERSION = 'azure-delivery-2026-11-06.1';
+const VERSION = 'azure-delivery-2026-11-06.2';
+const FREE_RESPONSE_VERSION = 'azure-delivery-2026-11-06.1';
 const PREVIOUS_VERSION = 'azure-delivery-2026-10-27.1';
-const CALIBRATED_TASKS = new Set(['di','rl','sgd','rts']);
+const CALIBRATED_TASKS = new Set(['ra','rs','di','rl','sgd','rts']);
+const FREE_RESPONSE_TASKS = new Set(['di','rl','sgd','rts']);
 const DELIVERY_RUBRIC_VERSION = require('./delivery-rubric').RUBRIC_VERSION;
 const CHUNK_SECONDS = 28;
 const WAV_MIME = 'audio/wav';
@@ -48,11 +50,11 @@ function band5(raw,policy=VERSION,{trait,type}={}) {
   if(raw==null||raw==='')return null;
   const value=Number(raw);
   if(!Number.isFinite(value)) return null;
-  if(policy!==VERSION&&policy!==PREVIOUS_VERSION)throw Error('Unknown Azure delivery calibration.');
-  // Read Aloud, Repeat Sentence, whole-audio diagnostics and saved older
-  // attempts keep their existing bands. Only the four reviewed free-response
-  // tasks use the new, trait-specific calibration.
-  if(policy===PREVIOUS_VERSION||!CALIBRATED_TASKS.has(type)){
+  if(![VERSION,FREE_RESPONSE_VERSION,PREVIOUS_VERSION].includes(policy))throw Error('Unknown Azure delivery calibration.');
+  // New attempts use the trait-specific bands for all six speaking tasks.
+  // Frozen older attempts and whole-audio diagnostics retain their policy.
+  const calibrated=policy===VERSION?CALIBRATED_TASKS.has(type):policy===FREE_RESPONSE_VERSION&&FREE_RESPONSE_TASKS.has(type);
+  if(!calibrated){
     if(value>=94)return 5;
     if(value>=84)return 4;
     if(value>=72)return 3;
@@ -342,4 +344,4 @@ async function assessRecording(recording,{
   return aggregate(results,{evidence:deliveryEvidence(question,confirmed,totalSeconds,{contentIndependent}),bandPolicy,questionType:question?.type});
 }
 
-module.exports={VERSION,PREVIOUS_VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,reband,descriptor,coaching,usefulPracticeWords,tokens,lcsLength,deliveryEvidence,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds,pcmData,pcmWav,balanceShortTail};
+module.exports={VERSION,FREE_RESPONSE_VERSION,PREVIOUS_VERSION,CHUNK_SECONDS,endpointFromEnv,isConfigured,configurationSummary,band5,reband,descriptor,coaching,usefulPracticeWords,tokens,lcsLength,deliveryEvidence,extractAssessment,aggregate,azureAssess,assessRecording,splitToWav,wavSeconds,pcmData,pcmWav,balanceShortTail};

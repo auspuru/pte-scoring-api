@@ -41,6 +41,20 @@ test('A mock started under the previous reassessment controller keeps its frozen
   assert.equal((await f.engine.results('alice',f.id)).ready,true);
   assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
+test('The immediately preceding Full Mock release keeps its saved Read Aloud and Repeat Sentence bands',async t=>{
+  const delivery=require('../speaking-delivery'),f=await fixture(t,{adapters:{assess:async q=>full(q)}});
+  const original=structuredClone(f.engine.snapshot);
+  original.configuration.delivery.version=delivery.FREE_RESPONSE_VERSION;
+  original.scoringSources=require('../content/full-mock/all-speaking-bands-compatible-sources.json');
+  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+  await f.engine.request('alice',f.id);await f.engine.drain();
+  assert.equal((await f.engine.results('alice',f.id)).ready,true);
+  assert.deepEqual((await f.state()).assessment.snapshot,original);
+  for(const type of ['ra','rs']){
+    assert.equal(delivery.band5(94,delivery.FREE_RESPONSE_VERSION,{trait:'pronunciation',type}),5);
+    assert.equal(delivery.band5(94,delivery.VERSION,{trait:'pronunciation',type}),4);
+  }
+});
 for(const baseline of ['session-security','account-email','image-clarity','audio-refresh'])test(baseline+' upgrade preserves old Full Mock snapshots and confirmed marks',async t=>{
  let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
  const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/'+baseline+'-compatible-sources.json')};

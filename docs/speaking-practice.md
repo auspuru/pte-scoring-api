@@ -40,18 +40,23 @@ Azure accuracy maps to pronunciation: 97–100 gives 5/5, 94–<97 gives 4/5,
 84–<94 gives 3/5, 75–<84 gives 2/5, 40–<75 gives 1/5, and below 40 gives 0/5.
 Azure fluency maps to oral fluency: 94–100 gives 5/5, 89–<94 gives 4/5,
 84–<89 gives 3/5, 75–<84 gives 2/5, 40–<75 gives 1/5, and below 40 gives 0/5.
-Read Aloud and Repeat Sentence keep their earlier bands. The thresholds are an
-institute calibration, not a Pearson conversion. Saved results retain their marks.
+The same bands also apply to new Read Aloud and Repeat Sentence assessments.
+The thresholds are an institute calibration, not a Pearson conversion. Saved
+results retain their marks until an instructor explicitly reassesses them.
 New Speaking Mocks record their policy at creation; unfinished older Speaking
 Mocks without that field use the previous bands. Unfinished older Full Mocks use
 their frozen assessment snapshot. Transcript edits affect Read Aloud content and
 do not directly deduct either audio trait.
 For a submitted older mock, publishing its existing report does not change
 saved marks. An instructor can explicitly reassess selected saved recordings
-with Azure under the current bands. The admin batch action automatically
-publishes confirmed replacements when reassessment finishes. This sends the
-selected audio to Azure again; unselected questions and existing marks stay
-intact until that publication.
+under the current bands. The admin batch action automatically publishes
+confirmed replacements when reassessment finishes. For Speaking Mocks, it
+reuses the original question-level Azure raw scores, including archived scores
+from an earlier published reassessment of the same recording. It only sends
+audio to Azure when those raw scores are unavailable. Full Mock historical
+reassessment sends audio to Azure because its original question-level raw
+scores were not saved. Fresh Azure measurements can differ from the original
+ones. Unselected questions and existing marks stay intact until publication.
 
 If the semantic content reviewer is unavailable, content marks are withheld: keyword similarity
 cannot verify negation, numerical relationships or speaker attribution. The

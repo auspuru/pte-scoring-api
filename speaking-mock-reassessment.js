@@ -4,6 +4,15 @@ const continuous=require('./azure-continuous-delivery');
 const delivery=require('./speaking-delivery');
 const fail=(message,status=409)=>Object.assign(Error(message),{status});
 function metadata(response){const r=structuredClone(response||{});if(r.recording)delete r.recording.data;return r;}
+function originalAzureRaw(a,index){
+ const recordingHash=a.responses[index]?.recording?.hash;
+ const valid=response=>response?.recording?.hash===recordingHash&&response.azure?.status==='assessed'
+  &&(!response.azure.recordingHash||response.azure.recordingHash===recordingHash)
+  &&['pronunciation','fluency'].every(key=>Number.isFinite(response.azure[key]?.raw)&&response.azure[key].raw>=0&&response.azure[key].raw<=100);
+ const operations=Object.values(a.deliveryReassessments||{}).sort((left,right)=>(left.at||0)-(right.at||0));
+ for(const operation of operations)for(const item of operation.items||[])if(item.index===index&&valid(item.previous))return item.previous.azure;
+ return valid(a.responses[index])?a.responses[index].azure:null;
+}
 const fingerprint=a=>hash({id:a.id,questions:a.questions,profile:a.assessmentProfile,responses:a.responses.map(metadata),exclusions:a.assessmentExclusions,review:a.instructorReview,submission:a.submission});
 const profiles=a=>({speaking:{practiceIndex:report.summarize(a).azure.overallScore}});
 function create({store,jobStore,transcribe,callModel,gradeContent=(q,text)=>require('./speaking-scoring').grade(q,text,callModel,{academyDescribeImage:true}),
@@ -32,7 +41,7 @@ function create({store,jobStore,transcribe,callModel,gradeContent=(q,text)=>requ
  function eligible(a,rows){return a.questions.flatMap((q,index)=>{
   const r=a.responses[index],marks=report.questionResult(a,q,r,index,'azure');if(q.type==='intro'||!report.WEIGHTS[q.type]||!r?.recording?.hash||r.content?.total===0&&!marks.excluded)return [];
   const savedEvidence=completion.replacement(a,index)?metadata(r):settled(q,r,index,rows),valid=report.validContent(q,savedEvidence.content),previous={content:marks.excluded?null:marks.content,pronunciation:marks.excluded?null:marks.pronunciation,fluency:marks.excluded?null:marks.fluency};
-  return [{id:q.id,number:a.questions.slice(0,index+1).filter(q=>q.type!=='intro').length,index,type:q.type,previous,needsContent:!valid,restore:!!marks.excluded||marks.total===null,savedEvidence,blocked:blocked(a,index,rows)}];
+  return [{id:q.id,number:a.questions.slice(0,index+1).filter(q=>q.type!=='intro').length,index,type:q.type,previous,needsContent:!valid,restore:!!marks.excluded||marks.total===null,savedRawAvailable:!!originalAzureRaw(a,index),savedEvidence,blocked:blocked(a,index,rows)}];
  });}
  function apply(a,op){
   const review=require('./mock-result-review'),ledger=a.instructorReview,published=ledger?.status==='published';
@@ -55,7 +64,7 @@ function create({store,jobStore,transcribe,callModel,gradeContent=(q,text)=>requ
   for(const item of complete){const row=after.questions.find(row=>row.index===item.index);item.publishedScores={content:row.content,pronunciation:row.pronunciation,fluency:row.fluency};}
   a.grading={status:'complete'};a.assessment={...a.assessment,status:'ready'};return after;
  }
- function view(owner,a,rows){const provider=providerConfiguration();return {owner,attemptId:a.id,paperId:a.paperId,paperVersion:a.version||'saved',engine:'speaking',evidenceHash:fingerprint(a),profiles:profiles(a),provider,questions:eligible(a,rows).map(({savedEvidence,...q})=>({...q,blocked:q.blocked||provider.ready===false&&!q.needsContent&&!q.restore})),operations:Object.fromEntries(Object.entries(a.deliveryReassessments||{}).map(([id,operation])=>{
+ function view(owner,a,rows){const provider=providerConfiguration();return {owner,attemptId:a.id,paperId:a.paperId,paperVersion:a.version||'saved',engine:'speaking',evidenceHash:fingerprint(a),profiles:profiles(a),provider,questions:eligible(a,rows).map(({savedEvidence,...q})=>({...q,blocked:q.blocked||provider.ready===false&&!q.savedRawAvailable&&!q.needsContent&&!q.restore})),operations:Object.fromEntries(Object.entries(a.deliveryReassessments||{}).map(([id,operation])=>{
   const op=structuredClone(operation);op.completedCount=op.items.filter(item=>item.status==='complete').length;op.failedCount=op.items.filter(item=>['failed','confirmation-pending'].includes(item.status)).length;
   if(['review','partial'].includes(op.status)&&op.evidenceHash===fingerprint(a)&&op.completedCount){try{const copy=structuredClone(a),proposal=copy.deliveryReassessments[id];apply(copy,proposal);op.proposedProfiles=profiles(copy);op.proposalReady=true;}catch(error){op.proposalReady=false;op.proposalError=error.status?error.message:'The proposed report could not be verified.';}}
   return [id,op];
@@ -83,9 +92,12 @@ function create({store,jobStore,transcribe,callModel,gradeContent=(q,text)=>requ
     content=await paid('content',()=>gradeContent(q,text),v=>report.validContent(q,v));proposed.content=content;
    }
    if(content.total===0){result={version:'native-content-gate',pronunciation:{score:0},fluency:{score:0}};}
-   else try{const config=providerConfiguration();if(!config.ready)throw Object.assign(Error('Azure delivery is unavailable.'),{providerStarted:false});await saveStage('azure',{status:'calling',at:now()});sent=true;
-    result=await assess(recording);
-    if(rebandCurrent)result=delivery.reband(result,{questionType:q.type,bandPolicy:delivery.VERSION});
+   else try{const a=await store.get(owner,id,{omitMockAudio:true}),savedRaw=originalAzureRaw(a,claimed.index);
+    if(savedRaw){result=delivery.reband({version:'azure-saved-question-raw-2026-11-06.1',pronunciation:{raw:savedRaw.pronunciation.raw},fluency:{raw:savedRaw.fluency.raw}},
+      {questionType:q.type,bandPolicy:delivery.VERSION});await saveStage('azure',{status:'ready',source:'saved-original-raw',at:now()});}
+    else{const config=providerConfiguration();if(!config.ready)throw Object.assign(Error('Azure delivery is unavailable.'),{providerStarted:false});await saveStage('azure',{status:'calling',at:now()});sent=true;
+      result=await assess(recording);
+      if(rebandCurrent)result=delivery.reband(result,{questionType:q.type,bandPolicy:delivery.VERSION});}
     if(!result?.version||!['pronunciation','fluency'].every(key=>Number.isFinite(result[key]?.score)&&result[key].score>=0&&result[key].score<=5))throw Error('Azure delivery was not confirmed.');
     proposed.azure={status:'assessed',recordingHash:recording.hash,assessedAt:now(),deliveryVersion:result.version,deliveryProvider:'azure',pronunciation:result.pronunciation,fluency:result.fluency};await saveStage('azure',{status:'ready',at:now()});
    }catch(caught){deliveryUncertain=sent&&caught.providerStarted!==false;if(!claimed.needsContent&&!claimed.restore)throw caught;
@@ -101,7 +113,7 @@ function create({store,jobStore,transcribe,callModel,gradeContent=(q,text)=>requ
   const prior=a.deliveryReassessments?.[operation];if(prior){if(!!prior.all!==(body.all===true)||!body.all&&hash(prior.questionIds)!==hash(body.questionIds)||!!prior.autoPublish!==(body.autoPublish===true))throw fail('This operation belongs to another selection.');return inspect(owner,id);}
   const available=eligible(a,rows),ids=body.all?available.filter(q=>!q.blocked).map(q=>q.id):body.questionIds;
   if(!Array.isArray(ids)||!ids.length||ids.length>27||new Set(ids).size!==ids.length||ids.some(id=>!available.some(q=>q.id===id&&!q.blocked)))throw fail('Select available saved recordings.',400);
-  const config=providerConfiguration();if(!config.ready&&!ids.some(id=>{const q=available.find(q=>q.id===id);return q.needsContent||q.restore;}))throw fail(config.message||'Azure Speech is unavailable.');
+  const config=providerConfiguration();if(!config.ready&&!ids.every(id=>{const q=available.find(q=>q.id===id);return q.savedRawAvailable||q.needsContent||q.restore;}))throw fail(config.message||'Azure Speech is unavailable.');
   await store.update(owner,id,current=>{check(current);current.deliveryReassessments||={};const previous=current.deliveryReassessments[operation];if(previous){if(hash(previous.questionIds)!==hash(ids)||!!previous.autoPublish!==(body.autoPublish===true))throw fail('This operation belongs to another selection.');return current;}if(fingerprint(current)!==evidenceHash)throw fail('Saved evidence changed. Inspect this attempt again.');
    if(Object.values(current.deliveryReassessments).some(op=>['queued','running','paused','review','partial'].includes(op.status)))throw fail('Finish or discard the current reassessment first.');
    const needsEarlierPublication=report.summarize(current).azure.status!=='assessed'||!completion.active(current)&&ids.some(id=>{const q=available.find(q=>q.id===id);return q.needsContent||q.restore;});

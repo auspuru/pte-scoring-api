@@ -98,14 +98,22 @@ test('Short incomplete Read Aloud responses do not receive misleading pronunciat
   assert.match(result.deliveryStatus,/Not enough speech/);assert.equal(result.deliveryEvidence.spokenWords,4);
 });
 
-test('Reviewed free-response tasks use trait-specific bands while scripted and saved attempts retain their bands',()=>{
+test('All six speaking tasks use trait-specific bands while earlier policies retain their bands',()=>{
   const pronunciation={trait:'pronunciation',type:'di'},fluency={trait:'fluency',type:'di'};
   for(const [raw,expected] of [[97,5],[96.9,4],[94,4],[93.9,3],[84,3],[83.9,2],[75,2],[74.9,1],[40,1],[39.9,0]])
     assert.equal(delivery.band5(raw,delivery.VERSION,pronunciation),expected,`pronunciation raw ${raw}`);
   for(const [raw,expected] of [[94,5],[93.9,4],[89,4],[88.9,3],[84,3],[83.9,2],[75,2],[74.9,1],[40,1],[39.9,0]])
     assert.equal(delivery.band5(raw,delivery.VERSION,fluency),expected,`fluency raw ${raw}`);
-  for(const type of ['rl','sgd','rts'])assert.equal(delivery.band5(94,delivery.VERSION,{trait:'pronunciation',type}),4);
-  for(const type of ['ra','rs'])assert.equal(delivery.band5(94,delivery.VERSION,{trait:'pronunciation',type}),5);
+  for(const type of ['ra','rs','di','rl','sgd','rts']){
+    assert.equal(delivery.band5(94,delivery.VERSION,{trait:'pronunciation',type}),4);
+    assert.equal(delivery.band5(89,delivery.VERSION,{trait:'fluency',type}),4);
+  }
+  for(const type of ['ra','rs'])assert.equal(delivery.band5(94,delivery.FREE_RESPONSE_VERSION,{trait:'pronunciation',type}),5);
+  assert.equal(delivery.band5(94,delivery.FREE_RESPONSE_VERSION,{trait:'pronunciation',type:'di'}),4);
+  for(const type of ['ra','rs','di','rl','sgd','rts'])for(const trait of ['pronunciation','fluency'])for(let raw=0;raw<=1000;raw++){
+    const value=raw/10;
+    assert(delivery.band5(value,delivery.VERSION,{trait,type})<=delivery.band5(value,delivery.FREE_RESPONSE_VERSION,{trait,type}));
+  }
   assert.equal(delivery.band5(84,delivery.PREVIOUS_VERSION),4);
   assert.equal(delivery.band5(72,delivery.PREVIOUS_VERSION),3);
   assert.equal(delivery.band5(58,delivery.PREVIOUS_VERSION),2);

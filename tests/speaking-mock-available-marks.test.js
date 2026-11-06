@@ -16,6 +16,32 @@ test('An older Speaking Mock publishes current bands after explicit Azure reasse
  assert.deepEqual([after.responses[f.index].azure.pronunciation.score,after.responses[f.index].azure.fluency.score],[4,4]);
  assert.deepEqual(after.responses[f.index+1],before.responses[f.index+1]);
 });
+test('A published Speaking Mock can correct a later Azure reading from archived original raw scores',async t=>{
+ const delivery=require('../speaking-delivery');let azureCalls=0;
+ const f=await fixture(t,{deliveryReassessment:{providerConfiguration:()=>({ready:false,message:'Azure unavailable.'}),assess:async()=>{azureCalls++;throw Error('Do not remeasure saved audio');}}});
+ const ra=f.questions.findIndex(q=>q.type==='ra'),rs=f.questions.findIndex(q=>q.type==='rs');
+ await f.store.update(f.owner,f.id,a=>{
+  const items=[f.index,ra,rs].map(index=>{
+   const r=a.responses[index],original=structuredClone(r),raw=index===f.index?[40,55]:[94,89];
+   original.azure.pronunciation={score:index===f.index?1:5,raw:raw[0]};
+   original.azure.fluency={score:index===f.index?1:4,raw:raw[1]};
+   r.azure.pronunciation={score:5,raw:95};r.azure.fluency={score:5,raw:95};
+   return {index,previous:require('../speaking-mock-reassessment').metadata(original)};
+  });
+  a.deliveryReassessments={'delivery:prior-batch':{operation:'delivery:prior-batch',status:'published',at:100,items}};
+  return a;
+ });
+ const view=await f.service.deliveryReview.inspect(f.owner,f.id),question=view.questions.find(q=>q.index===f.index);
+ assert.equal(question.savedRawAvailable,true);assert.equal(question.blocked,false);
+ const body={operation:'delivery:correct-original-raw',questionIds:[f.index,ra,rs].map(index=>view.questions.find(q=>q.index===index).id),evidenceHash:view.evidenceHash,autoPublish:true};
+ await f.service.deliveryReview.send(f.owner,f.id,body);await f.service.deliveryReview.drain();
+ const after=await f.store.get(f.owner,f.id),op=after.deliveryReassessments[body.operation];
+ assert.equal(op.status,'published');assert.equal(azureCalls,0);
+ assert.equal(op.items[0].result.bandPolicy,delivery.VERSION);
+ assert.deepEqual([after.responses[f.index].azure.pronunciation.raw,after.responses[f.index].azure.fluency.raw],[40,55]);
+ assert.deepEqual([after.responses[f.index].azure.pronunciation.score,after.responses[f.index].azure.fluency.score],[1,1]);
+ for(const index of [ra,rs])assert.deepEqual([after.responses[index].azure.pronunciation.score,after.responses[index].azure.fluency.score],[4,4]);
+});
 test('New Speaking mocks publish confirmed content while missing Azure traits stay unavailable',async t=>{
  const f=await fixture(t);await f.store.update(f.owner,f.id,a=>{a.responses[f.index].azure={status:'unavailable'};a.assessment.status='processing';a.grading.status='pending';return a;});
  const before=await f.store.get(f.owner,f.id);await f.service.progressive.ensure(f.owner,before);await f.service.waitForJobs();
