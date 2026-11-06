@@ -33,6 +33,14 @@ test('An unfinished saved mock retains its original delivery bands while a new m
   assert.deepEqual((await f.state()).assessment.snapshot,original);
   assert.equal(delivery.band5(84,delivery.VERSION,{trait:'fluency',type:'di'}),3);
 });
+test('A mock started under the previous reassessment controller keeps its frozen snapshot',async t=>{
+  const f=await fixture(t,{adapters:{assess:async q=>full(q)}});
+  const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/reassessment-current-bands-compatible-sources.json')};
+  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+  await f.engine.request('alice',f.id);await f.engine.drain();
+  assert.equal((await f.engine.results('alice',f.id)).ready,true);
+  assert.deepEqual((await f.state()).assessment.snapshot,original);
+});
 for(const baseline of ['session-security','account-email','image-clarity','audio-refresh'])test(baseline+' upgrade preserves old Full Mock snapshots and confirmed marks',async t=>{
  let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
  const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/'+baseline+'-compatible-sources.json')};

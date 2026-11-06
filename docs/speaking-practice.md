@@ -46,6 +46,12 @@ New Speaking Mocks record their policy at creation; unfinished older Speaking
 Mocks without that field use the previous bands. Unfinished older Full Mocks use
 their frozen assessment snapshot. Transcript edits affect Read Aloud content and
 do not directly deduct either audio trait.
+For a submitted older mock, publishing its existing report does not change
+saved marks. An instructor can explicitly reassess selected saved recordings
+with Azure under the current bands. The admin batch action automatically
+publishes confirmed replacements when reassessment finishes. This sends the
+selected audio to Azure again; unselected questions and existing marks stay
+intact until that publication.
 
 If the semantic content reviewer is unavailable, content marks are withheld: keyword similarity
 cannot verify negation, numerical relationships or speaker attribution. The

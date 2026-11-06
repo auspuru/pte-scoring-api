@@ -100,14 +100,30 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // The explicit reassessment controller changed after the last deployment.
+  // Project only that reviewed controller and this validator to the exact
+  // previous release, then apply its already-audited snapshot compatibility
+  // rules. Native scorers and every other source must match byte for byte.
+  const priorReassessment=require('../content/full-mock/reassessment-current-bands-compatible-sources.json');
+  if(digest(priorReassessment)==='8dba2e203eb75222a58b2fbf5af75bd9c95fb86f816f580c554a22079d3ee758'
+    &&current.scoringSources.files['full-mock/delivery-reassessment.js']?.sha256==='f88c111dc01558160462e708fbf1a174d2ed33959f1c161dd46f00f412c4e34f'
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(priorReassessment.files).sort().join()
+    &&Object.entries(priorReassessment.files).every(([file,pin])=>['full-mock/assessment.js','full-mock/delivery-reassessment.js'].includes(file)
+      ||digest(current.scoringSources.files[file])===digest(pin))){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of ['full-mock/assessment.js','full-mock/delivery-reassessment.js'])sources.files[file]=structuredClone(priorReassessment.files[file]);
+    const prior={...current,scoringSources:sources};
+    if(digest(saved)===digest(prior)||compatibleTransportUpgrade(saved,prior))return true;
+  }
   // Existing Full Mocks retain their original acoustic bands when pending
   // delivery work resumes. This exact projection is for validation only;
   // the worker passes the saved delivery policy to the Azure adapter.
   const deliveryBandsBaseline=require('../content/full-mock/delivery-bands-compatible-sources.json');
   const deliveryBandsPins={'speaking-delivery.js':'e0065e9fc096530358d936e3354d02d91d3d73bc11f6976ec98d1df37c379c4c',
     'full-mock/adapters.js':'1f985cc0859c56d177f78aeb15e1316efd84a9641e752eafbb2c73ba97cfd4dd',
-    'full-mock/delivery-reassessment.js':'d25837e3c0809e390a1c0bd9d3f48e6b4dea5bf8b527c00b5a332e52524cfecf'};
+    'full-mock/delivery-reassessment.js':current.scoringSources.files['full-mock/delivery-reassessment.js']?.sha256};
   if(digest(deliveryBandsBaseline)==='d1e945dae7b97024da23f8b00d1e6e6c3e10058c74637b23266a2f81fa8e1d1f'
+    &&['d25837e3c0809e390a1c0bd9d3f48e6b4dea5bf8b527c00b5a332e52524cfecf','f88c111dc01558160462e708fbf1a174d2ed33959f1c161dd46f00f412c4e34f'].includes(deliveryBandsPins['full-mock/delivery-reassessment.js'])
     &&[require('../speaking-delivery').PREVIOUS_VERSION,require('../speaking-delivery').VERSION].includes(saved.configuration.delivery.version)
     &&current.configuration.delivery.version===require('../speaking-delivery').VERSION
     &&Object.entries(deliveryBandsPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)

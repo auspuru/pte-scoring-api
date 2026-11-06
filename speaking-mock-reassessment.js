@@ -7,7 +7,7 @@ function metadata(response){const r=structuredClone(response||{});if(r.recording
 const fingerprint=a=>hash({id:a.id,questions:a.questions,profile:a.assessmentProfile,responses:a.responses.map(metadata),exclusions:a.assessmentExclusions,review:a.instructorReview,submission:a.submission});
 const profiles=a=>({speaking:{practiceIndex:report.summarize(a).azure.overallScore}});
 function create({store,jobStore,transcribe,callModel,gradeContent=(q,text)=>require('./speaking-scoring').grade(q,text,callModel,{academyDescribeImage:true}),
- assess=continuous.assessRecording,providerConfiguration=()=>assess===continuous.assessRecording?continuous.configuration():{ready:true},quietRecording=completion.quiet,now=Date.now}={}){
+ assess=continuous.assessRecording,providerConfiguration=()=>assess===continuous.assessRecording?continuous.configuration():{ready:true},rebandCurrent=assess===continuous.assessRecording,quietRecording=completion.quiet,now=Date.now}={}){
  const running=new Map();let recovering=false;
  function check(a){if(!a)throw fail('Speaking mock attempt not found.',404);const summary=report.summarize(a).azure;if(a.status!=='submitted'||a.submission?.state==='finalizing'||require('./mock-result-review').held(a)||a.lease?.expiresAt>now()||!summary.coverageValid||!summary.supported)throw fail('A submitted, settled Speaking mock attempt is required.');}
  async function read(owner,id){const a=await store.get(owner,id,{omitMockAudio:true});check(a);const rows=jobStore?await jobStore.list(owner,id):[];if(rows.some(row=>['pending','running','retry_wait'].includes(row.status)))throw fail('Assessment work is active. Refresh when it has settled.');return {a,rows};}
@@ -85,7 +85,7 @@ function create({store,jobStore,transcribe,callModel,gradeContent=(q,text)=>requ
    if(content.total===0){result={version:'native-content-gate',pronunciation:{score:0},fluency:{score:0}};}
    else try{const config=providerConfiguration();if(!config.ready)throw Object.assign(Error('Azure delivery is unavailable.'),{providerStarted:false});await saveStage('azure',{status:'calling',at:now()});sent=true;
     result=await assess(recording);
-    if(assess===continuous.assessRecording)result=delivery.reband(result,{questionType:q.type,bandPolicy:saved?.profile?.deliveryPolicy||delivery.PREVIOUS_VERSION});
+    if(rebandCurrent)result=delivery.reband(result,{questionType:q.type,bandPolicy:delivery.VERSION});
     if(!result?.version||!['pronunciation','fluency'].every(key=>Number.isFinite(result[key]?.score)&&result[key].score>=0&&result[key].score<=5))throw Error('Azure delivery was not confirmed.');
     proposed.azure={status:'assessed',recordingHash:recording.hash,assessedAt:now(),deliveryVersion:result.version,deliveryProvider:'azure',pronunciation:result.pronunciation,fluency:result.fluency};await saveStage('azure',{status:'ready',at:now()});
    }catch(caught){deliveryUncertain=sent&&caught.providerStarted!==false;if(!claimed.needsContent&&!claimed.restore)throw caught;
