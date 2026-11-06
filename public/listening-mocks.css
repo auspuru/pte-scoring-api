@@ -26,5 +26,5 @@ body.dark .listening-blank input{background:#182536;color:#edf4fc}
 #writingLabScreen .sst-mock-criteria>div{min-width:0;border-top:1px solid #dce9e1;padding-top:10px}
 #writingLabScreen .sst-mock-criteria dt{font-weight:700;font-size:14px}
 #writingLabScreen .sst-mock-criteria dd{margin:4px 0 0;line-height:1.7;white-space:pre-wrap}
-#writingLabScreen .response.sst-saved-summary{max-height:20rem;overflow:auto;overscroll-behavior:contain}
+#writingLabScreen .response.sst-saved-summary{white-space:normal;max-height:20rem;overflow:auto;overscroll-behavior:contain}
 #writingLabScreen .sst-saved-summary:focus-visible{outline:3px solid #005c8b;outline-offset:3px}
