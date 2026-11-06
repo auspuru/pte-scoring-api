@@ -6,10 +6,11 @@
   function scoreUpdates(updates=[]){return updates.map(update=>'<section class="sm-practice-focus"><h3>Scores updated</h3><p>Updated '+esc(new Date(update.publishedAt).toLocaleString('en-AU',{timeZone:'Australia/Brisbane',dateStyle:'medium',timeStyle:'short'}))+'. This report includes the changes below.</p>'+update.changes.map(row=>'<p><strong>Q'+esc(row.number)+' · '+esc(row.label)+'</strong><br>'+row.traits.map(trait=>esc(trait.trait)+': '+(trait.before==null?'Not assessed':esc(trait.before)+'/'+esc(trait.maximum))+' → '+esc(trait.after)+'/'+esc(trait.maximum)).join(' · ')+'</p>').join('')+'</section>').join('');}
   function createController(env,{getUserId=()=>env.currentUserId||''}={}){
     const doc=env.document,OWNER='speaking-mock',memory=new Map(),done=new Set(),urls=new Map(),promptFinished=new Set(),startCue=cues.create(env),imageViewer=images.create(env);let rsCue,check,checkTimer,flow,serverOffset=0;
-    let host,catalog,a,owner='',serial=0,busy=false,ending=false,stream,recorder,capture,recordingPromise,prompt,played='',timer,poller,pollBusy=false,pollUntil=0,pollFailures=0,nextPollAt=0,resultVersion=0,notice='',selected=null,reportFilter='all',reviewSignature='',reviewAudioTicket=0,reportSection='overview',reportProvider='azure',responsePane='feedback',context,analyser,silence=0,heard=false;
+    let host,catalog,a,owner='',serial=0,busy=false,ending=false,stream,recorder,capture,recordingPromise,prompt,played='',timer,poller,pollMode=null,pollBusy=false,pollUntil=0,pollFailures=0,nextPollAt=0,resultVersion=0,notice='',selected=null,reportFilter='all',reviewSignature='',reviewAudioTicket=0,reportSection='overview',reportProvider='azure',responsePane='feedback',context,analyser,silence=0,heard=false,reportVisible=false,reportRefresh=null;
     let volume=1;try{const saved=env.localStorage?.getItem('ipt-exam-volume');if(saved!=null&&Number.isFinite(Number(saved)))volume=Math.max(0,Math.min(1,Number(saved)));}catch{}
     const localNow=()=>env.Date?.now?.()||Date.now(),now=()=>localNow()+serverOffset,identity=()=>String(getUserId()||'').trim().toLowerCase();
     const valid=ticket=>ticket===serial&&identity()===owner;
+    const settledReport=()=>a?.status==='submitted'&&a.resultsReady!==false&&a.grading?.status==='complete'&&a.combinedRecovery?.status!=='processing'&&a.providerComparisonStatus!=='processing';
     const key=(id,index)=>owner+':'+id+':'+index;
     const token=()=>{
       try{const current=env.sessionStorage?.getItem('pte_impersonate_token')||env.sessionStorage?.getItem('pte_session_token');if(current)return current;}catch{}
@@ -40,11 +41,11 @@
     function message(text){notice=text;const node=doc.getElementById('sm-notice');if(node)node.textContent=text;}
     function stopPrompt(){if(prompt){prompt.pause();prompt.onended=null;prompt=null;}}
     function stopTimer(){env.clearInterval(timer);timer=null;}
-    function stopPolling(){env.clearInterval(poller);poller=null;}
+    function stopPolling(){env.clearInterval(poller);poller=null;pollMode=null;}
     function release(){stopCheck();flow=null;imageViewer.close();stopTimer();stopPrompt();startCue.close();rsCue=null;if(recorder?.state==='recording')recorder.stop();stream?.getTracks().forEach(t=>t.stop());stream=null;analyser=null;context?.close?.().catch(()=>{});context=null;}
-    function leave(){stopPolling();release();serial++;}
+    function leave(){reportVisible=false;stopPolling();release();serial++;}
     function reset(){leave();a=null;owner='';selected=null;reportFilter='all';reportSection='overview';reportProvider='azure';responsePane='feedback';reviewSignature='';for(const url of urls.values())env.URL.revokeObjectURL(url);urls.clear();host?.replaceChildren();}
-    function shell(html){imageViewer.close();host.innerHTML=html;images.bindFallback(host);host.onclick=click;host.onchange=e=>{if(e.target.id==='sm-check-heard'&&check){check.confirmed=!!e.target.checked;checkControls();}else reportChange(e);};host.onkeydown=reportKeydown;host.oninput=e=>{if(e.target.id==='sm-volume'){volume=Math.max(0,Math.min(1,Number(e.target.value)));if(prompt)prompt.volume=volume;if(check?.audio)check.audio.volume=volume;try{env.localStorage?.setItem('ipt-exam-volume',String(volume));}catch{}}};}
+    function shell(html){reportVisible=false;imageViewer.close();host.innerHTML=html;images.bindFallback(host);host.onclick=click;host.onchange=e=>{if(e.target.id==='sm-check-heard'&&check){check.confirmed=!!e.target.checked;checkControls();}else reportChange(e);};host.onkeydown=reportKeydown;host.oninput=e=>{if(e.target.id==='sm-volume'){volume=Math.max(0,Math.min(1,Number(e.target.value)));if(prompt)prompt.volume=volume;if(check?.audio)check.audio.volume=volume;try{env.localStorage?.setItem('ipt-exam-volume',String(volume));}catch{}}};}
     function protectedMode(){env.PortalExamMode?.set(OWNER,a?.status==='active',host,{onEvent:event=>{if(a)api('/attempts/'+a.id+'/integrity',{events:[event]}).catch(()=>{});},onLock:()=>{stopPrompt();startCue.cancel();rsCue=null;played='';if(recorder?.state==='recording')recorder.stop();},onResume:()=>{if(a)refresh().catch(e=>message(e.message));}});}
     async function open(options={}){
       if(check)release();
@@ -313,7 +314,7 @@
     function results(){
       env.PortalExamMode?.set(OWNER,false,host);stopTimer();stopPrompt();
       if(a.resultsReady===false){preparing();return;}
-      shell('<div class="sm-results ipt-mock-report" id="sm-report" data-provider="'+reportProvider+'"><header class="sm-results-heading ipr-heading"><div><p class="ipr-eyebrow">Speaking score report</p><h2>'+esc(a.title)+'</h2><p class="sm-muted">Your responses, feedback and next steps.</p></div><div class="sm-results-actions"><button class="portal-button" data-sm="history">Saved speaking mocks</button><button class="portal-button" data-sm="reattempt" data-id="'+esc(a.id)+'">Reattempt this mock</button></div></header>'
+      shell('<div class="sm-results ipt-mock-report" id="sm-report" data-provider="'+reportProvider+'"><header class="sm-results-heading ipr-heading"><div><p class="ipr-eyebrow">Speaking score report</p><h2>'+esc(a.title)+'</h2><p class="sm-muted">Your responses, feedback and next steps.</p></div><div class="sm-results-actions"><button class="portal-button" id="sm-refresh-report" data-sm="refresh-report" hidden>Refresh report</button><button class="portal-button" data-sm="history">Saved speaking mocks</button><button class="portal-button" data-sm="reattempt" data-id="'+esc(a.id)+'">Reattempt this mock</button></div></header>'
         +'<nav class="sm-report-tabs ipr-tabs" role="tablist" aria-label="Speaking report sections">'+[['overview','Score report'],['answers','Answers'],['analysis','Analysis'],['next','Feedback']].map(([value,label])=>'<button id="sm-tab-'+value+'" role="tab" data-sm="section" data-section="'+value+'" aria-controls="sm-panel-'+value+'" aria-selected="'+(reportSection===value)+'">'+label+'</button>').join('')+'</nav>'
         +'<p id="sm-assessment-status" class="sm-assessment-status" role="status"></p><section id="sm-panel-overview" role="tabpanel" aria-labelledby="sm-tab-overview"><div id="sm-results-summary" class="sm-summary-grid" aria-live="polite"></div><div class="sm-overview-shortcuts"><button class="portal-button primary" data-sm="section" data-section="answers">Review your answers →</button><button class="portal-button" data-sm="filter" data-type="di">Describe Image samples</button><button class="portal-button" data-sm="section" data-section="next">See next steps →</button></div></section>'
         +'<section id="sm-panel-answers" role="tabpanel" aria-labelledby="sm-tab-answers" hidden><section class="sm-answer-review" aria-labelledby="sm-answers-heading"><h3 id="sm-answers-heading">Individual question feedback</h3><div class="sm-compact-navigation"><label>Task<select id="sm-task-picker"></select></label><label>Question<select id="sm-question-picker"></select></label><p id="sm-question-count" class="sm-muted"></p></div>'
@@ -321,7 +322,7 @@
         +'</section><section id="sm-panel-analysis" role="tabpanel" aria-labelledby="sm-tab-analysis" hidden><div class="sm-score-breakdown"><h3>Question overview</h3><div class="sm-table-wrap"><table class="sm-table"><thead><tr><th scope="col">Question</th><th scope="col">Content</th><th scope="col">Pronunciation / fluency</th><th scope="col">Review</th></tr></thead><tbody id="sm-result-rows"></tbody></table></div></div></section>'
         +'<section id="sm-panel-next" role="tabpanel" aria-labelledby="sm-tab-next" hidden><h3>Your feedback</h3><p class="sm-muted">Choose an answer and focus on one useful improvement.</p><div id="sm-next-steps"></div></section>'
         +'<dialog id="sm-image-dialog" class="sm-image-dialog" aria-label="Full-size question image"></dialog><footer class="sm-report-footer"><p id="sm-notice" role="status"></p>'+(a.resultsReady===undefined?'<button class="portal-button" data-sm="retry">Retry unavailable scores</button>':'')+'</footer></div>');
-      updateResults();pollResults();
+      reportVisible=true;updateResults();pollResults();
     }
     function updateQuestionNavigation(){
       const all=answers(),visible=visibleAnswers(),filters=doc.getElementById('sm-task-filters'),list=doc.getElementById('sm-question-list'),count=doc.getElementById('sm-question-count');
@@ -339,6 +340,7 @@
       setMarkup(doc.getElementById('sm-next-steps'),layout.impactFeedback(a.impactFeedback)+overview+(candidates.length?candidates.map(r=>'<article class="sm-practice-step"><p class="sm-eyebrow">'+esc(answerLabel(r))+'</p><h4>'+esc(r.question.title||labels[r.question.type])+'</h4>'+(r.content.strengths?.[0]?'<p><strong>Keep:</strong> '+esc(r.content.strengths[0])+'</p>':'')+'<p><strong>Try this next:</strong> '+esc(r.content.improvements[0])+'</p><button class="portal-button" data-sm="review" data-index="'+r.index+'">Open this answer →</button><button class="portal-button" data-sm="sample" data-index="'+r.index+'">Compare with a sample</button></article>').join(''):'<p class="sm-muted">No specific next step is available yet. Open an answer to listen to your recording and review the saved feedback.</p>'));
     }
     function updateResults(){
+      const refreshButton=doc.getElementById('sm-refresh-report');if(refreshButton)refreshButton.hidden=!settledReport();
       const report=a.speakingReport,summary=doc.getElementById('sm-results-summary'),status=doc.getElementById('sm-assessment-status'),value=report?.azure,complete=value?.status==='assessed';
       const overallScore=complete?(value.unavailable?'Unavailable':value.overallScore):null;
       const exclusions=value?.excludedQuestions?.length?'<aside class="sm-practice-focus"><h4>Responses requiring attention</h4>'+value.excludedQuestions.map(q=>'<p><strong>Question '+esc(q.number)+' · '+esc(q.title||q.questionId)+'</strong><br>'+esc(q.note)+'</p>').join('')+'</aside>':'';
@@ -385,11 +387,25 @@
         if(valid(ticket)&&a?.id===id&&selected===index&&audioTicket===reviewAudioTicket){const slot=doc.getElementById('sm-review-audio');if(slot)slot.innerHTML='<audio controls preload="metadata" src="'+esc(url)+'" aria-label="Your recorded response"></audio>';}
       }catch(error){if(valid(ticket)&&a?.id===id&&selected===index&&audioTicket===reviewAudioTicket){const slot=doc.getElementById('sm-review-audio');if(slot)slot.innerHTML='<p class="sm-muted">Your recording could not load. Select this question again to retry.</p>';}}}
     }
+    async function refreshPublishedReport({manual=false}={}){
+      if(!reportVisible||!settledReport()||!valid(serial)||busy||pollBusy||doc.hidden&&!manual)return;
+      const ticket=serial,id=a.id,ownerToken=token();
+      if(reportRefresh?.ticket===ticket&&reportRefresh.id===id&&reportRefresh.token===ownerToken)return reportRefresh.promise;
+      const version=++resultVersion,button=doc.getElementById('sm-refresh-report'),read={ticket,id,token:ownerToken};if(button)button.disabled=true;
+      read.promise=(async()=>{
+        try{const saved=await api('/attempts/'+id);if(!valid(ticket)||a?.id!==id||version!==resultVersion||token()!==ownerToken||!reportVisible)return;
+          if(saved.id!==id)throw Error('The returned report does not match this saved attempt.');
+          a=saved;if(a.resultsReady===false)results();else{updateResults();pollResults();}if(manual)message('Report refreshed from the latest saved results.');
+        }catch(error){if(valid(ticket)&&a?.id===id&&version===resultVersion&&token()===ownerToken){const stop=[401,403,404].includes(error.status);if(manual||stop)message(error.message);if(stop)stopPolling();}}
+        finally{if(reportRefresh===read)reportRefresh=null;if(button)button.disabled=false;}
+      })();reportRefresh=read;return read.promise;
+    }
     function pollResults(){
-      if(a.grading?.status==='complete'&&a.combinedRecovery?.status!=='processing'&&a.providerComparisonStatus!=='processing'){stopPolling();return;}if(poller)return;pollUntil=now()+20*60000;
+      const settled=settledReport();if(poller&&pollMode===settled)return;stopPolling();pollMode=settled;
+      if(settled){let nextRead=now()+30000;poller=env.setInterval(()=>{if(now()<nextRead)return;nextRead=now()+30000;return refreshPublishedReport();},30000);return;}pollUntil=now()+20*60000;
       pollFailures=0;nextPollAt=0;
       poller=env.setInterval(async()=>{if(pollBusy||doc.hidden||now()<nextPollAt)return;if(now()>pollUntil&&a.resultsReady!==false){stopPolling();message('Your recordings are saved. Reopen these results to check for the remaining scores.');return;}const ticket=serial,id=a.id,version=resultVersion;pollBusy=true;
-        try{if(a.resultsReady===false){const progress=await api('/attempts/'+id+'/status');if(!valid(ticket)||a?.id!==id||version!==resultVersion)return;if(!progress.ready){a.resultStatus=progress;updatePreparing();pollFailures=0;return;}}const saved=await api('/attempts/'+id);if(!valid(ticket)||a?.id!==id||version!==resultVersion)return;const wasPreparing=a.resultsReady===false;a=saved;if(wasPreparing)results();else updateResults();if(pollFailures)message('');pollFailures=0;if(a.grading?.status==='complete'&&a.combinedRecovery?.status!=='processing'&&a.providerComparisonStatus!=='processing')stopPolling();}
+        try{if(a.resultsReady===false){const progress=await api('/attempts/'+id+'/status');if(!valid(ticket)||a?.id!==id||version!==resultVersion)return;if(!progress.ready){a.resultStatus=progress;updatePreparing();pollFailures=0;return;}}const saved=await api('/attempts/'+id);if(!valid(ticket)||a?.id!==id||version!==resultVersion)return;const wasPreparing=a.resultsReady===false;a=saved;if(wasPreparing)results();else updateResults();if(pollFailures)message('');pollFailures=0;if(settledReport())pollResults();}
         catch(error){if(!valid(ticket)||a?.id!==id||version!==resultVersion)return;if(error.retryable){nextPollAt=now()+Math.min(30000,3000*2**Math.min(pollFailures++,4));message('Connection interrupted. Your recordings are saved; retrying results automatically…');}else{stopPolling();message(error.message);}}finally{pollBusy=false;}
       },3000);
     }
@@ -399,7 +415,8 @@
       if(data.sm==='resume')return resume(data.id);
       if(data.sm==='reconcile-upload'){if(busy)return;busy=true;try{await retryPending();await refresh();}catch(error){message(error.message);}finally{busy=false;}return;}
       if(data.sm==='next')return next();
-      if(data.sm==='section'){if(['overview','answers','analysis','next'].includes(data.section)){reportSection=data.section;updateReportState();if(reportSection==='next')updateNextSteps();}return;}
+      if(data.sm==='refresh-report')return refreshPublishedReport({manual:true});
+      if(data.sm==='section'){if(['overview','answers','analysis','next'].includes(data.section)){reportSection=data.section;updateReportState();if(reportSection==='next')updateNextSteps();if(reportSection==='overview')return refreshPublishedReport();}return;}
       if(data.sm==='response-pane'){if(['feedback','transcript','sample'].includes(data.pane)){responsePane=data.pane;refreshReviewFeedback();doc.getElementById('sm-response-tab-'+data.pane)?.focus?.({preventScroll:true});}return;}
       if(data.sm==='zoom-image')return showImage();
       if(data.sm==='close-image'){doc.getElementById('sm-image-dialog')?.close?.();return;}
@@ -423,6 +440,8 @@
       }
       if(data.sm==='history'||data.sm==='reload')return open({history:data.sm==='history'});
     }
+    const refreshVisibleReport=()=>{if(!doc.hidden)return refreshPublishedReport();};
+    env.addEventListener?.('focus',refreshVisibleReport);doc.addEventListener?.('visibilitychange',refreshVisibleReport);
     return {open,leave,reset};
   }
   return {createController,clock,scoreUpdates};
