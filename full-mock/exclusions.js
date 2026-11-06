@@ -39,7 +39,16 @@ function retryableUnavailable(state, candidate, response, job) {
     || !validExclusion(state,candidate,response,job) || job?.status!=='failed'
     || job.inputHash!==inputHash(response) || job.snapshotHash!==state.assessment.snapshotHash) return false;
   const stages=Object.values(job.stages||{});
-  return stages.some(stage=>stage?.status==='failed' && String(stage.failureCode)==='429')
+  // Older SWT/SST adapters converted provider errors into a provisional local
+  // grade. Full Mock rejected that grade, so the persisted stage has the
+  // generic code "provider" even when the underlying request was a 429.
+  // An instructor may retry only that exact unscored, certain writing stage.
+  const writingFallback=['swt','sst'].includes(candidate.question.type)
+    &&(job.result?.reason||job.reason)==='writing-unavailable'
+    &&stages.length===1 &&job.stages?.writing?.status==='failed'
+    &&job.stages.writing.failureCode==='provider' &&job.stages.writing.uncertain===false
+    &&!job.stages.writing.recoveryBlocked;
+  return (stages.some(stage=>stage?.status==='failed' && String(stage.failureCode)==='429')||writingFallback)
     && stages.every(stage=>stage && stage.status!=='running' && !stage.uncertain && !stage.recoveryBlocked);
 }
 // Record the exact assessment and input at publication. Later audio uploads are

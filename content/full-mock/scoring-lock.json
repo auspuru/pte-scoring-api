@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "baseCommit": "f8deceb33497fc529f9271f6885130112f5ebaf4",
   "checkedAt": "2026-11-06",
-  "scope": "Explicit admin reassessment and provider-429 recovery support settled available-mark reports; native graders and saved inputs remain pinned.",
+  "scope": "Explicit admin reassessment and bounded retry of unavailable provider and Writing assessments support settled available-mark reports; native graders and saved inputs remain pinned.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "f7792b6eae34937c97cfebbdb424d5644d01a27fd4285f2231b7fdcb7adfc9d2",
+        "sha256": "4ee9c0781a95bbf800cee19aec5d3bfb0d6583e78a201fdb20164c0400a6f5a7",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -116,7 +116,7 @@
         "version": null
       },
       "full-mock/exclusions.js": {
-        "sha256": "d4a6fde15200b0d13fb4f170badc780bbc076bda2de7b4c3adf38be7fd4cef6e",
+        "sha256": "e2ccb984ff76df986b3b661f2cbffff3732b4d1373a43f8b400872eaf489c183",
         "version": null
       },
       "full-mock/paper.js": {

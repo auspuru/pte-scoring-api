@@ -81,6 +81,42 @@ test('A provider-429 writing failure is eligible without changing a saved essay'
   assert.equal(aggregate(f.paper,state).assessedCount,65);
 });
 
+for(const source of ['credit-recovery-compatible-sources.json','writing-retry-compatible-sources.json'])
+test('Three rejected provisional SWT/SST grades can recover together from '+source,async t=>{
+  const f=await fixture(t,async()=>{}),baseline=require('../content/full-mock/'+source);
+  const targets=[33,34,51].map(number=>({number,candidate:f.paper.questions[number-1]}));
+  assert.deepEqual(targets.map(row=>row.candidate.question.type),['swt','swt','sst']);
+  const originals=new Map();
+  await f.store.update(f.owner,f.id,state=>{
+    state.assessment.run=1;
+    state.assessment.snapshot.scoringSources=structuredClone(baseline);
+    state.assessment.snapshotHash=digest(state.assessment.snapshot);
+    state.assessment.completionPolicy={version:COMPLETION_POLICY,snapshotHash:state.assessment.snapshotHash};
+    for(const job of Object.values(state.assessment.items))job.snapshotHash=state.assessment.snapshotHash;
+    for(const {number,candidate} of targets){
+      const response=state.responses[number],job=state.assessment.items[candidate.id];
+      response.answer=['A saved response with enough text to assess the source accurately and preserve the student answer.'];
+      originals.set(candidate.question.id,structuredClone(job.result));
+      job.inputHash=inputHash(response);job.status='failed';job.result={status:'failed',reason:'writing-unavailable'};
+      job.stages={writing:{status:'failed',failureCode:'provider',uncertain:false,recoveryBlocked:false,attemptedRun:1}};
+    }
+    assert(exclusions.releaseAvailable(state,f.paper,1234));return state;
+  });
+  const calls=[];
+  const engine=assessment.createEngine({store:f.store,paper:f.paper,adapters:{assess:async q=>{calls.push(q.id);return originals.get(q.id);}}});
+  const view=await exclusions.createSupport({store:f.store,validate:engine.validate}).inspect(f.owner,f.id);
+  assert.equal(view.assessedCount,62);assert.equal(view.excludedCount,3);
+  assert.deepEqual(view.questions.filter(row=>row.retryableUnavailable).map(row=>row.number),[33,34,51]);
+  const saved=(await f.store.get(f.owner,f.id)).state.responses.map(row=>row.answer);
+  await engine.retryUnavailable(f.owner,f.id,{operation:'staff:writing-fallback-retry',evidenceHash:view.evidenceHash,
+    questionIds:targets.map(row=>row.candidate.id),confirmRetry:true});
+  await engine.drain();const state=(await f.store.get(f.owner,f.id)).state;
+  assert.deepEqual(calls.sort(),targets.map(row=>row.candidate.question.id).sort());
+  assert.deepEqual(state.responses.map(row=>row.answer),saved);
+  assert.equal(aggregate(f.paper,state).assessedCount,65);
+  assert.equal(aggregate(f.paper,state).excludedCount,0);
+});
+
 test('Only the protected administrator route can start an unavailable-score retry',async t=>{
   const f=await fixture(t,async()=>{});
   await f.store.update(f.owner,f.id,state=>{
