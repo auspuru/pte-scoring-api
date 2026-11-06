@@ -59,6 +59,10 @@ function quietRecording(recording) {
   return true;
 }
 `);
+ // The revised delivery policy is carried to Azure but does not change the
+ // frozen legacy adapter once the new argument is projected away.
+ project(', deliveryPolicy, contentOnly = false', ', contentOnly = false');
+ project(', bandPolicy:deliveryPolicy','');
  project(', completionPolicy, contentOnly = false','');
  project(" && completionPolicy !== require('./aggregation').COMPLETION_POLICY",'');
  project(`      if(completionPolicy===require('./aggregation').COMPLETION_POLICY&&stages.transcription?.status!=='complete'&&quietRecording(recording)){
@@ -107,7 +111,9 @@ function quietRecording(recording) {
  assert.equal(sha(source),'ed1f13396df180c9b88381c01a7180464dab7599114c662e5cc90d3d3d287709');
  source=read('public/writing-lab-report.js').replace("(attempt.kind!=='mock' || !needsReview(r,q))",'(!weighted || !needsReview(r,q))');
  assert.equal(sha(source),baseline.files['public/writing-lab-report.js'].sha256);
- for(const name of ['full-mock/profiles.js','speaking-scoring.js','speaking-delivery.js','writing-lab-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
+ for(const name of ['full-mock/profiles.js','speaking-scoring.js','writing-lab-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
+ assert.equal(sha(read('speaking-delivery.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['speaking-delivery.js'].sha256);
+ assert.equal(baseline.files['speaking-delivery.js'].sha256,require('../content/full-mock/delivery-bands-compatible-sources.json').files['speaking-delivery.js'].sha256);
  assert.equal(sha(read('full-mock/session.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/session.js'].sha256); // Reviewed section transition flow; legacy clock regression is covered separately.
  // Explicit instructor exclusions have separate ownership/integrity and
  // denominator tests. Their exact source is pinned; native graders and the
