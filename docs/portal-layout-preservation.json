@@ -1,9 +1,9 @@
 {
   "baselineCommit": "960d1fd1dc37d5772f24c27286181a0b30d461b2",
-  "scope": "Reviewed task-specific Azure delivery bands, frozen older attempt policies and explicit saved-recording reassessment, preserving content rubrics and confirmed marks.",
+  "scope": "Reviewed Azure delivery bands across six speaking tasks and saved-raw Speaking Mock reassessment, preserving frozen older policies, content rubrics and confirmed marks.",
   "files": {
     "server.js": "5d68f9fb63e3e835bbedbad0a8ee3220b98fc9184449b10eade435734b7f6cd8",
-    "full-mock/assessment.js": "fad6f08c828acb9819f721ad8384e6babe56b3f556d06e554bfdf5d52aaf1286",
+    "full-mock/assessment.js": "763376d0dfdc6b89f2d27865b4a9412f9be8417c1e999ba38150372a1c690ad4",
     "full-mock/adapters.js": "1f985cc0859c56d177f78aeb15e1316efd84a9641e752eafbb2c73ba97cfd4dd",
     "full-mock/aggregation.js": "d1cd8b4bdcd50c6a94f3006fbef7a02c0d024a6f57b4a08a4984688d98d17497",
     "full-mock/profiles.js": "8e9659f3d82839a445ec6cb0212d3e7456bb3c4442146a56a0ba721b1994df18",
@@ -43,14 +43,14 @@
     "public/swt-feedback.js": "6ad1bbb440e4d6ea29e93c6293107e3ce9af20c79b247bb97d643558b45ad930",
     "public/swt-feedback-review.js": "61dc962856a96342cb062ed4c11a65e2cfd523e38d52e4b1822936f8cac3e751",
     "public/swt-mock-feedback.js": "a935db09aa1ad2cd37ddad0df7e26e43b1b0d62a1270740365d7f201cf78b947",
-    "content/full-mock/scoring-lock.json": "d75148b1698d22548dfc6eef7035727835ab62c30aa61bc497b31f719785b2aa",
+    "content/full-mock/scoring-lock.json": "a1d568142ebe8d360e405fa35137762211e0c09389511d456b90a0e6097c9c40",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
     "public/reading-mock-tools.js": "c5655a466dad3579cd0faac269b90eafa7c468e413ec3a5a127f80530ad4fdd4",
     "speaking-mock.js": "263dc10550d94596360aa32563883549f207c66a97515eed3cbf3479c2728d84",
     "speaking-mock-deadline-score.js": "97bb9719d82ec8c9ab592e22b4ef41a8aa1fc61239551209354293919a8c9b10",
     "speaking-mock-completion.js": "880d440996216a193d566d75065e5c096e5e620aa9cc0b078206cc5d095e940a",
-    "speaking-mock-reassessment.js": "be40ff5d2bacbd598a9ba50dae2bfabf7a745f36b83ef4c8635f205f7588e31c",
-    "speaking-delivery.js": "e0065e9fc096530358d936e3354d02d91d3d73bc11f6976ec98d1df37c379c4c",
+    "speaking-mock-reassessment.js": "956f8d903adc5fdeb50d7f0ce6dcd806e63ef220e1368403885bf93e8f1c1472",
+    "speaking-delivery.js": "b4b046add57ba7f7f0031fc4c6db9d618fdc5abee1db452e693bd1c4970c5ad7",
     "full-mock/delivery-reassessment.js": "f88c111dc01558160462e708fbf1a174d2ed33959f1c161dd46f00f412c4e34f"
   },
   "presentationUpdates": {

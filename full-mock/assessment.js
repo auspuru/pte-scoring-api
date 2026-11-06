@@ -100,6 +100,25 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Existing attempts remain on the policy they captured. Project this
+  // reviewed expansion of the bands to the immediately preceding source set
+  // for snapshot validation only; the worker still uses the saved policy.
+  const priorAllSpeaking=require('../content/full-mock/all-speaking-bands-compatible-sources.json');
+  const deliveryPolicy=require('../speaking-delivery');
+  if(digest(priorAllSpeaking)==='381d71114cab2b31e54a8d75be2957d64b71b1a6f1231e0f45d1eea0e146ebeb'
+    &&current.configuration.delivery.version===deliveryPolicy.VERSION
+    &&current.scoringSources.files['speaking-delivery.js']?.sha256==='b4b046add57ba7f7f0031fc4c6db9d618fdc5abee1db452e693bd1c4970c5ad7'
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(priorAllSpeaking.files).sort().join()
+    &&Object.entries(priorAllSpeaking.files).every(([file,pin])=>['full-mock/assessment.js','speaking-delivery.js'].includes(file)
+      ||digest(current.scoringSources.files[file])===digest(pin))){
+    const sources=structuredClone(current.scoringSources);
+    for(const file of ['full-mock/assessment.js','speaking-delivery.js'])sources.files[file]=structuredClone(priorAllSpeaking.files[file]);
+    const projectedVersion=saved.configuration.delivery.version===deliveryPolicy.VERSION
+      ?deliveryPolicy.VERSION:deliveryPolicy.FREE_RESPONSE_VERSION;
+    const prior={...current,configuration:{...current.configuration,delivery:{...current.configuration.delivery,
+      version:projectedVersion}},scoringSources:sources};
+    if(digest(saved)===digest(prior)||compatibleTransportUpgrade(saved,prior))return true;
+  }
   // The explicit reassessment controller changed after the last deployment.
   // Project only that reviewed controller and this validator to the exact
   // previous release, then apply its already-audited snapshot compatibility
@@ -124,8 +143,8 @@ function compatibleTransportUpgrade(saved, current) {
     'full-mock/delivery-reassessment.js':current.scoringSources.files['full-mock/delivery-reassessment.js']?.sha256};
   if(digest(deliveryBandsBaseline)==='d1e945dae7b97024da23f8b00d1e6e6c3e10058c74637b23266a2f81fa8e1d1f'
     &&['d25837e3c0809e390a1c0bd9d3f48e6b4dea5bf8b527c00b5a332e52524cfecf','f88c111dc01558160462e708fbf1a174d2ed33959f1c161dd46f00f412c4e34f'].includes(deliveryBandsPins['full-mock/delivery-reassessment.js'])
-    &&[require('../speaking-delivery').PREVIOUS_VERSION,require('../speaking-delivery').VERSION].includes(saved.configuration.delivery.version)
-    &&current.configuration.delivery.version===require('../speaking-delivery').VERSION
+    &&[require('../speaking-delivery').PREVIOUS_VERSION,require('../speaking-delivery').FREE_RESPONSE_VERSION,require('../speaking-delivery').VERSION].includes(saved.configuration.delivery.version)
+    &&[require('../speaking-delivery').FREE_RESPONSE_VERSION,require('../speaking-delivery').VERSION].includes(current.configuration.delivery.version)
     &&Object.entries(deliveryBandsPins).every(([file,sha])=>current.scoringSources.files[file]?.sha256===sha)
     &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(deliveryBandsBaseline.files).sort().join()
     &&Object.entries(deliveryBandsBaseline.files).every(([file,pin])=>[...Object.keys(deliveryBandsPins),'full-mock/assessment.js'].includes(file)
