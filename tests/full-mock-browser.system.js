@@ -169,7 +169,7 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
       await clickControl(page, '[data-fm="next"]');
     }
   }
-  await page.waitForSelector('.fm-report-status'); await page.waitForFunction(() => /All 65/.test(document.querySelector('.fm-report-status')?.textContent), { timeout:30000 });
+  await page.waitForSelector('.fm-report-status'); await page.waitForFunction(() => /^Report ready/.test(document.querySelector('.fm-report-status')?.textContent), { timeout:30000 });
   assert(await page.evaluate(() => !document.fullscreenElement), 'Submitted report did not release fullscreen');
   assert(!await page.$eval('.fm-report-header',node=>/preview/i.test(node.textContent)));
   assert.equal(await page.$('.fm-method,.fm-interpretation'), null);
@@ -183,7 +183,7 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
   await page.click('[data-mock-tab="analysis"]');
   await page.waitForSelector('[data-mock-panel="analysis"]:not([hidden])');
   await f.service.assessor.drain(); const result = await f.service.assessor.results('alice', attemptId), saved = await f.state();
-  assert.equal(seen.size, 22); assert.equal(result.ready, true); assert.equal(result.items.length, 65); assert.equal(result.profiles.overall.practiceIndex, null);
+  assert.equal(seen.size, 22); assert.equal(result.ready, true); assert.equal(result.items.length, 65); assert.equal(result.assessedCount,35); assert.equal(result.excludedCount,30); assert.equal(result.profiles.overall.practiceIndex,90);
   for (const [index, response] of expected) assert.deepEqual(saved.responses[index].answer, response, 'Saved answer for Q' + index);
   assert.deepEqual(f.unexpectedDialogs, []);
   assert.equal(f.calls.size, 65); assert([...f.calls.values()].every(count => count === 1)); assert.equal(f.errors.length, 0, f.errors.join('; '));

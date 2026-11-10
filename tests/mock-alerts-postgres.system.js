@@ -47,7 +47,7 @@ test('PostgreSQL unattended Writing claims are exclusive across pools and retain
  const make=store=>require('../writing-lab-recovery').createRecovery({store,now:()=>at,isConfirmed:(a,i)=>!!a.results[i]});
  const outcomes=await Promise.all([make(first).claim('alice',a.id,0),make(second).claim('alice',a.id,0)]);assert.equal(outcomes.filter(Boolean).length,1);
  const rows=await second.scanForScoring('',20,{since:500});assert(rows.some(row=>row.username==='alice'&&row.data.id===a.id));
- at+=180001;assert.equal(await make(second).claim('alice',a.id,0),undefined);
+ at+=300001;assert.equal(await make(second).claim('alice',a.id,0),undefined);
  const held=await second.get('alice',a.id);assert.equal(held.assessmentRecovery[0].status,'held');assert.deepEqual(held.answers,a.answers);assert.equal(await second.get('bob',a.id),null);
 });
 

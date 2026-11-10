@@ -184,7 +184,7 @@ test('Staff recovery inspects one owned attempt and retries only its missing con
  const id='006d4971-2ad3-4f14-8e2a-0ea3ed450bdd',path='/api/admin/speaking-mocks/'+username+'/'+id+'/scoring',repairs=[];let queued=false;
  await page.setRequestInterception(true);page.on('request',async req=>{
   const pathname=new URL(req.url()).pathname;
-  if(pathname===path)return req.respond({status:200,contentType:'application/json',body:JSON.stringify({attemptId:id,status:queued?'ready':'delayed',ready:queued,accountedFor:queued?27:26,total:27,jobs:queued?[]:[{id:'job',index:19,status:'needs_attention',stages:{content:{status:'needs_attention',code:'validation'},azure:{status:'ready'}}}]})});
+  if(pathname===path)return req.respond({status:200,contentType:'application/json',body:JSON.stringify({owner:username,attemptId:id,status:queued?'ready':'delayed',ready:queued,accountedFor:queued?27:26,total:27,jobs:queued?[]:[{id:'job',index:19,status:'needs_attention',stages:{content:{status:'needs_attention',code:'validation'},azure:{status:'ready'}}}]})});
   if(pathname===path+'/retry'){repairs.push(JSON.parse(req.postData()));queued=true;return req.respond({status:200,contentType:'application/json',body:JSON.stringify({status:'queued',jobId:'job'})});}
   await req.continue();
  });
