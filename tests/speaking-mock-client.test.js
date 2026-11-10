@@ -456,3 +456,24 @@ test('Published timed-out answers display zero traits and a visible explanation 
  assert.match(h.nodes.get('sm-results-summary').innerHTML,/10 questions count as zero/);
  await h.click({sm:'review',index:18});assert.match(h.nodes.get('sm-review-details').innerHTML,/Unattempted before time expired/);
 });
+
+test('A student continues four timed-out Speaking questions without reattempting the saved first 23',async t=>{
+ const h=await harness(t),a=require('./helpers/speaking-deadline-zero-fixture').attempt(),report=require('../speaking-mock-report');
+ a.index=24;a.completedCount=23;a.submission.unattempted=[24,25,26,27];
+ for(let index=18;index<24;index++){
+  const q=a.questions[index],maximum=report.contentMaximum(q);
+  a.responses[index]={recording:{hash:'retained-'+index,mime:'audio/webm',data:'SYNTHETIC_AUDIO'},transcript:'Retained answer',transcriptionStatus:'assessed',content:{scoringMode:'ai',total:maximum,maximum},azure:{status:'assessed',pronunciation:{score:5},fluency:{score:5}}};
+ }
+ a.grading={status:'complete'};a.assessment={status:'ready'};
+ a.assessmentProfile.completionPolicy=require('../speaking-mock-completion').policy(a.questions);
+ a.assessment.omissions=require('../speaking-mock-completion').omissions(a,2500);
+ await h.lab.store.update('alice',a.id,()=>a);
+ const before=structuredClone(a.responses.slice(0,24));
+ await h.controller.open({history:true});assert.match(h.host.innerHTML,/Continue remaining questions/);
+ const evidence=require('../speaking-mock-continuation').inspect(a).evidenceHash;
+ await h.click({sm:'continue',id:a.id,evidence});
+ const saved=await h.active();assert.equal(saved.status,'active');assert.equal(saved.index,24);
+ assert.deepEqual(saved.responses.slice(0,24),before);
+ assert.match(h.host.innerHTML,/Item 25 of 28/);
+ assert.equal(h.requests.filter(request=>request.url.includes('/continue')&&request.method==='POST').length,1);
+});

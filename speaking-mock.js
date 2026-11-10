@@ -30,11 +30,12 @@ function present(a,now=Date.now(),{completeOnly=false,progress}={}){
   if(completeOnly){const ready=a.status==='submitted'&&require('./speaking-mock-jobs').complete(a);if(!ready)return{serverNow:now,id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,integrity:a.integrity,grading:{status:'processing'},resultsReady:false,resultStatus:progress||{status:'preparing',ready:false,total:a.questionCount},speakingReport:null,overall:null,overallAzure:null,combinedOverall:null,overallFeedback:null,combinedComparisons:null,...(a.status==='active'&&a.index<a.questions.length?{question:bank.publicQuestion(a.questions[a.index],false),timing:timing(a,now)}:{})};}
 
   const submitted=a.status==='submitted';
+  const continuationPlan=submitted?require('./speaking-mock-continuation').inspect(a):null;
   const hasExclusions=a.questions.some((q,i)=>speakingReport.exclusionFor(a,q,i));
   const savedContent=!hasExclusions&&a.combinedOverall?.status==='assessed'&&a.combinedOverall.sourceFingerprint===combined.fingerprint(a)?a.combinedOverall.content:null;
   const currentReport=submitted?speakingReport.summarize(a):null;
   return {serverNow:now,id:a.id,paperId:a.paperId,title:a.title,status:a.status,startedAt:a.startedAt,deadline:a.deadline,index:a.index,
-    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,...(completeOnly?{resultsReady:true,resultStatus:{status:'ready',ready:true}}:{}),grading:a.grading,overall:null,overallAzure:a.overallAzure||null,combinedOverall:null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,
+    reattemptOf:a.reattemptOf||null,questionCount:a.questionCount,totalItems:a.questions.length,completedCount:a.completedCount||0,...(continuationPlan?.eligible?{continuationPlan}:{}),...(completeOnly?{resultsReady:true,resultStatus:{status:'ready',ready:true}}:{}),grading:a.grading,overall:null,overallAzure:a.overallAzure||null,combinedOverall:null,combinedRecovery:a.combinedRecovery?{status:a.combinedRecovery.status}:null,
     speakingReport:currentReport,scoreChanges:submitted?require('./speaking-mock-completion').changes(a):[],
     impactFeedback:submitted?require('./mock-feedback').speaking(a,currentReport.azure):null,
     overallFeedback:submitted&&savedContent?{summary:savedContent.summary,strengths:savedContent.strengths||[],nextSteps:savedContent.nextSteps||[]}:null,
@@ -189,7 +190,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     catch{res.status(503).json({error:'Your account could not be checked. Please retry.'});}
   });
   const limiter=require('express-rate-limit')({windowMs:600000,max:240,keyGenerator:req=>req.mockUser,standardHeaders:true,legacyHeaders:false,message:{error:'Please wait before starting another speaking-mock action.'}});
-  router.get('/attempts',wrap(async(req,res)=>res.json((await store.list(req.mockUser,{omitMockAudio:true})).map(a=>{const value=view(a);return{id:a.id,paperId:a.paperId,title:a.title,status:value.status,index:a.index,startedAt:a.startedAt,grading:value.grading,resultsReady:value.resultsReady,resultStatus:value.resultStatus,speakingReport:value.speakingReport,overall:value.overall,overallAzure:value.overallAzure,combinedOverall:value.combinedOverall,completedCount:a.completedCount||0,questionCount:a.questionCount};}))));
+  router.get('/attempts',wrap(async(req,res)=>res.json((await store.list(req.mockUser,{omitMockAudio:true})).map(a=>{const value=view(a);return{id:a.id,paperId:a.paperId,title:a.title,status:value.status,index:a.index,startedAt:a.startedAt,grading:value.grading,resultsReady:value.resultsReady,resultStatus:value.resultStatus,speakingReport:value.speakingReport,overall:value.overall,overallAzure:value.overallAzure,combinedOverall:value.combinedOverall,completedCount:a.completedCount||0,questionCount:a.questionCount,continuationPlan:value.continuationPlan};}))));
   router.post('/attempts',limiter,wrap(async(req,res)=>{
     const paper=bank.papers.find(p=>p.id===req.body?.paperId);if(!paper)throw fail('Speaking mock not found.',404);
     const a=await store.update(req.mockUser,req.body.id,old=>{
@@ -208,6 +209,12 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       return {...profile(req.mockUser,questions),id:req.body.id,paperId:original.paperId,title:original.title,version:bank.VERSION,questionCount:original.questionCount,
         questions,reattemptOf:original.id,responses:[],index:0,status:'active',startedAt,
         deadline:startedAt+bank.OVERALL_MINUTES*60000,integrity:{protected:true,events:[]}};
+    });res.json(view(a));
+  }));
+  router.post('/attempts/:id/continue',limiter,wrap(async(req,res)=>{
+    const a=await store.update(req.mockUser,req.params.id,a=>{
+      if(!a)throw fail('Mock attempt not found.',404);
+      return require('./speaking-mock-continuation').apply(a,req.body||{},now());
     });res.json(view(a));
   }));
   router.get('/attempts/:id/status',wrap(async(req,res)=>{const a=await readResults(req.mockUser,req.params.id);res.json(require('./mock-result-review').held(a)?{status:'awaiting-instructor',ready:false,total:a.questionCount}:submission.blocked(a)?submission.progress(a):useProgressive(a)?await progressive.status(req.mockUser,a):{ready:a.grading?.status==='complete',status:a.grading?.status==='complete'?'ready':'preparing'});}));
