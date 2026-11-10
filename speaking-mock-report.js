@@ -66,11 +66,11 @@ function questionResult(a,q,response,index,provider){
   const exclusion=exclusionFor(a,q,index);
   if(exclusion)return {...base,status:'excluded',excluded:true,exclusion:{reason:exclusion.reason,note:exclusion.note},missing:[]};
   if(cmax===null)return {...base,status:'pending',missing:['question-rubric']};
+  if(require('./speaking-mock-deadline-score').credited(a,index))return {...base,status:'unanswered',deadlineUnattempted:true,unansweredNote:require('./speaking-mock-deadline-score').NOTE,content:0,pronunciation:0,fluency:0,total:0,missing:[]};
   const available=provider==='azure'&&(completion.active(a)||completion.replacement(a,index));
   const outcome=available&&completion.validOutcome(q,response)?response.assessmentOutcome:null;
   const skipped=available&&a.status==='submitted'&&(!response?.recording||completion.frozenMissing(a,index)&&!completion.replacement(a,index))?'recording-missing':outcome&&outcome.reason!=='available'?outcome.reason:null;
   if(skipped)return {...base,status:'excluded',excluded:true,exclusion:{reason:skipped,note:completion.notes[skipped]},missing:[]};
-  if(require('./speaking-mock-deadline-score').credited(a,index))return {...base,status:'unanswered',deadlineUnattempted:true,unansweredNote:require('./speaking-mock-deadline-score').NOTE,content:0,pronunciation:0,fluency:0,total:0,missing:[]};
   // An explicit skip, or an unvisited item when the timer submitted the test,
   // is zero. An unexplained hole in an already visited response stays pending.
   if(!response?.recording&&[...(a.submission?.pending||[]),...(a.submission?.missing||[]),...(a.submission?.unattempted||[])].includes(index))return {...base,status:'pending',missing:['recording']};
