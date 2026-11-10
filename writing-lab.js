@@ -92,7 +92,7 @@ function reconcile(a, now = Date.now()) {
   return a;
 }
 function present(a) {
-  const {assessmentRecovery,...visible}=a;
+  const {assessmentRecovery,sstReassessment,sstReassessmentHistory,...visible}=a;
   const result = { ...visible, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results, a) : null };
   result.overallFeedback = overall.view(a);
   result.impactFeedback = require('./mock-feedback').lab(a, result.report || undefined);
@@ -115,6 +115,10 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   const retryableResult = (result,question,attempt) => (attempt?.kind==='mock' && !!result && (result.score_provisional===true || result.needs_semantic_review===true)) || retryableSwt(result,question)
     || (report.isWritingMock(attempt) && report.needsReview(result,question));
   const recovery = require('./writing-lab-recovery').createRecovery({store,now,isConfirmed:(a,i)=>!!a.results[i]&&!retryableResult(a.results[i],a.questions[i],a)});
+  const sstReassessment = require('./writing-lab-sst-reassessment').createRunner({store,now,
+    model:process.env.CLAUDE_MODEL||'claude-haiku-4-5-20251001',
+    score:(question,answer)=>scoring.grade(question,answer,callModel),
+    onComplete:(uid,attempt)=>reviewer.ensure(uid,attempt)});
   // A submitted answer is immutable. Assess outside the answer-save transaction,
   // and share the same job with the results page to avoid duplicate model calls.
   const queue = [], failedAt = new Map();
@@ -168,7 +172,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
             } else if (question.type === 'swt' && graders.swtGrader) {
               result = await scoring.gradeUnifiedSwt(question,current.answers[index],graders.swtGrader);
             } else {
-              result = await scoring.grade(question, current.answers[index], graders.callModel);
+              result = await scoring.grade(question, current.answers[index], question.type==='sst' ? callModel : graders.callModel);
             }
           }
           const updated = receipt ? await recovery.save(uid,a.id,index,receipt,result) : await store.update(uid, a.id, value => {
@@ -196,6 +200,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     return task;
   }
   function assessSubmitted(uid, a) {
+    if(a.sstReassessment?.status==='queued')sstReassessment.run(uid,a.id).catch(()=>console.warn('[writing-sst-reassessment] Saved review needs attention.'));
     if(a.questions.every((q,i)=>a.results[i]&&!retryableResult(a.results[i],q,a)))reviewer.ensure(uid,a).catch(()=>console.warn('[writing-mock-overall] Saved feedback will recover automatically.'));
     a.questions.forEach((q, index) => {
       const key = uid + ':' + a.id + ':' + index;

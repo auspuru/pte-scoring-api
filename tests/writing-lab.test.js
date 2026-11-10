@@ -90,6 +90,29 @@ test('Writing Mock essays use the shared essay grader',async t=>{
   assert.equal(result.assessmentType,'Unified essay practice assessment');
 });
 
+test('Sectional mock SST uses the same Claude reviewer as individual practice',async t=>{
+  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'mock-sst-claude-'));
+  const app=express();app.use(express.json());
+  let claudeCalls=0,gptCalls=0;
+  const raw={scores:{content:2,form:2,grammar:2,vocabulary:2,spelling:2},formInvalid:false,formReason:'',
+    feedback:Object.fromEntries(Object.keys(policy.MAXIMA.sst).map(key=>[key,'Supported review.'])),
+    strengths:['Relevant summary'],improvements:['Include the main relationship.'],errors:[]};
+  const {store}=installWritingLab(app,{directory:dir,verifyToken:value=>value==='tester'?'tester':null,
+    getAccount:async()=>({}),callModel:async()=>{claudeCalls++;return raw;},
+    mockGraders:{callModel:async()=>{gptCalls++;return raw;}}});
+  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+  t.after(async()=>{await new Promise(resolve=>server.close(resolve));await fs.rm(dir,{recursive:true,force:true});});
+  const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab';
+  const headers={'Content-Type':'application/json','x-session-token':'tester'},id=randomUUID();
+  assert.equal((await fetch(base+'/attempts',{method:'POST',headers,body:JSON.stringify({id,testId:'writing-mock-1'})})).status,200);
+  await store.update('tester',id,a=>{a.status='submitted';a.completed=a.questions.map(()=>({at:Date.now()}));
+    a.answers[3]=Array(59).fill('word').join(' ')+'.';
+    a.results=a.questions.map((question,index)=>index===3?null:{total:0,maximum:report.maximumFor(question)});return a;});
+  const response=await fetch(base+'/attempts/'+id+'/score/3',{method:'POST',headers,body:'{}'});
+  assert.equal(response.status,200);assert.equal((await response.json()).total,10);
+  assert.equal(claudeCalls,1);assert.equal(gptCalls,0);
+});
+
 test('Original content has correct task counts, lengths and usable reference answers',()=>{
   assert.equal(bank.spoken.length,15);assert.equal(bank.mocks.length,2);
   for(const q of bank.spoken) {assert(policy.wordCount(q.text)>=175);assert.equal(policy.formFor('sst',q.sample).score,2);}

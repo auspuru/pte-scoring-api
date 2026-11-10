@@ -30,6 +30,9 @@ function configuration(env = process.env) {
     sst:{...content}
   };
 }
+function claudeConfiguration(env = process.env) {
+  return { ...configuration(env), sst:{provider:'anthropic',model:env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001'} };
+}
 function snapshot(config = configuration(), root = require('node:path').resolve(__dirname, '..'), paper = loadPaper()) {
   const allowed = configuration({});
   if (!config || Object.keys(config).sort().join() !== Object.keys(allowed).sort().join()) throw Error('Concrete provider configuration is required.');
@@ -100,6 +103,19 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Keep pre-switch GPT SST attempts on their frozen provider and exact source
+  // snapshot; only new attempts use Claude for SST.
+  const priorSst=require('../content/full-mock/sst-claude-previous-sources.json');
+  if(digest(priorSst)==='9d5cf711521135f63e40339094d9dfb34f1744d6db3ef493f26710fb88c6de35'
+    &&(current.configuration.sst.provider==='openai' && current.configuration.sst.model==='gpt-6.1-sol'
+      ||current.configuration.speakingContent.provider==='anthropic')
+    &&current.scoringSources.files['server.js']?.sha256!==priorSst.files['server.js']?.sha256
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(priorSst.files).sort().join()
+    &&Object.entries(priorSst.files).every(([file,pin])=>['full-mock/assessment.js','server.js','writing-lab.js'].includes(file)
+      ||digest(current.scoringSources.files[file])===digest(pin))){
+    const projected={...current,scoringSources:structuredClone(priorSst)};
+    if(digest(saved)===digest(projected)||compatibleTransportUpgrade(saved,projected))return true;
+  }
   // Existing attempts remain on the policy they captured. Project this
   // reviewed expansion of the bands to the immediately preceding source set
   // for snapshot validation only; the worker still uses the saved policy.
@@ -591,7 +607,8 @@ function scheduleRecovery(assessment, at) {
   if (recovery.retries >= RECOVERY_DELAYS.length) { recovery.status = 'exhausted'; return; }
   recovery.status = 'scheduled'; recovery.nextAt = at + RECOVERY_DELAYS[recovery.retries];
 }
-function createEngine({ store, adapters = createAdapters(), providerConfiguration = configuration(), legacyAdapters, legacyProviderConfiguration,
+function createEngine({ store, adapters = createAdapters(), providerConfiguration = configuration(), previousAdapters, previousProviderConfiguration,
+  legacyAdapters, legacyProviderConfiguration,
   now = Date.now, assemble = media.assemble, concurrency = 2, paper = loadPaper() } = {}) {
   const currentSnapshot = snapshot(providerConfiguration, undefined, paper), jobs = new Map(); let sweep, closing = false, recovering = false; const recoveryErrors = new Set();
   // New attempts use the active paper. In-flight attempts continue against the
@@ -600,12 +617,14 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
   const trustedSnapshots = new Map([...trustedPapers].map(([paperHash, value]) => {
     const current = paperHash === currentSnapshot.paperHash ? currentSnapshot : snapshot(providerConfiguration, undefined, value);
     return [paperHash, { current, hash: digest(current),
+      previous: previousAdapters && previousProviderConfiguration ? snapshot(previousProviderConfiguration, undefined, value) : null,
       legacy: legacyAdapters && legacyProviderConfiguration ? snapshot(legacyProviderConfiguration, undefined, value) : null }];
   }));
   function validate(state) {
     const saved = state.assessment, trusted = trustedSnapshots.get(state.paperHash);
     if (trusted && saved && digest(saved.snapshot) === saved.snapshotHash && saved.version === VERSION && saved.snapshot.paperHash === state.paperHash) {
       if (saved.snapshotHash === trusted.hash || compatibleTransportUpgrade(saved.snapshot,trusted.current)) return adapters;
+      if (trusted.previous && compatibleTransportUpgrade(saved.snapshot,trusted.previous)) return previousAdapters;
       if (trusted.legacy && compatibleTransportUpgrade(saved.snapshot,trusted.legacy)) return legacyAdapters;
     }
     throw fail('This attempt uses a different assessment version. Its saved answers and results are retained.', 409);
@@ -804,4 +823,4 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
   }
   return { snapshot: currentSnapshot, snapshotFor, prepareContent, review:(uid,id,body)=>require('../mock-result-review').fullAction({store,uid,id,body,at:now(),validate,queue}),request,retryUnavailable, wakeMedia, results, recover, start, stop, drain, jobs, validate };
 }
-module.exports = { VERSION, configuration, legacyConfiguration, snapshot, stateFor, createEngine };
+module.exports = { VERSION, configuration, claudeConfiguration, legacyConfiguration, snapshot, stateFor, createEngine };
