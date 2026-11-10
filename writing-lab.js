@@ -154,7 +154,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
             const question = current.questions[index];
             const graders = current.kind === 'mock' && mockGraders ? mockGraders : {callModel,essayGrader,swtGrader};
             if (question.type === 'essay' && graders.essayGrader) {
-              const unified = await graders.essayGrader.grade(question.text, current.answers[index], '9', {feedbackV3:require('./essay-feedback-rollout').enabledFor(uid),includeSample:false});
+              const unified = await graders.essayGrader.grade(question.text, current.answers[index], '9', {feedbackV3:require('./essay-feedback-rollout').enabledFor(uid),includeSample:false,...(current.kind==='mock'?{totalTimeoutMs:240000}:{})});
               result = {
                 ...require('./public/essay-feedback').scope(unified,{attemptId:a.id+'_'+index}),
                 version: unified.scoring_version || essayPolicy.VERSION,

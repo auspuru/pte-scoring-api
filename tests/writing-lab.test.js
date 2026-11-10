@@ -48,10 +48,12 @@ test('Writing Mock essays use the shared essay grader',async t=>{
   const app=express();app.use(express.json());
   let sharedCalls=0;
   const essayGrader={
-    grade:async(questionText,answer)=>{
+    grade:async(questionText,answer,band,options)=>{
       sharedCalls++;
       assert.equal(questionText,bank.mocks[0].questions[2].text);
       assert.match(answer,/minimum age/i);
+      assert.equal(band,'9');
+      assert.equal(options.totalTimeoutMs,240000);
       return {
         scoring_version:'test-shared-essay',
         scores:{content:5,form:2,grammar:2,vocabulary:2,spelling:2,linguistic:4,coherence:4,total:21},

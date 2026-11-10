@@ -8,6 +8,8 @@ test('Durable assessment leases prevent duplicates across workers and hold uncer
  const one=createRecovery({store,now:()=>at,isConfirmed:(a,i)=>!!a.results[i]}),two=createRecovery({store,now:()=>at,isConfirmed:(a,i)=>!!a.results[i]});
  const [first,second]=await Promise.all([one.claim('alice',a.id,0),two.claim('alice',a.id,0)]);assert.equal([first,second].filter(Boolean).length,1);
  at+=180001;assert.equal(await two.claim('alice',a.id,0),undefined);
+ assert.equal((await store.get('alice',a.id)).assessmentRecovery[0].status,'calling');
+ at+=120000;assert.equal(await two.claim('alice',a.id,0),undefined);
  const held=await store.get('alice',a.id);assert.equal(held.assessmentRecovery[0].status,'held');assert.equal(held.assessmentRecovery[0].uncertain,true);
  assert.deepEqual(held.answers,a.answers);assert.deepEqual(held.results,[null]);
 });
