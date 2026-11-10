@@ -66,7 +66,7 @@ test('An old Speaking attempt retains its pending-delivery behavior',async t=>{
  assert.equal(report.summarize(a).azure.status,'pending');assert.notEqual(a.assessment.status,'ready');
 });
 test('A new completely missing Speaking attempt finishes with an unavailable score, not zero',async t=>{
- const f=await fixture(t);await f.store.update(f.owner,f.id,a=>{a.responses=a.questions.map(()=>({skipped:true}));a.assessment.status='processing';a.grading.status='pending';return a;});await f.service.progressive.ensure(f.owner,await f.store.get(f.owner,f.id));await f.service.waitForJobs();
+ const f=await fixture(t);await f.store.update(f.owner,f.id,a=>{a.responses=a.questions.map(()=>({}));a.assessment.status='processing';a.grading.status='pending';return a;});await f.service.progressive.ensure(f.owner,await f.store.get(f.owner,f.id));await f.service.waitForJobs();
  const a=await f.store.get(f.owner,f.id),r=report.summarize(a).azure;assert.equal(a.assessment.status,'ready');assert.equal(r.status,'assessed');assert.equal(r.overallScore,null);assert.equal(r.excludedCount,27);assert.equal(r.unavailable,true);
 });
 test('All 27 Speaking recordings can be resent and published with student-visible changes',async t=>{

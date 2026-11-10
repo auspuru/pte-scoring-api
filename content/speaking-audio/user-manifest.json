@@ -723,5 +723,197 @@
     ],
     "generator": "gpt-4o-mini-tts",
     "source": "user-supplied-screenshot"
+  },
+  "mock-rs-easy-20261111-01": {
+    "textSha256": "3fafcdb2b98232ef8b1d1fc56cb463f2f8d179d965877298ad72ccafcb56c86d",
+    "audioSha256": "423f8eebaca8d4c5ec9b9f66e166d6c977da10bd5da915596c892e8e65e4dc55",
+    "bytes": 87552,
+    "seconds": 5.472,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-02": {
+    "textSha256": "8cde7231cf3e5d845fa16a84c3f413c5c437e9379342d69db3815fd55b35bc77",
+    "audioSha256": "162e6cb83e006a14837d6648916e7d197bd6e9b66bd5db404505dbfe2531e003",
+    "bytes": 57216,
+    "seconds": 3.576,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-03": {
+    "textSha256": "337a97f91a97003eb748b4e4fdbb844fe3a4e39cc974a560fa8528c8e56a9359",
+    "audioSha256": "0d67fafc4aed0e186dc75f186019ecb92856d9ee965b6f399886aa3454b0640a",
+    "bytes": 99456,
+    "seconds": 6.216,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-04": {
+    "textSha256": "83c01e659b418b798ac7365070333ba140607b05682a3b8decd19f4f6a8b12fa",
+    "audioSha256": "4fb9cdb0271e5e55d29a1ebf3f42649255a95cb1956dca398e06bd4e1ec04080",
+    "bytes": 86400,
+    "seconds": 5.4,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-05": {
+    "textSha256": "34a41d99c8a57ca980750741852715cc9da9af146802e4522e92061271088744",
+    "audioSha256": "affe625e15fde048bf24367edc195d264ebab461c69d15fe76018962f13c002c",
+    "bytes": 76800,
+    "seconds": 4.8,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-06": {
+    "textSha256": "a58e310ea239aeaf4075ff30b40ecac7808bae8ad6e52aea481c6790f6425621",
+    "audioSha256": "f31380dda2eab1669aafd10b771acf845c2ebef22046b997fdf066d2ddd109c5",
+    "bytes": 105216,
+    "seconds": 6.576,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-07": {
+    "textSha256": "5f1eff18ad1b36c3b0fc73ada6782a2fb006ddb81fb51237eb65f349ee566d19",
+    "audioSha256": "7a2a1fd1a3c574e4619d526bab48af2f6265b864920d437de9dfea2e5c550e7f",
+    "bytes": 81792,
+    "seconds": 5.112,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-08": {
+    "textSha256": "6c6b90af8607ae24eea60c7815f00d19459ee7fd3e1da745aa1c54e9311d5621",
+    "audioSha256": "67739728dfe09c4b48c35e15c381e2d66863ea74fb1a6eae6c7a35ffb011ea8c",
+    "bytes": 84480,
+    "seconds": 5.28,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-09": {
+    "textSha256": "ee41a66243f086813a8728a6d6c044dcf635470f8889b73804d61c87c691b86f",
+    "audioSha256": "7d9e5b123ad15554ffe55eae9b257d9bf24cd59d7dd2d9118cbf94418f2a079f",
+    "bytes": 92928,
+    "seconds": 5.808,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-10": {
+    "textSha256": "fd101298b1f72f94178c6966b8c3d2b4256594b998c7227b01da3f17c97104d0",
+    "audioSha256": "be7d9a7e0039c71df0e96deab93a49aec864b5dbc482c493471ca2bef8b90a91",
+    "bytes": 85632,
+    "seconds": 5.352,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-11": {
+    "textSha256": "986a06b260db2cb1299775cc58f65d398084bf7df2a36ecacc02fa81481a7c51",
+    "audioSha256": "bc860d77f9958f67d297f6f2a92b4cb51a390d460877728effe28d985dde68e1",
+    "bytes": 88320,
+    "seconds": 5.52,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-12": {
+    "textSha256": "14a5661d5a5dd4071d2d94495c554fc71a81b88047ff64ff0780c98fb5ff6395",
+    "audioSha256": "eabcad8ad08662cf163091ce44c59fd7d3e8719ec62b1b371d28187baba54dd8",
+    "bytes": 91008,
+    "seconds": 5.688,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-13": {
+    "textSha256": "d4630ce84c3bce9d5390db9b3b8ad313dfb5825dccc27c86ddd889f3fdfed855",
+    "audioSha256": "66d6098232726c8485526db8307346004e766ba29db336adbc3b313a82a66917",
+    "bytes": 84480,
+    "seconds": 5.28,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-14": {
+    "textSha256": "d2621f2ed4d1f564c9833153562249c84885b32adc3a15966540d6715722a554",
+    "audioSha256": "8a8f93d51a56b9fe404a299f50c710d2b3c5a5437f89978913ac970c52a1231b",
+    "bytes": 76800,
+    "seconds": 4.8,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-15": {
+    "textSha256": "ed9fa77215237782f7cfb5342e6ce74fa6ec9ccc1cb2795ec839482eca683848",
+    "audioSha256": "eab718c65ad1b64472f1d2e3bc66909c3b24031cdea95328bc639f99d30f49f0",
+    "bytes": 85632,
+    "seconds": 5.352,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-easy-20261111-16": {
+    "textSha256": "cea84aa78cbfe90a1c3ad97a738fd8d8866844d34eafb05084bf6200c2887373",
+    "audioSha256": "9147c2ecb615bfeb0b0835de7870d6b2f7570b290498adeb3adb10aa3834183d",
+    "bytes": 76032,
+    "seconds": 4.752,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "speed": 0.85,
+    "source": "instructor-requested-short-adaptation"
   }
 }

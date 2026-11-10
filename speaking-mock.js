@@ -52,10 +52,10 @@ function present(a,now=Date.now(),{completeOnly=false,progress}={}){
       if(result.unavailableTraits?.length)for(const trait of result.unavailableTraits)delivery[trait]={status:'unavailable',score:null,reason:'Not assessed; omitted from the score calculation.'};
       return {index:i,question:bank.publicQuestion(q,true),recording:!!r.recording,transcript:r.transcript||'',skipped:!r.recording,
         ...(exclusion?{exclusion:{reason:exclusion.reason,note:exclusion.note}}:{}),
-        ...(result.deadlineUnattempted?{unanswered:{reason:'deadline-unattempted',note:result.unansweredNote}}:{}),
+        ...(result.status==='unanswered'?{unanswered:{reason:result.deadlineUnattempted?'deadline-unattempted':'skipped',note:result.unansweredNote||'This question was skipped. It counts as zero in the mock score.'}}:{}),
         ...(result.status==='insufficient-speech'?{deliveryOutcome:{status:result.status,note:result.deliveryNote}}:{}),
         ...(result.unavailableTraits?.length?{unavailableTraits:result.unavailableTraits}:{}),
-        content:result.deadlineUnattempted?{total:0,maximum:result.contentMaximum,overview:result.unansweredNote,strengths:[],improvements:['Practise pacing to reach every question before the overall timer expires.']}:exclusion?null:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{azure:result.deadlineUnattempted?{pronunciation:{score:0,reason:result.unansweredNote},fluency:{score:0,reason:result.unansweredNote}}:exclusion?null:Object.keys(delivery).length?delivery:null}};
+        content:result.status==='unanswered'?{total:0,maximum:result.contentMaximum,overview:result.unansweredNote||'This question was skipped. It counts as zero in the mock score.',strengths:[],improvements:[result.deadlineUnattempted?'Practise pacing to reach every question before the overall timer expires.':'Attempt every question to earn credit.']}:exclusion?null:scoring.resultForClient(r.content,r.transcript||'')||null,providers:{azure:result.status==='unanswered'?{pronunciation:{score:0,reason:result.unansweredNote||'Skipped response.'},fluency:{score:0,reason:result.unansweredNote||'Skipped response.'}}:exclusion?null:Object.keys(delivery).length?delivery:null}};
     })}:{})};
 }
 function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callModel,transcribe=transcribeRecording,
@@ -297,7 +297,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   router.use((error,req,res,next)=>error.type==='entity.too.large'?res.status(413).json({error:'The response recording is too large. Use a recording under 3 MB.'}):next(error));
   app.use('/api/speaking-mocks',router);
   app.get('/speaking-mock-audio/:id.mp3',wrap(async(req,res)=>{
-    const q=bank.papers.flatMap(p=>p.questions).find(q=>q.id===req.params.id&&q.audioSource);if(!q)throw fail('Prompt recording not found.',404);
+    const q=bank.audioQuestions.find(q=>q.id===req.params.id&&q.audioSource);if(!q)throw fail('Prompt recording not found.',404);
     if(q.type==='rts'&&(q.promptAudioKey||req.query.prompt!==undefined)){
       const audio=require('./rts-prompts').requestedAudio(q.id,req.query.prompt);if(!audio)throw fail('Prompt recording not found.',404);
       res.type('audio/mpeg').set('Cache-Control',audio.versioned?'public,max-age=31536000,immutable':'public,max-age=3600').sendFile(audio.file);return;

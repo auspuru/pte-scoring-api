@@ -15,7 +15,7 @@
     "full-mock/recording.js": "480756dcae089f44f6153f6a45ff849a713d8e68b2076df0a4d34a41d9060f63",
     "speaking-scoring.js": "0c673372149fe2732f7aa6b950862ea01ce4c6473e5df4a55daf49d2740ca3a2",
     "speaking-judge-format.js": "09d30d083c0171ad3aa3a571ea15bc9b16176253733fe1ca8c895e0685fd252c",
-    "speaking-mock-report.js": "194d8b55932215b5ead05baf81ead8875fd74276b3e6668579f87e250e5298ff",
+    "speaking-mock-report.js": "b28067f30a9b9b45a7f754fb76f49bd8132b24c878119d42f292398d458a900e",
     "speaking-mock-jobs.js": "57492599c63a35375281799407fe5a3741d563d9f5799309b091c07801600fc1",
     "speaking-mock-submission.js": "792ea3384560aa28a92f47c458572d5fbc237806b50bf787e0cea29b2faa7a82",
     "speaking-lab.js": "4c94f66a4693c05c655d33f5bdbc5d99de9414f6667d0f820ef1e9460c3bcc7c",
@@ -35,7 +35,7 @@
     "public/writing-lab-report.js": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
     "public/writing-lab-client.js": "a074e3ba99a51130b5321fece13e521ddfa147ca6c7c234a85fc47e93fa8ef5d",
     "public/speaking-practice.js": "20bdac5c77a57c9d00d3d6604383d133c4d4b8696b1f2ab15e267ee4eafb2916",
-    "public/speaking-mock-client.js": "87e41599456f053fc9b2b66cdb7d5a0c03a209b1269aaa28f3f083901e5a8de4",
+    "public/speaking-mock-client.js": "98c0f1585f889954706170dd280fd1ac4aaf71089ca84c63b90906a9ee08431f",
     "public/reading-practice.js": "6ccd25fa306b632394b5ffa48ee714e80081e09a4c8aabb7e000032592c00498",
     "public/reading-review.js": "98e9c23a186fcc72034d552e0664f1d8ccb420600e21fa27fa6bbf987a1a2872",
     "public/essay-scoring.js": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
@@ -46,7 +46,7 @@
     "content/full-mock/scoring-lock.json": "72ec7b9bf4344e04384bded878365a4ab108c004a7da11531ce902e648710bb8",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
     "public/reading-mock-tools.js": "6766b45368eb780a587dcac94cb2520fdd28520ce7a7b76dade61a93ad5dfee1",
-    "speaking-mock.js": "55193fcadaa653d6c1328d1afb5ff50b930b391555534bfdfbdce9d1f2312890",
+    "speaking-mock.js": "03ca702fd04d728c94ccee6ce5f473933fb9015a9248e12060622e4f28fe4600",
     "speaking-mock-deadline-score.js": "97bb9719d82ec8c9ab592e22b4ef41a8aa1fc61239551209354293919a8c9b10",
     "speaking-mock-completion.js": "880d440996216a193d566d75065e5c096e5e620aa9cc0b078206cc5d095e940a",
     "speaking-mock-reassessment.js": "956f8d903adc5fdeb50d7f0ce6dcd806e63ef220e1368403885bf93e8f1c1472",
@@ -185,5 +185,19 @@
     "scope": "Add fixed supplied RTS narration to the existing mock audio endpoint. Existing keyed RTS requests keep the versioned resolver; new mock-only unkeyed situations use the verified audioSource file. No grading, provider, timing, recording upload, ownership, result or saved-attempt functions change.",
     "controllerBefore": "4b3abacdf4550aa25b89f2e6797274dc9ddd5c1bd25db40fb871a5f980edeb4f",
     "controllerAfter": "55193fcadaa653d6c1328d1afb5ff50b930b391555534bfdfbdce9d1f2312890"
+  },
+  "explicitSkipCorrection": {
+    "baselineCommit": "cdc357724f93c6a7ea6e7fbc277c11fe20249d32",
+    "scope": "Instructor-authorized correction: deliberate skips receive zero credit and remain in task totals; report projection preserves saved answers, marks, delivery failures and exclusions. New paper content revision retains historical audio routes.",
+    "before": {
+      "speaking-mock-report.js": "194d8b55932215b5ead05baf81ead8875fd74276b3e6668579f87e250e5298ff",
+      "speaking-mock.js": "55193fcadaa653d6c1328d1afb5ff50b930b391555534bfdfbdce9d1f2312890",
+      "public/speaking-mock-client.js": "87e41599456f053fc9b2b66cdb7d5a0c03a209b1269aaa28f3f083901e5a8de4"
+    },
+    "after": {
+      "speaking-mock-report.js": "b28067f30a9b9b45a7f754fb76f49bd8132b24c878119d42f292398d458a900e",
+      "speaking-mock.js": "03ca702fd04d728c94ccee6ce5f473933fb9015a9248e12060622e4f28fe4600",
+      "public/speaking-mock-client.js": "98c0f1585f889954706170dd280fd1ac4aaf71089ca84c63b90906a9ee08431f"
+    }
   }
 }

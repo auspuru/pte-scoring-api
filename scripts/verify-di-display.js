@@ -3,7 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 function verify(){
   const {manifest,forQuestion}=require('../di-image-display'),bank=require('../content/speaking-bank'),mocks=require('../content/speaking-mocks');
   const supplied=require('../content/di-user-predictions.json'),root=path.join(__dirname,'../public'),hash=b=>crypto.createHash('sha256').update(b).digest('hex');
-  assert.equal(Object.keys(manifest.entries).length,supplied.length+require('../content/speaking-mocks-web-images.json').length,'Clear-image coverage differs from supplied images.');
+  assert.equal(Object.keys(manifest.entries).length,supplied.length+require('../content/speaking-mocks-web-images.json').length+require('../content/speaking-mock-4-user-images-20261111.json').length,'Clear-image coverage differs from supplied images.');
   for(const original of supplied){
     const q=bank.questions.find(q=>q.id===original.id),e=manifest.entries[q.id];
     assert.equal(q.imageUrl,e.originalImageUrl);assert.equal(hash(fs.readFileSync(path.join(root,q.imageUrl))),e.originalSha256,'Original image changed: '+q.id);

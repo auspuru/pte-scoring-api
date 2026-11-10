@@ -1,0 +1,122 @@
+[
+  {
+    "id": "mock-di-reference-20261111-browser-june",
+    "type": "di",
+    "title": "Browser usage on Wikimedia, June 2011",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/speaking-mock-4-20261111/browser-june.png",
+    "visual": {
+      "kind": "pie",
+      "title": "Browser usage on Wikimedia, June 2011"
+    },
+    "facts": [
+      "The pie chart shows browser usage on Wikimedia in June 2011.",
+      "Internet Explorer has the largest share at 38.2 percent, followed by Firefox at 25.4 percent.",
+      "Chrome accounts for 16.5 percent and Safari for 9.9 percent.",
+      "Opera has 4.4 percent, Other 4.2 percent and Android the smallest share at 1.4 percent."
+    ],
+    "optionalFactIndices": [],
+    "sample": "The given image provides the detailed information about browser usage on wikimedia, june 2011. Internet Explorer has the largest share at 38.2 percent, followed by Firefox at 25.4 percent. Chrome accounts for 16.5 percent and Safari for 9.9 percent. Opera has 4.4 percent, Other 4.2 percent and Android the smallest share at 1.4 percent.",
+    "contentOrigin": {
+      "kind": "user-referenced-published-original",
+      "sourceId": "browser-june",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wikimedia_browser_share_pie_chart.png",
+      "retrievedAt": "2026-11-11",
+      "sha256": "4f69f6521b86a1c8d525c9ddf6711f35a71eee9ca27ad849865a31eb0512a23e",
+      "bytes": 42343,
+      "imageUrl": "/assets/speaking-mock-4-20261111/browser-june.png",
+      "reference": "Matched to the chart or process supplied in chat; original publisher raster, no redrawing.",
+      "credit": "Daniel Cardenas / Wikimedia Commons",
+      "license": "CC BY 3.0",
+      "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/archive/a/a2/20110831182135!Wikimedia_browser_share_pie_chart.png"
+    }
+  },
+  {
+    "id": "mock-di-reference-20261111-transport",
+    "type": "di",
+    "title": "Transport modes in a European city, 1960\u20132000",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/speaking-mock-4-20261111/transport.jpg",
+    "visual": {
+      "kind": "bar",
+      "title": "Transport modes in a European city, 1960\u20132000"
+    },
+    "facts": [
+      "The bar chart compares bus, car, bike and foot as transport modes in a European city in 1960, 1980 and 2000.",
+      "Car use increases from about 7 percent to roughly 25 percent and then nearly 40 percent, becoming the highest in 2000.",
+      "Walking declines from around 35 percent to roughly 20 percent and then about 10 percent.",
+      "Cycling also declines, from around 27 percent to about 22 percent and then about 7 percent.",
+      "Bus use rises from about 20 percent to around 27 percent before falling to about 18 percent."
+    ],
+    "optionalFactIndices": [],
+    "sample": "The given image provides the detailed information about transport modes in a european city, 1960\u20132000. Car use increases from about 7 percent to roughly 25 percent and then nearly 40 percent, becoming the highest in 2000. Walking declines from around 35 percent to roughly 20 percent and then about 10 percent. Cycling also declines, from around 27 percent to about 22 percent and then about 7 percent. Bus use rises from about 20 percent to around 27 percent before falling to about 18 percent.",
+    "contentOrigin": {
+      "kind": "user-referenced-published-original",
+      "sourceId": "transport",
+      "sourceUrl": "https://www.ieltsbuddy.com/ielts-bar-chart-modes-of-transport-in-a-european-city.html",
+      "retrievedAt": "2026-11-11",
+      "sha256": "006ab69d7c730dfab1e7aa61d7e6979043fe7db7e8fa0bf7ccb0466929f6371b",
+      "bytes": 18736,
+      "imageUrl": "/assets/speaking-mock-4-20261111/transport.jpg",
+      "reference": "Matched to the chart or process supplied in chat; original publisher raster, no redrawing."
+    }
+  },
+  {
+    "id": "mock-di-reference-20261111-pop-music",
+    "type": "di",
+    "title": "Percentage of people in Britain who buy pop music",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/speaking-mock-4-20261111/pop-music.png",
+    "visual": {
+      "kind": "bar",
+      "title": "Percentage of people in Britain who buy pop music"
+    },
+    "facts": [
+      "The bar chart compares pop-music purchasing in Britain by gender and age group.",
+      "The 25\u201334 and 16\u201324 groups are highest, at just over 30 percent, with the 25\u201334 group slightly higher.",
+      "Men are at roughly 28 percent, compared with about 19 percent for women.",
+      "The 35\u201344 group is around 25 percent, while people aged 45 and above are lowest at about 10 percent."
+    ],
+    "optionalFactIndices": [],
+    "sample": "The given image provides the detailed information about percentage of people in britain who buy pop music. The 25\u201334 and 16\u201324 groups are highest, at just over 30 percent, with the 25\u201334 group slightly higher. Men are at roughly 28 percent, compared with about 19 percent for women. The 35\u201344 group is around 25 percent, while people aged 45 and above are lowest at about 10 percent.",
+    "contentOrigin": {
+      "kind": "user-referenced-published-original",
+      "sourceId": "pop-music",
+      "sourceUrl": "https://www.ieltsbuddy.com/support-files/ielts-task-1-graph-questions.pdf",
+      "retrievedAt": "2026-11-11",
+      "sha256": "a9ccf4a7f9af338fff632541542def99cd5ea4faf7d13e2d43ae0a5980f0e229",
+      "bytes": 11261,
+      "imageUrl": "/assets/speaking-mock-4-20261111/pop-music.png",
+      "reference": "Matched to the chart or process supplied in chat; original publisher raster, no redrawing."
+    }
+  },
+  {
+    "id": "mock-di-reference-20261111-tomato-cycle",
+    "type": "di",
+    "title": "Tomato plant life cycle",
+    "imageCategory": "process",
+    "imageUrl": "/assets/speaking-mock-4-20261111/tomato-cycle.jpg",
+    "visual": {
+      "kind": "process",
+      "title": "Tomato plant life cycle"
+    },
+    "facts": [
+      "The diagram shows a repeating tomato plant life cycle with directional arrows.",
+      "Seeds develop into a young plant, which grows into a mature plant.",
+      "The mature plant produces flowers, followed by fruit.",
+      "The fruit contains seeds, which begin the next cycle."
+    ],
+    "optionalFactIndices": [],
+    "sample": "The given image provides the detailed information about tomato plant life cycle. Seeds develop into a young plant, which grows into a mature plant. The mature plant produces flowers, followed by fruit. The fruit contains seeds, which begin the next cycle.",
+    "contentOrigin": {
+      "kind": "user-referenced-published-original",
+      "sourceId": "tomato-cycle",
+      "sourceUrl": "https://homepte.com/courses-telegram-files/weekly-predicction-03-09-jan.pdf",
+      "retrievedAt": "2026-11-11",
+      "sha256": "bf9d3f39d2d145f3972c8268ec797da256e47286f4e473d66fce871aca231eff",
+      "bytes": 14536,
+      "imageUrl": "/assets/speaking-mock-4-20261111/tomato-cycle.jpg",
+      "reference": "Matched to the chart or process supplied in chat; original publisher raster, no redrawing."
+    }
+  }
+]

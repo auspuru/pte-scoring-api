@@ -7,10 +7,11 @@ const approvedAudio=require('../approved-audio');
 const VERSION='speaking-mock-2026-11-04.2';
 const OVERALL_MINUTES=40;
 const webImages=require('./speaking-mocks-web-images.json');
+const replacementImages=require('./speaking-mock-4-user-images-20261111.json'),easySentences=require('./speaking-mocks-easy-rs-20261111.json');
 const pick=id=>structuredClone(bank.questions.find(q=>q.id===id));
 function suppliedMockImage(q){
   const original=supplied.get(q.id),entry=references.manifest.entries[q.id];
-  const web=webImages.find(item=>item.id===q.id);
+  const web=[...webImages,...replacementImages].find(item=>item.id===q.id);
   if(web)return web.imageUrl===q.imageUrl&&entry?.source.sha256===web.contentOrigin.sha256&&entry.mapping.category!=='photo';
   return !!(original?.predictionSource?.suppliedFile&&original.imageUrl===q.imageUrl&&entry?.source.kind==='image-sha256'
     &&entry.mapping.category!=='photo'&&/^\/assets\/di-predictions-\d{8}\/\d+\.png$/.test(q.imageUrl||''));
@@ -79,6 +80,18 @@ for(const [number,offset,lectures,discussions,situations] of [
   const next=paper(number,items);next.description='Speaking paper based on supplied student booklet '+(offset+1)+', with distinct published charts and recorded portal prompts.';
   papers.push(next);
 }
+// Retain old prompt identities for audio links in immutable saved attempts.
+const historicalQuestions=papers.flatMap(p=>p.questions);
+for(const [offset,number,lastIds] of [[0,4,['wfd-practice-26','wfd-practice-27']],[1,5,['wfd-practice-36','wfd-practice-37']]]){
+  const current=papers.find(p=>p.id==='speaking-mock-'+number);
+  const repeats=[...easySentences.slice(offset*8,offset*8+8).map(q=>source({...bank.types.rs,...structuredClone(q)},'speaking')),
+    ...lastIds.map(id=>repeatSentence(writing.dictation.find(q=>q.id===id)))];
+  const imageIds=number===4?[replacementImages[0],replacementImages[1],replacementImages[2],webImages[0],replacementImages[3]]:null;
+  let rs=0,di=0;
+  current.questions=current.questions.map(q=>q.type==='rs'?repeats[rs++]:q.type==='di'&&imageIds?references.apply({...bank.types.di,...structuredClone(imageIds[di++])}):q);
+  current.contentVersion=2;
+}
+const audioQuestions=[...new Map([...historicalQuestions,...papers.flatMap(p=>p.questions)].filter(q=>q.audioSource).map(q=>[q.id,q])).values()];
 function publicQuestion(q,reveal=false){
   return {id:q.id,type:q.type,name:q.name,preparation:q.preparation,seconds:q.seconds,instruction:q.instruction,
     ...(q.type==='di'?{title:q.title||q.visual?.title||''}:{}),
@@ -89,7 +102,7 @@ function publicQuestion(q,reveal=false){
 }
 const catalogue=()=>papers.map(({questions,...paper})=>({...paper,tasks:Object.keys(bank.types).map(type=>({type,label:bank.types[type].name,count:questions.filter(q=>q.type===type).length}))}));
 function reattemptQuestions(original){
-  const images=(papers.find(p=>p.id===original.paperId)||papers[0]).questions.filter(q=>q.type==='di');let imageIndex=0;
+  const current=papers.find(p=>p.id===original.paperId)||papers[0],images=current.questions.filter(q=>q.type==='di'),repeats=current.questions.filter(q=>q.type==='rs');let imageIndex=0,repeatIndex=0;
   return original.questions.map(q=>{
     if(q.type==='sgd'){
       const current=bank.questions.find(item=>item.id===q.id&&item.type==='sgd');
@@ -99,10 +112,10 @@ function reattemptQuestions(original){
       const current=bank.questions.find(item=>item.id===q.id&&item.type==='rts');
       return current?(current.audioPrompt===false?structuredClone(current):source(structuredClone(current),'speaking')):structuredClone(q);
     }
-    if(q.type==='rs')return{...structuredClone(q),startCueMs:bank.types.rs.startCueMs,instruction:bank.types.rs.instruction};
+    if(q.type==='rs')return{...structuredClone(current.contentVersion===2?repeats[repeatIndex++]:q),startCueMs:bank.types.rs.startCueMs,instruction:bank.types.rs.instruction};
     if(q.type!=='di')return structuredClone(q);
     const replacement=images[imageIndex++%images.length];
     return structuredClone(replacement);
   });
 }
-module.exports={VERSION,OVERALL_MINUTES,papers,catalogue,publicQuestion,suppliedMockImage,reattemptQuestions};
+module.exports={VERSION,OVERALL_MINUTES,papers,audioQuestions,catalogue,publicQuestion,suppliedMockImage,reattemptQuestions};

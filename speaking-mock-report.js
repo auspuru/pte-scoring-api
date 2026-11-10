@@ -5,7 +5,7 @@ const manual=require('./speaking-manual-delivery');
 const {hash}=require('./scoring-jobs');
 const completion=require('./speaking-mock-completion');
 
-const VERSION='speaking-task-weighted-azure-2026-10-30.1';
+const VERSION='speaking-task-weighted-azure-2026-11-11.1';
 const INSUFFICIENT_SPEECH_NOTE='This response has too little speech for reliable pronunciation and fluency estimates. Its saved content points count; no delivery points are awarded in this practice result.';
 // Pearson's rounded average Speaking contributions total 101, not 100.
 // Normalise their relative weights; never silently change RTS from 13 to 12.
@@ -67,6 +67,12 @@ function questionResult(a,q,response,index,provider){
   if(exclusion)return {...base,status:'excluded',excluded:true,exclusion:{reason:exclusion.reason,note:exclusion.note},missing:[]};
   if(cmax===null)return {...base,status:'pending',missing:['question-rubric']};
   if(require('./speaking-mock-deadline-score').credited(a,index))return {...base,status:'unanswered',deadlineUnattempted:true,unansweredNote:require('./speaking-mock-deadline-score').NOTE,content:0,pronunciation:0,fluency:0,total:0,missing:[]};
+  // A deliberate skip is an unanswered test item, including when an older
+  // available-marks report froze it as a missing-recording omission. An active
+  // upload receipt still takes precedence: it is missing evidence, not a skip.
+  const pendingRecording=[...(a.submission?.pending||[]),...(a.submission?.missing||[]),...(a.submission?.unattempted||[])].includes(index);
+  if(!response?.recording&&!response?.transcript?.trim()&&response?.skipped===true&&!pendingRecording)
+    return {...base,status:'unanswered',unansweredNote:'This question was skipped. It counts as zero in the mock score.',content:0,pronunciation:0,fluency:0,total:0,missing:[]};
   const available=provider==='azure'&&(completion.active(a)||completion.replacement(a,index));
   const outcome=available&&completion.validOutcome(q,response)?response.assessmentOutcome:null;
   const skipped=available&&a.status==='submitted'&&(!response?.recording||completion.frozenMissing(a,index)&&!completion.replacement(a,index))?'recording-missing':outcome&&outcome.reason!=='available'?outcome.reason:null;

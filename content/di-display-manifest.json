@@ -1100,6 +1100,42 @@
       "bytes": 47879,
       "derivation": "unaltered-internet-original",
       "legend": []
+    },
+    "mock-di-reference-20261111-browser-june": {
+      "originalImageUrl": "/assets/speaking-mock-4-20261111/browser-june.png",
+      "originalSha256": "4f69f6521b86a1c8d525c9ddf6711f35a71eee9ca27ad849865a31eb0512a23e",
+      "displayImageUrl": "/assets/speaking-mock-4-20261111/browser-june.png",
+      "displaySha256": "4f69f6521b86a1c8d525c9ddf6711f35a71eee9ca27ad849865a31eb0512a23e",
+      "bytes": 42343,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-reference-20261111-transport": {
+      "originalImageUrl": "/assets/speaking-mock-4-20261111/transport.jpg",
+      "originalSha256": "006ab69d7c730dfab1e7aa61d7e6979043fe7db7e8fa0bf7ccb0466929f6371b",
+      "displayImageUrl": "/assets/speaking-mock-4-20261111/transport.jpg",
+      "displaySha256": "006ab69d7c730dfab1e7aa61d7e6979043fe7db7e8fa0bf7ccb0466929f6371b",
+      "bytes": 18736,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-reference-20261111-pop-music": {
+      "originalImageUrl": "/assets/speaking-mock-4-20261111/pop-music.png",
+      "originalSha256": "a9ccf4a7f9af338fff632541542def99cd5ea4faf7d13e2d43ae0a5980f0e229",
+      "displayImageUrl": "/assets/speaking-mock-4-20261111/pop-music.png",
+      "displaySha256": "a9ccf4a7f9af338fff632541542def99cd5ea4faf7d13e2d43ae0a5980f0e229",
+      "bytes": 11261,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-reference-20261111-tomato-cycle": {
+      "originalImageUrl": "/assets/speaking-mock-4-20261111/tomato-cycle.jpg",
+      "originalSha256": "bf9d3f39d2d145f3972c8268ec797da256e47286f4e473d66fce871aca231eff",
+      "displayImageUrl": "/assets/speaking-mock-4-20261111/tomato-cycle.jpg",
+      "displaySha256": "bf9d3f39d2d145f3972c8268ec797da256e47286f4e473d66fce871aca231eff",
+      "bytes": 14536,
+      "derivation": "unaltered-internet-original",
+      "legend": []
     }
   }
 }
