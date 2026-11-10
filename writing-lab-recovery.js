@@ -18,7 +18,7 @@ function createRecovery({store,now=Date.now,isConfirmed}) {
         if(['held','exhausted'].includes(prior.status)||prior.nextAt>now())return a;
       }
       receipt={lease,fingerprint,attempts:prior?.fingerprint===fingerprint?(prior.attempts||0)+1:1};
-      a.assessmentRecovery[index]={...receipt,status:'calling',startedAt:now(),expiresAt:now()+180000};return a;
+      a.assessmentRecovery[index]={...receipt,status:'calling',startedAt:now(),expiresAt:now()+(a.kind==='mock'&&a.questions[index]?.type==='essay'?300000:180000)};return a;
     });
     return receipt;
   }
