@@ -1,0 +1,34 @@
+[
+  {
+    "id": "mock-rts-user-20261110-lecture",
+    "type": "rts",
+    "title": "A friend talking during a lecture",
+    "text": "Your friend is sitting next to you and keeps talking, but you want to focus on the lecture and take notes. What would you say to him?",
+    "facts": [
+      "Speak directly and politely to the friend.",
+      "Explain the need to concentrate on the lecture and take notes.",
+      "Ask to continue the conversation later."
+    ],
+    "sample": "Hey, could we talk after the lecture? I need to concentrate and take notes so I do not miss anything. Let us catch up when the class finishes. Thanks for understanding.",
+    "contentOrigin": {
+      "kind": "user-supplied-screenshot",
+      "receivedAt": "2026-11-10"
+    }
+  },
+  {
+    "id": "mock-rts-user-20261110-orientation",
+    "type": "rts",
+    "title": "Volunteering for orientation",
+    "text": "The school is looking for volunteers to help students during orientation. You want to join this event because you are good at preparing publicity materials, and you are available on Friday. What would you say to the committee?",
+    "facts": [
+      "Address the orientation committee and offer to volunteer.",
+      "Mention being good at preparing publicity materials.",
+      "State availability on Friday and ask how to help."
+    ],
+    "sample": "Hello, I would like to volunteer for orientation. I am good at preparing publicity materials and I am available on Friday. I would be happy to help with posters or information for new students. Could you let me know how I can sign up and what you need?",
+    "contentOrigin": {
+      "kind": "user-supplied-screenshot",
+      "receivedAt": "2026-11-10"
+    }
+  }
+]

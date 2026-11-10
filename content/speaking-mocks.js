@@ -6,9 +6,12 @@ const speakingAudio=require('./speaking-audio-manifest')(),writingAudio=require(
 const approvedAudio=require('../approved-audio');
 const VERSION='speaking-mock-2026-11-04.2';
 const OVERALL_MINUTES=40;
+const webImages=require('./speaking-mocks-web-images.json');
 const pick=id=>structuredClone(bank.questions.find(q=>q.id===id));
 function suppliedMockImage(q){
   const original=supplied.get(q.id),entry=references.manifest.entries[q.id];
+  const web=webImages.find(item=>item.id===q.id);
+  if(web)return web.imageUrl===q.imageUrl&&entry?.source.sha256===web.contentOrigin.sha256&&entry.mapping.category!=='photo';
   return !!(original?.predictionSource?.suppliedFile&&original.imageUrl===q.imageUrl&&entry?.source.kind==='image-sha256'
     &&entry.mapping.category!=='photo'&&/^\/assets\/di-predictions-\d{8}\/\d+\.png$/.test(q.imageUrl||''));
 }
@@ -59,6 +62,22 @@ for(const [number,passages,sentenceStart,imageIds,lectureIds,discussionIds,situa
     ...imageIds.map(id=>pick('di-pred-'+id)),...[...lectureIds,...discussionIds,...situationIds].map(id=>source(pick(id),'speaking'))];
   if(items.length!==28||new Set(items.map(q=>q.id)).size!==28)throw Error('Incomplete speaking mock '+number);
   papers.push(paper(number,items));
+}
+// Fixed selections from the two supplied student booklets and existing recorded banks.
+const pdfPassages=require('./speaking-mocks-pdf-read-aloud.json');
+const userSituations=require('./speaking-mocks-user-situations.json');
+for(const [number,offset,lectures,discussions,situations] of [
+  [4,0,['rl-user-20261104-us-economic-strength','rl-user-20261104-earth-mars'],['sgd-user-20261030-07','sgd-user-20261030-01'],userSituations],
+  [5,1,['rl-user-20261104-neuron-intensity','rl-user-20261104-science-scientist'],['sgd-user-20261030-03','sgd-user-20261030-04'],['rts-original-20261024-23','rts-original-20261024-12'].map(pick)]
+]){
+  const items=[structuredClone(questions[0]),...pdfPassages[offset].map(q=>({...bank.types.ra,...structuredClone(q)})),
+    ...sentences.slice(25+offset*10,35+offset*10).map(repeatSentence),
+    ...webImages.slice(offset*5,offset*5+5).map(q=>references.apply({...bank.types.di,...structuredClone(q)})),
+    ...[...lectures,...discussions].map(id=>source(pick(id),'speaking')),
+    ...situations.map(q=>source({...bank.types.rts,...structuredClone(q)},'speaking'))];
+  if(items.length!==28||new Set(items.map(q=>q.id)).size!==28)throw Error('Incomplete speaking mock '+number);
+  const next=paper(number,items);next.description='Speaking paper based on supplied student booklet '+(offset+1)+', with distinct published charts and recorded portal prompts.';
+  papers.push(next);
 }
 function publicQuestion(q,reveal=false){
   return {id:q.id,type:q.type,name:q.name,preparation:q.preparation,seconds:q.seconds,instruction:q.instruction,

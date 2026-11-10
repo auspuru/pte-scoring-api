@@ -1845,6 +1845,386 @@
       },
       "mappingHash": "3e172f6ebb83178a230822d6e14fac5a9a1505db40f326f91d5226c781fa758d",
       "sample": "The given image provides the detailed information about daily television viewing. The highest frequency is for three to four hours, at approximately 28, followed by two to three hours at about 25. Very short viewing times and six to seven hours are uncommon. Overall, most of the displayed frequency is concentrated in the middle viewing intervals."
+    },
+    "mock-di-web-20261110-population": {
+      "academyId": "mock-di-web-20261110-population",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "5483c523229e31e73b0e8082d2081c669fd39e45f9cc85eb7547ba47955ada04"
+      },
+      "portalImageUrl": "/assets/speaking-mocks-20261110/population.png",
+      "mapping": {
+        "title": "Population, 1960–2023",
+        "category": "line",
+        "facts": [
+          "The chart compares the populations of India, China, the United States, Indonesia and Brazil from 1960 to 2023.",
+          "India and China are much more populous than the other three countries and finish at around 1.4 billion each.",
+          "India grows faster and slightly overtakes China near the end.",
+          "The United States remains above Indonesia and Brazil, which also increase."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "Population, 1960–2023"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "c9aae42359b75d3133dd65fa2533ab2af7886a0d2243015b3d5818ad6aead6a7",
+      "sample": "The given image provides the detailed information about population, 1960–2023. India and China are much more populous than the other three countries and finish at around 1.4 billion each. India grows faster and slightly overtakes China near the end. The United States remains above Indonesia and Brazil, which also increase.",
+      "contentOrigin": {
+        "kind": "internet-original-image",
+        "retrievedAt": "2026-11-10",
+        "sourceId": "population",
+        "id": "population",
+        "sourceUrl": "https://ourworldindata.org/grapher/population?tab=chart&country=CHN~IND~USA~IDN~BRA&time=1960..2023",
+        "downloadUrl": "https://ourworldindata.org/grapher/population.png?tab=chart&country=CHN~IND~USA~IDN~BRA&time=1960..2023",
+        "credit": "Our World in Data; underlying data credits retained in image. CC BY 4.0.",
+        "ext": "png",
+        "imageUrl": "/assets/speaking-mocks-20261110/population.png",
+        "sha256": "5483c523229e31e73b0e8082d2081c669fd39e45f9cc85eb7547ba47955ada04",
+        "bytes": 53197
+      }
+    },
+    "mock-di-web-20261110-life-expectancy": {
+      "academyId": "mock-di-web-20261110-life-expectancy",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "12bf4c4aaaf0f80b5f45e488a8bc1ad4d5dd349bf4c66ef1b38ff67478a2c011"
+      },
+      "portalImageUrl": "/assets/speaking-mocks-20261110/life-expectancy.png",
+      "mapping": {
+        "title": "Life expectancy, 1960–2023",
+        "category": "line",
+        "facts": [
+          "The chart compares life expectancy in Japan, Australia, India and Nigeria between 1960 and 2023.",
+          "All four countries show an overall increase.",
+          "Japan and Australia finish above 80 years, whereas India finishes around 70 and Nigeria around 55.",
+          "Japan overtakes Australia early in the period and remains slightly ahead at the end."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "Life expectancy, 1960–2023"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "588ef0f060a4100e7db9672029e9e476cc45f0bb2ff98484f36263d1b6e3795d",
+      "sample": "The given image provides the detailed information about life expectancy, 1960–2023. All four countries show an overall increase. Japan and Australia finish above 80 years, whereas India finishes around 70 and Nigeria around 55. Japan overtakes Australia early in the period and remains slightly ahead at the end.",
+      "contentOrigin": {
+        "kind": "internet-original-image",
+        "retrievedAt": "2026-11-10",
+        "sourceId": "life-expectancy",
+        "id": "life-expectancy",
+        "sourceUrl": "https://ourworldindata.org/grapher/life-expectancy?tab=chart&country=JPN~AUS~IND~NGA&time=1960..2023",
+        "downloadUrl": "https://ourworldindata.org/grapher/life-expectancy.png?tab=chart&country=JPN~AUS~IND~NGA&time=1960..2023",
+        "credit": "Our World in Data; underlying data credits retained in image. CC BY 4.0.",
+        "ext": "png",
+        "imageUrl": "/assets/speaking-mocks-20261110/life-expectancy.png",
+        "sha256": "12bf4c4aaaf0f80b5f45e488a8bc1ad4d5dd349bf4c66ef1b38ff67478a2c011",
+        "bytes": 55220
+      }
+    },
+    "mock-di-web-20261110-share-of-individuals-using-the-internet": {
+      "academyId": "mock-di-web-20261110-share-of-individuals-using-the-internet",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "0b3c0a015ae889895e1606cffe519b5f5ed04b7322c681e4b8b7e43749f293de"
+      },
+      "portalImageUrl": "/assets/speaking-mocks-20261110/share-of-individuals-using-the-internet.png",
+      "mapping": {
+        "title": "Internet use, 2000–2023",
+        "category": "line",
+        "facts": [
+          "The chart shows the share of people using the Internet in the United States, Brazil and India from 2000 to 2023.",
+          "Internet use increases in all three countries.",
+          "The United States remains highest and ends above 90 percent; Brazil finishes above 80 percent.",
+          "India grows sharply after 2018 and reaches approximately 60 percent by 2023."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "Internet use, 2000–2023"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "729ed35409a870c17335d0d3b500dd159c59f93e00fbc1415ddce0da7b05776d",
+      "sample": "The given image provides the detailed information about internet use, 2000–2023. Internet use increases in all three countries. The United States remains highest and ends above 90 percent; Brazil finishes above 80 percent. India grows sharply after 2018 and reaches approximately 60 percent by 2023.",
+      "contentOrigin": {
+        "kind": "internet-original-image",
+        "retrievedAt": "2026-11-10",
+        "sourceId": "share-of-individuals-using-the-internet",
+        "id": "share-of-individuals-using-the-internet",
+        "sourceUrl": "https://ourworldindata.org/grapher/share-of-individuals-using-the-internet?tab=chart&country=USA~IND~BRA&time=2000..2023",
+        "downloadUrl": "https://ourworldindata.org/grapher/share-of-individuals-using-the-internet.png?tab=chart&country=USA~IND~BRA&time=2000..2023",
+        "credit": "Our World in Data; underlying data credits retained in image. CC BY 4.0.",
+        "ext": "png",
+        "imageUrl": "/assets/speaking-mocks-20261110/share-of-individuals-using-the-internet.png",
+        "sha256": "0b3c0a015ae889895e1606cffe519b5f5ed04b7322c681e4b8b7e43749f293de",
+        "bytes": 44183
+      }
+    },
+    "mock-di-web-20261110-annual-co2-emissions-per-country": {
+      "academyId": "mock-di-web-20261110-annual-co2-emissions-per-country",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "035f9b15b27c3265e28774e14b606d563482ce20436895b3592e8ed773bc44da"
+      },
+      "portalImageUrl": "/assets/speaking-mocks-20261110/annual-co2-emissions-per-country.png",
+      "mapping": {
+        "title": "Annual carbon dioxide emissions, 1960–2023",
+        "category": "line",
+        "facts": [
+          "The chart compares annual carbon dioxide emissions from fossil fuels and industry in China, the United States and India from 1960 to 2023.",
+          "China overtakes the United States during the 2000s and finishes above 12 billion tonnes.",
+          "United States emissions peak at about 6 billion tonnes before falling to around 5 billion.",
+          "India increases to around 3 billion tonnes but remains below the other two countries."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "Annual carbon dioxide emissions, 1960–2023"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "2e4352124c6075d1a0df675303028e8a3ba7be5cee35dc2b6f51de5a38a453b1",
+      "sample": "The given image provides the detailed information about annual carbon dioxide emissions, 1960–2023. China overtakes the United States during the 2000s and finishes above 12 billion tonnes. United States emissions peak at about 6 billion tonnes before falling to around 5 billion. India increases to around 3 billion tonnes but remains below the other two countries.",
+      "contentOrigin": {
+        "kind": "internet-original-image",
+        "retrievedAt": "2026-11-10",
+        "sourceId": "annual-co2-emissions-per-country",
+        "id": "annual-co2-emissions-per-country",
+        "sourceUrl": "https://ourworldindata.org/grapher/annual-co2-emissions-per-country?tab=chart&country=CHN~USA~IND&time=1960..2023",
+        "downloadUrl": "https://ourworldindata.org/grapher/annual-co2-emissions-per-country.png?tab=chart&country=CHN~USA~IND&time=1960..2023",
+        "credit": "Our World in Data; underlying data credits retained in image. CC BY 4.0.",
+        "ext": "png",
+        "imageUrl": "/assets/speaking-mocks-20261110/annual-co2-emissions-per-country.png",
+        "sha256": "035f9b15b27c3265e28774e14b606d563482ce20436895b3592e8ed773bc44da",
+        "bytes": 47749
+      }
+    },
+    "mock-di-web-20261110-children-born-per-woman": {
+      "academyId": "mock-di-web-20261110-children-born-per-woman",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "174a9ca4c7d656ebd7c8c73ad6eadd28a761b6e89f2f44ba1c9e0a1e511d9522"
+      },
+      "portalImageUrl": "/assets/speaking-mocks-20261110/children-born-per-woman.png",
+      "mapping": {
+        "title": "Fertility rate, 1960–2023",
+        "category": "line",
+        "facts": [
+          "The chart compares births per woman in India, Brazil and the United States between 1960 and 2023.",
+          "Fertility declines overall in all three countries.",
+          "India and Brazil begin at around six births per woman, much higher than the United States.",
+          "By 2023 all three are around two births per woman or lower, with India highest and Brazil lowest."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "Fertility rate, 1960–2023"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "71cbc0f9201208f0f54894afee74f0e9c70f495c9743a2c56f422a265f112e79",
+      "sample": "The given image provides the detailed information about fertility rate, 1960–2023. Fertility declines overall in all three countries. India and Brazil begin at around six births per woman, much higher than the United States. By 2023 all three are around two births per woman or lower, with India highest and Brazil lowest.",
+      "contentOrigin": {
+        "kind": "internet-original-image",
+        "retrievedAt": "2026-11-10",
+        "sourceId": "children-born-per-woman",
+        "id": "children-born-per-woman",
+        "sourceUrl": "https://ourworldindata.org/grapher/children-born-per-woman?tab=chart&country=IND~BRA~USA&time=1960..2023",
+        "downloadUrl": "https://ourworldindata.org/grapher/children-born-per-woman.png?tab=chart&country=IND~BRA~USA&time=1960..2023",
+        "credit": "Our World in Data; underlying data credits retained in image. CC BY 4.0.",
+        "ext": "png",
+        "imageUrl": "/assets/speaking-mocks-20261110/children-born-per-woman.png",
+        "sha256": "174a9ca4c7d656ebd7c8c73ad6eadd28a761b6e89f2f44ba1c9e0a1e511d9522",
+        "bytes": 55826
+      }
+    },
+    "mock-di-web-20261110-child-mortality": {
+      "academyId": "mock-di-web-20261110-child-mortality",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "f0d8d466348af543fea5f757c2b094101ba574a58a4a67ff465013c9bff462b2"
+      },
+      "portalImageUrl": "/assets/speaking-mocks-20261110/child-mortality.png",
+      "mapping": {
+        "title": "Child mortality rate, 1960–2023",
+        "category": "line",
+        "facts": [
+          "The chart shows the estimated percentage of newborns who die before age five in Nigeria, India and Brazil from 1960 to 2023.",
+          "Nigeria has the highest mortality throughout, including a peak above 40 percent in the late 1960s.",
+          "All three countries show substantial long-term declines.",
+          "By 2023 Nigeria is near 12 percent, while India and Brazil are below 5 percent; Brazil is lowest."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "Child mortality rate, 1960–2023"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "4e9f0cdfb7cfab78dfeb35804fb3f88372cca14c35660aaac7dc19b6a0cd838c",
+      "sample": "The given image provides the detailed information about child mortality rate, 1960–2023. Nigeria has the highest mortality throughout, including a peak above 40 percent in the late 1960s. All three countries show substantial long-term declines. By 2023 Nigeria is near 12 percent, while India and Brazil are below 5 percent; Brazil is lowest.",
+      "contentOrigin": {
+        "kind": "internet-original-image",
+        "retrievedAt": "2026-11-10",
+        "sourceId": "child-mortality",
+        "id": "child-mortality",
+        "sourceUrl": "https://ourworldindata.org/grapher/child-mortality?tab=chart&country=IND~NGA~BRA&time=1960..2023",
+        "downloadUrl": "https://ourworldindata.org/grapher/child-mortality.png?tab=chart&country=IND~NGA~BRA&time=1960..2023",
+        "credit": "Our World in Data; underlying data credits retained in image. CC BY 4.0.",
+        "ext": "png",
+        "imageUrl": "/assets/speaking-mocks-20261110/child-mortality.png",
+        "sha256": "f0d8d466348af543fea5f757c2b094101ba574a58a4a67ff465013c9bff462b2",
+        "bytes": 46380
+      }
+    },
+    "mock-di-web-20261110-share-of-population-urban": {
+      "academyId": "mock-di-web-20261110-share-of-population-urban",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "27f5170b738149e666609d362df1cd3a4b4d18c4d6b2ce29f970a9bc63d4f361"
+      },
+      "portalImageUrl": "/assets/speaking-mocks-20261110/share-of-population-urban.png",
+      "mapping": {
+        "title": "Urban population share, 1960–2023",
+        "category": "line",
+        "facts": [
+          "The chart compares the share of people living in urban areas in Australia, China and India from 1960 to 2023.",
+          "Australia remains the most urbanised, increasing from about 80 percent to nearly 90 percent.",
+          "China rises from below 20 percent to above 60 percent and overtakes India around 1980.",
+          "India increases more gradually and finishes at roughly 35 percent."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "Urban population share, 1960–2023"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "76872e1bc75751aea64e3ae254f48993fe3d6a1eb989665954f6a45d13c4ac9c",
+      "sample": "The given image provides the detailed information about urban population share, 1960–2023. Australia remains the most urbanised, increasing from about 80 percent to nearly 90 percent. China rises from below 20 percent to above 60 percent and overtakes India around 1980. India increases more gradually and finishes at roughly 35 percent.",
+      "contentOrigin": {
+        "kind": "internet-original-image",
+        "retrievedAt": "2026-11-10",
+        "sourceId": "share-of-population-urban",
+        "id": "share-of-population-urban",
+        "sourceUrl": "https://ourworldindata.org/grapher/share-of-population-urban?tab=chart&country=AUS~IND~CHN&time=1960..2023",
+        "downloadUrl": "https://ourworldindata.org/grapher/share-of-population-urban.png?tab=chart&country=AUS~IND~CHN&time=1960..2023",
+        "credit": "Our World in Data; underlying data credits retained in image. CC BY 4.0.",
+        "ext": "png",
+        "imageUrl": "/assets/speaking-mocks-20261110/share-of-population-urban.png",
+        "sha256": "27f5170b738149e666609d362df1cd3a4b4d18c4d6b2ce29f970a9bc63d4f361",
+        "bytes": 48052
+      }
+    },
+    "mock-di-web-20261110-gdp-per-capita-worldbank": {
+      "academyId": "mock-di-web-20261110-gdp-per-capita-worldbank",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "f8e7dd3f9937f95d592609b17527c23afb53b88abed1ff0a26ed538cf634c362"
+      },
+      "portalImageUrl": "/assets/speaking-mocks-20261110/gdp-per-capita-worldbank.png",
+      "mapping": {
+        "title": "GDP per capita, 2000–2023",
+        "category": "line",
+        "facts": [
+          "The chart compares GDP per capita in Brazil, India and Nigeria from 2000 to 2023, adjusted for inflation and differences in living costs.",
+          "Brazil remains highest throughout and finishes near 19,000 international dollars.",
+          "India increases from around 3,000 to around 9,000 dollars.",
+          "Nigeria rises and then fluctuates; India overtakes it near the end and Nigeria finishes near 8,000 dollars."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "GDP per capita, 2000–2023"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "863e6657da7512c3a86e92e3ac5f295092d9fd12b2cb750acce7d5e67c75a22c",
+      "sample": "The given image provides the detailed information about gdp per capita, 2000–2023. Brazil remains highest throughout and finishes near 19,000 international dollars. India increases from around 3,000 to around 9,000 dollars. Nigeria rises and then fluctuates; India overtakes it near the end and Nigeria finishes near 8,000 dollars.",
+      "contentOrigin": {
+        "kind": "internet-original-image",
+        "retrievedAt": "2026-11-10",
+        "sourceId": "gdp-per-capita-worldbank",
+        "id": "gdp-per-capita-worldbank",
+        "sourceUrl": "https://ourworldindata.org/grapher/gdp-per-capita-worldbank?tab=chart&country=IND~NGA~BRA&time=2000..2023",
+        "downloadUrl": "https://ourworldindata.org/grapher/gdp-per-capita-worldbank.png?tab=chart&country=IND~NGA~BRA&time=2000..2023",
+        "credit": "Our World in Data; underlying data credits retained in image. CC BY 4.0.",
+        "ext": "png",
+        "imageUrl": "/assets/speaking-mocks-20261110/gdp-per-capita-worldbank.png",
+        "sha256": "f8e7dd3f9937f95d592609b17527c23afb53b88abed1ff0a26ed538cf634c362",
+        "bytes": 42331
+      }
+    },
+    "mock-di-web-20261110-water-cycle": {
+      "academyId": "mock-di-web-20261110-water-cycle",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "bb62f4cd2c0fc098d0ec0dbbc10a4771f6ef91bbb59811fb199947159166340d"
+      },
+      "portalImageUrl": "/assets/speaking-mocks-20261110/water-cycle.png",
+      "mapping": {
+        "title": "The water cycle",
+        "category": "process",
+        "facts": [
+          "The diagram shows water storage and movement between the atmosphere, land, oceans and groundwater.",
+          "Evaporation and evapotranspiration move water into the atmosphere; precipitation returns it to land and oceans.",
+          "Runoff and streamflow carry water across the surface, while infiltration and recharge move it underground.",
+          "Water is stored in oceans, lakes, rivers, snow, glaciers and groundwater, and human water uses also appear."
+        ],
+        "visual": {
+          "kind": "process",
+          "title": "The water cycle"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "33f771ccd2aed4faa68c6de5255870b6ecca7051dcafa36cf0ed044324cba089",
+      "sample": "The given image provides the detailed information about the water cycle. Evaporation and evapotranspiration move water into the atmosphere; precipitation returns it to land and oceans. Runoff and streamflow carry water across the surface, while infiltration and recharge move it underground. Water is stored in oceans, lakes, rivers, snow, glaciers and groundwater, and human water uses also appear.",
+      "contentOrigin": {
+        "kind": "internet-original-image",
+        "retrievedAt": "2026-11-10",
+        "sourceId": "water-cycle",
+        "id": "water-cycle",
+        "sourceUrl": "https://www.usgs.gov/media/images/water-cycle-png",
+        "downloadUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/media/images/USGS_WaterCycle_English_ONLINE_20230302.png",
+        "credit": "USGS VizLab / Water Science School, public domain",
+        "ext": "png",
+        "imageUrl": "/assets/speaking-mocks-20261110/water-cycle.png",
+        "sha256": "bb62f4cd2c0fc098d0ec0dbbc10a4771f6ef91bbb59811fb199947159166340d",
+        "bytes": 14937701
+      }
+    },
+    "mock-di-web-20261110-solar-system-sizes": {
+      "academyId": "mock-di-web-20261110-solar-system-sizes",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "276bce1cb5cbf55e6bbc965b2afee3491bff2f2cddf36727c60fd1770d27ee05"
+      },
+      "portalImageUrl": "/assets/speaking-mocks-20261110/solar-system-sizes.jpg",
+      "mapping": {
+        "title": "Relative sizes of the planets",
+        "category": "diagram",
+        "facts": [
+          "The image compares the relative sizes of planets in the Solar System against a black background, with part of the Sun at the left.",
+          "Jupiter is the largest planet shown, followed by Saturn, whose rings are clearly visible.",
+          "Uranus and Neptune are similar in size and smaller than Jupiter and Saturn.",
+          "The inner rocky planets are much smaller than the four giant planets; Earth and Venus are similar in size."
+        ],
+        "visual": {
+          "kind": "diagram",
+          "title": "Relative sizes of the planets"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "d18a7d661ef7a22fbedc2bcce316c1d38e8d36c55daa3b70505bff097c42fd55",
+      "sample": "The given image provides the detailed information about relative sizes of the planets. Jupiter is the largest planet shown, followed by Saturn, whose rings are clearly visible. Uranus and Neptune are similar in size and smaller than Jupiter and Saturn. The inner rocky planets are much smaller than the four giant planets; Earth and Venus are similar in size.",
+      "contentOrigin": {
+        "kind": "internet-original-image",
+        "retrievedAt": "2026-11-10",
+        "sourceId": "solar-system-sizes",
+        "id": "solar-system-sizes",
+        "sourceUrl": "https://science.nasa.gov/resource/solar-system-sizes/",
+        "downloadUrl": "https://assets.science.nasa.gov/content/dam/science/psd/solar/2023/09/s/solarsys_scale.jpg/jcr:content/renditions/cq5dam.web.1280.1280.jpeg",
+        "credit": "NASA / Lunar and Planetary Institute",
+        "ext": "jpg",
+        "imageUrl": "/assets/speaking-mocks-20261110/solar-system-sizes.jpg",
+        "sha256": "276bce1cb5cbf55e6bbc965b2afee3491bff2f2cddf36727c60fd1770d27ee05",
+        "bytes": 47879
+      }
     }
   }
 }

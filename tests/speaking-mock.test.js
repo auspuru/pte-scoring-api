@@ -6,7 +6,7 @@ const top=()=>({status:'scored',pattern:'minor_slips',overallImpact:'none',score
 const raw=()=>({assessable:true,overallScore:90,summary:'Generally clear and connected speech throughout the mock.',pronunciation:top(),fluency:top()});
 
 test('The speaking paper has full task counts, an unscored introduction and only existing verified audio',async()=>{
-  assert.equal(bank.papers.length,3);
+  assert.equal(bank.papers.length,5);
   for(const p of bank.papers){assert.equal(p.questionCount,27);assert.equal(p.questions.length,28);
   assert.deepEqual(Object.fromEntries(Object.keys(require('../content/speaking-bank').types).map(type=>[type,p.questions.filter(q=>q.type===type).length])),{ra:6,rs:10,di:5,rl:2,sgd:2,rts:2});
   assert.equal(new Set(p.questions.map(q=>q.id)).size,28);
@@ -14,7 +14,7 @@ test('The speaking paper has full task counts, an unscored introduction and only
     assert(q.instruction);assert(q.seconds>0);
     if(q.type==='ra')assert(q.text.split(/\s+/u).length<=60);
     if(q.imageUrl)assert((await fs.stat(path.join(__dirname,'..','public',q.imageUrl))).size>100);
-    if(q.type==='di'){assert.match(q.imageUrl,/^\/assets\/di-predictions-\d{8}\//);assert(q.predictionSource?.sourceId);assert(q.sample);assert(q.facts?.length);assert.equal(bank.publicQuestion(q).imageUrl,q.imageUrl);}
+    if(q.type==='di'){assert.match(q.imageUrl,/^\/assets\/(di-predictions-\d{8}|speaking-mocks-20261110)\//);assert(q.predictionSource?.sourceId||q.contentOrigin?.sourceId);assert(q.sample);assert(q.facts?.length);assert.equal(bank.publicQuestion(q).imageUrl,q.imageUrl);}
     if(q.audioSource){const file=q.audioSource.folder==='approved'?require('../approved-audio').fileFor(q.audioSource.id).file:path.join(__dirname,'..','content',q.audioSource.folder==='speaking'?'speaking-audio':'writing-audio',q.audioSource.id+'.mp3');assert((await fs.stat(file)).size>100);}
     const shown=bank.publicQuestion(q);assert.equal(shown.facts,undefined);assert.equal(shown.reference,undefined);assert.equal(shown.sample,undefined);
     if(['rs','rl','sgd'].includes(q.type))assert.equal(shown.text,undefined);
@@ -189,10 +189,10 @@ test('Prompt-end receipts enforce account, active question, minimum duration and
  assert.equal((await request('/recordings/0',Buffer.alloc(200),'alice',true)).status,409);now=first.body.timing.recordingAt+1;
  assert.equal((await request('/recordings/0',Buffer.alloc(200),'alice',true)).status,200);
 });
-test('all mock DI placements use supplied original PNGs and reattempts replace legacy photos without editing saved work',()=>{
+test('all mock DI placements use source-verified original images and reattempts replace legacy photos without editing saved work',()=>{
  const fs=require('node:fs'),path=require('node:path'),manifest=require('../content/di-reference-manifest.json');
  for(const paper of bank.papers)for(const q of paper.questions.filter(q=>q.type==='di')){
-  assert(bank.suppliedMockImage(q));assert.notEqual(q.imageCategory,'photo');assert(q.predictionSource.suppliedFile);
+  assert(bank.suppliedMockImage(q));assert.notEqual(q.imageCategory,'photo');assert(q.predictionSource?.suppliedFile||q.contentOrigin?.sourceUrl);
   assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(__dirname,'../public',q.imageUrl))).digest('hex'),manifest.entries[q.id].source.sha256);
  }
  const original={paperId:'speaking-mock-2',questions:structuredClone(bank.papers[1].questions),responses:[{recording:{hash:'saved-audio'}}]};
