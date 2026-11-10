@@ -327,7 +327,7 @@
   function showAttempt() {
     clearInterval(timer); clearTimeout(saveTimer);
     if(attempt.status==='submitted') { stopAudio(); storage.remove(draftKey()); renderResults(); return; }
-    if(attempt.pause){stopAudio();setMockMode(false);root.innerHTML='<section class="exam"><h1>'+esc(attempt.title)+' · Paused</h1><p>Question '+(attempt.index+1)+' of '+attempt.questions.length+' · '+clock(Math.ceil(attempt.pause.remainingMs/1000))+' remains. Your answer and audio position are saved.</p><p id="notice" role="status"></p><button type="button" class="primary" data-mock-unpause>Continue mock</button></section>';return;}
+    if(attempt.pause){stopAudio();setMockMode(false);root.innerHTML='<section class="exam"><h2>'+esc(attempt.title)+' · Paused</h2><p>Question '+(attempt.index+1)+' of '+attempt.questions.length+' · '+clock(Math.ceil(attempt.pause.remainingMs/1000))+' remains. Your answer and audio position are saved.</p><p id="notice" role="status"></p><button type="button" class="primary" data-mock-unpause>Continue mock</button></section>';return;}
     shell.classList.add('exam-mode');
     const q=attempt.questions[attempt.index], sst=q.type==='sst', listening=audioQuestion(q),objective=!!listeningTasks?.isObjective(q);
     const listeningWorkspace=listening&&(attempt.kind!=='mock'||attempt.module==='listening');
