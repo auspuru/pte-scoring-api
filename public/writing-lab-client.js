@@ -30,7 +30,7 @@
   const practiceTypes=['sst','wfd','lmcma','lfi','hcs','lmcsa','smw','hiw'];
   const questionsFor=type=>studio?studio.questions(catalog,type):type==='sst'?catalog?.spoken||[]:type==='wfd'?catalog?.dictation||[]:(catalog?.listeningPractice||[]).filter(q=>q.type===type);
   const supportedPractice=()=>attempt?.kind!=='mock'&&attempt?.mode==='practice';
-  const beforeDeadline=()=>attempt?.deadline==null||attempt.deadline>Date.now()+offset;
+  const beforeDeadline=()=>!attempt?.pause&&(attempt?.deadline==null||attempt.deadline>Date.now()+offset);
   function bookmarks(){try{return JSON.parse(storage.get('ipt-listening-bookmarks:'+username)||'[]');}catch(_){return [];}}
   function studioWrap(content,type,mock=false,library=false){
     if(!studio)return content;
@@ -303,7 +303,7 @@
       historyKind=attempt.kind;
       showAttempt();
       flushIntegrity();
-      if(attempt?.status==='active') saveAnswer(false);
+      if(attempt?.status==='active'&&!attempt.pause) saveAnswer(false);
     } catch(e) { if(serial===navigationSerial && workspaceVisible) {notify(e.message);button.disabled=false;} }
   }
   async function reattempt(testId,button,serial=++navigationSerial) {
@@ -327,6 +327,7 @@
   function showAttempt() {
     clearInterval(timer); clearTimeout(saveTimer);
     if(attempt.status==='submitted') { stopAudio(); storage.remove(draftKey()); renderResults(); return; }
+    if(attempt.pause){stopAudio();setMockMode(false);root.innerHTML='<section class="exam"><h1>'+esc(attempt.title)+' · Paused</h1><p>Question '+(attempt.index+1)+' of '+attempt.questions.length+' · '+clock(Math.ceil(attempt.pause.remainingMs/1000))+' remains. Your answer and audio position are saved.</p><p id="notice" role="status"></p><button type="button" class="primary" data-mock-unpause>Continue mock</button></section>';return;}
     shell.classList.add('exam-mode');
     const q=attempt.questions[attempt.index], sst=q.type==='sst', listening=audioQuestion(q),objective=!!listeningTasks?.isObjective(q);
     const listeningWorkspace=listening&&(attempt.kind!=='mock'||attempt.module==='listening');
@@ -334,7 +335,7 @@
     const instruction=q.prompt || (q.type==='wfd'?'Listen and type the sentence.' :sst?'Listen and write a summary of 50–70 words.':q.type==='swt'?'Summarise the passage in one sentence of 5–75 words.':'Write an essay of 200–300 words.');
     const questionHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.kind==='mock'?(attempt.module==='listening'?'Listening sectional mock':'Writing sectional mock'):'Listening practice')+'</strong><small>'+esc(username)+'</small><label class="mock-volume">Volume <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="'+volume+'" aria-label="Mock volume"></label></div><div class="timer-wrap"><span>'+(q.timeGroup==='listening'?'LISTENING TIME REMAINING':q.timeGroup?'DICTATION TIME REMAINING':'QUESTION TIME REMAINING')+'</span><strong id="timer">'+(supportedPractice()?'Untimed':q.minutes+':00')+'</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main exam-main-'+esc(q.type)+'"><p class="instruction">'+instruction+'</p>'+
       (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Play':'Play')+'</button> '+(supportedPractice()?'<button type="button" id="audio-replay">↻ Replay</button>':'')+'</div><details class="studio-notes"><summary>Notes</summary><label class="answer-label" for="notes">Notes</label><textarea id="notes" '+(attempt.status==='ready'?'disabled':'')+' class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea></details>':'<div class="passage">'+esc(q.text)+'</div>')+
-      (studio&&listening&&supportedPractice()?'<details class="studio-help"><summary>How to answer</summary><p>'+esc(studio.help[q.type])+'</p></details>':'')+(objective?listeningTasks.render(q,attempt.answers[attempt.index]):'')+'<label class="answer-label" for="answer" '+(objective?'hidden':'')+'>Your response</label><textarea id="answer" '+(objective?'hidden':'')+' spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools" '+(objective?'hidden':'')+'><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Words: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'Ready to begin':'Your current answer is saved on this device')+'</p></div><footer class="exam-footer">'+''+'<button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.kind!=='mock'?'Check answer':attempt.index===attempt.questions.length-1?'Finish test':'Submit & next')+'</button></footer></section>';
+      (studio&&listening&&supportedPractice()?'<details class="studio-help"><summary>How to answer</summary><p>'+esc(studio.help[q.type])+'</p></details>':'')+(objective?listeningTasks.render(q,attempt.answers[attempt.index]):'')+'<label class="answer-label" for="answer" '+(objective?'hidden':'')+'>Your response</label><textarea id="answer" '+(objective?'hidden':'')+' spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools" '+(objective?'hidden':'')+'><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Words: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'Ready to begin':'Your current answer is saved on this device')+'</p></div><footer class="exam-footer">'+(attempt.kind==='mock'?'<button type="button" data-mock-pause>Pause mock</button> ':'')+'<button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.kind!=='mock'?'Check answer':attempt.index===attempt.questions.length-1?'Finish test':'Submit & next')+'</button></footer></section>';
     root.innerHTML=studio&&listeningWorkspace?studioWrap((attempt.kind==='mock'?'':practiceNavigation())+questionHTML+practiceHistory(),q.type,attempt.kind==='mock'):(attempt.kind==='mock'?'':practiceNavigation())+questionHTML+practiceHistory();
     if(studio&&listeningWorkspace){bindStudioLibrary();const strip=root.querySelector?.('.exam-strip');if(strip&&attempt.kind!=='mock')strip.insertAdjacentHTML('beforeend','<button type="button" class="studio-bookmark" data-listening-bookmark="'+esc(q.id)+'" aria-label="Bookmark question" aria-pressed="'+bookmarks().includes(q.id)+'">'+(bookmarks().includes(q.id)?'★':'☆')+'</button>');}
     document.getElementById('answer').addEventListener('input',onInput);
@@ -349,7 +350,7 @@
     questionChanged();
   }
   function onInput() {
-    if(!attempt || attempt.status!=='active') return;
+    if(!attempt || attempt.status!=='active'||attempt.pause) return;
     attempt.answers[attempt.index]=document.getElementById('answer').value;
     attempt.notes=document.getElementById('notes')?.value || '';
     attempt.revisions[attempt.index]++;
@@ -357,7 +358,7 @@
     writeDraft(); clearTimeout(saveTimer); saveTimer=setTimeout(()=>saveAnswer(false),650);
   }
   function saveAnswer(next) {
-    if(!attempt || attempt.status!=='active' || saveConflict) return Promise.resolve();
+    if(!attempt || attempt.status!=='active' || attempt.pause || saveConflict) return Promise.resolve();
     const id=attempt.id,index=attempt.index,editor=document.getElementById('answer'),saveUser=username,saveToken=token();
     if(!editor) return Promise.resolve();
     const body={index,text:editor.value,revision:++attempt.revisions[index],next,notes:document.getElementById('notes')?.value || '',
@@ -399,7 +400,7 @@
     });
   }
   async function nextQuestion() {
-    if(moving || saveConflict || !attempt || attempt.status!=='active') return;
+    if(moving || saveConflict || !attempt || attempt.status!=='active'||attempt.pause) return;
     const originalId=attempt.id, originalIndex=attempt.index;
     const text=document.getElementById('answer').value;
     const currentQuestion=attempt.questions[attempt.index],parsed=listeningTasks?.isObjective(currentQuestion)?listeningTasks.parse(text):null;
@@ -420,8 +421,21 @@
       }
     }
   }
+  async function pauseMock(button){
+    if(moving||saveConflict||attempt?.kind!=='mock'||attempt.status!=='active'||attempt.pause)return;
+    button.disabled=true;stopAudio();writeDraft();
+    try{await saveAnswer(false);await saving;if(saveConflict)throw Error('Resolve the saved-answer conflict before pausing.');
+      setAttempt(await api('/attempts/'+attempt.id+'/pause',{}));showAttempt();
+    }catch(error){notify(error.message);button.disabled=false;}
+  }
+  async function unpauseMock(button){
+    if(!attempt?.pause)return;button.disabled=true;
+    try{if(window.PortalExamMode?.prepare&&!await window.PortalExamMode.prepare('writing',portalShell||root,{immediate:true})){button.disabled=false;return;}
+      setAttempt(await api('/attempts/'+attempt.id+'/resume',{pauseId:attempt.pause.id}));showAttempt();
+    }catch(error){notify(error.message);button.disabled=false;}
+  }
   async function tick() {
-    if(!attempt || attempt.status!=='active') return;
+    if(!attempt || attempt.status!=='active'||attempt.pause) return;
     if(attempt.deadline==null){const node=document.getElementById('timer');if(node)node.textContent='Untimed';return;}
     const remaining=Math.max(0,Math.ceil((attempt.deadline-Date.now()-offset)/1000));
     const timerNode=document.getElementById('timer');
@@ -854,6 +868,8 @@
   root.addEventListener('click',async e=>{
     const b=e.target.closest('button'); if(!b) return;
     if(b.disabled)return;
+    if(b.dataset.mockPause!==undefined)return pauseMock(b);
+    if(b.dataset.mockUnpause!==undefined)return unpauseMock(b);
     if(b.dataset.listeningMode)return changeListeningMode(b.dataset.listeningMode,b);
     if(b.dataset.listeningType){studioSearch='';studioFilter='all';writeDraft();await saveAnswer(false);if(saveConflict)return;stopAudio();return returnToPortal(b.dataset.listeningRoute);}
     if(b.dataset.listeningAttempt){if(attempt?.kind==='mock')return;if(!attempt){rememberContext(view);practiceContext.selectedId=b.dataset.listeningQuestion;}const serial=++navigationSerial;writeDraft();stopAudio();await saveAnswer(false);try{await saving;}catch{notify('Your answer has not saved. Retry before changing attempts.');return;}if(saveConflict||serial!==navigationSerial||!workspaceVisible)return;return resume(b.dataset.listeningAttempt,b,serial);}

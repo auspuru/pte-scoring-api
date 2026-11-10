@@ -11,10 +11,11 @@ function validRelease(a){
   &&e?.reason==='deadline-unattempted'&&e.operation===r.operation&&e.index===i&&e.attemptId===a.id&&e.questionId===a.questions?.[i]?.id
   &&a.responses?.[i]?.deadlineUnattempted===true&&a.responses[i].reason==='deadline-unattempted'&&!a.responses[i].recording);
 }
-const due=(a,now)=>a?.status==='active'&&now>=a.deadline&&(a.submission?.state!=='finalizing'||now>a.submission.closesAt);
+const due=(a,now)=>a?.status==='active'&&!a.pause&&Number.isFinite(a.deadline)&&now>=a.deadline&&(a.submission?.state!=='finalizing'||now>a.submission.closesAt);
 const blocked=a=>a?.submission?.state==='finalizing'||a?.submission?.state==='incomplete'&&!(a.status==='submitted'&&require('./speaking-mock-completion').active(a))&&!validRelease(a)&&!require('./mock-result-review').publicationValid(a,'speaking')&&!require('./speaking-mock-deadline-score').valid(a);
 function progress(a){return {status:a.submission.state,ready:false,total:a.questionCount,pendingUploads:a.submission.pending||[],missingUploads:a.submission.missing||[],unattemptedQuestions:a.submission.unattempted||[],uploadClosesAt:a.submission.closesAt};}
 function reconcile(a,now,clock=require('./speaking-mock').timing){
+ if(a.pause)return a;
  if(a.status!=='active'||now<a.deadline)return a;
  if(!a.submission){
   const t=clock(a,a.deadline),i=a.index;

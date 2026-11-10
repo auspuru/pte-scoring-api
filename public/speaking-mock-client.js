@@ -46,7 +46,7 @@
     function leave(){reportVisible=false;stopPolling();release();serial++;}
     function reset(){leave();a=null;owner='';selected=null;reportFilter='all';reportSection='overview';reportProvider='azure';responsePane='feedback';reviewSignature='';for(const url of urls.values())env.URL.revokeObjectURL(url);urls.clear();host?.replaceChildren();}
     function shell(html){reportVisible=false;imageViewer.close();host.innerHTML=html;images.bindFallback(host);host.onclick=click;host.onchange=e=>{if(e.target.id==='sm-check-heard'&&check){check.confirmed=!!e.target.checked;checkControls();}else reportChange(e);};host.onkeydown=reportKeydown;host.oninput=e=>{if(e.target.id==='sm-volume'){volume=Math.max(0,Math.min(1,Number(e.target.value)));if(prompt)prompt.volume=volume;if(check?.audio)check.audio.volume=volume;try{env.localStorage?.setItem('ipt-exam-volume',String(volume));}catch{}}};}
-    function protectedMode(){env.PortalExamMode?.set(OWNER,a?.status==='active',host,{onEvent:event=>{if(a)api('/attempts/'+a.id+'/integrity',{events:[event]}).catch(()=>{});},onLock:()=>{stopPrompt();startCue.cancel();rsCue=null;played='';if(recorder?.state==='recording')recorder.stop();},onResume:()=>{if(a)refresh().catch(e=>message(e.message));}});}
+    function protectedMode(){env.PortalExamMode?.set(OWNER,a?.status==='active'&&!a.pause,host,{onEvent:event=>{if(a)api('/attempts/'+a.id+'/integrity',{events:[event]}).catch(()=>{});},onLock:()=>{stopPrompt();startCue.cancel();rsCue=null;played='';if(recorder?.state==='recording')recorder.stop();},onResume:()=>{if(a)refresh().catch(e=>message(e.message));}});}
     async function open(options={}){
       if(check)release();
       if(owner&&owner!==identity())reset();stopPolling();owner=identity();if(!owner)return;host=doc.getElementById('speakingMockPane');const ticket=++serial;
@@ -118,17 +118,54 @@
       if(busy)return;startCue.unlock();busy=true;const ticket=serial;
       try{const saved=await api('/attempts/'+id);if(!valid(ticket))return;
         if(saved.resultStatus?.status==='finalizing'){a=saved;await retryPending();release();results();return;}
-        if(saved.status==='active'){const ready=await env.PortalExamMode.prepare(OWNER,host,{immediate:true});if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}}
+        if(saved.status==='active'&&!saved.pause){const ready=await env.PortalExamMode.prepare(OWNER,host,{immediate:true});if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}}
         a=saved;selected=null;reportFilter='all';reportSection='overview';responsePane='feedback';reviewSignature='';
-        if(a.status==='active'){const blob=await pending('get',key(a.id,a.index));if(blob){done.add(key(a.id,a.index));await upload(blob,a.id,a.index);}await begin();}else{startCue.close();results();}
+        if(a.status==='active'){if(a.pause){showPause();return;}const blob=await pending('get',key(a.id,a.index));if(blob){done.add(key(a.id,a.index));await upload(blob,a.id,a.index);}await begin();}else{startCue.close();results();}
       }catch(error){message(error.message);env.PortalExamMode?.set(OWNER,false,host);}
       finally{busy=false;}
     }
     async function begin(){
       if(a.status!=='active'||a.submission){results();return;}
+      if(a.pause){showPause();return;}
       const fresh=a.timing.phase==='ready';if(fresh)a=await api('/attempts/'+a.id+'/begin',{index:a.index,timingVersion:2});
       flow={key:key(a.id,a.index),leadUntil:localNow()+(fresh?3000:Math.max(0,a.timing.audioAt-now())),fresh,ended:a.timing.playbackDriven&&a.timing.prepAt!=null,prepUntil:null,finishing:false};
       notice='';renderExam();protectedMode();stopTimer();timer=env.setInterval(tick,100);tick();
+    }
+    function showPause(){
+      stopTimer();stopPrompt();startCue.cancel();rsCue=null;env.PortalExamMode?.set(OWNER,false,host);
+      shell('<section class="sm-equipment"><p class="ipr-eyebrow">Speaking mock paused</p><h1>'+esc(a.title)+'</h1><p>Question '+(a.index+1)+' of '+a.totalItems+' · '+clock(a.pause.remainingMs/1000)+' remains. Your earlier answers and any recorded part of this question are saved.</p>'
+        +(a.pause.partialPending?'<p role="alert">The partial recording still needs to save from this device. Retry before continuing.</p><button class="portal-button" data-sm="retry-fragment">Retry saving partial recording</button>':'')
+        +'<p id="sm-notice" role="status">'+esc(notice)+'</p><button class="portal-button primary" data-sm="unpause"'+(a.pause.partialPending?' disabled':'')+'>Continue mock</button></section>');
+    }
+    async function saveFragment(blob,id,index,pauseId){
+      const route='/attempts/'+id+'/fragments/'+index+'/'+pauseId;
+      const saved=blob?.size>=100?await api(route,blob,true):await api(route,{empty:true});
+      await pending('delete',key(id,index)+':fragment:'+pauseId);
+      if(a?.id===id&&a.pause?.id===pauseId){a=saved;showPause();}
+    }
+    async function pauseMock(){
+      if(busy||!a||a.status!=='active'||a.pause)return;busy=true;
+      const id=a.id,index=a.index,ticket=serial,position=prompt&&!prompt.ended?prompt.currentTime:null;
+      stopTimer();if(prompt)prompt.pause();startCue.cancel();rsCue=null;
+      try{
+        if(recorder?.state!=='recording'&&recordingPromise)await recordingPromise;
+        const partial=recorder?.state==='recording';
+        a=await api('/attempts/'+id+'/pause',{hasPartial:partial,...(Number.isFinite(position)?{audioPositionSeconds:position}:{})});
+        if(!valid(ticket))return;
+        if(partial&&capture){capture.pauseId=a.pause.id;recorder.stop();if(recordingPromise)await recordingPromise;}
+        capture=null;recordingPromise=null;flow=null;showPause();
+      }catch(error){if(valid(ticket)){message(error.message);await refresh().catch(()=>{});}}
+      finally{busy=false;}
+    }
+    async function unpause(){
+      if(busy||!a?.pause)return;busy=true;const id=a.id,pauseId=a.pause.id,ticket=serial;
+      try{
+        if(a.pause.partialPending){const blob=await pending('get',key(id,a.index)+':fragment:'+pauseId);if(blob===undefined)throw Error('This device has no saved partial recording. Keep this mock paused and contact support.');await saveFragment(blob,id,a.index,pauseId);}
+        const ready=await env.PortalExamMode.prepare(OWNER,host,{immediate:true});if(!ready||!valid(ticket))return;
+        await microphone();if(!valid(ticket))return;
+        a=await api('/attempts/'+id+'/resume',{pauseId});capture=null;recordingPromise=null;played='';await begin();
+      }catch(error){if(valid(ticket))message(error.message);}
+      finally{busy=false;}
     }
     function renderExam(){
       const q=a.question;
@@ -138,13 +175,13 @@
         +'<div class="sm-controls">'+(q.audioUrl?'<section class="sm-audio-panel" aria-label="Prompt audio"><div>Status: <span id="sm-audio-status">Beginning shortly</span></div><div class="sm-bar"><span id="sm-audio-bar"></span></div></section>':'')
         +'<section class="sm-record-panel" aria-label="Recorded answer"><strong>Recorded Answer</strong><p>Current Status:</p><div id="sm-preparation-status" role="status"></div><div id="sm-record-status" role="status" aria-live="polite">Beginning shortly</div><div class="sm-bar"><span id="sm-record-bar"></span></div></section></div></div>'
         +'<p id="sm-time-warning" role="status" aria-live="polite"></p><p id="sm-notice" role="status">'+esc(notice)+'</p><button class="portal-button" data-sm="play" id="sm-play" hidden>Play remaining audio</button><button class="portal-button" data-sm="upload" id="sm-upload" hidden>Retry saving recording</button></main>'
-        +'<footer class="sm-exam-footer"><span>'+esc(q.type==='intro'?'Personal Introduction · Not scored':labels[q.type])+'</span><button type="button" class="sm-next" data-sm="next" id="sm-next">Next <span aria-hidden="true">➜</span></button></footer><dialog id="sm-image-dialog" class="sm-image-dialog" aria-label="Full-size question image"></dialog></div>');
+        +'<footer class="sm-exam-footer"><span>'+esc(q.type==='intro'?'Personal Introduction · Not scored':labels[q.type])+'</span><div><button type="button" class="portal-button" data-sm="pause">Pause mock</button> <button type="button" class="sm-next" data-sm="next" id="sm-next">Next <span aria-hidden="true">➜</span></button></div></footer><dialog id="sm-image-dialog" class="sm-image-dialog" aria-label="Full-size question image"></dialog></div>');
     }
     function beep(){try{if(!context)return;const tone=context.createOscillator(),gain=context.createGain();tone.frequency.value=1000;gain.gain.value=.07*volume;tone.connect(gain);gain.connect(context.destination);tone.start();tone.stop(context.currentTime+.12);}catch{}}
     async function playPrompt(){
       if(!a?.question.audioUrl||env.PortalExamMode?.isLocked(OWNER))return;
       const clipKey=key(a.id,a.index);played=clipKey;stopPrompt();prompt=new env.Audio(a.question.audioUrl);prompt.volume=volume;
-      const audio=prompt;audio.currentTime=flow?.fresh?0:Math.max(0,(now()-a.timing.audioAt)/1000);
+      const audio=prompt;audio.currentTime=flow?.fresh?0:a.resumedAudio?.index===a.index?Math.max(0,a.resumedAudio.positionSeconds+(now()-a.resumedAudio.at)/1000):Math.max(0,(now()-a.timing.audioAt)/1000);
       const ticket=serial;promptFinished.delete(clipKey);
       audio.onended=()=>{if(!valid(ticket)||!a||key(a.id,a.index)!==clipKey||prompt!==audio)return;promptFinished.add(clipKey);stopPrompt();if(a.timing.playbackDriven){flow.ended=true;finishPrompt();}else tick();};
       audio.onerror=()=>{const node=doc.getElementById('sm-play');if(node)node.hidden=false;message('The prompt audio could not load. Select Play remaining audio to retry.');};
@@ -161,13 +198,14 @@
       const captureKey=key(a.id,a.index);if(done.has(captureKey)||capture?.key===captureKey)return;
       const options=['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(type=>env.MediaRecorder.isTypeSupported?.(type));
       try{
-        recorder=new env.MediaRecorder(stream,options?{mimeType:options}:undefined);const activeRecorder=recorder,chunks=[],current={key:captureKey,id:a.id,index:a.index,ticket:serial,startedAt:now(),endsAt:a.question.type==='rs'||a.timing.playbackDriven?now()+a.question.seconds*1000:a.timing.endsAt};capture=current;
+        recorder=new env.MediaRecorder(stream,options?{mimeType:options}:undefined);const activeRecorder=recorder,chunks=[],current={key:captureKey,id:a.id,index:a.index,ticket:serial,startedAt:now(),endsAt:Number.isFinite(a.timing.endsAt)?a.timing.endsAt:now()+a.question.seconds*1000};capture=current;
         heard=false;silence=0;if(a.question.type!=='rs')beep();
         recordingPromise=new Promise(resolve=>{
           recorder.ondataavailable=event=>{if(event.data?.size)chunks.push(event.data);};
-          recorder.onstop=async()=>{done.add(current.key);analyser&&=(context?.state==='closed'?null:analyser);
-            const blob=new env.Blob(chunks,{type:activeRecorder.mimeType||options||'audio/webm'});await pending('put',current.key,blob);
-            if(valid(current.ticket)){try{await upload(blob,current.id,current.index);}catch(error){message(error.message+' Your recording is saved on this device; retry saving it.');const node=doc.getElementById('sm-upload');if(node)node.hidden=false;}}
+          recorder.onstop=async()=>{if(!current.pauseId)done.add(current.key);analyser&&=(context?.state==='closed'?null:analyser);
+            const blob=new env.Blob(chunks,{type:activeRecorder.mimeType||options||'audio/webm'}),pendingKey=current.pauseId?current.key+':fragment:'+current.pauseId:current.key;
+            await pending('put',pendingKey,blob);
+            if(valid(current.ticket)){try{if(current.pauseId)await saveFragment(blob,current.id,current.index,current.pauseId);else await upload(blob,current.id,current.index);}catch(error){message(error.message+' Your recording is saved on this device; retry saving it.');const node=doc.getElementById('sm-upload');if(node)node.hidden=false;}}
             resolve();};
         });
         recorder.onerror=()=>{message('Recording was interrupted. Continue when your saved response is ready.');if(recorder.state==='recording')recorder.stop();};recorder.start(500);
@@ -188,7 +226,7 @@
       finally{ending=false;}
     }
     function tick(){
-      if(!a||a.status!=='active')return;
+      if(!a||a.status!=='active'||a.pause)return;
       const overallLeft=Math.max(0,a.deadline-now()),overall=doc.getElementById('sm-overall-time');if(overall)overall.textContent=clock(overallLeft/1000);
       const warning=overallLeft<=60000?'One minute or less remains in this mock.':overallLeft<=300000?'Five minutes or less remain in this mock.':'';
       const warningNode=doc.getElementById('sm-time-warning');if(warningNode&&warningNode.textContent!==warning)warningNode.textContent=warning;
@@ -245,7 +283,7 @@
       }
     }
     async function next(){
-      if(busy||!a||a.status!=='active')return;busy=true;const ticket=serial,id=a.id,index=a.index;
+      if(busy||!a||a.status!=='active'||a.pause)return;busy=true;const ticket=serial,id=a.id,index=a.index;
       const button=doc.getElementById('sm-next');if(button){button.disabled=true;button.textContent='Moving on…';}
       try{
         if(recorder?.state==='recording')recorder.stop();if(recordingPromise&&capture?.id===id&&capture.index===index)await recordingPromise;
@@ -255,7 +293,7 @@
         capture=null;recordingPromise=null;if(a.status==='submitted'){release();results();}else await begin();
       }catch(error){message(error.message);}finally{busy=false;if(button){button.disabled=false;button.innerHTML='Next <span aria-hidden="true">➜</span>';}}
     }
-    async function refresh(){const ticket=serial,saved=await api('/attempts/'+a.id);if(!valid(ticket))return;a=saved;if(a.status==='submitted'||a.submission){release();results();}else{renderExam();protectedMode();tick();}}
+    async function refresh(){const ticket=serial,saved=await api('/attempts/'+a.id);if(!valid(ticket))return;a=saved;if(a.status==='submitted'||a.submission){release();results();}else if(a.pause)showPause();else{renderExam();protectedMode();tick();}}
     function score(trait){return trait?.score==null?'—':esc(trait.score)+'/5'+(trait.manualOverride?' (manual override)':'');}
     const setMarkup=(node,markup)=>{if(node&&node.innerHTML!==markup)node.innerHTML=markup;};
     const answers=()=>a?.responses?.filter(r=>r.question.type!=='intro')||[];
@@ -413,6 +451,9 @@
       if(data.sm==='start')return start(data.paper);
       if(data.sm==='reattempt')return start(null,data.id);
       if(data.sm==='resume')return resume(data.id);
+      if(data.sm==='pause')return pauseMock();
+      if(data.sm==='unpause')return unpause();
+      if(data.sm==='retry-fragment'){const blob=await pending('get',key(a.id,a.index)+':fragment:'+a.pause.id);if(blob===undefined)return message('No partial recording was found on this device. Contact support.');try{await saveFragment(blob,a.id,a.index,a.pause.id);}catch(error){message(error.message);}return;}
       if(data.sm==='continue'){
         if(busy)return;busy=true;button.disabled=true;
         try{
