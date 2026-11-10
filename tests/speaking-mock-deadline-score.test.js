@@ -13,6 +13,28 @@ test('17 recorded answers plus ten confirmed timeout answers publish with zero c
  assert.equal(policy.inspect(next,next,[],4000).confirmedHash,plan.confirmedHash);assert.deepEqual(policy.apply(next,next,[],body,4000),next);
  const visible=require('../speaking-mock').present(next,4000,{completeOnly:true});assert(visible.resultsReady);assert.equal(visible.responses[18].content.total,0);assert.equal(visible.responses[18].providers.azure.pronunciation.score,0);assert.match(visible.responses[18].unanswered.note,/zero credit/);
 });
+test('one recorded answer and 26 frozen omissions become zero-credit questions under the available-marks policy',()=>{
+ const a=attempt(),completion=require('../speaking-mock-completion');
+ a.index=2;
+ a.submission.unattempted=Array.from({length:26},(_,i)=>i+2);
+ a.responses=a.responses.map((response,index)=>index<2?response:{deadlineUnattempted:true,reason:'deadline-unattempted'});
+ a.assessmentProfile.completionPolicy=completion.policy(a.questions);
+ a.assessment={status:'ready',version:'progressive-speaking-v1',omissions:completion.omissions(a,2500)};
+ const before=report.summarize(a).azure;
+ assert.equal(before.assessedCount,1);assert.equal(before.excludedCount,26);
+ const plan=policy.inspect(a,a,[],3000);
+ assert(plan.eligible);assert.equal(plan.zeroCount,26);
+ const next=policy.apply(a,a,[],command(plan),3000),after=report.summarize(next).azure;
+ assert.equal(after.status,'assessed');assert.equal(after.assessedCount,27);assert.equal(after.excludedCount,0);
+ assert.equal(after.deadlineUnattemptedCount,26);assert(after.fullProfile);
+ assert(after.overallScore<before.overallScore);
+ assert.deepEqual(next.responses,a.responses);
+ for(const row of after.questions.filter(q=>q.index>=2))assert.equal(row.total,0);
+ const visible=require('../speaking-mock').present(next,3000,{completeOnly:true});
+ assert(visible.resultsReady);assert.equal(visible.responses[2].content.total,0);
+ assert.equal(visible.responses[2].providers.azure.pronunciation.score,0);
+ assert.match(visible.responses[2].unanswered.note,/zero credit/);
+});
 test('Missing recordings, partial assessments, contradictory timeout evidence, active work and stale evidence stay held',()=>{
  const changes=[a=>a.status='active',a=>a.submission.missing=[18],a=>a.submission.pending=[18],a=>a.submission.startedAt++,a=>a.finishedAt=1999,a=>a.submission.unattempted.push(18),a=>delete a.responses[18].deadlineUnattempted,a=>a.responses[18].recording={hash:'late'},a=>a.responses[18].transcript='unexpected answer',a=>a.responses[18].content={total:0},a=>a.submission.unattempted=[999],a=>delete a.responses[1].recording,a=>delete a.responses[1].azure.fluency,a=>a.lease={expiresAt:4000}];
  for(const change of changes){const a=attempt(),body=command(policy.inspect(a,a,[],3000));change(a);assert.equal(policy.inspect(a,a,[],3000).eligible,false);assert.throws(()=>policy.apply(a,a,[],body,3000));}
