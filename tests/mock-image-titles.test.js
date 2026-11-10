@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const bank=require('../content/speaking-mocks'),{loadPaper,questionForPlayer}=require('../full-mock/paper');
 const {renderQuestion}=require('../public/full-mock-client'),images=require('../public/speaking-images');
-test('All 15 Speaking mock image titles reach the player without revealing reference answers',()=>{
+test('All 25 Speaking mock image titles reach the player without revealing reference answers',()=>{
  let count=0;
  for(const paper of bank.papers)for(const q of paper.questions){
   const before=JSON.stringify(q),shown=bank.publicQuestion(q);
@@ -13,7 +13,7 @@ test('All 15 Speaking mock image titles reach the player without revealing refer
   for(const key of ['sample','facts','reference'])assert.equal(shown[key],undefined);
   assert.equal(JSON.stringify(q),before);
  }
- assert.equal(count,15);
+ assert.equal(count,25);
 });
 test('Current and retained Full Mock image titles appear above their original images',()=>{
  for(const version of [1,2]){

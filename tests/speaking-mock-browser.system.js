@@ -3,8 +3,8 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const express=require('express'),puppeteer=require('puppeteer'),run=require('node:util').promisify(require('node:child_process').execFile);
 const {database,until}=require('./helpers/full-mock-systems'),{installSpeakingMock}=require('../speaking-mock'),bank=require('../content/speaking-mocks');
 const root=path.resolve(__dirname,'..');
-for(const mobile of [false,true])test('Speaking mock Chrome '+(mobile?'mobile':'desktop')+': local headset check, audio lead-in and full preparation after playback',{timeout:90000},async t=>{
- const db=await database(t),directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-flow-browser-')),sample=bank.papers[0].questions.find(q=>q.type==='rs'),microphone=path.join(directory,'mic.wav');
+for(const [mobile,paperIndex] of [[false,0],[true,0],[false,3],[true,4]])test('Speaking mock '+(paperIndex+1)+' Chrome '+(mobile?'mobile':'desktop')+': local headset check, audio lead-in and full preparation after playback',{timeout:90000},async t=>{
+ const db=await database(t),directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-flow-browser-')),sample=bank.papers[paperIndex].questions.find(q=>q.type==='rs'),microphone=path.join(directory,'mic.wav');
  const source=path.join(root,'content',sample.audioSource.folder==='speaking'?'speaking-audio':'writing-audio',sample.audioSource.id+'.mp3');
  await run('ffmpeg',['-hide_banner','-loglevel','error','-nostdin','-y','-i',source,'-ar','48000','-ac','1','-c:a','pcm_s16le',microphone]);
  let offset=0,uploads=0,created=0;const app=express();app.use(express.json());
@@ -23,12 +23,13 @@ for(const mobile of [false,true])test('Speaking mock Chrome '+(mobile?'mobile':'
  const click=async selector=>{await page.$eval(selector,node=>node.scrollIntoView({block:'center'}));if(mobile)await page.tap(selector);else await page.click(selector);};
  const advance=async ms=>{offset+=ms;await page.evaluate(ms=>window.__mockOffset+=ms,ms);};
  try{
- await page.goto('http://127.0.0.1:'+server.address().port);await page.waitForSelector('[data-sm="start"]');await click('[data-sm="start"]');
+ await page.goto('http://127.0.0.1:'+server.address().port);await page.waitForSelector('[data-sm="start"]');await click('[data-sm="start"][data-paper="'+bank.papers[paperIndex].id+'"]');
  await page.waitForSelector('#sm-check-record');assert.equal(created,0);assert.equal(uploads,0);assert(await page.$eval('#sm-check-begin',node=>node.disabled));
  await click('#sm-check-record');await page.waitForFunction(()=>!document.getElementById('sm-check-play').disabled);assert.equal(created,0);assert.equal(uploads,0);
  await click('#sm-check-play');await page.waitForFunction(()=>!document.getElementById('sm-check-heard').disabled);assert(await page.$eval('#sm-check-begin',node=>node.disabled));
- await click('#sm-check-heard');await click('#sm-check-begin');await page.waitForSelector('#sm-next');await page.waitForFunction(()=>/^(40:00|39:\d{2})$/.test(document.getElementById('sm-overall-time')?.textContent||''));assert.equal(created,1);assert(await page.$eval('#sm-next',node=>node.getBoundingClientRect().bottom<=innerHeight),'Next is inside the protected viewport');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Speaking header overflows the viewport');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','speaking-mock-timer-'+(mobile?'mobile':'desktop')+'.png')});assert.equal(uploads,0);assert(await page.evaluate(()=>!!document.fullscreenElement));
+ await click('#sm-check-heard');await click('#sm-check-begin');await page.waitForSelector('#sm-next');await page.waitForFunction(()=>/^(40:00|39:\d{2})$/.test(document.getElementById('sm-overall-time')?.textContent||''));assert.equal(created,1);assert(await page.$eval('#sm-next',node=>node.getBoundingClientRect().bottom<=innerHeight),'Next is inside the protected viewport');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Speaking header overflows the viewport');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','speaking-mock-timer-'+(paperIndex+1)+'-'+(mobile?'mobile':'desktop')+'.png')});assert.equal(uploads,0);assert(await page.evaluate(()=>!!document.fullscreenElement));
  const [summary]=await service.store.list('alice'),attempt=await service.store.get('alice',summary.id),index=attempt.questions.findIndex(q=>q.type==='rts');
+ assert.equal(attempt.paperId,bank.papers[paperIndex].id);
  await service.store.update('alice',attempt.id,a=>{a.index=index;a.questions[index].audioSeconds=sample.audioSeconds;delete a.questionStartedAt;delete a.questionTimingVersion;return a;});
  await page.evaluate(()=>SpeakingMock.open({history:true}));await page.waitForSelector('[data-sm="resume"]');await click('[data-sm="resume"]');await page.waitForSelector('#sm-audio-status');
  assert.equal(await page.evaluate(()=>window.__promptPlays),0);assert.match(await page.$eval('#sm-audio-status',node=>node.textContent),/Beginning in/);
