@@ -103,6 +103,17 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // A saved mock may predate the SST validation fix. Permit only the exact
+  // deployed source set and the two reviewed files changed by that fix.
+  const priorSstForm=require('../content/full-mock/sst-form-previous-sources.json');
+  if(digest(priorSstForm)==='440337cbe7def5558d2c6d146c69d1a0f7257457bac2948a5982fc7435860f8b'
+    &&current.scoringSources.files['writing-lab-scoring.js']?.sha256!==priorSstForm.files['writing-lab-scoring.js']?.sha256
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(priorSstForm.files).sort().join()
+    &&Object.entries(priorSstForm.files).every(([file,pin])=>['full-mock/assessment.js','writing-lab-scoring.js'].includes(file)
+      ||digest(current.scoringSources.files[file])===digest(pin))){
+    const projected={...current,scoringSources:structuredClone(priorSstForm)};
+    if(digest(saved)===digest(projected)||compatibleTransportUpgrade(saved,projected))return true;
+  }
   // Keep pre-switch GPT SST attempts on their frozen provider and exact source
   // snapshot; only new attempts use Claude for SST.
   const priorSst=require('../content/full-mock/sst-claude-previous-sources.json');

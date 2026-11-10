@@ -37,6 +37,25 @@ test('Scoring rejects malformed traits and fabricated error evidence, gates off-
   assert.throws(()=>policy.normalize(q,text,{...raw,errors:[{phrase:'invented quotation',correction:'...',explanation:'...'}]}));
   assert.equal(policy.normalize(q,text,{...raw,scores:{...raw.scores,content:0},improvements:['Answer the lecture topic.']}).total,0);
 });
+test('A substantial SST sentence cannot be erased by an unsupported fragment form gate',async()=>{
+  const q=bank.spoken[0],text=sentence(57);
+  const feedback=Object.fromEntries(Object.keys(policy.MAXIMA.sst).map(key=>[key,'Evidence-based feedback.']));
+  const invalid={scores:{content:1,form:0,grammar:0,vocabulary:1,spelling:0},formInvalid:true,
+    formReason:'All sentences are fragments.',feedback,strengths:[],improvements:['Improve sentence structure.'],errors:[]};
+  assert.throws(()=>policy.normalize(q,text,invalid),/Unsupported SST form gate/);
+  let calls=0;
+  const result=await policy.grade(q,text,async()=>{
+    calls++;
+    return calls===1?invalid:{...invalid,scores:{...invalid.scores,form:2},formInvalid:false,formReason:''};
+  });
+  assert.equal(calls,2);
+  assert.deepEqual(result.scores,{content:1,form:2,grammar:0,vocabulary:1,spelling:0});
+  assert.equal(result.total,4);
+  assert.equal(result.gated,false);
+  const unresolved=await policy.grade(q,text,async()=>invalid);
+  assert.equal(unresolved.score_provisional,true);
+  assert.equal(unresolved.needs_semantic_review,true);
+});
 test('Elapsed clocks do not reset on refresh, and future prompts/samples stay hidden',()=>{
   const a={status:'active',questions:bank.mocks[0].questions.slice(0,3),index:0,deadline:600000,completed:[null,null,null]};
   assert.equal(present(a).questions[1].text,undefined);assert.equal(present(a).questions[0].sample,undefined);

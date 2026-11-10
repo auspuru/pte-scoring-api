@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path');
 const {createStore}=require('../writing-lab-store');
-const {createRunner,OWNER,ATTEMPT,OPERATION}=require('../writing-lab-sst-reassessment');
+const {createRunner,OWNER,ATTEMPT,OPERATION,ROLLBACK}=require('../writing-lab-sst-reassessment');
 
 async function fixture(t){
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'sst-reassessment-'));
@@ -14,7 +14,8 @@ async function fixture(t){
     questions,answers:types.map((_,i)=>i===3?'a'.repeat(360):'Saved response'),completed:types.map(()=>({at:1000})),
     results:types.map((type,i)=>({total:totals[i],maximum:type==='essay'?26:type==='sst'?12:type==='swt'?9:totals[i]})),
     overallFeedback:{status:'complete',result:{summary:'Prior review'}},
-    sstReassessment:{status:'queued',operation:OPERATION}};
+    sstReassessment:{status:'queued',operation:OPERATION},
+    sstReassessmentHistory:[{operation:ROLLBACK,invalidResult:{total:0},restoredTotal:4}]};
   await store.update(OWNER,ATTEMPT,()=>a);
   return {store,a};
 }
@@ -30,7 +31,7 @@ test('Only Sukhpal’s saved SST is replaced after a confirmed review; the opera
   assert.equal(after.results[3].scoringProvider,'anthropic');
   assert.deepEqual(after.results.filter((_,i)=>i!==3),a.results.filter((_,i)=>i!==3));
   assert.deepEqual(after.answers,a.answers);assert.deepEqual(after.questions,a.questions);
-  assert.deepEqual(after.sstReassessmentHistory[0].oldResult,a.results[3]);
+  assert.deepEqual(after.sstReassessmentHistory[1].oldResult,a.results[3]);
   await runner.run(OWNER,ATTEMPT);assert.equal(calls,1);
   assert.equal(await runner.run('other-student',ATTEMPT),null);
 });
@@ -41,7 +42,16 @@ test('A failed or provisional review retains every published mark',async t=>{
   await runner.run(OWNER,ATTEMPT);
   const after=await store.get(OWNER,ATTEMPT);
   assert.equal(after.sstReassessment.status,'needs-review');
-  assert.deepEqual(after.results,a.results);assert.equal(after.sstReassessmentHistory,undefined);
+  assert.deepEqual(after.results,a.results);assert.deepEqual(after.sstReassessmentHistory,a.sstReassessmentHistory);
+});
+
+test('A corrected review cannot start until the invalid zero is archived and the original mark restored',async t=>{
+  const {store}=await fixture(t);let calls=0;
+  await store.update(OWNER,ATTEMPT,value=>{delete value.sstReassessmentHistory;return value;});
+  const runner=createRunner({store,score:async()=>{calls++;return revised();}});
+  assert.equal(await runner.run(OWNER,ATTEMPT),null);
+  assert.equal(calls,0);
+  assert.equal((await store.get(OWNER,ATTEMPT)).results[3].total,4);
 });
 
 test('Changed saved input prevents a late review from replacing the original score',async t=>{
@@ -53,5 +63,5 @@ test('Changed saved input prevents a late review from replacing the original sco
   release(revised());await job;
   const after=await store.get(OWNER,ATTEMPT);
   assert.equal(after.sstReassessment.status,'needs-review');
-  assert.deepEqual(after.results,a.results);assert.equal(after.sstReassessmentHistory,undefined);
+  assert.deepEqual(after.results,a.results);assert.deepEqual(after.sstReassessmentHistory,a.sstReassessmentHistory);
 });

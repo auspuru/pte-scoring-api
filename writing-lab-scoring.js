@@ -88,6 +88,11 @@ function normalize(q, text, raw) {
     scores.content = Math.min(scores.content, SYNTHESIS_CONTENT_CAP[synthesis.quality]);
   }
   const form = formFor(q.type, text);
+  // SST permits several sentences. An answer containing a substantial
+  // punctuated sentence cannot be entirely short, disconnected fragments.
+  if (q.type === 'sst' && form.score > 0 && raw.formInvalid
+    && text.split(/[.!?;]+/u).some(sentence => wordCount(sentence) >= 8))
+    throw Error('Unsupported SST form gate: a substantial sentence is present; assess grammar and content separately');
   if (raw.formInvalid && raw.scores.form !== 0) throw Error('A claimed form failure contradicts the form score');
   if (!raw.formInvalid && raw.scores.form !== form.score) throw Error('The form score must match the supplied deterministic form score');
   scores.form = form.score;
