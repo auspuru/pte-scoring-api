@@ -1077,11 +1077,20 @@
     "mock-di-web-20261110-water-cycle": {
       "originalImageUrl": "/assets/speaking-mocks-20261110/water-cycle.png",
       "originalSha256": "bb62f4cd2c0fc098d0ec0dbbc10a4771f6ef91bbb59811fb199947159166340d",
-      "displayImageUrl": "/assets/speaking-mocks-20261110/water-cycle.png",
-      "displaySha256": "bb62f4cd2c0fc098d0ec0dbbc10a4771f6ef91bbb59811fb199947159166340d",
-      "bytes": 14937701,
-      "derivation": "unaltered-internet-original",
-      "legend": []
+      "displayImageUrl": "/assets/speaking-mocks-20261110/water-cycle-display.png",
+      "displaySha256": "42430087a4aacf9cf403b9fb0237606def35b54fcd7983da8e299279aff8a69f",
+      "bytes": 1393603,
+      "derivation": "publisher-resampling",
+      "legend": [],
+      "displaySourceUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/styles/full_width/public/media/images/USGS_WaterCycle_English_ONLINE_20230302.png?itok=tAVM8IYl",
+      "originalDimensions": [
+        11400,
+        7800
+      ],
+      "displayDimensions": [
+        1336,
+        914
+      ]
     },
     "mock-di-web-20261110-solar-system-sizes": {
       "originalImageUrl": "/assets/speaking-mocks-20261110/solar-system-sizes.jpg",

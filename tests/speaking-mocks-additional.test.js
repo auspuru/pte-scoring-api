@@ -9,7 +9,7 @@ test('new selectable papers preserve all old paper snapshots and use ten distinc
   const bytes=fs.readFileSync(path.join(__dirname,'../public',q.imageUrl)),sha=hash(bytes);assert(!seen.has(sha),'Repeated image '+q.id);seen.add(sha);
   if(p.id==='speaking-mock-4'||p.id==='speaking-mock-5'){
    assert.equal(sha,q.contentOrigin.sha256);assert.equal(bytes.length,q.contentOrigin.bytes);assert.match(q.contentOrigin.sourceUrl,/^https:\/\//);assert(!sourceIds.has(q.contentOrigin.sourceUrl));sourceIds.add(q.contentOrigin.sourceUrl);
-   assert.deepEqual(require('../di-reference').referenceFor(q).source,{kind:'image-sha256',sha256:sha});assert.equal(require('../di-image-display').forQuestion(q).displayImageUrl,q.imageUrl);
+   assert.deepEqual(require('../di-reference').referenceFor(q).source,{kind:'image-sha256',sha256:sha});const display=require('../di-image-display'),entry=display.manifest.entries[q.id];assert.equal(display.forQuestion(q).displayImageUrl,entry.displayImageUrl);assert.equal(hash(fs.readFileSync(path.join(__dirname,'../public',entry.displayImageUrl))),entry.displaySha256);
   }
  }}
  assert.equal(sourceIds.size,10);
