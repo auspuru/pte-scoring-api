@@ -3,7 +3,7 @@
   "scope": "Reviewed Azure delivery bands across six speaking tasks and saved-raw Speaking Mock reassessment, preserving frozen older policies, content rubrics and confirmed marks.",
   "files": {
     "server.js": "5fa0de370e865b6e2fdbfd4e5d7249d05891d2ac49d6f6a7d02f6f172c233b2f",
-    "full-mock/assessment.js": "8c5b1f2c6a6de5083e16b2c26e17109106604d14428fc6acd6a903bdc06b128a",
+    "full-mock/assessment.js": "04cb21aad8cece20fae5cf3acd44d95ed0c34703e99ae0a8c38ffe658bc07de3",
     "full-mock/adapters.js": "1f985cc0859c56d177f78aeb15e1316efd84a9641e752eafbb2c73ba97cfd4dd",
     "full-mock/aggregation.js": "d1cd8b4bdcd50c6a94f3006fbef7a02c0d024a6f57b4a08a4984688d98d17497",
     "full-mock/profiles.js": "8e9659f3d82839a445ec6cb0212d3e7456bb3c4442146a56a0ba721b1994df18",
@@ -43,7 +43,7 @@
     "public/swt-feedback.js": "6ad1bbb440e4d6ea29e93c6293107e3ce9af20c79b247bb97d643558b45ad930",
     "public/swt-feedback-review.js": "61dc962856a96342cb062ed4c11a65e2cfd523e38d52e4b1822936f8cac3e751",
     "public/swt-mock-feedback.js": "a935db09aa1ad2cd37ddad0df7e26e43b1b0d62a1270740365d7f201cf78b947",
-    "content/full-mock/scoring-lock.json": "b412f58a378165894abc4d1f5347944dce2c1c1786967aa46cb3aabce4a1a810",
+    "content/full-mock/scoring-lock.json": "72ec7b9bf4344e04384bded878365a4ab108c004a7da11531ce902e648710bb8",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
     "public/reading-mock-tools.js": "6766b45368eb780a587dcac94cb2520fdd28520ce7a7b76dade61a93ad5dfee1",
     "speaking-mock.js": "4b3abacdf4550aa25b89f2e6797274dc9ddd5c1bd25db40fb871a5f980edeb4f",
@@ -130,11 +130,11 @@
   },
   "practiceListeningUpdates": {
     "baselineCommit": "e40b84b8dc3e7993b1b928e98c7996a858d8d350",
-    "scope": "Individual Listening navigation, historical attempts and five-second timed audio lead-in. Protected mock navigation, timers, graders, native save and report renderers preserved.",
+    "scope": "Individual Listening navigation and historical attempts. Mock pause changes save, next and timer controls while graders and report renderers remain pinned.",
     "nativeFunctions": {
-      "saveAnswer": "2d2caf5923c6cc920ea8ce2b0b76940ad3ab4bc0fb4279265bd080fbc750b832",
-      "nextQuestion": "580b8f57cfe0bc1f8b452d9168019e9c00e7c3d1f8e7e4d87529b03104664edd",
-      "tick": "a299b5b989f9c1b3b528bd59a62abce9aeb705e33a5e2f88eeeedd557fce6355",
+      "saveAnswer": "5c60436ae3d71b92d06621dcc617875c40ae86328ea7a634b0f2fab0e3f3a56b",
+      "nextQuestion": "dba561ec93c5701fba2891c0cc7979fbdf449551604b7863ee4b6a712c9b9ecd",
+      "tick": "81ba56d522b105ba2a2268c3b3be3ac5dbce1f530d042117c78e3731eb53f89a",
       "reviewCard": "389affe589aae31740f485bd4596922c9388e6496216bdc9a97a1874f656c641",
       "mockReviewCard": "2dc407ea2d67a221c47ecf7f2c5e613db571b87cfaa226b0310c28728ed1d578",
       "scoreRemaining": "ce33e717031daedcc21d3af95647ac81cfae3bc537c53422f5ba0927d9795261",

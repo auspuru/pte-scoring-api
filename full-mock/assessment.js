@@ -103,6 +103,24 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Pausing changes clocks, recording transport and the Reading mock player,
+  // but leaves frozen scoring rules and successful assessments untouched.
+  // Only this exact deployed source pair may project to its previous snapshot.
+  const pauseBefore=require('../content/full-mock/pause-previous-sources.json');
+  const pauseFiles={
+    'full-mock/api.js':'e6a83754194feeea73c8034afd797862ffe7019b3f1fb91beab80bd5516686c8',
+    'full-mock/session.js':'42ce3ff414bb37fbfcb8e7ca4917a44ff83a3e07d90597c85856d69aaeef486e',
+    'public/reading-mock-tools.js':'6766b45368eb780a587dcac94cb2520fdd28520ce7a7b76dade61a93ad5dfee1',
+    'public/reading-practice.js':'6ccd25fa306b632394b5ffa48ee714e80081e09a4c8aabb7e000032592c00498'
+  };
+  if(digest(pauseBefore)==='d9ff0f99245c924a8f162bd2091b2c9ea3bff382f75ad53495b07ebd4ce593bf'
+    &&Object.keys(current.scoringSources.files).sort().join()===Object.keys(pauseBefore.files).sort().join()
+    &&Object.entries(pauseFiles).every(([name,sha])=>current.scoringSources.files[name]?.sha256===sha)
+    &&Object.entries(pauseBefore.files).every(([name,pin])=>name==='full-mock/assessment.js'||name in pauseFiles
+      ||digest(current.scoringSources.files[name])===digest(pin))){
+    const projected={...current,scoringSources:structuredClone(pauseBefore)};
+    if(digest(saved)===digest(projected)||compatibleTransportUpgrade(saved,projected))return true;
+  }
   // A saved mock may predate the SST validation fix. Permit only the exact
   // deployed source set and the two reviewed files changed by that fix.
   const priorSstForm=require('../content/full-mock/sst-form-previous-sources.json');
