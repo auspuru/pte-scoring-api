@@ -126,7 +126,8 @@ function quietRecording(recording) {
  assert.equal(sha(source),baseline.files['writing-lab-scoring.js'].sha256);
  assert.equal(sha(read('speaking-delivery.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['speaking-delivery.js'].sha256);
  assert.equal(baseline.files['speaking-delivery.js'].sha256,require('../content/full-mock/delivery-bands-compatible-sources.json').files['speaking-delivery.js'].sha256);
- assert.equal(sha(read('full-mock/session.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/session.js'].sha256); // Reviewed section transition flow; legacy clock regression is covered separately.
+ assert.equal(sha(read('full-mock/session.js')),'42ce3ff414bb37fbfcb8e7ca4917a44ff83a3e07d90597c85856d69aaeef486e'); // Reviewed pause clock; historical source stays pinned below.
+ assert.equal(require('../content/full-mock/pause-previous-sources.json').files['full-mock/session.js'].sha256,'35d81a57f61193d1a94c22ae74cd31cae2cde56e861fd20ec66ae2a050ab5e58');
  // Explicit instructor exclusions have separate ownership/integrity and
  // denominator tests. Their exact source is pinned; native graders and the
  // original profile weights remain byte-identical above.

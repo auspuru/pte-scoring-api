@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "452e99836edb75c8de07b6f2e9b0a9dc74ee546f",
-  "checkedAt": "2026-11-06",
+  "baseCommit": "d6d5b5b167365701e299b36ad4f432af902d84c0",
+  "checkedAt": "2026-11-10",
   "scope": "Reviewed Azure pronunciation and fluency bands for new Read Aloud, Repeat Sentence and free-response assessments; frozen older attempts keep their policy and saved marks.",
   "snapshot": {
     "schemaVersion": 1,
@@ -92,7 +92,7 @@
         "version": "full-mock-aggregation-2026-10-29.1"
       },
       "full-mock/api.js": {
-        "sha256": "0062761943bf43a420fdb1b89b9d0c41d86823a7a2d0bf352ebe794d81cfde9d",
+        "sha256": "e6a83754194feeea73c8034afd797862ffe7019b3f1fb91beab80bd5516686c8",
         "version": null
       },
       "full-mock/asq-scoring.js": {
@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "8c5b1f2c6a6de5083e16b2c26e17109106604d14428fc6acd6a903bdc06b128a",
+        "sha256": "04cb21aad8cece20fae5cf3acd44d95ed0c34703e99ae0a8c38ffe658bc07de3",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -140,7 +140,7 @@
         "version": null
       },
       "full-mock/session.js": {
-        "sha256": "35d81a57f61193d1a94c22ae74cd31cae2cde56e861fd20ec66ae2a050ab5e58",
+        "sha256": "42ce3ff414bb37fbfcb8e7ca4917a44ff83a3e07d90597c85856d69aaeef486e",
         "version": "full-mock-session-2026-10-29.2"
       },
       "full-mock/store.js": {
@@ -177,11 +177,11 @@
         "version": "essay-unified-2.6"
       },
       "public/reading-mock-tools.js": {
-        "sha256": "c5655a466dad3579cd0faac269b90eafa7c468e413ec3a5a127f80530ad4fdd4",
+        "sha256": "6766b45368eb780a587dcac94cb2520fdd28520ce7a7b76dade61a93ad5dfee1",
         "version": null
       },
       "public/reading-practice.js": {
-        "sha256": "d7e67dea4258894ebbe63c64fa1463700ad7146c334f85ce1c486a2aeb263bef",
+        "sha256": "6ccd25fa306b632394b5ffa48ee714e80081e09a4c8aabb7e000032592c00498",
         "version": null
       },
       "public/writing-lab-report.js": {
