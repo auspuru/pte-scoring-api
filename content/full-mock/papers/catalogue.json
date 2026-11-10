@@ -110,12 +110,45 @@
       "scoredQuestionCount": 65,
       "taskTypeCount": 22,
       "file": "content/full-mock/papers/full-mock-3.v3.json"
+    },
+    {
+      "id": "full-mock-1",
+      "version": 5,
+      "sha256": "69698d5cc6e54f4c4f6a34bd668705e8fbf3544da5fcc5484a589f31ec860012",
+      "title": "IPT Brisbane — Full Mock 1",
+      "status": "frozen-draft",
+      "available": false,
+      "scoredQuestionCount": 65,
+      "taskTypeCount": 22,
+      "file": "content/full-mock/papers/full-mock-1.v5.json"
+    },
+    {
+      "id": "full-mock-2",
+      "version": 4,
+      "sha256": "34fa6c8d2508eed84edcb0a6e11e03d727d1dbfe6e2ae03fe72246bee0ccea73",
+      "title": "IPT Brisbane — Full Mock 2",
+      "status": "frozen-draft",
+      "available": false,
+      "scoredQuestionCount": 65,
+      "taskTypeCount": 22,
+      "file": "content/full-mock/papers/full-mock-2.v4.json"
+    },
+    {
+      "id": "full-mock-3",
+      "version": 4,
+      "sha256": "14573c1b1113236dec2ad6ae16d72a683e8c0ca6c9f73d637f2c6e41c2e945b1",
+      "title": "IPT Brisbane — Full Mock 3",
+      "status": "frozen-draft",
+      "available": false,
+      "scoredQuestionCount": 65,
+      "taskTypeCount": 22,
+      "file": "content/full-mock/papers/full-mock-3.v4.json"
     }
   ],
-  "activeVersion": 4,
+  "activeVersion": 5,
   "activeVersions": {
-    "full-mock-1": 4,
-    "full-mock-2": 3,
-    "full-mock-3": 3
+    "full-mock-1": 5,
+    "full-mock-2": 4,
+    "full-mock-3": 4
   }
 }
