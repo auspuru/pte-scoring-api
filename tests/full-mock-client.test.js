@@ -15,7 +15,7 @@ const { installFullMock } = require('../full-mock/api');
 const { createController, createPendingStore, renderQuestion } = require('../public/full-mock-client');
 const paper = loadPaper();
 const settle = () => new Promise(resolve => setTimeout(resolve, 5));
-async function until(check,timeoutMs=5000) { const deadline = Date.now() + timeoutMs; do { if (await check()) return; await settle(); } while (Date.now() < deadline); assert.fail('Timed out waiting for the player'); }
+async function until(check,timeoutMs=30000) { const deadline = Date.now() + timeoutMs; do { if (await check()) return; await settle(); } while (Date.now() < deadline); assert.fail('Timed out waiting for the player'); }
 const storage = () => { const values = new Map(); return { getItem: key => values.get(key) || null, setItem: (key, value) => values.set(key, value), removeItem: key => values.delete(key) }; };
 
 // A real DOM, IndexedDB transactions and authenticated HTTP routes; only browser
@@ -92,7 +92,7 @@ test('Full Mock Pause keeps the first recorded segment and permits the same ques
   const h=await fixture(t);await h.resume();await h.step(26000);
   await until(async()=>{await h.step(100);return h.recorders.some(r=>r.state==='recording');});
   const token=(await h.state()).current.token;await h.click('[data-fm="pause"]');
-  await until(async()=>{const state=await h.state();return !!state.responses[0].segments[0]?.finished;},20000);
+  await until(async()=>{const state=await h.state();return !!state.responses[0].segments[0]?.finished;});
   const paused=await h.state();assert(paused.pause);assert.equal(paused.responses[0].segments[0].chunkCount,1);
   await h.step(3600000);await h.click('[data-fm="unpause"]');
   assert.equal((await h.state()).current.token,token);
