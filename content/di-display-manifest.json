@@ -1001,6 +1001,105 @@
       "derivation": "verified-vector",
       "academyAsset": "assets/clear/verified/3001386.svg",
       "legend": []
+    },
+    "mock-di-web-20261110-population": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/population.png",
+      "originalSha256": "5483c523229e31e73b0e8082d2081c669fd39e45f9cc85eb7547ba47955ada04",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/population.png",
+      "displaySha256": "5483c523229e31e73b0e8082d2081c669fd39e45f9cc85eb7547ba47955ada04",
+      "bytes": 53197,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-life-expectancy": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/life-expectancy.png",
+      "originalSha256": "12bf4c4aaaf0f80b5f45e488a8bc1ad4d5dd349bf4c66ef1b38ff67478a2c011",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/life-expectancy.png",
+      "displaySha256": "12bf4c4aaaf0f80b5f45e488a8bc1ad4d5dd349bf4c66ef1b38ff67478a2c011",
+      "bytes": 55220,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-share-of-individuals-using-the-internet": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/share-of-individuals-using-the-internet.png",
+      "originalSha256": "0b3c0a015ae889895e1606cffe519b5f5ed04b7322c681e4b8b7e43749f293de",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/share-of-individuals-using-the-internet.png",
+      "displaySha256": "0b3c0a015ae889895e1606cffe519b5f5ed04b7322c681e4b8b7e43749f293de",
+      "bytes": 44183,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-annual-co2-emissions-per-country": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/annual-co2-emissions-per-country.png",
+      "originalSha256": "035f9b15b27c3265e28774e14b606d563482ce20436895b3592e8ed773bc44da",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/annual-co2-emissions-per-country.png",
+      "displaySha256": "035f9b15b27c3265e28774e14b606d563482ce20436895b3592e8ed773bc44da",
+      "bytes": 47749,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-children-born-per-woman": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/children-born-per-woman.png",
+      "originalSha256": "174a9ca4c7d656ebd7c8c73ad6eadd28a761b6e89f2f44ba1c9e0a1e511d9522",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/children-born-per-woman.png",
+      "displaySha256": "174a9ca4c7d656ebd7c8c73ad6eadd28a761b6e89f2f44ba1c9e0a1e511d9522",
+      "bytes": 55826,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-child-mortality": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/child-mortality.png",
+      "originalSha256": "f0d8d466348af543fea5f757c2b094101ba574a58a4a67ff465013c9bff462b2",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/child-mortality.png",
+      "displaySha256": "f0d8d466348af543fea5f757c2b094101ba574a58a4a67ff465013c9bff462b2",
+      "bytes": 46380,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-share-of-population-urban": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/share-of-population-urban.png",
+      "originalSha256": "27f5170b738149e666609d362df1cd3a4b4d18c4d6b2ce29f970a9bc63d4f361",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/share-of-population-urban.png",
+      "displaySha256": "27f5170b738149e666609d362df1cd3a4b4d18c4d6b2ce29f970a9bc63d4f361",
+      "bytes": 48052,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-gdp-per-capita-worldbank": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/gdp-per-capita-worldbank.png",
+      "originalSha256": "f8e7dd3f9937f95d592609b17527c23afb53b88abed1ff0a26ed538cf634c362",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/gdp-per-capita-worldbank.png",
+      "displaySha256": "f8e7dd3f9937f95d592609b17527c23afb53b88abed1ff0a26ed538cf634c362",
+      "bytes": 42331,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-water-cycle": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/water-cycle.png",
+      "originalSha256": "bb62f4cd2c0fc098d0ec0dbbc10a4771f6ef91bbb59811fb199947159166340d",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/water-cycle-display.png",
+      "displaySha256": "42430087a4aacf9cf403b9fb0237606def35b54fcd7983da8e299279aff8a69f",
+      "bytes": 1393603,
+      "derivation": "publisher-resampling",
+      "legend": [],
+      "displaySourceUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/styles/full_width/public/media/images/USGS_WaterCycle_English_ONLINE_20230302.png?itok=tAVM8IYl",
+      "originalDimensions": [
+        11400,
+        7800
+      ],
+      "displayDimensions": [
+        1336,
+        914
+      ]
+    },
+    "mock-di-web-20261110-solar-system-sizes": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/solar-system-sizes.jpg",
+      "originalSha256": "276bce1cb5cbf55e6bbc965b2afee3491bff2f2cddf36727c60fd1770d27ee05",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/solar-system-sizes.jpg",
+      "displaySha256": "276bce1cb5cbf55e6bbc965b2afee3491bff2f2cddf36727c60fd1770d27ee05",
+      "bytes": 47879,
+      "derivation": "unaltered-internet-original",
+      "legend": []
     }
   }
 }

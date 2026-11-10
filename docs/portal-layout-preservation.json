@@ -46,7 +46,7 @@
     "content/full-mock/scoring-lock.json": "72ec7b9bf4344e04384bded878365a4ab108c004a7da11531ce902e648710bb8",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
     "public/reading-mock-tools.js": "6766b45368eb780a587dcac94cb2520fdd28520ce7a7b76dade61a93ad5dfee1",
-    "speaking-mock.js": "4b3abacdf4550aa25b89f2e6797274dc9ddd5c1bd25db40fb871a5f980edeb4f",
+    "speaking-mock.js": "55193fcadaa653d6c1328d1afb5ff50b930b391555534bfdfbdce9d1f2312890",
     "speaking-mock-deadline-score.js": "97bb9719d82ec8c9ab592e22b4ef41a8aa1fc61239551209354293919a8c9b10",
     "speaking-mock-completion.js": "880d440996216a193d566d75065e5c096e5e620aa9cc0b078206cc5d095e940a",
     "speaking-mock-reassessment.js": "956f8d903adc5fdeb50d7f0ce6dcd806e63ef220e1368403885bf93e8f1c1472",
@@ -179,5 +179,11 @@
     "scope": "Refresh completed saved reports while visible, on return and through Refresh report. Owner, attempt, session and read-version guards preserve current audio, report navigation and all saved marks. Native scoring sources and provider work are unchanged.",
     "controllerBefore": "22d705058781594fc0bc2fb7fbbf3b95bfe6834eca670452a56475e07065954a",
     "controllerAfter": "56d0e8537736cd35ccc03369cd92586929c8146f9f84c2093c6356e597298850"
+  },
+  "speakingMockAdditionalPapersUpdate": {
+    "baselineCommit": "c8ccfef352dc9e32fc99b2eb04bb19e997e13bcb",
+    "scope": "Add fixed supplied RTS narration to the existing mock audio endpoint. Existing keyed RTS requests keep the versioned resolver; new mock-only unkeyed situations use the verified audioSource file. No grading, provider, timing, recording upload, ownership, result or saved-attempt functions change.",
+    "controllerBefore": "4b3abacdf4550aa25b89f2e6797274dc9ddd5c1bd25db40fb871a5f980edeb4f",
+    "controllerAfter": "55193fcadaa653d6c1328d1afb5ff50b930b391555534bfdfbdce9d1f2312890"
   }
 }

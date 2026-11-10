@@ -1,0 +1,150 @@
+[
+  [
+    {
+      "id": "mock-pdf-1-ra-01",
+      "type": "ra",
+      "title": "Read Aloud 1",
+      "text": "Urban gardens are becoming common in many cities. They provide fresh produce, create shared spaces and help residents learn about local ecosystems. Although gardens require regular care, volunteers often find that working together improves their sense of community. Some schools also use these spaces to teach children practical skills.",
+      "sample": "Urban gardens are becoming common in many cities. They provide fresh produce, create shared spaces and help residents learn about local ecosystems. Although gardens require regular care, volunteers often find that working together improves their sense of community. Some schools also use these spaces to teach children practical skills.",
+      "contentOrigin": {
+        "kind": "user-supplied-pdf",
+        "suppliedFile": "PTE_Speaking_Mock_01_Student.pdf",
+        "sourceId": "RA-1"
+      }
+    },
+    {
+      "id": "mock-pdf-1-ra-02",
+      "type": "ra",
+      "title": "Read Aloud 2",
+      "text": "Modern libraries offer far more than printed books. Visitors can access digital collections, attend workshops and receive support with research. Many institutions have also created quiet study areas and collaborative rooms. By combining traditional resources with new technology, libraries continue to serve students and the wider public.",
+      "sample": "Modern libraries offer far more than printed books. Visitors can access digital collections, attend workshops and receive support with research. Many institutions have also created quiet study areas and collaborative rooms. By combining traditional resources with new technology, libraries continue to serve students and the wider public.",
+      "contentOrigin": {
+        "kind": "user-supplied-pdf",
+        "suppliedFile": "PTE_Speaking_Mock_01_Student.pdf",
+        "sourceId": "RA-2"
+      }
+    },
+    {
+      "id": "mock-pdf-1-ra-03",
+      "type": "ra",
+      "title": "Read Aloud 3",
+      "text": "Researchers study ocean currents to understand how heat travels around the planet. These currents affect weather patterns, marine habitats and the movement of nutrients. Scientists collect information from satellites, floating instruments and research vessels. Comparing these measurements over time can reveal changes that are difficult to observe directly.",
+      "sample": "Researchers study ocean currents to understand how heat travels around the planet. These currents affect weather patterns, marine habitats and the movement of nutrients. Scientists collect information from satellites, floating instruments and research vessels. Comparing these measurements over time can reveal changes that are difficult to observe directly.",
+      "contentOrigin": {
+        "kind": "user-supplied-pdf",
+        "suppliedFile": "PTE_Speaking_Mock_01_Student.pdf",
+        "sourceId": "RA-3"
+      }
+    },
+    {
+      "id": "mock-pdf-1-ra-04",
+      "type": "ra",
+      "title": "Read Aloud 4",
+      "text": "Public transport networks can improve access to education and employment. Reliable services allow passengers to plan their journeys and reduce their dependence on private cars. However, successful transport planning requires attention to affordability, accessibility and changing population needs. Local feedback can help authorities identify the most important improvements.",
+      "sample": "Public transport networks can improve access to education and employment. Reliable services allow passengers to plan their journeys and reduce their dependence on private cars. However, successful transport planning requires attention to affordability, accessibility and changing population needs. Local feedback can help authorities identify the most important improvements.",
+      "contentOrigin": {
+        "kind": "user-supplied-pdf",
+        "suppliedFile": "PTE_Speaking_Mock_01_Student.pdf",
+        "sourceId": "RA-4"
+      }
+    },
+    {
+      "id": "mock-pdf-1-ra-05",
+      "type": "ra",
+      "title": "Read Aloud 5",
+      "text": "Learning a second language involves more than memorising vocabulary. Students must practise listening, speaking, reading and writing in different contexts. Frequent, manageable practice sessions often support long-term progress. Conversations with other learners can also build confidence and encourage people to communicate even when they make small mistakes.",
+      "sample": "Learning a second language involves more than memorising vocabulary. Students must practise listening, speaking, reading and writing in different contexts. Frequent, manageable practice sessions often support long-term progress. Conversations with other learners can also build confidence and encourage people to communicate even when they make small mistakes.",
+      "contentOrigin": {
+        "kind": "user-supplied-pdf",
+        "suppliedFile": "PTE_Speaking_Mock_01_Student.pdf",
+        "sourceId": "RA-5"
+      }
+    },
+    {
+      "id": "mock-pdf-1-ra-06",
+      "type": "ra",
+      "title": "Read Aloud 6",
+      "text": "Renewable energy projects depend on both scientific knowledge and careful planning. Engineers assess local conditions before choosing equipment and estimating expected output. Communities may also consider environmental effects and costs. When these factors are discussed early, project teams can make better decisions and explain their plans more clearly.",
+      "sample": "Renewable energy projects depend on both scientific knowledge and careful planning. Engineers assess local conditions before choosing equipment and estimating expected output. Communities may also consider environmental effects and costs. When these factors are discussed early, project teams can make better decisions and explain their plans more clearly.",
+      "contentOrigin": {
+        "kind": "user-supplied-pdf",
+        "suppliedFile": "PTE_Speaking_Mock_01_Student.pdf",
+        "sourceId": "RA-6"
+      }
+    }
+  ],
+  [
+    {
+      "id": "mock-pdf-2-ra-01",
+      "type": "ra",
+      "title": "Read Aloud 1",
+      "text": "Digital maps have changed the way people plan journeys. A traveller can compare routes, estimate distances and locate services using a mobile device. However, digital information may sometimes be outdated or incomplete. For this reason, people should remain attentive to road signs, local conditions and official advice, especially when travelling in unfamiliar areas.",
+      "sample": "Digital maps have changed the way people plan journeys. A traveller can compare routes, estimate distances and locate services using a mobile device. However, digital information may sometimes be outdated or incomplete. For this reason, people should remain attentive to road signs, local conditions and official advice, especially when travelling in unfamiliar areas.",
+      "contentOrigin": {
+        "kind": "user-supplied-pdf",
+        "suppliedFile": "PTE_Speaking_Mock_02_Student.pdf",
+        "sourceId": "RA-1"
+      }
+    },
+    {
+      "id": "mock-pdf-2-ra-02",
+      "type": "ra",
+      "title": "Read Aloud 2",
+      "text": "Scientific experiments are designed to test ideas using evidence. Researchers begin with a question, choose appropriate methods and record their observations carefully. A result becomes more convincing when other people can repeat the procedure. Transparent reporting is therefore important, even when findings differ from what the researchers originally expected.",
+      "sample": "Scientific experiments are designed to test ideas using evidence. Researchers begin with a question, choose appropriate methods and record their observations carefully. A result becomes more convincing when other people can repeat the procedure. Transparent reporting is therefore important, even when findings differ from what the researchers originally expected.",
+      "contentOrigin": {
+        "kind": "user-supplied-pdf",
+        "suppliedFile": "PTE_Speaking_Mock_02_Student.pdf",
+        "sourceId": "RA-2"
+      }
+    },
+    {
+      "id": "mock-pdf-2-ra-03",
+      "type": "ra",
+      "title": "Read Aloud 3",
+      "text": "Community festivals can support local businesses and introduce visitors to regional traditions. Successful events depend on clear communication between organisers, vendors and volunteers. Weather, transport and accessibility also need careful consideration. After each festival, organisers can review feedback to identify changes that would improve the experience for future visitors.",
+      "sample": "Community festivals can support local businesses and introduce visitors to regional traditions. Successful events depend on clear communication between organisers, vendors and volunteers. Weather, transport and accessibility also need careful consideration. After each festival, organisers can review feedback to identify changes that would improve the experience for future visitors.",
+      "contentOrigin": {
+        "kind": "user-supplied-pdf",
+        "suppliedFile": "PTE_Speaking_Mock_02_Student.pdf",
+        "sourceId": "RA-3"
+      }
+    },
+    {
+      "id": "mock-pdf-2-ra-04",
+      "type": "ra",
+      "title": "Read Aloud 4",
+      "text": "Online courses provide flexibility for people who cannot attend a classroom at fixed times. Learners may watch recorded lessons, complete exercises and interact through discussion boards. Nevertheless, independent study requires self-discipline. Setting weekly goals and seeking feedback can help students stay engaged and understand whether they are making progress.",
+      "sample": "Online courses provide flexibility for people who cannot attend a classroom at fixed times. Learners may watch recorded lessons, complete exercises and interact through discussion boards. Nevertheless, independent study requires self-discipline. Setting weekly goals and seeking feedback can help students stay engaged and understand whether they are making progress.",
+      "contentOrigin": {
+        "kind": "user-supplied-pdf",
+        "suppliedFile": "PTE_Speaking_Mock_02_Student.pdf",
+        "sourceId": "RA-4"
+      }
+    },
+    {
+      "id": "mock-pdf-2-ra-05",
+      "type": "ra",
+      "title": "Read Aloud 5",
+      "text": "Water conservation has become an important planning issue in many communities. Households can reduce unnecessary consumption by repairing leaks and choosing efficient appliances. Businesses may also monitor their water use and improve industrial processes. Public education programmes can support these efforts by explaining why small changes matter over time.",
+      "sample": "Water conservation has become an important planning issue in many communities. Households can reduce unnecessary consumption by repairing leaks and choosing efficient appliances. Businesses may also monitor their water use and improve industrial processes. Public education programmes can support these efforts by explaining why small changes matter over time.",
+      "contentOrigin": {
+        "kind": "user-supplied-pdf",
+        "suppliedFile": "PTE_Speaking_Mock_02_Student.pdf",
+        "sourceId": "RA-5"
+      }
+    },
+    {
+      "id": "mock-pdf-2-ra-06",
+      "type": "ra",
+      "title": "Read Aloud 6",
+      "text": "Museums preserve objects that help communities understand their history and culture. Curators research collections, prepare exhibitions and create educational activities for visitors. Many museums now provide digital access to selected materials. This can help people explore collections from distant locations, although seeing original objects still offers a different kind of experience.",
+      "sample": "Museums preserve objects that help communities understand their history and culture. Curators research collections, prepare exhibitions and create educational activities for visitors. Many museums now provide digital access to selected materials. This can help people explore collections from distant locations, although seeing original objects still offers a different kind of experience.",
+      "contentOrigin": {
+        "kind": "user-supplied-pdf",
+        "suppliedFile": "PTE_Speaking_Mock_02_Student.pdf",
+        "sourceId": "RA-6"
+      }
+    }
+  ]
+]

@@ -701,5 +701,27 @@
     },
     "loudnessLUFS": -20.7,
     "truePeakDbTP": -2.45
+  },
+  "mock-rts-user-20261110-lecture": {
+    "textSha256": "c30981087af8988fea2ccd8d830ccfb2aa0a545280b0583dc636046af8b1aaea",
+    "audioSha256": "021a1d8e69ea31eb8cfb4a7c86da0cd18f996829bcd6aabdee457e16c7bc4f7f",
+    "bytes": 137088,
+    "seconds": 8.568,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "source": "user-supplied-screenshot"
+  },
+  "mock-rts-user-20261110-orientation": {
+    "textSha256": "3294222447d991f29f8e31d3173b8d369fb4a81a5ed5a435daba6857a29865a2",
+    "audioSha256": "92d260852f68dbee24d57c46d97bbe15b9774a142e19188f1f718ba4329c48a7",
+    "bytes": 222720,
+    "seconds": 13.92,
+    "voices": [
+      "coral"
+    ],
+    "generator": "gpt-4o-mini-tts",
+    "source": "user-supplied-screenshot"
   }
 }

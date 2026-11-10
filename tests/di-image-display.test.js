@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs');
 const display=require('../di-image-display'),bank=require('../content/speaking-bank'),mock=require('../content/speaking-mocks');
 test('every supplied original and all mock placements have a verified matching clear display file',()=>{
-  assert.deepEqual(require('../scripts/verify-di-display').verify(),{images:49,mockPlacements:15,version:'di-display-2026-10-28.1'});
+  assert.deepEqual(require('../scripts/verify-di-display').verify(),{images:49,mockPlacements:25,version:'di-display-2026-10-28.1'});
 });
 test('display variants do not alter saved questions, scorer references or answers shown before submission',()=>{
   for(const q of bank.questions.filter(q=>q.type==='di'&&q.imageUrl)){

@@ -30,8 +30,8 @@ test('the six revised narrations and all original narrations are bound to their 
   assert.equal(prompts.requestedAudio('rts-1',bank.questions.find(q=>q.id==='rts-2').promptAudioKey),null);
   assert.equal(prompts.requestedAudio('rts-original-20261024-01'),null);
 });
-test('mock papers and reattempts use the latest RTS prompts while historical mock snapshots remain intact',()=>{
-  for(const paper of mocks.papers){
+test('legacy mock papers and reattempts use the latest RTS prompts while historical snapshots remain intact',()=>{
+  for(const paper of mocks.papers.slice(0,3)){
     assert.equal(paper.questionCount,27);assert.equal(paper.questions.filter(q=>q.type==='rts').length,2);
     const old={paperId:paper.id,questions:paper.questions.map(q=>q.type==='rts'?{...structuredClone(prompts.legacy.questions[q.id]),audioSource:{folder:'speaking',id:q.id},audioSeconds:prompts.requestedAudio(q.id).entry.seconds}:structuredClone(q)),responses:[{recording:{hash:'saved'},content:{total:5}}]};
     const before=JSON.stringify(old),updated=mocks.reattemptQuestions(old);assert.equal(updated.length,old.questions.length);
