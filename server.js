@@ -6493,14 +6493,17 @@ const fullMock = require('./full-mock/api').installFullMock(app, {
     users:process.env.FULL_MOCK_PREVIEW_USERS, verifyImpersonation:verifyImpersonationToken
   }),
   assessment: {
-    adapters: require('./full-mock/adapters').createAdapters({ speakingContentModel:mockContent.speaking, writingContentModel:mockContent.writing,
+    adapters: require('./full-mock/adapters').createAdapters({ speakingContentModel:mockContent.speaking, writingContentModel,
       swtGrader:mockContent.swt, essayGrader:mockContent.essay }),
+    previousAdapters: require('./full-mock/adapters').createAdapters({ speakingContentModel:mockContent.speaking, writingContentModel:mockContent.writing,
+      swtGrader:mockContent.swt, essayGrader:mockContent.essay }),
+    previousProviderConfiguration:require('./full-mock/assessment').configuration(),
     // Attempts frozen before the model change keep their concrete providers.
     // Their successful stages are never repeated or relabelled as GPT grades.
     legacyAdapters: require('./full-mock/adapters').createAdapters({ speakingContentModel, writingContentModel,
       swtGrader:(question,text)=>judgeContentWithClaude(text,question.text,{}),essayGrader }),
     legacyProviderConfiguration:require('./full-mock/assessment').legacyConfiguration(),
-    providerConfiguration: require('./full-mock/assessment').configuration()
+    providerConfiguration: require('./full-mock/assessment').claudeConfiguration()
   }
 });
 const mockAlertsEnabled=(process.env.MOCK_ALERTS_ENABLED??process.env.SPEAKING_MOCK_ALERTS_ENABLED)==='true';
