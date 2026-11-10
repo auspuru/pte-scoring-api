@@ -24,3 +24,20 @@ test('new selectable papers preserve all old paper snapshots and use ten distinc
   }
  }
 });
+
+test('new papers serve every exact public prompt recording, including supplied situations',async t=>{
+ const express=require('express'),os=require('node:os'),{randomUUID}=require('node:crypto'),app=express();app.use(express.json());
+ const directory=fs.mkdtempSync(path.join(os.tmpdir(),'new-speaking-prompts-'));
+ const service=require('../speaking-mock').installSpeakingMock(app,{directory,verifyToken:token=>token==='alice'?'alice':null,getAccount:async()=>({}),backgroundEnabled:false,azureAvailable:false,gptAvailable:false});
+ const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+ t.after(async()=>{await service.stop();await service.waitForJobs();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));fs.rmSync(directory,{recursive:true,force:true});});
+ const base='http://127.0.0.1:'+server.address().port;
+ for(const p of bank.papers.slice(3)){
+  const response=await fetch(base+'/api/speaking-mocks/attempts',{method:'POST',headers:{'Content-Type':'application/json','x-session-token':'alice'},body:JSON.stringify({id:randomUUID(),paperId:p.id})});assert.equal(response.status,200);const a=await response.json();assert.equal(a.paperId,p.id);assert.equal(a.questionCount,27);assert.equal(a.deadline-a.startedAt,40*60000);
+  for(const q of p.questions.filter(q=>q.audioSource)){
+   const shown=bank.publicQuestion(q),r=await fetch(base+shown.audioUrl);assert.equal(r.status,200,q.id);assert.match(r.headers.get('content-type'),/audio\/mpeg/);
+   const source=q.audioSource,entry=source.folder==='approved'?require('../approved-audio').fileFor(source.id).entry:(source.folder==='speaking'?require('../content/speaking-audio-manifest')():require('../content/writing-audio/manifest.json'))[source.id];assert.equal(hash(Buffer.from(await r.arrayBuffer())),entry.audioSha256,q.id);
+  }
+ }
+ const bad=await fetch(base+'/speaking-mock-audio/mock-rts-user-20261110-lecture.mp3?prompt=unrecognised');assert.equal(bad.status,404);
+});

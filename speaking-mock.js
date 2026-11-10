@@ -298,7 +298,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   app.use('/api/speaking-mocks',router);
   app.get('/speaking-mock-audio/:id.mp3',wrap(async(req,res)=>{
     const q=bank.papers.flatMap(p=>p.questions).find(q=>q.id===req.params.id&&q.audioSource);if(!q)throw fail('Prompt recording not found.',404);
-    if(q.type==='rts'){
+    if(q.type==='rts'&&(q.promptAudioKey||req.query.prompt!==undefined)){
       const audio=require('./rts-prompts').requestedAudio(q.id,req.query.prompt);if(!audio)throw fail('Prompt recording not found.',404);
       res.type('audio/mpeg').set('Cache-Control',audio.versioned?'public,max-age=31536000,immutable':'public,max-age=3600').sendFile(audio.file);return;
     }
