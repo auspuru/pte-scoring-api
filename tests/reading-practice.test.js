@@ -58,6 +58,16 @@ test('Reading UI completes an expired mock once and retains its review in histor
  assert.match(h.host.innerHTML,/Session complete/);let result=JSON.parse(h.values.get(key));assert.equal(result.history.length,1);assert.equal(result.session.done,true);
  h.timers.at(-1)();result=JSON.parse(h.values.get(key));assert.equal(result.history.length,1);
 });
+test('Reading mock Pause keeps the current question and saved answer until the student explicitly continues',async()=>{
+ const h=client();await h.ctx.ReadingPractice.open();await h.click({start:'mock'});
+ const key=storageKey('first'),before=JSON.parse(h.values.get(key));assert(before.session.deadline>Date.now());
+ await h.click({action:'exam-pause'});
+ const paused=JSON.parse(h.values.get(key));assert.equal(paused.session.manualPause,true);assert.equal(paused.session.deadline,null);
+ assert.match(h.host.innerHTML,/Continue mock/);
+ await h.click({action:'exam-resume'});
+ const resumed=JSON.parse(h.values.get(key));assert.equal(resumed.session.manualPause,undefined);
+ assert(resumed.session.deadline>Date.now());assert.equal(resumed.session.index,before.session.index);
+});
 test('A question-bank response arriving after sign-out cannot restore the reading pane',async()=>{
  const h=client();let resolve;h.ctx.fetch=()=>new Promise(r=>resolve=r);
  const pending=h.ctx.ReadingPractice.open();h.ctx.currentUserId='';h.ctx.ReadingPractice.reset();resolve({ok:true,json:async()=>bank});await pending;

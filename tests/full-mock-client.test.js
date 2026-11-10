@@ -15,7 +15,7 @@ const { installFullMock } = require('../full-mock/api');
 const { createController, createPendingStore, renderQuestion } = require('../public/full-mock-client');
 const paper = loadPaper();
 const settle = () => new Promise(resolve => setTimeout(resolve, 5));
-async function until(check) { const deadline = Date.now() + 5000; do { if (await check()) return; await settle(); } while (Date.now() < deadline); assert.fail('Timed out waiting for the player'); }
+async function until(check,timeoutMs=5000) { const deadline = Date.now() + timeoutMs; do { if (await check()) return; await settle(); } while (Date.now() < deadline); assert.fail('Timed out waiting for the player'); }
 const storage = () => { const values = new Map(); return { getItem: key => values.get(key) || null, setItem: (key, value) => values.set(key, value), removeItem: key => values.delete(key) }; };
 
 // A real DOM, IndexedDB transactions and authenticated HTTP routes; only browser
@@ -77,6 +77,28 @@ async function fixture(t, type = 'intro', sectionTransitions = false) {
     offline: value => { offline = value; }, intercept: value => { interceptor = value; }, defer: value => { deferStop = value; },
     metadata: value => { metadataReady = value; }, account: value => { owner = value; env.sessionStorage.setItem('pte_session_token', value); }, now: () => now };
 }
+test('Full Mock Pause retains a typed answer and resumes the same question after a long break',async t=>{
+  const h=await fixture(t,'swt');await h.resume();h.input('A saved summary of the passage.');
+  const before=await h.state(),token=before.current.token,index=before.index,endsAt=before.current.endsAt;
+  await h.click('[data-fm="pause"]');const paused=await h.state();
+  assert(paused.pause);assert.equal(paused.responses[index].draft[0],'A saved summary of the passage.');
+  await h.step(3600000);assert.equal((await h.state()).index,index);
+  await h.click('[data-fm="unpause"]');const resumed=await h.state();
+  assert.equal(resumed.pause,undefined);assert.equal(resumed.current.token,token);
+  assert.equal(resumed.current.endsAt,endsAt+3600000);
+  assert.equal(h.document.getElementById('fm-text').value,'A saved summary of the passage.');
+});
+test('Full Mock Pause keeps the first recorded segment and permits the same question to record after Continue',async t=>{
+  const h=await fixture(t);await h.resume();await h.step(26000);
+  await until(async()=>{await h.step(100);return h.recorders.some(r=>r.state==='recording');});
+  const token=(await h.state()).current.token;await h.click('[data-fm="pause"]');
+  await until(async()=>{const state=await h.state();return !!state.responses[0].segments[0]?.finished;},20000);
+  const paused=await h.state();assert(paused.pause);assert.equal(paused.responses[0].segments[0].chunkCount,1);
+  await h.step(3600000);await h.click('[data-fm="unpause"]');
+  assert.equal((await h.state()).current.token,token);
+  await until(async()=>{await h.step(100);return h.recorders.some(r=>r.state==='recording');});
+  assert.equal((await h.state()).responses[0].segments[0].chunkCount,1);
+});
 
 test('All 22 task forms render usable controls from the redacted player projection', () => {
   const seen = new Set();

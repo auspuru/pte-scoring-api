@@ -48,7 +48,7 @@ function seal(state, at, reason) {
   response.answer = structuredClone(response.draft); response.status = responseStatus(response);
 }
 function reconcile(state, paper, now) {
-  for (let count = 0; state.status === 'active' && state.current && now >= state.current.endsAt && count < 70; count++) {
+  for (let count = 0; state.status === 'active' && !state.pause && state.current && now >= state.current.endsAt && count < 70; count++) {
     const deadline = state.current.endsAt;
     seal(state, deadline, 'time-expired'); state.index++; enter(state, paper, deadline);
   }
@@ -56,6 +56,7 @@ function reconcile(state, paper, now) {
 }
 function phase(state, now) {
   if (state.status !== 'active') return 'submitted';
+  if (state.pause) return 'paused';
   if (state.transition) return 'transition';
   const current = state.current;
   if (current.promptAt != null && now < current.promptAt) return 'instructions';
@@ -76,12 +77,34 @@ function control(state, token, now) {
 }
 function beginSection(state, paper, transitionId, now) {
   if (Object.values(state.sectionStarts || {}).some(value => value.id === transitionId)) return;
-  if (state.status !== 'active' || !state.transition || state.transition.id !== transitionId) throw fail('This section introduction is no longer current.', 409);
+  if (state.status !== 'active' || state.pause || !state.transition || state.transition.id !== transitionId) throw fail('This section introduction is no longer current.', 409);
   const part = state.transition.section;
   state.sectionStarts[part] = { id: transitionId, startedAt: now };
   delete state.transition; enter(state, paper, now);
 }
-function current(state, token) { if (state.status !== 'active' || !state.current || state.current.token !== token) throw fail('This question has already finished.'); return state.responses[state.index]; }
+function current(state, token) { if(state.pause)throw fail('This question is paused.',409);if (state.status !== 'active' || !state.current || state.current.token !== token) throw fail('This question has already finished.'); return state.responses[state.index]; }
+function pause(state, paper, now, {audioPositionSeconds,draft:pausedDraft,sequence}={}) {
+  if(state.pause)return;
+  if(state.status!=='active'||state.current?.endsAt<=now)throw fail('This question has already finished.',409);
+  if(pausedDraft!==undefined)saveDraft(state,paper,{itemToken:state.current?.token,answer:pausedDraft,sequence});
+  const position=Number(audioPositionSeconds),seconds=state.current?.promptAt==null?0:(state.current.promptEndsAt-state.current.promptAt)/1000;
+  state.pause={id:randomUUID(),at:now,index:state.index,
+    ...(audioPositionSeconds!=null&&Number.isFinite(position)&&position>=0&&position<=seconds+1?{audioPositionSeconds:position}:{})};
+}
+function resume(state, now, pauseId) {
+  if(typeof pauseId!=='string'||!pauseId)throw fail('Select the saved pause before continuing.',409);
+  if(!state.pause){if(state.lastResumedPause===pauseId)return;throw fail('This mock is not paused.',409);}
+  const saved=state.pause;
+  if(state.status!=='active'||saved.id!==pauseId||saved.index!==state.index)throw fail('This pause is no longer current.',409);
+  const elapsed=now-saved.at;if(!Number.isSafeInteger(elapsed)||elapsed<0)throw fail('The saved pause time changed.',409);
+  for(const field of ['reading','listening'])if(Number.isFinite(state.clocks[field]))state.clocks[field]+=elapsed;
+  if(state.current)for(const field of ['enteredAt','promptAt','promptEndsAt','responseAt','endsAt'])if(Number.isFinite(state.current[field]))state.current[field]+=elapsed;
+  const response=state.responses[state.index];
+  if(response?.permit)for(const field of ['responseAt','deadline'])if(Number.isFinite(response.permit[field]))response.permit[field]+=elapsed;
+  for(const segment of response?.segments||[])if(!segment.finished)for(const field of ['startedAt','deadline'])if(Number.isFinite(segment[field]))segment[field]+=elapsed;
+  if(Number.isFinite(saved.audioPositionSeconds)&&state.current?.promptAt!=null&&now<state.current.promptEndsAt)state.resumedAudio={index:state.index,positionSeconds:saved.audioPositionSeconds,at:now};
+  state.lastResumedPause=saved.id;delete state.pause;
+}
 function validateAnswer(q, answer) {
   if (!Array.isArray(answer) || answer.length > 500 || JSON.stringify(answer).length > 16000) throw fail('Invalid answer.', 400);
   if (['swt', 'essay', 'sst', 'wfd'].includes(q.type)) { if (answer.length > 1 || answer.some(value => typeof value !== 'string' || value.length > 12000)) throw fail('Invalid written answer.', 400); }
@@ -90,9 +113,10 @@ function validateAnswer(q, answer) {
   return structuredClone(answer);
 }
 function saveDraft(state, paper, body) {
-  const response = current(state, body.itemToken), q = item(paper, state.index).question;
+  const response = state.pause&&state.current?.token===body.itemToken?state.responses[state.index]:current(state, body.itemToken), q = item(paper, state.index).question;
   if (SPEECH.has(q.type) || !Number.isSafeInteger(body.sequence) || body.sequence < 0 || body.sequence > 100000) throw fail('Invalid answer sequence.', 400);
   const answer = validateAnswer(q, body.answer);
+  if(state.pause){if(body.sequence>response.draftSequence||body.sequence===response.draftSequence&&JSON.stringify(answer)!==JSON.stringify(response.draft))throw fail('This answer is paused.',409);return;}
   if (body.sequence < response.draftSequence) return;
   if (body.sequence === response.draftSequence) { if (JSON.stringify(answer) !== JSON.stringify(response.draft)) throw fail('An answer revision cannot be replaced.'); return; }
   response.draft = answer; response.draftSequence = body.sequence;
@@ -103,12 +127,12 @@ function next(state, paper, body, now) {
   if (SPEECH.has(q.type) && now < state.current.responseAt && body.skip !== true) throw fail('Wait for the response window, or explicitly skip this question.');
   if (body.skip === true && response.segments.some(segment => Object.keys(segment.chunks).length)) throw fail('A recorded response cannot be replaced with a skip.');
   if (body.skip === true) for (const segment of response.segments) { segment.cancelled = true; segment.finished = true; segment.chunkCount = 0; }
-  seal(state, now, body.skip ? 'skipped' : 'submitted'); state.index++; enter(state, paper, now);
+  seal(state, now, body.skip ? 'skipped' : 'submitted'); state.index++;delete state.resumedAudio; enter(state, paper, now);
 }
 function openSegment(state, paper, body, now) {
   const index = state.responses.findIndex(value => value.token === body.itemToken), response = state.responses[index];
   if (!response || !SPEECH.has(response.type)) throw fail('Recording item not found.', 404);
-  const live = state.status === 'active' && state.current?.token === body.itemToken && now < state.current.endsAt;
+  const live = state.status === 'active' && !state.pause && state.current?.token === body.itemToken && now < state.current.endsAt;
   const reserved = response.permit?.id === body.segmentId && response.permit.token === body.segmentToken;
   // A delayed, unused declaration is harmless after an explicit skip. Its
   // corresponding zero-chunk finalisation is also idempotent below.
@@ -117,7 +141,7 @@ function openSegment(state, paper, body, now) {
   if (!uuid(body.segmentId) || !uuid(body.segmentToken) || !['audio/webm', 'audio/mp4', 'audio/ogg', 'audio/wav', 'audio/mpeg'].includes(body.mime)) throw fail('Unsupported recording.', 400);
   const existing = response.segments.find(segment => segment.id === body.segmentId);
   if (existing) { if (existing.hash !== hash(body.segmentToken) || existing.mime !== body.mime) throw fail('This recording segment is already saved.'); return; }
-  if (response.segments.length >= 5) throw fail('Too many recording interruptions. Your saved audio is retained for review.');
+  if (response.segments.length >= 32) throw fail('Too many recording interruptions. Your saved audio is retained for review.');
   response.segments.push({ id: body.segmentId, hash: hash(body.segmentToken), mime: body.mime,
     startedAt: response.permit.responseAt, deadline: response.permit.deadline, chunks: {}, finished: false, lateActivation: !live });
   if (!live) response.status = 'needs-review';
@@ -135,7 +159,7 @@ function registerChunk(state, token, segmentId, secret, sequence, metadata, now)
   if (existing) { if (existing.sha256 !== metadata.sha256 || existing.bytes !== metadata.bytes) throw fail('A saved recording chunk cannot be replaced.'); return; }
   const total = state.responses.flatMap(value => value.segments).reduce((sum, value) => sum + Object.values(value.chunks).reduce((n, chunk) => n + chunk.bytes, 0), 0);
   if (segment.finished || total + metadata.bytes > 96 * 1024 * 1024 || Object.values(segment.chunks).reduce((sum, chunk) => sum + chunk.bytes, 0) + metadata.bytes > 12 * 1024 * 1024) throw fail('This recording segment is closed or too large.', 413);
-  segment.chunks[sequence] = { ...metadata, receivedAt: now, late: now > segment.deadline };
+  segment.chunks[sequence] = { ...metadata, receivedAt: now, late: !state.pause && now > segment.deadline };
 }
 function finishSegment(state, token, segmentId, secret, count, now) {
   const skipped = state.responses.find(value => value.token === token);
@@ -144,7 +168,7 @@ function finishSegment(state, token, segmentId, secret, count, now) {
   if (!Number.isInteger(count) || count < 0 || count > 256) throw fail('Invalid recording length.', 400);
   if (segment.finished) { if (segment.chunkCount !== count) throw fail('This recording is already finalised.'); return; }
   if (Object.keys(segment.chunks).length !== count || Array.from({ length: count }, (_, index) => !segment.chunks[index]?.stored).some(Boolean)) throw fail('Some recording chunks are still uploading. Retry after they are saved.');
-  segment.finished = true; segment.chunkCount = count; segment.finishedAt = now; segment.late = now > segment.deadline;
+  segment.finished = true; segment.chunkCount = count; segment.finishedAt = now; segment.late = !state.pause && now > segment.deadline;
   if (response.sealed) response.status = responseStatus(response);
 }
 function recover(state, paper, body, now) {
@@ -166,7 +190,7 @@ function present(state, paper, now) {
   const output = { id: state.id, paperId: state.paperId, paperVersion: state.paperVersion, paperHash: state.paperHash, title: state.title,
     status: state.status, preview: state.preview, createdAt: state.createdAt, submittedAt: state.submittedAt || null,
     index: state.index, totalItems: 66, scoredQuestionCount: 65, completedCount: state.responses.filter(value => value.sealed).length,
-    serverNow: now, mediaPending: state.responses.reduce((sum, value) => sum + value.segments.filter(segment => !segment.finished).length, 0),
+    serverNow: now, ...(state.pause?{pause:{id:state.pause.id,index:state.pause.index}}:{}),...(state.resumedAudio?{resumedAudio:state.resumedAudio}:{}), mediaPending: state.responses.reduce((sum, value) => sum + value.segments.filter(segment => !segment.finished).length, 0),
     recoveredEvidenceCount: state.recoveries.length, assessmentStatus,
     ...(state.assessment ? { assessmentProgress: { assessed: assessed?.assessedCount || 0, expected: 65 } } : {}) };
   if (state.transition) {
@@ -189,4 +213,4 @@ function end(state, paper, now) {
   if (state.transition) { delete state.transition; enter(state, paper, now); }
   while (state.status === 'active') { seal(state, now, 'finished-early'); state.index++; enter(state, paper, now); }
 }
-module.exports = { VERSION, SPEECH, item, create, reconcile, phase, beginSection, claim, control, saveDraft, next, openSegment, findSegment, registerChunk, finishSegment, recover, present, end };
+module.exports = { VERSION, SPEECH, item, create, reconcile, phase, beginSection, claim, control, pause, resume, saveDraft, next, openSegment, findSegment, registerChunk, finishSegment, recover, present, end };

@@ -97,6 +97,8 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     res.json(view(record));
   }));
   router.get('/attempts/:id', wrap(async (req, res) => res.json(view(await read(req.fullMock.uid, req.params.id, req.fullMock)))));
+  router.post('/attempts/:id/pause', wrap(async(req,res)=>res.json(view(await change(req,(state,savedPaper)=>session.pause(state,savedPaper,now(),req.body||{}))))));
+  router.post('/attempts/:id/resume', wrap(async(req,res)=>res.json(view(await change(req,(state)=>session.resume(state,now(),req.body?.pauseId),{controlling:false})))));
   router.post('/attempts/:id/begin-section', wrap(async (req, res) => res.json(view(await change(req, (state, savedPaper) => session.beginSection(state, savedPaper, req.body?.transitionId, now()))))));
   router.post('/attempts/:id/assessment', wrap(async (req, res) => {
     if (!assessor) throw fail('Assessment is not enabled.', 503);

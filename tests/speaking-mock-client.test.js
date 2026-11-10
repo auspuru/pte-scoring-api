@@ -70,6 +70,19 @@ test('A delayed begin response and a fast device clock do not consume the visibl
  await h.click({sm:'resume',id:saved.id});const prompts=()=>h.audios.filter(a=>(a.url.startsWith('/speaking-mock-audio/')||a.url.startsWith('/practice-audio/')));
  assert.equal(prompts().length,0);await h.tick(2999);assert.equal(prompts().length,0);await h.tick(1);assert.equal(prompts().length,1);assert.equal(prompts()[0].offset,0);
 });
+test('Pause during a Speaking prompt freezes its timer and Continue seeks to the saved audio position',async t=>{
+ const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
+ const first=await h.active(),index=first.questions.findIndex(q=>q.type==='rs');
+ await h.lab.store.update('alice',first.id,a=>{a.index=index;delete a.questionStartedAt;return a;});
+ await h.controller.open();await h.click({sm:'resume',id:first.id});await h.tick(3000);
+ const prompt=h.audios.at(-1);prompt.currentTime=3.25;
+ const before=await h.active();await h.click({sm:'pause'});
+ const paused=await h.active();assert(paused.pause);assert.equal(paused.deadline,null);assert.equal(h.protected(),false);
+ await h.tick(300000);assert.equal((await h.active()).index,index);
+ await h.click({sm:'unpause'});await h.tick(100);
+ const resumed=await h.active();assert.equal(resumed.pause,undefined);assert(resumed.deadline>before.deadline);
+ assert(h.audios.at(-1).offset>=3.25&&h.audios.at(-1).offset<4);
+});
 for(const type of ['rl','sgd','rts'])test(type+': a full visible lead-in and preparation follow real prompt completion, even when playback is delayed',async t=>{
  const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
  const first=await h.active(),index=first.questions.findIndex(q=>q.type===type);await h.lab.store.update('alice',first.id,a=>{a.index=index;delete a.questionStartedAt;return a;});
@@ -141,7 +154,7 @@ test('moving to the next mock question cancels a pending beep without saving a p
 
 test('One complete mock runs timed recording, reuses saved audio, hides feedback until submission and shows saved delivery feedback',async t=>{
   const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
-  assert.equal(h.protected(),true);assert.match(h.host.innerHTML,/Recorded Answer/);assert.doesNotMatch(h.host.innerHTML,/Individual question feedback|Score|Transcript|Sample response|Pause|Replay/);
+  assert.equal(h.protected(),true);assert.match(h.host.innerHTML,/Recorded Answer/);assert.doesNotMatch(h.host.innerHTML,/Individual question feedback|Score|Transcript|Sample response|Replay/);
   for(let index=0;index<28;index++){
     const a=await h.active(),q=a.questions[index];const recordingAt=a.questionStartedAt+3000+(q.audioSeconds||0)*1000+q.preparation*1000+(q.startCueMs||0);
     if(q.audioSource){await h.tick(Math.max(0,a.questionStartedAt+3001-h.env.Date.now()));const count=h.audios.length;await h.tick(100);assert.equal(h.audios.length,count,'A prompt plays once.');}

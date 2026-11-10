@@ -118,7 +118,7 @@
       // A slow heartbeat must not rewind the displayed clock when its response
       // arrives after newer local ticks or another request's acknowledgement.
       if (!lastClock || value.serverNow > lastClock) { anchor = Math.max(value.serverNow, lastClock ? serverNow() : value.serverNow); anchorAt = monotonic(); lastClock = value.serverNow; }
-      const changed = attempt?.current?.token !== value.current?.token || attempt?.status !== value.status;
+      const changed = attempt?.current?.token !== value.current?.token || attempt?.status !== value.status || !!attempt?.pause !== !!value.pause;
       attempt = value;
       if (changed) render();
     }
@@ -248,18 +248,20 @@
       // report never requires browser audio or microphone support.
       const unlocking = knownStatus === 'submitted' ? null : unlockAudio().then(() => null, error => error);
       try {
-        if (knownStatus !== 'submitted') {
+        const value = await api('/attempts/' + id); if (!valid(ticket)) return; attempt = value;
+        if (knownStatus !== 'submitted'&&!value.pause) {
           if (!env.PortalExamMode?.prepare) throw Error('Reload the portal to continue this full mock in fullscreen.');
           const ready = await env.PortalExamMode.prepare(OWNER, host, { immediate:true });
           if (!ready || !valid(ticket)) return;
         }
-        const value = await api('/attempts/' + id); if (!valid(ticket)) return; attempt = value;
+        if(value.pause){render();return;}
         if (value.status === 'active') { if (unlocking) { const error = await unlocking; if (error) throw error; } else await unlockAudio(); if (!valid(ticket)) return; if (speech(value.question?.type)) await microphone(); if (!valid(ticket)) return; await establishClaim(); if (valid(ticket)) startPlayer(); }
         else { accept(value); render(); await flush(); await syncReport(); }
       } catch (error) { if (valid(ticket)) { env.PortalExamMode?.set(OWNER, false, host); notice(error.message, true); } }
     }
     function startPlayer() {
       if (attempt?.status !== 'active') { render(); return; }
+      if(attempt.pause){render();return;}
       render(); env.PortalExamMode?.set(OWNER, true, host, {
         onEvent:event => logEvent(event.reason),
         onLock:() => { if (capture?.recorder) stopCapture(); output?.pause(); },
@@ -357,6 +359,8 @@
         if (!report) shell('<h1>Test submitted</h1><p role="status">Loading your saved report…</p><p>Keep this tab open until pending recordings finish uploading.</p><p id="fm-save-status" role="status"></p><p id="fm-notice" role="status"></p><button class="portal-button" data-fm="retry">Retry pending saves and report</button><button class="portal-button" data-fm="reload">Saved attempts</button>');
         syncReport(); return;
       }
+      if(attempt.pause){stopCapture();stopPrompt();rendering='paused:'+attempt.pause.id;env.clearInterval(timer);env.clearInterval(poller);env.PortalExamMode?.set(OWNER,false,host);
+        shell('<section class="fm-transition"><span class="fm-eyebrow">FULL MOCK PAUSED</span><h1>'+esc(attempt.title)+'</h1><p>Question '+(attempt.index||'Introduction')+' of 65. Your remaining time, answer and recorded audio are saved.</p><p id="fm-save-status" role="status">Saving any final recording segment…</p><p id="fm-notice" role="status"></p><button type="button" class="portal-button primary" data-fm="unpause">Continue full mock</button></section>');flush();return;}
       if (attempt.transition) {
         const part = attempt.transition, key = 'transition:' + part.id;
         if (rendering === key) return;
@@ -369,7 +373,7 @@
       const q = attempt.question;
       shell((attempt.preview ? '<div class="fm-preview-tools"><button type="button" class="fm-text-button" data-fm="end">Finish test early</button></div>' : '') + '<header class="fm-exam-header"><div><span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><strong>' + esc(q.type === 'intro' ? 'Personal Introduction · Not scored' : q.name) + '</strong></div><div class="fm-exam-meta"><span class="fm-badge">Full Mock</span><span>' + (attempt.index === 0 ? 'Introduction' : 'Question ' + attempt.index + ' of 65') + '</span><span class="fm-timer"><small id="fm-clock-label">Time remaining</small><strong id="fm-time" aria-label="Time remaining"></strong></span>' + volumeControl() + '</div></header><main class="fm-exam-body"><p class="fm-instruction">' + esc(q.instruction) + '</p>'
         + (q.audio ? '<section class="fm-prompt"><span id="fm-audio-status" role="status">Audio will play automatically.</span><button type="button" class="portal-button" data-fm="audio" id="fm-audio-resume" hidden>Resume remaining audio</button></section>' : '')
-        + '<div id="fm-question">' + renderQuestion(q, draft) + '</div>' + (speech(q.type) ? '<button class="portal-button" data-fm="mic" id="fm-mic-resume" hidden>Reconnect microphone</button>' : '') + '<p id="fm-save-status" class="fm-save-status" role="status">Responses save automatically.</p><p id="fm-notice" role="status"></p></main><footer class="fm-exam-footer"><div>' + (speech(q.type) ? '<button class="fm-text-button" data-fm="skip">Skip this item</button>' : '') + '</div><button class="portal-button primary" id="fm-next" data-fm="next">' + (attempt.index === 65 ? 'Submit test' : 'Next') + ' →</button></footer>');
+        + '<div id="fm-question">' + renderQuestion(q, draft) + '</div>' + (speech(q.type) ? '<button class="portal-button" data-fm="mic" id="fm-mic-resume" hidden>Reconnect microphone</button>' : '') + '<p id="fm-save-status" class="fm-save-status" role="status">Responses save automatically.</p><p id="fm-notice" role="status"></p></main><footer class="fm-exam-footer"><div>' + (speech(q.type) ? '<button class="fm-text-button" data-fm="skip">Skip this item</button>' : '') + '</div><div><button type="button" class="portal-button" data-fm="pause">Pause mock</button> <button class="portal-button primary" id="fm-next" data-fm="next">' + (attempt.index === 65 ? 'Submit test' : 'Next') + ' →</button></div></footer>');
       recoverDraft(rendering).catch(error => notice(error.message, true)); loadMedia(rendering); if (speech(q.type)) prepareSegment(rendering);
       doc.getElementById('fm-question')?.querySelector('textarea,input,select,button')?.focus({ preventScroll: true });
       host.scrollTop = 0; env.scrollTo?.({ top:0, left:0, behavior:'auto' });
@@ -405,7 +409,7 @@
         if (audio.readyState < 1) await new Promise((resolve, reject) => { const timeout = env.setTimeout(() => reject(Error('Audio load timed out.')), 10000); audio.onloadedmetadata = () => { env.clearTimeout(timeout); resolve(); }; audio.onerror = () => { env.clearTimeout(timeout); reject(Error('Audio interrupted.')); }; });
         if (rendering !== token || outputUrl !== url || !attempt?.current || env.PortalExamMode?.isLocked?.(OWNER)) return;
         if (serverNow() >= attempt.current.promptEndsAt) { updateAudioStatus('Audio completed.'); return; }
-        audio.currentTime = Math.max(0, (serverNow() - attempt.current.promptAt) / 1000); await audio.play();
+        audio.currentTime = attempt.resumedAudio?.index===attempt.index?Math.max(0,attempt.resumedAudio.positionSeconds+(serverNow()-attempt.resumedAudio.at)/1000):Math.max(0, (serverNow() - attempt.current.promptAt) / 1000); await audio.play();
         if (rendering === token) { updateAudioStatus('Playing — listen once.'); doc.getElementById('fm-audio-resume').hidden = true; }
       } catch { if (rendering === token) { played = token; audioFailure(); } }
     }
@@ -451,8 +455,29 @@
       await queuePut(ownerPrefix + current.id + ':finish:' + current.segmentId, { kind: 'finish', id: current.id, itemToken: current.itemToken, segmentId: current.segmentId, segmentToken: current.segmentToken, chunks: current.count }); await flush();
     }
     function stopCapture() { if (!capture) return; capture.stopped = true; if (capture.recorder?.state === 'recording') capture.recorder.stop(); else if (!capture.recorder) finishCapture(capture, capture.ownerPrefix).catch(() => {}); capture = null; }
+    async function pauseMock(){
+      if(advancing||attempt?.status!=='active'||attempt.pause)return;
+      advancing=true;const ticket=generation,id=attempt.id,audioPositionSeconds=output&&!output.paused?output.currentTime:null;
+      output?.pause();
+      try{const body={...(audioPositionSeconds!=null?{audioPositionSeconds}:{})};
+        if(attempt.current&&!speech(attempt.question.type)){body.draft=structuredClone(draft);body.sequence=++sequence;}
+        const value=await api('/attempts/'+id+'/pause',body);if(!valid(ticket))return;accept(value);stopCapture();void flush();
+      }catch(error){if(valid(ticket)){notice(error.message,true);played='';tick();}}
+      finally{advancing=false;}
+    }
+    async function unpauseMock(){
+      if(advancing||!attempt?.pause)return;advancing=true;const ticket=generation,id=attempt.id,pauseId=attempt.pause.id;
+      try{if(!env.PortalExamMode?.prepare)throw Error('Reload the portal to continue this full mock in fullscreen.');
+        const ready=await env.PortalExamMode.prepare(OWNER,host,{immediate:true});if(!ready||!valid(ticket))return;
+        await unlockAudio();if(!valid(ticket))return;
+        await establishClaim();if(!valid(ticket))return;
+        const value=await api('/attempts/'+id+'/resume',{pauseId});if(!valid(ticket))return;accept(value);
+        if(speech(value.question?.type))await microphone();if(valid(ticket))startPlayer();
+      }catch(error){if(valid(ticket))notice(error.message,true);}
+      finally{advancing=false;}
+    }
     function tick() {
-      if (!attempt || attempt.status !== 'active' || attempt.transition || !attempt.current) return;
+      if (!attempt || attempt.status !== 'active' || attempt.pause || attempt.transition || !attempt.current) return;
       const now = serverNow(), current = attempt.current, q = attempt.question;
       const phase = now < (current.promptAt ?? 0) ? 'instructions' : q.audio && now < current.promptEndsAt ? 'listening' : now < current.responseAt ? 'preparing' : speech(q.type) ? 'recording' : 'answering';
       const preparationEndsAt = current.responseAt - (q.startCueMs || 0);
@@ -604,6 +629,8 @@
           case 'mic': await microphone(); button.hidden = true; logEvent('recording-resumed'); break;
           case 'begin': await begin(); break;
           case 'resume': await resume(button.dataset.id, button.dataset.status || 'active'); break;
+          case 'pause': await pauseMock(); break;
+          case 'unpause': await unpauseMock(); break;
           case 'next': await advance(); break;
           case 'skip': await advance(true); break;
           case 'audio': played = ''; await playPrompt(); break;

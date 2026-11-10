@@ -95,6 +95,15 @@ test('Two-speaker audio plays each sentence in sequence and completes only after
   assert.equal(h.utterances.length, 2); assert.equal(h.utterances[1].text, 'Second speaker supplies the correction.'); assert.equal(h.utterances[1].voice.lang, 'en-US');
   h.utterances[1].onstart(); h.utterances[1].onend(); assert.equal(h.events.at(-1)[1], 'complete');
 });
+test('Paused Reading speech keeps its word boundary for Continue, including after reopening the player',()=>{
+  const source='First speaker explains the claim. Second speaker supplies the correction.',options={variant:'two-speakers'};
+  const first=speakerHarness();first.speaker.play('hiw',source,options);
+  first.utterances[0].onstart();first.utterances[0].onboundary({charIndex:6});
+  const progress=first.speaker.pause();assert.deepEqual(progress,{kind:'speech',partIndex:0,charIndex:6});
+  assert.equal(first.speaker.resume(),true);
+  const reopened=speakerHarness();reopened.speaker.play('hiw',source,{...options,resumeAt:progress});
+  assert.equal(reopened.utterances[0].text,'speaker explains the claim.');
+});
 
 test('Ambient and sound-cue layers degrade safely when Web Audio is blocked', () => {
   const h = speakerHarness(); h.env.AudioContext = class { constructor() { throw Error('blocked'); } };

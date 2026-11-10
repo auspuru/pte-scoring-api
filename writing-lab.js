@@ -88,7 +88,7 @@ function advance(a, at, reason) {
   }
 }
 function reconcile(a, now = Date.now()) {
-  while (a.status === 'active' && a.deadline != null && now >= a.deadline) advance(a, a.deadline, 'Time expired');
+  while (a.status === 'active' && !a.pause && a.deadline != null && now >= a.deadline) advance(a, a.deadline, 'Time expired');
   return a;
 }
 function present(a) {
@@ -284,6 +284,26 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     assessSubmitted(req.labUser, a);
     res.set('Cache-Control','no-store'); res.json(present(a));
   }));
+  router.post('/attempts/:id/pause', route(async(req,res) => {
+    const a=await store.update(req.labUser,req.params.id,value=>{
+      if(!value)throw bad('Attempt not found.',404);
+      reconcile(value,now());
+      if(value.kind!=='mock'||value.status!=='active')throw bad('This mock cannot be paused.',409);
+      if(value.pause)return value;
+      if(!Number.isFinite(value.deadline)||value.deadline<=now())throw bad('This question has finished.',409);
+      value.pause={id:require('node:crypto').randomUUID(),remainingMs:value.deadline-now(),index:value.index,at:now()};
+      value.deadline=null;return value;
+    });res.json(present(a));
+  }));
+  router.post('/attempts/:id/resume', route(async(req,res) => {
+    const a=await store.update(req.labUser,req.params.id,value=>{
+      if(!value)throw bad('Attempt not found.',404);
+      if(typeof req.body?.pauseId!=='string'||!req.body.pauseId)throw bad('Select the saved pause before continuing.',409);
+      if(!value.pause){if(value.lastResumedPause===req.body?.pauseId)return value;throw bad('This mock is not paused.',409);}
+      if(value.kind!=='mock'||value.status!=='active'||value.pause.id!==req.body?.pauseId||value.pause.index!==value.index)throw bad('This pause is no longer current.',409);
+      value.deadline=now()+value.pause.remainingMs;value.lastResumedPause=value.pause.id;delete value.pause;return value;
+    });res.json(present(a));
+  }));
   router.post('/attempts/:id/begin', route(async(req,res) => {
     const a = await store.update(req.labUser,req.params.id,value => {
       if (!value) throw bad('Attempt not found.',404);
@@ -316,7 +336,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       if(!value) throw bad('Attempt not found.',404);
       reconcile(value);
       // A repeated Next request returns the new state without skipping another item.
-      if(value.status !== 'active' || index !== value.index) return value;
+      if(value.status !== 'active' || value.pause || index !== value.index) return value;
       if(revision <= value.revisions[index]) return value;
       value.answers[index]=text; value.revisions[index]=revision;
       if(typeof notes === 'string') value.notes=notes;

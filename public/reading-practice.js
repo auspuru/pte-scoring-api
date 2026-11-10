@@ -71,19 +71,21 @@
     if(Number.isFinite(session?.pausedRemainingSeconds)) return Math.max(0, Math.ceil(session.pausedRemainingSeconds));
     return session.deadline == null ? null : Math.max(0, Math.ceil((session.deadline - now) / 1000));
   }
-  function parkSession(session=state?.session){
-    if(!session||session.done||session.integrity?.protected||session.deadline==null||Number.isFinite(session.pausedRemainingSeconds))return false;
+  function parkSession(session=state?.session,{explicit=false}={}){
+    if(!session||session.done||session.integrity?.protected&&!explicit||session.deadline==null||Number.isFinite(session.pausedRemainingSeconds))return false;
     const now=Date.now(),stage=timing.current(session);
     session.pausedRemainingSeconds=Math.max(0,Math.ceil((session.deadline-now)/1000));session.pausedAt=now;session.deadline=null;
     if(stage?.deadline!=null){stage.pausedRemainingSeconds=Math.max(0,Math.ceil((stage.deadline-now)/1000));stage.deadline=null;}
+    if(explicit)session.manualPause=true;
     return true;
   }
-  function resumeParkedSession(session=state?.session){
+  function resumeParkedSession(session=state?.session,{explicit=false}={}){
     if(!session||session.done||!Number.isFinite(session.pausedRemainingSeconds))return false;
+    if(session.manualPause&&!explicit)return false;
     const now=Date.now(),stage=timing.current(session);
     session.deadline=now+session.pausedRemainingSeconds*1000;
     if(stage){const left=Number.isFinite(stage.pausedRemainingSeconds)?stage.pausedRemainingSeconds:session.pausedRemainingSeconds;stage.deadline=now+left*1000;delete stage.pausedRemainingSeconds;}
-    delete session.pausedRemainingSeconds;delete session.pausedAt;activeSince=now;return true;
+    delete session.pausedRemainingSeconds;delete session.pausedAt;delete session.manualPause;activeSince=now;return true;
   }
   let host, bank, owner = '', state, generation = 0, interval, selectedWord = '', saveNotice = '';
   let activeSince = 0, viewingQuestion = false, lastPersisted = 0, starting = false, speaker;
@@ -173,7 +175,7 @@
   }
   function recordTime() {
     const s = state?.session;
-    if (s && !s.done && activeSince && viewingQuestion && !host.hidden && !document.hidden) {
+    if (s && !s.done && !s.manualPause && activeSince && viewingQuestion && !host.hidden && !document.hidden) {
       const q = s.questions[s.index];
       const end = s.deadline == null ? Date.now() : Math.min(Date.now(), s.deadline);
       s.times[q.uid] = (s.times[q.uid] || 0) + Math.max(0, end - activeSince);
@@ -202,7 +204,7 @@
       onResume() { if(!expireSession())renderSession(); }
     } : null);
   }
-  function leave() { requestSerial++; startGeneration++; starting=false; recordTime(); parkSession(); cancelAudio(); viewingQuestion = false; setExamMode(false); examNotice=null; persist(); }
+  function leave() { requestSerial++; startGeneration++; starting=false; recordTime(); parkSession(); if(!state?.session?.manualPause)cancelAudio(); viewingQuestion = false; setExamMode(false); examNotice=null; persist(); }
   async function showRequested(request) {
     if(request.context)libraryView=request.context;
     if(request.library&&request.libraryId)return browseLibrary(request.libraryId);
@@ -454,6 +456,7 @@
     if (expireSession()) return;
     const s=state.session, q=s.questions[s.index], a=s.answers[q.uid]||[];
     if (s.done) return renderReview();
+    if(s.manualPause){setExamMode(false);host.innerHTML='<section class="reading-exam-player"><h1>'+escape(s.name)+' · Paused</h1><p>Question '+(s.index+1)+' of '+s.questions.length+' · '+timerText()+' remains. Your answers and audio position are saved.</p><button class="portal-button primary" data-action="exam-resume">Continue mock</button></section>';return;}
     const testing=exam.isExam(s)&&!s.done;
     if(testing && typeof window !== 'undefined' && window.PortalExamMode?.prepare && !s.integrity?.protected) {
       resumeParkedSession(s); s.integrity={protected:true,events:[]}; persist();
@@ -502,7 +505,7 @@
   }
   function updateAutoplay() {
     const s=state?.session;
-    if(!owner||identity()!==owner||!s||s.done||!viewingQuestion||host.hidden||document.hidden||(typeof window !== 'undefined' && window.PortalExamMode?.isLocked?.('reading')))return;
+    if(!owner||identity()!==owner||!s||s.done||s.manualPause||!viewingQuestion||host.hidden||document.hidden||(typeof window !== 'undefined' && window.PortalExamMode?.isLocked?.('reading')))return;
     const q=s.questions[s.index]; if(!mock.isAudio(q))return;
     prepareAudio(q);
     const item=s.audioStates[q.uid]; if(item?.status!=='countdown')return;
@@ -520,7 +523,7 @@
     speaker?.cancel();
   }
   function visibilityChanged() {
-    if(document.hidden){recordTime();parkSession();cancelAudio();persist();}
+    if(document.hidden){recordTime();parkSession();if(!state?.session?.manualPause)cancelAudio();persist();}
     else if(owner&&identity()===owner&&state?.session&&viewingQuestion&&!host.hidden){if(resumeParkedSession())persist();if(!expireSession())renderSession();}
   }
   function audioState(key, status, message) {
@@ -711,7 +714,7 @@
     if(changed){persist();renderTimerUpdate();resumeSwtAssessments();}
     return changed;
   }
-  function editable() { if(expireSession())return false; const s=state?.session; return s&&!s.done&&!s.checked.includes(s.questions[s.index].uid); }
+  function editable() { if(expireSession())return false; const s=state?.session; return s&&!s.done&&!s.manualPause&&!s.checked.includes(s.questions[s.index].uid); }
   function change(e) {
     if(!owner||identity()!==owner)return;
     if(e.target.hasAttribute?.('data-library-status')&&libraryView){libraryView.status=e.target.value;libraryView.page=0;refreshLibraryList();return;}
@@ -797,7 +800,7 @@
   }
   function advanceExam() {
     const s=state.session;
-    if(!s||s.done||!exam.isExam(s))return;
+    if(!s||s.done||s.manualPause||!exam.isExam(s))return;
     examNotice=null;
     if(expireSession())return;
     if(s.index===s.questions.length-1)return finish();
@@ -840,6 +843,21 @@
     }
     if(b.disabled)return;
     const d=b.dataset,s=state.session;
+    if(d.action==='exam-pause'&&s&&!s.done&&exam.isExam(s)){
+      if(!parkSession(s,{explicit:true}))return;
+      const q=s.questions[s.index],audio=s.audioStates?.[q.uid];
+      if(['playing','loading'].includes(audio?.status))s.audioStates[q.uid]={status:'paused',progress:speaker?.pause()||audio.progress||null,message:'Audio paused at your current position.'};
+      else if(audio?.status==='countdown')s.audioStates[q.uid]={status:'paused-countdown',remainingMs:Math.max(0,audio.readyAt-Date.now()),message:'Audio countdown paused.'};
+      persist();renderSession();return;
+    }
+    if(d.action==='exam-resume'&&s?.manualPause){speaker?.unlock();const q=s.questions[s.index],audio=s.audioStates?.[q.uid];
+      if(typeof window!=='undefined'&&window.PortalExamMode?.prepare&&!await window.PortalExamMode.prepare('reading',host,{immediate:true}))return;
+      if(!resumeParkedSession(s,{explicit:true}))return;
+      if(audio?.status==='paused-countdown')s.audioStates[q.uid]={status:'countdown',readyAt:Date.now()+audio.remainingMs,message:'Audio starts shortly.'};
+      if(audio?.status==='paused'){s.audioStates[q.uid]={status:'loading',progress:audio.progress,message:'Resuming audio…'};
+        if(!speaker?.resume())speaker?.play(q.uid,q.audioText,{...playback(q),resumeAt:audio.progress});}
+      persist();renderSession();return;
+    }
     // Unlock Web Audio while a real click is active, before any async load or countdown.
     if(d.start||d.practiceUid||d.draft!==undefined||d.history!==undefined||d.question!==undefined||d.move!==undefined||['play','soundcheck','resume','exam-next','exam-confirm'].includes(d.action))speaker?.unlock();
     if(d.browseLibrary)return browseLibrary(d.browseLibrary);

@@ -435,6 +435,7 @@
   // Autoplay, manual playback and review share one audio lifecycle.
   function createSpeaker(env, onState) {
     let active = null, timeout = null, startTimeout = null, serial = 0, volume = 1, utteranceQueue = [], recording = null;
+    let paused=false,playbackCursor=null;
     try { const saved = env.localStorage?.getItem('ipt-exam-volume'); if (saved != null && Number.isFinite(Number(saved))) volume = Math.max(0, Math.min(1, Number(saved))); } catch {}
     function setVolume(value) {
       volume = Math.max(0, Math.min(1, Number(value)));
@@ -472,6 +473,7 @@
       } catch (_) { return Promise.resolve(false); }
     }
     function cancel() {
+      paused=false;playbackCursor=null;
       serial++;
       clearTimers();
       stopEffects();
@@ -481,6 +483,21 @@
         env.speechSynthesis?.cancel();
         onState(previous, 'error', 'Playback was interrupted. Replay this question before submitting.');
       }
+    }
+    function pause(){
+      if(active===null||paused)return playbackCursor;
+      paused=true;
+      clearTimers();
+      if(recording){playbackCursor={kind:'recording',seconds:recording.currentTime||0};recording.pause();}
+      else env.speechSynthesis?.pause?.();
+      stopEffects();return playbackCursor;
+    }
+    function resume(){
+      if(active===null||!paused)return false;
+      paused=false;
+      if(recording)recording.play()?.catch?.(()=>{});
+      else env.speechSynthesis?.resume?.();
+      return true;
     }
     function startEffects(options, ticket, ready, unavailable) {
       const mixed = options.variant === 'mixed';
@@ -589,6 +606,8 @@
         if(!options.audioUrl||!env.Audio){finish('error','The recording is unavailable. Select Play audio to retry.');return;}
         try{
           const audio=new env.Audio(options.audioUrl);recording=audio;audio.volume=volume;
+          const startAt=options.resumeAt?.kind==='recording'?Number(options.resumeAt.seconds):0;
+          if(Number.isFinite(startAt)&&startAt>0)audio.addEventListener?.('loadedmetadata',()=>{audio.currentTime=Math.min(startAt,audio.duration||startAt);},{once:true});
           audio.onplaying=()=>{if(!current())return;started=true;if(startTimeout!==null)env.clearTimeout(startTimeout);startTimeout=null;onState(key,'playing','Playing. Follow the question on screen.');};
           audio.onended=()=>{if(current())finish(started?'complete':'error',started?'Audio complete. Your answer is ready to submit.':'Audio did not start. Select Play audio to retry.');};
           audio.onerror=()=>finish('error','The recording could not finish. Select Play audio to retry.');
@@ -603,7 +622,7 @@
         return;
       }
       const ticket = serial, variant = options.variant || 'single', twoSpeakers = variant === 'two-speakers' || variant === 'mixed';
-      let started = false, effectsUnavailable = false, cursor = 0, utterances = [];
+      let started = false, effectsUnavailable = false, cursor = 0, utterances = [], basePart=0, baseChar=0;
       active = key;
       const current = () => ticket === serial && active === key;
       const finish = (status, message) => {
@@ -646,10 +665,11 @@
             refreshEffects();
           }
         };
+        utterance.onboundary = event => {if(current()&&Number.isInteger(event.charIndex))playbackCursor={kind:'speech',partIndex:basePart+cursor-1,charIndex:(cursor===1?baseChar:0)+event.charIndex};};
         utterance.onend = () => {
           if (!current()) return;
           if (!partStarted) return finish('error', 'Audio did not start. Check your sound and try again.');
-          if (cursor < utterances.length) return playNext();
+          if (cursor < utterances.length){playbackCursor={kind:'speech',partIndex:basePart+cursor,charIndex:0};return playNext();}
           finish('complete', effectsUnavailable && !options.hideLabels ? 'Audio complete. Practice background sound was unavailable in this browser.' : 'Audio complete. Your answer is ready to submit.');
         };
         utterance.onerror = event => finish('error', event?.error === 'not-allowed' ? 'Your browser blocked autoplay. Select Play audio to start.' : 'Audio could not finish. Check your sound and select Play audio to retry.');
@@ -667,6 +687,11 @@
             if (words.length > 1) { const middle = Math.ceil(words.length / 2); parts = [words.slice(0, middle).join('').trim(), words.slice(middle).join('').trim()]; }
           }
         }
+        const resumeAt=options.resumeAt?.kind==='speech'?options.resumeAt:null;
+        basePart=resumeAt&&Number.isInteger(resumeAt.partIndex)?Math.max(0,Math.min(parts.length-1,resumeAt.partIndex)):0;
+        baseChar=resumeAt&&Number.isInteger(resumeAt.charIndex)?Math.max(0,Math.min(parts[basePart].length,resumeAt.charIndex)):0;
+        parts=parts.slice(basePart);parts[0]=parts[0].slice(baseChar);
+        playbackCursor={kind:'speech',partIndex:basePart,charIndex:baseChar};
         const first = voices.find(v => /^en[-_](AU|GB)/i.test(v.lang)) || voices[0] || null;
         const identity = v => v && (v.voiceURI || v.name || v.lang);
         const others = voices.filter(v => identity(v) !== identity(first));
@@ -708,7 +733,7 @@
         voicesChanged();
       } catch (_) { finish('error', 'The speech voice could not load. Check your browser audio settings and retry.'); }
     }
-    return { play, cancel, unlock, setVolume, getVolume: () => volume };
+    return { play, pause, resume, cancel, unlock, setVolume, getVolume: () => volume };
   }
   return { approvedQuestion, extraLabels, scoreExtra, isAudio, compose, createSpeaker, readingFormat, validateReading, languageFirstFib, qualityFibPool, strengthenFib, audioVariant, audioPlayback, shuffle, prepareQuestion, prepareQuestions, choiceText, AUDIO_VARIANTS, AUDIO_BACKGROUNDS, AUDIO_CUES };
 });
