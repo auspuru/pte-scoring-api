@@ -14,7 +14,7 @@ test('new selectable papers preserve all old paper snapshots and use ten distinc
  }}
  assert.equal(sourceIds.size,10);
  for(const p of bank.papers.slice(3)){
-  assert(bank.catalogue().find(row=>row.id===p.id));assert.equal(p.minutes,40);assert.equal(p.questions.filter(q=>q.type==='di'&&q.imageCategory==='line').length,4);
+  assert(bank.catalogue().find(row=>row.id===p.id));assert.equal(p.minutes,40);assert.equal(p.questions.filter(q=>q.type==='di'&&q.imageCategory==='line').length,p.id==='speaking-mock-4'?1:4);
   const before=JSON.stringify(p.questions);assert.deepEqual(bank.reattemptQuestions({paperId:p.id,questions:p.questions}),p.questions);assert.equal(JSON.stringify(p.questions),before);
   const normalized=p.questions.filter(q=>q.type!=='intro').map(q=>q.imageUrl||q.text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' '));assert.equal(new Set(normalized).size,27);
   for(const q of p.questions.filter(q=>q.audioSource)){
@@ -40,4 +40,16 @@ test('new papers serve every exact public prompt recording, including supplied s
   }
  }
  const bad=await fetch(base+'/speaking-mock-audio/mock-rts-user-20261110-lecture.mp3?prompt=unrecognised');assert.equal(bad.status,404);
+});
+
+test('revision two starts with short repeat sentences and preserves historical prompt playback',()=>{
+ const revision=require('../docs/speaking-mocks-4-5-revision-2.json');
+ for(const p of bank.papers.slice(3)){
+  const rs=p.questions.filter(q=>q.type==='rs');assert.equal(p.contentVersion,2);assert.equal(rs.length,10);assert(rs.slice(0,8).every(q=>q.text.split(/\s+/).length<=8));assert(rs.every(q=>q.text.split(/\s+/).length<=12));
+  for(const q of rs.slice(0,8)){assert.equal(q.contentOrigin.kind,'instructor-requested-short-adaptation');assert(q.audioSeconds>=3&&q.audioSeconds<=9);}
+  const original=revision.previousQuestions[p.id],before=structuredClone(original),updated=bank.reattemptQuestions({paperId:p.id,questions:original});
+  assert.deepEqual(updated.filter(q=>q.type==='rs'),rs);assert.deepEqual(original,before);
+  for(const q of original.filter(q=>q.audioSource))assert(bank.audioQuestions.some(saved=>saved.id===q.id&&saved.text===q.text),'Lost historical prompt '+q.id);
+ }
+ assert.deepEqual(bank.papers[3].questions.filter(q=>q.type==='di').map(q=>q.imageCategory),['pie','bar','bar','line','process']);
 });

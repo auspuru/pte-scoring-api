@@ -1,7 +1,7 @@
 'use strict';
 const fs=require('node:fs'),assert=require('node:assert/strict'),{hash}=require('../scoring-jobs');
 function verify(academyManifest){
-  const {manifest,referenceFor}=require('../di-reference'),questions=[...require('../content/speaking-bank').questions.filter(q=>q.type==='di'),...require('../content/speaking-mocks-web-images.json').map(q=>require('../di-reference').apply(q))];
+  const {manifest,referenceFor}=require('../di-reference'),questions=[...require('../content/speaking-bank').questions.filter(q=>q.type==='di'),...[...require('../content/speaking-mocks-web-images.json'),...require('../content/speaking-mock-4-user-images-20261111.json')].map(q=>require('../di-reference').apply(q))];
   assert.equal(questions.length,Object.keys(manifest.entries).length,'DI question/reference count differs.');
   for(const q of questions){
     const entry=manifest.entries[q.id];assert(entry,'Missing DI reference '+q.id);

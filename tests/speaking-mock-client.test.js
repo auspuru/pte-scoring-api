@@ -490,3 +490,13 @@ test('A student continues four timed-out Speaking questions without reattempting
  assert.match(h.host.innerHTML,/Item 25 of 28/);
  assert.equal(h.requests.filter(request=>request.url.includes('/continue')&&request.method==='POST').length,1);
 });
+
+test('an older available-marks report shows explicit skips as zero and counts only actual assessed recordings',async t=>{
+ const h=await harness(t),{id}=await sampleReport(h,{paperIndex:3}),completion=require('../speaking-mock-completion');
+ await h.lab.store.update('alice',id,a=>{for(let i=7;i<a.questions.length;i++)a.responses[i]={skipped:true};a.assessmentProfile={completionPolicy:completion.policy(a.questions)};a.assessment={omissions:completion.omissions(a,1)};return a;});
+ const saved=await h.lab.store.get('alice',id),expected=require('../speaking-mock-report').summarize(saved).azure.overallScore;
+ await h.controller.open({history:true});await h.click({sm:'resume',id});const html=h.nodes.get('sm-results-summary').innerHTML;
+ assert.match(html,/6 of 27 responses assessed/);assert.match(html,/21 skipped or unattempted responses count as zero/);assert(html.includes('>'+expected+'<'));assert.doesNotMatch(html,/Scores use available assessed marks/);
+ await h.click({sm:'review',index:'7'});assert.match(h.nodes.get('sm-review-details').innerHTML,/Skipped response/);assert.match(h.nodes.get('sm-review-details').innerHTML,/0\/3/);assert.doesNotMatch(h.nodes.get('sm-review-details').innerHTML,/Excluded from the overall score/);
+ assert.deepEqual((await h.lab.store.get('alice',id)).responses,saved.responses);assert(h.requests.every(r=>(r.method||'GET')==='GET'));
+});

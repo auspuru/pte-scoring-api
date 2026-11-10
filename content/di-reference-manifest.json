@@ -2225,6 +2225,150 @@
         "sha256": "276bce1cb5cbf55e6bbc965b2afee3491bff2f2cddf36727c60fd1770d27ee05",
         "bytes": 47879
       }
+    },
+    "mock-di-reference-20261111-browser-june": {
+      "academyId": "mock-di-reference-20261111-browser-june",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "4f69f6521b86a1c8d525c9ddf6711f35a71eee9ca27ad849865a31eb0512a23e"
+      },
+      "portalImageUrl": "/assets/speaking-mock-4-20261111/browser-june.png",
+      "mapping": {
+        "title": "Browser usage on Wikimedia, June 2011",
+        "category": "pie",
+        "facts": [
+          "The pie chart shows browser usage on Wikimedia in June 2011.",
+          "Internet Explorer has the largest share at 38.2 percent, followed by Firefox at 25.4 percent.",
+          "Chrome accounts for 16.5 percent and Safari for 9.9 percent.",
+          "Opera has 4.4 percent, Other 4.2 percent and Android the smallest share at 1.4 percent."
+        ],
+        "visual": {
+          "kind": "pie",
+          "title": "Browser usage on Wikimedia, June 2011"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "a5a1cc7de028eb82230142915b3062511788420874381de43878e2fbd921dd29",
+      "sample": "The given image provides the detailed information about browser usage on wikimedia, june 2011. Internet Explorer has the largest share at 38.2 percent, followed by Firefox at 25.4 percent. Chrome accounts for 16.5 percent and Safari for 9.9 percent. Opera has 4.4 percent, Other 4.2 percent and Android the smallest share at 1.4 percent.",
+      "contentOrigin": {
+        "kind": "user-referenced-published-original",
+        "sourceId": "browser-june",
+        "sourceUrl": "https://commons.wikimedia.org/wiki/File:Wikimedia_browser_share_pie_chart.png",
+        "retrievedAt": "2026-11-11",
+        "sha256": "4f69f6521b86a1c8d525c9ddf6711f35a71eee9ca27ad849865a31eb0512a23e",
+        "bytes": 42343,
+        "imageUrl": "/assets/speaking-mock-4-20261111/browser-june.png",
+        "reference": "Matched to the chart or process supplied in chat; original publisher raster, no redrawing.",
+        "credit": "Daniel Cardenas / Wikimedia Commons",
+        "license": "CC BY 3.0",
+        "downloadUrl": "https://upload.wikimedia.org/wikipedia/commons/archive/a/a2/20110831182135!Wikimedia_browser_share_pie_chart.png"
+      }
+    },
+    "mock-di-reference-20261111-transport": {
+      "academyId": "mock-di-reference-20261111-transport",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "006ab69d7c730dfab1e7aa61d7e6979043fe7db7e8fa0bf7ccb0466929f6371b"
+      },
+      "portalImageUrl": "/assets/speaking-mock-4-20261111/transport.jpg",
+      "mapping": {
+        "title": "Transport modes in a European city, 1960–2000",
+        "category": "bar",
+        "facts": [
+          "The bar chart compares bus, car, bike and foot as transport modes in a European city in 1960, 1980 and 2000.",
+          "Car use increases from about 7 percent to roughly 25 percent and then nearly 40 percent, becoming the highest in 2000.",
+          "Walking declines from around 35 percent to roughly 20 percent and then about 10 percent.",
+          "Cycling also declines, from around 27 percent to about 22 percent and then about 7 percent.",
+          "Bus use rises from about 20 percent to around 27 percent before falling to about 18 percent."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Transport modes in a European city, 1960–2000"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "6c893de37dc59307e2e1c786cf3b727427793dfdafa8ba28a0aab780338443f5",
+      "sample": "The given image provides the detailed information about transport modes in a european city, 1960–2000. Car use increases from about 7 percent to roughly 25 percent and then nearly 40 percent, becoming the highest in 2000. Walking declines from around 35 percent to roughly 20 percent and then about 10 percent. Cycling also declines, from around 27 percent to about 22 percent and then about 7 percent. Bus use rises from about 20 percent to around 27 percent before falling to about 18 percent.",
+      "contentOrigin": {
+        "kind": "user-referenced-published-original",
+        "sourceId": "transport",
+        "sourceUrl": "https://www.ieltsbuddy.com/ielts-bar-chart-modes-of-transport-in-a-european-city.html",
+        "retrievedAt": "2026-11-11",
+        "sha256": "006ab69d7c730dfab1e7aa61d7e6979043fe7db7e8fa0bf7ccb0466929f6371b",
+        "bytes": 18736,
+        "imageUrl": "/assets/speaking-mock-4-20261111/transport.jpg",
+        "reference": "Matched to the chart or process supplied in chat; original publisher raster, no redrawing."
+      }
+    },
+    "mock-di-reference-20261111-pop-music": {
+      "academyId": "mock-di-reference-20261111-pop-music",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "a9ccf4a7f9af338fff632541542def99cd5ea4faf7d13e2d43ae0a5980f0e229"
+      },
+      "portalImageUrl": "/assets/speaking-mock-4-20261111/pop-music.png",
+      "mapping": {
+        "title": "Percentage of people in Britain who buy pop music",
+        "category": "bar",
+        "facts": [
+          "The bar chart compares pop-music purchasing in Britain by gender and age group.",
+          "The 25–34 and 16–24 groups are highest, at just over 30 percent, with the 25–34 group slightly higher.",
+          "Men are at roughly 28 percent, compared with about 19 percent for women.",
+          "The 35–44 group is around 25 percent, while people aged 45 and above are lowest at about 10 percent."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Percentage of people in Britain who buy pop music"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "79ce62c5b77bedea33cbe78a54462919e966bf0c180615b3da70d36f7521ab97",
+      "sample": "The given image provides the detailed information about percentage of people in britain who buy pop music. The 25–34 and 16–24 groups are highest, at just over 30 percent, with the 25–34 group slightly higher. Men are at roughly 28 percent, compared with about 19 percent for women. The 35–44 group is around 25 percent, while people aged 45 and above are lowest at about 10 percent.",
+      "contentOrigin": {
+        "kind": "user-referenced-published-original",
+        "sourceId": "pop-music",
+        "sourceUrl": "https://www.ieltsbuddy.com/support-files/ielts-task-1-graph-questions.pdf",
+        "retrievedAt": "2026-11-11",
+        "sha256": "a9ccf4a7f9af338fff632541542def99cd5ea4faf7d13e2d43ae0a5980f0e229",
+        "bytes": 11261,
+        "imageUrl": "/assets/speaking-mock-4-20261111/pop-music.png",
+        "reference": "Matched to the chart or process supplied in chat; original publisher raster, no redrawing."
+      }
+    },
+    "mock-di-reference-20261111-tomato-cycle": {
+      "academyId": "mock-di-reference-20261111-tomato-cycle",
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "bf9d3f39d2d145f3972c8268ec797da256e47286f4e473d66fce871aca231eff"
+      },
+      "portalImageUrl": "/assets/speaking-mock-4-20261111/tomato-cycle.jpg",
+      "mapping": {
+        "title": "Tomato plant life cycle",
+        "category": "process",
+        "facts": [
+          "The diagram shows a repeating tomato plant life cycle with directional arrows.",
+          "Seeds develop into a young plant, which grows into a mature plant.",
+          "The mature plant produces flowers, followed by fruit.",
+          "The fruit contains seeds, which begin the next cycle."
+        ],
+        "visual": {
+          "kind": "process",
+          "title": "Tomato plant life cycle"
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "485a3cf085f0e448311de605582063eda4aa0f8b7b696ea85e0a49fc9f0fc397",
+      "sample": "The given image provides the detailed information about tomato plant life cycle. Seeds develop into a young plant, which grows into a mature plant. The mature plant produces flowers, followed by fruit. The fruit contains seeds, which begin the next cycle.",
+      "contentOrigin": {
+        "kind": "user-referenced-published-original",
+        "sourceId": "tomato-cycle",
+        "sourceUrl": "https://homepte.com/courses-telegram-files/weekly-predicction-03-09-jan.pdf",
+        "retrievedAt": "2026-11-11",
+        "sha256": "bf9d3f39d2d145f3972c8268ec797da256e47286f4e473d66fce871aca231eff",
+        "bytes": 14536,
+        "imageUrl": "/assets/speaking-mock-4-20261111/tomato-cycle.jpg",
+        "reference": "Matched to the chart or process supplied in chat; original publisher raster, no redrawing."
+      }
     }
   }
 }
