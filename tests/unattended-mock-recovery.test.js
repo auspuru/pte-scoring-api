@@ -116,7 +116,14 @@ function quietRecording(recording) {
  assert.equal(sha(source),'ed1f13396df180c9b88381c01a7180464dab7599114c662e5cc90d3d3d287709');
  source=read('public/writing-lab-report.js').replace("(attempt.kind!=='mock' || !needsReview(r,q))",'(!weighted || !needsReview(r,q))');
  assert.equal(sha(source),baseline.files['public/writing-lab-report.js'].sha256);
- for(const name of ['full-mock/profiles.js','speaking-scoring.js','writing-lab-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
+ for(const name of ['full-mock/profiles.js','speaking-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
+ source=read('writing-lab-scoring.js').replace(`  // SST permits several sentences. An answer containing a substantial
+  // punctuated sentence cannot be entirely short, disconnected fragments.
+  if (q.type === 'sst' && form.score > 0 && raw.formInvalid
+    && text.split(/[.!?;]+/u).some(sentence => wordCount(sentence) >= 8))
+    throw Error('Unsupported SST form gate: a substantial sentence is present; assess grammar and content separately');
+`, '');
+ assert.equal(sha(source),baseline.files['writing-lab-scoring.js'].sha256);
  assert.equal(sha(read('speaking-delivery.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['speaking-delivery.js'].sha256);
  assert.equal(baseline.files['speaking-delivery.js'].sha256,require('../content/full-mock/delivery-bands-compatible-sources.json').files['speaking-delivery.js'].sha256);
  assert.equal(sha(read('full-mock/session.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/session.js'].sha256); // Reviewed section transition flow; legacy clock regression is covered separately.

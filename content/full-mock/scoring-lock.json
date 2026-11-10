@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "69844c450fc3ede2454c70fe8cc2e2cc7bb754262bcae6f93a770adea3ae28bf",
+        "sha256": "8c5b1f2c6a6de5083e16b2c26e17109106604d14428fc6acd6a903bdc06b128a",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -237,7 +237,7 @@
         "version": "20.3.16"
       },
       "writing-lab-scoring.js": {
-        "sha256": "a130307d850613728d40a36634b3aef337ea211a620695cc9e2217f0bbb1fad6",
+        "sha256": "c28a7def1c8eda1961b57ea342c6e8ce3501c24eb92e905005a6cbee250ff312",
         "version": "exam-practice-2026-10-09.1"
       }
     }

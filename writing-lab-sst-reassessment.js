@@ -6,7 +6,8 @@ const report = require('./public/writing-lab-report');
 
 const OWNER = 'sukhpal';
 const ATTEMPT = 'a7e5cadb-8b63-4420-8035-490923d28bc5';
-const OPERATION = 'sukhpal-writing-sst-claude-2026-11-10';
+const OPERATION = 'sukhpal-writing-sst-claude-form-correction-2026-11-10';
+const ROLLBACK = 'sukhpal-writing-sst-invalid-form-rollback-2026-11-10';
 const INDEX = 3;
 const originalTotals = [8, 6.5, 17, 4, 7, 5, 6];
 
@@ -19,6 +20,8 @@ function createRunner({ store, score, onComplete = async()=>{}, now = Date.now, 
       && a.questions[INDEX]?.id === 'pred26-user-sst-03'
       && a.answers?.[INDEX]?.length === 360
       && a.completed?.[INDEX] && a.results?.length === 7
+      && a.sstReassessmentHistory?.some(entry => entry.operation === ROLLBACK
+        && entry.invalidResult?.total === 0 && entry.restoredTotal === 4)
       && a.results.every((result, index) => result?.total === originalTotals[index] && !report.needsReview(result,a.questions[index]));
   }
   async function run(uid, id) {
@@ -66,4 +69,4 @@ function createRunner({ store, score, onComplete = async()=>{}, now = Date.now, 
   }
   return { run, eligible, operation:OPERATION };
 }
-module.exports={ createRunner, OWNER, ATTEMPT, OPERATION, INDEX };
+module.exports={ createRunner, OWNER, ATTEMPT, OPERATION, ROLLBACK, INDEX };

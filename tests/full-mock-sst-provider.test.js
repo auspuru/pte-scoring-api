@@ -11,6 +11,11 @@ test('New Full Mocks freeze Claude for SST while the last GPT snapshot keeps its
     providerConfiguration:assessment.claudeConfiguration({}),previousProviderConfiguration:assessment.configuration({})});
   const recent=engine.snapshot;
   assert.equal(engine.validate({paperHash:recent.paperHash,assessment:{version:assessment.VERSION,snapshot:recent,snapshotHash:digest(recent)}}),current);
+  const priorClaude={...recent,scoringSources:require('../content/full-mock/sst-form-previous-sources.json')};
+  assert.equal(engine.validate({paperHash:priorClaude.paperHash,assessment:{version:assessment.VERSION,snapshot:priorClaude,snapshotHash:digest(priorClaude)}}),current);
+  const altered={...priorClaude,scoringSources:structuredClone(priorClaude.scoringSources)};
+  altered.scoringSources.files['writing-lab-scoring.js'].sha256='0'.repeat(64);
+  assert.throws(()=>engine.validate({paperHash:altered.paperHash,assessment:{version:assessment.VERSION,snapshot:altered,snapshotHash:digest(altered)}}),/different assessment version/);
   const frozen={...assessment.snapshot(assessment.configuration({})),
     scoringSources:require('../content/full-mock/sst-claude-previous-sources.json')};
   assert.equal(engine.validate({paperHash:frozen.paperHash,assessment:{version:assessment.VERSION,snapshot:frozen,snapshotHash:digest(frozen)}}),previous);
