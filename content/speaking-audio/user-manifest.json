@@ -915,5 +915,425 @@
     "generator": "gpt-4o-mini-tts",
     "speed": 0.85,
     "source": "instructor-requested-short-adaptation"
+  },
+  "mock-rs-clear-20261111-01": {
+    "textSha256": "3fafcdb2b98232ef8b1d1fc56cb463f2f8d179d965877298ad72ccafcb56c86d",
+    "audioSha256": "b987f1d2254667bce00b4203b408f08ccf04d80b8c9b2330ec500d35d51eedcc",
+    "bytes": 53420,
+    "seconds": 3.312,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 3.2,
+      "sourcePeakDb": -6.2,
+      "decodedPeakDb": -3.422,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-02": {
+    "textSha256": "8cde7231cf3e5d845fa16a84c3f413c5c437e9379342d69db3815fd55b35bc77",
+    "audioSha256": "c4c3a64511c98fb680b62ebe49fb637b5e4b84528aa225fc74de1b672feca3ef",
+    "bytes": 41132,
+    "seconds": 2.544,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 6.8,
+      "sourcePeakDb": -9.8,
+      "decodedPeakDb": -3.465,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-03": {
+    "textSha256": "337a97f91a97003eb748b4e4fdbb844fe3a4e39cc974a560fa8528c8e56a9359",
+    "audioSha256": "a20aa95188cabd98713807261333859535f9f1b2bbe26e81428257438b98c001",
+    "bytes": 59948,
+    "seconds": 3.72,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 3.5,
+      "sourcePeakDb": -6.5,
+      "decodedPeakDb": -3.446,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-04": {
+    "textSha256": "83c01e659b418b798ac7365070333ba140607b05682a3b8decd19f4f6a8b12fa",
+    "audioSha256": "224550a955ccdd43310446402a74c2b1649558895690c52c91ebe7d3869c6f65",
+    "bytes": 55724,
+    "seconds": 3.456,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 1.2,
+      "sourcePeakDb": -4.2,
+      "decodedPeakDb": -3.487,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-05": {
+    "textSha256": "34a41d99c8a57ca980750741852715cc9da9af146802e4522e92061271088744",
+    "audioSha256": "bdb65bbe39e0842670f5deae20646c3cc245e57fb6bb17f5d07ab42b313d4ea0",
+    "bytes": 61100,
+    "seconds": 3.792,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 4.2,
+      "sourcePeakDb": -7.2,
+      "decodedPeakDb": -3.493,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-06": {
+    "textSha256": "a58e310ea239aeaf4075ff30b40ecac7808bae8ad6e52aea481c6790f6425621",
+    "audioSha256": "6aa5d6ec2635a3f61ece43208e5db494ce8bcb80121bac74160de788958b75cb",
+    "bytes": 44972,
+    "seconds": 2.784,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 5.0,
+      "sourcePeakDb": -8.0,
+      "decodedPeakDb": -3.482,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-07": {
+    "textSha256": "5f1eff18ad1b36c3b0fc73ada6782a2fb006ddb81fb51237eb65f349ee566d19",
+    "audioSha256": "296435018a39d85d49d6f699f03d416dc0c89566d29da0a412fc10acf6a98313",
+    "bytes": 44972,
+    "seconds": 2.784,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 6.3,
+      "sourcePeakDb": -9.3,
+      "decodedPeakDb": -3.476,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-08": {
+    "textSha256": "6c6b90af8607ae24eea60c7815f00d19459ee7fd3e1da745aa1c54e9311d5621",
+    "audioSha256": "4ce875bbae808f9d909f10b1df478958a25f76ec0ab5b43f7b87193a95b28827",
+    "bytes": 61100,
+    "seconds": 3.792,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 3.9,
+      "sourcePeakDb": -6.9,
+      "decodedPeakDb": -3.47,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-09": {
+    "textSha256": "a64fc5691feb8a4aba6509ed30f94abc6f325ac4640f98ae256eb5908d34b8f2",
+    "audioSha256": "5fb43473efbdbd1f5e06ca605d9f3b3bcc2dd885607195ccf89ac4a7e5311bd2",
+    "bytes": 79916,
+    "seconds": 4.968,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 5.0,
+      "sourcePeakDb": -8.0,
+      "decodedPeakDb": -3.459,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-10": {
+    "textSha256": "51deac5c3ff4b6abc39e386b1b4a70400f735975b9c0e142d97f5632f92ccccb",
+    "audioSha256": "0bc60d8dfc3426224e75b39d8bc257eeffd96d91915e0e3f8fcf06c3a01830f0",
+    "bytes": 104108,
+    "seconds": 6.48,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 3.9,
+      "sourcePeakDb": -6.9,
+      "decodedPeakDb": -3.463,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-11": {
+    "textSha256": "ee41a66243f086813a8728a6d6c044dcf635470f8889b73804d61c87c691b86f",
+    "audioSha256": "604257186d6ca5474ab2bffa269a6d300072e6d63944616cd4680f71f9edd211",
+    "bytes": 46892,
+    "seconds": 2.904,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 6.8,
+      "sourcePeakDb": -9.8,
+      "decodedPeakDb": -3.474,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-12": {
+    "textSha256": "fd101298b1f72f94178c6966b8c3d2b4256594b998c7227b01da3f17c97104d0",
+    "audioSha256": "c5c4bdf7181bac29ef530314b6fa3c7ca991f1edb3da16693c7402f92f8f5e39",
+    "bytes": 42668,
+    "seconds": 2.64,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 3.1,
+      "sourcePeakDb": -6.1,
+      "decodedPeakDb": -3.419,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-13": {
+    "textSha256": "986a06b260db2cb1299775cc58f65d398084bf7df2a36ecacc02fa81481a7c51",
+    "audioSha256": "17031343a4548f8c55a629b6fee332b08ce1c8683d46e5fbe633b25b8e2c60a2",
+    "bytes": 38444,
+    "seconds": 2.376,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 4.4,
+      "sourcePeakDb": -7.4,
+      "decodedPeakDb": -3.465,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-14": {
+    "textSha256": "14a5661d5a5dd4071d2d94495c554fc71a81b88047ff64ff0780c98fb5ff6395",
+    "audioSha256": "7672c40a57f60dd9ed0d148d272429bc09359f15b98808c7eff893e407c80dd3",
+    "bytes": 58028,
+    "seconds": 3.6,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 1.9,
+      "sourcePeakDb": -4.9,
+      "decodedPeakDb": -3.4,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-15": {
+    "textSha256": "d4630ce84c3bce9d5390db9b3b8ad313dfb5825dccc27c86ddd889f3fdfed855",
+    "audioSha256": "32b9b4771649f351f173c2e36b8ad71d35fb2b25ebcd3b25a34105d18d06b611",
+    "bytes": 49964,
+    "seconds": 3.096,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 3.5,
+      "sourcePeakDb": -6.5,
+      "decodedPeakDb": -3.436,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-16": {
+    "textSha256": "d2621f2ed4d1f564c9833153562249c84885b32adc3a15966540d6715722a554",
+    "audioSha256": "fc443b45a8fa8f1cb304c385af926725e1f936dc4df60600055ef691feddf543",
+    "bytes": 41516,
+    "seconds": 2.568,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 5.1,
+      "sourcePeakDb": -8.1,
+      "decodedPeakDb": -3.474,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-17": {
+    "textSha256": "ed9fa77215237782f7cfb5342e6ce74fa6ec9ccc1cb2795ec839482eca683848",
+    "audioSha256": "67b60add24193e14f2050389e53b4d865012d01e2f65bccb34e6881c539aacad",
+    "bytes": 49580,
+    "seconds": 3.072,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 6.3,
+      "sourcePeakDb": -9.3,
+      "decodedPeakDb": -3.427,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-18": {
+    "textSha256": "cea84aa78cbfe90a1c3ad97a738fd8d8866844d34eafb05084bf6200c2887373",
+    "audioSha256": "3bf39d96b14853ed3591cd6e49539329cd703d6115ddd76a45bf1bc9f3dff29d",
+    "bytes": 49964,
+    "seconds": 3.096,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 6.2,
+      "sourcePeakDb": -9.2,
+      "decodedPeakDb": -3.485,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-19": {
+    "textSha256": "9a479524e79029b094d2b057d4506d801a63ae78a4fa7a1d8f913b3ee272a451",
+    "audioSha256": "7829fae98eb2ec8471d4d5c26c2a4c097930dd7833a1b1b6e323a0e2cddb900f",
+    "bytes": 79916,
+    "seconds": 4.968,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 4.2,
+      "sourcePeakDb": -7.2,
+      "decodedPeakDb": -3.404,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
+  },
+  "mock-rs-clear-20261111-20": {
+    "textSha256": "d69068231655a76db54b4edca0688fadecfc366b76e4f0e9438f7dccff3ed13d",
+    "audioSha256": "f96c7564381ade7e9febd9d1873d34cba87c5c1e05db71f7d5f20167c51b8cfa",
+    "bytes": 84140,
+    "seconds": 5.232,
+    "voices": [
+      "alloy"
+    ],
+    "generator": "tts-1-hd",
+    "speed": 1,
+    "source": "instructor-requested-distortion-replacement",
+    "normalization": {
+      "method": "constant-gain",
+      "gainDb": 4.3,
+      "sourcePeakDb": -7.3,
+      "decodedPeakDb": -3.456,
+      "clippedSamples": 0,
+      "sampleRate": 24000,
+      "bitRate": 128000
+    }
   }
 }

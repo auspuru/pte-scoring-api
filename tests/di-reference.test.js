@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const {manifest,apply,referenceFor}=require('../di-reference'),{hash}=require('../scoring-jobs');
 const bank=require('../content/speaking-bank'),mock=require('../content/speaking-mocks'),mapping=require('../describe-image-feedback').mapping;
 test('every practice and mock DI reference is bound to its source image, optional facts and spoken sample',()=>{
-  assert.equal(require('../scripts/verify-di-reference-sync').verify().questions,68);
+  assert.equal(require('../scripts/verify-di-reference-sync').verify().questions,71);
   const items=mock.papers.flatMap(p=>p.questions.filter(q=>q.type==='di'));assert.equal(items.length,25);
   for(const q of items){const entry=manifest.entries[q.id];assert.equal(hash(mapping(q)),entry.mappingHash);assert.deepEqual(q.imageReference.source,entry.source);}
   const rainfall=bank.questions.find(q=>q.id==='di-pred-3000411');assert.match(rainfall.facts.join(' '),/October/);assert.match(rainfall.sample,/October/);assert(!/November|autumn/.test(rainfall.sample));

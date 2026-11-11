@@ -1136,6 +1136,33 @@
       "bytes": 14536,
       "derivation": "unaltered-internet-original",
       "legend": []
+    },
+    "mock-di-reference-20261111-arable-crops-2006": {
+      "originalImageUrl": "/assets/speaking-mock-5-20261111/arable-2006.jpg",
+      "originalSha256": "9d6e5b882239a5033083796754bfd057906f01d15f8e1b6f711b82839b5b62fa",
+      "displayImageUrl": "/assets/speaking-mock-5-20261111/arable-2006.jpg",
+      "displaySha256": "9d6e5b882239a5033083796754bfd057906f01d15f8e1b6f711b82839b5b62fa",
+      "bytes": 7219,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-reference-20261111-classical-music-britain": {
+      "originalImageUrl": "/assets/speaking-mock-5-20261111/classical-music.png",
+      "originalSha256": "9e6ff04bdd7498f0fa9b706c3adc25bf3b766d457bc0a42fbb3e3bbddd96a362",
+      "displayImageUrl": "/assets/speaking-mock-5-20261111/classical-music.png",
+      "displaySha256": "9e6ff04bdd7498f0fa9b706c3adc25bf3b766d457bc0a42fbb3e3bbddd96a362",
+      "bytes": 11657,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-reference-20261111-asian-elephants-comparison": {
+      "originalImageUrl": "/assets/speaking-mock-5-20261111/asian-elephants.png",
+      "originalSha256": "206a4d01de71aa6a19e71193ce6f95d80eddd4ddc90771f57f8d8574db25b48f",
+      "displayImageUrl": "/assets/speaking-mock-5-20261111/asian-elephants.png",
+      "displaySha256": "206a4d01de71aa6a19e71193ce6f95d80eddd4ddc90771f57f8d8574db25b48f",
+      "bytes": 12369,
+      "derivation": "unaltered-internet-original",
+      "legend": []
     }
   }
 }

@@ -14,7 +14,7 @@ test('new selectable papers preserve all old paper snapshots and use ten distinc
  }}
  assert.equal(sourceIds.size,10);
  for(const p of bank.papers.slice(3)){
-  assert(bank.catalogue().find(row=>row.id===p.id));assert.equal(p.minutes,40);assert.equal(p.questions.filter(q=>q.type==='di'&&q.imageCategory==='line').length,p.id==='speaking-mock-4'?1:4);
+  assert(bank.catalogue().find(row=>row.id===p.id));assert.equal(p.minutes,40);assert.equal(p.questions.filter(q=>q.type==='di'&&q.imageCategory==='line').length,1);
   const before=JSON.stringify(p.questions);assert.deepEqual(bank.reattemptQuestions({paperId:p.id,questions:p.questions}),p.questions);assert.equal(JSON.stringify(p.questions),before);
   const normalized=p.questions.filter(q=>q.type!=='intro').map(q=>q.imageUrl||q.text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' '));assert.equal(new Set(normalized).size,27);
   for(const q of p.questions.filter(q=>q.audioSource)){
@@ -42,14 +42,32 @@ test('new papers serve every exact public prompt recording, including supplied s
  const bad=await fetch(base+'/speaking-mock-audio/mock-rts-user-20261110-lecture.mp3?prompt=unrecognised');assert.equal(bad.status,404);
 });
 
-test('revision two starts with short repeat sentences and preserves historical prompt playback',()=>{
+test('current revision starts with short repeat sentences and preserves historical prompt playback',()=>{
  const revision=require('../docs/speaking-mocks-4-5-revision-2.json');
  for(const p of bank.papers.slice(3)){
-  const rs=p.questions.filter(q=>q.type==='rs');assert.equal(p.contentVersion,2);assert.equal(rs.length,10);assert(rs.slice(0,8).every(q=>q.text.split(/\s+/).length<=8));assert(rs.every(q=>q.text.split(/\s+/).length<=12));
-  for(const q of rs.slice(0,8)){assert.equal(q.contentOrigin.kind,'instructor-requested-short-adaptation');assert(q.audioSeconds>=3&&q.audioSeconds<=9);}
+  const rs=p.questions.filter(q=>q.type==='rs');assert.equal(p.contentVersion,3);assert.equal(rs.length,10);assert(rs.slice(0,8).every(q=>q.text.split(/\s+/).length<=8));assert(rs.every(q=>q.text.split(/\s+/).length<=12));
+  for(const q of rs.slice(0,8)){assert.equal(q.contentOrigin.kind,'instructor-requested-short-adaptation');assert(q.audioSeconds>=2&&q.audioSeconds<=9);}
   const original=revision.previousQuestions[p.id],before=structuredClone(original),updated=bank.reattemptQuestions({paperId:p.id,questions:original});
   assert.deepEqual(updated.filter(q=>q.type==='rs'),rs);assert.deepEqual(original,before);
   for(const q of original.filter(q=>q.audioSource))assert(bank.audioQuestions.some(saved=>saved.id===q.id&&saved.text===q.text),'Lost historical prompt '+q.id);
  }
  assert.deepEqual(bank.papers[3].questions.filter(q=>q.type==='di').map(q=>q.imageCategory),['pie','bar','bar','line','process']);
+});
+
+test('targeted media revision has distinct clean RS files, static then comparison bars, and unchanged final images',()=>{
+ const audio=require('../content/speaking-audio-manifest')(),writing=require('../content/writing-audio/manifest.json'),ids=new Set(),texts=new Set(),hashes=new Set();
+ for(const [offset,p] of bank.papers.slice(3).entries()){
+  const images=p.questions.filter(q=>q.type==='di');assert.deepEqual(images.map(q=>q.imageCategory),['pie','bar','bar','line',offset?'diagram':'process']);
+  assert.equal(images[1].id,offset?'mock-di-reference-20261111-classical-music-britain':'mock-di-reference-20261111-pop-music');
+  assert.equal(images[2].id,offset?'mock-di-reference-20261111-asian-elephants-comparison':'mock-di-reference-20261111-transport');
+  assert.equal(images[4].id,offset?'mock-di-web-20261110-solar-system-sizes':'mock-di-reference-20261111-tomato-cycle');
+  for(const q of p.questions.filter(q=>q.type==='rs')){
+   assert(!ids.has(q.id));assert(!texts.has(q.text));ids.add(q.id);texts.add(q.text);
+   const e=audio[q.id],previous=bank.audioQuestions.find(row=>row.id===q.audioRevision.replacesId);assert(previous);assert.equal(previous.text,q.text);
+   const oldEntry=(previous.audioSource.folder==='writing'?writing:audio)[previous.audioSource.id];assert.notEqual(e.audioSha256,oldEntry.audioSha256);
+   assert.equal(e.generator,'tts-1-hd');assert.equal(e.speed,1);assert.equal(e.normalization.clippedSamples,0);assert(e.normalization.decodedPeakDb<=-1);assert.equal(e.normalization.sampleRate,24000);assert(q.audioSeconds>=2&&q.audioSeconds<=9);
+   assert(!hashes.has(e.audioSha256));hashes.add(e.audioSha256);
+  }
+ }
+ assert.equal(ids.size,20);
 });
