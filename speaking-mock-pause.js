@@ -36,7 +36,7 @@ function saveFragment(a,index,pauseId,bytes,mime){
   const prior=r?.fragments?.find(part=>part.pauseId===pauseId);
   if(prior){if(prior.hash!==hash)throw fail('The saved recording fragment cannot be replaced.');return a;}
   if(!p.partialPending)throw fail('This recording fragment is not expected.');
-  if(bytes?.length&&(!Buffer.isBuffer(bytes)||bytes.length>3*1024*1024||bytes.length<100
+  if(bytes?.length&&(!Buffer.isBuffer(bytes)||bytes.length>6*1024*1024||bytes.length<100
     ||!['audio/webm','audio/mp4','audio/wav','audio/mpeg'].includes(mime)))throw fail('Invalid recording fragment.',400);
   a.responses[index]||={};a.responses[index].fragments||=[];
   if(a.responses[index].fragments.length>=32)throw fail('Too many recording interruptions. Contact support.');

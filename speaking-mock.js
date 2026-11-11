@@ -234,7 +234,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       return require('./speaking-mock-pause').resume(a,now(),req.body||{});
     });res.json(view(a));
   }));
-  router.post('/attempts/:id/fragments/:index/:pauseId',limiter,express.raw({type:['audio/webm','audio/mp4','audio/wav','audio/mpeg'],limit:'3mb'}),wrap(async(req,res)=>{
+  router.post('/attempts/:id/fragments/:index/:pauseId',limiter,express.raw({type:['audio/webm','audio/mp4','audio/wav','audio/mpeg'],limit:'6mb'}),wrap(async(req,res)=>{
     const index=Number(req.params.index),bytes=Buffer.isBuffer(req.body)?req.body:null;
     if(!Number.isInteger(index)||(!bytes&&req.body?.empty!==true))throw fail('Invalid recording fragment.',400);
     const a=await store.update(req.mockUser,req.params.id,a=>{
@@ -255,7 +255,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       a.promptFinishedAt||=now();return a;
     });res.json(view(a));
   }));
-  router.post('/attempts/:id/recordings/:index',limiter,express.raw({type:['audio/webm','audio/mp4','audio/wav','audio/mpeg'],limit:'3mb'}),wrap(async(req,res)=>{
+  router.post('/attempts/:id/recordings/:index',limiter,express.raw({type:['audio/webm','audio/mp4','audio/wav','audio/mpeg'],limit:'6mb'}),wrap(async(req,res)=>{
     const index=Number(req.params.index),mime=String(req.headers['content-type']||'').split(';')[0],data=req.body;
     if(!Number.isInteger(index)||!Buffer.isBuffer(data)||data.length<100||!['audio/webm','audio/mp4','audio/wav','audio/mpeg'].includes(mime))throw fail('Upload a valid saved recording.');
     const hash=crypto.createHash('sha256').update(data).digest('hex');
@@ -294,7 +294,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     const events=req.body?.events;if(!Array.isArray(events)||events.length>20||events.some(e=>!e||typeof e.id!=='string'||e.id.length>80||!['tab-hidden','window-blur','fullscreen-exit','fullscreen-required','external-paste-blocked','external-drop-blocked'].includes(e.reason)||!Number.isFinite(e.at)))throw fail('Invalid interruption record.');
     const a=await store.update(req.mockUser,req.params.id,a=>{if(!a)throw fail('Mock attempt not found.',404);for(const e of events)if(!a.integrity.events.some(x=>x.id===e.id)&&a.integrity.events.length<200)a.integrity.events.push({id:e.id,reason:e.reason,at:e.at,receivedAt:now()});return a;});res.json(a.integrity);
   }));
-  router.use((error,req,res,next)=>error.type==='entity.too.large'?res.status(413).json({error:'The response recording is too large. Use a recording under 3 MB.'}):next(error));
+  router.use((error,req,res,next)=>error.type==='entity.too.large'?res.status(413).json({error:'The response recording is too large. Use a recording under 6 MB.'}):next(error));
   app.use('/api/speaking-mocks',router);
   app.get('/speaking-mock-audio/:id.mp3',wrap(async(req,res)=>{
     const q=bank.audioQuestions.find(q=>q.id===req.params.id&&q.audioSource);if(!q)throw fail('Prompt recording not found.',404);
