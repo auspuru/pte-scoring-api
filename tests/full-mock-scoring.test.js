@@ -160,16 +160,14 @@ test('Provider snapshots contain only concrete safe metadata and freeze their ow
 });
 
 
-test('A short RS recording can receive independent delivery marks despite low reference coverage',async()=>{
+test('A short RS recording can receive whole-recording delivery marks despite low reference coverage',async()=>{
  const question={...q('rs'),text:'The new library opens early on weekdays.'},transcript='The library opens each morning today.';
  const delivery=require('../speaking-delivery');
  assert.equal(delivery.deliveryEvidence(question,transcript,3).sufficient,false);
- const service=adapters.createAdapters({transcribe:async()=>transcript,assessDelivery:async(recording,options)=>{
-  const evidence=delivery.deliveryEvidence(question,transcript,3,options);
-  return {deliveryEvidence:evidence,pronunciation:{score:evidence.sufficient?3:null},fluency:{score:evidence.sufficient?4:null}};
- }});
+ const service=adapters.createAdapters({transcribe:async()=>transcript,assessDelivery:async()=>({version:'whole-recording',pronunciation:{raw:90},fluency:{raw:90}})});
  const r=await service.assess(question,{...response(),segments:[{}]},{recording:{}});
  assert.equal(r.status,'assessed');assert.equal(r.scores.pronunciation,3);assert.equal(r.scores.fluency,4);
+ assert.equal(r.stages.delivery.traits.pronunciation.raw,90);
  assert(r.scores.content>0&&r.scores.content<r.maxima.content);
 });
 

@@ -20,10 +20,10 @@ test('Effectively silent saved audio is skipped without asking a provider to inv
 
 test('A new attempt keeps confirmed content and any Azure trait, while an older attempt still waits',async t=>{
   const f=await fixture(t,async()=>azure),q=f.q.question,response=(await f.store.get(f.owner,f.id)).state.responses[f.number];
-  let calls=0,bandPolicy;
-  const a=adapters.createAdapters({transcribe:async()=> 'The chart shows a change over time.',gradeSpeaking:async q=>content(q),assessDelivery:async(recording,options)=>{calls++;bandPolicy=options.bandPolicy;return {deliveryVersion:'synthetic',deliveryProvider:'azure',pronunciation:{score:4},fluency:{status:'unavailable'}};}});
+  let calls=0,optionsSeen;
+  const a=adapters.createAdapters({transcribe:async()=> 'The chart shows a change over time.',gradeSpeaking:async q=>content(q),assessDelivery:async(recording,options)=>{calls++;optionsSeen=options;return {deliveryVersion:'synthetic',deliveryProvider:'azure',pronunciation:{score:4},fluency:{status:'unavailable'}};}});
   const value=await a.assess(q,response,{recording:{data:'synthetic'},completionPolicy:COMPLETION_POLICY,deliveryPolicy:require('../speaking-delivery').PREVIOUS_VERSION});
-  assert.equal(bandPolicy,require('../speaking-delivery').PREVIOUS_VERSION);
+  assert.equal(optionsSeen,undefined);
   assert.equal(value.status,'assessed');assert.deepEqual(value.scores,{content:4,pronunciation:4,fluency:null});
   assert.equal(value.total,8);assert.equal(value.maximum,11);assert.deepEqual(value.unavailableTraits,['fluency']);
   const {stages,...result}=value;assert.equal(partialValid(result,adapters.maxima(q),stages,'di'),true);

@@ -103,6 +103,17 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // New attempts use one continuous Azure request per recording. Project only
+  // this exact source upgrade when validating older, chunk-scored attempts.
+  const wholeRecordingPins=require('../content/full-mock/whole-recording-upgrade-pins.json');
+  if(current.scoringSources.files['full-mock/adapters.js']?.sha256===wholeRecordingPins.newAdapter
+    &&current.scoringSources.files['full-mock/assessment.js']?.sha256===wholeRecordingPins.newAssessment){
+    const sources=structuredClone(current.scoringSources);
+    sources.files['full-mock/adapters.js'].sha256=wholeRecordingPins.oldAdapter;
+    sources.files['full-mock/assessment.js'].sha256=wholeRecordingPins.oldAssessment;
+    const previous={...current,scoringSources:sources};
+    if(digest(saved)===digest(previous)||compatibleTransportUpgrade(saved,previous))return true;
+  }
   // Pausing changes clocks, recording transport and the Reading mock player,
   // but leaves frozen scoring rules and successful assessments untouched.
   // Only this exact deployed source pair may project to its previous snapshot.
@@ -776,6 +787,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
           }
           const value = await activeAdapters.assess(q, response, { recording, previous: stages, run: state.assessment.run,
             deliveryPolicy:state.assessment.snapshot.configuration.delivery.version, ...(availableMarks(state)?{completionPolicy:COMPLETION_POLICY}:{}),
+            legacyDelivery:state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256!==currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256,
             checkpoint: value => persist({ status: 'processing', stages: value }) });
           const { stages: evidence = stages, ...result } = value;
           if (!['assessed','pending','failed'].includes(result.status) || result.status === 'assessed' && (result.version !== adapterVersion || !(nativeValid(result, maxima(q)) || availableMarks(state) && partialValid(result,maxima(q),evidence,q.type)))) throw Error('Invalid native assessment result.');

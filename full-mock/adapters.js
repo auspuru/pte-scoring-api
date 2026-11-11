@@ -56,9 +56,11 @@ function objective(q, answer) {
 }
 function createAdapters({ transcribe = require('../speaking-lab').transcribeRecording,
   gradeSpeaking = (q, text, call) => speech.grade(q, text, call, { academyDescribeImage: true }),
-  assessDelivery = require('../speaking-delivery').assessRecording,
+  assessDelivery = require('../azure-continuous-delivery').assessRecording,
+  assessLegacyDelivery = assessDelivery === require('../azure-continuous-delivery').assessRecording
+    ? require('../speaking-delivery').assessRecording : assessDelivery,
   speakingContentModel, writingContentModel, swtGrader, essayGrader } = {}) {
-  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, deliveryPolicy, contentOnly = false } = {}) {
+  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, deliveryPolicy, legacyDelivery = false, contentOnly = false } = {}) {
     const stages = structuredClone(previous);
     const failed = reason => ({ status: 'failed', version: VERSION, reason, stages });
     async function stage(name, call, verify = value => value != null) {
@@ -112,12 +114,16 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         const traits = { ...(stages.delivery?.traits || {}) }; let raw, error;
         stages.delivery = { status: 'running', attemptedRun: run, traits, uncertain: true };
         await checkpoint(stages);
-        try { raw = await assessDelivery(recording, { question: q, transcript, transcribe: async () => transcript, contentIndependent: true, bandPolicy:deliveryPolicy }); }
+        try {
+          raw = legacyDelivery
+            ? await assessLegacyDelivery(recording, { question: q, transcript, transcribe: async () => transcript, contentIndependent: true, bandPolicy:deliveryPolicy })
+            : require('../speaking-delivery').reband(await assessDelivery(recording), { questionType:q.type, bandPolicy:deliveryPolicy });
+        }
         catch (caught) { error = caught; }
         for (const key of ['pronunciation','fluency']) {
           const trait = raw?.[key];
           if (traits[key] == null && raw?.deliveryEvidence?.sufficient !== false && !['unassessed','unavailable'].includes(trait?.status)
-            && Number.isFinite(trait?.score) && trait.score >= 0 && trait.score <= 5) traits[key] = { score: trait.score, evidence: trait.evidence || [], version: raw.deliveryVersion, provider: raw.deliveryProvider,
+            && Number.isFinite(trait?.score) && trait.score >= 0 && trait.score <= 5) traits[key] = { score: trait.score, ...(Number.isFinite(trait.raw)?{raw:trait.raw}:{}), evidence: trait.evidence || [], version: raw.deliveryVersion || raw.version, provider: raw.deliveryProvider || 'azure',
               descriptor:typeof trait.descriptor === 'string' ? trait.descriptor.slice(0, 2000) : '', coaching:typeof trait.coaching === 'string' ? trait.coaching.slice(0, 3000) : '',
               words:Array.isArray(trait.words) ? trait.words.filter(word => word && typeof word.word === 'string').slice(0, 20).map(word => ({ word:word.word.slice(0, 200), errorType:String(word.errorType || '').slice(0, 80) })) : [] };
         }

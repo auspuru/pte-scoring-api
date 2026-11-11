@@ -84,7 +84,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "1f985cc0859c56d177f78aeb15e1316efd84a9641e752eafbb2c73ba97cfd4dd",
+        "sha256": "5c2c387e5f72c37acca92db0ee43d162366f5c44262bd98eba7cfbb50279905f",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "04cb21aad8cece20fae5cf3acd44d95ed0c34703e99ae0a8c38ffe658bc07de3",
+        "sha256": "63873472f532b97236052d3ccc15380d282949b4d98e95006595f56b26c23c2c",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {

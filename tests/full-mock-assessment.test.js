@@ -15,6 +15,23 @@ const media = require('../full-mock/recording');
 const { installFullMock } = require('../full-mock/api');
 const paper = loadPaper();
 const accessBase = require('../content/full-mock/access-compatible-sources.json');
+test('New Full Mock delivery scores one complete recording and retains Azure raw marks',async()=>{
+  const recording={mime:'audio/wav',data:'saved-recording'},response={sealed:true,segments:[{chunkCount:1}]};
+  let wholeCalls=0,legacyCalls=0;
+  const service=adapters.createAdapters({transcribe:async()=> 'spoken answer',
+    gradeSpeaking:async()=>({total:2,maximum:3}),
+    assessDelivery:async value=>{wholeCalls++;assert.equal(value,recording);return {version:'continuous',pronunciation:{raw:95,score:1},fluency:{raw:91,score:1}};},
+    assessLegacyDelivery:async(value,options)=>{legacyCalls++;assert.equal(value,recording);assert.equal(options.question.type,'rs');return {deliveryVersion:'chunked',pronunciation:{score:2},fluency:{score:3}};}});
+  const question={type:'rs',text:'spoken answer'};
+  const current=await service.assess(question,response,{recording});
+  assert.deepEqual(current.scores,{content:2,pronunciation:4,fluency:4});
+  assert.equal(current.stages.delivery.traits.pronunciation.raw,95);
+  assert.equal(current.stages.delivery.traits.fluency.raw,91);
+  assert.equal(current.stages.delivery.traits.pronunciation.version,'continuous');
+  const earlier=await service.assess(question,response,{recording,legacyDelivery:true});
+  assert.deepEqual(earlier.scores,{content:2,pronunciation:2,fluency:3});
+  assert.deepEqual([wholeCalls,legacyCalls],[1,1]);
+});
 test('An unfinished saved mock retains its original delivery bands while a new mock uses the stricter bands',async t=>{
   const delivery=require('../speaking-delivery');
   const bands=[];
@@ -32,6 +49,21 @@ test('An unfinished saved mock retains its original delivery bands while a new m
   assert(bands.includes(delivery.PREVIOUS_VERSION));
   assert.deepEqual((await f.state()).assessment.snapshot,original);
   assert.equal(delivery.band5(84,delivery.VERSION,{trait:'fluency',type:'di'}),3);
+});
+test('Previously started Full Mocks retain chunked delivery while new attempts use whole recordings',async t=>{
+  const methods=[];
+  const f=await fixture(t,{adapters:{assess:async(q,response,options)=>{if(q.type==='ra')methods.push(options.legacyDelivery);return full(q);}}});
+  const original=structuredClone(f.engine.snapshot),pins=require('../content/full-mock/whole-recording-upgrade-pins.json');
+  original.scoringSources.files['full-mock/adapters.js'].sha256=pins.oldAdapter;
+  original.scoringSources.files['full-mock/assessment.js'].sha256=pins.oldAssessment;
+  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+  await f.engine.request('alice',f.id);await f.engine.drain();
+  assert.equal((await f.engine.results('alice',f.id)).ready,true);
+  assert.deepEqual(methods,[true,true,true,true,true,true]);
+  const changed=structuredClone((await f.state()));
+  changed.assessment.snapshot.scoringSources.files['full-mock/adapters.js'].sha256='0'.repeat(64);
+  changed.assessment.snapshotHash=digest(changed.assessment.snapshot);
+  assert.throws(()=>f.engine.validate(changed),{status:409});
 });
 test('A mock started under the previous reassessment controller keeps its frozen snapshot',async t=>{
   const f=await fixture(t,{adapters:{assess:async q=>full(q)}});
