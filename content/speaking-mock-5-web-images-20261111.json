@@ -1,0 +1,93 @@
+[
+  {
+    "id": "mock-di-reference-20261111-arable-crops-2006",
+    "type": "di",
+    "title": "Arable crops grown in the UK in 2006",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/speaking-mock-5-20261111/arable-2006.jpg",
+    "visual": {
+      "kind": "pie",
+      "title": "Arable crops grown in the UK in 2006"
+    },
+    "facts": [
+      "The pie chart shows the shares of arable crops grown in the UK in 2006.",
+      "Wheat accounts for the largest share at 34 percent, followed closely by corn at 32 percent.",
+      "Barley and rape seed each account for 12 percent.",
+      "Potatoes have the smallest share at 10 percent."
+    ],
+    "optionalFactIndices": [],
+    "sample": "The given image provides the detailed information about arable crops grown in the UK in 2006. Wheat is the largest category at 34 percent, followed by corn at 32 percent. Barley and rape seed each account for 12 percent, while potatoes are lowest at 10 percent. Overall, wheat and corn together make up 66 percent of the total.",
+    "contentOrigin": {
+      "kind": "internet-original-image",
+      "sourceId": "arable-crops-2006",
+      "sourceUrl": "https://www.ieltsbuddy.com/support-files/ielts-task-1-graph-questions.pdf#page=9",
+      "retrievedAt": "2026-11-11",
+      "page": 9,
+      "imageUrl": "/assets/speaking-mock-5-20261111/arable-2006.jpg",
+      "sha256": "9d6e5b882239a5033083796754bfd057906f01d15f8e1b6f711b82839b5b62fa",
+      "bytes": 7219,
+      "derivation": "Original raster extracted from the published PDF without redrawing or recolouring."
+    }
+  },
+  {
+    "id": "mock-di-reference-20261111-classical-music-britain",
+    "type": "di",
+    "title": "Percentage of people who buy classical music",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/speaking-mock-5-20261111/classical-music.png",
+    "visual": {
+      "kind": "bar",
+      "title": "Percentage of people who buy classical music"
+    },
+    "facts": [
+      "The static bar chart compares classical-music purchasing by gender and age group.",
+      "The 45-plus group is highest at 20 percent, followed by the 25\u201334 group at about 16 percent.",
+      "Men are at about 9 percent and women about 7 percent.",
+      "The 35\u201344 group is near 3 percent, and the 16\u201324 group is lowest at about 1 percent."
+    ],
+    "optionalFactIndices": [],
+    "sample": "The given image provides the detailed information about people who buy classical music. The 45-plus group is highest at 20 percent, followed by people aged 25 to 34 at roughly 16 percent. Men are around 9 percent, compared with about 7 percent for women. The two remaining age groups are much lower, with those aged 16 to 24 the lowest.",
+    "contentOrigin": {
+      "kind": "internet-original-image",
+      "sourceId": "classical-music-britain",
+      "sourceUrl": "https://www.ieltsbuddy.com/support-files/ielts-task-1-graph-questions.pdf#page=6",
+      "retrievedAt": "2026-11-11",
+      "page": 6,
+      "imageUrl": "/assets/speaking-mock-5-20261111/classical-music.png",
+      "sha256": "9e6ff04bdd7498f0fa9b706c3adc25bf3b766d457bc0a42fbb3e3bbddd96a362",
+      "bytes": 11657,
+      "derivation": "Original raster extracted from the published PDF without redrawing or recolouring."
+    }
+  },
+  {
+    "id": "mock-di-reference-20261111-asian-elephants-comparison",
+    "type": "di",
+    "title": "Estimated maximum population of Asian elephants",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/speaking-mock-5-20261111/asian-elephants.png",
+    "visual": {
+      "kind": "bar",
+      "title": "Estimated maximum population of Asian elephants"
+    },
+    "facts": [
+      "The grouped bar chart compares estimated maximum Asian elephant populations in nine countries in 1997 and 2004.",
+      "India has the highest population in both years, falling from nearly 10000 to about 7500.",
+      "Myanmar is the second highest, declining from just over 5000 to roughly 4700.",
+      "Thailand and Malaysia show large declines, from roughly 3700 to 1300 and 3100 to 1100 respectively.",
+      "Cambodia is the only country showing a clear increase, while Laos remains roughly unchanged."
+    ],
+    "optionalFactIndices": [],
+    "sample": "The given image provides the detailed information about estimated maximum Asian elephant populations in 1997 and 2004. India has the highest population in both years, followed by Myanmar. Most countries show a decline, with substantial falls in India, Thailand and Malaysia. Cambodia shows an increase, while Laos is roughly unchanged. Overall, the chart indicates falling populations across most of the countries shown.",
+    "contentOrigin": {
+      "kind": "internet-original-image",
+      "sourceId": "asian-elephants-comparison",
+      "sourceUrl": "https://www.ieltsbuddy.com/support-files/ielts-task-1-graph-questions.pdf#page=5",
+      "retrievedAt": "2026-11-11",
+      "page": 5,
+      "imageUrl": "/assets/speaking-mock-5-20261111/asian-elephants.png",
+      "sha256": "206a4d01de71aa6a19e71193ce6f95d80eddd4ddc90771f57f8d8574db25b48f",
+      "bytes": 12369,
+      "derivation": "Original raster extracted from the published PDF without redrawing or recolouring."
+    }
+  }
+]

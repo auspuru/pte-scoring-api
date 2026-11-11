@@ -7,7 +7,8 @@ const approvedAudio=require('../approved-audio');
 const VERSION='speaking-mock-2026-11-04.2';
 const OVERALL_MINUTES=40;
 const webImages=require('./speaking-mocks-web-images.json');
-const replacementImages=require('./speaking-mock-4-user-images-20261111.json'),easySentences=require('./speaking-mocks-easy-rs-20261111.json');
+const mock5Images=require('./speaking-mock-5-web-images-20261111.json');
+const replacementImages=[...require('./speaking-mock-4-user-images-20261111.json'),...mock5Images],easySentences=require('./speaking-mocks-easy-rs-20261111.json');
 const pick=id=>structuredClone(bank.questions.find(q=>q.id===id));
 function suppliedMockImage(q){
   const original=supplied.get(q.id),entry=references.manifest.entries[q.id];
@@ -91,7 +92,16 @@ for(const [offset,number,lastIds] of [[0,4,['wfd-practice-26','wfd-practice-27']
   current.questions=current.questions.map(q=>q.type==='rs'?repeats[rs++]:q.type==='di'&&imageIds?references.apply({...bank.types.di,...structuredClone(imageIds[di++])}):q);
   current.contentVersion=2;
 }
-const audioQuestions=[...new Map([...historicalQuestions,...papers.flatMap(p=>p.questions)].filter(q=>q.audioSource).map(q=>[q.id,q])).values()];
+// The previous revision remains addressable by saved attempts and audio URLs.
+const revisionTwoQuestions=papers.flatMap(p=>p.questions),clearSentences=require('./speaking-mocks-clear-rs-20261111.json');
+for(const [offset,number] of [[0,4],[1,5]]){
+  const current=papers.find(p=>p.id==='speaking-mock-'+number),repeats=clearSentences.slice(offset*10,offset*10+10).map(q=>source({...bank.types.rs,...structuredClone(q)},'speaking'));
+  const images=number===4?[replacementImages[0],replacementImages[2],replacementImages[1],webImages[0],replacementImages[3]]:[...mock5Images,webImages[5],webImages[9]];
+  let rs=0,di=0;
+  current.questions=current.questions.map(q=>q.type==='rs'?repeats[rs++]:q.type==='di'?references.apply({...bank.types.di,...structuredClone(images[di++])}):q);
+  current.contentVersion=3;
+}
+const audioQuestions=[...new Map([...historicalQuestions,...revisionTwoQuestions,...papers.flatMap(p=>p.questions)].filter(q=>q.audioSource).map(q=>[q.id,q])).values()];
 function publicQuestion(q,reveal=false){
   return {id:q.id,type:q.type,name:q.name,preparation:q.preparation,seconds:q.seconds,instruction:q.instruction,
     ...(q.type==='di'?{title:q.title||q.visual?.title||''}:{}),
@@ -112,7 +122,7 @@ function reattemptQuestions(original){
       const current=bank.questions.find(item=>item.id===q.id&&item.type==='rts');
       return current?(current.audioPrompt===false?structuredClone(current):source(structuredClone(current),'speaking')):structuredClone(q);
     }
-    if(q.type==='rs')return{...structuredClone(current.contentVersion===2?repeats[repeatIndex++]:q),startCueMs:bank.types.rs.startCueMs,instruction:bank.types.rs.instruction};
+    if(q.type==='rs')return{...structuredClone(current.contentVersion>=2?repeats[repeatIndex++]:q),startCueMs:bank.types.rs.startCueMs,instruction:bank.types.rs.instruction};
     if(q.type!=='di')return structuredClone(q);
     const replacement=images[imageIndex++%images.length];
     return structuredClone(replacement);

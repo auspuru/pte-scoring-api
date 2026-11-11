@@ -1,0 +1,418 @@
+[
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "Students should submit their proposals this semester.",
+    "sample": "Students should submit their proposals this semester.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-01",
+      "sourceText": "Students should submit their research proposals before the end of this semester.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-01",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-01",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "The new equipment arrives during the summer.",
+    "sample": "The new equipment arrives during the summer.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-02",
+      "sourceText": "The new laboratory equipment will be installed during the summer holiday period.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-02",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-02",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "Important documents are available on the learning platform.",
+    "sample": "Important documents are available on the learning platform.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-03",
+      "sourceText": "Several important documents are available through the university's online learning platform.",
+      "wordCount": 8,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-03",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-03",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "Our department offers practical workshops for students.",
+    "sample": "Our department offers practical workshops for students.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-04",
+      "sourceText": "Our department offers practical workshops for students interested in environmental research.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-04",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-04",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "Economic policies influence decisions in local communities.",
+    "sample": "Economic policies influence decisions in local communities.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-05",
+      "sourceText": "The lecturer explained how economic policies can influence decisions within local communities.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-05",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-05",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "All visitors must report to reception first.",
+    "sample": "All visitors must report to reception first.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-06",
+      "sourceText": "All visitors must report to reception before entering the main research building.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-06",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-06",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "The final examination covers the whole year.",
+    "sample": "The final examination covers the whole year.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-07",
+      "sourceText": "The final examination will cover topics discussed throughout the entire academic year.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-07",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-07",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "Researchers collected more evidence to support their results.",
+    "sample": "Researchers collected more evidence to support their results.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-08",
+      "sourceText": "Researchers collected additional evidence to support their original interpretation of the results.",
+      "wordCount": 8,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-08",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-08",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "Each group must prepare a brief report summarising the main research findings.",
+    "sample": "Each group must prepare a brief report summarising the main research findings.",
+    "sourceId": "wfd-practice-26",
+    "id": "mock-rs-clear-20261111-09",
+    "audioRevision": {
+      "replacesId": "mock-rs-wfd-practice-26",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "The university encourages collaboration between researchers working in different academic disciplines.",
+    "sample": "The university encourages collaboration between researchers working in different academic disciplines.",
+    "sourceId": "wfd-practice-27",
+    "id": "mock-rs-clear-20261111-10",
+    "audioRevision": {
+      "replacesId": "mock-rs-wfd-practice-27",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "The library provides quiet areas for students.",
+    "sample": "The library provides quiet areas for students.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-09",
+      "sourceText": "The library provides quiet study areas for both undergraduate and postgraduate students.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-11",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-09",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "Please include references in your final assignment.",
+    "sample": "Please include references in your final assignment.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-10",
+      "sourceText": "Please remember to include relevant references at the end of your assignment.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-12",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-10",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "The project description is in the handbook.",
+    "sample": "The project description is in the handbook.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-11",
+      "sourceText": "A detailed description of the project is included in the course handbook.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-13",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-11",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "The university has improved access to digital resources.",
+    "sample": "The university has improved access to digital resources.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-12",
+      "sourceText": "The university has introduced several initiatives to improve access to digital resources.",
+      "wordCount": 8,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-14",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-12",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "Students should discuss ideas with the coordinator.",
+    "sample": "Students should discuss ideas with the coordinator.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-13",
+      "sourceText": "Students are encouraged to discuss their ideas with the course coordinator first.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-15",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-13",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "The results were presented at a conference.",
+    "sample": "The results were presented at a conference.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-14",
+      "sourceText": "The results of the experiment were presented at an international scientific conference.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-16",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-14",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "Public transport runs more often during festivals.",
+    "sample": "Public transport runs more often during festivals.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-15",
+      "sourceText": "Public transport services will operate more frequently during the annual cultural festival.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-17",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-15",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "The committee will review all applications first.",
+    "sample": "The committee will review all applications first.",
+    "contentOrigin": {
+      "kind": "instructor-requested-short-adaptation",
+      "sourceId": "wfd-practice-16",
+      "sourceText": "The committee will review all applications before making its final funding decisions.",
+      "wordCount": 7,
+      "requestedAt": "2026-11-11"
+    },
+    "id": "mock-rs-clear-20261111-18",
+    "audioRevision": {
+      "replacesId": "mock-rs-easy-20261111-16",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "Local residents were invited to share their views on the proposed development.",
+    "sample": "Local residents were invited to share their views on the proposed development.",
+    "sourceId": "wfd-practice-36",
+    "id": "mock-rs-clear-20261111-19",
+    "audioRevision": {
+      "replacesId": "mock-rs-wfd-practice-36",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  },
+  {
+    "type": "rs",
+    "title": "Repeat Sentence",
+    "text": "The experiment demonstrated that temperature can affect the rate of chemical reactions.",
+    "sample": "The experiment demonstrated that temperature can affect the rate of chemical reactions.",
+    "sourceId": "wfd-practice-37",
+    "id": "mock-rs-clear-20261111-20",
+    "audioRevision": {
+      "replacesId": "mock-rs-wfd-practice-37",
+      "reason": "Instructor reported distorted audio",
+      "model": "tts-1-hd",
+      "voice": "alloy",
+      "speed": 1,
+      "date": "2026-11-11"
+    }
+  }
+]
