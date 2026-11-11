@@ -853,9 +853,11 @@ window.exitImpersonation = exitImpersonation;
 
 function signOut() {
   globalThis.EssayGuide?.close();
+  if(['speaking-practice-set','listening-practice-set'].includes(section)&&!options.mockRequest?.practiceSet&&!options.mockRequest?.attemptId&&!options.labRequest?.practiceSet&&!options.labRequest?.attemptId)section='practice-sets';
   authFlowRevision++;window.PortalAuthBoot?.cancel?.();
   savePortalEssayDraft();
   resetWritingLabFrame();
+  window.RandomPractice?.reset?.();
   window.SpeakingPractice?.reset();
   window.ReadingPractice?.leave();
   captureAccountProgress();
@@ -12562,9 +12564,16 @@ function ensureSpeakingRuntimeLoaded() {
 }
 
 let speakingMockRuntimeLoadPromise=null;
+let randomPracticeRuntimeLoadPromise;
+function ensureRandomPracticeRuntimeLoaded(){
+  if(window.RandomPractice)return Promise.resolve(window.RandomPractice);
+  if(!randomPracticeRuntimeLoadPromise)randomPracticeRuntimeLoadPromise=loadDeferredScript('/random-practice.js?v=sha256-ced42956ad5b','random practice sets').then(()=>{
+    window.RandomPractice=window.RandomPracticeUI.createController(window,{getUserId:()=>currentUserId,launchSpeaking:request=>switchSection('speaking-practice-set',{mockRequest:request,...(request.attemptId?{routeHash:PortalWorkspace.questionHash('speaking-practice-set',{attempt:request.attemptId})}:{})}),launchWriting:request=>switchSection('listening-practice-set',{labRequest:request,...(request.attemptId?{routeHash:PortalWorkspace.questionHash('listening-practice-set',{attempt:request.attemptId})}:{})})});return window.RandomPractice;
+  }).catch(error=>{randomPracticeRuntimeLoadPromise=null;throw error;});return randomPracticeRuntimeLoadPromise;
+}
 function ensureSpeakingMockRuntimeLoaded() {
   if(window.SpeakingMock)return Promise.resolve(window.SpeakingMock);
-  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-98c0f1585f88','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
+  if(!speakingMockRuntimeLoadPromise)speakingMockRuntimeLoadPromise=ensureSpeakingCueLoaded().then(()=>loadDeferredScript('/speaking-mock-client.js?v=sha256-ed37dcf75fd5','speaking mock')).then(()=>{if(!window.SpeakingMock)throw Error('Speaking mock did not load.');return window.SpeakingMock;}).catch(error=>{speakingMockRuntimeLoadPromise=null;throw error;});
   return speakingMockRuntimeLoadPromise;
 }
 let fullMockRuntimeLoadPromise = null;
@@ -12580,7 +12589,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-a074e3ba99a5', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-9732c0a63e41', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -12869,6 +12878,7 @@ function switchSection(section, options = {}) {
   if (active === 'progress') openStudentProgress();
   if (active === 'swt' && options.swtRequest) openSavedSwtResponse(options.swtRequest);
   else if (active === 'swt') window.PracticeWritingWorkspace?.openSwtMenu();
+  if(active==='practice-sets')ensureRandomPracticeRuntimeLoaded().then(controller=>{if(portalWorkspace.current()===active)controller.open();}).catch(error=>{const host=document.getElementById('randomPracticePane');if(host)host.innerHTML='<p role="alert">Practice sets could not load. Return to Practice and retry.</p>';toast(error.message,true);});
   if (active === 'practice-hub') portalCatalogue.openPractice();
   if(activeRoute?.speakingMock)ensureSpeakingMockRuntimeLoaded().then(mock=>{if(portalWorkspace.current()===active)mock.open({...options.mockRequest,history:activeRoute.mockHistory});}).catch(error=>{const host=document.getElementById('speakingMockPane');if(host)host.innerHTML='<p role="alert">Speaking mock could not load. Return to Mock Tests and retry.</p>';toast(error.message,true);});
   if (activeRoute?.fullMock) ensureFullMockRuntimeLoaded().then(mock => { if (portalWorkspace.current() === active) mock.open(options.mockRequest || {}); }).catch(error => { const host = document.getElementById('fullMockPane'); if (host) host.innerHTML = '<p role="alert">Full Mock could not load. Return to Mock Tests and retry.</p>'; toast(error.message, true); });

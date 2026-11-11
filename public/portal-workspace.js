@@ -17,6 +17,9 @@
     progress: { pane:'progressPane',nav:'nav-progress',title:'My Progress',path:'progress',eyebrow:'Your activity',context:'' },
     'saved-results': {pane:'savedResultsPane',nav:'nav-saved-results',title:'Results',path:'results',eyebrow:'Saved attempts',context:''},
     'practice-hub': { pane: 'practiceHubPane', nav: 'nav-practice-hub', title: 'Practice', path: 'practice', eyebrow: 'Individual questions', context: '' },
+    'speaking-practice-set': {pane:'speakingMockPane',nav:'nav-practice-hub',speakingMock:true,title:'Speaking practice set',path:'speaking-practice-set',eyebrow:'Random practice',context:''},
+    'listening-practice-set': {pane:'writingLabScreen',nav:'nav-practice-hub',labTab:'mocks',title:'Dictation practice set',path:'dictation-practice-set',eyebrow:'Random practice',context:''},
+    'practice-sets': {pane:'randomPracticePane',nav:'nav-practice-hub',title:'Random practice sets',path:'practice-sets',eyebrow:'Practice',context:''},
     'mock-tests': { pane: 'mockTestsPane', nav: 'nav-mock-tests', title: 'Mock Tests', path: 'mock-tests', eyebrow: 'Timed tests', context: '' },
     'speaking-mocks': {pane:'mockTestsPane',nav:'nav-mock-tests',catalogueModule:'speaking',title:'Speaking mocks',path:'speaking-mocks',eyebrow:'Mock Tests · Speaking',context:''},
     'speaking-run': {pane:'speakingMockPane',nav:'nav-mock-tests',speakingMock:true,title:'Speaking mock',path:'speaking-attempt',eyebrow:'Mock Tests · Speaking',context:''},
@@ -65,6 +68,7 @@
     const options={routeHash:retired ? '#/'+routes.progress.path : hash};
     if(route.readingLibrary)options.readingRequest={...request,...(params.question?{practiceUid:params.question}:{})};
     if(route.speakingType)options.speakingRequest={...request,...(params.mode?{mode:params.mode==='untimed'?'untimed':'timed'}:{}),...(params.question?{questionId:params.question}:{})};
+    if(route.speakingMock&&params.attempt)options.mockRequest={attemptId:params.attempt};
     if(route.labTab)options.labRequest={...request,...(params.question?{testId:params.question}:{})};
     if(section==='practice'&&params.attempt)options.essayRequest={attemptId:params.attempt};
     else if(section==='practice'&&params.question)options.essayRequest={questionId:params.question,navigation:true};
@@ -107,6 +111,7 @@
       if (section === 'next-steps') section = 'progress';
       if (!Object.hasOwn(routes, section)) section = 'dashboard';
       const changed = current !== section;
+      if(changed&&current==='practice-sets')win.RandomPractice?.leave?.();
       if (changed && routes[current]?.pane === 'speakingPane') win.SpeakingPractice?.leave();
       if (changed && routes[current]?.pane === 'speakingMockPane') win.SpeakingMock?.leave();
       if (changed && routes[current]?.pane === 'fullMockPane') win.FullMock?.leave();

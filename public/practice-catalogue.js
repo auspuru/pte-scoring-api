@@ -161,12 +161,13 @@
       if(progressOwner!==owner){progress={practice:{},mocks:{}};progressOwner=owner;progressReady=false;}
       const subjectMark = id => ({ speaking:'SP', writing:'WR', reading:'RD', listening:'LS' }[id] || id.slice(0,2).toUpperCase());
       host.innerHTML = '<div class="catalogue-heading"><h2>Practice</h2><p>Choose a skill, then select a task to begin.</p></div>'
+        + '<section class="rp-entry"><div><h3>Random practice sets</h3><p>Practise 5, 10, 15 or 20 questions of one type, picked for you.</p></div><button type="button" class="portal-button primary" data-practice-set-mode>Start a practice set</button></section>'
         + '<div class="practice-banners">' + groups.filter(g=>g.id!=='speaking'||canAccessSpeaking()).map(g => '<details name="practice-skill" class="practice-banner ' + g.id + '" aria-labelledby="practice-' + g.id + '"><summary class="practice-banner-header"><span class="practice-subject-mark" aria-hidden="true">' + subjectMark(g.id) + '</span><h3 id="practice-' + g.id + '">' + g.title + '</h3><span class="practice-skill-count">' + g.tasks.length + ' tasks</span><span class="practice-skill-toggle" aria-hidden="true">+</span></summary><div class="practice-task-list">'
           + g.tasks.map(t => {
             const labels=practiceLabels(t);
             return '<button type="button" data-practice-route="' + t.route + '"><span class="practice-task-copy"><strong>' + esc(t.label) + '</strong><small><span class="practice-task-count">' + esc(labels.count) + '</span><span class="practice-task-last">' + esc(labels.last) + '</span></small></span><span class="practice-task-arrow" aria-hidden="true">→</span></button>';
           }).join('') + '</div></details>').join('') + '</div>';
-      host.onclick = e => { const b = e.target.closest('[data-practice-route]'); if (b) navigate(b.dataset.practiceRoute); };
+      host.onclick = e => { const b = e.target.closest('[data-practice-route]');if(b)return navigate(b.dataset.practiceRoute);if(e.target.closest('[data-practice-set-mode]'))navigate('practice-sets'); };
       // Task navigation needs no bank or history request. Enrich the existing
       // controls in place so disclosure state, focus and scroll stay intact.
       const update=()=>{
