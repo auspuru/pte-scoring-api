@@ -49,6 +49,19 @@ test('Available-mark policy is exactly pinned and its legacy adapter projects to
  // that the historical adapter is exactly the previously deployed revision.
  assert.equal(sha(source),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/adapters.js'].sha256);
  const project=(from,to='')=>{assert(source.includes(from),'Expected available-marks projection');source=source.replace(from,to);};
+ const whole=require('../content/full-mock/whole-recording-upgrade-pins.json');
+ project(`  assessDelivery = require('../azure-continuous-delivery').assessRecording,
+  assessLegacyDelivery = assessDelivery === require('../azure-continuous-delivery').assessRecording
+    ? require('../speaking-delivery').assessRecording : assessDelivery,`,"  assessDelivery = require('../speaking-delivery').assessRecording,");
+ project(', legacyDelivery = false','');
+ project(`        try {
+          raw = legacyDelivery
+            ? await assessLegacyDelivery(recording, { question: q, transcript, transcribe: async () => transcript, contentIndependent: true, bandPolicy:deliveryPolicy })
+            : require('../speaking-delivery').reband(await assessDelivery(recording), { questionType:q.type, bandPolicy:deliveryPolicy });
+        }`,`        try { raw = await assessDelivery(recording, { question: q, transcript, transcribe: async () => transcript, contentIndependent: true, bandPolicy:deliveryPolicy }); }`);
+ project("{ score: trait.score, ...(Number.isFinite(trait.raw)?{raw:trait.raw}:{}), evidence: trait.evidence || [], version: raw.deliveryVersion || raw.version, provider: raw.deliveryProvider || 'azure',",
+   "{ score: trait.score, evidence: trait.evidence || [], version: raw.deliveryVersion, provider: raw.deliveryProvider,");
+ assert.equal(sha(source),whole.oldAdapter);
  project(`// The assembly path creates canonical 16-bit mono WAV. Only classify an almost
 // silent signal; unknown formats and merely short responses are not silence.
 function quietRecording(recording) {
