@@ -22,7 +22,7 @@
     "writing-lab-scoring.js": "c28a7def1c8eda1961b57ea342c6e8ce3501c24eb92e905005a6cbee250ff312",
     "writing-mock-overall.js": "49aed6b2d7a4bef9283ee3998190a594d0f6beafa97a53ae4110dfef253b7ce0",
     "writing-lab-store.js": "a14129ab9b1c254e4a5ce8029042d8e4c5914ad852d8952b2f06edccb02294f5",
-    "writing-lab.js": "605c7fff8ea64464edba727005ee19336199fd2f69ee3567f6c395afd92b4b0e",
+    "writing-lab.js": "76e92aa4f1d8fba34142f5bc9fd5bdc90a47f70e9dc5dc03f00c18d517cc440f",
     "listening-scoring.js": "f3ecff70034f0f641248b47a2f457979934bd7ef034f0214dda452988331536c",
     "local-scoring-engine.js": "52f605df6952c3de6894dd9f5357a4a97f5c84c19be93581af7ea3a8f69ef6ac",
     "mock-feedback.js": "d5e742a47a8f87496d0c2e0e4c0b7f7539b2080a0c35ba01154daa351b24286f",
@@ -33,9 +33,9 @@
     "public/full-mock-report.js": "ee5bf1beefb5a4d5a6b2cb4f84bb109e07f79a917f83e544576f6d0c63da77b5",
     "public/mock-impact-feedback.js": "0db0538a9d8d7f948135d0dc282ebe02a8721afe1936920fbb0e6214c958beee",
     "public/writing-lab-report.js": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
-    "public/writing-lab-client.js": "a074e3ba99a51130b5321fece13e521ddfa147ca6c7c234a85fc47e93fa8ef5d",
+    "public/writing-lab-client.js": "9732c0a63e4154e2ec035719d3bc9f2c0ea74e3019972f8bc2094e6ac5083501",
     "public/speaking-practice.js": "20bdac5c77a57c9d00d3d6604383d133c4d4b8696b1f2ab15e267ee4eafb2916",
-    "public/speaking-mock-client.js": "98c0f1585f889954706170dd280fd1ac4aaf71089ca84c63b90906a9ee08431f",
+    "public/speaking-mock-client.js": "ed37dcf75fd5cfe8eacbcd119225362d3837390aa21b3a139d325bb734f3055b",
     "public/reading-practice.js": "6ccd25fa306b632394b5ffa48ee714e80081e09a4c8aabb7e000032592c00498",
     "public/reading-review.js": "98e9c23a186fcc72034d552e0664f1d8ccb420600e21fa27fa6bbf987a1a2872",
     "public/essay-scoring.js": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
@@ -46,7 +46,7 @@
     "content/full-mock/scoring-lock.json": "72ec7b9bf4344e04384bded878365a4ab108c004a7da11531ce902e648710bb8",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
     "public/reading-mock-tools.js": "6766b45368eb780a587dcac94cb2520fdd28520ce7a7b76dade61a93ad5dfee1",
-    "speaking-mock.js": "f6d32f24217e1450beb4bee41ed3a9404917e2fecd524a98716ab742b217f94f",
+    "speaking-mock.js": "c5297590bdc5860f26eda90937c0f0081062606242463b9caf91606f579d9dde",
     "speaking-mock-deadline-score.js": "97bb9719d82ec8c9ab592e22b4ef41a8aa1fc61239551209354293919a8c9b10",
     "speaking-mock-completion.js": "880d440996216a193d566d75065e5c096e5e620aa9cc0b078206cc5d095e940a",
     "speaking-mock-reassessment.js": "956f8d903adc5fdeb50d7f0ce6dcd806e63ef220e1368403885bf93e8f1c1472",
@@ -198,6 +198,22 @@
       "speaking-mock-report.js": "b28067f30a9b9b45a7f754fb76f49bd8132b24c878119d42f292398d458a900e",
       "speaking-mock.js": "03ca702fd04d728c94ccee6ce5f473933fb9015a9248e12060622e4f28fe4600",
       "public/speaking-mock-client.js": "98c0f1585f889954706170dd280fd1ac4aaf71089ca84c63b90906a9ee08431f"
+    }
+  },
+  "randomPracticeIntegration": {
+    "baselineCommit": "0face1ba49266f380d56c4078d7f2c82f763a1dd",
+    "scope": "Instructor-authorized single-type random practice sets using existing players, stores and graders. No manual question selection or mixed sets. Only custom-set creation/metadata, pool audio lookup, navigation and report-return actions are added. All native Full Mock scoring-source files remain unchanged.",
+    "before": {
+      "writing-lab.js": "605c7fff8ea64464edba727005ee19336199fd2f69ee3567f6c395afd92b4b0e",
+      "public/writing-lab-client.js": "a074e3ba99a51130b5321fece13e521ddfa147ca6c7c234a85fc47e93fa8ef5d",
+      "public/speaking-mock-client.js": "98c0f1585f889954706170dd280fd1ac4aaf71089ca84c63b90906a9ee08431f",
+      "speaking-mock.js": "f6d32f24217e1450beb4bee41ed3a9404917e2fecd524a98716ab742b217f94f"
+    },
+    "after": {
+      "writing-lab.js": "76e92aa4f1d8fba34142f5bc9fd5bdc90a47f70e9dc5dc03f00c18d517cc440f",
+      "public/writing-lab-client.js": "9732c0a63e4154e2ec035719d3bc9f2c0ea74e3019972f8bc2094e6ac5083501",
+      "public/speaking-mock-client.js": "ed37dcf75fd5cfe8eacbcd119225362d3837390aa21b3a139d325bb734f3055b",
+      "speaking-mock.js": "c5297590bdc5860f26eda90937c0f0081062606242463b9caf91606f579d9dde"
     }
   }
 }

@@ -1,6 +1,7 @@
 'use strict';
 const express=require('express'),crypto=require('node:crypto'),path=require('node:path'),fs=require('node:fs/promises');
 const submission=require('./speaking-mock-submission');
+const randomPractice=require('./random-practice');
 const bank=require('./content/speaking-mocks'),scoring=require('./speaking-scoring'),azure=require('./speaking-delivery');
 const academy=require('./describe-image-academy');
 const manualDelivery=require('./speaking-manual-delivery');
@@ -67,8 +68,9 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   const store=createStore(pool,directory,{table:'speaking_mock_attempts'}),router=express.Router(),jobs=new Map(),instance=crypto.randomUUID();
   const progressive=require('./speaking-mock-jobs').createMockJobs({pool,directory,store,transcribe,assessAzure,callModel,gradeResponse,quietRecording,academyClient,includeLegacy:backgroundEnabled,now});
   const deliveryReview=require('./speaking-mock-reassessment').create({store,jobStore:progressive.jobs,transcribe,callModel,quietRecording,now,...deliveryReassessment});let deliverySweep;
+  randomPractice.registerSpeaking(app,store);
   const useProgressive=a=>backgroundEnabled||a?.assessmentProfile?.mode==='progressive-v1';
-  const view=a=>present(a,now(),{completeOnly:useProgressive(a)});
+  const view=a=>({...present(a,now(),{completeOnly:useProgressive(a)}),...(a.practiceSet?{practiceSet:a.practiceSet}:{})});
   const profile=(uid,questions)=>({assessmentProfile:{deliveryPolicy:azure.VERSION,
     ...(backgroundEnabled?{mode:'progressive-v1',owner:uid,completionPolicy:require('./speaking-mock-completion').policy(questions),
       diBackend:contentModel?'portal-gpt':'academy',...(contentModel?{contentProvider:'openai',contentModel}:{}),requiredProviders:['azure']}: {})}});
@@ -193,25 +195,32 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     catch{res.status(503).json({error:'Your account could not be checked. Please retry.'});}
   });
   const limiter=require('express-rate-limit')({windowMs:600000,max:240,keyGenerator:req=>req.mockUser,standardHeaders:true,legacyHeaders:false,message:{error:'Please wait before starting another speaking-mock action.'}});
-  router.get('/attempts',wrap(async(req,res)=>res.json((await store.list(req.mockUser,{omitMockAudio:true})).map(a=>{const value=view(a);return{id:a.id,paperId:a.paperId,title:a.title,status:value.status,index:a.index,startedAt:a.startedAt,grading:value.grading,resultsReady:value.resultsReady,resultStatus:value.resultStatus,speakingReport:value.speakingReport,overall:value.overall,overallAzure:value.overallAzure,combinedOverall:value.combinedOverall,completedCount:a.completedCount||0,questionCount:a.questionCount,continuationPlan:value.continuationPlan,pause:value.pause};}))));
+  router.get('/attempts',wrap(async(req,res)=>res.json((await store.list(req.mockUser,{omitMockAudio:true})).map(a=>{const value=view(a);return{id:a.id,paperId:a.paperId,title:a.title,status:value.status,index:a.index,startedAt:a.startedAt,grading:value.grading,resultsReady:value.resultsReady,resultStatus:value.resultStatus,speakingReport:value.speakingReport,overall:value.overall,overallAzure:value.overallAzure,combinedOverall:value.combinedOverall,completedCount:a.completedCount||0,questionCount:a.questionCount,continuationPlan:value.continuationPlan,pause:value.pause,...(a.practiceSet?{practiceSet:a.practiceSet}:{})};}))));
   router.post('/attempts',limiter,wrap(async(req,res)=>{
-    const paper=bank.papers.find(p=>p.id===req.body?.paperId);if(!paper)throw fail('Speaking mock not found.',404);
+    const config=Object.hasOwn(req.body||{},'practiceSet')?randomPractice.options(req.body.practiceSet):null;
+    if(config&&(config.type==='wfd'||req.body.paperId||req.body.questions||req.body.questionIds))throw fail('Choose one speaking task and a question count.');
+    const fixed=config?null:bank.papers.find(p=>p.id===req.body?.paperId);if(!config&&!fixed)throw fail('Speaking mock not found.',404);
+    const previous=config?await store.list(req.mockUser,{omitMockAudio:true}):[];
     const a=await store.update(req.mockUser,req.body.id,old=>{
-      if(old){if(old.paperId!==paper.id)throw fail('This attempt belongs to another paper.',409);return old;}
-      return {...profile(req.mockUser,paper.questions),id:req.body.id,paperId:paper.id,title:paper.title,version:bank.VERSION,questionCount:paper.questionCount,questions:structuredClone(paper.questions),responses:[],index:0,status:'active',startedAt:now(),deadline:now()+paper.minutes*60000,integrity:{protected:true,events:[]}};
+      const paperId=config?'practice-set-'+config.type+'-'+config.count:fixed.id;
+      if(old){if(old.paperId!==paperId||config&&(!old.practiceSet||old.practiceSet.type!==config.type||old.practiceSet.count!==config.count))throw fail('This attempt belongs to another paper.',409);return old;}
+      const paper=config?randomPractice.make(config,previous):fixed;
+      return {...profile(req.mockUser,paper.questions),id:req.body.id,paperId:paper.id,title:paper.title,...(paper.practiceSet?{practiceSet:paper.practiceSet}:{}),version:bank.VERSION,questionCount:paper.questionCount,questions:structuredClone(paper.questions),responses:[],index:0,status:'active',startedAt:now(),deadline:now()+paper.minutes*60000,integrity:{protected:true,events:[]}};
     });res.json(view(a));
   }));
   router.post('/attempts/:id/reattempt',limiter,wrap(async(req,res)=>{
     const original=await read(req.mockUser,req.params.id);
     if(original.status!=='submitted')throw fail('Finish this mock before reattempting it.',409);
     if(req.body?.id===original.id)throw fail('Use a new attempt for the reattempt.',409);
+    const previous=original.practiceSet?await store.list(req.mockUser,{omitMockAudio:true}):[];
     const a=await store.update(req.mockUser,req.body?.id,old=>{
       if(old){if(old.reattemptOf!==original.id)throw fail('This attempt belongs to another mock.',409);return old;}
       const startedAt=now();
-      const questions=bank.reattemptQuestions(original);
-      return {...profile(req.mockUser,questions),id:req.body.id,paperId:original.paperId,title:original.title,version:bank.VERSION,questionCount:original.questionCount,
+      const practice=original.practiceSet?randomPractice.make(original.practiceSet,previous):null;
+      const questions=practice?.questions||bank.reattemptQuestions(original);
+      return {...profile(req.mockUser,questions),id:req.body.id,paperId:original.paperId,title:original.title,...(practice?{practiceSet:practice.practiceSet}:{}),version:bank.VERSION,questionCount:original.questionCount,
         questions,reattemptOf:original.id,responses:[],index:0,status:'active',startedAt,
-        deadline:startedAt+bank.OVERALL_MINUTES*60000,integrity:{protected:true,events:[]}};
+        deadline:startedAt+(practice?.minutes||bank.OVERALL_MINUTES)*60000,integrity:{protected:true,events:[]}};
     });res.json(view(a));
   }));
   router.post('/attempts/:id/continue',limiter,wrap(async(req,res)=>{
@@ -297,7 +306,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   router.use((error,req,res,next)=>error.type==='entity.too.large'?res.status(413).json({error:'The response recording is too large. Use a recording under 6 MB.'}):next(error));
   app.use('/api/speaking-mocks',router);
   app.get('/speaking-mock-audio/:id.mp3',wrap(async(req,res)=>{
-    const q=bank.audioQuestions.find(q=>q.id===req.params.id&&q.audioSource);if(!q)throw fail('Prompt recording not found.',404);
+    const q=bank.audioQuestions.find(q=>q.id===req.params.id&&q.audioSource)||randomPractice.audioQuestion(req.params.id);if(!q)throw fail('Prompt recording not found.',404);
     if(q.type==='rts'&&(q.promptAudioKey||req.query.prompt!==undefined)){
       const audio=require('./rts-prompts').requestedAudio(q.id,req.query.prompt);if(!audio)throw fail('Prompt recording not found.',404);
       res.type('audio/mpeg').set('Cache-Control',audio.versioned?'public,max-age=31536000,immutable':'public,max-age=3600').sendFile(audio.file);return;

@@ -10,6 +10,7 @@ const essayPolicy = require('./public/essay-scoring');
 const ESSAY_MAXIMUM = Object.values(essayPolicy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
 const bank = require('./content/writing-lab.json');
 const approvedAudio = require('./approved-audio');
+const randomPractice = require('./random-practice');
 const predictions = require('./content/writing-predictions-sep-2026');
 const AUDIO_VERSION = '20261008-sst-native-minute3';
 const MAX_ASSESSMENT_QUEUE = 500;
@@ -109,6 +110,7 @@ function present(a) {
 function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, mockGraders = null, overallGrader = null, onMockError = async()=>{}, speakingAllowed = require('./speaking-access').allowed, now = Date.now }) {
   approvedAudio.install(app);
   const router = express.Router(), store = createStore(pool, directory), pending = new Map();
+  randomPractice.install(app,{writingStore:store,verifyToken,getAccount,speakingAllowed});
   const reviewer = overall.createReviewer({ store, callModel:overallGrader, now });
   const retryableSwt = (result,question) => !!(swtGrader && question?.type === 'swt' && result
     && (result.score_provisional === true || result.needs_semantic_review === true));
@@ -257,20 +259,22 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
         index:current.index, completed:current.completed.filter(Boolean).length,questions:current.questions.length,
         questionIds:current.questions.map(q=>q.id),
         total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90,
-        byType:summary.byType, weighting:summary.weighting || null, integrity:current.integrity || null });
+        byType:summary.byType, weighting:summary.weighting || null, integrity:current.integrity || null,...(current.practiceSet?{practiceSet:current.practiceSet}:{}) });
     }
     res.set('Cache-Control','no-store'); res.json(entries);
   }));
   router.post('/attempts', route(async(req,res) => {
     const { id, testId, mode } = req.body || {};
     if(mode!=null && !['practice','exam'].includes(mode))throw bad('Invalid practice mode.');
-    const mock = allMocks.find(m => m.id === testId), individual = individualQuestions.find(q => q.id === testId);
+    const config=Object.hasOwn(req.body||{},'practiceSet')?randomPractice.options(req.body.practiceSet):null;
+    if(config&&(config.type!=='wfd'||testId||req.body.questions||req.body.questionIds))throw bad('Choose Write From Dictation and a question count.');
+    const mock = config?randomPractice.make(config,await store.list(req.labUser)):allMocks.find(m => m.id === testId), individual = config?null:individualQuestions.find(q => q.id === testId);
     if (!mock && !individual) throw bad('Question set not found.',404);
     const q = structuredClone(mock ? mock.questions : [individual]).map(approvedAudio.current);
     if (!mock) delete q[0].timeGroup;
     const a = await store.update(req.labUser, id, existing => {
-      if (existing) return reconcile(existing);
-      return { id,testId,title:mock?.title || individual.title,module:mock?.module || (mock ? 'writing' : 'listening'),kind:mock ? 'mock' : individual.type,questions:q,index:0,
+      if (existing) {if(config&&(!existing.practiceSet||existing.practiceSet.type!==config.type||existing.practiceSet.count!==config.count))throw bad('This attempt belongs to another practice set.',409);return reconcile(existing);}
+      return { id,testId:config?mock.id:testId,...(config?{practiceSet:mock.practiceSet}:{}),title:mock?.title || individual.title,module:mock?.module || (mock ? 'writing' : 'listening'),kind:mock ? 'mock' : individual.type,questions:q,index:0,
         mode:mock ? 'exam' : mode || 'exam',
         status:mock ? 'active' : 'ready',startedAt:Date.now(),deadline:mock ? Date.now()+q[0].minutes*60000 : null,
         answers:q.map(()=>''),notes:'',revisions:q.map(()=>0),completed:q.map(()=>null),results:q.map(()=>null),playback:q.map(()=>null),

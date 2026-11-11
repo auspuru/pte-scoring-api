@@ -66,6 +66,14 @@ For each DI, `suppliedMockImage()` requires an original user-supplied chart/diag
 - When the instructor explicitly says **skip CI**, respect that exception: use targeted local content/audio/reference/playback checks and commit with `[skip ci]`; do not launch the full regression/database/browser suites. State which checks were run. Existing platform build checks may still run during deployment; do not alter global build settings solely to bypass them. Otherwise follow the normal CI workflow below.
 - A content revision updates new starts and reattempts. Existing saved attempts retain their exact question snapshots and prior recordings. For Speaking Mocks 4/5, retain all historical prompt entries in `audioQuestions` before replacing the current selection; immutable URLs must remain playable. Compare the requested five-image order by question identity/role, not only by broad `imageCategory:'bar'`.
 
+### Random single-task practice sets
+
+`random-practice.js` owns the eligible pools and server-side selection for Read Aloud, Repeat Sentence, Describe Image, Retell Lecture, Respond to a Situation, Summarise Group Discussion and Write From Dictation. Students choose one type and 5/10/15/20 questions; never expose manual question selection, mixed types or a client-controlled seed. Advertise only counts supported by the actual ready pool, with no repeats within a set. Prefer unused questions from that account's earlier sets where possible. Keep RS at at most 12 words and exclude unavailable images or prompt audio.
+
+Speaking types reuse `/api/speaking-mocks/attempts`; WFD reuses `/api/writing-lab/attempts`. Creation accepts `practiceSet:{type,count}` and snapshots the server-selected questions in the existing owned stores. Reopening or retrying the same creation UUID must retain that exact selection; a fresh set/reattempt can select new questions. The shared `/api/practice-sets/catalog` and `/attempts` routes are authenticated and honour existing speaking access. Overall and individual results come from the existing native graders/reports, including zero-credit deliberate skips. Keep ordinary mock definitions and all native scoring sources unchanged.
+
+The portal entry is Practice → Random practice sets, implemented by `public/random-practice.js` with existing speaking/dictation players. Targeted coverage is in `tests/random-practice.test.js`, `tests/random-practice-client.test.js` and `tests/random-practice-browser.system.js`. Do not generate extra questions/audio merely to fill an unsupported count without authorization for new content.
+
 ### Writing: explicit or prediction paper
 
 Standard order: **2 SWT, 1 essay, 1 SST, 3 WFD**. SWT 10 minutes each; essay 20; SST 10 including listening; three WFD share **one 4-minute `timeGroup:'dictation'`**. Total 54 minutes, not 62. Use the existing `minutesFor()` calculation rather than summing a shared clock three times.

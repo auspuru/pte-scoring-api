@@ -50,7 +50,9 @@
     async function open(options={}){
       if(check)release();
       if(owner&&owner!==identity())reset();stopPolling();owner=identity();if(!owner)return;host=doc.getElementById('speakingMockPane');const ticket=++serial;
-      shell('<p role="status">Loading speaking mocks…</p>');
+      shell('<p role="status">Loading speaking practice…</p><p id="sm-notice" role="alert"></p>');
+      if(options.practiceSet){start(null,null,options.practiceSet);return;}
+      if(options.attemptId){await resume(options.attemptId);return;}
       try{const values=await Promise.all([api('/catalog'),api('/attempts')]);if(!valid(ticket))return;catalog=values[0];hub(values[1],options);}
       catch(error){if(valid(ticket))shell('<p role="alert">'+esc(error.message)+'</p><button class="portal-button" data-sm="reload">Retry</button>');}
     }
@@ -75,9 +77,9 @@
       const play=doc.getElementById('sm-check-play');if(play)play.disabled=!check?.blob?.size||check.recorder?.state==='recording';
       const record=doc.getElementById('sm-check-record');if(record)record.disabled=busy||check?.recorder?.state==='recording';
     }
-    function start(paperId,reattemptId){
-      if(busy)return;release();check={paperId,reattemptId,ticket:serial,confirmed:false,played:false};
-      shell('<section class="sm-equipment"><p class="ipr-eyebrow">Before you begin</p><h1>Check your microphone and headphones</h1><p>Record a few words, play them through your headset, then confirm you can hear your voice clearly. The test starts after this check.</p><label class="sm-check-meter">Microphone level<meter id="sm-check-level" min="0" max="1" value="0"></meter></label><label class="sm-volume">Volume <input id="sm-volume" aria-label="Mock volume" type="range" min="0" max="1" step="0.05" value="'+volume+'"></label><div class="sm-check-actions"><button type="button" class="portal-button" id="sm-check-record" data-sm="check-record">Record a 10-second sample</button><button type="button" class="portal-button" id="sm-check-play" data-sm="check-play" disabled>Play my sample</button></div><p id="sm-check-status" role="status">Your sample stays on this device.</p><label class="sm-check-confirm"><input type="checkbox" id="sm-check-heard" disabled> I can hear my recorded voice clearly.</label><p id="sm-notice" role="status"></p><div class="sm-check-actions"><button type="button" class="portal-button" data-sm="reload">Back</button><button type="button" class="portal-button primary" id="sm-check-begin" data-sm="check-begin" disabled>Begin speaking mock</button></div></section>');
+    function start(paperId,reattemptId,practiceSet){
+      if(busy)return;const practice=practiceSet||(reattemptId?a?.practiceSet:null);release();check={paperId,reattemptId,practiceSet:practice,ticket:serial,confirmed:false,played:false};
+      shell('<section class="sm-equipment"><p class="ipr-eyebrow">Before you begin</p><h1>Check your microphone and headphones</h1><p>Record a few words, play them through your headset, then confirm you can hear your voice clearly. The test starts after this check.</p><label class="sm-check-meter">Microphone level<meter id="sm-check-level" min="0" max="1" value="0"></meter></label><label class="sm-volume">Volume <input id="sm-volume" aria-label="Mock volume" type="range" min="0" max="1" step="0.05" value="'+volume+'"></label><div class="sm-check-actions"><button type="button" class="portal-button" id="sm-check-record" data-sm="check-record">Record a 10-second sample</button><button type="button" class="portal-button" id="sm-check-play" data-sm="check-play" disabled>Play my sample</button></div><p id="sm-check-status" role="status">Your sample stays on this device.</p><label class="sm-check-confirm"><input type="checkbox" id="sm-check-heard" disabled> I can hear my recorded voice clearly.</label><p id="sm-notice" role="status"></p><div class="sm-check-actions"><button type="button" class="portal-button" data-sm="'+(practice?'practice-sets':'reload')+'">Back</button><button type="button" class="portal-button primary" id="sm-check-begin" data-sm="check-begin" disabled>Begin '+(practice?'practice set':'speaking mock')+'</button></div></section>');
       checkTimer=env.setInterval(()=>{
         if(!check)return;
         if(analyser){const values=new Uint8Array(analyser.fftSize);analyser.getByteTimeDomainData(values);const level=Math.sqrt(values.reduce((sum,n)=>sum+((n-128)/128)**2,0)/values.length);const meter=doc.getElementById('sm-check-level');if(meter)meter.value=Math.min(1,level*5);}
@@ -108,9 +110,9 @@
     }
     async function beginMock(){
       if(busy||!check?.blob?.size||!check.played||!check.confirmed)return;
-      const {paperId,reattemptId}=check;startCue.unlock();busy=true;checkControls();const ticket=serial;
+      const {paperId,reattemptId,practiceSet}=check;startCue.unlock();busy=true;checkControls();const ticket=serial;
       try{const ready=await env.PortalExamMode.prepare(OWNER,host,{immediate:true});if(!ready||!valid(ticket))return;await microphone();if(!valid(ticket)){release();return;}
-        const id=env.crypto.randomUUID();a=await api(reattemptId?'/attempts/'+reattemptId+'/reattempt':'/attempts',reattemptId?{id}:{id,paperId});if(!valid(ticket))return;stopCheck();stopPolling();selected=null;capture=null;recordingPromise=null;played='';await begin();
+        const id=env.crypto.randomUUID();a=await api(reattemptId?'/attempts/'+reattemptId+'/reattempt':'/attempts',reattemptId?{id}:practiceSet?{id,practiceSet:{type:practiceSet.type,count:practiceSet.count}}:{id,paperId});if(!valid(ticket))return;stopCheck();stopPolling();selected=null;capture=null;recordingPromise=null;played='';await begin();
       }catch(error){message(error.message||'Microphone access is required to start the speaking mock.');env.PortalExamMode?.set(OWNER,false,host);release();}
       finally{busy=false;checkControls();}
     }
@@ -334,7 +336,7 @@
       for(const index of indices){const localKey=key(id,index),blob=await pending('get',localKey);if(!valid(ticket)||a?.id!==id)return;if(blob)await upload(blob,id,index);}
     }
     function preparing(){
-      shell('<div class="sm-results"><header class="sm-results-heading"><div><h2>'+esc(a.title)+'</h2><p id="sm-preparing-status" role="status" aria-live="polite">Preparing your results. Please wait.</p></div><button class="portal-button" data-sm="history">Saved speaking mocks</button></header><p id="sm-preparing-help">Your answers are saved. Results may take around 5–10 minutes. This page will open your complete report automatically. You can leave and return later.</p><p id="sm-preparing-progress" class="sm-muted"></p><button class="portal-button" id="sm-reconcile-upload" data-sm="reconcile-upload" hidden>Retry saving pending recording</button><p id="sm-notice" role="status"></p></div>');
+      shell('<div class="sm-results"><header class="sm-results-heading"><div><h2>'+esc(a.title)+'</h2><p id="sm-preparing-status" role="status" aria-live="polite">Preparing your results. Please wait.</p></div><button class="portal-button" data-sm="history">'+(a?.practiceSet?'Practice sets':'Saved speaking mocks')+'</button></header><p id="sm-preparing-help">Your answers are saved. Results may take around 5–10 minutes. This page will open your complete report automatically. You can leave and return later.</p><p id="sm-preparing-progress" class="sm-muted"></p><button class="portal-button" id="sm-reconcile-upload" data-sm="reconcile-upload" hidden>Retry saving pending recording</button><p id="sm-notice" role="status"></p></div>');
       updatePreparing();if(a.resultStatus?.status!=='incomplete')pollResults();
     }
     function updatePreparing(){
@@ -352,9 +354,9 @@
     function results(){
       env.PortalExamMode?.set(OWNER,false,host);stopTimer();stopPrompt();
       if(a.resultsReady===false){preparing();return;}
-      shell('<div class="sm-results ipt-mock-report" id="sm-report" data-provider="'+reportProvider+'"><header class="sm-results-heading ipr-heading"><div><p class="ipr-eyebrow">Speaking score report</p><h2>'+esc(a.title)+'</h2><p class="sm-muted">Your responses, feedback and next steps.</p></div><div class="sm-results-actions"><button class="portal-button" id="sm-refresh-report" data-sm="refresh-report" hidden>Refresh report</button><button class="portal-button" data-sm="history">Saved speaking mocks</button>'+(a.continuationPlan?.eligible?'<button class="portal-button primary" data-sm="continue" data-id="'+esc(a.id)+'" data-evidence="'+esc(a.continuationPlan.evidenceHash)+'">Continue '+a.continuationPlan.indices.length+' remaining questions</button>':'<button class="portal-button" data-sm="reattempt" data-id="'+esc(a.id)+'">Reattempt this mock</button>')+'</div></header>'
+      shell('<div class="sm-results ipt-mock-report" id="sm-report" data-provider="'+reportProvider+'"><header class="sm-results-heading ipr-heading"><div><p class="ipr-eyebrow">Speaking score report</p><h2>'+esc(a.title)+'</h2><p class="sm-muted">Your responses, feedback and next steps.</p></div><div class="sm-results-actions"><button class="portal-button" id="sm-refresh-report" data-sm="refresh-report" hidden>Refresh report</button><button class="portal-button" data-sm="history">'+(a?.practiceSet?'Practice sets':'Saved speaking mocks')+'</button>'+(a.continuationPlan?.eligible?'<button class="portal-button primary" data-sm="continue" data-id="'+esc(a.id)+'" data-evidence="'+esc(a.continuationPlan.evidenceHash)+'">Continue '+a.continuationPlan.indices.length+' remaining questions</button>':'<button class="portal-button" data-sm="reattempt" data-id="'+esc(a.id)+'">'+(a.practiceSet?'New random set':'Reattempt this mock')+'</button>')+'</div></header>'
         +'<nav class="sm-report-tabs ipr-tabs" role="tablist" aria-label="Speaking report sections">'+[['overview','Score report'],['answers','Answers'],['analysis','Analysis'],['next','Feedback']].map(([value,label])=>'<button id="sm-tab-'+value+'" role="tab" data-sm="section" data-section="'+value+'" aria-controls="sm-panel-'+value+'" aria-selected="'+(reportSection===value)+'">'+label+'</button>').join('')+'</nav>'
-        +'<p id="sm-assessment-status" class="sm-assessment-status" role="status"></p><section id="sm-panel-overview" role="tabpanel" aria-labelledby="sm-tab-overview"><div id="sm-results-summary" class="sm-summary-grid" aria-live="polite"></div><div class="sm-overview-shortcuts"><button class="portal-button primary" data-sm="section" data-section="answers">Review your answers →</button><button class="portal-button" data-sm="filter" data-type="di">Describe Image samples</button><button class="portal-button" data-sm="section" data-section="next">See next steps →</button></div></section>'
+        +'<p id="sm-assessment-status" class="sm-assessment-status" role="status"></p><section id="sm-panel-overview" role="tabpanel" aria-labelledby="sm-tab-overview"><div id="sm-results-summary" class="sm-summary-grid" aria-live="polite"></div><div class="sm-overview-shortcuts"><button class="portal-button primary" data-sm="section" data-section="answers">Review your answers →</button>'+(!a.practiceSet||a.practiceSet.type==='di'?'<button class="portal-button" data-sm="filter" data-type="di">Describe Image samples</button>':'')+'<button class="portal-button" data-sm="section" data-section="next">See next steps →</button></div></section>'
         +'<section id="sm-panel-answers" role="tabpanel" aria-labelledby="sm-tab-answers" hidden><section class="sm-answer-review" aria-labelledby="sm-answers-heading"><h3 id="sm-answers-heading">Individual question feedback</h3><div class="sm-compact-navigation"><label>Task<select id="sm-task-picker"></select></label><label>Question<select id="sm-question-picker"></select></label><p id="sm-question-count" class="sm-muted"></p></div>'
         +'<div id="sm-review-details"></div><details class="sm-all-questions"><summary>Browse all questions</summary><div id="sm-task-filters" class="sm-task-filters" role="group" aria-label="Filter questions by task"></div><div id="sm-question-list"></div></details></section>'
         +'</section><section id="sm-panel-analysis" role="tabpanel" aria-labelledby="sm-tab-analysis" hidden><div class="sm-score-breakdown"><h3>Question overview</h3><div class="sm-table-wrap"><table class="sm-table"><thead><tr><th scope="col">Question</th><th scope="col">Content</th><th scope="col">Pronunciation / fluency</th><th scope="col">Review</th></tr></thead><tbody id="sm-result-rows"></tbody></table></div></div></section>'
@@ -448,6 +450,7 @@
       },3000);
     }
     async function click(event){const button=event.target.closest('[data-sm]');if(!button||button.disabled)return;const data=button.dataset;
+      if(data.sm==='practice-sets')return env.switchSection?.('practice-sets');
       if(data.sm==='start')return start(data.paper);
       if(data.sm==='reattempt')return start(null,data.id);
       if(data.sm==='resume')return resume(data.id);
@@ -488,6 +491,7 @@
         catch(error){if(valid(ticket)&&a?.id===id&&version===resultVersion){message(error.retryable?'The retry request was interrupted. Your recordings are saved; checking the results automatically…':error.message);if(error.retryable)pollResults();}}
         finally{busy=false;button.disabled=false;}return;
       }
+      if(data.sm==='history'&&a?.practiceSet)return env.switchSection?.('practice-sets');
       if(data.sm==='history'||data.sm==='reload')return open({history:data.sm==='history'});
     }
     const refreshVisibleReport=()=>{if(!doc.hidden)return refreshPublishedReport();};
