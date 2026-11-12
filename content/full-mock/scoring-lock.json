@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "2f5776bf5eca29c9074cd95f4ffae9a548d32ea8",
+  "baseCommit": "e8e191608dcdc8fe10f5bcbfc086f4c56ac7a4dd",
   "checkedAt": "2026-11-12",
-  "scope": "Bounded invalid-output repair and retained failure evidence; unchanged native scoring rules, models, weights, papers and confirmed marks.",
+  "scope": "Normal-paced immutable mock audio with unchanged transcripts, response clocks, native rubrics and models; retains the bounded assessment recovery release and older snapshots.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "2396727468bc328c7ee8f61f87942cc07a7466477fe6089225a6d49563943ac2",
+        "sha256": "6ef3710ef2c1ec0db0645bf07a90c6ab30214e6f872b316469a31c598072dd19",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -108,7 +108,7 @@
         "version": null
       },
       "full-mock/blueprint.js": {
-        "sha256": "ee5f56f160821e6f3bd8ead5a797f4d46114aef0b14b06bbfeabdc6665e0330e",
+        "sha256": "32b17900da2c8c67849f531975dfadfeb9b03ac7c5aa3db37575670f8465204d",
         "version": null
       },
       "full-mock/delivery-reassessment.js": {

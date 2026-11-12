@@ -103,6 +103,11 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  const audioPacePins=require('../content/full-mock/mock-audio-compatibility-pins.json');
+  if(digest(current.scoringSources)===audioPacePins.currentDigest&&digest(audioPacePins.previous)===audioPacePins.previousDigest){
+    const prior={...current,scoringSources:audioPacePins.previous};
+    if(digest(saved)===digest(prior)||compatibleTransportUpgrade(saved,prior))return true;
+  }
   // This exact transport-only repair retains native marks, models and frozen
   // inputs. Project to the last deployed sources before checking older pins.
   const repairTransportPins=require('../content/full-mock/assessment-recovery-pins.json');

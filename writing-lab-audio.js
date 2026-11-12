@@ -208,12 +208,17 @@ function createNarration(directory, generate, { bundledDirectory, cacheVersion, 
     try { return (await fs.stat(file)).size > 1000; }
     catch(error) { if(error.code === 'ENOENT') return false; throw error; }
   };
-  async function get(id) {
-    const q = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(mock => mock.questions), ...(predictions.sst || []), ...(predictions.wfd || []), ...require('./content/listening-mocks').missing].find(item => item.id === id && ['sst', 'wfd', 'smw'].includes(item.type));
+  async function get(id,{normalMock=false,sourceHash}={}) {
+    let q = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(mock => mock.questions), ...(predictions.sst || []), ...(predictions.wfd || []), ...require('./content/listening-mocks').missing].find(item => item.id === id && ['sst', 'wfd', 'smw'].includes(item.type));
     if (!q) throw Object.assign(Error('Recording not found.'), { status: 404 });
-    const minimumSeconds = q.type === 'sst' ? minimumSstSeconds : 0;
+    if(normalMock){
+      if(!['sst','wfd'].includes(q.type))throw Object.assign(Error('Normal mock narration is not available for this task.'),{status:400});
+      if(sourceHash&&sourceHash!==createHash('sha256').update(q.text).digest('hex'))throw Object.assign(Error('The saved recording source has changed.'),{status:409});
+      q={...q,narrationText:q.text,audioSpeed:1,audioInstructions:'',audioAmbience:[]};
+    }
+    const minimumSeconds = !normalMock&&q.type === 'sst' ? minimumSstSeconds : 0;
     let bundledSource = null;
-    if (bundledDirectory) {
+    if (bundledDirectory&&!normalMock) {
       manifest ||= JSON.parse(await fs.readFile(path.join(bundledDirectory, 'manifest.json'), 'utf8'));
       const entry = manifest[id], bundledFile = path.resolve(bundledDirectory, id + '.mp3');
       // Content hashes prevent an edited lecture from using an old recording.
@@ -229,6 +234,7 @@ function createNarration(directory, generate, { bundledDirectory, cacheVersion, 
     }
     const neural = q.audioMode === 'runtime-neural';
     const input = { model:q.ttsModel || 'tts-1', voice:q.voice, edgeVoice:q.edgeVoice, input:q.narrationText || q.text, response_format:neural ? 'wav' : 'mp3', speed:q.audioSpeed || 0.95, instructions:q.audioInstructions || '', ambience:q.audioAmbience || [], requireNeural:neural };
+    if(normalMock)input.mockPace='mock-normal-pace-v1';
     if(q.audioEndCue)input.endCue=true;
     const legacyHash = digest(input);
     const cacheInput = cacheVersion ? { ...input, cacheVersion } : input;
@@ -324,6 +330,7 @@ async function prewarmNarration(narration, ids, { attempts=3, baseDelayMs=1000, 
 }
 function installNarration(app, directory, { prewarm=true } = {}) {
   const approvedAudio=require('./approved-audio');approvedAudio.install(app);
+  require('./mock-audio-pace').install(app);
   let openAiNeuralRetryAt = 0;
   const narration=createNarration(directory,async input=>{
     if(input.preferLocal) return createLocalNarration(input);
@@ -383,7 +390,8 @@ function installNarration(app, directory, { prewarm=true } = {}) {
   // classroom IP must not consume the old narration-generation request quota.
   app.get('/writing-audio/:id.mp3',async(req,res)=>{
     try {
-      const file=await narration.get(req.params.id);
+      if(req.query.mockPace&&req.query.mockPace!=='mock-normal-pace-v1')throw Object.assign(Error('Unknown mock audio version.'),{status:400});
+      const file=await narration.get(req.params.id,{normalMock:req.query.mockPace==='mock-normal-pace-v1',sourceHash:req.query.source});
       res.type('audio/mpeg');res.set('Cache-Control','public, max-age=3600');res.sendFile(file);
     } catch(e) {
       console.warn('[writing-audio]',e.message);
