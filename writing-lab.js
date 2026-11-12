@@ -10,6 +10,7 @@ const essayPolicy = require('./public/essay-scoring');
 const ESSAY_MAXIMUM = Object.values(essayPolicy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
 const bank = require('./content/writing-lab.json');
 const approvedAudio = require('./approved-audio');
+const mockAudio = require('./mock-audio-pace');
 const randomPractice = require('./random-practice');
 const predictions = require('./content/writing-predictions-sep-2026');
 const AUDIO_VERSION = '20261008-sst-native-minute3';
@@ -103,7 +104,7 @@ function present(a) {
     ...(a.status === 'submitted' || i === a.index ? {prompt:q.prompt,choices:q.choices,passage:q.passage} : {}),
     ...(q.predictionSource ? { predictionSource:q.predictionSource } : {}),
     ...(a.status === 'submitted' || i <= a.index ? { text:(['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && a.status !== 'submitted' ? '' : q.text } : {}),
-    ...((['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && (i <= a.index || a.status === 'submitted') ? { audioUrl:approvedAudio.publicAudio(q)?.audioUrl || q.audioUrl || '/writing-audio/' + (q.audioId || q.id) + '.mp3?v=' + AUDIO_VERSION } : {}),
+    ...((['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && (i <= a.index || a.status === 'submitted') ? { audioUrl:mockAudio.publicAudio(q)?.audioUrl || approvedAudio.publicAudio(q)?.audioUrl || q.audioUrl || '/writing-audio/' + (q.audioId || q.id) + '.mp3?v=' + AUDIO_VERSION } : {}),
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation } : {}) }));
   return result;
 }
@@ -270,7 +271,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     if(config&&(config.type!=='wfd'||testId||req.body.questions||req.body.questionIds))throw bad('Choose Write From Dictation and a question count.');
     const mock = config?randomPractice.make(config,await store.list(req.labUser)):allMocks.find(m => m.id === testId), individual = config?null:individualQuestions.find(q => q.id === testId);
     if (!mock && !individual) throw bad('Question set not found.',404);
-    const q = structuredClone(mock ? mock.questions : [individual]).map(approvedAudio.current);
+    const q = structuredClone(mock ? mock.questions : [individual]).map(approvedAudio.current).map(q=>mock&&!config?mockAudio.current(q):q);
     if (!mock) delete q[0].timeGroup;
     const a = await store.update(req.labUser, id, existing => {
       if (existing) {if(config&&(!existing.practiceSet||existing.practiceSet.type!==config.type||existing.practiceSet.count!==config.count))throw bad('This attempt belongs to another practice set.',409);return reconcile(existing);}

@@ -26,11 +26,12 @@ test('Question selection preserves native graders, models, weights and timing; f
   // Instructor publication adds an explicitly pinned support controller;
   // every native grader below must still match its retained baseline.
   assert.deepEqual([...Object.keys(before.files),'full-mock/exclusions.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js'].sort(), Object.keys(after.files).sort());
-  for(const file of ['full-mock/exclusions.js','full-mock/aggregation.js','full-mock/api.js','full-mock/audit.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','speaking-delivery.js','writing-lab-scoring.js'])
+  for(const file of ['full-mock/blueprint.js','speaking-scoring.js','describe-image-academy.js','full-mock/exclusions.js','full-mock/aggregation.js','full-mock/api.js','full-mock/audit.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','speaking-delivery.js','writing-lab-scoring.js'])
     assert.deepEqual(after.files[file],require('../content/full-mock/scoring-lock.json').snapshot.files[file],file);
   // Standalone practice transport can evolve; Full Mock imports only this
   // frozen transcription function from the shared source file.
   assert.equal(hash(require('../speaking-lab').transcribeRecording.toString()),'6779768323a86f2488ac0621c8dd7f0949ca1348bdf0c23a98d10f64eaa84f4a');
+  assert.equal(hash(require('../speaking-scoring').normalize.toString()),'d1ab64850c7d7ee503f04cec696842bfd6b4765c82c66f8c2aa63102f213b6d7');
   assert.equal(hash(require('../public/reading-practice').score.toString()),'3998d5c54514d46ffbfddf893667574bee7a06b729f01a1da4a74248962f629b');
   assert.deepEqual(after.files['public/reading-practice.js'],require('../content/full-mock/scoring-lock.json').snapshot.files['public/reading-practice.js']);
   // User-requested section transitions and mixed-practice clocks have exact pins and behavioral timing tests.
@@ -38,7 +39,7 @@ test('Question selection preserves native graders, models, weights and timing; f
   // Report-only feedback has its own exact lock and behavioral regressions.
   assert.deepEqual(after.files['full-mock/report.js'],require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/report.js']);
   for (const file of Object.keys(before.files)) {
-    if (!['full-mock/session.js', 'public/reading-mock-tools.js', 'full-mock/paper.js', 'full-mock/assessment.js', 'full-mock/report.js', 'full-mock/adapters.js', 'full-mock/store.js', 'full-mock/aggregation.js', 'full-mock/api.js', 'full-mock/audit.js', 'server.js', 'public/writing-lab-report.js', 'speaking-lab.js', 'public/reading-practice.js', 'speaking-delivery.js', 'writing-lab-scoring.js'].includes(file)) assert.deepEqual(after.files[file], before.files[file], file);
+    if (!['full-mock/blueprint.js','speaking-scoring.js','describe-image-academy.js','full-mock/session.js', 'public/reading-mock-tools.js', 'full-mock/paper.js', 'full-mock/assessment.js', 'full-mock/report.js', 'full-mock/adapters.js', 'full-mock/store.js', 'full-mock/aggregation.js', 'full-mock/api.js', 'full-mock/audit.js', 'server.js', 'public/writing-lab-report.js', 'speaking-lab.js', 'public/reading-practice.js', 'speaking-delivery.js', 'writing-lab-scoring.js'].includes(file)) assert.deepEqual(after.files[file], before.files[file], file);
   }
 });
 

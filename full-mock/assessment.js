@@ -103,6 +103,19 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  const audioPacePins=require('../content/full-mock/mock-audio-compatibility-pins.json');
+  if(digest(current.scoringSources)===audioPacePins.currentDigest&&digest(audioPacePins.previous)===audioPacePins.previousDigest){
+    const prior={...current,scoringSources:audioPacePins.previous};
+    if(digest(saved)===digest(prior)||compatibleTransportUpgrade(saved,prior))return true;
+  }
+  // This exact transport-only repair retains native marks, models and frozen
+  // inputs. Project to the last deployed sources before checking older pins.
+  const repairTransportPins=require('../content/full-mock/assessment-recovery-pins.json');
+  if(digest(current.scoringSources)===repairTransportPins.currentDigest
+    &&digest(repairTransportPins.previous)===repairTransportPins.previousDigest){
+    const prior={...current,scoringSources:repairTransportPins.previous};
+    if(digest(saved)===digest(prior)||compatibleTransportUpgrade(saved,prior))return true;
+  }
   // Skipping audio on an individual Reading reattempt changes only its UI.
   // Project this exact source pair to the previous frozen snapshot so saved
   // Full Mocks can finish with their original graders and confirmed marks.
@@ -805,11 +818,16 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
           }
           const value = await activeAdapters.assess(q, response, { recording, previous: stages, run: state.assessment.run,
             deliveryPolicy:state.assessment.snapshot.configuration.delivery.version, ...(availableMarks(state)?{completionPolicy:COMPLETION_POLICY}:{}),
-            legacyDelivery:state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256!==currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256,
+            legacyDelivery:![currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256,
+              require('../content/full-mock/assessment-recovery-pins.json').previous.files['full-mock/adapters.js'].sha256]
+              .includes(state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256),
             checkpoint: value => persist({ status: 'processing', stages: value }) });
           const { stages: evidence = stages, ...result } = value;
           if (!['assessed','pending','failed'].includes(result.status) || result.status === 'assessed' && (result.version !== adapterVersion || !(nativeValid(result, maxima(q)) || availableMarks(state) && partialValid(result,maxima(q),evidence,q.type)))) throw Error('Invalid native assessment result.');
           await persist({ status: result.status, result, stages: evidence, assessedAt: now() });
+          if(result.status==='failed')console.warn('[full-mock-assessment-failure]',JSON.stringify({id,questionNumber:position+1,type:q.type,
+            stages:Object.entries(evidence).filter(([,stage])=>stage?.status==='failed').map(([stage,value])=>({stage,code:value.failureCode,
+              category:value.failureCategory,validationCode:value.validationCode,providerStatus:value.providerStatus,uncertain:!!value.uncertain,providerCalls:value.providerCalls}))}));
         } catch { try { await persist({ status: 'failed', reason: 'assessment-unavailable' }); } catch { /* Stale workers never overwrite replacements. */ } }
       }
     }

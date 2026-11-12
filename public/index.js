@@ -853,7 +853,6 @@ window.exitImpersonation = exitImpersonation;
 
 function signOut() {
   globalThis.EssayGuide?.close();
-  if(['speaking-practice-set','listening-practice-set'].includes(section)&&!options.mockRequest?.practiceSet&&!options.mockRequest?.attemptId&&!options.labRequest?.practiceSet&&!options.labRequest?.attemptId)section='practice-sets';
   authFlowRevision++;window.PortalAuthBoot?.cancel?.();
   savePortalEssayDraft();
   resetWritingLabFrame();

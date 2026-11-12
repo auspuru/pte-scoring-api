@@ -194,7 +194,7 @@ async function gradeUnifiedSwt(q, text, judge) {
     errors:corrections.map(item=>({phrase:item.phrase,correction:item.fix,explanation:item.meaning_effect || item.rationale || '',affectsScore:item.affects_score}))};
 }
 
-async function grade(q, text, call) {
+async function grade(q, text, call, {strict=false}={}) {
   const objective = require('./listening-scoring').grade(q,text);
   if(objective)return objective;
   if (q.type === 'essay') return gradeUnifiedEssay(q, text, call);
@@ -203,9 +203,18 @@ async function grade(q, text, call) {
   if (!form.score) return zeroResult(q.type, text, form.reasons);
   let error;
   for (let i = 0; i < 2; i++) {
-    try { return normalize(q, text, await call(buildPrompt(q, text) + (i ? '\nVALIDATION RETRY: '+error.message+'. Return all required fields with valid exact response quotations. For SWT, one complete sentence within 5–75 words earns FULL Form 1/1; never require multiple sentences.' : ''))); }
-    catch (e) { error = e; }
+    try {
+      const issue=error&&(strict&&!error.contentValidationCode?require('./mock-recovery-policy').assessmentFailure(error).validationCode:error.message);
+      const raw=await call(buildPrompt(q, text)+(i?'\nVALIDATION RETRY: '+issue+'. Return all required fields with valid exact response quotations. Use the supplied deterministic Form score; SST permits multiple complete sentences.':''));
+      try { return normalize(q,text,raw); }
+      catch(e) { e.contentValidationCode='writing_validation';throw e; }
+    }
+    catch (e) {
+      error=e;
+      if(strict&&require('./mock-recovery-policy').assessmentFailure(e).category!=='validation')throw e;
+    }
   }
+  if(strict)throw error;
   return localGrade(q, text, { reason: error?.message || 'AI assessment unavailable' });
 }
 function gradeDictation(q, text) {

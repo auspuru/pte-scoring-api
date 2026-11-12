@@ -262,6 +262,35 @@ test('Staff analyses missing mock results twice and publishes separately on mobi
  }
 });
 
+test('Staff follows an unavailable Full Mock retry to its saved outcome on mobile and desktop',{timeout:60000},async t=>{
+ const f=await fixture(t),username='retry-outcome-browser';await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:'retry-outcome@example.test'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ for(const width of [390,1440]){
+  const page=await browser.newPage();await page.setViewport({width,height:900});const errors=[];page.on('pageerror',error=>errors.push(error.message));
+  const id='006d4971-2ad3-4f14-8e2a-0ea3ed450bdd',route='/api/admin/full-mocks/'+username+'/'+id+'/scoring',posts=[];
+  let started=false,settled=false;const recovered=width===390?1:0;
+  const diagnostic=()=>({owner:username,attemptId:id,ready:!started||settled,busy:started&&!settled,status:started&&!settled?'processing':'complete',
+   responsesHash:'retained-inputs',confirmedHash:'retained-marks',evidenceHash:'a'.repeat(64),recovery:{status:'complete'},total:65,
+   assessedCount:64+(settled?recovered:0),excludedCount:started&&!settled?0:1-(settled?recovered:0),accountedFor:started&&!settled?64:65,
+   questions:settled&&recovered?[]:[{id:'di-21',number:21,type:'di',status:'excluded',retryableUnavailable:true,
+    failures:[{stage:'content',code:'assessment_validation',validationCode:'inconsistent-score',providerCalls:2}]}]});
+  await page.setRequestInterception(true);page.on('request',async req=>{
+   const pathname=new URL(req.url()).pathname;if(pathname===route||pathname===route+'/retry-unavailable'){
+    if(req.method()==='POST'){posts.push(JSON.parse(req.postData()));started=true;}else if(started)settled=true;
+    return req.respond({status:200,contentType:'application/json',body:JSON.stringify(diagnostic())});
+   }await req.continue();
+  });
+  await page.goto(f.base+'/admin');if(await page.$eval('#dashboard',e=>getComputedStyle(e).display==='none')){await page.type('#adminKeyInput','isolated-auth-test-admin');await page.click('#authCard > button');}
+  await page.waitForSelector('#dashboard',{visible:true});await page.type('[aria-label="Search users"]',username);await page.click('button[onclick="viewUser(\''+username+'\')"]');
+  await page.waitForSelector('[data-full-attempt]',{visible:true});await page.type('[data-full-attempt]',id);await page.click('[data-full-inspect]');
+  await page.waitForSelector('[data-full-retry-unavailable]',{visible:true});assert.match(await page.$eval('[data-full-diagnostics]',e=>e.textContent),/inconsistent-score/);
+  await page.click('[data-full-retry-confirm]');await page.click('[data-full-retry-unavailable]');
+  await page.waitForFunction(()=>document.querySelector('[data-full-notice]')?.textContent.startsWith('Retry finished.'));
+  assert.equal(posts.length,1);assert.deepEqual(posts[0].questionIds,['di-21']);assert.equal(posts[0].confirmRetry,true);
+  assert.match(await page.$eval('[data-full-notice]',e=>e.textContent),new RegExp(recovered+' assessment.* recovered'));
+  assert.equal(await page.$eval('#fullMockRecoveryPanel',e=>e.scrollWidth<=e.clientWidth+1),true);assert.deepEqual(errors,[]);await page.close();
+ }
+});
 test('User detail opens on one click and stale requests cannot replace scoring controls on mobile and desktop',{timeout:60000},async t=>{
  const f=await fixture(t),username='detail-request-browser';await f.request('/api/auth/register',{username,password:'Synthetic-pass-123',email:'detail-request@example.test'});
  const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());

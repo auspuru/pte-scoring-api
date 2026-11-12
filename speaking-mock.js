@@ -64,6 +64,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   azureAvailable=azure.isConfigured(),
   assessAzureOverall=azureWhole.assess,azureOverallAvailable=azureAvailable&&azure.isConfigured(),backgroundEnabled=false,academyClient,contentModel,quietRecording,requireAdmin,deliveryReassessment={},now=Date.now}={}){
   require('./approved-audio').install(app);
+  require('./mock-audio-pace').install(app);
   const gptAvailable=false;
   const store=createStore(pool,directory,{table:'speaking_mock_attempts'}),router=express.Router(),jobs=new Map(),instance=crypto.randomUUID();
   const progressive=require('./speaking-mock-jobs').createMockJobs({pool,directory,store,transcribe,assessAzure,callModel,gradeResponse,quietRecording,academyClient,includeLegacy:backgroundEnabled,now});

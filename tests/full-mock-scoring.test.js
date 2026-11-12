@@ -180,9 +180,9 @@ test('An explicit retry of invalid DI evidence uses the configured review model 
   calls++;const raw=wire();if(!context.recoveryReview)raw.judgment.accuracy='major-errors';return raw;
  },assessDelivery:async()=>({pronunciation:{score:4},fluency:{score:4}})});
  const saved={...response(),segments:[{}]},first=await service.assess(question,saved,{recording:{},run:1});
- assert.equal(first.status,'failed');assert.equal(calls,1);
- await service.assess(question,saved,{recording:{},previous:first.stages,run:1});assert.equal(calls,1);
+ assert.equal(first.status,'failed');assert.equal(calls,2,'Initial invalid output gets one bounded correction.');
+ await service.assess(question,saved,{recording:{},previous:first.stages,run:1});assert.equal(calls,2);
  const repaired=await service.assess(question,saved,{recording:{},previous:first.stages,run:2});
- assert.equal(repaired.status,'assessed');assert.equal(repaired.scores.content,6);assert.equal(calls,2);assert.equal(transcriptions,1);
- await service.assess(question,saved,{recording:{},previous:repaired.stages,run:3});assert.equal(calls,2);
+ assert.equal(repaired.status,'assessed');assert.equal(repaired.scores.content,6);assert.equal(calls,3);assert.equal(transcriptions,1);
+ await service.assess(question,saved,{recording:{},previous:repaired.stages,run:3});assert.equal(calls,3);
 });

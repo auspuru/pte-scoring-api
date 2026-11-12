@@ -52,7 +52,9 @@ const TASKS = [
   { type: 'mcsa', label: 'Multiple Choice — Single Answer', section: 'reading', count: 2, skills: ['reading'],
     timing: reading, maxPromptWords: 300 },
   { type: 'sst', label: 'Summarize Spoken Text', section: 'listening', count: 1, skills: ['listening', 'writing'],
-    timing: { mode: 'per-item', responseSeconds: 600, includesPromptPlayback: true, audio: true, playOnce: true, promptSeconds: [60, 90] } },
+    // Transcript length determines playback duration; never slow or pad speech
+    // to reach one minute. The original ten-minute answer clock is unchanged.
+    timing: { mode: 'per-item', responseSeconds: 600, includesPromptPlayback: true, audio: true, playOnce: true, promptSeconds: [0, 90] } },
   { type: 'lmcma', label: 'Multiple Choice — Multiple Answers', section: 'listening', count: 2, skills: ['listening'], timing: listening([80, 120]) },
   { type: 'lfi', label: 'Fill in the Blanks — Type In', section: 'listening', count: 2, skills: ['listening'], timing: listening([30, 60]) },
   { type: 'hcs', label: 'Highlight Correct Summary', section: 'listening', count: 2, skills: ['listening', 'reading'], timing: listening([30, 90]) },

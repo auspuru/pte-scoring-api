@@ -49,8 +49,8 @@ async def main():
         + [q for m in bank['mocks'] for q in m['questions'] if q['type'] in ('sst', 'wfd')]
         + prediction_questions()
     )
-    if '--sst-minute-only' in sys.argv:
-        # Restrict duration repairs to the 17 public bundled prediction texts.
+    if '--sst-natural-only' in sys.argv or '--sst-minute-only' in sys.argv:
+        # The legacy flag remains a selector, never a duration requirement.
         # User-supplied/runtime-neural transcripts never go to this provider.
         questions = [q for q in questions if q['id'].startswith('pred26-sst-') and q.get('audioMode') != 'runtime-neural']
         if len(questions) != 17:
@@ -71,36 +71,24 @@ async def main():
             and file.exists()
             and digest(file.read_bytes()) == existing.get('audioSha256')
         )
-        needs_minute = q['type'] == 'sst' and existing.get('seconds', 0) < 60
-        if file_verified and existing.get('normalization') == NORMALIZATION_LABEL and not needs_minute:
-            print(q['id'], 'already verified and normalized', flush=True)
+        if existing and not file_verified:
+            raise ValueError('Retain the original recording; author a new audio version: ' + q['id'])
+        if file_verified:
+            print(q['id'], 'existing verified recording retained', flush=True)
             return
 
         voice = existing.get('voice') if file_verified else VOICES[q['voice']]
-        rate = existing.get('rate') if file_verified else q.get('audioRate', '-5%')
+        rate = '+0%' if q['type'] == 'sst' else q.get('audioRate', '+0%')
         source = file
-        if not file_verified or needs_minute:
+        if not file_verified:
             source = raw
             async with semaphore:
-                # Regenerate the same words with the narrator's native rate.
-                # Do not stretch phonemes in an already encoded recording or
-                # pad it with silence just to satisfy the duration requirement.
-                if needs_minute:
-                    original_rate = 1 + int(existing.get('rate', '-5%').rstrip('%')) / 100
-                    rate = f"{round((original_rate * existing['seconds'] / 62 - 1) * 100):+d}%"
-                for attempt in range(3):
-                    await asyncio.wait_for(
-                        edge_tts.Communicate(q['text'], voice, rate=rate).save(str(raw)),
-                        timeout=55
-                    )
-                    duration = float(subprocess.check_output([
-                        'ffprobe', '-v', 'error', '-show_entries', 'format=duration',
-                        '-of', 'default=noprint_wrappers=1:nokey=1', str(raw)
-                    ]))
-                    if q['type'] != 'sst' or 60 <= duration <= 90:
-                        break
-                    native_rate = 1 + int(rate.rstrip('%')) / 100
-                    rate = f"{round((native_rate * duration / 62 - 1) * 100):+d}%"
+                # Keep the exact words and native pace. Short source passages
+                # stay short; never slow them down to meet a one-minute target.
+                await asyncio.wait_for(
+                    edge_tts.Communicate(q['text'], voice, rate=rate).save(str(raw)),
+                    timeout=55
+                )
 
         # Normalise every published recording once so old low-volume dictations
         # and newly generated prediction recordings have consistent playback.
@@ -113,8 +101,8 @@ async def main():
             'ffprobe', '-v', 'error', '-show_entries', 'format=duration',
             '-of', 'default=noprint_wrappers=1:nokey=1', str(tmp)
         ]))
-        low, high = (60, 90) if q['type'] == 'sst' else (3, 8)
-        if not low <= duration <= high:
+        low, high = (0, 90) if q['type'] == 'sst' else (3, 8)
+        if not 0 < duration <= high or q['type'] != 'sst' and duration < low:
             raise ValueError(f"{q['id']}: {duration:.2f}s outside {low}–{high}s")
         subprocess.run(['ffmpeg', '-v', 'error', '-i', str(tmp), '-f', 'null', '-'], check=True)
         data = tmp.read_bytes()
@@ -132,9 +120,8 @@ async def main():
             'validationStatus': 'validated',
             'validatedAt': __import__('datetime').date.today().isoformat()
         }
-        if needs_minute:
+        if q['type'] == 'sst':
             manifest[q['id']]['pacing'] = 'native-neural-rate'
-            manifest[q['id']]['targetSeconds'] = 62
         manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
         print(q['id'], f'{duration:.2f}s', len(data), 'bytes', flush=True)
 

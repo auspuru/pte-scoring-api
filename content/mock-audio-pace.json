@@ -1,0 +1,2010 @@
+{
+  "version": "mock-normal-pace-v1",
+  "sourceCommit": "2f5776bf5eca29c9074cd95f4ffae9a548d32ea8",
+  "entries": {
+    "rl-31a83541047d9efda759271fbb1cb708630a4fffcee53cd67fc4084106d46387": {
+      "textSha256": "31a83541047d9efda759271fbb1cb708630a4fffcee53cd67fc4084106d46387",
+      "audioSha256": "238c5661f97c0e0c99a547a8066b561a538776178fffb848725ec9c8d5132655",
+      "bytes": 925868,
+      "seconds": 57.84,
+      "voices": [
+        "en-AU-NatashaNeural"
+      ],
+      "path": "content/full-mock/assets/238c5661f97c0e0c99a547a8066b561a538776178fffb848725ec9c8d5132655.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 164.9,
+      "derivation": {
+        "sourcePath": "content/full-mock/assets/0690273f1ab8d3bb2224e9d5d3057dead01690633f605bbf4753b6630da76a8e.mp3",
+        "sourceAudioSha256": "0690273f1ab8d3bb2224e9d5d3057dead01690633f605bbf4753b6630da76a8e",
+        "tempo": 1.35528302,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "rl-7ecccf87e235d2da88edc7f5fd5cd8a700aa134a4cd92cbaa32525c767b7b215": {
+      "textSha256": "7ecccf87e235d2da88edc7f5fd5cd8a700aa134a4cd92cbaa32525c767b7b215",
+      "audioSha256": "1395a5b3e891efe5015d190ac355d4f8700d6f5c63cf8339ac7e72b71999e829",
+      "bytes": 931628,
+      "seconds": 58.2,
+      "voices": [
+        "en-AU-NatashaNeural"
+      ],
+      "path": "content/full-mock/assets/1395a5b3e891efe5015d190ac355d4f8700d6f5c63cf8339ac7e72b71999e829.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 164.9,
+      "derivation": {
+        "sourcePath": "content/full-mock/assets/bcd6d30d94d13787042dd9e3f87be64e671116870f28d629e17f7ee54b263e23.mp3",
+        "sourceAudioSha256": "bcd6d30d94d13787042dd9e3f87be64e671116870f28d629e17f7ee54b263e23",
+        "tempo": 1.2725625,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sst-f2e59a21a5069aff22498cb3f12ec1175eb5996c34517fe5d4ee64f546f35a01": {
+      "questionId": "pred26-sst-01",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-01/pred26-sst-01-neural-review-20261104.mp3",
+      "textSha256": "f2e59a21a5069aff22498cb3f12ec1175eb5996c34517fe5d4ee64f546f35a01",
+      "audioSha256": "0217ee39dd9b86af23253646460b861b5b0b93fc26a339400d7efb4d0da8393d",
+      "bytes": 793484,
+      "seconds": 39.648,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -18.44,
+      "truePeakDbTP": -2.44,
+      "path": "content/full-mock/assets/0217ee39dd9b86af23253646460b861b5b0b93fc26a339400d7efb4d0da8393d.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 146.8,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-01/pred26-sst-01-neural-review-20261104.mp3",
+        "sourceAudioSha256": "0217ee39dd9b86af23253646460b861b5b0b93fc26a339400d7efb4d0da8393d",
+        "tempo": 1,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-cf6808e0a033ec0830cb8a99cfefd774e4d376286db86c83a50afd909d78b494": {
+      "textSha256": "cf6808e0a033ec0830cb8a99cfefd774e4d376286db86c83a50afd909d78b494",
+      "audioSha256": "ed1c38a667800173163d15cdc9b9fb9422cfc19e60dbfbaf276778c76cd44ee3",
+      "bytes": 51884,
+      "seconds": 3.216,
+      "voice": "en-AU-NatashaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/ed1c38a667800173163d15cdc9b9fb9422cfc19e60dbfbaf276778c76cd44ee3.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 167.9,
+      "derivation": {
+        "sourcePath": "content/full-mock/assets/969623dabec3212aaf874259b85550c44e449aefa3fc40459dacbd29ae7a09f3.mp3",
+        "sourceAudioSha256": "969623dabec3212aaf874259b85550c44e449aefa3fc40459dacbd29ae7a09f3",
+        "tempo": 1.50355556,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-2b6bdcc40a0a66552558ceaf1ec990d7ae457e09b946e40a789c681f5f852299": {
+      "textSha256": "2b6bdcc40a0a66552558ceaf1ec990d7ae457e09b946e40a789c681f5f852299",
+      "audioSha256": "384a34314b9a47c42a128ec2e9bcc9d8c61c74f0b8129fe37b41ffc754cbdea6",
+      "bytes": 57260,
+      "seconds": 3.552,
+      "voice": "en-AU-WilliamNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/384a34314b9a47c42a128ec2e9bcc9d8c61c74f0b8129fe37b41ffc754cbdea6.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.9,
+      "derivation": {
+        "sourcePath": "content/full-mock/assets/534ecbf5d78010a8ffe64ce25ad1ab9acd948d1044ce8a5eba656ea32c43e371.mp3",
+        "sourceAudioSha256": "534ecbf5d78010a8ffe64ce25ad1ab9acd948d1044ce8a5eba656ea32c43e371",
+        "tempo": 1.3872,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "rl-96771991f537ff676025eb712c85a27fb784b71db8730dbcd5a12db4310e26b4": {
+      "textSha256": "96771991f537ff676025eb712c85a27fb784b71db8730dbcd5a12db4310e26b4",
+      "audioSha256": "e0d0437295b8bd4d5fedfe3d56f89a4102aa221041c7f890783ec1aaf8f5251a",
+      "bytes": 629804,
+      "seconds": 39.336,
+      "voices": [
+        "production-recording"
+      ],
+      "path": "content/full-mock/assets/e0d0437295b8bd4d5fedfe3d56f89a4102aa221041c7f890783ec1aaf8f5251a.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 164.7,
+      "derivation": {
+        "sourcePath": "content/full-mock/assets/1086ca909e0fc9a7407cc2aff7ac16126550b05a022bc880c80245fd16228681.mp3",
+        "sourceAudioSha256": "1086ca909e0fc9a7407cc2aff7ac16126550b05a022bc880c80245fd16228681",
+        "tempo": 1.25741311,
+        "removedSilenceIntervals": [
+          [
+            49.382042000000006,
+            50.088
+          ]
+        ],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": false
+    },
+    "sgd-fa5d3e64af62908204e4d20670225aa003b4a40f661493c2f010dff98ef6e97c": {
+      "questionId": "sgd-user-20261030-01",
+      "type": "sgd",
+      "file": "review/audio-refresh-remaining-20261104/sgd/sgd-user-20261030-01/sgd-user-20261030-01-neural-review-20261104.mp3",
+      "textSha256": "fa5d3e64af62908204e4d20670225aa003b4a40f661493c2f010dff98ef6e97c",
+      "audioSha256": "bc30e9b30024796f0a24e744df888b1da5083d2dd54e6b03dfffd1b084f0e891",
+      "bytes": 2547884,
+      "seconds": 159.216,
+      "voices": [
+        "marin",
+        "cedar",
+        "coral"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -24.27,
+      "truePeakDbTP": -2.45,
+      "speakerVoices": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "turnSpeakers": [
+        "Speaker 1",
+        "Speaker 2",
+        "Speaker 3",
+        "Speaker 2",
+        "Speaker 1",
+        "Speaker 3",
+        "Speaker 2",
+        "Speaker 1",
+        "Speaker 3",
+        "Speaker 2"
+      ],
+      "narrationIncluded": true,
+      "narrationSha256": "f9e8db614ccd6ce900ac3fc25505ab46d303184ce2ce27f94cbf90d4f456d9fc",
+      "speakerAccents": {
+        "Speaker 1": "British English",
+        "Speaker 2": "General American English",
+        "Speaker 3": "Australian English"
+      },
+      "path": "content/full-mock/assets/bc30e9b30024796f0a24e744df888b1da5083d2dd54e6b03dfffd1b084f0e891.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 188,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sgd/sgd-user-20261030-01/sgd-user-20261030-01-neural-review-20261104.mp3",
+        "sourceAudioSha256": "5336dbd6dde3d211df02ea6e69e9b1ca901d0cd15d9e6016dcf4b6bf4aceafba",
+        "tempo": 1,
+        "removedSilenceIntervals": [
+          [
+            0,
+            0.373333
+          ],
+          [
+            97.032208,
+            97.95837499999999
+          ]
+        ],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sgd-062b81124bfad54bb368a478f9a85f88e38e1715c56b04d768030cb281757ce5": {
+      "questionId": "sgd-user-20261030-02",
+      "type": "sgd",
+      "file": "review/audio-refresh-remaining-20261104/sgd/sgd-user-20261030-02/sgd-user-20261030-02-neural-review-20261104.mp3",
+      "textSha256": "062b81124bfad54bb368a478f9a85f88e38e1715c56b04d768030cb281757ce5",
+      "audioSha256": "29d3bae466747b37d156117692dc747b7e5bf665575cf6ca09423e040dc4d46f",
+      "bytes": 2726828,
+      "seconds": 170.4,
+      "voices": [
+        "marin",
+        "cedar",
+        "coral"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -22.88,
+      "truePeakDbTP": -2.44,
+      "speakerVoices": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "turnSpeakers": [
+        "Speaker 1",
+        "Speaker 2",
+        "Speaker 3",
+        "Speaker 1",
+        "Speaker 2",
+        "Speaker 3",
+        "Speaker 1",
+        "Speaker 2",
+        "Speaker 3"
+      ],
+      "narrationIncluded": true,
+      "narrationSha256": "a7a02456843abe683ec01359930f6f5d2ff5d4c615776c5945b57ba1e58b1783",
+      "speakerAccents": {
+        "Speaker 1": "British English",
+        "Speaker 2": "General American English",
+        "Speaker 3": "Australian English"
+      },
+      "path": "content/full-mock/assets/29d3bae466747b37d156117692dc747b7e5bf665575cf6ca09423e040dc4d46f.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 160.6,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sgd/sgd-user-20261030-02/sgd-user-20261030-02-neural-review-20261104.mp3",
+        "sourceAudioSha256": "6fb8587746bfd51433b01ffabcd0eb3748afa6a07c298fbac9959e59710fcb17",
+        "tempo": 1,
+        "removedSilenceIntervals": [
+          [
+            68.842125,
+            69.80687499999999
+          ]
+        ],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": false
+    },
+    "sst-341373554753a5d5e50f10c4f0e2eb7e6299bf3dbaa32fda9eafe18c8ced7fdd": {
+      "questionId": "pred26-sst-02",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-02/pred26-sst-02-neural-review-20261104.mp3",
+      "textSha256": "341373554753a5d5e50f10c4f0e2eb7e6299bf3dbaa32fda9eafe18c8ced7fdd",
+      "audioSha256": "4eef51d8a251bb2e2ccc9cf9697f5b296d882dd83b15543785d68bd41f8b0282",
+      "bytes": 535724,
+      "seconds": 33.456,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -18.73,
+      "truePeakDbTP": -2.43,
+      "path": "content/full-mock/assets/4eef51d8a251bb2e2ccc9cf9697f5b296d882dd83b15543785d68bd41f8b0282.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-02/pred26-sst-02-neural-review-20261104.mp3",
+        "sourceAudioSha256": "19700e3c65eb92f896bccc1d7a664338d484597f4883ca7d9199d05a857bd2fc",
+        "tempo": 1.25543478,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-907ffa87021c7385f3c56ea735926fbbe4a5fa8647f146ec1f8514e2ff2df0c5": {
+      "textSha256": "907ffa87021c7385f3c56ea735926fbbe4a5fa8647f146ec1f8514e2ff2df0c5",
+      "audioSha256": "c86a0e86ee42aa10ffb3222aab9026a8fa3f0ea1ac8de2ba606cdaf19ee6b425",
+      "bytes": 57260,
+      "seconds": 3.552,
+      "voice": "en-GB-SoniaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/c86a0e86ee42aa10ffb3222aab9026a8fa3f0ea1ac8de2ba606cdaf19ee6b425.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.9,
+      "derivation": {
+        "sourcePath": "content/full-mock/assets/12af7cd86b494c95ede5b1efa9ff2be17fb76b24f3810ca43442181c2ca3ee95.mp3",
+        "sourceAudioSha256": "12af7cd86b494c95ede5b1efa9ff2be17fb76b24f3810ca43442181c2ca3ee95",
+        "tempo": 1.4076,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sgd-bb340a1bd2ee9433eda6a0081b9f213d4ccf02e3f4e6c709996a2699f7cd4fcd": {
+      "questionId": "sgd-user-20261030-03",
+      "type": "sgd",
+      "file": "review/audio-refresh-remaining-20261104/sgd/sgd-user-20261030-03/sgd-user-20261030-03-neural-review-20261104.mp3",
+      "textSha256": "bb340a1bd2ee9433eda6a0081b9f213d4ccf02e3f4e6c709996a2699f7cd4fcd",
+      "audioSha256": "a1282cf702eb3c697cbc2df4d284735c1729111f5e05532a77e6c21a64617d66",
+      "bytes": 3534764,
+      "seconds": 176.712,
+      "voices": [
+        "marin",
+        "cedar",
+        "coral"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -24.53,
+      "truePeakDbTP": -2.47,
+      "speakerVoices": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "turnSpeakers": [
+        "Speaker 1",
+        "Speaker 2",
+        "Speaker 3",
+        "Speaker 1",
+        "Speaker 2",
+        "Speaker 3",
+        "Speaker 1",
+        "Speaker 2",
+        "Speaker 3"
+      ],
+      "narrationIncluded": true,
+      "narrationSha256": "3d997603fbcf38b7e64efda6da85ed994ea896d931cedba30c851c88156d217f",
+      "speakerAccents": {
+        "Speaker 1": "British English",
+        "Speaker 2": "General American English",
+        "Speaker 3": "Australian English"
+      },
+      "path": "content/full-mock/assets/a1282cf702eb3c697cbc2df4d284735c1729111f5e05532a77e6c21a64617d66.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 176.2,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sgd/sgd-user-20261030-03/sgd-user-20261030-03-neural-review-20261104.mp3",
+        "sourceAudioSha256": "a1282cf702eb3c697cbc2df4d284735c1729111f5e05532a77e6c21a64617d66",
+        "tempo": 1,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sgd-7b18a8022c5be685b0eb1e871626e00370944490210e6ca34cf6c94f464c786c": {
+      "questionId": "sgd-user-20261030-04",
+      "type": "sgd",
+      "file": "review/audio-refresh-remaining-20261104/sgd/sgd-user-20261030-04/sgd-user-20261030-04-neural-review-20261104.mp3",
+      "textSha256": "7b18a8022c5be685b0eb1e871626e00370944490210e6ca34cf6c94f464c786c",
+      "audioSha256": "351a3651a9a0a0bd14625993ee10a9f00bae1f0da917cb28a0b5afff7fa1c4cd",
+      "bytes": 3186764,
+      "seconds": 159.312,
+      "voices": [
+        "marin",
+        "cedar",
+        "coral"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -22.15,
+      "truePeakDbTP": -2.46,
+      "speakerVoices": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "turnSpeakers": [
+        "Speaker 1",
+        "Speaker 2",
+        "Speaker 3",
+        "Speaker 1",
+        "Speaker 2",
+        "Speaker 3",
+        "Speaker 1",
+        "Speaker 2",
+        "Speaker 3"
+      ],
+      "narrationIncluded": true,
+      "narrationSha256": "aded6e8ce550560994ce0df77940aefff7a58f8aaca8dac526d66c10a09db148",
+      "speakerAccents": {
+        "Speaker 1": "British English",
+        "Speaker 2": "General American English",
+        "Speaker 3": "Australian English"
+      },
+      "path": "content/full-mock/assets/351a3651a9a0a0bd14625993ee10a9f00bae1f0da917cb28a0b5afff7fa1c4cd.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 178.1,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sgd/sgd-user-20261030-04/sgd-user-20261030-04-neural-review-20261104.mp3",
+        "sourceAudioSha256": "351a3651a9a0a0bd14625993ee10a9f00bae1f0da917cb28a0b5afff7fa1c4cd",
+        "tempo": 1,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sst-42357ab1358a441d304b20084f2ae030cd67aeb1de5663cf9358706a0ff44142": {
+      "questionId": "pred26-sst-03",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-03/pred26-sst-03-neural-review-20261104.mp3",
+      "textSha256": "42357ab1358a441d304b20084f2ae030cd67aeb1de5663cf9358706a0ff44142",
+      "audioSha256": "701a29921a7c83f2fbf5cf711f6cfe3aa1c6cda3a607830f344149ef0cfc4231",
+      "bytes": 524204,
+      "seconds": 32.736,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -18.56,
+      "truePeakDbTP": -2.44,
+      "path": "content/full-mock/assets/701a29921a7c83f2fbf5cf711f6cfe3aa1c6cda3a607830f344149ef0cfc4231.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-03/pred26-sst-03-neural-review-20261104.mp3",
+        "sourceAudioSha256": "8168ec0b63f21e23fdd295a88e174d87eecb18e4b166b3691f3f452ba26440f2",
+        "tempo": 1.18433333,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "rl-6a0f88d8531ff2d2bde4741f597c7e12da274dcd4e5299fa7f2096323e9d3f2b": {
+      "textSha256": "6a0f88d8531ff2d2bde4741f597c7e12da274dcd4e5299fa7f2096323e9d3f2b",
+      "audioSha256": "0cf603e88e1ef6d95aa868b2f2a53bec94be4f41649518d3aead5a6332a02219",
+      "bytes": 908204,
+      "seconds": 56.736,
+      "voices": [
+        "en-AU-NatashaNeural"
+      ],
+      "path": "content/full-mock/assets/0cf603e88e1ef6d95aa868b2f2a53bec94be4f41649518d3aead5a6332a02219.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165,
+      "derivation": {
+        "sourcePath": "content/speaking-audio/rl-1.mp3",
+        "sourceAudioSha256": "09a4e04e22b1228b8309602a7aea8734488253ed0921a56bee5a25ea6e6dcdf5",
+        "tempo": 1.19646154,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "rl-9721a3dafb6735898d5f5b88b603f53a645a730514031bb05564fabd64a755aa": {
+      "textSha256": "9721a3dafb6735898d5f5b88b603f53a645a730514031bb05564fabd64a755aa",
+      "audioSha256": "fa772684f8a381cb08ec2c295a78fa20c94b19f1fbdda52ddeb343e8b397d683",
+      "bytes": 989612,
+      "seconds": 61.824,
+      "voices": [
+        "en-AU-NatashaNeural"
+      ],
+      "path": "content/full-mock/assets/fa772684f8a381cb08ec2c295a78fa20c94b19f1fbdda52ddeb343e8b397d683.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165,
+      "derivation": {
+        "sourcePath": "content/speaking-audio/rl-2.mp3",
+        "sourceAudioSha256": "b39c6e91228fe257a82f609c2de004b1442ea0329fcd0963cded5f5edf3f332a",
+        "tempo": 1.28117647,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sgd-e3edaaa4b71b96788e70918e197bf8b9d7867280725deb1d8827d809069ee9b6": {
+      "questionId": "sgd-1",
+      "type": "sgd",
+      "file": "review/audio-refresh-remaining-20261104/sgd/sgd-1/sgd-1-neural-review-20261104.mp3",
+      "textSha256": "e3edaaa4b71b96788e70918e197bf8b9d7867280725deb1d8827d809069ee9b6",
+      "audioSha256": "beff6ae4d8a79231cd524b501655f6eb34ac5359c4b5b9d8941e9cb547191cc1",
+      "bytes": 1653932,
+      "seconds": 103.344,
+      "voices": [
+        "marin",
+        "cedar",
+        "coral"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -18.58,
+      "truePeakDbTP": -2.42,
+      "speakerVoices": {
+        "Maya": "marin",
+        "Ben": "cedar",
+        "Clara": "coral"
+      },
+      "turnSpeakers": [
+        "Maya",
+        "Ben",
+        "Clara",
+        "Maya",
+        "Ben",
+        "Clara"
+      ],
+      "narrationIncluded": true,
+      "narrationSha256": "534acdb630df15ed7f3090142a821770233a2b864644fa2c5246b23b3f16199e",
+      "speakerAccents": {
+        "Maya": "British English",
+        "Ben": "General American English",
+        "Clara": "Australian English"
+      },
+      "path": "content/full-mock/assets/beff6ae4d8a79231cd524b501655f6eb34ac5359c4b5b9d8941e9cb547191cc1.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.4,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sgd/sgd-1/sgd-1-neural-review-20261104.mp3",
+        "sourceAudioSha256": "98129ea8038384f6706d20abb54b0517d8195c756f23d043abde671d5d965d75",
+        "tempo": 1,
+        "removedSilenceIntervals": [
+          [
+            0,
+            0.35587499999999994
+          ],
+          [
+            5.647667,
+            6.513875
+          ]
+        ],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sgd-6432b4714efbcf61a2f6707c3db651d6ded4deedf2684f492f64ad3cf5bc6c5f": {
+      "questionId": "sgd-4",
+      "type": "sgd",
+      "file": "review/audio-refresh-remaining-20261104/sgd/sgd-4/sgd-4-neural-review-20261104.mp3",
+      "textSha256": "6432b4714efbcf61a2f6707c3db651d6ded4deedf2684f492f64ad3cf5bc6c5f",
+      "audioSha256": "ec9412c0c71e2233b6eae3a9da0809cb7997b93799126d6b2a61826dfffb244c",
+      "bytes": 1801388,
+      "seconds": 112.56,
+      "voices": [
+        "marin",
+        "cedar",
+        "coral"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -22.02,
+      "truePeakDbTP": -2.44,
+      "speakerVoices": {
+        "Ethan": "marin",
+        "Nina": "cedar",
+        "Luis": "coral"
+      },
+      "turnSpeakers": [
+        "Ethan",
+        "Nina",
+        "Luis",
+        "Ethan",
+        "Nina",
+        "Luis"
+      ],
+      "narrationIncluded": true,
+      "narrationSha256": "fae0520f9e2224a060e739bea0cb0650778d17cae1bad61fe6047f753bef6653",
+      "speakerAccents": {
+        "Ethan": "British English",
+        "Nina": "General American English",
+        "Luis": "Australian English"
+      },
+      "path": "content/full-mock/assets/ec9412c0c71e2233b6eae3a9da0809cb7997b93799126d6b2a61826dfffb244c.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 157.2,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sgd/sgd-4/sgd-4-neural-review-20261104.mp3",
+        "sourceAudioSha256": "319080f5c75db65c311e5318626557c36e249c5019ae88a5c2c7bdbcc54ac1ae",
+        "tempo": 1,
+        "removedSilenceIntervals": [
+          [
+            4.857292000000001,
+            6.456042
+          ],
+          [
+            77.053458,
+            78.05470799999999
+          ]
+        ],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "rl-2296790d490f0346fdc85ee647141ea2bb9d0cb49b335c791567299eecb82173": {
+      "textSha256": "2296790d490f0346fdc85ee647141ea2bb9d0cb49b335c791567299eecb82173",
+      "audioSha256": "4e8d364654ee8f657ff2c6468db7b3486e572ab2a01cde36808abc69eaf1dace",
+      "bytes": 919724,
+      "seconds": 57.456,
+      "voices": [
+        "en-AU-NatashaNeural"
+      ],
+      "path": "content/full-mock/assets/4e8d364654ee8f657ff2c6468db7b3486e572ab2a01cde36808abc69eaf1dace.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165,
+      "derivation": {
+        "sourcePath": "content/speaking-audio/rl-5.mp3",
+        "sourceAudioSha256": "4670f59e4fed130de732b2de47ce1973c6910b02c1340ba41d9d09303cbb3cb7",
+        "tempo": 1.28156962,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sgd-70a3623ac980412d2751ff8b91a81c7cae225422a0e27e794fd6c173132cd189": {
+      "questionId": "sgd-5",
+      "type": "sgd",
+      "file": "review/audio-refresh-remaining-20261104/sgd/sgd-5/sgd-5-neural-review-20261104.mp3",
+      "textSha256": "70a3623ac980412d2751ff8b91a81c7cae225422a0e27e794fd6c173132cd189",
+      "audioSha256": "15b003501cf8e7af34f5d8d908fd670f5b3c2033c7ff5cf1ff3bd010677447c0",
+      "bytes": 1703468,
+      "seconds": 106.44,
+      "voices": [
+        "marin",
+        "cedar",
+        "coral"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -23.31,
+      "truePeakDbTP": -2.44,
+      "speakerVoices": {
+        "Grace": "marin",
+        "Sam": "cedar",
+        "Priya": "coral"
+      },
+      "turnSpeakers": [
+        "Grace",
+        "Sam",
+        "Priya",
+        "Grace",
+        "Sam",
+        "Priya"
+      ],
+      "narrationIncluded": true,
+      "narrationSha256": "4fd41b3878839432a161680a67d7a5fa1ad434eeb62180f73556fc6ec41eb7cf",
+      "speakerAccents": {
+        "Grace": "British English",
+        "Sam": "General American English",
+        "Priya": "Australian English"
+      },
+      "path": "content/full-mock/assets/15b003501cf8e7af34f5d8d908fd670f5b3c2033c7ff5cf1ff3bd010677447c0.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 164,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sgd/sgd-5/sgd-5-neural-review-20261104.mp3",
+        "sourceAudioSha256": "b9430ede92f45ca5d20bafec921689e8e00ea74d1f438f66c8b3d7fc60f38cb0",
+        "tempo": 1,
+        "removedSilenceIntervals": [
+          [
+            105.990333,
+            106.8
+          ]
+        ],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "rl-8958ae1d8134f4f0e3dd4a1e510d132a31aae899b2c5c56bb2267a1a4f5fb5c8": {
+      "textSha256": "8958ae1d8134f4f0e3dd4a1e510d132a31aae899b2c5c56bb2267a1a4f5fb5c8",
+      "audioSha256": "a292711d5b80f76672263a1be360d35ef6c95377388c129330c263eb3ee5a447",
+      "bytes": 687020,
+      "seconds": 42.912,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "generation": [
+        {
+          "model": "gpt-4o-mini-tts-2025-12-15",
+          "voice": "marin",
+          "speed": 1,
+          "targetWordsPerMinute": 115,
+          "instructions": "Read exactly the supplied text without adding, omitting, or changing any words. Do not read out these instructions. Use clear British English and a natural, human-like university lecture delivery. Be engaged and thoughtful, with natural phrase pauses, clear consonants, complete word endings and gentle emphasis. Aim around 115 words per minute, maintaining clear, fluid speech. Stop immediately after the final supplied word. Do not add production cues, fillers, introductions, a conclusion, music, background noise or sound effects.",
+          "spokenTextSha256": "8958ae1d8134f4f0e3dd4a1e510d132a31aae899b2c5c56bb2267a1a4f5fb5c8",
+          "requestId": "req_455f60b757894de68f2d112ff11e2e8e"
+        }
+      ],
+      "processing": {
+        "kind": "constant-gain-only",
+        "constantGainDb": 1.77,
+        "tempoProcessing": "none",
+        "limiting": "none",
+        "dynamicLoudnessProcessing": "none"
+      },
+      "loudnessLUFS": -20.7,
+      "truePeakDbTP": -2.45,
+      "path": "content/full-mock/assets/a292711d5b80f76672263a1be360d35ef6c95377388c129330c263eb3ee5a447.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165,
+      "derivation": {
+        "sourcePath": "content/speaking-audio/rl-user-20261104-us-economic-strength.mp3",
+        "sourceAudioSha256": "9747e46e128ccac06327605c56a7bc973f108667ae23ee6f93143c2592177a23",
+        "tempo": 1.14772881,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sgd-0dc15c945270682f033af8bae618a054604a735003c5e4a576179c9ca2d26a02": {
+      "questionId": "sgd-user-20261030-07",
+      "type": "sgd",
+      "file": "review/audio-refresh-remaining-20261104/sgd/sgd-user-20261030-07/sgd-user-20261030-07-neural-review-20261104.mp3",
+      "textSha256": "0dc15c945270682f033af8bae618a054604a735003c5e4a576179c9ca2d26a02",
+      "audioSha256": "92630ec729cd7c218d829fd54ce45eaf4a5def55e7fd4a257c433cba908e9fea",
+      "bytes": 2593964,
+      "seconds": 162.096,
+      "voices": [
+        "marin",
+        "cedar",
+        "coral"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -22.29,
+      "truePeakDbTP": -2.45,
+      "speakerVoices": {
+        "Speaker 1": "marin",
+        "Speaker 2": "cedar",
+        "Speaker 3": "coral"
+      },
+      "turnSpeakers": [
+        "Speaker 1",
+        "Speaker 2",
+        "Speaker 3",
+        "Speaker 1",
+        "Speaker 3",
+        "Speaker 2",
+        "Speaker 3",
+        "Speaker 1",
+        "Speaker 2",
+        "Speaker 1"
+      ],
+      "narrationIncluded": true,
+      "narrationSha256": "76315606096dede8fce01d046168f79ca01a5331e58ac799198bb9bea6ef4994",
+      "speakerAccents": {
+        "Speaker 1": "British English",
+        "Speaker 2": "General American English",
+        "Speaker 3": "Australian English"
+      },
+      "path": "content/full-mock/assets/92630ec729cd7c218d829fd54ce45eaf4a5def55e7fd4a257c433cba908e9fea.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 167.3,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sgd/sgd-user-20261030-07/sgd-user-20261030-07-neural-review-20261104.mp3",
+        "sourceAudioSha256": "acf58133573385d14c3548dbe506346951e158f2662791cd5c903ad994ce85b8",
+        "tempo": 1,
+        "removedSilenceIntervals": [
+          [
+            52.196290999999995,
+            52.949708
+          ]
+        ],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sst-0fecdacc5467dfd4d725538aad8107dce261b108e0e525916fa365d637cfffd7": {
+      "textSha256": "0fecdacc5467dfd4d725538aad8107dce261b108e0e525916fa365d637cfffd7",
+      "audioSha256": "947cb1d90dc38a91f318bebad3d83f0262449b07664dd6a721238524527f46d7",
+      "bytes": 1065644,
+      "seconds": 66.576,
+      "voice": "en-AU-NatashaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/947cb1d90dc38a91f318bebad3d83f0262449b07664dd6a721238524527f46d7.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 164.9,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wm1-sst.mp3",
+        "sourceAudioSha256": "8dd0fd8fe2c222474910877c057c705a9e4d12804236a2ecc304c6d67fd00e10",
+        "tempo": 1.30990164,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-9d8322deba45c2eb783a62c05484b75fe854c040441e7869421f17813dbc77ec": {
+      "textSha256": "9d8322deba45c2eb783a62c05484b75fe854c040441e7869421f17813dbc77ec",
+      "audioSha256": "c2d3024ed8fa50b87c703f3b6821aef5449d758299648b01cb452f300c03f21c",
+      "bytes": 57260,
+      "seconds": 3.552,
+      "voice": "en-US-GuyNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/c2d3024ed8fa50b87c703f3b6821aef5449d758299648b01cb452f300c03f21c.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.9,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wm1-wfd1.mp3",
+        "sourceAudioSha256": "060672b41f41ac97bf013bee50c566fd263352a262fa4e5eeb36c762566096e3",
+        "tempo": 1.5776,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-40b5d7b1296fbe0cd2c195df27e35cea6ad632ea6ebba2683e1ac549ce383fe5": {
+      "textSha256": "40b5d7b1296fbe0cd2c195df27e35cea6ad632ea6ebba2683e1ac549ce383fe5",
+      "audioSha256": "1070de6a9244a2f7e26b4e69e6d72ac3b44fa106b15418e97c35c76e54f511ca",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-GB-SoniaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/1070de6a9244a2f7e26b4e69e6d72ac3b44fa106b15418e97c35c76e54f511ca.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wm1-wfd2.mp3",
+        "sourceAudioSha256": "901bc1bc3309f4154cfb0cfb44998ce03c6a81737a0d2ed5c15582ca3d250e49",
+        "tempo": 1.26727273,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-80119ca2faa19cb9bd2d86082ed44d64db5399a7e63bd1ee96392ac930dc29c3": {
+      "textSha256": "80119ca2faa19cb9bd2d86082ed44d64db5399a7e63bd1ee96392ac930dc29c3",
+      "audioSha256": "c084c2c2c774a89dd3dc19fdadb482738d52641eeee836a5e369fbbc0045cce3",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-GB-RyanNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/c084c2c2c774a89dd3dc19fdadb482738d52641eeee836a5e369fbbc0045cce3.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wm1-wfd3.mp3",
+        "sourceAudioSha256": "d2b57ef33c5c87406304b5b8cbf1ebba05b044d12dae1a7ff3afcb2a61d0799e",
+        "tempo": 1.47127273,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-165694004cc53812817213f6d5797f69d1108e8fbdb5d8a4c0a15022aaf05e83": {
+      "textSha256": "165694004cc53812817213f6d5797f69d1108e8fbdb5d8a4c0a15022aaf05e83",
+      "audioSha256": "e2f91d6a5aa6955b05788954a6ef6fde1694d9fa296777e049a61af4d1e9a5f2",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-US-GuyNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/e2f91d6a5aa6955b05788954a6ef6fde1694d9fa296777e049a61af4d1e9a5f2.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wm2-wfd1.mp3",
+        "sourceAudioSha256": "36f6ca4b3908f423ca1eff97c3509173020bbdebec276881be83d93d17564569",
+        "tempo": 1.23636364,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-858082fb03efa95cf80f1082377b06aa665665751ff5a1d864b3500db4427bde": {
+      "textSha256": "858082fb03efa95cf80f1082377b06aa665665751ff5a1d864b3500db4427bde",
+      "audioSha256": "b8ccfb2a8233d54eb55763636cdfe948f42dabef3ecda69c8a332521f72d9bc1",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-GB-SoniaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/b8ccfb2a8233d54eb55763636cdfe948f42dabef3ecda69c8a332521f72d9bc1.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wm2-wfd2.mp3",
+        "sourceAudioSha256": "e5d76470ae8f92b10c72eebd3f5b0e20775a50dc6b8a2071c76d2b4aa0812316",
+        "tempo": 1.25490909,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-6fa94f441fd2715f0731135a5716a977df7aa96239f4c1bc09425114983db0ca": {
+      "textSha256": "6fa94f441fd2715f0731135a5716a977df7aa96239f4c1bc09425114983db0ca",
+      "audioSha256": "df10c87b73cce43dc26aa7d9275c338f5f54b7ce7676d1353f9b277424f8ad59",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-GB-RyanNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/df10c87b73cce43dc26aa7d9275c338f5f54b7ce7676d1353f9b277424f8ad59.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wm2-wfd3.mp3",
+        "sourceAudioSha256": "222d8f10aa416f40d63c79706175a944f2be16ae05c2e044e4d0de3777bd41fa",
+        "tempo": 1.36618182,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "hiw-d8afd639f2a5088e35aa132768d8a86375c82362edd6b8189eb43e7e88fbcd7a": {
+      "questionId": "pred26-sst-10",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-10/pred26-sst-10-neural-review-20261104.mp3",
+      "textSha256": "d8afd639f2a5088e35aa132768d8a86375c82362edd6b8189eb43e7e88fbcd7a",
+      "audioSha256": "2bf39bc46c15657430f2d7b9aefc93023544d266f492b77e53697de6af7ce794",
+      "bytes": 488876,
+      "seconds": 30.528,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -21.67,
+      "truePeakDbTP": -2.45,
+      "path": "content/full-mock/assets/2bf39bc46c15657430f2d7b9aefc93023544d266f492b77e53697de6af7ce794.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165.1,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-10/pred26-sst-10-neural-review-20261104.mp3",
+        "sourceAudioSha256": "910d3738444b51cbf8a187b1e8a0c13e41dc214fc00833c898e35fb83bec02f3",
+        "tempo": 1.14478571,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "hiw-e76371fe626e547ad8678f0ddbc9a68644f1304ddf7facf71e2c5bc64e8c35c1": {
+      "questionId": "pred26-sst-11",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-11/pred26-sst-11-neural-review-20261104.mp3",
+      "textSha256": "e76371fe626e547ad8678f0ddbc9a68644f1304ddf7facf71e2c5bc64e8c35c1",
+      "audioSha256": "5ca47d8ee6cf7c6ad986a2cca28cec78d332bafbcfb1682b2b7647163ba929f7",
+      "bytes": 501164,
+      "seconds": 31.296,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -19.85,
+      "truePeakDbTP": -2.44,
+      "path": "content/full-mock/assets/5ca47d8ee6cf7c6ad986a2cca28cec78d332bafbcfb1682b2b7647163ba929f7.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 164.9,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-11/pred26-sst-11-neural-review-20261104.mp3",
+        "sourceAudioSha256": "e599dbf14e3b77ea5427b50a82ad9824bea3cff1d9af7f1d0971ca768085a3ca",
+        "tempo": 1.23634884,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-1764bc85afe9442983ded418920d7775439f66d90f7602201d023066d94e4545": {
+      "textSha256": "1764bc85afe9442983ded418920d7775439f66d90f7602201d023066d94e4545",
+      "audioSha256": "021a8d6aa0e7034e90f12f8cd7346ab09d3c1dd2e1e66d7c62bcad86273c0c49",
+      "bytes": 68396,
+      "seconds": 4.248,
+      "voice": "en-AU-NatashaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/021a8d6aa0e7034e90f12f8cd7346ab09d3c1dd2e1e66d7c62bcad86273c0c49.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 169.5,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wfd-practice-01.mp3",
+        "sourceAudioSha256": "2df689e57e36eced2c5eda368c2b6a08f001d26802eee3aa231cf626cc434e79",
+        "tempo": 1.292,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-5c76c4706ff351767648e636868ebb93650420ed738abd5bdf02beafed596171": {
+      "textSha256": "5c76c4706ff351767648e636868ebb93650420ed738abd5bdf02beafed596171",
+      "audioSha256": "2bbce09dda56c81ed3f3d4d25263cabfe086ffb923019d53fb356610b03f2f8b",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-GB-RyanNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/2bbce09dda56c81ed3f3d4d25263cabfe086ffb923019d53fb356610b03f2f8b.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wfd-practice-03.mp3",
+        "sourceAudioSha256": "bf6faa0f0ecd14e47f356a28209213e1d2161538d07773a63307115cdf68e9e2",
+        "tempo": 1.57636364,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sst-1380ad5d63a33315eb6fb71d3798f034e1af4662b2a421c9b438bcb17dbaabc4": {
+      "questionId": "pred26-sst-16",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-16/pred26-sst-16-neural-review-20261104.mp3",
+      "textSha256": "1380ad5d63a33315eb6fb71d3798f034e1af4662b2a421c9b438bcb17dbaabc4",
+      "audioSha256": "be95f943ff126300170d2d7460f37205482685f75ec9a8b83942e229a9fc15f5",
+      "bytes": 518444,
+      "seconds": 32.376,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -20.15,
+      "truePeakDbTP": -2.48,
+      "path": "content/full-mock/assets/be95f943ff126300170d2d7460f37205482685f75ec9a8b83942e229a9fc15f5.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 164.9,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-16/pred26-sst-16-neural-review-20261104.mp3",
+        "sourceAudioSha256": "3f92f7266fe33c49dbca84e494d3ff87414759a0364dbcb72cd4518608fb162e",
+        "tempo": 1.30442697,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "hiw-a8245c9ded613709491b43f847c810b1e4598a5031c848b62818bfc06d4dc667": {
+      "questionId": "pred26-sst-12",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-12/pred26-sst-12-neural-review-20261104.mp3",
+      "textSha256": "a8245c9ded613709491b43f847c810b1e4598a5031c848b62818bfc06d4dc667",
+      "audioSha256": "96c0f2fab54432533eefb5de5dc64b5f4a0faa81a607d12b3f8c8de363080094",
+      "bytes": 506924,
+      "seconds": 31.656,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -21.12,
+      "truePeakDbTP": -2.44,
+      "path": "content/full-mock/assets/96c0f2fab54432533eefb5de5dc64b5f4a0faa81a607d12b3f8c8de363080094.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 164.9,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-12/pred26-sst-12-neural-review-20261104.mp3",
+        "sourceAudioSha256": "4cfe09e02855d3aa0c2cd3f48412630b782d1fe2d3fba93445b857f116eb7ac0",
+        "tempo": 1.2137931,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-ef7130208ad130fc03fa1bdbd905019beb6a020aa28faca3483dfeab0e90de86": {
+      "textSha256": "ef7130208ad130fc03fa1bdbd905019beb6a020aa28faca3483dfeab0e90de86",
+      "audioSha256": "f4cd2a1416dc6c89f40f027f714737abe00364e190bb64d74017cb67a4e62b0f",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-GB-SoniaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/f4cd2a1416dc6c89f40f027f714737abe00364e190bb64d74017cb67a4e62b0f.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wfd-practice-04.mp3",
+        "sourceAudioSha256": "f1d0d8d0b83bdd42ff1b83697c9d1248c97fa585b3d403fc3d2c54fc36a35805",
+        "tempo": 1.60109091,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-f97169c62bdb236e1ca06bc8ea36e3bfb577988c082931d33e40b43c354d3a54": {
+      "textSha256": "f97169c62bdb236e1ca06bc8ea36e3bfb577988c082931d33e40b43c354d3a54",
+      "audioSha256": "0c68e8272dd212b9a76ed226a0f01ffeb998b501779d46940c3bd138bc6366b7",
+      "bytes": 68780,
+      "seconds": 4.272,
+      "voice": "en-US-GuyNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/0c68e8272dd212b9a76ed226a0f01ffeb998b501779d46940c3bd138bc6366b7.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.5,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wfd-practice-05.mp3",
+        "sourceAudioSha256": "5e95a51b329e783782c61ef26e5bf28a489f1177733b6b0c760f7ace2fce303a",
+        "tempo": 1.48466667,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-8c0ed7ddc369b17de2b9be022fcba4228f0399317e2427075801a24c819d8172": {
+      "textSha256": "8c0ed7ddc369b17de2b9be022fcba4228f0399317e2427075801a24c819d8172",
+      "audioSha256": "38022903658760e37d982b899d4e3691ca363981b87ec1163858116cd4095541",
+      "bytes": 68780,
+      "seconds": 4.272,
+      "voice": "en-AU-NatashaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/38022903658760e37d982b899d4e3691ca363981b87ec1163858116cd4095541.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.5,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wfd-practice-06.mp3",
+        "sourceAudioSha256": "83f455f092a5bd3f4a4120a7cbb933591294bf6c6d171c5c6897b37025c56fd4",
+        "tempo": 1.36566667,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sst-f0280e975170325db852e15ca7d85c9dd97ee897943e302159da1cbdfa4c196e": {
+      "questionId": "pred26-sst-17",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-17/pred26-sst-17-neural-review-20261104.mp3",
+      "textSha256": "f0280e975170325db852e15ca7d85c9dd97ee897943e302159da1cbdfa4c196e",
+      "audioSha256": "78cf495447056a2c057b2cc2f6791fb2e4a493e46f93f4a6b238c2f59e3fce7e",
+      "bytes": 541100,
+      "seconds": 33.792,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -19.39,
+      "truePeakDbTP": -2.43,
+      "path": "content/full-mock/assets/78cf495447056a2c057b2cc2f6791fb2e4a493e46f93f4a6b238c2f59e3fce7e.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165.1,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-17/pred26-sst-17-neural-review-20261104.mp3",
+        "sourceAudioSha256": "174e7159781a926fe28c50c30f74e51d967cbce5f30f359886a2a2fff0c0100a",
+        "tempo": 1.15324305,
+        "removedSilenceIntervals": [
+          [
+            0,
+            0.263417
+          ]
+        ],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "hiw-7148e73144f498e5c9f256edd98f1507099b404bfa56c4e9e21014fa32a50934": {
+      "questionId": "pred26-sst-14",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-14/pred26-sst-14-neural-review-20261104.mp3",
+      "textSha256": "7148e73144f498e5c9f256edd98f1507099b404bfa56c4e9e21014fa32a50934",
+      "audioSha256": "8f0acb7d6c52e70e558ab80c7da90e77d7f517ce1bdc7684504c0a280bfd1fc4",
+      "bytes": 460076,
+      "seconds": 28.728,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -20.77,
+      "truePeakDbTP": -2.45,
+      "path": "content/full-mock/assets/8f0acb7d6c52e70e558ab80c7da90e77d7f517ce1bdc7684504c0a280bfd1fc4.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-14/pred26-sst-14-neural-review-20261104.mp3",
+        "sourceAudioSha256": "f64e47cae2751a61214cbac21410277e4c41517123898edd714907242a3265b3",
+        "tempo": 1.32167089,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-0a1278d216f8de788fb65c12adbabca8f3086886448947e431974abbe6d57ad8": {
+      "textSha256": "0a1278d216f8de788fb65c12adbabca8f3086886448947e431974abbe6d57ad8",
+      "audioSha256": "bc9e9df4d5d5e38ad86ce01f812feef064ddbbffba486fa841841e5b5df05ffe",
+      "bytes": 68780,
+      "seconds": 4.272,
+      "voice": "en-AU-WilliamNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/bc9e9df4d5d5e38ad86ce01f812feef064ddbbffba486fa841841e5b5df05ffe.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.5,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wfd-practice-07.mp3",
+        "sourceAudioSha256": "b52ad485a4e393dc3ff05ef046f99b792d74c7a240d49d3f9ac515b6a2aaaa8c",
+        "tempo": 1.224,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-0401b2ee1e40b68ae2620b2dca640f8c1ba95c210b0c2ba562a4ce4f318ab9a0": {
+      "textSha256": "0401b2ee1e40b68ae2620b2dca640f8c1ba95c210b0c2ba562a4ce4f318ab9a0",
+      "audioSha256": "011ef183d030e671338fdee61d64fac33417c1fd37771e89aaeebe1eec528c1e",
+      "bytes": 68780,
+      "seconds": 4.272,
+      "voice": "en-GB-RyanNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/011ef183d030e671338fdee61d64fac33417c1fd37771e89aaeebe1eec528c1e.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.5,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wfd-practice-08.mp3",
+        "sourceAudioSha256": "296ade8c5e4332157e8380e6e7ee948f229c2f7800860b019a67811ac1685811",
+        "tempo": 1.40533333,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-f6e9358b1e30c2e82aaba54f6c14fc9dc0085ea3dc9ef5abc21131c7a323ef5d": {
+      "textSha256": "f6e9358b1e30c2e82aaba54f6c14fc9dc0085ea3dc9ef5abc21131c7a323ef5d",
+      "audioSha256": "4e41a58ad819c541a5b7060d18a3b767c51e3efd42f13e141bca14e5e073a2e4",
+      "bytes": 68780,
+      "seconds": 4.272,
+      "voice": "en-GB-SoniaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/4e41a58ad819c541a5b7060d18a3b767c51e3efd42f13e141bca14e5e073a2e4.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.5,
+      "derivation": {
+        "sourcePath": "content/writing-audio/wfd-practice-09.mp3",
+        "sourceAudioSha256": "2e54930525e330659d4a219074d3f31b69333068b6f89a7d74d1962d316f6e3a",
+        "tempo": 1.428,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sst-e76371fe626e547ad8678f0ddbc9a68644f1304ddf7facf71e2c5bc64e8c35c1": {
+      "questionId": "pred26-sst-11",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-11/pred26-sst-11-neural-review-20261104.mp3",
+      "textSha256": "e76371fe626e547ad8678f0ddbc9a68644f1304ddf7facf71e2c5bc64e8c35c1",
+      "audioSha256": "5ca47d8ee6cf7c6ad986a2cca28cec78d332bafbcfb1682b2b7647163ba929f7",
+      "bytes": 501164,
+      "seconds": 31.296,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -19.85,
+      "truePeakDbTP": -2.44,
+      "path": "content/full-mock/assets/5ca47d8ee6cf7c6ad986a2cca28cec78d332bafbcfb1682b2b7647163ba929f7.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 164.9,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-11/pred26-sst-11-neural-review-20261104.mp3",
+        "sourceAudioSha256": "e599dbf14e3b77ea5427b50a82ad9824bea3cff1d9af7f1d0971ca768085a3ca",
+        "tempo": 1.23634884,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-e3e5f77a0d43ce37f8407950496e1bc7bcbc6394d66bf70067d7b49ba9af0132": {
+      "textSha256": "e3e5f77a0d43ce37f8407950496e1bc7bcbc6394d66bf70067d7b49ba9af0132",
+      "audioSha256": "de6c9a338bd988a2be2a7b2dfe1d0f1e4953ef8781b5761bc9cba1bd273f9f6e",
+      "bytes": 57260,
+      "seconds": 3.552,
+      "voice": "en-AU-NatashaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/de6c9a338bd988a2be2a7b2dfe1d0f1e4953ef8781b5761bc9cba1bd273f9f6e.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.9,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-09.mp3",
+        "sourceAudioSha256": "64c383579b98ae9d82df61f9eb709fe9277f3db59b2552238b6cfd9f0989c89b",
+        "tempo": 1.3872,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sst-c0dc727bbf58f0bfd4ec5245bd2f881238880b43424994dc2028c725ddfb5c30": {
+      "questionId": "pred26-sst-09",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-09/pred26-sst-09-neural-review-20261104.mp3",
+      "textSha256": "c0dc727bbf58f0bfd4ec5245bd2f881238880b43424994dc2028c725ddfb5c30",
+      "audioSha256": "2b6a534d10e39d79b73c748247aca9e6d262a3df558ff3866a9ef3c401d554ac",
+      "bytes": 524204,
+      "seconds": 32.736,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -20.72,
+      "truePeakDbTP": -2.46,
+      "path": "content/full-mock/assets/2b6a534d10e39d79b73c748247aca9e6d262a3df558ff3866a9ef3c401d554ac.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-09/pred26-sst-09-neural-review-20261104.mp3",
+        "sourceAudioSha256": "06dd0ddae16841a8f2fd354460189a012b8d8f41711941ec07cbbb06ec5cf812",
+        "tempo": 1.16013333,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-65654a64dcb55c798e89d57264ee79ab4bc3cab2dceb1e8d94f0e96f92762d28": {
+      "textSha256": "65654a64dcb55c798e89d57264ee79ab4bc3cab2dceb1e8d94f0e96f92762d28",
+      "audioSha256": "007441875d07cdd86f79033d45f2fcf0a688160702d0b3613251adbba0c3bd09",
+      "bytes": 57260,
+      "seconds": 3.552,
+      "voice": "en-GB-SoniaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/007441875d07cdd86f79033d45f2fcf0a688160702d0b3613251adbba0c3bd09.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.9,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-15.mp3",
+        "sourceAudioSha256": "54f8e51cabafb796b4a65b4d320b111cdbf1c903229724b9a0f108ae090e5e9e",
+        "tempo": 1.53,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-ba4e4afd3979ffce91cddaa5e84efdf21fc99e31aba013defa70af1b20b831b9": {
+      "textSha256": "ba4e4afd3979ffce91cddaa5e84efdf21fc99e31aba013defa70af1b20b831b9",
+      "audioSha256": "ae04d126b59a21f1660e4bd2e5197b043a8e9b489e63e797be448bcb1761fd15",
+      "bytes": 57260,
+      "seconds": 3.552,
+      "voice": "en-AU-NatashaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/ae04d126b59a21f1660e4bd2e5197b043a8e9b489e63e797be448bcb1761fd15.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.9,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-05.mp3",
+        "sourceAudioSha256": "425e583d89275c6ac1848a2953f61449df0fa46ea77391b82af3d6241e197594",
+        "tempo": 1.2036,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-6a997047a3e01e02838ad6a8a50b23ee1e7f0b88022b00839ca1e96293b397e5": {
+      "textSha256": "6a997047a3e01e02838ad6a8a50b23ee1e7f0b88022b00839ca1e96293b397e5",
+      "audioSha256": "3c445d823b455bc61f5984ea530c01a89afb9c62231152d0fc5d56bea4576dca",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-AU-NatashaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/3c445d823b455bc61f5984ea530c01a89afb9c62231152d0fc5d56bea4576dca.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-21.mp3",
+        "sourceAudioSha256": "0a534888e72c9971c765413610650a2ec7e76b325e7984e06b32ffb61cfd6bc6",
+        "tempo": 1.37236364,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-0bf8ff62a3bc302c98064b30603a957c1fdfcbab0723433cd43112288edde58d": {
+      "textSha256": "0bf8ff62a3bc302c98064b30603a957c1fdfcbab0723433cd43112288edde58d",
+      "audioSha256": "c645e3d0fb28539e9e5727989a34e02330fccb729a5144cddcb411dbcbbb92fb",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-GB-SoniaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/c645e3d0fb28539e9e5727989a34e02330fccb729a5144cddcb411dbcbbb92fb.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-11.mp3",
+        "sourceAudioSha256": "95b66cacc2d7b5b4e12b7b5c4c16691ebc22b46308e416cac84e444b67e7b7d2",
+        "tempo": 1.31672727,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-aa40278dc896066868f14d3e000d079f1f100ad4687893bf9d25746f3639a9b2": {
+      "textSha256": "aa40278dc896066868f14d3e000d079f1f100ad4687893bf9d25746f3639a9b2",
+      "audioSha256": "fb363efb019a9e205094fc528d9419fe0b44a90af7d61a64c8adcaf5e76da9ea",
+      "bytes": 57260,
+      "seconds": 3.552,
+      "voice": "en-GB-RyanNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/fb363efb019a9e205094fc528d9419fe0b44a90af7d61a64c8adcaf5e76da9ea.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.9,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-24.mp3",
+        "sourceAudioSha256": "b38d46eff0f6f8e1ac1b2742439455cb94439671a30934edf0aa968d9866f8f9",
+        "tempo": 1.2648,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sst-36102900bf6ef1cf10165c28cafc64da82e1fe43046cbcbe55c47baa3472068b": {
+      "questionId": "pred26-sst-07",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-07/pred26-sst-07-neural-review-20261104.mp3",
+      "textSha256": "36102900bf6ef1cf10165c28cafc64da82e1fe43046cbcbe55c47baa3472068b",
+      "audioSha256": "ba53abca3455d7a264bd2cc260630cc27d444aeb18a9d9d4734fc5535cf282e2",
+      "bytes": 518060,
+      "seconds": 32.352,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -19.99,
+      "truePeakDbTP": -2.42,
+      "path": "content/full-mock/assets/ba53abca3455d7a264bd2cc260630cc27d444aeb18a9d9d4734fc5535cf282e2.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165.1,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-07/pred26-sst-07-neural-review-20261104.mp3",
+        "sourceAudioSha256": "8fec5ff583c83b66509e26114b003ba0c7a1922084c2b039036d8203c0e2814e",
+        "tempo": 1.15314607,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-0591ac81cbd7793b6f2d831da9416acecd0b55829d1d3f78d97a09f61f1b5a7e": {
+      "textSha256": "0591ac81cbd7793b6f2d831da9416acecd0b55829d1d3f78d97a09f61f1b5a7e",
+      "audioSha256": "ab8e42f1f07dd62265ddac041a961e3c248cf0f73e1981d37fbf9d165e21dac5",
+      "bytes": 68780,
+      "seconds": 4.272,
+      "voice": "en-AU-NatashaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/ab8e42f1f07dd62265ddac041a961e3c248cf0f73e1981d37fbf9d165e21dac5.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.5,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-01.mp3",
+        "sourceAudioSha256": "b8ec80a7133550fe0b2fd341ae7f91d47844ef6db4a515469809f78dc39c5ddb",
+        "tempo": 1.224,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sst-7148e73144f498e5c9f256edd98f1507099b404bfa56c4e9e21014fa32a50934": {
+      "questionId": "pred26-sst-14",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-14/pred26-sst-14-neural-review-20261104.mp3",
+      "textSha256": "7148e73144f498e5c9f256edd98f1507099b404bfa56c4e9e21014fa32a50934",
+      "audioSha256": "8f0acb7d6c52e70e558ab80c7da90e77d7f517ce1bdc7684504c0a280bfd1fc4",
+      "bytes": 460076,
+      "seconds": 28.728,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -20.77,
+      "truePeakDbTP": -2.45,
+      "path": "content/full-mock/assets/8f0acb7d6c52e70e558ab80c7da90e77d7f517ce1bdc7684504c0a280bfd1fc4.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-14/pred26-sst-14-neural-review-20261104.mp3",
+        "sourceAudioSha256": "f64e47cae2751a61214cbac21410277e4c41517123898edd714907242a3265b3",
+        "tempo": 1.32167089,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-16b591ae542f574c20be585d256d529e7807c0adefb879e13dd1dc7c64135398": {
+      "textSha256": "16b591ae542f574c20be585d256d529e7807c0adefb879e13dd1dc7c64135398",
+      "audioSha256": "d3cb0f49b1cc292e67ab64d4d2841aa22c90a47cabbdcfd81fc27e0eb0e4cb9e",
+      "bytes": 57260,
+      "seconds": 3.552,
+      "voice": "en-AU-NatashaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/d3cb0f49b1cc292e67ab64d4d2841aa22c90a47cabbdcfd81fc27e0eb0e4cb9e.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.9,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-17.mp3",
+        "sourceAudioSha256": "4d5a62a63973800bf2a3d85faeedb857d8c7d70062c4e1435d5b2bb06db4344d",
+        "tempo": 1.5028,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-cb04b09b66e8943f31489e81a206bd51a57582d2dbe1c014b690e53a170c5a30": {
+      "textSha256": "cb04b09b66e8943f31489e81a206bd51a57582d2dbe1c014b690e53a170c5a30",
+      "audioSha256": "853e54669390e3048c49ce5a0901871b6a0f8c7b84ea64fc2d876073d66ea497",
+      "bytes": 51884,
+      "seconds": 3.216,
+      "voice": "en-AU-WilliamNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/853e54669390e3048c49ce5a0901871b6a0f8c7b84ea64fc2d876073d66ea497.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 167.9,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-30.mp3",
+        "sourceAudioSha256": "50fc68cfe37f9b4e6c14a533b9ce97584d03a9abf16a24b708220ac93dc50eee",
+        "tempo": 1.58666667,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-43531890c0bec4daa8c7ce759e9fbd6a7c70406cf215211f2c21921e543548cd": {
+      "textSha256": "43531890c0bec4daa8c7ce759e9fbd6a7c70406cf215211f2c21921e543548cd",
+      "audioSha256": "8921f6a78c6e03eeaa6e767381368c8142184cfccc910d733898ffb4a9ecf373",
+      "bytes": 68780,
+      "seconds": 4.272,
+      "voice": "en-GB-SoniaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/8921f6a78c6e03eeaa6e767381368c8142184cfccc910d733898ffb4a9ecf373.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.5,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-07.mp3",
+        "sourceAudioSha256": "66d59c8b7508cf388c86f9bd50ff87e6aead9a60c445cbccb2c9114a7547d8cf",
+        "tempo": 1.19566667,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-4796126c66537d33c84a3dec499af66daf2057967623c9da1384356832091fde": {
+      "questionId": "pred26-wfd-20",
+      "type": "wfd",
+      "file": "review/audio-refresh-remaining-20261104/wfd/pred26-wfd-20/pred26-wfd-20-neural-review-20261104.mp3",
+      "textSha256": "4796126c66537d33c84a3dec499af66daf2057967623c9da1384356832091fde",
+      "audioSha256": "4567464019175c12a0a9c21bb5f20833ddb985930300f3e46c3e6184a95b006a",
+      "bytes": 51500,
+      "seconds": 3.192,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -18.45,
+      "truePeakDbTP": -2.58,
+      "path": "content/full-mock/assets/4567464019175c12a0a9c21bb5f20833ddb985930300f3e46c3e6184a95b006a.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 169.2,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/wfd/pred26-wfd-20/pred26-wfd-20-neural-review-20261104.mp3",
+        "sourceAudioSha256": "8c07d8498428c7987a61a354f4fd5fd69b9a23cf82c046fad377f80820591464",
+        "tempo": 1.59422222,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-ce7fbc60a8460f6fe2c4c0727304f97fc20c2ac568de4face14f5f7e727f1fb3": {
+      "textSha256": "ce7fbc60a8460f6fe2c4c0727304f97fc20c2ac568de4face14f5f7e727f1fb3",
+      "audioSha256": "ebb23de409726f613aa1d827fea23e8242eb9b6de646a7295aaf351da1d8486d",
+      "bytes": 57260,
+      "seconds": 3.552,
+      "voice": "en-AU-NatashaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/ebb23de409726f613aa1d827fea23e8242eb9b6de646a7295aaf351da1d8486d.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.9,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-33.mp3",
+        "sourceAudioSha256": "281c568293b9863a797ccee11f166da761ac2e64cabc7c18cc7159edc03d32e1",
+        "tempo": 1.5028,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-97be164495d6e7f2e2e0c57c3a09527ca865856be59d36721d84af6cf512007a": {
+      "textSha256": "97be164495d6e7f2e2e0c57c3a09527ca865856be59d36721d84af6cf512007a",
+      "audioSha256": "2f25e4c33b82ef1e53d21ad3b9bfa9f0ff953a528f76561c74849417c1051901",
+      "bytes": 57260,
+      "seconds": 3.552,
+      "voice": "en-AU-WilliamNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/2f25e4c33b82ef1e53d21ad3b9bfa9f0ff953a528f76561c74849417c1051901.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.9,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-10.mp3",
+        "sourceAudioSha256": "300416a370c7884f2eaa9e84a2f9c67f61c1f6cddd127d665f7c08240b070575",
+        "tempo": 1.3328,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-064a44a7c36c0eb02603ea1920f787fa59c0e73f45bff7400b2a831808e7e906": {
+      "questionId": "pred26-wfd-23",
+      "type": "wfd",
+      "file": "review/audio-refresh-remaining-20261104/wfd/pred26-wfd-23/pred26-wfd-23-neural-review-20261104.mp3",
+      "textSha256": "064a44a7c36c0eb02603ea1920f787fa59c0e73f45bff7400b2a831808e7e906",
+      "audioSha256": "c209b088ac5f74f277c7592f14a6f1f0afb59728d1d890e5d986d19c650b85fe",
+      "bytes": 57260,
+      "seconds": 3.552,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -21.62,
+      "truePeakDbTP": -2.44,
+      "path": "content/full-mock/assets/c209b088ac5f74f277c7592f14a6f1f0afb59728d1d890e5d986d19c650b85fe.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.9,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/wfd/pred26-wfd-23/pred26-wfd-23-neural-review-20261104.mp3",
+        "sourceAudioSha256": "71e8bf02bacdccf1f1b6e1ecd96dc286b8c994739c3eb24feb65259a3ce09cab",
+        "tempo": 1.4484,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-dd5cf13fb81e84b683c6439716d5651bf9c10c15f3e947baca9e6081160bfb16": {
+      "textSha256": "dd5cf13fb81e84b683c6439716d5651bf9c10c15f3e947baca9e6081160bfb16",
+      "audioSha256": "e1b85ccabec3a5408b1e9d0070e085b35e9c34639571a408dd9adfe10d2926fc",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-GB-RyanNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/e1b85ccabec3a5408b1e9d0070e085b35e9c34639571a408dd9adfe10d2926fc.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-36.mp3",
+        "sourceAudioSha256": "46b43585b87495bf792edd9d0228ac08950d2c87c2f347e154231993c8106c2f",
+        "tempo": 1.19309091,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sst-a8245c9ded613709491b43f847c810b1e4598a5031c848b62818bfc06d4dc667": {
+      "questionId": "pred26-sst-12",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-12/pred26-sst-12-neural-review-20261104.mp3",
+      "textSha256": "a8245c9ded613709491b43f847c810b1e4598a5031c848b62818bfc06d4dc667",
+      "audioSha256": "96c0f2fab54432533eefb5de5dc64b5f4a0faa81a607d12b3f8c8de363080094",
+      "bytes": 506924,
+      "seconds": 31.656,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -21.12,
+      "truePeakDbTP": -2.44,
+      "path": "content/full-mock/assets/96c0f2fab54432533eefb5de5dc64b5f4a0faa81a607d12b3f8c8de363080094.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 164.9,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-12/pred26-sst-12-neural-review-20261104.mp3",
+        "sourceAudioSha256": "4cfe09e02855d3aa0c2cd3f48412630b782d1fe2d3fba93445b857f116eb7ac0",
+        "tempo": 1.2137931,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-9c9d107a00a28bc4a848204b7a4e68166507dad0d661dd99848bdf640ef1b42e": {
+      "textSha256": "9c9d107a00a28bc4a848204b7a4e68166507dad0d661dd99848bdf640ef1b42e",
+      "audioSha256": "ca6a4c0b2c4a35b58524e4890e81be7b2558e02b8ea1e1dd162033c8aece46e1",
+      "bytes": 51500,
+      "seconds": 3.192,
+      "voice": "en-GB-RyanNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/ca6a4c0b2c4a35b58524e4890e81be7b2558e02b8ea1e1dd162033c8aece46e1.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 169.2,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-16.mp3",
+        "sourceAudioSha256": "a22569235b9cb26f5100e2e50ee407fce9a052af1fe908706a20bfd965e73427",
+        "tempo": 1.31466667,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-6c9d86dd4bc3cf181621e68c3afb808a324b6d34e1e6fef6ffe32f0c13781893": {
+      "textSha256": "6c9d86dd4bc3cf181621e68c3afb808a324b6d34e1e6fef6ffe32f0c13781893",
+      "audioSha256": "750359e67c0cfa8f55d549fd5f2848c0635368fef08413a177aa3a588b6c8157",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-AU-NatashaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/750359e67c0cfa8f55d549fd5f2848c0635368fef08413a177aa3a588b6c8157.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-29.mp3",
+        "sourceAudioSha256": "4f4e357fb6c33f912469ee77c93e263a30d5557b0a0f6e5af345fecb251829c8",
+        "tempo": 1.35381818,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-3e1d177e77a032c7a2832c347f6a0744441045d605155601193dd60a4e31b5e2": {
+      "textSha256": "3e1d177e77a032c7a2832c347f6a0744441045d605155601193dd60a4e31b5e2",
+      "audioSha256": "3286f3e58817f16f343932f2a15bb3f204ca4cb9a9035529c1c97039f46a822a",
+      "bytes": 57260,
+      "seconds": 3.552,
+      "voice": "en-AU-WilliamNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/3286f3e58817f16f343932f2a15bb3f204ca4cb9a9035529c1c97039f46a822a.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.9,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-22.mp3",
+        "sourceAudioSha256": "8f8f7d7f6a792347817ae858196b7fcae00bc69a0a66fbb1b14306b16e97d597",
+        "tempo": 1.3668,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-c9cfe8a61ae44d501577aa2c28bd3959d45fa80c2cd3cf751b51af658329b51f": {
+      "questionId": "pred26-wfd-35",
+      "type": "wfd",
+      "file": "review/audio-refresh-remaining-20261104/wfd/pred26-wfd-35/pred26-wfd-35-neural-review-20261104.mp3",
+      "textSha256": "c9cfe8a61ae44d501577aa2c28bd3959d45fa80c2cd3cf751b51af658329b51f",
+      "audioSha256": "7cccff3e0324d077ff59ee3d551faff9fa828c7fd9e0ff85a2791fce093229b7",
+      "bytes": 49964,
+      "seconds": 3.096,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -18.85,
+      "truePeakDbTP": -2.44,
+      "path": "content/full-mock/assets/7cccff3e0324d077ff59ee3d551faff9fa828c7fd9e0ff85a2791fce093229b7.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 155,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/wfd/pred26-wfd-35/pred26-wfd-35-neural-review-20261104.mp3",
+        "sourceAudioSha256": "be65ca1600e2189dd8c19c12bf4990a3fba1fa2a5c1eec71d8e756e6a76552bb",
+        "tempo": 1.63525,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-5c7504a87c8ab62663e91725f1427becb24f4d9ff43c004b757f6137292a22ab": {
+      "textSha256": "5c7504a87c8ab62663e91725f1427becb24f4d9ff43c004b757f6137292a22ab",
+      "audioSha256": "58393f5f8c291887d993e14dbca89c8bdaa0824f4b5d9950513505b62210b9d0",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-AU-NatashaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/58393f5f8c291887d993e14dbca89c8bdaa0824f4b5d9950513505b62210b9d0.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-25.mp3",
+        "sourceAudioSha256": "d5c7974a7377976286b61c319a38174f9a5edae6d45b4b6f99a2a0eb0423a5b9",
+        "tempo": 1.30436364,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sst-d8afd639f2a5088e35aa132768d8a86375c82362edd6b8189eb43e7e88fbcd7a": {
+      "questionId": "pred26-sst-10",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-10/pred26-sst-10-neural-review-20261104.mp3",
+      "textSha256": "d8afd639f2a5088e35aa132768d8a86375c82362edd6b8189eb43e7e88fbcd7a",
+      "audioSha256": "2bf39bc46c15657430f2d7b9aefc93023544d266f492b77e53697de6af7ce794",
+      "bytes": 488876,
+      "seconds": 30.528,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -21.67,
+      "truePeakDbTP": -2.45,
+      "path": "content/full-mock/assets/2bf39bc46c15657430f2d7b9aefc93023544d266f492b77e53697de6af7ce794.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165.1,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-10/pred26-sst-10-neural-review-20261104.mp3",
+        "sourceAudioSha256": "910d3738444b51cbf8a187b1e8a0c13e41dc214fc00833c898e35fb83bec02f3",
+        "tempo": 1.14478571,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "wfd-e7d8dc4af0748bdedaa46db68ad2c014e788b290ca76dcbb36a6858d79517705": {
+      "textSha256": "e7d8dc4af0748bdedaa46db68ad2c014e788b290ca76dcbb36a6858d79517705",
+      "audioSha256": "56212f7ea214f9afdc9aab11da4cbfb2b04c4fe0ebf4d696f71bc3de5b3cadd7",
+      "bytes": 63020,
+      "seconds": 3.912,
+      "voice": "en-GB-SoniaNeural",
+      "rate": "-5%",
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "validationStatus": "decoded-and-probed",
+      "validatedAt": "2026-09-24",
+      "path": "content/full-mock/assets/56212f7ea214f9afdc9aab11da4cbfb2b04c4fe0ebf4d696f71bc3de5b3cadd7.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 168.7,
+      "derivation": {
+        "sourcePath": "content/writing-audio/pred26-wfd-31.mp3",
+        "sourceAudioSha256": "63208dd37a5fc66ad8df2c0e1d57b70aaabad32d3694dd55a0e9774b39e152f4",
+        "tempo": 1.21163636,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    },
+    "sst-ee8f82dffd99ba8e796b292e1acf8826545019ae29f3703fdeee9340919fa6a6": {
+      "questionId": "pred26-sst-08",
+      "type": "sst",
+      "file": "review/audio-refresh-remaining-20261104/sst/pred26-sst-08/pred26-sst-08-neural-review-20261104.mp3",
+      "textSha256": "ee8f82dffd99ba8e796b292e1acf8826545019ae29f3703fdeee9340919fa6a6",
+      "audioSha256": "c002c8dc79565e9d30e8983a21bb9ef621207fb706d6e22ef419d32b22bf1370",
+      "bytes": 524204,
+      "seconds": 32.736,
+      "voices": [
+        "marin"
+      ],
+      "generator": "gpt-4o-mini-tts-2025-12-15",
+      "loudnessLUFS": -20.58,
+      "truePeakDbTP": -2.44,
+      "path": "content/full-mock/assets/c002c8dc79565e9d30e8983a21bb9ef621207fb706d6e22ef419d32b22bf1370.mp3",
+      "pacingVersion": "mock-normal-pace-v1",
+      "wordsPerMinuteIncludingPauses": 165,
+      "derivation": {
+        "sourcePath": "review/audio-refresh-remaining-20261104/sst/pred26-sst-08/pred26-sst-08-neural-review-20261104.mp3",
+        "sourceAudioSha256": "ebd8476eb66fcf18f16adf23bf2caad4a2f23d2c2bda72c9e68a43c735b19933",
+        "tempo": 1.22393333,
+        "removedSilenceIntervals": [],
+        "speechAdded": false
+      },
+      "validationStatus": "decoded-and-probed",
+      "humanListeningReview": "pending",
+      "publicMockPlayback": true
+    }
+  }
+}

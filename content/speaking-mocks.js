@@ -4,6 +4,7 @@ const bank=require('./speaking-bank'),writing=require('./writing-lab.json');
 const references=require('../di-reference'),supplied=new Map(require('./di-user-predictions.json').map(q=>[q.id,q]));
 const speakingAudio=require('./speaking-audio-manifest')(),writingAudio=require('./writing-audio/manifest.json'),rtsPrompts=require('../rts-prompts');
 const approvedAudio=require('../approved-audio');
+const mockAudio=require('../mock-audio-pace');
 const VERSION='speaking-mock-2026-11-04.2';
 const OVERALL_MINUTES=40;
 const webImages=require('./speaking-mocks-web-images.json');
@@ -20,12 +21,12 @@ function suppliedMockImage(q){
 function source(q,folder,id=q.id){
   if(folder==='speaking'&&q.type==='sgd'){
     const current=approvedAudio.current(q);
-    if(current.audioKey)return{...current,audioSource:{folder:'approved',id:current.audioKey},audioSeconds:current.audioSeconds};
+    if(current.audioKey)return mockAudio.current({...current,audioSource:{folder:'approved',id:current.audioKey},audioSeconds:current.audioSeconds});
   }
   if(folder==='speaking'&&q.promptAudioKey)id=q.promptAudioKey;
   const manifest=folder==='speaking'?speakingAudio:writingAudio,entry=manifest[id];
   if(!entry||entry.textSha256!==crypto.createHash('sha256').update(q.text).digest('hex'))throw Error('Missing verified speaking mock audio: '+id);
-  return {...q,audioSource:{folder,id},audioSeconds:entry.seconds};
+  return mockAudio.current({...q,audioSource:{folder,id},audioSeconds:entry.seconds});
 }
 const questions=[{id:'mock-introduction',type:'intro',name:'Personal Introduction',title:'Personal Introduction',preparation:25,seconds:30,
   instruction:'Read the introduction prompt. You will have 25 seconds to prepare and 30 seconds to speak. This introduction is not scored.',
@@ -106,7 +107,7 @@ function publicQuestion(q,reveal=false){
   return {id:q.id,type:q.type,name:q.name,preparation:q.preparation,seconds:q.seconds,instruction:q.instruction,
     ...(q.type==='di'?{title:q.title||q.visual?.title||''}:{}),
     ...(['intro','ra','rts'].includes(q.type)?{text:q.text}:{}),
-    ...(q.audioSource?(approvedAudio.publicAudio(q)||rtsPrompts.publicAudio(q,'/speaking-mock-audio')||{audioUrl:'/speaking-mock-audio/'+q.id+'.mp3?v='+VERSION,audioSeconds:q.audioSeconds}):{}),
+    ...(q.audioSource?(mockAudio.publicAudio(q)||approvedAudio.publicAudio(q)||rtsPrompts.publicAudio(q,'/speaking-mock-audio')||{audioUrl:'/speaking-mock-audio/'+q.id+'.mp3?v='+VERSION,audioSeconds:q.audioSeconds}):{}),
     ...(q.imageUrl?{imageUrl:q.imageUrl,...require('../di-image-display').forQuestion(q)}:q.visual?{imageUrl:'/speaking-image/'+q.id+'.svg'}:{}),
     ...(reveal?{title:q.title,reference:q.text,sample:q.sample,facts:q.facts}:{} )};
 }
@@ -126,6 +127,6 @@ function reattemptQuestions(original){
     if(q.type!=='di')return structuredClone(q);
     const replacement=images[imageIndex++%images.length];
     return structuredClone(replacement);
-  });
+  }).map(mockAudio.current);
 }
 module.exports={VERSION,OVERALL_MINUTES,papers,audioQuestions,catalogue,publicQuestion,suppliedMockImage,reattemptQuestions};

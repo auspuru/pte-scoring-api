@@ -48,7 +48,9 @@ function retryableUnavailable(state, candidate, response, job) {
     &&stages.length===1 &&job.stages?.writing?.status==='failed'
     &&job.stages.writing.failureCode==='provider' &&job.stages.writing.uncertain===false
     &&!job.stages.writing.recoveryBlocked;
-  return (stages.some(stage=>stage?.status==='failed' && String(stage.failureCode)==='429')||writingFallback)
+  const validatedFailure=stages.some(stage=>stage?.status==='failed' && stage.failureCategory==='validation'
+    &&stage.failureCode==='assessment_validation'&&typeof stage.validationCode==='string');
+  return (stages.some(stage=>stage?.status==='failed' && String(stage.failureCode)==='429')||writingFallback||validatedFailure)
     && stages.every(stage=>stage && stage.status!=='running' && !stage.uncertain && !stage.recoveryBlocked);
 }
 // Record the exact assessment and input at publication. Later audio uploads are
@@ -200,6 +202,9 @@ function createSupport({ store, validate, now = Date.now }) {
           deliveryEligible:deliveryEligible(state, paper, candidate, response, job),
           transcriptionEligible:transcriptionEligible(state,paper,candidate,response,job),
           reason:job?.result?.reason || job?.reason || null, exclusion:row.exclusion || null,
+          failures:Object.entries(job?.stages||{}).filter(([,s])=>s&&['failed','partial'].includes(s.status)).map(([stage,s])=>({stage,
+            code:s.failureCode||null,category:s.failureCategory||'unknown',validationCode:s.validationCode||null,
+            providerStatus:s.providerStatus||null,uncertain:!!s.uncertain,blocked:!!s.recoveryBlocked,providerCalls:s.providerCalls??null})),
           retryableUnavailable:retryableUnavailable(state,candidate,response,job),
           transcription:job?.stages?.transcription ? { status:job.stages.transcription.status, code:job.stages.transcription.failureCode || null, uncertain:!!job.stages.transcription.uncertain } : null };
       }).filter(row => row.status !== 'assessed') };

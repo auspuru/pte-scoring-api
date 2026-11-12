@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "d6d5b5b167365701e299b36ad4f432af902d84c0",
-  "checkedAt": "2026-11-10",
-  "scope": "Reviewed Azure pronunciation and fluency bands for new Read Aloud, Repeat Sentence and free-response assessments; frozen older attempts keep their policy and saved marks.",
+  "baseCommit": "e8e191608dcdc8fe10f5bcbfc086f4c56ac7a4dd",
+  "checkedAt": "2026-11-12",
+  "scope": "Normal-paced immutable mock audio with unchanged transcripts, response clocks, native rubrics and models; retains the bounded assessment recovery release and older snapshots.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -16,7 +16,7 @@
         "version": "intelligibility-delivery-v5"
       },
       "describe-image-academy.js": {
-        "sha256": "209828a9894cdfe2be8546b771fc37d5e85595f4d82417b8fa772c9372aea74e",
+        "sha256": "d1e0ea1eb674f34eb427158a606262493fa5134fed03eed0553103ebdb33930e",
         "version": null
       },
       "describe-image-academy/chart-readings.js": {
@@ -84,7 +84,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "5c2c387e5f72c37acca92db0ee43d162366f5c44262bd98eba7cfbb50279905f",
+        "sha256": "5b994fa96bdbfcee5f2cd5754949bd486329bd1da1702686822da9a25aaa64f2",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "d9f953114ace531379fff3840e09d2183d8cf92393e8f5918215adabc7b39f6e",
+        "sha256": "6ef3710ef2c1ec0db0645bf07a90c6ab30214e6f872b316469a31c598072dd19",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -108,7 +108,7 @@
         "version": null
       },
       "full-mock/blueprint.js": {
-        "sha256": "ee5f56f160821e6f3bd8ead5a797f4d46114aef0b14b06bbfeabdc6665e0330e",
+        "sha256": "32b17900da2c8c67849f531975dfadfeb9b03ac7c5aa3db37575670f8465204d",
         "version": null
       },
       "full-mock/delivery-reassessment.js": {
@@ -116,7 +116,7 @@
         "version": null
       },
       "full-mock/exclusions.js": {
-        "sha256": "e2ccb984ff76df986b3b661f2cbffff3732b4d1373a43f8b400872eaf489c183",
+        "sha256": "d9396dcb92c41d1d5aa1f2fb903305d517dd0827bbb14c900e1386a8ac985ffd",
         "version": null
       },
       "full-mock/paper.js": {
@@ -189,7 +189,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "5fa0de370e865b6e2fdbfd4e5d7249d05891d2ac49d6f6a7d02f6f172c233b2f",
+        "sha256": "767d1f4415e26c9727c1927180f29de97c4829eff5d3079915441365c0443c49",
         "version": null
       },
       "situation-content-policy.js": {
@@ -209,7 +209,7 @@
         "version": null
       },
       "speaking-scoring.js": {
-        "sha256": "0c673372149fe2732f7aa6b950862ea01ce4c6473e5df4a55daf49d2740ca3a2",
+        "sha256": "826d568ad8834581c9cb3db1adf3c7a50470a6c81da5ec462cee909d27be6ff5",
         "version": "speaking-content-2026-10-25.2"
       },
       "spoken-summary-policy.js": {
@@ -237,7 +237,7 @@
         "version": "20.3.16"
       },
       "writing-lab-scoring.js": {
-        "sha256": "c28a7def1c8eda1961b57ea342c6e8ce3501c24eb92e905005a6cbee250ff312",
+        "sha256": "7f35641d4dc7d6649a28bd67cd18ae75ee8040411a21b59488932249af301bd0",
         "version": "exam-practice-2026-10-09.1"
       }
     }
