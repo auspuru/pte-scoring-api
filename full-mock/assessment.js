@@ -103,6 +103,24 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Skipping audio on an individual Reading reattempt changes only its UI.
+  // Project this exact source pair to the previous frozen snapshot so saved
+  // Full Mocks can finish with their original graders and confirmed marks.
+  const audioSkipPins=require('../content/full-mock/audio-skip-compatible-pins.json');
+  if(current.scoringSources.files['public/reading-practice.js']?.sha256===audioSkipPins.newReading
+    &&current.scoringSources.files['full-mock/assessment.js']?.sha256===audioSkipPins.newAssessment){
+    const sources=structuredClone(current.scoringSources);
+    sources.files['full-mock/assessment.js'].sha256=audioSkipPins.oldAssessment;
+    if(digest(sources)===audioSkipPins.currentReadingSourcesDigest){
+      const prior={...current,scoringSources:sources};
+      if(digest(saved)===digest(prior)||compatibleTransportUpgrade(saved,prior))return true;
+    }
+    sources.files['public/reading-practice.js'].sha256=audioSkipPins.oldReading;
+    if(digest(sources)===audioSkipPins.oldSourcesDigest){
+      const prior={...current,scoringSources:sources};
+      if(digest(saved)===digest(prior)||compatibleTransportUpgrade(saved,prior))return true;
+    }
+  }
   // New attempts use one continuous Azure request per recording. Project only
   // this exact source upgrade when validating older, chunk-scored attempts.
   const wholeRecordingPins=require('../content/full-mock/whole-recording-upgrade-pins.json');

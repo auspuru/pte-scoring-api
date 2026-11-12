@@ -32,6 +32,6 @@ test('Reading checked practice offers a direct retry without changing scoring lo
   assert.match(reading, /data-action="retry-question">Retry this question/);
   assert.match(reading, /d\.action==='retry-question'&&s\.practiceUid/);
   assert.match(reading, /state\.drafts=\[s,/);
-  assert.match(reading, /start\('practice',s\.practiceUid\)/);
+  assert.match(reading, /start\('practice',s\.practiceUid,true\)/);
   assert.equal(require('node:crypto').createHash('sha256').update(require('../public/reading-practice').score.toString()).digest('hex'),'3998d5c54514d46ffbfddf893667574bee7a06b729f01a1da4a74248962f629b');
 });

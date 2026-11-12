@@ -95,11 +95,11 @@
   const storage = { get(k) { try { return localStorage.getItem(k); } catch(_) { return null; } },
     put(k,v) { try { localStorage.setItem(k,v); return true; } catch(_) { return false; } },
     remove(k) { try { localStorage.removeItem(k); } catch(_) {} } };
+  const draftKey = () => 'ipt-writing-lab:' + username + ':' + attempt?.id;
+  function notify(text) { clearTimeout(noticeTimer); document.getElementById('notice').textContent=text; noticeTimer=setTimeout(()=>document.getElementById('notice').textContent='',6500); }
   const audioSkipKey=(id,done=false)=>'ipt-listening-skip-audio:'+username+':'+id+(done?':done':'');
   const canSkipAudio=()=>attempt?.kind!=='mock'&&storage.get(audioSkipKey(attempt.id))==='1';
   const skippedAudio=()=>canSkipAudio()&&storage.get(audioSkipKey(attempt.id,true))==='1';
-  const draftKey = () => 'ipt-writing-lab:' + username + ':' + attempt?.id;
-  function notify(text) { clearTimeout(noticeTimer); document.getElementById('notice').textContent=text; noticeTimer=setTimeout(()=>document.getElementById('notice').textContent='',6500); }
   function token() {
     // The parent portal falls back to sessionStorage when localStorage is full.
     // Prefer that fresh token here too; otherwise the iframe can keep sending
