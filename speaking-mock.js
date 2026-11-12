@@ -21,7 +21,7 @@ function timing(a,now=Date.now()){
   if(playbackDriven&&!a.promptFinishedAt)return {audioAt,prepAt:null,cueAt:null,recordingAt:null,endsAt:null,playbackDriven:true,phase:now<audioAt?'instructions':'listening'};
   const prepAt=playbackDriven?a.promptFinishedAt:audioAt+(q.audioSeconds||0)*1000;
   const cueAt=prepAt+q.preparation*1000,recordingAt=cueAt+(q.type==='rs'?q.startCueMs||0:0),endsAt=recordingAt+q.seconds*1000;
-  return {audioAt,prepAt,cueAt,recordingAt,endsAt,...(playbackDriven?{playbackDriven:true}:{}),phase:now<audioAt?'instructions':now<prepAt?'listening':now<cueAt?'preparing':now<recordingAt?'cue':now<endsAt?'recording':'expired'};
+  return {audioAt,prepAt,cueAt,recordingAt,endsAt,...(playbackDriven?{playbackDriven:true}:{}),phase:now<audioAt&&!(playbackDriven&&a.promptFinishedAt)?'instructions':now<prepAt?'listening':now<cueAt?'preparing':now<recordingAt?'cue':now<endsAt?'recording':'expired'};
 }
 function reconcile(a,now=Date.now()){
   return submission.reconcile(a,now,timing);
@@ -262,6 +262,14 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       const earliest=a.questionStartedAt+3000+(a.questions[a.index].audioSeconds||0)*1000;
       if(now()+500<earliest)throw fail('The prompt has not finished yet.',409);
       a.promptFinishedAt||=now();return a;
+    });res.json(view(a));
+  }));
+  router.post('/attempts/:id/skip-audio',limiter,wrap(async(req,res)=>{
+    const a=await store.update(req.mockUser,req.params.id,a=>{
+      if(!a)throw fail('Mock attempt not found.',404);reconcile(a,now());
+      if(a.status!=='active'||a.pause||submission.blocked(a)||!a.reattemptOf||req.body?.index!==a.index||!a.questionStartedAt||!a.questions[a.index]?.audioSource)throw fail('Audio can only be skipped on a reattempted question.',409);
+      if(a.responses[a.index]?.recording||a.responses[a.index]?.skipped)throw fail('This response is locked.',409);
+      a.questionTimingVersion=2;a.promptFinishedAt||=now();return a;
     });res.json(view(a));
   }));
   router.post('/attempts/:id/recordings/:index',limiter,express.raw({type:['audio/webm','audio/mp4','audio/wav','audio/mpeg'],limit:'6mb'}),wrap(async(req,res)=>{

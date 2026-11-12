@@ -95,6 +95,9 @@
   const storage = { get(k) { try { return localStorage.getItem(k); } catch(_) { return null; } },
     put(k,v) { try { localStorage.setItem(k,v); return true; } catch(_) { return false; } },
     remove(k) { try { localStorage.removeItem(k); } catch(_) {} } };
+  const audioSkipKey=(id,done=false)=>'ipt-listening-skip-audio:'+username+':'+id+(done?':done':'');
+  const canSkipAudio=()=>attempt?.kind!=='mock'&&storage.get(audioSkipKey(attempt.id))==='1';
+  const skippedAudio=()=>canSkipAudio()&&storage.get(audioSkipKey(attempt.id,true))==='1';
   const draftKey = () => 'ipt-writing-lab:' + username + ':' + attempt?.id;
   function notify(text) { clearTimeout(noticeTimer); document.getElementById('notice').textContent=text; noticeTimer=setTimeout(()=>document.getElementById('notice').textContent='',6500); }
   function token() {
@@ -315,6 +318,7 @@
       // A new UUID keeps the completed attempt and its feedback in My attempts.
       const value=await api('/attempts',{id:crypto.randomUUID(),testId,...(studio?{mode:attempt?.mode||listeningMode}:{})});
       if(serial!==navigationSerial || !workspaceVisible) return;
+      storage.put(audioSkipKey(value.id),'1');
       setAttempt(value);
       showAttempt();
     } catch(e) { if(serial===navigationSerial && workspaceVisible) {notify(e.message);button.disabled=false;} }
@@ -334,7 +338,7 @@
     setListeningStyle(listeningWorkspace);
     const instruction=q.prompt || (q.type==='wfd'?'Listen and type the sentence.' :sst?'Listen and write a summary of 50–70 words.':q.type==='swt'?'Summarise the passage in one sentence of 5–75 words.':'Write an essay of 200–300 words.');
     const questionHTML='<section class="exam"><header class="exam-header"><div><strong>IPT Brisbane · '+(attempt.practiceSet?'Random practice set':attempt.kind==='mock'?(attempt.module==='listening'?'Listening sectional mock':'Writing sectional mock'):'Listening practice')+'</strong><small>'+esc(username)+'</small><label class="mock-volume">Volume <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="'+volume+'" aria-label="Mock volume"></label></div><div class="timer-wrap"><span>'+(q.timeGroup==='listening'?'LISTENING TIME REMAINING':q.timeGroup?'DICTATION TIME REMAINING':'QUESTION TIME REMAINING')+'</span><strong id="timer">'+(supportedPractice()?'Untimed':q.minutes+':00')+'</strong></div></header><div class="exam-strip"><b>'+report.labels[q.type]+'</b><span>'+questionPosition()+'</span></div><div class="exam-main exam-main-'+esc(q.type)+'"><p class="instruction">'+instruction+'</p>'+
-      (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Play':'Play')+'</button> '+(supportedPractice()?'<button type="button" id="audio-replay">↻ Replay</button>':'')+'</div><details class="studio-notes"><summary>Notes</summary><label class="answer-label" for="notes">Notes</label><textarea id="notes" '+(attempt.status==='ready'?'disabled':'')+' class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea></details>':'<div class="passage">'+esc(q.text)+'</div>')+
+      (listening?'<div class="audio-panel"><h2>Audio recording</h2><div class="audio-meta"><span id="audio-status">Preparing audio…</span><span id="audio-time">0:00</span></div><progress id="audio-progress" value="0" max="100" aria-label="Recording progress"></progress><button id="audio-start" class="primary" disabled>'+(attempt.status==='ready'?'Play':'Play')+'</button> '+(canSkipAudio()&&!skippedAudio()?'<button type="button" id="audio-skip">Skip audio</button> ':'')+(supportedPractice()?'<button type="button" id="audio-replay">↻ Replay</button>':'')+'</div><details class="studio-notes"><summary>Notes</summary><label class="answer-label" for="notes">Notes</label><textarea id="notes" '+(attempt.status==='ready'?'disabled':'')+' class="notes-area" spellcheck="false" placeholder="Take notes while you listen…">'+esc(attempt.notes)+'</textarea></details>':'<div class="passage">'+esc(q.text)+'</div>')+
       (studio&&listening&&supportedPractice()?'<details class="studio-help"><summary>How to answer</summary><p>'+esc(studio.help[q.type])+'</p></details>':'')+(objective?listeningTasks.render(q,attempt.answers[attempt.index]):'')+'<label class="answer-label" for="answer" '+(objective?'hidden':'')+'>Your response</label><textarea id="answer" '+(objective?'hidden':'')+' spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" '+(attempt.status==='ready'?'disabled':'')+'>'+esc(attempt.answers[attempt.index])+'</textarea><div class="editor-tools" '+(objective?'hidden':'')+'><div class="clipboard"><button data-edit="cut">Cut</button><button data-edit="copy">Copy</button><button data-edit="paste">Paste</button></div><span>Words: <b id="word-count">'+count(attempt.answers[attempt.index])+'</b></span></div><p id="save-status" class="save-status">'+(attempt.status==='ready'?'Ready to begin':'Your current answer is saved on this device')+'</p></div><footer class="exam-footer">'+(attempt.kind==='mock'?'<button type="button" data-mock-pause>Pause mock</button> ':'')+'<button id="next" class="primary" '+(attempt.status==='ready'?'disabled':'')+'>'+(attempt.kind!=='mock'?'Check answer':attempt.index===attempt.questions.length-1?'Finish test':'Submit & next')+'</button></footer></section>';
     root.innerHTML=studio&&listeningWorkspace?studioWrap((attempt.kind==='mock'?'':practiceNavigation())+questionHTML+practiceHistory(),q.type,attempt.kind==='mock'):(attempt.kind==='mock'?'':practiceNavigation())+questionHTML+practiceHistory();
     if(studio&&listeningWorkspace){bindStudioLibrary();const strip=root.querySelector?.('.exam-strip');if(strip&&attempt.kind!=='mock')strip.insertAdjacentHTML('beforeend','<button type="button" class="studio-bookmark" data-listening-bookmark="'+esc(q.id)+'" aria-label="Bookmark question" aria-pressed="'+bookmarks().includes(q.id)+'">'+(bookmarks().includes(q.id)?'★':'☆')+'</button>');}
@@ -362,7 +366,7 @@
     const id=attempt.id,index=attempt.index,editor=document.getElementById('answer'),saveUser=username,saveToken=token();
     if(!editor) return Promise.resolve();
     const body={index,text:editor.value,revision:++attempt.revisions[index],next,notes:document.getElementById('notes')?.value || '',
-      ...(audioAttempt===questionKey()?{playback:{position:audio?.currentTime||0,finished:audioFinished,plays:attempt.playback?.[index]?.plays||0}}:{})};
+      ...(audioAttempt===questionKey()?{playback:{position:audio?.currentTime||0,finished:audioFinished&&!skippedAudio(),plays:attempt.playback?.[index]?.plays||0}}:{})};
     writeDraft();
     const task=saving.catch(()=>{}).then(async()=>{
       if(token()!==saveToken||username!==saveUser)return;
@@ -462,7 +466,7 @@
     if(audioAttempt!==key) {
       stopAudio();
       audio=new Audio(q.audioUrl); audio.volume=volume; audio.preload='auto'; audioAttempt=key; audioSaveAt=0;
-      audioFinished=(!!saved?.finished && saved.position>0) || (!!local?.audioFinished && local.audioTime>0);
+      audioFinished=(!!saved?.finished && saved.position>0) || (!!local?.audioFinished && local.audioTime>0) || skippedAudio();
     }
     const timedPractice=attempt.kind!=='mock'&&attempt.mode==='exam';
     const cueKey='ipt-listening-lead:'+username+':'+key;
@@ -545,7 +549,7 @@
     const ready=()=>{
       if(!current()||leadDeadline) return;
       restorePosition();
-      if(audioFinished) { status.textContent=completeText; startButton.classList.add('hidden'); update(); return; }
+      if(audioFinished) { status.textContent=skippedAudio()?'Audio skipped for this reattempt. Answer when ready.':completeText; startButton.classList.add('hidden');const skip=document.getElementById('audio-skip');if(skip)skip.hidden=true; update(); return; }
       startButton.disabled=starting; status.textContent=player.paused?'Ready to play':'Playing…';
       startButton.textContent=attempt.status==='ready'?'Play':player.currentTime>0?'Continue recording':'Play';
       if(!player.paused) {
@@ -577,7 +581,7 @@
     }
     player.onended=()=>{
       if(!current()) return;
-      audioFinished=true; status.textContent=completeText; startButton.classList.add('hidden'); writeDraft(); saveAnswer(false);
+      audioFinished=true; status.textContent=completeText; startButton.classList.add('hidden');const skip=document.getElementById('audio-skip');if(skip)skip.hidden=true; writeDraft(); saveAnswer(false);
     };
     player.onpause=()=>{
       if(!current() || audioFinished || player.ended) return;
@@ -594,7 +598,22 @@
     };
     document.getElementById('audio-volume').oninput=e=>setVolume(e.target.value);
     const replay=document.getElementById('audio-replay');
-    if(replay&&canReplay)replay.onclick=()=>{if(!current()||starting)return;player.pause();player.currentTime=0;audioFinished=false;resumePosition=0;startButton.classList.remove('hidden');return play();};
+    if(replay&&canReplay)replay.onclick=()=>{if(!current()||starting)return;player.pause();player.currentTime=0;storage.remove(audioSkipKey(id,true));audioFinished=false;resumePosition=0;startButton.classList.remove('hidden');return play();};
+    const skip=document.getElementById('audio-skip');
+    if(skip)skip.onclick=async()=>{
+      if(!current()||starting||audioFinished||!canSkipAudio())return;
+      skip.disabled=true;clearInterval(audioCountdown);leadDeadline=0;storage.put(cueKey,'0');player.pause();
+      try{
+        if(attempt.status==='ready'){
+          const value=await api('/attempts/'+id+'/begin',{});
+          if(!current())return;setAttempt(value);
+          if(attempt.status!=='active'){showAttempt();return;}
+          document.getElementById('answer').disabled=false;document.getElementById('next').disabled=false;const notes=document.getElementById('notes');if(notes)notes.disabled=false;listeningTasks?.setEditable?.(root,true);
+        }
+        if(!current())return;
+        storage.put(audioSkipKey(id,true),'1');audioFinished=true;status.textContent='Audio skipped for this reattempt. Answer when ready.';startButton.classList.add('hidden');skip.hidden=true;writeDraft();saveAnswer(false);
+      }catch(error){if(current()){status.textContent=error.message;skip.disabled=false;}}
+    };
     startButton.onclick=()=>{
       if(canPause && !player.paused && !starting && current() && !audioFinished) {
         player.pause(); writeDraft(); saveAnswer(false);

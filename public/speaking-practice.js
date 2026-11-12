@@ -23,7 +23,7 @@
     const doc=env.document,now=()=>env.Date?env.Date.now():Date.now(),pendingUploads=new Map(),startCue=cues.create(env),imageViewer=images.create(env);
     let host,catalog,owner='',activeType='',attempt=null,serial=0,visible=false,busy=false,saveQueue=Promise.resolve();
     let phase='idle',deadline=0,clockId,promptAudio,stream,recorder,playbackUrl='',uploadBlob=null,notice='';
-    let practiceMode='timed',promptRequest,promptSource='',promptAttemptId='';
+    let practiceMode='timed',promptRequest,promptSource='',promptAttemptId='',skipPromptAttemptId='';
     const modeOf=a=>a?.practiceMode==='untimed'?'untimed':'timed';
     const timedListeningTask=()=>modeOf(attempt)==='timed'&&['rl','sgd'].includes(attempt?.question.type);
     const timedPromptTask=()=>modeOf(attempt)==='timed'&&!!attempt?.question.audioUrl;
@@ -162,16 +162,16 @@
       const selected=[...(host.querySelectorAll?.('[data-speaking-question]')||[])].find(b=>b.dataset.speakingQuestion===f.selectedId);selected?.focus({preventScroll:true});host.scrollTop=f.scrollTop||0;const rows=doc.getElementById('speaking-library-list');if(rows)rows.scrollTop=f.libraryScrollTop||0;
       try{const history=await loadHistory(true);if(!valid(ticket,user)||attempt||activeType!==type)return;renderLibraryList();const node=doc.getElementById('speaking-history');if(node)node.innerHTML=history.filter(a=>a.type===type&&matchingMode(a)).map(a=>'<article class="speaking-history-row"><div><strong>'+esc(a.title)+'</strong><p>'+esc(new Date(a.startedAt).toLocaleString())+' · '+modeName(modeOf(a))+' · '+(a.assessment?.status==='pending'?'Feedback pending':a.assessment?.status==='error'?'Saved — assessment needs retry':a.result?(a.result.scoringMode==='local'||a.result.score_provisional||a.result.total==null?'Content review pending':a.result.total+'/'+a.result.maximum+' content'):a.status==='submitted'?'Feedback pending':'Saved draft')+'</p></div><button class="portal-button" data-speaking-attempt="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join('')||'<p>Your attempts will appear here.</p>';}catch(e){const node=doc.getElementById('speaking-history');if(node)node.textContent=e.message;}
     }
-    async function start(questionId) {
+    async function start(questionId,{skipAudio=false}={}) {
       stopComparisonPoll();stopAssessmentPoll();
       if(busy)return;const needsCue=cueType(catalog.questions.find(q=>q.id===questionId)?.type);if(needsCue)startCue.unlock();busy=true;message('Preparing your question…');const ticket=serial,user=owner;let shouldBegin=false;
-      try{const a=await api('/attempts',{id:env.crypto.randomUUID(),questionId,practiceMode});if(!valid(ticket,user))return;clearAudio(needsCue);releasePlayback();uploadBlob=null;attempt=a;practiceMode=modeOf(a);phase='idle';notice='';render();shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      try{const a=await api('/attempts',{id:env.crypto.randomUUID(),questionId,practiceMode});if(!valid(ticket,user))return;clearAudio(needsCue);releasePlayback();uploadBlob=null;attempt=a;skipPromptAttemptId=skipAudio&&a.question.audioUrl?a.id:'';if(skipPromptAttemptId)try{env.localStorage.setItem(localKey(a)+':skip-audio','1');}catch{}practiceMode=modeOf(a);phase='idle';notice='';render();shouldBegin=true;}catch(e){message(e.message);}finally{busy=false;refreshControls();}
       if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function resume(id,{capture=true}={}) {
       stopComparisonPoll();stopAssessmentPoll();
       if(busy)return;if(cueType(activeType))startCue.unlock();busy=true;const ticket=serial,user=owner;let shouldBegin=false;
-      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio(cueType(activeType));releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;practiceMode=modeOf(a);phase=readClock(a)?'paused':'idle';notice='';render();if(a.recording){await loadPlayback();if(a.assessment?.status==='pending')pollAssessment();}else shouldBegin=capture&&phase!=='paused';}catch(e){message(e.message);}finally{busy=false;refreshControls();}
+      try{const a=await api('/attempts/'+id);if(!valid(ticket,user))return;clearAudio(cueType(activeType));releasePlayback();uploadBlob=pendingUploads.get(a.id)||null;attempt=a;skipPromptAttemptId='';try{if(env.localStorage.getItem(localKey(a)+':skip-audio')==='1')skipPromptAttemptId=a.id;}catch{}practiceMode=modeOf(a);phase=readClock(a)?'paused':'idle';notice='';render();if(a.recording){await loadPlayback();if(a.assessment?.status==='pending')pollAssessment();}else shouldBegin=capture&&phase!=='paused';}catch(e){message(e.message);}finally{busy=false;refreshControls();}
       if(shouldBegin&&valid(ticket,user)&&attempt?.status==='draft'&&!attempt.recording)await begin();
     }
     async function loadPlayback() {
@@ -214,11 +214,11 @@
         node.innerHTML=studio.attemptHistory(matching.map((a,i)=>({a,i})).filter(({a})=>a.id!==id).reverse().map(({a,i})=>({id:a.id,label:'Attempt '+(i+1),date:studio.brisbaneDate(a.startedAt),mode:modeName(modeOf(a)),status:a.assessment?.status==='pending'?'Scoring':a.assessment?.status==='error'?'Saved — feedback needs retry':a.status==='submitted'?'Completed':'Saved draft',actions:'<button class="portal-button" data-speaking-attempt="'+esc(a.id)+'">'+(a.status==='submitted'?'Answer &amp; feedback':'Open saved attempt')+'</button>'})));
       }catch(error){const node=doc.getElementById('speaking-question-history');if(node&&attempt?.id===id)node.textContent='Previous attempts could not load. Return to questions and retry.';}
     }
-    async function openSelectedQuestion(questionId,{fresh=false}={}) {
+    async function openSelectedQuestion(questionId,{fresh=false,skipAudio=false}={}) {
       if(navigationPending||busy||uploadBlob)return;navigationPending=true;refreshControls();
       try{if(attempt&&!await prepareNavigation())return;const ticket=serial,user=owner;
         if(!fresh){const history=await loadHistory();if(!valid(ticket,user))return;const saved=history.filter(a=>a.questionId===questionId&&matchingMode(a)).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt))[0];if(saved)return await resume(saved.id,{capture:false});}
-        await start(questionId);
+        await start(questionId,{skipAudio});
       }catch(error){message(error.message);}finally{navigationPending=false;refreshControls();}
     }
     async function prepareNavigation() {
@@ -253,7 +253,7 @@
         ? '<section class="speaking-card speaking-exam-panel">'
           +'<div class="speaking-exam-status"><div><span class="speaking-kicker">'+modeName(modeOf(attempt))+'</span><span id="speaking-phase" role="status"></span></div><strong id="speaking-clock"></strong></div>'
           +'<div id="speaking-level-panel" class="speaking-exam-mic" hidden><meter id="speaking-level" min="0" max="100" value="0"></meter><p id="speaking-mic-status" role="status">Microphone connected</p></div>'
-          +'<div class="speaking-exam-actions"><button class="portal-button primary" data-speaking-action="ready-record" id="speaking-ready-start" hidden>Start recording</button><button class="portal-button" data-speaking-action="replay-prompt" id="speaking-replay-prompt" hidden>Replay prompt</button><button class="portal-button primary" data-speaking-action="skip" id="speaking-skip" hidden>Skip preparation</button><button class="portal-button primary" data-speaking-action="respond" id="speaking-respond" hidden>Respond now</button><button class="portal-button primary" data-speaking-action="finish" id="speaking-finish" hidden>Submit response</button><button class="portal-button primary" data-speaking-action="record" id="speaking-record" hidden>Retry microphone</button><button class="portal-button primary" data-speaking-action="submit" id="speaking-assess-retry" hidden>Retry assessment</button><button class="portal-button" data-speaking-action="upload-retry" id="speaking-upload-retry" hidden>Retry saving response</button></div>'
+          +'<div class="speaking-exam-actions"><button class="portal-button primary" data-speaking-action="ready-record" id="speaking-ready-start" hidden>Start recording</button><button class="portal-button" data-speaking-action="replay-prompt" id="speaking-replay-prompt" hidden>Replay prompt</button><button class="portal-button" data-speaking-action="skip-audio" id="speaking-skip-audio" hidden>Skip audio</button><button class="portal-button primary" data-speaking-action="skip" id="speaking-skip" hidden>Skip preparation</button><button class="portal-button primary" data-speaking-action="respond" id="speaking-respond" hidden>Respond now</button><button class="portal-button primary" data-speaking-action="finish" id="speaking-finish" hidden>Submit response</button><button class="portal-button primary" data-speaking-action="record" id="speaking-record" hidden>Retry microphone</button><button class="portal-button primary" data-speaking-action="submit" id="speaking-assess-retry" hidden>Retry assessment</button><button class="portal-button" data-speaking-action="upload-retry" id="speaking-upload-retry" hidden>Retry saving response</button></div>'
           +'<p class="speaking-exam-note">'+(modeOf(attempt)==='untimed'?'Take as much preparation time as you need. Start recording when ready, then submit your response when you finish.':'The microphone opens automatically when preparation ends. Recording stops at the response limit, or you can submit once you are finished.')+' Next saves your recording before opening the next question.</p>'
           +'</section>'
         : '';
@@ -405,10 +405,11 @@
       return '<details class="speaking-inner-details"><summary>Improve everyday pronunciation and fluency — YouTube lessons</summary><p>General English lessons. Aim for clear, comfortable speech; you do not need to change your accent. Practise for 10 minutes daily.</p><ul>'+videos.map(([id,title,exercise])=>'<li><a href="https://www.youtube.com/watch?v='+id+'" target="_blank" rel="noopener noreferrer">'+esc(title)+'</a><p>'+esc(exercise)+'</p></li>').join('')+'</ul></details>';
     }
     function refreshControls() {
-      const retryMic=doc.getElementById('speaking-record'),skip=doc.getElementById('speaking-skip'),finish=doc.getElementById('speaking-finish'),retrySave=doc.getElementById('speaking-upload-retry'),retryAssess=doc.getElementById('speaking-assess-retry');
+      const retryMic=doc.getElementById('speaking-record'),skip=doc.getElementById('speaking-skip'),skipAudio=doc.getElementById('speaking-skip-audio'),finish=doc.getElementById('speaking-finish'),retrySave=doc.getElementById('speaking-upload-retry'),retryAssess=doc.getElementById('speaking-assess-retry');
       for(const button of host?.querySelectorAll?.('[data-speaking-action="submit"], [data-speaking-action="refresh-di-feedback"]')||[])button.disabled=busy;
       const levelPanel=doc.getElementById('speaking-level-panel');if(levelPanel)levelPanel.hidden=!stream;
       if(skip)skip.hidden=phase!=='preparing'||attempt?.question.type==='rts';
+      if(skipAudio)skipAudio.hidden=skipPromptAttemptId!==attempt?.id||!stream||!['lead-in','loading-prompt','listening','error'].includes(phase);
       const readyStart=doc.getElementById('speaking-ready-start'),replay=doc.getElementById('speaking-replay-prompt');
       if(readyStart){readyStart.hidden=phase!=='ready';readyStart.disabled=busy;}
       if(replay){replay.hidden=!(phase==='ready'&&attempt?.question.audioUrl);replay.disabled=busy;}
@@ -622,13 +623,14 @@
       if(d.speakingQuestion){const fresh=true;Object.assign(filters(),{...(!attempt?{queue:visibleLibraryQuestions().map(q=>q.id)}:{}),selectedId:d.speakingQuestion,scrollTop:host.scrollTop||0,libraryScrollTop:doc.getElementById('speaking-library-list')?.scrollTop||0});return openSelectedQuestion(d.speakingQuestion,{fresh});}
       if(d.speakingAttempt){if(!attempt&&d.speakingResumeQuestion)Object.assign(filters(),{queue:visibleLibraryQuestions().map(q=>q.id),selectedId:d.speakingResumeQuestion,scrollTop:host.scrollTop||0,libraryScrollTop:doc.getElementById('speaking-library-list')?.scrollTop||0});if(attempt&&!await prepareNavigation())return;return resume(d.speakingAttempt,{capture:false});}
       const action=d.speakingAction;
-      if(action==='reattempt')return openSelectedQuestion(attempt.questionId,{fresh:true});
+      if(action==='reattempt')return openSelectedQuestion(attempt.questionId,{fresh:true,skipAudio:true});
       if(action==='zoom-image')return imageViewer.open(doc.getElementById('speaking-image-dialog'),attempt?.question);
       if(action==='practice'){leave();env.switchSection('practice-hub');return;}
       if(action==='reload')return open(activeType);
       if(action==='refresh-di-feedback')return submit(true);
       if(action==='record')return begin();
       if(action==='replay-prompt'&&phase==='ready')return playPrompt(serial,owner);
+      if(action==='skip-audio'&&skipPromptAttemptId===attempt?.id&&stream&&['lead-in','loading-prompt','listening','error'].includes(phase)){stopPrompt();env.clearInterval(clockId);forgetClock();message('Audio skipped for this reattempt.');return prepare();}
       if(action==='ready-record'&&phase==='ready'&&!busy){if(attempt.question.type==='rs'){const ticket=serial,user=owner,id=attempt.id;phase='cue';refreshControls();startCue.unlock();return startCue.play(id+':'+captureGeneration,()=>{if(valid(ticket,user)&&visible&&attempt?.id===id&&phase==='cue')record();});}return record();}
       if(action==='skip'&&phase==='preparing')return startResponse();
       if(action==='respond'&&attempt?.question.type==='rts'&&modeOf(attempt)==='timed'&&!attempt.recording&&!uploadBlob&&!busy){

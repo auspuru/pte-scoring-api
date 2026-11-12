@@ -380,6 +380,18 @@ test('Submitted standalone SST results offer a fresh reattempt while retaining t
   assert.equal(h.hooks.current().id,'new-id');
   assert.equal(h.hooks.current().status,'ready');
   assert.equal(h.nodes.get('audio-start').textContent,'Play');
+  assert(h.nodes.get('audio-skip'));
+  const originalFetch=h.context.fetch,active={...fresh,status:'active',deadline:700000};
+  h.context.fetch=async(url,options)=>{
+    if(url.endsWith('/begin'))return {ok:true,json:async()=>active};
+    if(url.endsWith('/answer')){const body=JSON.parse(options.body);return {ok:true,json:async()=>({...active,revisions:[body.revision],answers:[body.text]})};}
+    return originalFetch(url,options);
+  };
+  await h.nodes.get('audio-skip').onclick();await flush();
+  assert.equal(h.recordings[0].plays,0);
+  assert.equal(h.hooks.current().status,'active');
+  assert.equal(h.nodes.get('next').disabled,false);
+  assert.equal(h.memory.get('ipt-listening-skip-audio:tester:new-id:done'),'1');
 });
 
 test('Integrated audio advances to each new recording and ignores late events from the previous question',async()=>{

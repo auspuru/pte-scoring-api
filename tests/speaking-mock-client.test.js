@@ -70,6 +70,15 @@ test('A delayed begin response and a fast device clock do not consume the visibl
  await h.click({sm:'resume',id:saved.id});const prompts=()=>h.audios.filter(a=>(a.url.startsWith('/speaking-mock-audio/')||a.url.startsWith('/practice-audio/')));
  assert.equal(prompts().length,0);await h.tick(2999);assert.equal(prompts().length,0);await h.tick(1);assert.equal(prompts().length,1);assert.equal(prompts()[0].offset,0);
 });
+test('Speaking mock reattempt skips the prompt and keeps preparation before recording',async t=>{
+ const h=await harness(t);await h.controller.open();
+ const id=require('node:crypto').randomUUID(),q=require('../content/speaking-mocks').papers[0].questions.find(item=>item.type==='rl');
+ await h.lab.store.update('alice',id,()=>({id,reattemptOf:require('node:crypto').randomUUID(),paperId:'speaking-mock-1',title:'Retell retry',questions:[q],responses:[],index:0,status:'active',startedAt:1000000,deadline:1600000,questionCount:1,integrity:{protected:true,events:[]}}));
+ await h.click({sm:'resume',id});assert.match(h.host.innerHTML,/data-sm="skip-audio"/);
+ await h.click({sm:'skip-audio'});
+ const saved=await h.lab.store.get('alice',id);assert(saved.promptFinishedAt);assert.equal(h.nodes.get('sm-audio-status').textContent,'Completed');assert.equal(h.starts(),0);
+ await h.tick(q.preparation*1000+100);assert.equal(h.starts(),1);
+});
 test('Pause during a Speaking prompt freezes its timer and Continue seeks to the saved audio position',async t=>{
  const h=await harness(t);await h.controller.open();await h.click({sm:'start',paper:'speaking-mock-1'});
  const first=await h.active(),index=first.questions.findIndex(q=>q.type==='rs');

@@ -307,7 +307,7 @@
   }
   function questionList(set) { return set.questions.map(q => mock.strengthenFib({ ...q, uid: set.id + ':' + q.id, reasoning: set.reasoning[q.id] || {} }, 'practice-set:'+set.id+':'+q.id)); }
 
-  async function start(mode, practiceUid) {
+  async function start(mode, practiceUid, skipAudio=false) {
     if (starting || !owner || identity() !== owner) return;
     const preset = bank.mockCatalogue?.find(item => item.id === mode);
     const set = bank.sets.find(s => s.id === (preset?.setId || host.querySelector('#readingSet')?.value)) || bank.sets[0];
@@ -361,6 +361,7 @@
       state.session = session;
       if(practiceUid){
         session.practiceUid=practiceUid;
+        if(skipAudio&&mock.isAudio(preparedQuestions[0]))session.audioSkipAvailable=true;
         const context=libraryView;
         session.practiceContext=context?{...context,queue:context.queue||libraryQuestions().map(q=>q.uid),selectedUid:practiceUid}:null;
       }
@@ -494,7 +495,7 @@
     const s = state.session, item = displayAudioState(s.audioStates?.[q.uid],exam.isExam(s)), locked = !s.done && ['countdown','loading','playing','complete'].includes(item?.status);
     const profile = playback(q);
     const statusMessage = item?.message;
-    return `<div class="reading-audio"><button class="portal-button primary" data-action="play" ${locked?'disabled':''}>${s.done?'Replay for review':item?.status==='complete'?'Audio played':item?.status==='countdown'?'Starting soon':item?.status==='loading'?'Starting audio…':item?.status==='playing'?'Playing…':'Play audio'}</button><span data-audio-status role="status">${escape(statusMessage || (profile.hideLabels || profile.variant === 'single' ? 'Listen once, then answer. Check that your sound is on.' : profile.label+'. Listen and select the incorrect words.'))}</span></div>`;
+    return `<div class="reading-audio"><button class="portal-button primary" data-action="play" ${locked?'disabled':''}>${s.done?'Replay for review':item?.status==='complete'?'Audio played':item?.status==='countdown'?'Starting soon':item?.status==='loading'?'Starting audio…':item?.status==='playing'?'Playing…':'Play audio'}</button>${s.audioSkipAvailable&&!s.done&&!['complete','skipped'].includes(item?.status)?'<button class="portal-button" data-action="skip-audio">Skip audio</button>':''}<span data-audio-status role="status">${escape(statusMessage || (profile.hideLabels || profile.variant === 'single' ? 'Listen once, then answer. Check that your sound is on.' : profile.label+'. Listen and select the incorrect words.'))}</span></div>`;
   }
   function prepareAudio(q) {
     const s=state?.session;
@@ -902,6 +903,9 @@
     // Exam questions can only advance through Next; review unlocks after submission.
     if(testing&&(d.question!==undefined||d.move!==undefined||d.action==='flag'||d.action==='check'))return;
     if(d.action==='play'&&mock.isAudio(q)){if(!s.done&&['countdown','loading','playing','complete'].includes(s.audioStates[q.uid]?.status))return;return speaker.play(q.uid,q.audioText,playback(q));}
+    if(d.action==='skip-audio'&&s.practiceUid&&s.audioSkipAvailable&&!s.done&&mock.isAudio(q)){
+      cancelAudio();s.audioStates[q.uid]={status:'skipped',message:'Audio skipped for this reattempt. Answer now or play the audio.'};persist();renderSession();return;
+    }
     if(d.action==='retry-swt'&&q.type==='swt')return gradeSwt(q);
     if(d.move!==undefined&&s.practiceUid){
       const items=practiceQueue(s),index=items.findIndex(item=>item.uid===s.practiceUid),target=items[index+Number(d.move)];
@@ -924,7 +928,7 @@
       if(starting)return;cancelAudio();if(!persist())return;
       libraryView=s.practiceContext?{...s.practiceContext,selectedUid:s.practiceUid}:null;
       if(!s.done)state.drafts=[JSON.parse(JSON.stringify(s)),...(state.drafts||[]).filter(item=>item.id!==s.id)];
-      return start('practice',s.practiceUid);
+      return start('practice',s.practiceUid,true);
     }
     if(!editable())return;
     if(q.type==='reorder'){

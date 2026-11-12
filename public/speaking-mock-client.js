@@ -174,7 +174,7 @@
       shell('<div class="sm-exam"><header class="sm-exam-header"><strong>IPT Brisbane · Speaking</strong><div><span class="sm-overall-clock"><small>Overall time remaining</small> <span id="sm-overall-time" role="timer"></span></span><span><small id="sm-clock-label">This question</small> <span id="sm-time"></span></span><span>Item '+(a.index+1)+' of '+a.totalItems+'</span><label class="sm-volume">Volume <input id="sm-volume" aria-label="Mock volume" type="range" min="0" max="1" step="0.05" value="'+volume+'"></label></div></header>'
         +'<main class="sm-exam-main"><p class="sm-instructions">'+esc(q.instruction)+'</p><div class="sm-question '+(q.type==='di'?'sm-visual':'')+'">'
         +'<div class="sm-stimulus">'+(q.type==='di'&&q.title?'<h2 class="sm-image-title">'+esc(q.title)+'</h2>':'')+(q.text?'<p class="sm-passage">'+esc(q.text)+'</p>':'')+(q.imageUrl?'<button type="button" class="sm-exam-image" data-sm="zoom-image" aria-label="Enlarge question image">'+images.image(q)+'</button><button type="button" class="portal-button sm-image-enlarge" data-sm="zoom-image">Enlarge image</button>'+images.legend(q):'')+'</div>'
-        +'<div class="sm-controls">'+(q.audioUrl?'<section class="sm-audio-panel" aria-label="Prompt audio"><div>Status: <span id="sm-audio-status">Beginning shortly</span></div><div class="sm-bar"><span id="sm-audio-bar"></span></div></section>':'')
+        +'<div class="sm-controls">'+(q.audioUrl?'<section class="sm-audio-panel" aria-label="Prompt audio"><div>Status: <span id="sm-audio-status">Beginning shortly</span></div><div class="sm-bar"><span id="sm-audio-bar"></span></div>'+(a.reattemptOf?'<button type="button" class="portal-button" data-sm="skip-audio" id="sm-skip-audio">Skip audio</button>':'')+'</section>':'')
         +'<section class="sm-record-panel" aria-label="Recorded answer"><strong>Recorded Answer</strong><p>Current Status:</p><div id="sm-preparation-status" role="status"></div><div id="sm-record-status" role="status" aria-live="polite">Beginning shortly</div><div class="sm-bar"><span id="sm-record-bar"></span></div></section></div></div>'
         +'<p id="sm-time-warning" role="status" aria-live="polite"></p><p id="sm-notice" role="status">'+esc(notice)+'</p><button class="portal-button" data-sm="play" id="sm-play" hidden>Play remaining audio</button><button class="portal-button" data-sm="upload" id="sm-upload" hidden>Retry saving recording</button></main>'
         +'<footer class="sm-exam-footer"><span>'+esc(q.type==='intro'?'Personal Introduction · Not scored':labels[q.type])+'</span><div><button type="button" class="portal-button" data-sm="pause">Pause mock</button> <button type="button" class="sm-next" data-sm="next" id="sm-next">Next <span aria-hidden="true">➜</span></button></div></footer><dialog id="sm-image-dialog" class="sm-image-dialog" aria-label="Full-size question image"></dialog></div>');
@@ -188,6 +188,17 @@
       audio.onended=()=>{if(!valid(ticket)||!a||key(a.id,a.index)!==clipKey||prompt!==audio)return;promptFinished.add(clipKey);stopPrompt();if(a.timing.playbackDriven){flow.ended=true;finishPrompt();}else tick();};
       audio.onerror=()=>{const node=doc.getElementById('sm-play');if(node)node.hidden=false;message('The prompt audio could not load. Select Play remaining audio to retry.');};
       try{await audio.play();if(valid(ticket)&&prompt===audio){const node=doc.getElementById('sm-play');if(node)node.hidden=true;}}catch{const node=doc.getElementById('sm-play');if(node)node.hidden=false;message('Audio was blocked. Select Play remaining audio to continue.');}
+    }
+    async function skipAudio(){
+      if(busy||!a?.reattemptOf||!a.question?.audioUrl||!flow||flow.ended||a.timing.prepAt!=null)return;
+      busy=true;const id=a.id,index=a.index,ticket=serial,active=flow,button=doc.getElementById('sm-skip-audio');if(button)button.disabled=true;
+      try{
+        const saved=await api('/attempts/'+id+'/skip-audio',{index});
+        if(!valid(ticket)||a?.id!==id||a.index!==index||flow!==active)return;
+        if(saved.status!=='active'||saved.index!==index)throw Error('This question has finished. Reopen the mock.');
+        stopPrompt();a=saved;played=key(id,index);promptFinished.add(played);active.ended=true;active.leadUntil=0;active.prepUntil=localNow()+a.question.preparation*1000;message('Audio skipped for this reattempt.');tick();
+      }catch(error){if(valid(ticket))message(error.message);}
+      finally{busy=false;if(button?.isConnected)button.disabled=false;}
     }
     async function finishPrompt(){
       const active=flow;if(!active||active.finishing||!a||!a.timing.playbackDriven||a.timing.prepAt!=null)return;
@@ -279,6 +290,7 @@
       const audioStatus=doc.getElementById('sm-audio-status');if(audioStatus)audioStatus.textContent=t.playbackDriven?(flow&&localNow()<flow.leadUntil?'Beginning in '+clock((flow.leadUntil-localNow())/1000):flow?.ended?'Completed':prompt?.paused?'Select Play remaining audio':'Playing'):current<t.audioAt?'Beginning shortly':current<t.prepAt||q.type==='rs'&&!promptFinished.has(captureKey)?'Playing':'Completed';
       const preparation=doc.getElementById('sm-preparation-status');if(preparation)preparation.textContent=text.startsWith('Preparation time:')?text:'';
       const audioBar=doc.getElementById('sm-audio-bar');if(audioBar)audioBar.style.width=(t.playbackDriven?(flow?.ended?100:Math.max(0,Math.min(100,(prompt?.currentTime||0)/(q.audioSeconds||1)*100))):Math.max(0,Math.min(100,(current-t.audioAt)/(q.audioSeconds*10))))+'%';
+      const skipAudioButton=doc.getElementById('sm-skip-audio');if(skipAudioButton)skipAudioButton.hidden=!!flow?.ended||t.prepAt!=null||completed;
       if(analyser&&recorder?.state==='recording'){
         const data=new Uint8Array(analyser.fftSize);analyser.getByteTimeDomainData(data);const level=Math.sqrt(data.reduce((sum,n)=>sum+((n-128)/128)**2,0)/data.length);
         if(level>.015){heard=true;silence=0;}else if(heard){silence||=current;if(current-silence>=3000)recorder.stop();}
@@ -484,6 +496,7 @@
       if(data.sm==='check-play')return playCheck();
       if(data.sm==='check-begin')return beginMock();
       if(data.sm==='play'){if(flow?.ended&&a?.timing.playbackDriven)return finishPrompt();played='';return playPrompt();}
+      if(data.sm==='skip-audio')return skipAudio();
       if(data.sm==='upload'){const blob=await pending('get',key(a.id,a.index));if(blob)try{await upload(blob,a.id,a.index);}catch(error){message(error.message);}return;}
       if(data.sm==='retry'){
         if(busy||!a)return;busy=true;button.disabled=true;stopPolling();const ticket=serial,id=a.id,version=++resultVersion;

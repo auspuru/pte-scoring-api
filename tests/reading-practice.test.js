@@ -898,6 +898,12 @@ test('New HIW practice autoplays its fixed recording and saves highlights with f
  clock.add(10000);h.timers.at(-1)();assert.equal(recordings.length,1);assert.equal(recordings[0].url,h.ctx.ReadingMockTools.approvedQuestion(q).audioUrl);assert.equal(audio.utterances.length,0);
  recordings[0].onplaying();q.answers.forEach(index=>h.click({hiwWord:String(index)}));recordings[0].onended();h.click({action:'submit'});
  assert.equal(snapshot(h).practiceResults[q.uid].earned,6);assert.equal(snapshot(h).history[0].excluded,0);assert.match(h.host.innerHTML,/Meaning in context/);assert.match(h.host.innerHTML,/Legitimacy depends on purposes/);
+ const first=snapshot(h).session.id;await h.click({action:'retry-question'});
+ assert.notEqual(snapshot(h).session.id,first);assert.match(h.host.innerHTML,/data-action="skip-audio"/);
+ await h.click({action:'skip-audio'});assert.equal(snapshot(h).session.audioStates[q.uid].status,'skipped');
+ clock.add(10000);h.timers.at(-1)();assert.equal(recordings.length,1);
+ q.answers.forEach(index=>h.click({hiwWord:String(index)}));h.click({action:'submit'});
+ assert.equal(snapshot(h).practiceResults[q.uid].earned,6);
 });
 test('Practice Back and Next traverse the task library and restore an answered draft',async()=>{
  const h=client();await h.ctx.ReadingPractice.open({libraryId:'dropdown'});

@@ -189,6 +189,21 @@ test('Prompt-end receipts enforce account, active question, minimum duration and
  assert.equal((await request('/recordings/0',Buffer.alloc(200),'alice',true)).status,409);now=first.body.timing.recordingAt+1;
  assert.equal((await request('/recordings/0',Buffer.alloc(200),'alice',true)).status,200);
 });
+test('Only a reattempt can skip prompt audio and its full recording window starts after preparation',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-skip-audio-')),app=express();app.use(express.json());let now=1000000;
+ const lab=installSpeakingMock(app,{directory,verifyToken:t=>t==='alice'?'alice':null,getAccount:async()=>({}),now:()=>now});
+ const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(async()=>{await lab.waitForJobs();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
+ const q=bank.papers[0].questions.find(q=>q.type==='rl'),id=crypto.randomUUID();
+ await lab.store.update('alice',id,()=>({id,questions:[q],responses:[],index:0,status:'active',startedAt:now,deadline:now+600000,questionCount:1}));
+ const request=async(route,body)=>{const response=await fetch('http://127.0.0.1:'+server.address().port+'/api/speaking-mocks/attempts/'+id+route,{method:'POST',headers:{'x-session-token':'alice','Content-Type':'application/json'},body:JSON.stringify(body)});return{status:response.status,body:await response.json()};};
+ await request('/begin',{index:0,timingVersion:2});
+ assert.equal((await request('/skip-audio',{index:0})).status,409);
+ await lab.store.update('alice',id,a=>{a.reattemptOf=crypto.randomUUID();return a;});
+ assert.equal((await request('/skip-audio',{index:1})).status,409);
+ const skipped=await request('/skip-audio',{index:0});assert.equal(skipped.status,200);
+ assert.equal(skipped.body.timing.phase,'preparing');assert.equal(skipped.body.timing.recordingAt,now+q.preparation*1000);
+ now+=1000;assert.equal((await request('/skip-audio',{index:0})).body.timing.recordingAt,skipped.body.timing.recordingAt);
+});
 test('all mock DI placements use source-verified original images and reattempts replace legacy photos without editing saved work',()=>{
  const fs=require('node:fs'),path=require('node:path'),manifest=require('../content/di-reference-manifest.json');
  for(const paper of bank.papers)for(const q of paper.questions.filter(q=>q.type==='di')){
