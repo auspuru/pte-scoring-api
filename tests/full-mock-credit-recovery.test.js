@@ -6,6 +6,30 @@ const adapters=require('../full-mock/adapters');
 const {aggregate,inputHash,COMPLETION_POLICY}=require('../full-mock/aggregation');
 const {digest}=require('../full-mock/paper');
 
+test('A confirmed invalid DI output can recover its exclusion without repeating transcription or other marks',async t=>{
+ const f=await fixture(t,async()=>{}),original=(await f.store.get(f.owner,f.id)).state.assessment.items[f.q.id].result;
+ await f.store.update(f.owner,f.id,state=>{
+  state.assessment.run=1;state.assessment.completionPolicy={version:COMPLETION_POLICY,snapshotHash:state.assessment.snapshotHash};
+  const job=state.assessment.items[f.q.id];job.status='failed';job.result={status:'failed',reason:'content-unavailable'};
+  job.stages={transcription:{status:'complete',value:'Saved original words.'},content:{status:'failed',failureCode:'assessment_validation',
+   failureCategory:'validation',validationCode:'inconsistent-score',providerCalls:2,uncertain:false,recoveryBlocked:false}};
+  assert(exclusions.releaseAvailable(state,f.paper,1234));return state;
+ });
+ let calls=0;const engine=assessment.createEngine({store:f.store,paper:f.paper,
+  assemble:async()=>({status:'ready',recording:{}}),adapters:{assess:async(q,response,{previous})=>{
+   calls++;assert.equal(previous.transcription.value,'Saved original words.');return {...structuredClone(original),stages:previous};
+  }}});
+ const view=await exclusions.createSupport({store:f.store,validate:engine.validate}).inspect(f.owner,f.id),before=(await f.store.get(f.owner,f.id)).state;
+ const row=view.questions.find(row=>row.id===f.q.id);assert.equal(row.retryableUnavailable,true);
+ assert.equal(row.failures[0].validationCode,'inconsistent-score');assert.equal(row.failures[0].providerCalls,2);
+ const body={operation:'staff:validation-recovery',questionIds:[f.q.id],confirmRetry:true,evidenceHash:view.evidenceHash};
+ await Promise.all([engine.retryUnavailable(f.owner,f.id,body),engine.retryUnavailable(f.owner,f.id,body)]);await engine.drain();
+ const after=(await f.store.get(f.owner,f.id)).state;assert.equal(calls,1);assert.equal(aggregate(f.paper,after).assessedCount,65);
+ assert.deepEqual(after.responses,before.responses);assert.equal(after.assessment.snapshotHash,before.assessment.snapshotHash);
+ for(const [id,job] of Object.entries(before.assessment.items))if(id!==f.q.id)assert.deepEqual(after.assessment.items[id],job);
+ await engine.retryUnavailable(f.owner,f.id,body);await engine.drain();assert.equal(calls,1);
+});
+
 test('A published provider-429 exclusion recovers from saved input once, retaining other marks and frozen source',async t=>{
   const f=await fixture(t,async()=>{}),baseline=require('../content/full-mock/credit-recovery-compatible-sources.json');
   await f.store.update(f.owner,f.id,state=>{

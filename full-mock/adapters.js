@@ -55,7 +55,7 @@ function objective(q, answer) {
   return null;
 }
 function createAdapters({ transcribe = require('../speaking-lab').transcribeRecording,
-  gradeSpeaking = (q, text, call) => speech.grade(q, text, call, { academyDescribeImage: true }),
+  gradeSpeaking = (q, text, call) => speech.grade(q, text, call, { academyDescribeImage: true, strict:true }),
   assessDelivery = require('../azure-continuous-delivery').assessRecording,
   assessLegacyDelivery = assessDelivery === require('../azure-continuous-delivery').assessRecording
     ? require('../speaking-delivery').assessRecording : assessDelivery,
@@ -63,17 +63,26 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
   async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, deliveryPolicy, legacyDelivery = false, contentOnly = false } = {}) {
     const stages = structuredClone(previous);
     const failed = reason => ({ status: 'failed', version: VERSION, reason, stages });
+    const trackedModel=(name,model)=>async(...args)=>{
+      stages[name].providerCalls=(stages[name].providerCalls||0)+1;
+      await checkpoint(stages);
+      return model(...args);
+    };
     async function stage(name, call, verify = value => value != null) {
       if (stages[name]?.status === 'complete') return stages[name].value;
       // An interrupted process may resume an unfinished request, but never
       // silently repeat a known failed/uncertain provider call in the same run.
       if (stages[name]?.attemptedRun === run) return null;
-      stages[name] = { status: 'running', attemptedRun: run, uncertain: true };
+      const priorCalls=stages[name]?.providerCalls;
+      stages[name] = { status: 'running', attemptedRun: run, uncertain: true, providerCalls:priorCalls };
       await checkpoint(stages);
       let value, error;
       try { value = await call(); if (!verify(value)) throw Error('Unverified provider output'); }
       catch (caught) { error = caught; }
-      stages[name] = error ? { status: 'failed', attemptedRun: run, uncertain: require('../mock-recovery-policy').failure(error).uncertain, failureCode:require('../mock-recovery-policy').failure(error).code, recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked } : { status: 'complete', attemptedRun: run, value };
+      const calls=stages[name].providerCalls,issue=error&&require('../mock-recovery-policy').assessmentFailure(error);
+      stages[name] = error ? { status:'failed',attemptedRun:run,providerCalls:calls,uncertain:issue.uncertain,failureCode:issue.code,recoveryBlocked:issue.blocked,
+        failureCategory:issue.category,...(issue.validationCode?{validationCode:issue.validationCode}:{}),...(issue.providerStatus?{providerStatus:issue.providerStatus}:{}) }
+        : { status:'complete',attemptedRun:run,providerCalls:calls,value };
       await checkpoint(stages);
       return error ? null : value;
     }
@@ -100,7 +109,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
       }
       const contentModel = q.type === 'di' && stages.content?.status === 'failed' && typeof speakingContentModel === 'function'
         ? (prompt, context) => speakingContentModel(prompt, { ...context, recoveryReview: true }) : speakingContentModel;
-      const content = await stage('content', () => gradeSpeaking(q, transcript, contentModel), value => value && Number.isInteger(value.total) && value.total >= 0 && value.total <= maxima(q).content
+      const content = await stage('content', () => gradeSpeaking(q, transcript, trackedModel('content',contentModel)), value => value && Number.isInteger(value.total) && value.total >= 0 && value.total <= maxima(q).content
         && value.maximum === maxima(q).content && !value.score_provisional && !value.needs_semantic_review
         && (['ra','rs'].includes(q.type) || value.scoringMode === 'ai' && value.contentStatus === 'assessed'));
       if (!content) return failed('content-unavailable');
@@ -152,7 +161,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         if (!essayGrader) throw Error('Essay assessment unavailable');
         const assessed = await essayGrader.grade(q.text, text, '9', { feedbackV3: true, includeSample: false, totalTimeoutMs: 240000 });
         value = { ...assessed, version: assessed.scoring_version, maxima: maxima(q), total: assessed.scores?.total, maximum: Object.values(maxima(q)).reduce((sum, max) => sum + max, 0) };
-      } else value = await writing.grade(q, text, writingContentModel);
+      } else value = await writing.grade(q, text, trackedModel('writing',writingContentModel),{strict:true});
       return normalise(q, value);
     });
     return raw ? { ...raw, stages } : failed('writing-unavailable');

@@ -54,6 +54,7 @@ test('Previously started Full Mocks retain chunked delivery while new attempts u
   const methods=[];
   const f=await fixture(t,{adapters:{assess:async(q,response,options)=>{if(q.type==='ra')methods.push(options.legacyDelivery);return full(q);}}});
   const original=structuredClone(f.engine.snapshot),pins=require('../content/full-mock/whole-recording-upgrade-pins.json');
+  original.scoringSources=structuredClone(require('../content/full-mock/assessment-recovery-pins.json').previous);
   original.scoringSources.files['full-mock/adapters.js'].sha256=pins.oldAdapter;
   original.scoringSources.files['full-mock/assessment.js'].sha256=pins.oldAssessment;
   await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});

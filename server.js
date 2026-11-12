@@ -6480,7 +6480,7 @@ async function writingContentModel(prompt) {
   if (!anthropic) throw new Error('Writing assessment is not configured.');
   const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
     max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { timeout: 60000, maxRetries: 0 });
-  if (response.stop_reason === 'max_tokens') throw new Error('Incomplete writing assessment.');
+  if (response.stop_reason === 'max_tokens') throw Object.assign(new Error('Incomplete writing assessment.'),{code:'WRITING_TRUNCATED'});
   const output = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
   return JSON.parse(output.match(/\{[\s\S]*\}/)?.[0] || 'null');
 }

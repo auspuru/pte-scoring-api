@@ -132,7 +132,7 @@ const repairInstructions={
   provider:'The previous request did not produce a usable assessment. Return the complete assessment.'
 };
 async function grade(q,text,callModel,options={}) {
-  if(q.type==='di'&&options.academyDescribeImage)return require('./describe-image-academy').grade(q,text,callModel);
+  if(q.type==='di'&&options.academyDescribeImage)return require('./describe-image-academy').grade(q,text,callModel,options);
   if(['ra','rs'].includes(q.type)) return exact(q,text);
   if(!tokens(text).length)return {...base(6),total:0,overview:'No spoken content was supplied for assessment.',strengths:[],improvements:['Record a response or enter the exact words you said, then reattempt.'],coverage:q.facts.map(point=>({point,status:'missing',evidence:'',feedback:'Include this relevant idea in your response.'}))};
   let lastError,previousAssessment;

@@ -3,6 +3,24 @@ const test=require('node:test'),assert=require('node:assert/strict'),{parseHTML}
 const {mount}=require('../public/admin-full-mock-recovery');
 const id='006d4971-2ad3-4f14-8e2a-0ea3ed450bdd';
 const diagnostic=()=>({owner:'student',attemptId:id,ready:false,assessedCount:62,excludedCount:0,accountedFor:62,total:65,recovery:{status:'scheduled'},evidenceHash:'a'.repeat(64),responsesHash:'responses',confirmedHash:'marks',questions:[{id:'asq-1',number:24,type:'asq',status:'failed',eligible:true,reason:'transcription-unavailable'}]});
+for(const recovered of [0,1])test('Unavailable-score retry polls to its actual '+recovered+' recovered outcome',async()=>{
+ const {document}=parseHTML('<html><body><div id="host"></div></body></html>'),host=document.getElementById('host');
+ const initial={...diagnostic(),ready:true,assessedCount:64,excludedCount:1,accountedFor:65,
+  questions:[{id:'di-1',number:21,type:'di',status:'excluded',retryableUnavailable:true,
+    failures:[{stage:'content',code:'assessment_validation',validationCode:'inconsistent-score',providerCalls:2}]}]};
+ let started=false,reads=0,posts=0;
+ const ui=mount(host,{username:'student',pause:async()=>{},operationId:()=> 'poll-operation',request:async(path,body)=>{
+  if(body){started=true;posts++;return {...initial,busy:true};}
+  if(!started)return initial;reads++;
+  return reads===1?{...initial,busy:true}:{...initial,busy:false,assessedCount:64+recovered,excludedCount:1-recovered,questions:recovered?[]:initial.questions};
+ }});
+ host.querySelector('[data-full-attempt]').value=id;await ui.inspect();
+ assert.match(host.querySelector('[data-full-diagnostics]').textContent,/inconsistent-score/);
+ host.querySelector('[data-full-retry-confirm]').checked=true;
+ await host.querySelector('[data-full-diagnostics]').onclick({target:host.querySelector('[data-full-retry-unavailable]')});
+ assert.equal(posts,1);assert.equal(reads,2);assert.match(host.querySelector('[data-full-notice]').textContent,new RegExp(recovered+' assessment.* recovered'));
+ if(!recovered)assert.match(host.querySelector('[data-full-notice]').textContent,/Review the failure details/);
+});
 test('Published unavailable provider failures require credit confirmation and reuse a lost retry operation',async()=>{
  const {document}=parseHTML('<html><body><div id="host"></div></body></html>'),host=document.getElementById('host'),requests=[];
  const value={...diagnostic(),ready:true,assessedCount:64,excludedCount:1,accountedFor:65,recovery:{status:'complete'},
