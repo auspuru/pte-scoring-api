@@ -54,6 +54,7 @@ test('Previously started Full Mocks retain chunked delivery while new attempts u
   const methods=[];
   const f=await fixture(t,{adapters:{assess:async(q,response,options)=>{if(q.type==='ra')methods.push(options.legacyDelivery);return full(q);}}});
   const original=structuredClone(f.engine.snapshot),pins=require('../content/full-mock/whole-recording-upgrade-pins.json');
+  original.scoringSources.files['full-mock/store.js'].sha256=require('../content/full-mock/paper-selection-compatible-pins.json').oldStore;
   original.scoringSources.files['full-mock/adapters.js'].sha256=pins.oldAdapter;
   original.scoringSources.files['full-mock/assessment.js'].sha256=pins.oldAssessment;
   await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
@@ -64,6 +65,10 @@ test('Previously started Full Mocks retain chunked delivery while new attempts u
   changed.assessment.snapshot.scoringSources.files['full-mock/adapters.js'].sha256='0'.repeat(64);
   changed.assessment.snapshotHash=digest(changed.assessment.snapshot);
   assert.throws(()=>f.engine.validate(changed),{status:409});
+  const storageDrift=structuredClone(await f.state());
+  storageDrift.assessment.snapshot.scoringSources.files['full-mock/store.js'].sha256='0'.repeat(64);
+  storageDrift.assessment.snapshotHash=digest(storageDrift.assessment.snapshot);
+  assert.throws(()=>f.engine.validate(storageDrift),{status:409});
 });
 test('A mock started under the previous reassessment controller keeps its frozen snapshot',async t=>{
   const f=await fixture(t,{adapters:{assess:async q=>full(q)}});

@@ -43,10 +43,20 @@ function inspectMp3(bytes) {
   const consumed=offset-first;
   const payload=Math.max(1,bytes.length-first-(id3v1?128:0));
   const valid=frames.length>=20 && consumed/payload>=0.98 && (trailing===0 || id3v1);
+  // A Xing/Info frame carries seek metadata, not an audio frame. Container
+  // duration reporting varies across FFmpeg versions; count the encoded audio
+  // samples directly so validation does not depend on that estimate.
+  const mono=((bytes[first+3]>>6)&3)===3, crc=(bytes[first+1]&1)?0:2;
+  const sideInfo=frames[0]?.mpeg1?(mono?17:32):(mono?9:17);
+  const tag=bytes.toString('ascii',first+4+crc+sideInfo,first+8+crc+sideInfo);
+  const metadataFrames=['Xing','Info'].includes(tag)?1:0;
+  const seconds=frames.slice(metadataFrames).reduce((sum,f)=>sum+(f.mpeg1?1152:576)/f.sampleRate,0);
   return {
     valid,
     reason:valid?'':('frames='+frames.length+', consumed='+Math.round(consumed/payload*100)+'%, trailing='+trailing),
     frames:frames.length,
+    seconds,
+    metadataFrames,
     sampleRate:frames[0]?.sampleRate || 0,
     bitrate:frames[0]?.bitrate || 0
   };

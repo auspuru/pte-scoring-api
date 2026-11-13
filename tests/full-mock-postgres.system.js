@@ -25,7 +25,7 @@ test('PostgreSQL: competing instructor reviews retain a two-retry cap across poo
  await Promise.all(engines.map(e=>e.review('alice',id,body)));assert.equal(calls,2);const result=await engines[0].results('alice',id);assert(result.ready);assert.equal(result.assessedCount,64);assert.equal(result.excludedCount,1);
 });
 
-test('PostgreSQL: concurrent startup and attempt creation preserve one active owned attempt', async t => {
+test('PostgreSQL: concurrent startup and attempt creation preserve one active owned attempt per paper', async t => {
   const db = await database(t), stores = [createStore({ pool:db.first }), createStore({ pool:db.pool() })];
   await Promise.all(stores.map(store => store.initialise()));
   const records = await Promise.all(stores.map(store => store.create('alice', randomUUID(), paper, make, 1000)));
@@ -33,6 +33,19 @@ test('PostgreSQL: concurrent startup and attempt creation preserve one active ow
   assert.equal((await stores[0].list('alice')).length, 1); assert.equal(await stores[0].get('bob', records[0].state.id), null);
   assert.equal(digest(records[0].paper), digest(paper));
   await assert.rejects(stores[1].create('bob', records[0].state.id, paper, make, 1000), { status:404 });
+});
+test('PostgreSQL: the old account-wide index upgrades without changing saved attempts', async t => {
+  const db=await database(t),old=createStore({pool:db.first});await old.initialise();
+  const second=loadPaper('full-mock-2'),third=loadPaper('full-mock-3');
+  const saved=await old.create('alice',randomUUID(),second,(id,at)=>session.create(id,second,at,{preview:true}),1000);
+  await db.first.query("DROP INDEX full_mock_one_active_user_paper; CREATE UNIQUE INDEX full_mock_one_active_user ON full_mock_attempts(username) WHERE state->>'status'='active'");
+  const stores=[createStore({pool:db.first}),createStore({pool:db.pool()})];await Promise.all(stores.map(s=>s.initialise()));
+  const starts=await Promise.all(stores.map(s=>s.create('alice',randomUUID(),third,(id,at)=>session.create(id,third,at,{preview:true}),1000)));
+  assert.equal(starts[0].state.id,starts[1].state.id);assert.equal(starts[0].paper.id,'full-mock-3');
+  assert.deepEqual(await stores[0].get('alice',saved.state.id),saved);
+  assert.equal((await stores[1].create('alice',randomUUID(),second,(id,at)=>session.create(id,second,at,{preview:true}),1000)).state.id,saved.state.id);
+  assert.equal((await stores[0].list('alice')).length,2);
+  await assert.rejects(stores[0].create('alice',saved.state.id,third,()=>{},1000),{status:409});
 });
 test('PostgreSQL: racing revisions, sealed answers, shared deadlines and reconnects survive new pools', async t => {
   const db = await database(t), a = createStore({ pool:db.first }); await a.initialise();
