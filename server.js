@@ -3665,6 +3665,7 @@ app.get('/api/auth/check/:username', async (req, res) => {
 // ═══ ADMIN ROUTES (require ADMIN_KEY) ═══
 const staffAdminAuth=require('./admin-auth').createAdminAuth({
   authenticate:(username,password)=>AuthAPI.login(username,password),
+  verifyPassword:(password,account)=>verifyPw(password,account.passwordHash).ok,
   getAccount:async username=>USE_POSTGRES?PgStorage._getAccount(username):(await AuthAPI.readAccounts()).accounts?.[username],
   secret:_sessionSecret,
   staffUsers:()=>process.env.ADMIN_STAFF_USERS||''

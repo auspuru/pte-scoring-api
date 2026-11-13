@@ -1,6 +1,13 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
 const {fixture}=require('./helpers/auth-server');
+test('Staff login rejects a password changed while authentication was in flight',async()=>{
+ let status=200,cookie=false;
+ const auth=require('../admin-auth').createAdminAuth({authenticate:async()=>({success:true,sessionVersion:0}),getAccount:async()=>({role:'admin',passwordHash:'changed-password',sessionVersion:0}),verifyPassword:(password,account)=>password===account.passwordHash,secret:()=>Buffer.from('isolated-test-secret')});
+ const req={body:{username:'staff',password:'old-password'},get:key=>key==='host'?'127.0.0.1:45678':'http://127.0.0.1:45678'};
+ const res={set(){return this;},status(value){status=value;return this;},json(){return this;},cookie(){cookie=true;return this;}};
+ await auth.login(req,res);assert.equal(status,401);assert.equal(cookie,false);
+});
 test('Staff login binds HttpOnly access to approved accounts and current credentials',{timeout:45000},async t=>{
   const f=await fixture(t,{staffUsers:'staff'}),password='Isolated-staff-pass-123';
   for(const username of ['staff','student'])assert.equal((await f.request('/api/auth/register',{username,password,email:username+'@example.test',role:'admin'})).body.success,true);

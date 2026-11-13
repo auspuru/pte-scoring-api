@@ -2,7 +2,7 @@
 const crypto=require('node:crypto');
 const security=require('./account-security');
 const COOKIE='ipt_staff_admin', TTL=8*60*60*1000;
-function createAdminAuth({authenticate,getAccount,secret,staffUsers=()=>'',now=Date.now}) {
+function createAdminAuth({authenticate,getAccount,verifyPassword,secret,staffUsers=()=>'',now=Date.now}) {
   const sign=value=>crypto.createHmac('sha256',secret()).update('staff-admin:'+value).digest('hex');
   const allowed=(username,account)=>!!account&&!account.blocked&&(account.role==='admin'||String(staffUsers()).split(',').map(x=>x.trim().toLowerCase()).filter(Boolean).includes(username));
   const stamp=account=>sign(JSON.stringify([account.passwordHash,account.sessionVersion||0,account.createdAt]));
@@ -16,7 +16,7 @@ function createAdminAuth({authenticate,getAccount,secret,staffUsers=()=>'',now=D
     try{
       const uid=username.trim().toLowerCase(),result=await authenticate(uid,password);
       const account=result?.success?await getAccount(uid):null;
-      if(!result?.success||!allowed(uid,account))return res.status(401).json({error:'Invalid staff username or password.'});
+      if(!result?.success||!allowed(uid,account)||(result.sessionVersion||0)!==(account.sessionVersion||0)||!verifyPassword(password,account))return res.status(401).json({error:'Invalid staff username or password.'});
       const issued=now(),value=Buffer.from(JSON.stringify({purpose:'staff-admin',username:uid,stamp:stamp(account),issued,expires:issued+TTL})).toString('base64url');
       res.cookie(COOKIE,value+'.'+sign(value),{...options,secure:security.resetOrigin(req).startsWith('https:')}).json({success:true,username:uid});
     }catch{res.status(503).json({error:'Staff sign-in is temporarily unavailable. Please try again.'});}
