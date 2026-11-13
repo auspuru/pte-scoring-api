@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "8be12644544a549cf3b61b9e9af345f2e49ec5eca8165afff0f6ee13e35580ee",
+        "sha256": "cada6870c75ea62eac74b77c2c55686981bebbc8ab51f190ceca02d5d78cb0ea",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -189,7 +189,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "5fa0de370e865b6e2fdbfd4e5d7249d05891d2ac49d6f6a7d02f6f172c233b2f",
+        "sha256": "f28f8bf516c72957afeefd3ce7bcd3e81b4bc681d5579b0ede810571460e4b79",
         "version": null
       },
       "situation-content-policy.js": {

@@ -1,5 +1,23 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),puppeteer=require('puppeteer'),{fixture}=require('./helpers/auth-server');
+test('Staff username and password sign-in survives reload and signs out on desktop and mobile',{timeout:60000},async t=>{
+ require('node:fs').mkdirSync(require('node:path').join(__dirname,'../.cache'),{recursive:true});
+ const f=await fixture(t,{staffUsers:'staff-browser'}),password='Staff-browser-pass-123';
+ await f.request('/api/auth/register',{username:'staff-browser',password,email:'staff-browser@example.test'});
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});t.after(()=>browser.close());
+ for(const [name,width] of [['desktop',1363],['mobile',390]]){
+  const page=await browser.newPage();await page.setViewport({width,height:900});await page.goto(f.base+'/admin');
+  await page.waitForSelector('#staffUsername',{visible:true});await page.type('#staffUsername','staff-browser');await page.type('#staffPassword',password);
+  assert.equal(await page.$eval('#staffSignIn',button=>{const rect=button.getBoundingClientRect();return rect.height>=44&&rect.width>=button.form.clientWidth*.9;}),true);
+  await page.screenshot({path:require('node:path').join(__dirname,'../.cache/admin-staff-login-'+name+'.png'),fullPage:true});
+  await page.click('#staffSignIn');await page.waitForFunction(()=>getComputedStyle(document.getElementById('dashboard')).display!=='none');
+  assert.equal(await page.$eval('#staffPassword',e=>e.value),'');
+  assert.equal(await page.evaluate(()=>sessionStorage.getItem('adminKey')),null);
+  await page.reload();await page.waitForFunction(()=>getComputedStyle(document.getElementById('dashboard')).display!=='none');
+  await page.evaluate(()=>adminLogout());await page.waitForSelector('#staffUsername',{visible:true});
+  assert.equal((await page.goto(f.base+'/api/admin/users')).status(),403);await page.close();
+ }
+});
 test('Duplicate-email sign-up remains recoverable through the real Forgot password screens',{timeout:60000},async t=>{
  const f=await fixture(t),username='email-browser',password='Original-pass-123';
  const original=(await f.request('/api/auth/register',{username,password,email:'email-browser@example.test'})).body;

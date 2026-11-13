@@ -55,6 +55,7 @@ test('Previously started Full Mocks retain chunked delivery while new attempts u
   const f=await fixture(t,{adapters:{assess:async(q,response,options)=>{if(q.type==='ra')methods.push(options.legacyDelivery);return full(q);}}});
   const original=structuredClone(f.engine.snapshot),pins=require('../content/full-mock/whole-recording-upgrade-pins.json');
   original.scoringSources.files['full-mock/store.js'].sha256=require('../content/full-mock/paper-selection-compatible-pins.json').oldStore;
+  original.scoringSources.files['server.js'].sha256=require('../content/full-mock/staff-login-compatible-pins.json').oldServer;
   original.scoringSources.files['full-mock/adapters.js'].sha256=pins.oldAdapter;
   original.scoringSources.files['full-mock/assessment.js'].sha256=pins.oldAssessment;
   await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
@@ -571,4 +572,25 @@ test('Shared practice libraries finish the exact deployed Full Mock snapshot wit
 for(const file of ['public/reading-practice.js','speaking-scoring.js','server.js'])test('Shared library compatibility rejects drift in '+file,async t=>{
  const f=await fixture(t),original={...structuredClone(f.engine.snapshot),scoringSources:structuredClone(require('../content/full-mock/library-compatible-sources.json'))};original.scoringSources.files[file].sha256='0'.repeat(64);
  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});await assert.rejects(f.engine.request('alice',f.id),error=>error.status===409);assert.deepEqual((await f.state()).assessment.snapshot,original);
+});
+
+test('Staff login upgrade retains frozen assessment sources and completed marks',async t=>{
+ let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
+ const pins=require('../content/full-mock/staff-login-compatible-pins.json');
+ const original=structuredClone(f.engine.snapshot);
+ original.scoringSources.files['server.js'].sha256=pins.oldServer;
+ original.scoringSources.files['full-mock/assessment.js'].sha256=pins.oldAssessment;
+ assert.equal(digest(original.scoringSources),pins.oldSourcesDigest);
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
+ const marked=structuredClone((await f.state()).assessment.items);
+ await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal(calls,65);
+ assert.deepEqual((await f.state()).assessment.items,marked);assert.deepEqual((await f.state()).assessment.snapshot,original);
+});
+test('Staff login compatibility rejects unreviewed server drift',async t=>{
+ const f=await fixture(t),original=structuredClone(f.engine.snapshot),pins=require('../content/full-mock/staff-login-compatible-pins.json');
+ original.scoringSources.files['server.js'].sha256='0'.repeat(64);
+ original.scoringSources.files['full-mock/assessment.js'].sha256=pins.oldAssessment;
+ await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
+ await assert.rejects(f.engine.request('alice',f.id),error=>error.status===409);
 });

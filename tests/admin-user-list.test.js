@@ -26,7 +26,7 @@ test('admin lists both login accounts and progress-only student records',()=>{
 });
 
 
-test('admin presentation uses IPT branding without changing authorization',()=>{
+test('admin presentation retains IPT branding and protected administrator routes',()=>{
   const html=fs.readFileSync(path.join(root,'public','admin.html'),'utf8');
   const css=fs.readFileSync(path.join(root,'public','admin-liquid-glass.css'),'utf8');
   const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
@@ -50,9 +50,9 @@ test('admin presentation uses IPT branding without changing authorization',()=>{
   assert.doesNotMatch(interventions,/font-size:11px|rgba\(0,92,139|#0b6b92|@media\(max-width:800px\)/);
 
   assert.match(server,/function requireAdmin\(req, res, next\)/);
-  assert.match(server,/if \(!ADMIN_KEY\) return res\.status\(503\)/);
+  assert.match(server,/if \(ADMIN_KEY && key === ADMIN_KEY\)/);
   assert.match(server,/req\.headers\['x-admin-key'\]/);
-  assert.match(server,/if \(key !== ADMIN_KEY\) return res\.status\(403\)/);
+  assert.match(server,/await staffAdminAuth\.verify\(req\)/);
 });
 
 
