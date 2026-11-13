@@ -12617,18 +12617,19 @@ function ensureStudentProgressRuntimeLoaded() {
 
 let portalCatalogueProgressCache = { uid:'', at:0, value:null };
 let portalWritingAttemptsCache = null;
-async function getPortalWritingAttempts() {
+async function getPortalWritingAttempts(engine='writing-lab') {
   const uid=canonicalClientUserId(currentUserId), token=sessionToken;
   if (!uid || !token) return [];
-  const prior=portalWritingAttemptsCache;
+  portalWritingAttemptsCache ||= {};
+  const prior=portalWritingAttemptsCache[engine];
   if (prior?.uid===uid && prior.token===token) {
     if (prior.pending) return prior.pending;
     if (prior.rows && Date.now()-prior.at<10000) return prior.rows;
   }
   const cache={uid,token,at:0,rows:null,pending:null};
-  portalWritingAttemptsCache=cache;
+  portalWritingAttemptsCache[engine]=cache;
   cache.pending=(async()=>{
-    const response=await fetch(API_URL+'/api/writing-lab/attempts',{
+    const response=await fetch(API_URL+'/api/'+engine+'/attempts',{
       cache:'no-store',signal:AbortSignal.timeout(10000),headers:{'x-session-token':token}
     });
     if (!response.ok) throw Error('Saved attempts could not load.');
@@ -12681,7 +12682,7 @@ async function getPortalCatalogueProgress() {
       token?read('/api/speaking/attempts',true):Promise.resolve([]),
       token?getPortalWritingAttempts():Promise.resolve([]),
       token?read('/api/speaking-mocks/attempts',true):Promise.resolve([]),
-      token?read('/api/listening-mocks/attempts',true):Promise.resolve([])
+      token?getPortalWritingAttempts('listening-mocks'):Promise.resolve([])
     ]);
     if (uid!==canonicalClientUserId(currentUserId) || token!==sessionToken) return {practice:{},mocks:{}};
     const result={ practice:{ swt:{count:Array.isArray(passages)?passages.length:0}, practice:{count:Array.isArray(essays)?essays.length:0} }, mocks:{} };
@@ -13152,7 +13153,7 @@ async function refreshWritingPortalResume(localCandidate) {
   if (portalResumeCache.uid === uid && portalResumeCache.token === token && Date.now() - portalResumeCache.at < 10000) item = portalResumeCache.item;
   else {
     try {
-      const [rows,listening] = await Promise.all([getPortalWritingAttempts(),fetch(API_URL+'/api/listening-mocks/attempts',{signal:AbortSignal.timeout(10000),headers:{'x-session-token':token}}).then(r=>r.ok?r.json():[]).catch(()=>[])]);
+      const [rows,listening] = await Promise.all([getPortalWritingAttempts(),getPortalWritingAttempts('listening-mocks').catch(()=>[])]);
       const active = (Array.isArray(rows) ? rows : []).filter(a => ['active','ready'].includes(a.status))
         .sort((a,b)=>Number(b.startedAt || 0)-Number(a.startedAt || 0))[0];
       if (active) item = {

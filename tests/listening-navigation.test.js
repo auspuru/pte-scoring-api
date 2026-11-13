@@ -5,14 +5,14 @@ const workspace=require('../public/portal-workspace'),catalogue=require('../publ
 const source=fs.readFileSync(path.join(__dirname,'../public/index.js'),'utf8');
 function portalFunction(name){const pattern=name==='openWritingLab'?'async function '+name+'(':'function '+name+'(';const start=source.indexOf(pattern);assert(start>=0,name);const end=source.indexOf('\n}\n',start);return source.slice(start,end+2);}
 function harness(){
- const requests=[],activated=[],mockPages=[];
+ const requests=[],activated=[],mockPages=[],mockRequests=[];
  const practiceHost={innerHTML:''},nodes=new Map([['practiceHubPane',practiceHost],['mockTestsPane',{innerHTML:''}]]);
  const doc={getElementById:id=>nodes.get(id),querySelectorAll:()=>[]};
- const context={PortalWorkspace:workspace,window:{},document:doc,crypto:{randomUUID:()=>String(requests.length)},savePortalEssayDraft(){},portalWorkspace:{activate(section){activated.push(section);return section;}},ensureWritingLabRuntimeLoaded:async()=>({open:async request=>requests.push(request)}),toast(){throw Error('Unexpected navigation error');},escapeHtml:s=>s};
+ const context={PortalWorkspace:workspace,window:{ListeningMock:{open:async request=>mockRequests.push(request)}},ensureFullMockRuntimeLoaded:async()=>({}),document:doc,crypto:{randomUUID:()=>String(requests.length)},savePortalEssayDraft(){},portalWorkspace:{current:()=>activated.at(-1),activate(section){activated.push(section);return section;}},ensureWritingLabRuntimeLoaded:async()=>({open:async request=>requests.push(request)}),toast(){throw Error('Unexpected navigation error');},escapeHtml:s=>s};
  vm.createContext(context);vm.runInContext(portalFunction('openWritingLab')+'\n'+portalFunction('switchSection'),context);
  const controller=catalogue.createController({document:doc,navigate:(...args)=>context.switchSection(...args),launchReading(){},launchWriting(){},fetch:async url=>({ok:true,json:async()=>url.includes('reading-bank')?require('../public/reading-bank.json'):{spoken:[{id:'sst'}],dictation:[{id:'wfd'}],listeningPractice:['lmcma','lfi','hcs','lmcsa','smw','hiw'].map(type=>({id:type,type})),mocks:[],listeningMocks:[]}})});
  context.portalCatalogue={openPractice:controller.openPractice,openMocks:options=>mockPages.push(options)};
- return {context,controller,practiceHost,requests,activated,mockPages};
+ return {context,controller,practiceHost,requests,activated,mockPages,mockRequests};
 }
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 test('Every actual Listening Practice catalogue button reaches its task through both portal navigation functions',async()=>{
@@ -27,7 +27,8 @@ test('Every actual Listening Practice catalogue button reaches its task through 
 });
 test('Listening mock catalogue and runner remain distinct from individual task buttons',async()=>{
  const h=harness();h.context.switchSection('listening-mocks');await flush();assert.equal(h.mockPages.length,1);assert.equal(h.mockPages[0].module,'listening');assert.equal(h.requests.length,0);
- h.context.switchSection('listening-run');await flush();assert.equal(h.requests[0].tab,'mocks');assert.equal(h.requests[0].module,'listening');
+ h.context.switchSection('listening-run',{labRequest:{testId:'listening-mock-3'}});await flush();assert.equal(h.requests.length,0);assert.equal(h.mockRequests.length,1);assert.equal(h.mockRequests[0].paperId,'listening-mock-3');
+ h.context.switchSection('listening-run',{labRequest:{attemptId:'legacy'}});await flush();assert.equal(h.requests[0].attemptId,'legacy');assert.equal(h.activated.at(-1),'listening-legacy-history');
  await h.context.openWritingLab('invalid-task');assert.equal(h.requests.at(-1).tab,'mocks');
 });
 test('Lazy loaded Writing Lab and Progress URLs fingerprint their current source, alongside the main portal bundle',()=>{
