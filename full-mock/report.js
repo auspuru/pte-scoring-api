@@ -71,7 +71,7 @@ function feedbackFor(q, response, job, marks, trusted, recovering) {
     changes:(Array.isArray(content.changes) ? content.changes : []).slice(0, 400).map(row => ({ kind:clean(row.kind, 40), expected:clean(row.expected, 200), actual:clean(row.actual, 200) })) };
 }
 function metadata(paper, state, at) {
-  return { id:state.id, title:state.title, paperId:state.paperId, paperVersion:state.paperVersion, status:state.status, preview:!!state.preview,
+  return { id:state.id, title:state.title, paperId:state.paperId, paperVersion:state.paperVersion, ...(paper.module?{module:paper.module}:{}),status:state.status, preview:!!state.preview,
     createdAt:state.createdAt, submittedAt:state.submittedAt || null, durationSeconds:Math.max(0, Math.round(((state.submittedAt || at) - state.createdAt) / 1000)),
     completedCount:state.responses.slice(1).filter(row => row.sealed).length, expectedCount:paper.questions.length, mediaPending:pendingMedia(state) };
 }
@@ -113,15 +113,16 @@ function buildReport(paper, state, at = Date.now()) {
       ready:segment.finished && segment.chunkCount > 0 && Object.keys(segment.chunks).length === segment.chunkCount && Object.values(segment.chunks).every(chunk => chunk.stored),
       reviewRequired:!!segment.lateActivation || response.segments.filter(value => !value.cancelled && value.chunkCount !== 0).length > 1 }));
     const transcription = trusted && job.stages?.transcription?.status === 'complete' ? clean(job.stages.transcription.value, 20000) : '';
-    return { ...marks, number:index + 1, label:task.label, section:task.section, skills:[...task.skills], title:clean(q.title), question, reference,
+    return { ...marks, number:index + 1,...(paper.module==='listening'?{questionCount:paper.questions.length}:{}), label:task.label, section:task.section, skills:[...task.skills], title:clean(q.title), question, reference,
       answer:structuredClone(response.answer), responseReason:clean(response.reason, 80), transcript:transcription, recordings,
       recovered:state.recoveries.filter(row => row.itemToken === response.token).map(row => ({ answer:structuredClone(row.answer), receivedAt:row.receivedAt, status:'needs-review' })),
       assessment:marks.status === 'assessed' ? { code:'assessed', label:marks.unavailableTraits?.length?'Assessed · some marks unavailable':'Assessed' } : marks.status === 'excluded' ? { code:marks.exclusion.reason, label:['automatic-recovery-exhausted','assessment-unavailable'].includes(marks.exclusion.reason) ? 'Excluded · assessment unavailable' : ['recording-missing','recording-incomplete'].includes(marks.exclusion.reason)?'Excluded · recording unavailable':['instructor-delivery-exclusion','instructor-transcription-exclusion','instructor-review-unavailable'].includes(marks.exclusion.reason) ? 'Excluded · instructor request' : 'Excluded · unusable audio', action:marks.exclusion.note } : reasonFor(job, trusted, state.assessment?.recovery?.status === 'scheduled'),
       feedback:feedbackFor(q, response, job, marks, trusted, state.assessment?.recovery?.status === 'scheduled'), practice:{ path:'#/' + GUIDANCE[q.type][0], instruction:GUIDANCE[q.type][1] } };
   });
-  const groups = TASKS.map(task => ({ type:task.type, label:task.label, section:task.section, skills:[...task.skills], ...result.groups[task.type],
+  const groups = TASKS.filter(task=>result.groups[task.type]).map(task => ({ type:task.type, label:task.label, section:task.section, skills:paper.module==='listening'?['listening']:[...task.skills], ...result.groups[task.type],
     assessedCount:items.filter(item => item.type === task.type && item.status === 'assessed').length }));
-  const sourceProfiles = state.assessment?.snapshot?.weighting?.profiles || require('./profiles').PROFILES;
+  const allProfiles = state.assessment?.snapshot?.weighting?.profiles || require('./profiles').PROFILES;
+  const sourceProfiles = paper.module==='listening'?{listening:allProfiles.listening}:allProfiles;
   const impactFeedback = impact.build({ groups, profiles:sourceProfiles, items:items.map(item => {
     const responseText = item.transcript || (Array.isArray(item.answer) ? item.answer.join(' ') : '');
     const issue = item.feedback.issues.find(issue => issue.affectsScore && issue.evidence && responseText.includes(issue.evidence));

@@ -38,7 +38,16 @@ async function casFile(directory, transform) {
   }
   throw fail('This attempt is busy. Retry the saved action.', 503);
 }
-function createStore({ pool, directory }) {
+function createStore({ pool, directory, namespace = 'full_mock' }) {
+  if (!['full_mock','listening_mock'].includes(namespace)) throw Error('Unsupported mock storage namespace.');
+  if (pool && namespace !== 'full_mock') {
+    // Only fixed internal SQL identifiers change. Owner IDs and payloads remain
+    // bound parameters; the two engines never share attempts or audio chunks.
+    const original = pool, scoped = sql => sql.replace(/\bfull_mock_/g,namespace+'_').replaceAll('full-mock-schema',namespace+'-schema');
+    pool = {query:(sql,values)=>original.query(scoped(sql),values),connect:async()=>{
+      const client=await original.connect();return {query:(sql,values)=>client.query(scoped(sql),values),release:()=>client.release()};
+    }};
+  }
   let ready;
   const ownerDirectory = uid => path.join(directory, hash(String(uid)));
   function attemptDirectory(uid, id) { if (!uuid(id)) throw fail('Invalid attempt.', 400); return pool ? null : path.join(ownerDirectory(uid), id); }

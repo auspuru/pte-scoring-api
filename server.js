@@ -6519,6 +6519,19 @@ const fullMock = require('./full-mock/api').installFullMock(app, {
     providerConfiguration: require('./full-mock/assessment').claudeConfiguration()
   }
 });
+const listeningPapers=require('./listening-mock/papers').registeredPapers();
+const listeningMock=require('./full-mock/api').installFullMock(app,{
+  variant:'listening',pool:pgPool,directory:path.join(DATA_DIR,'listening-mock'),paper:listeningPapers[0],papers:listeningPapers,
+  verifyToken:token=>verifySessionToken(token)||verifyImpersonationToken(token),getAccount:getPracticeAccount,canPreview:()=>true,
+  assessment:{
+    adapters:require('./full-mock/adapters').createAdapters({speakingContentModel:mockContent.speaking,writingContentModel,swtGrader:mockContent.swt,essayGrader:mockContent.essay}),
+    providerConfiguration:require('./full-mock/assessment').claudeConfiguration()
+  },
+  legacyAttempts:async username=>(await writingLab.store.list(username,{omitMockAudio:true})).filter(a=>a.kind==='mock'&&a.module==='listening').map(a=>{
+    const score=require('./public/writing-lab-report').summarize(a.questions,a.results,a);
+    return{id:a.id,title:a.title,status:a.status,startedAt:a.startedAt,finishedAt:a.finishedAt||null,questionCount:a.questions.length,score90:score.complete?score.score90:null};
+  })
+});
 const mockAlertsEnabled=(process.env.MOCK_ALERTS_ENABLED??process.env.SPEAKING_MOCK_ALERTS_ENABLED)==='true';
 const speakingAlerts=require('./speaking-mock-alerts').createSpeakingMockAlerts({pool:pgPool,directory:path.join(DATA_DIR,'speaking-mock'),mockStore:speakingMock.store,progressive:speakingMock.progressive,...speakingAlertTransport,recipient:process.env.MOCK_ALERT_EMAIL||process.env.SPEAKING_MOCK_ALERT_EMAIL||'',enabled:mockAlertsEnabled});
 const academyAzure=require('./academy-azure-service').installAcademyAzure(app,{pool:pgPool,directory:path.join(DATA_DIR,'academy-azure'),secret:process.env.PTE_DI_SERVICE_KEY||'',transcribe:require('./speaking-lab').transcribeRecording});
@@ -6541,7 +6554,7 @@ const writingLab = require('./writing-lab').installWritingLab(app, {
   callModel: writingContentModel
 });
 mockTestAlerts=require('./mock-test-alerts').createMockTestAlerts({pool:pgPool,directory:path.join(DATA_DIR,'mock-alerts'),delivery:speakingAlerts,enabled:mockAlertsEnabled,
-  sources:require('./mock-test-alert-sources').createSources({pool:pgPool,speakingStore:speakingMock.store,writingStore:writingLab.store,fullStore:fullMock.store,
+  sources:require('./mock-test-alert-sources').createSources({pool:pgPool,speakingStore:speakingMock.store,writingStore:writingLab.store,fullStore:fullMock.store,listeningStore:listeningMock.store,
     loadReading:async username=>(await StorageAPI.getUserData(username))?.readingProgress})});
 app.get('/api/admin/mock-alerts',requireAdmin,(req,res)=>res.set('Cache-Control','no-store').json(mockTestAlerts.health()));
 app.get('/api/admin/mock-alerts/:engine/:username/:id',requireAdmin,async(req,res)=>{
@@ -6636,9 +6649,10 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
   if (!storageInitialized) return;
   try {
     await ensureDataDir();
-    await Promise.all([speakingLab.store.initialise(), writingLab.store.initialise(), speakingMock.store.initialise(), fullMock.store.initialise()]);
+    await Promise.all([speakingLab.store.initialise(), writingLab.store.initialise(), speakingMock.store.initialise(), fullMock.store.initialise(),listeningMock.store.initialise()]);
     await speakingMock.start();
     fullMock.start();
+    listeningMock.start();
     await writingLab.start();
     await speakingAlerts.start();
     await mockTestAlerts.start();
@@ -6723,6 +6737,7 @@ installGracefulShutdown(httpServer, {
     await academyAzure.stop();
     await speakingMock.stop();
     await fullMock.stop();
+    await listeningMock.stop();
     await writingLab.stop();
     if (browserStarting) await browserStarting.catch(() => {});
     await Promise.all([

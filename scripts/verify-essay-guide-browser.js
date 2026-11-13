@@ -3,6 +3,12 @@ const {spawnSync}=require('node:child_process');
 const path=require('node:path');
 const {releaseEnvironment}=require('./verify-release');
 // Fail early on the changed UI flow; the complete release suite still runs next.
+const listening=spawnSync(process.execPath,['--test','--test-name-pattern=Chrome listening-mock-','tests/full-mock-browser.system.js'],{
+ cwd:path.resolve(__dirname,'..'),env:releaseEnvironment(process.env),stdio:'inherit'
+});
+if(listening.error)throw Error('Integrated Listening browser verification could not start.');
+if(listening.status!==0)process.exit(Number.isInteger(listening.status)?listening.status:1);
+
 const auth=spawnSync(process.execPath,['--test','--test-name-pattern=Staff username and password sign-in|AUTH-01/03/04|SWT practice submits with the signed-in session|Staff releases the final failed Repeat Sentence|Staff releases the final unreached Speaking question|Staff analyses missing mock results|Staff reviews Azure replacement|User detail opens|Staff publishes confirmed timed-out','tests/auth-browser.system.js'],{
  cwd:path.resolve(__dirname,'..'),env:releaseEnvironment(process.env),stdio:'inherit'
 });

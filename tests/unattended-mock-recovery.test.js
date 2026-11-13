@@ -126,8 +126,8 @@ function quietRecording(recording) {
  // native graders below retain their original hashes. Keep both exact source
  // revisions pinned; do not exempt arbitrary account or provider source drift.
  assert.equal(require('../content/full-mock/portal-access-compatible-sources.json').files['server.js'].sha256,'f7a1a04a570e13bcac8e158ca6744fb71e14b7986080e1229038c69b6530b742');
- assert.equal(sha(read('server.js')),require('../content/full-mock/staff-login-compatible-pins.json').newServer);
- assert.equal(sha(source),'46a22e903d009e7026664ba7d38ce27ed661959558f2bd80f50295a05a721747');
+ assert.equal(sha(read('server.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['server.js'].sha256);
+ assert.equal(sha(source),"d34d0eb20185e21a6b25605f4e6f7ab0b91f259d58245cda8eb6c6b77c0dc5be");
  source=read('public/writing-lab-report.js').replace("(attempt.kind!=='mock' || !needsReview(r,q))",'(!weighted || !needsReview(r,q))');
  assert.equal(sha(source),baseline.files['public/writing-lab-report.js'].sha256);
  for(const name of ['full-mock/profiles.js','speaking-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
@@ -140,7 +140,8 @@ function quietRecording(recording) {
  assert.equal(sha(source),baseline.files['writing-lab-scoring.js'].sha256);
  assert.equal(sha(read('speaking-delivery.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['speaking-delivery.js'].sha256);
  assert.equal(baseline.files['speaking-delivery.js'].sha256,require('../content/full-mock/delivery-bands-compatible-sources.json').files['speaking-delivery.js'].sha256);
- assert.equal(sha(read('full-mock/session.js')),'42ce3ff414bb37fbfcb8e7ca4917a44ff83a3e07d90597c85856d69aaeef486e'); // Reviewed pause clock; historical source stays pinned below.
+ assert.equal(sha(read('full-mock/session.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/session.js'].sha256); // Reviewed integrated Listening transport; historical clocks remain pinned below.
+ assert.equal(require('../content/full-mock/listening-skill-compatible-sources.json').previous.files['full-mock/session.js'].sha256,'42ce3ff414bb37fbfcb8e7ca4917a44ff83a3e07d90597c85856d69aaeef486e');
  assert.equal(require('../content/full-mock/pause-previous-sources.json').files['full-mock/session.js'].sha256,'35d81a57f61193d1a94c22ae74cd31cae2cde56e861fd20ec66ae2a050ab5e58');
  // Explicit instructor exclusions have separate ownership/integrity and
  // denominator tests. Their exact source is pinned; native graders and the

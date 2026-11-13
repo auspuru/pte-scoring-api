@@ -229,7 +229,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     spoken:predictions.sst.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     listeningPractice:listeningPractice.map(q=>({id:q.id,type:q.type,title:q.title,minutes:q.minutes})),
-    listeningMocks:listening.mocks.map(m=>({id:m.id,title:m.title,module:'listening',minutes:report.minutesFor(m.questions),questionCount:m.questions.length,tasks:Object.keys(listening.listeningFormat.tasks).map(type=>({type,label:report.labels[type],count:m.questions.filter(q=>q.type===type).length}))})),
+    listeningMocks:require('./listening-mock/papers').catalogue(),
     mocks:allMocks.filter(m=>m.module!=='listening').map(m => ({ id:m.id,title:m.title,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {
         const questions=m.questions.filter(q=>q.type===type);

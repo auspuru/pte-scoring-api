@@ -136,3 +136,12 @@ test('Speaking upload-finalising and incomplete submissions cannot emit a comple
   const value=snapshot('speaking',a);assert.equal(value.ready,false);assert.equal(value.pending,3);assert.equal(require('../speaking-mock-jobs').complete(a),false);
  }
 });
+
+test('Integrated Listening diagnostics count thirty-four questions and redact private provider evidence',async()=>{
+ const paper=require('../listening-mock/papers').registeredPapers()[0],state={id:randomUUID(),title:paper.title,status:'submitted',submittedAt:123,answers:['PRIVATE_ANSWER'],assessment:{status:'needs-attention',items:{}}};
+ for(const c of paper.questions)state.assessment.items[c.id]={status:'assessed'};
+ const q=paper.questions[0];state.assessment.items[q.id]={status:'failed',reason:'PRIVATE_PROVIDER_ERROR',stages:{content:{uncertain:true,value:'PRIVATE_TRANSCRIPT'}}};
+ const sources=createSources({listeningStore:{get:async()=>({paper,state})},writingStore:{get:async()=>{throw Error('Integrated result must use its own store.');}}});
+ const value=await sources.listening.get('alice',state.id);assert.equal(value.pending,1);assert.equal(value.ready,false);assert.equal(value.finishedAt,123);assert.equal(value.pendingQuestions[0].questionNumber,1);assert.equal(value.pendingQuestions[0].reason,'assessment-pending');assert(!JSON.stringify(value).includes('PRIVATE_'));
+ state.assessment.items[q.id]={status:'assessed'};state.assessment.status='complete';assert.equal((await sources.listening.get('alice',state.id)).ready,true);
+});

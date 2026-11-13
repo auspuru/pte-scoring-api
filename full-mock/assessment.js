@@ -103,6 +103,11 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  const listeningUpgrade=require('../content/full-mock/listening-skill-compatible-sources.json');
+  if(digest(current.scoringSources)===listeningUpgrade.currentDigest&&digest(listeningUpgrade.previous)===listeningUpgrade.previousDigest){
+    const prior={...current,scoringSources:listeningUpgrade.previous};
+    if(digest(saved)===digest(prior)||compatibleTransportUpgrade(saved,prior))return true;
+  }
   // Staff authentication changes transport only. Bind the exact source pair
   // so pending attempts keep their original graders and confirmed results.
   const staffPins=require('../content/full-mock/staff-login-compatible-pins.json');
@@ -693,11 +698,11 @@ function scheduleRecovery(assessment, at) {
 }
 function createEngine({ store, adapters = createAdapters(), providerConfiguration = configuration(), previousAdapters, previousProviderConfiguration,
   legacyAdapters, legacyProviderConfiguration,
-  now = Date.now, assemble = media.assemble, concurrency = 2, paper = loadPaper() } = {}) {
+  now = Date.now, assemble = media.assemble, concurrency = 2, paper = loadPaper(), papers = registeredPapers() } = {}) {
   const currentSnapshot = snapshot(providerConfiguration, undefined, paper), jobs = new Map(); let sweep, closing = false, recovering = false; const recoveryErrors = new Set();
   // New attempts use the active paper. In-flight attempts continue against the
   // explicitly retained frozen paper, rather than adopting replacement questions.
-  const trustedPapers = new Map([...registeredPapers(), paper].map(value => [digest(value), value]));
+  const trustedPapers = new Map([...papers, paper].map(value => [digest(value), value]));
   const trustedSnapshots = new Map([...trustedPapers].map(([paperHash, value]) => {
     const current = paperHash === currentSnapshot.paperHash ? currentSnapshot : snapshot(providerConfiguration, undefined, value);
     return [paperHash, { current, hash: digest(current),

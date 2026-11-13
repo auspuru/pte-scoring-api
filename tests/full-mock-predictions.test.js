@@ -25,8 +25,8 @@ test('Question selection preserves native graders, models, weights and timing; f
   assert.equal(digest(before), '97cebe2ecb2d51a2da15d0aea1004dbd33d7ab1c79ded0174afbc38893fbb458');
   // Instructor publication adds an explicitly pinned support controller;
   // every native grader below must still match its retained baseline.
-  assert.deepEqual([...Object.keys(before.files),'full-mock/exclusions.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js'].sort(), Object.keys(after.files).sort());
-  for(const file of ['full-mock/exclusions.js','full-mock/aggregation.js','full-mock/api.js','full-mock/audit.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','speaking-delivery.js','writing-lab-scoring.js'])
+  assert.deepEqual([...Object.keys(before.files),'full-mock/exclusions.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','listening-mock/aggregation.js'].sort(), Object.keys(after.files).sort());
+  for(const file of ['full-mock/exclusions.js','full-mock/aggregation.js','full-mock/api.js','full-mock/audit.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','listening-mock/aggregation.js','speaking-delivery.js','writing-lab-scoring.js'])
     assert.deepEqual(after.files[file],require('../content/full-mock/scoring-lock.json').snapshot.files[file],file);
   // Standalone practice transport can evolve; Full Mock imports only this
   // frozen transcription function from the shared source file.

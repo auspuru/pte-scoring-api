@@ -88,11 +88,11 @@
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
-        "sha256": "d1cd8b4bdcd50c6a94f3006fbef7a02c0d024a6f57b4a08a4984688d98d17497",
+        "sha256": "6fcd85d0317145d0b0686882f998659c1c8326bf5165a95ae14f5c28894b488d",
         "version": "full-mock-aggregation-2026-10-29.1"
       },
       "full-mock/api.js": {
-        "sha256": "e6a83754194feeea73c8034afd797862ffe7019b3f1fb91beab80bd5516686c8",
+        "sha256": "c47c1a2fafa9c9963448008af78c311180a53f7c0454e0942fe95a1158e7baa1",
         "version": null
       },
       "full-mock/asq-scoring.js": {
@@ -100,11 +100,11 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "cada6870c75ea62eac74b77c2c55686981bebbc8ab51f190ceca02d5d78cb0ea",
+        "sha256": "cc4f00ccc8061aed2f10a8a7558be45ce5105da1489ca0a09158a257e08ae7f2",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
-        "sha256": "c114a950b4c7d858146b50fb88851cc804ef6a8911f67369046a56b852258203",
+        "sha256": "aa28fcc602bdbf1ed1c9805739540f91f22c35f9cc37a57a23d24af397e930d8",
         "version": null
       },
       "full-mock/blueprint.js": {
@@ -132,7 +132,7 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "2f0a97c79231ffa071e4aaa45fbf8ab655cd4dbbb438e1b5046b60dee9a973c8",
+        "sha256": "ac24552ccc718109c77481bd5682a42613d42af3cf3e35cffaab342656b33aea",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
@@ -140,17 +140,21 @@
         "version": null
       },
       "full-mock/session.js": {
-        "sha256": "42ce3ff414bb37fbfcb8e7ca4917a44ff83a3e07d90597c85856d69aaeef486e",
+        "sha256": "f45a5c4919e60f496298d8d687836ac090d6a0b99891d9323a3f43fc60fffed5",
         "version": "full-mock-session-2026-10-29.2"
       },
       "full-mock/store.js": {
-        "sha256": "bdc04c4218dcedfd5f6e268971894b6140183b56343834df56f0eab4df7e6d5f",
+        "sha256": "c9be0d9aad6d36e9ec0167c416785299a65bfd8529fe43d6f43d3a1192852711",
         "version": null
       },
       "gpt-speaking-delivery.js": {
         "sha256": "cb42317a9cf1b4f34dbdcceeb32ff7df509fe55a449e518b6a312d40142cb580",
         "version": null,
         "versionExpression": "'gpt-delivery-2026-10-25.1:' + MODEL"
+      },
+      "listening-mock/aggregation.js": {
+        "sha256": "ddfc9836f4b39bd666a0205887b2c789181a35a32317a410059e6e5fde1f97b1",
+        "version": null
       },
       "listening-scoring.js": {
         "sha256": "f3ecff70034f0f641248b47a2f457979934bd7ef034f0214dda452988331536c",
@@ -189,7 +193,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "f28f8bf516c72957afeefd3ce7bcd3e81b4bc681d5579b0ede810571460e4b79",
+        "sha256": "78940169dd76568c0d6b403dbea0888313f089f7bc952aeb23c1e478bd6f19e2",
         "version": null
       },
       "situation-content-policy.js": {

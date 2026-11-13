@@ -4,7 +4,7 @@ const ID=/^[a-zA-Z0-9_-]{1,120}$/;
 function capture({monitor,verifyToken,logger=console}){
   return(req,res,next)=>{
     const route=(req.originalUrl||req.url||'').split('?')[0];
-    const match=route.match(/^\/api\/(speaking-mocks|writing-lab|full-mocks)\/attempts(?:\/([a-zA-Z0-9_-]{1,120})(?:\/.*)?)?$/);
+    const match=route.match(/^\/api\/(speaking-mocks|writing-lab|full-mocks|listening-mocks)\/attempts(?:\/([a-zA-Z0-9_-]{1,120})(?:\/.*)?)?$/);
     const sync=route.match(/^\/api\/sync\/([^/]+)$/);
     if(!match&&!sync)return next();
     res.once('finish',()=>{
@@ -27,7 +27,7 @@ function capture({monitor,verifyToken,logger=console}){
           return;
         }
         const id=match[2]||req.body?.id;if(!ID.test(id||''))return;
-        const engines=match[1]==='writing-lab'?['writing','listening']:[match[1]==='full-mocks'?'full':'speaking'];
+        const engines=match[1]==='writing-lab'?['writing','listening']:[match[1]==='full-mocks'?'full':match[1]==='listening-mocks'?'listening':'speaking'];
         const operation=/\/recording|\/segments/.test(route)?'recording':/\/end$|\/finish$/.test(route)?'submission':/\/draft$|\/answer$/.test(route)?'save':/\/score|\/assessment|\/overall-feedback/.test(route)?'assessment':/\/results$|\/report$/.test(route)?'results':'load';
         for(const engine of engines){
           let value;
