@@ -60,7 +60,9 @@ original account and question ownership.
 
 `full-mock/store.js` uses dedicated PostgreSQL tables or private atomic revision
 files. Both enforce ownership and optimistic updates. Concurrent starts resume
-one active attempt per account. Each attempt retains the complete paper, digest
+one active attempt per account and paper, so starting another paper preserves an
+unfinished or paused mock. Existing account-wide indexes upgrade without changing
+saved attempts. Each attempt retains the complete paper, digest
 and session version. Existing sectional attempts are not migrated.
 
 Draft revisions are monotonic; conflicting same-revision writes are rejected.

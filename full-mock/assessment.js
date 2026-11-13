@@ -103,6 +103,19 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Retain the exact pre-selection transport for frozen attempts. Graders,
+  // models, paper contents and recorded results do not change in this upgrade.
+  const selectionPins=require('../content/full-mock/paper-selection-compatible-pins.json');
+  if(current.scoringSources.files['full-mock/store.js']?.sha256===selectionPins.newStore
+    &&current.scoringSources.files['full-mock/assessment.js']?.sha256===selectionPins.newAssessment){
+    const sources=structuredClone(current.scoringSources);
+    sources.files['full-mock/store.js'].sha256=selectionPins.oldStore;
+    sources.files['full-mock/assessment.js'].sha256=selectionPins.oldAssessment;
+    if(digest(sources)===selectionPins.oldSourcesDigest){
+      const prior={...current,scoringSources:sources};
+      if(digest(saved)===digest(prior)||compatibleTransportUpgrade(saved,prior))return true;
+    }
+  }
   // Skipping audio on an individual Reading reattempt changes only its UI.
   // Project this exact source pair to the previous frozen snapshot so saved
   // Full Mocks can finish with their original graders and confirmed marks.

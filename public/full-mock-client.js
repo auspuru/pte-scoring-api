@@ -75,7 +75,7 @@
       report = null, reviewId = '', reportLoading = false, reportRequest = 0, assessmentRetrying = false, volume = 1;
     try { const saved = env.localStorage?.getItem('ipt-exam-volume'); if (saved != null && Number.isFinite(Number(saved))) volume = Math.max(0, Math.min(1, Number(saved))); } catch {}
     const volumeControl = () => '<label class="fm-volume">Volume <input type="range" id="fm-volume" min="0" max="1" step="0.05" value="' + volume + '" aria-label="Mock volume"></label>';
-    const volatile = new Map(), segmentCounts = new Map();
+    const volatile = new Map(), segmentCounts = new Map(), paperTitles = new Map();
     const reviewUrls = new Map();
     const uid = () => String(getUserId() || '').trim().toLowerCase();
     const valid = ticket => ticket === generation && uid() === owner;
@@ -129,6 +129,7 @@
       shell('<p role="status">Loading Full Mock…</p>');
       try {
         const [catalog, history] = await Promise.all([api('/catalog'), api('/attempts')]); if (!valid(ticket)) return;
+        (catalog.papers || []).forEach(paper => paperTitles.set(paper.id, paper.title));
         if (options.attemptId) {
           if (history.some(row => row.id === options.attemptId && row.status === 'submitted')) { await resume(options.attemptId, 'submitted'); return; }
           shell('<h1>Continue your full mock</h1><p>Your saved timer continues while you reconnect.</p><button class="portal-button primary" data-fm="resume" data-id="' + esc(options.attemptId) + '">Continue</button><p id="fm-notice" role="status"></p>'); return;
@@ -175,6 +176,7 @@
     function setup(paperId) {
       clearSample(); setupPaper = paperId; micDetected = false; readingLevel = 0;
       shell('<span class="fm-eyebrow">BEFORE YOU BEGIN</span><h1>Check your microphone and headphones</h1><p>Record a few words, play the sample, then confirm you can hear it clearly. The sample stays on your device.</p><label class="fm-meter">Microphone level<meter id="fm-level" min="0" max="1" value="0"></meter></label>' + volumeControl() + '<button type="button" class="portal-button" data-fm="sample" id="fm-sample-button">Record a 10-second sample</button><div id="fm-sample"></div><label class="fm-check"><input id="fm-heard" type="checkbox" disabled> I can hear my recorded voice clearly.</label><p id="fm-notice" role="status"></p><button type="button" class="portal-button" data-fm="reload" id="fm-check-back">Back</button> <button type="button" class="portal-button primary" data-fm="begin" id="fm-begin" disabled>Begin full mock</button>');
+      host.querySelector('.fm-shell').insertAdjacentHTML('afterbegin', '<p class="fm-selected-paper"><strong>' + esc(paperTitles.get(paperId) || paperId) + '</strong></p>');
       env.clearInterval(timer); timer = env.setInterval(() => { meter(); const node = doc.getElementById('fm-level'); if (node) node.value = readingLevel; }, 100);
     }
     async function sampleAudio() {
@@ -236,9 +238,12 @@
         const ready = await env.PortalExamMode.prepare(OWNER, host, { immediate:true });
         if (!ready || !valid(ticket)) return;
         await unlockAudio(); if (!valid(ticket)) return; let id;
-        const key = prefix() + 'starting'; id = env.sessionStorage.getItem(key) || random(); env.sessionStorage.setItem(key, id);
-        const value = await api('/attempts', { id, paperId: setupPaper, checks: { microphone: true, playback: true } });
-        if (!valid(ticket)) return; env.sessionStorage.removeItem(key); attempt = value; await establishClaim(); if (valid(ticket)) { clearSample(); startPlayer(); }
+        const paperId = setupPaper, key = prefix() + 'starting:' + paperId;
+        id = env.sessionStorage.getItem(key) || random(); env.sessionStorage.setItem(key, id);
+        const value = await api('/attempts', { id, paperId, checks: { microphone: true, playback: true } });
+        if (!valid(ticket)) return;
+        if (value.paperId !== paperId) throw Error('The server returned a different mock. Your saved attempts are retained; return to Mock Tests and select your paper again.');
+        env.sessionStorage.removeItem(key); attempt = value; await establishClaim(); if (valid(ticket)) { clearSample(); startPlayer(); }
       } catch (error) { if (valid(ticket)) { env.PortalExamMode?.set(OWNER, false, host); notice(error.message, true); } }
       finally { if (valid(ticket)) { equipmentStarting = false; equipmentControls(); } }
     }
@@ -650,7 +655,7 @@
     function logEvent(reason) { if (attempt && owner === uid()) api('/attempts/' + attempt.id + '/events', { reason }).catch(() => {}); }
     function reset() {
       generation++; clearReviewMedia(); stopCapture(); stopPrompt(); env.clearInterval(timer); env.clearInterval(poller); env.clearTimeout(saveTimer);
-      clearSample(); equipmentStarting = false;
+      clearSample(); equipmentStarting = false; paperTitles.clear(); setupPaper = '';
       stream?.getTracks().forEach(track => { track.onended = null; track.stop(); }); stream = null;
       context?.close?.().catch?.(() => {}); context = null; analyser = null;
       env.PortalExamMode?.set(OWNER, false, host); attempt = null; claim = null; rendering = ''; anchor = 0; lastClock = 0; loadingState = false; advancing = false;

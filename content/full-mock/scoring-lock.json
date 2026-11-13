@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "d6d5b5b167365701e299b36ad4f432af902d84c0",
-  "checkedAt": "2026-11-10",
+  "baseCommit": "2f5776bf5eca29c9074cd95f4ffae9a548d32ea8",
+  "checkedAt": "2026-11-13",
   "scope": "Reviewed Azure pronunciation and fluency bands for new Read Aloud, Repeat Sentence and free-response assessments; frozen older attempts keep their policy and saved marks.",
   "snapshot": {
     "schemaVersion": 1,
@@ -100,7 +100,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "d9f953114ace531379fff3840e09d2183d8cf92393e8f5918215adabc7b39f6e",
+        "sha256": "8be12644544a549cf3b61b9e9af345f2e49ec5eca8165afff0f6ee13e35580ee",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -144,7 +144,7 @@
         "version": "full-mock-session-2026-10-29.2"
       },
       "full-mock/store.js": {
-        "sha256": "d338b7204dfc26f3469402d1cef10948ed6a138ade399fe33d64c66722917b32",
+        "sha256": "bdc04c4218dcedfd5f6e268971894b6140183b56343834df56f0eab4df7e6d5f",
         "version": null
       },
       "gpt-speaking-delivery.js": {

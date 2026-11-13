@@ -33,12 +33,33 @@ async function fixture(t){
  const start=(paperId,user='alice')=>request('/attempts',{id:randomUUID(),paperId,checks:{microphone:true,playback:true}},user);
  return{service,request,start};
 }
+test('Legacy filesystem active indexes retain paused Mock 2 while starting and resuming Mock 3',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'full-mock-paper-index-')),store=createStore({directory});t.after(()=>fs.rm(directory,{recursive:true,force:true}));
+ const second=loadPaper('full-mock-2'),third=loadPaper('full-mock-3'),id=randomUUID();
+ await store.create('alice',id,second,(key,at)=>session.create(key,second,at,{preview:true,sectionTransitions:false}),1000);
+ await store.update('alice',id,s=>{while(s.index<13)session.next(s,second,{itemToken:s.current.token,skip:true},1000);session.pause(s,second,1000);return s;});
+ const before=await store.get('alice',id),indexDirectory=path.join(directory,require('../full-mock/store').hash('alice'),'index');
+ const index=JSON.parse(await fs.readFile(path.join(indexDirectory,'000000000001.json'),'utf8'));
+ await fs.writeFile(path.join(indexDirectory,'000000000002.json'),JSON.stringify({owner:'alice',ids:index.ids,active:index.activeByPaper[second.id]}));
+ const make=(key,at)=>session.create(key,third,at,{preview:true});
+ const starts=await Promise.all([store,createStore({directory})].map(s=>s.create('alice',randomUUID(),third,make,1000)));
+ assert.equal(starts[0].state.id,starts[1].state.id);assert.equal(starts[0].paper.id,third.id);
+ assert.deepEqual(await store.get('alice',id),before);assert(before.state.pause);assert.equal(before.state.index,13);
+ const restarted=createStore({directory});assert.equal((await restarted.create('alice',randomUUID(),second,(key,at)=>session.create(key,second,at,{preview:true}),1000)).state.id,id);
+ assert.deepEqual(new Set((await restarted.active(100000)).map(r=>r.id)),new Set([id,starts[0].state.id]));
+ assert.equal((await restarted.list('alice')).length,2);
+});
 test('Catalogue/start/resume/history keep selected papers, native maxima, ownership and reports isolated',async t=>{
  const f=await fixture(t);assert.deepEqual((await f.request('/catalog')).body.papers.map(p=>p.id),active.map(p=>p.id));
  assert.equal((await f.start('full-mock-999')).status,400);
  const first=await f.start('full-mock-1');assert.equal(first.body.paperId,'full-mock-1');
- // The existing one-active-attempt rule resumes paper 1 instead of relabelling it.
- const resumed=await f.start('full-mock-2');assert.equal(resumed.body.id,first.body.id);assert.equal(resumed.body.paperId,'full-mock-1');
+ // A saved active paper never substitutes for a different selected paper.
+ const second=await f.start('full-mock-2');assert.notEqual(second.body.id,first.body.id);assert.equal(second.body.paperId,'full-mock-2');
+ const before=await f.service.store.get('alice',second.body.id);
+ const third=await f.start('full-mock-3');assert.equal(third.body.paperId,'full-mock-3');assert.notEqual(third.body.id,second.body.id);
+ assert.deepEqual(await f.service.store.get('alice',second.body.id),before);
+ assert.equal((await f.start('full-mock-2')).body.id,second.body.id);
+ assert.equal((await f.request('/attempts',{id:second.body.id,paperId:'full-mock-3',checks:{microphone:true,playback:true}})).status,409);
  await f.service.store.update('alice',first.body.id,s=>{session.end(s,loadPaper(),1000);return s;});
  for(const paper of active.slice(1)){
   const started=await f.start(paper.id);assert.equal(started.status,200);assert.equal(started.body.paperId,paper.id);assert.equal(started.body.paperHash,digest(paper));

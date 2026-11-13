@@ -853,7 +853,6 @@ window.exitImpersonation = exitImpersonation;
 
 function signOut() {
   globalThis.EssayGuide?.close();
-  if(['speaking-practice-set','listening-practice-set'].includes(section)&&!options.mockRequest?.practiceSet&&!options.mockRequest?.attemptId&&!options.labRequest?.practiceSet&&!options.labRequest?.attemptId)section='practice-sets';
   authFlowRevision++;window.PortalAuthBoot?.cancel?.();
   savePortalEssayDraft();
   resetWritingLabFrame();
@@ -12580,7 +12579,7 @@ let fullMockRuntimeLoadPromise = null;
 function ensureFullMockRuntimeLoaded() {
   if (window.FullMock) return Promise.resolve(window.FullMock);
   if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-ee5bf1beefb5', 'full mock report')
-    .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-1b57fe77d982', 'full mock'))
+    .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-3a65f2532d32', 'full mock'))
     .then(() => { if (!window.FullMock) throw Error('Full mock did not load.'); return window.FullMock; })
     .catch(error => { fullMockRuntimeLoadPromise = null; throw error; });
   return fullMockRuntimeLoadPromise;

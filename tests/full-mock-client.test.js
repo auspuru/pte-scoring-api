@@ -131,6 +131,24 @@ test('Equipment check requires a recorded local sample and sound confirmation be
   assert.equal(f.requests.filter(row => /\/attempts$/.test(row.route) && row.init.method === 'POST').length, 1);
   assert.equal(f.requests.filter(row => row.init.method === 'PUT').length, 0, 'Equipment sample must stay local');
 });
+test('Choosing Mock 3 preserves other papers and rejects an old server returning Mock 2',async t=>{
+  const f=await fixture(t),second=require('../full-mock/paper').loadPaper('full-mock-2'),savedId=randomUUID();
+  const saved=await f.service.store.create('alice',savedId,second,(id,at)=>session.create(id,second,at,{preview:true}),f.now());
+  f.env.sessionStorage.setItem('alice:full-mock:starting',savedId);
+  f.env.sessionStorage.setItem('alice:full-mock:starting:full-mock-2',savedId);
+  await f.client.open();await f.click('[data-fm="setup"][data-paper="full-mock-3"]');
+  assert.match(f.document.querySelector('.fm-selected-paper').textContent,/Full Mock 3/);
+  await f.click('[data-fm="sample"]');await f.step(10000);await until(()=>f.document.querySelector('#fm-sample audio'));f.playSample();
+  const heard=f.document.getElementById('fm-heard');heard.checked=true;f.document.getElementById('fullMockPane').onchange({target:heard});
+  f.intercept((route,init,send)=>route==='/api/full-mocks/attempts'&&init.method==='POST'?new Response(JSON.stringify({id:savedId,paperId:second.id}),{headers:{'content-type':'application/json'}}):send());
+  await f.click('[data-fm="begin"]');assert.match(f.document.getElementById('fm-notice').textContent,/different mock/);
+  assert(!f.requests.some(r=>r.route==='/api/full-mocks/attempts/'+savedId+'/claim'));
+  f.intercept(null);await f.click('[data-fm="begin"]');
+  const selected=(await f.service.store.list('alice')).find(s=>s.paperId==='full-mock-3');assert(selected);assert.notEqual(selected.id,savedId);
+  const starts=f.requests.filter(r=>r.route==='/api/full-mocks/attempts'&&r.init.method==='POST').map(r=>JSON.parse(r.init.body));
+  assert.equal(starts[0].id,starts[1].id);assert.notEqual(starts[0].id,savedId);assert(starts.every(r=>r.paperId==='full-mock-3'));
+  assert.deepEqual(await f.service.store.get('alice',savedId),saved);
+});
 test('Fullscreen is requested before an attempt starts, and cancelling it keeps the start button available', async t => {
   const f = await fixture(t); await f.client.open(); await f.click('[data-fm="setup"]');
   await f.click('[data-fm="sample"]'); await f.step(10000); await until(() => f.document.querySelector('#fm-sample audio'));

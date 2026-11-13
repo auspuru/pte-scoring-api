@@ -55,7 +55,8 @@ function createStore({ pool, directory }) {
         id UUID PRIMARY KEY, username TEXT NOT NULL REFERENCES accounts(username) ON DELETE CASCADE,
         paper JSONB NOT NULL, state JSONB NOT NULL, revision BIGINT NOT NULL DEFAULT 1,
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW());
-        CREATE UNIQUE INDEX IF NOT EXISTS full_mock_one_active_user ON full_mock_attempts(username) WHERE state->>'status'='active';
+        CREATE UNIQUE INDEX IF NOT EXISTS full_mock_one_active_user_paper ON full_mock_attempts(username,(paper->>'id')) WHERE state->>'status'='active';
+        DROP INDEX IF EXISTS full_mock_one_active_user;
         CREATE INDEX IF NOT EXISTS full_mock_user_updated ON full_mock_attempts(username,updated_at DESC);
         CREATE TABLE IF NOT EXISTS full_mock_audio_chunks (
         attempt_id UUID NOT NULL REFERENCES full_mock_attempts(id) ON DELETE CASCADE,
@@ -91,31 +92,51 @@ function createStore({ pool, directory }) {
   }
   async function create(uid, id, paper, makeState, now) {
     await initialise(); attemptDirectory(uid, id);
-    const existing = await get(uid, id); if (existing) return existing;
+    const samePaper = record => {
+      if (record.paper.id !== paper.id) throw fail('This saved start belongs to a different mock. Return to Mock Tests and choose your paper again.', 409);
+      return record;
+    };
+    const existing = await get(uid, id); if (existing) return samePaper(existing);
     if (pool) {
       const state = makeState(id, now);
       try { const row = (await pool.query('INSERT INTO full_mock_attempts(id,username,paper,state) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING RETURNING paper,state', [id, uid, JSON.stringify(paper), JSON.stringify(state)])).rows[0]; if (row) return row; }
       catch (error) { if (error.code !== '23505') throw error; }
-      const row = (await pool.query("SELECT paper,state FROM full_mock_attempts WHERE username=$1 AND (id=$2 OR state->>'status'='active') ORDER BY (id=$2) DESC LIMIT 1", [uid, id])).rows[0];
-      if (!row) throw fail('Attempt not found.', 404); return row;
+      const row = (await pool.query("SELECT paper,state FROM full_mock_attempts WHERE username=$1 AND (id=$2 OR (state->>'status'='active' AND paper->>'id'=$3)) ORDER BY (id=$2) DESC LIMIT 1", [uid, id, paper.id])).rows[0];
+      if (!row) throw fail('Attempt not found.', 404); return samePaper(row);
     }
     const indexDirectory = path.join(ownerDirectory(uid), 'index');
     const index = await casFile(indexDirectory, async old => {
-      old ||= { owner: uid, ids: [], active: null };
+      old ||= { owner: uid, ids: [] };
+      old.activeByPaper ||= {};
       if (old.active) {
-        const active = await readVersion(path.join(attemptDirectory(uid, old.active.id), 'state'));
+        const folder = attemptDirectory(uid, old.active.id);
+        const legacy = await readVersion(path.join(folder, 'state'));
+        let paperId = legacy?.value.paperId;
+        if (!paperId) {
+          try { paperId = JSON.parse(await fs.readFile(path.join(folder, 'paper.json'), 'utf8')).id; }
+          catch (error) { if (error.code !== 'ENOENT') throw error; }
+        }
+        if (!paperId && old.active.paperHash === hash(JSON.stringify(paper))) paperId = paper.id;
+        if (!paperId) throw fail('The pending saved paper is unavailable. Your attempt has not been replaced.', 503);
+        old.activeByPaper[paperId] ||= { ...old.active, paperId };
+        delete old.active;
+      }
+      const selected = old.activeByPaper[paper.id];
+      if (selected) {
+        const active = await readVersion(path.join(attemptDirectory(uid, selected.id), 'state'));
         if (!active || active.value.status === 'active') return old;
       }
-      old.ids = [...new Set([...old.ids, id])]; old.active = { id, createdAt: now, paperHash: hash(JSON.stringify(paper)) }; return old;
+      old.ids = [...new Set([...old.ids, id])];
+      old.activeByPaper[paper.id] = { id, paperId: paper.id, createdAt: now, paperHash: hash(JSON.stringify(paper)) }; return old;
     });
-    const active = index.active, folder = attemptDirectory(uid, active.id);
+    const active = index.activeByPaper[paper.id], folder = attemptDirectory(uid, active.id);
     if (active.paperHash && active.paperHash !== hash(JSON.stringify(paper)) && !await readVersion(path.join(folder, 'state'))) throw fail('The pending saved paper is unavailable. Your attempt has not been replaced.', 503);
     await fs.mkdir(folder, { recursive: true, mode: 0o700 });
     const paperFile = path.join(folder, 'paper.json'), temporary = paperFile + '.' + randomUUID() + '.tmp';
     await fs.writeFile(temporary, JSON.stringify(paper), { flag: 'wx', mode: 0o600 });
     try { await fs.link(temporary, paperFile); } catch (error) { if (error.code !== 'EEXIST') throw error; } finally { await fs.rm(temporary, { force: true }); }
     await claimVersion(path.join(folder, 'state'), 1, makeState(active.id, active.createdAt));
-    return get(uid, active.id);
+    return samePaper(await get(uid, active.id));
   }
   async function list(uid) {
     await initialise();
@@ -131,9 +152,10 @@ function createStore({ pool, directory }) {
     for (const dir of await fs.readdir(directory, { withFileTypes: true })) {
       if (!dir.isDirectory()) continue;
       const index = await readVersion(path.join(directory, dir.name, 'index'));
-      if (index?.value.active) {
-        const current = await readVersion(path.join(directory, dir.name, index.value.active.id, 'state'));
-        if (current?.value.status === 'active' && current.value.current?.endsAt <= at) rows.push({ uid: index.value.owner, id: index.value.active.id });
+      const active = index?.value.activeByPaper ? Object.values(index.value.activeByPaper) : index?.value.active ? [index.value.active] : [];
+      for (const saved of active) {
+        const current = await readVersion(path.join(directory, dir.name, saved.id, 'state'));
+        if (current?.value.status === 'active' && current.value.current?.endsAt <= at) rows.push({ uid: index.value.owner, id: saved.id });
       }
     }
     return rows.slice(0, 500);
