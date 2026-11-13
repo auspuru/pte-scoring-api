@@ -60,3 +60,13 @@ test('New Listening starts expose all three papers and retain separate readable 
  assert.equal((await f.request('/api/full-mocks/attempts',undefined,token)).body.length,0);
  const current=(await f.request('/api/listening-mocks/attempts',undefined,token)).body;assert.equal(current.length,3);assert(current.every(a=>a.expectedCount===34));
 });
+
+test('Listening honours the existing verified missing-recording exclusions and never trusts an arbitrary exclusion',()=>{
+ const paper=papers.registeredPapers()[0],state=completed(paper),c=paper.questions[0],job=state.assessment.items[c.id];
+ state.assessment.completionPolicy={version:aggregation.COMPLETION_POLICY,snapshotHash:state.assessment.snapshotHash};
+ job.status='failed';job.reason='recording-missing';delete job.result;
+ assert.equal(aggregation.aggregate(paper,state).ready,false);
+ assert.equal(require('../full-mock/exclusions').releaseAvailable(state,paper,3000),true);
+ const result=aggregation.aggregate(paper,state);assert.equal(result.ready,true);assert.equal(result.accountedCount,34);assert.equal(result.assessedCount,33);assert.equal(result.excludedCount,1);assert.equal(result.items[0].status,'excluded');assert.equal(result.profiles.listening.practiceIndex,90);
+ state.assessment.exclusions[c.id].snapshotHash='invalid';assert.equal(aggregation.aggregate(paper,state).ready,false);
+});

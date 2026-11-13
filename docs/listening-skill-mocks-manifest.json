@@ -531,7 +531,7 @@
         }
       ],
       "audience": "Existing signed-in Listening mock users; new attempts only.",
-      "paperHash": "21066dcf8ccc1afd0381b2077ebcc92eef03bb44407f233b9723c241365857c8"
+      "paperHash": "76fb99f3cc566a78256aa64dbfe0537113e667f9de99e7f351f4dacc930ecf30"
     },
     {
       "id": "listening-mock-2",
@@ -1068,7 +1068,7 @@
         }
       ],
       "audience": "Existing signed-in Listening mock users; new attempts only.",
-      "paperHash": "01f0f2493d03bd23917aaf8a3034ea2e992cde9670b6d82b917142913555f7c3"
+      "paperHash": "8b2de2933c840b82cb98f4f405191c441a69162123c2dc8afd82a040b67cfb20"
     },
     {
       "id": "listening-mock-3",
@@ -1605,8 +1605,8 @@
         }
       ],
       "audience": "Existing signed-in Listening mock users; new attempts only.",
-      "paperHash": "b6762ebf289ede259eaca2f32883f4b09743e830f944515c50f0974a92dc3964"
+      "paperHash": "1e5173a76eea9cfde110d30278436c20058fbac30dbf73d7e09f597c933a5b3f"
     }
   ],
-  "scoringSourcesDigest": "308e6555f51021673e2f27b4ab2f17f6600dd0750e35a96f5f9d120c09138a54"
+  "scoringSourcesDigest": "b24a58dc3ccc2901749e2540412cc9102ace0e7e24ae914899cafb6504aef3de"
 }
