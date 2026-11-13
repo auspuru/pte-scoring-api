@@ -93,6 +93,7 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
   await fs.mkdir(path.join(root,'.cache'),{recursive:true});
   await page.screenshot({path:path.join(root,'.cache','full-mock-flow-' + paper.id + '-' + (mobile?'mobile':'desktop') + '-part1.png')});
   await clickControl(page, '[data-fm="begin-section"]');
+  await page.waitForSelector('.fm-exam-meta'); // The section request must finish before checking the next transition.
   if(!listening){await page.waitForSelector('[data-fm="skip"]'); await page.click('[data-fm="skip"]');}
   const expected = new Map(), seen = new Set(); let attemptId, readingDeadline, listeningDeadline;
   for (let i = 0; i < paper.questions.length; i++) {
@@ -162,7 +163,7 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
       const response = await answer(page, q); expected.set(i + 1, response);
       if ((q.type === 'swt'||listening&&q.type==='sst') && !mobile && ![...expected.keys()].some(index => index !== i + 1 && paper.questions[index - 1].question.type === 'swt')) {
         await page.setOfflineMode(true); await paste(page, '#fm-text', response[0] + ' Saved while offline.'); expected.set(i + 1, [response[0] + ' Saved while offline.']);
-        await until(async () => page.evaluate(() => new Promise(resolve => { const open = indexedDB.open(document.querySelector('.fm-shell')?.textContent.includes('Listening')?'ipt-listening-mock-v1':'ipt-full-mock-v1', 1); open.onsuccess = () => { const db = open.result, read = db.transaction('pending').objectStore('pending').getAll(); read.onsuccess = () => { resolve(read.result.some(row => row.value.kind === 'draft')); db.close(); }; }; })), 'Offline draft was not saved to IndexedDB.');
+        await until(async () => page.evaluate(databaseName => new Promise(resolve => { const open = indexedDB.open(databaseName, 1); open.onsuccess = () => { const db = open.result, read = db.transaction('pending').objectStore('pending').getAll(); read.onsuccess = () => { resolve(read.result.some(row => row.value.kind === 'draft')); db.close(); }; }; }),listening?'ipt-listening-mock-v1':'ipt-full-mock-v1'), 'Offline draft was not saved to IndexedDB.');
         await page.setOfflineMode(false); await f.reload(); await page.waitForSelector('[data-fm="resume"]'); await page.click('[data-fm="resume"]');
         await page.waitForFunction(() => document.fullscreenElement === document.documentElement);
         await page.waitForFunction(value => document.getElementById('fm-text')?.value === value, {}, expected.get(i + 1)[0]);
@@ -176,6 +177,7 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
   assert(!await page.$eval('.fm-report-header',node=>/preview/i.test(node.textContent)));
   assert.equal(await page.$('.fm-method,.fm-interpretation'), null);
   assert(await page.$('.ipr-score-report .ipr-logo'), 'Score report is missing the IPT logo');
+  if(listening)await page.screenshot({path:path.join(root,'.cache','listening-skill-overview-'+(mobile?'mobile':'desktop')+'.png')});
   await page.click('[data-mock-tab="feedback"]');
   await page.waitForSelector('[data-mock-panel="feedback"]:not([hidden]) .ipr-impact-feedback');
   assert.equal(await page.$$eval('[data-impact-profile]',nodes=>nodes.length),listening?1:5);
@@ -188,6 +190,7 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
   assert.equal(seen.size, listening?12:22); assert.equal(result.ready, true); assert.equal(result.items.length,count); assert.equal(result.assessedCount,listening?34:35); assert.equal(result.excludedCount,listening?0:30); if(listening)assert.equal(result.profiles.listening.practiceIndex,90);else assert.equal(result.profiles.overall.practiceIndex,null);
   for (const [index, response] of expected) assert.deepEqual(saved.responses[index].answer, response, 'Saved answer for Q' + index);
   assert.deepEqual(f.unexpectedDialogs, []);
+  if(listening)assert.equal(saved.responses.slice(1,20).filter(r=>r.segments.some(s=>s.finished&&s.chunkCount>0)).length,19);
   assert.equal(f.calls.size,count); assert([...f.calls.values()].every(count => count === 1)); assert.equal(f.errors.length, 0, f.errors.join('; '));
   for (const type of listening?['rs','rl','asq','sgd']:['ra','rs']) { const index = paper.questions.findIndex(row => row.question.type === type) + 1; assert(saved.responses[index].segments.some(segment => segment.finished && segment.chunkCount > 0)); }
   assert.equal(await page.$$eval('.ipr-overall,.ipr-skill', nodes => nodes.length),listening?2:5); assert.equal(await page.$$eval('#fm-review-select option', nodes => nodes.length),count);

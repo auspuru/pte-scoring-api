@@ -45,6 +45,7 @@ jobs:
         run: git diff --exit-code -- public/index.min.js
       - name: Verify essay guide browser flow
         env:
+          FULL_MOCK_TEST_DATABASE_URL: postgresql://full_mock_test:full_mock_test@127.0.0.1:5432/full_mock_test
           FULL_MOCK_TEST_CHROME_PATH: /usr/bin/google-chrome
         run: node scripts/verify-essay-guide-browser.js
       - name: Verify production release
