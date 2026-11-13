@@ -122,11 +122,12 @@ function quietRecording(recording) {
    .replace("    providerConfiguration: require('./full-mock/assessment').claudeConfiguration()", "    providerConfiguration: require('./full-mock/assessment').configuration()")
    .replace("const speakingMock = require('./speaking-mock').installSpeakingMock(app, {\n  requireAdmin,", "const speakingMock = require('./speaking-mock').installSpeakingMock(app, {")
    .replace("backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING!=='false'","backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'").replace('    await writingLab.start();\n','').replace('    await writingLab.stop();\n','');
- // Reviewed account dates, session revocation and email registration/recovery change this server; the
+ // Reviewed staff sign-in, account dates, session revocation and email recovery change this server; the
  // native graders below retain their original hashes. Keep both exact source
  // revisions pinned; do not exempt arbitrary account or provider source drift.
  assert.equal(require('../content/full-mock/portal-access-compatible-sources.json').files['server.js'].sha256,'f7a1a04a570e13bcac8e158ca6744fb71e14b7986080e1229038c69b6530b742');
- assert.equal(sha(source),'ed1f13396df180c9b88381c01a7180464dab7599114c662e5cc90d3d3d287709');
+ assert.equal(sha(read('server.js')),require('../content/full-mock/staff-login-compatible-pins.json').newServer);
+ assert.equal(sha(source),'46a22e903d009e7026664ba7d38ce27ed661959558f2bd80f50295a05a721747');
  source=read('public/writing-lab-report.js').replace("(attempt.kind!=='mock' || !needsReview(r,q))",'(!weighted || !needsReview(r,q))');
  assert.equal(sha(source),baseline.files['public/writing-lab-report.js'].sha256);
  for(const name of ['full-mock/profiles.js','speaking-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
