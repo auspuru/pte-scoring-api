@@ -415,7 +415,15 @@ tr:hover td { background: var(--surface-dim); }
   </div>
   <button type="button" class="theme-toggle" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle theme">☀️</button>
   </div>
-  <p class="admin-auth-copy">Authorized staff only. Use the server-configured admin key to continue.</p>
+  <p class="admin-auth-copy">Sign in with your staff account.</p>
+  <form id="staffLoginForm" onsubmit="event.preventDefault();staffAdminLogin()">
+    <label class="admin-field-label" for="staffUsername">Username</label>
+    <input id="staffUsername" name="username" autocomplete="username" required>
+    <label class="admin-field-label" for="staffPassword">Password</label>
+    <input type="password" id="staffPassword" name="password" autocomplete="current-password" required>
+    <button type="submit" id="staffSignIn">Sign in with username and password</button>
+  </form>
+  <p class="admin-auth-copy">Or use existing admin-key access.</p>
   <div class="auth-error" id="authError" role="alert"></div>
   <label class="admin-field-label" for="adminKeyInput">Admin key</label>
   <div class="admin-key-field">
@@ -687,7 +695,30 @@ function adminLogin(opts){
     });
 }
 
-function adminLogout(){adminKey='';sessionStorage.removeItem('adminKey');location.reload();}
+async function staffAdminLogin(){
+  const button=document.getElementById('staffSignIn'),error=document.getElementById('authError');
+  if(button.disabled)return;button.disabled=true;error.style.display='none';
+  try{
+    const response=await fetch(API+'/api/admin/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:document.getElementById('staffUsername').value,password:document.getElementById('staffPassword').value})});
+    const value=await response.json();if(!response.ok)throw Error(value.error||'Could not sign in.');
+    adminKey='';sessionStorage.removeItem('adminKey');document.getElementById('adminKeyInput').value='';
+    await loadUsers();document.getElementById('authCard').style.display='none';document.getElementById('dashboard').style.display='block';
+  }catch(e){error.textContent=e.message;error.style.display='block';}
+  finally{document.getElementById('staffPassword').value='';button.disabled=false;}
+}
+async function restoreStaffSession(){
+  try{
+    const response=await fetch(API+'/api/admin/session',{cache:'no-store'});if(!response.ok)return;
+    await loadUsers();document.getElementById('authCard').style.display='none';document.getElementById('dashboard').style.display='block';
+  }catch{}
+}
+async function adminLogout(){
+  try{
+    const response=await fetch(API+'/api/admin/logout',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});
+    if(!response.ok)throw Error();
+    adminKey='';sessionStorage.removeItem('adminKey');location.reload();
+  }catch{toast('Could not sign out. Please try again.');}
+}
 
 function renderUsers(users){
   const accountUsers=users.filter(u=>u.hasAccount!==false);
@@ -1393,6 +1424,7 @@ async function deletePassage(id) {
 // and we fall back to the login screen without a noisy error.
 const savedKey=sessionStorage.getItem('adminKey');
 if(savedKey){document.getElementById('adminKeyInput').value=savedKey;adminLogin({silent:true});}
+else restoreStaffSession();
 
 function toggleAdminKeyVisibility() {
   const input = document.getElementById('adminKeyInput');

@@ -239,6 +239,7 @@ if (rateLimit) {
   app.use('/api/interventions/help', gradeLimiter);
   app.use('/api/interventions/screen-help', gradeLimiter);
   app.use('/api/auth/login', authLimiter);
+  app.use('/api/admin/login', authLimiter);
   app.use('/api/auth/register', authLimiter);
   app.use('/api/auth/email-reset', authLimiter);
 }
@@ -3662,14 +3663,25 @@ app.get('/api/auth/check/:username', async (req, res) => {
 });
 
 // ═══ ADMIN ROUTES (require ADMIN_KEY) ═══
-function requireAdmin(req, res, next) {
-  // M1: if ADMIN_KEY is unset (production with no env var), admin routes are
-  // hard-disabled rather than falling back to a guessable default.
-  if (!ADMIN_KEY) return res.status(503).json({ error: 'Admin is not configured on this server (ADMIN_KEY unset).' });
+const staffAdminAuth=require('./admin-auth').createAdminAuth({
+  authenticate:(username,password)=>AuthAPI.login(username,password),
+  getAccount:async username=>USE_POSTGRES?PgStorage._getAccount(username):(await AuthAPI.readAccounts()).accounts?.[username],
+  secret:_sessionSecret,
+  staffUsers:()=>process.env.ADMIN_STAFF_USERS||''
+});
+async function requireAdmin(req, res, next) {
   const key = req.headers['x-admin-key'] || req.query.key;
-  if (key !== ADMIN_KEY) return res.status(403).json({ error: 'Invalid admin key' });
-  next();
+  if (ADMIN_KEY && key === ADMIN_KEY) {req.adminAuth={method:'key'};return next();}
+  try {
+    const session=await staffAdminAuth.verify(req);
+    if(session){req.adminAuth=session;return next();}
+    if(!ADMIN_KEY&&!process.env.ADMIN_STAFF_USERS)return res.status(503).json({error:'Admin is not configured on this server (ADMIN_KEY unset).'});
+    return res.status(403).json({error:key?'Invalid admin key':'Please sign in as an administrator.'});
+  } catch {return res.status(503).json({error:'Admin access could not be checked. Please retry.'});}
 }
+app.post('/api/admin/login',staffAdminAuth.login);
+app.post('/api/admin/logout',staffAdminAuth.logout);
+app.get('/api/admin/session',requireAdmin,(req,res)=>res.set('Cache-Control','no-store').json({authenticated:true,...req.adminAuth}));
 
 const speakingAccess = require('./speaking-access').install(app, { pool:pgPool, directory:path.join(DATA_DIR,'speaking-access'),
   verify:token=>verifySessionToken(token)||verifyImpersonationToken(token), getAccount:getPracticeAccount, requireAdmin });

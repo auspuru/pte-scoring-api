@@ -103,6 +103,19 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Staff authentication changes transport only. Bind the exact source pair
+  // so pending attempts keep their original graders and confirmed results.
+  const staffPins=require('../content/full-mock/staff-login-compatible-pins.json');
+  if(current.scoringSources.files['server.js']?.sha256===staffPins.newServer
+    &&current.scoringSources.files['full-mock/assessment.js']?.sha256===staffPins.newAssessment){
+    const sources=structuredClone(current.scoringSources);
+    sources.files['server.js'].sha256=staffPins.oldServer;
+    sources.files['full-mock/assessment.js'].sha256=staffPins.oldAssessment;
+    if(digest(sources)===staffPins.oldSourcesDigest){
+      const prior={...current,scoringSources:sources};
+      if(digest(saved)===digest(prior)||compatibleTransportUpgrade(saved,prior))return true;
+    }
+  }
   // Retain the exact pre-selection transport for frozen attempts. Graders,
   // models, paper contents and recorded results do not change in this upgrade.
   const selectionPins=require('../content/full-mock/paper-selection-compatible-pins.json');
