@@ -1,5 +1,19 @@
 'use strict';
 const writingReport=require('./public/writing-lab-report');
+function pendingQuestions(a){
+  const safeReasons=new Set(['Invalid scoring evidence','Missing feedback','Missing improvement advice','The form score must match the supplied deterministic form score','A claimed form failure contradicts the form score','Missing form explanation','Unsupported SST form gate: a substantial sentence is present; assess grammar and content separately']);
+  return (a.questions||[]).flatMap((q,index)=>{
+    const result=a.results?.[index],recovery=a.assessmentRecovery?.[index]||{};
+    if(result&&!writingReport.needsReview(result,q))return [];
+    const reason=result?.fallbackReason;
+    const validationIssue=typeof reason==='string'&&(safeReasons.has(reason)||/^Invalid scoring trait: (content|form|grammar|vocabulary|spelling)$/.test(reason))?reason:null;
+    const code=recovery.code;
+    return [{questionNumber:index+1,task:q.type,status:['calling','held','exhausted','retry_wait','complete'].includes(recovery.status)?recovery.status:'pending',
+      attempts:Number.isSafeInteger(recovery.attempts)?recovery.attempts:0,nextRetryAt:Number.isFinite(recovery.nextAt)?recovery.nextAt:null,uncertain:recovery.uncertain===true,
+      failureCode:typeof code==='number'||['validation','provider','uncertain_provider_outcome','insufficient_quota','billing_hard_limit_reached','invalid_api_key','ETIMEDOUT','ECONNRESET'].includes(code)?code:null,
+      provisional:result?.score_provisional===true||result?.needs_semantic_review===true,validationIssue}];
+  });
+}
 function readingRecords(progress){
   return [...(Array.isArray(progress?.history)?progress.history:[]),progress?.session].filter(Boolean);
 }
@@ -54,7 +68,8 @@ function createSources({pool,speakingStore,writingStore,fullStore,loadReading}){
     sources[engine]={
       async get(uid,id){
         const record=engine==='full'?await fullStore.get(uid,id):await stores[engine].get(uid,id,{omitMockAudio:true});
-        return snapshot(engine,engine==='full'?record?.state:record,record);
+        const value=snapshot(engine,engine==='full'?record?.state:record,record);
+        return value&&['writing','listening'].includes(engine)?{...value,pendingQuestions:pendingQuestions(record)}:value;
       },
       async scan({since,cursor,limit}){
         if(!pool)return{rows:[],nextCursor:''};

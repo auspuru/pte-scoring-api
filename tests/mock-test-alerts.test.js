@@ -7,6 +7,15 @@ const {createMockTestAlerts,TEN_MINUTES}=require('../mock-test-alerts');
 const {createSources,snapshot}=require('../mock-test-alert-sources');
 const {capture}=require('../mock-test-alert-http');
 const {eventKey}=require('../mock-test-alert-events');
+test('Protected sectional status identifies missing work without exposing answers or raw provider errors',async()=>{
+ const attempt={id:randomUUID(),kind:'mock',module:'listening',status:'submitted',finishedAt:1,questions:[{type:'sst',text:'PRIVATE_SOURCE'}],answers:['PRIVATE_ANSWER'],results:[{score_provisional:true,needs_semantic_review:true,fallbackReason:'Invalid scoring evidence'}],assessmentRecovery:{0:{status:'retry_wait',attempts:2,nextAt:123,code:'validation',lease:'PRIVATE_LEASE'}}};
+ const sources=createSources({writingStore:{get:async()=>attempt}});
+ const value=await sources.listening.get('student',attempt.id);
+ assert.deepEqual(value.pendingQuestions,[{questionNumber:1,task:'sst',status:'retry_wait',attempts:2,nextRetryAt:123,uncertain:false,failureCode:'validation',provisional:true,validationIssue:'Invalid scoring evidence'}]);
+ assert(!JSON.stringify(value).includes('PRIVATE_'));
+ attempt.results[0].fallbackReason='PRIVATE_PROVIDER_ERROR';attempt.assessmentRecovery[0].code='PRIVATE_KEY';
+ const redacted=await sources.listening.get('student',attempt.id);assert.equal(redacted.pendingQuestions[0].validationIssue,null);assert.equal(redacted.pendingQuestions[0].failureCode,null);assert(!JSON.stringify(redacted).includes('PRIVATE_'));
+});
 async function fixture(t,{enabled=true,send}={}){
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'all-mock-alerts-'));let time=1800000000000;
   const messages=[],records=new Map(),services=[],sources={};
