@@ -12629,7 +12629,8 @@ async function getPortalWritingAttempts(engine='writing-lab') {
   const cache={uid,token,at:0,rows:null,pending:null};
   portalWritingAttemptsCache[engine]=cache;
   cache.pending=(async()=>{
-    const response=await fetch(API_URL+'/api/'+engine+'/attempts',{
+    const endpoint=engine==='listening-mocks'?'/api/listening-mocks/attempts':'/api/writing-lab/attempts';
+    const response=await fetch(API_URL+endpoint,{
       cache:'no-store',signal:AbortSignal.timeout(10000),headers:{'x-session-token':token}
     });
     if (!response.ok) throw Error('Saved attempts could not load.');
