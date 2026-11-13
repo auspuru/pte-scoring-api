@@ -7,14 +7,16 @@ const { createStore, fail } = require('./store');
 const session = require('./session');
 const reports = require('./report');
 
-function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper(), papers = registeredPapers({ activeOnly: true }), sectionTransitions = true, assessment, requireAdmin, deliveryReassessment = {} } = {}) {
+function installFullMock(app, { pool, directory, verifyToken, getAccount, canPreview = ({ account }) => account.role === 'admin', now = Date.now, paper = loadPaper(), papers = registeredPapers({ activeOnly: true }), sectionTransitions = true, assessment, requireAdmin, deliveryReassessment = {}, variant = 'full', legacyAttempts } = {}) {
+  if (!['full','listening'].includes(variant)) throw Error('Unsupported mock engine.');
+  const listening = variant === 'listening';
   const selectedPapers = new Map(papers.map(value => [value.id, value]));
   selectedPapers.set(paper.id, paper);
-  const store = createStore({ pool, directory }), router = express.Router();
-  const assessor = assessment ? require('./assessment').createEngine({ store, now, paper, ...assessment }) : null;
+  const store = createStore({ pool, directory,namespace:listening?'listening_mock':'full_mock' }), router = express.Router();
+  const assessor = assessment ? require('./assessment').createEngine({ store, now, paper, ...(listening?{papers}:{}), ...assessment }) : null;
   let sweep, deliveryReview;
   const wrap = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(error => res.status(error.status || 503).json({ error: error.status ? error.message : 'This action could not finish. Your saved responses are retained; retry when connected.' }));
-  if (requireAdmin && assessor) {
+  if (requireAdmin && assessor && !listening) {
     const support = require('./exclusions').createSupport({ store, now, validate:assessor.validate });
     const admin = express.Router();
     admin.use(requireAdmin, (req, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
@@ -32,7 +34,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     admin.post('/:username/:id/scoring/delivery/send', wrap(async(req,res)=>res.json(await deliveryReview.send(req.params.username,req.params.id,req.body||{}))));
     admin.post('/:username/:id/scoring/delivery/publish', wrap(async(req,res)=>res.json(await deliveryReview.publish(req.params.username,req.params.id,req.body||{}))));
     admin.post('/:username/:id/scoring/delivery/discard', wrap(async(req,res)=>res.json(await deliveryReview.discard(req.params.username,req.params.id,req.body||{}))));
-    app.use('/api/admin/full-mocks', admin);
+    app.use(listening?'/api/admin/listening-mocks':'/api/admin/full-mocks', admin);
   }
   router.use(wrap(async (req, res, next) => {
     res.set({ 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Cross-Origin-Resource-Policy': 'same-origin' });
@@ -74,7 +76,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
   router.get('/catalog', wrap(async (req, res) => {
     const visible = [...selectedPapers.values()].filter(value => available(req.fullMock, value));
     res.json({ available: visible.length > 0, preview: visible.some(value => value.status !== 'released'),
-      papers: visible.map(value => ({ id: value.id, version: value.version, title: value.title, questionCount: value.questions.length, taskTypeCount: 22, preview: value.status !== 'released' })) });
+      papers: visible.map(value => ({ id: value.id, version: value.version, title: value.title, questionCount: value.questions.length, taskTypeCount: new Set(value.questions.map(c=>c.question.type)).size, ...(value.estimatedMinutes?{minutes:value.estimatedMinutes}:{}),preview: value.status !== 'released' })) });
   }));
   router.get('/attempts', wrap(async (req, res) => {
     const saved = (await store.list(req.fullMock.uid)).filter(state => !state.preview || req.fullMock.preview).sort((a, b) => b.createdAt - a.createdAt);
@@ -85,6 +87,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     }
     res.json(rows);
   }));
+  if(listening)router.get('/legacy-attempts',wrap(async(req,res)=>res.json(legacyAttempts?await legacyAttempts(req.fullMock.uid):[])));
   router.post('/attempts', wrap(async (req, res) => {
     const selected = selectedPapers.get(req.body?.paperId);
     if (!selected) throw fail('Unknown full mock.', 400);
@@ -184,7 +187,7 @@ function installFullMock(app, { pool, directory, verifyToken, getAccount, canPre
     if (res.headersSent) return next(error);
     res.status(error.status || 503).json({ error: error.status === 413 ? 'This recording chunk is too large.' : 'This request could not be read. Retry the saved action.' });
   });
-  app.use('/api/full-mocks', router);
+  app.use(listening?'/api/listening-mocks':'/api/full-mocks', router);
   async function reconcileAll() {
     for (const value of await store.active(now())) { try { await read(value.uid, value.id); } catch { /* A transient failure retains the existing attempt. */ } }
   }

@@ -31,6 +31,10 @@ function create(id, paper, at, { preview = false, assessmentSnapshot, sectionTra
   if (!preview) assertReleased(paper);
   const state = { id, version: VERSION, paperId: paper.id, paperVersion: paper.version, paperHash: digest(paper), preview,
     title: paper.title, createdAt: at, status: 'active', index: 0, clocks: {}, responses: [], events: [], recoveries: [] };
+  if(paper.skipIntroduction===true){
+    state.index=1;
+    state.responses=[{type:'intro',draft:[],answer:[],segments:[],sealed:true,sealedAt:at,status:'unanswered',reason:'not-in-paper'}];
+  }
   if (sectionTransitions) { state.sectionTransitions = 1; state.sectionStarts = {}; }
   if (assessmentSnapshot) state.assessment = require('./assessment').stateFor(assessmentSnapshot);
   if (availableMarks && state.assessment) state.assessment.completionPolicy = {version:require('./aggregation').COMPLETION_POLICY,snapshotHash:state.assessment.snapshotHash};
@@ -189,18 +193,18 @@ function present(state, paper, now) {
   const assessmentStatus = state.assessment?.displayStatus || (state.assessment?.status === 'complete' && assessed && !assessed.ready ? 'needs-attention' : state.assessment?.status) || 'not-enabled';
   const output = { id: state.id, paperId: state.paperId, paperVersion: state.paperVersion, paperHash: state.paperHash, title: state.title,
     status: state.status, preview: state.preview, createdAt: state.createdAt, submittedAt: state.submittedAt || null,
-    index: state.index, totalItems: 66, scoredQuestionCount: 65, completedCount: state.responses.filter(value => value.sealed).length,
+    index: state.index, totalItems: paper.questions.length+(paper.skipIntroduction?0:1), scoredQuestionCount: paper.questions.length, completedCount: state.responses.filter((value,index) => value.sealed&&(!paper.skipIntroduction||index>0)).length,
     serverNow: now, ...(state.pause?{pause:{id:state.pause.id,index:state.pause.index}}:{}),...(state.resumedAudio?{resumedAudio:state.resumedAudio}:{}), mediaPending: state.responses.reduce((sum, value) => sum + value.segments.filter(segment => !segment.finished).length, 0),
     recoveredEvidenceCount: state.recoveries.length, assessmentStatus,
-    ...(state.assessment ? { assessmentProgress: { assessed: assessed?.assessedCount || 0, expected: 65 } } : {}) };
+    ...(state.assessment ? { assessmentProgress: { assessed: assessed?.assessedCount || 0, expected: paper.questions.length } } : {}) };
   if (state.transition) {
-    const info = PARTS[state.transition.section];
+    const info = paper.sections?.[state.transition.section] || PARTS[state.transition.section];
     const details = state.transition.section === 'speaking-writing'
       ? ['Complete the unscored personal introduction, then answer the speaking and writing questions.', 'Speaking questions have their own preparation and recording windows.', 'Each Summarize Written Text has 10 minutes. Each essay has 20 minutes.']
       : state.transition.section === 'reading'
         ? ['All Reading questions share one ' + paper.clockPolicy.readingSeconds / 60 + '-minute timer.', 'Time continues when you move to the next Reading question.']
         : ['Each Summarize Spoken Text has ' + paper.clockPolicy.sstSeconds / 60 + ' minutes, including its recording.', 'The remaining Listening questions share one ' + paper.clockPolicy.listeningAfterSstSeconds / 60 + '-minute timer, including audio playback.'];
-    output.transition = { ...state.transition, ...info, details };
+    output.transition = { ...state.transition, ...info, details:info.details||details,...(paper.sections?{partCount:Object.keys(paper.sections).length}:{}) };
   }
   if (response) Object.assign(output, { question: state.index === 0 ? { ...paper.introduction, preparation: 25, seconds: 30, startCueMs: 300 } : questionForPlayer(item(paper, state.index)),
     current: { ...state.current, phase: phase(state, now) }, draft: response.draft, draftSequence: response.draftSequence,

@@ -190,7 +190,7 @@
       board.innerHTML = shown.map(m => {
         const saved=progress.mocks?.[m.id] || {}, status=saved.status || 'New', when=dateLabel(saved.date);
         return '<article class="mock-catalogue-card ' + m.module + '"><div class="mock-card-meta"><span class="mock-module">' + ({speaking:'Speaking',reading:'Reading',writing:'Writing',listening:'Listening'}[m.module] || m.module) + '</span><span class="mock-status" data-status="' + esc(status.toLowerCase().replace(/\s+/g,'-')) + '">' + esc(status) + (when ? ' · ' + esc(when) : '') + '</span></div><h3>' + esc(m.title) + '</h3>'
-          + (['listening','speaking'].includes(m.module) ? '<p class="muted">' + m.questionCount + ' questions · '+(m.module==='speaking'?'All 6 speaking task types':'All 8 listening task types')+'</p>' : '') + '<footer><span>' + m.minutes + ' minutes</span><button type="button" class="portal-button primary" data-mock-id="' + esc(m.id) + '">' + (status === 'In progress' ? 'Continue timed test' : status === 'Done' ? 'Try again' : 'Start timed test') + ' <span aria-hidden="true">→</span></button></footer></article>';
+          + (['listening','speaking'].includes(m.module) ? '<p class="muted">' + m.questionCount + ' questions · '+(m.module==='speaking'?'All 6 speaking task types':m.format==='listening-skill-20261113.1'?'Speaking and Listening tasks':'All 8 listening task types')+'</p>' : '') + '<footer><span>' + m.minutes + ' minutes</span><button type="button" class="portal-button primary" data-mock-id="' + esc(m.id) + '">' + (status === 'In progress' ? 'Continue timed test' : status === 'Done' ? 'Try again' : 'Start timed test') + ' <span aria-hidden="true">→</span></button></footer></article>';
       }).join('');
       doc.getElementById('catalogue-count').textContent = items.length ? 'Showing ' + (page * pageSize + 1) + '–' + (page * pageSize + shown.length) + ' of ' + items.length + ' tests' : 'No tests available';
       const empty = doc.getElementById('catalogue-empty'); empty.hidden = !!items.length;
@@ -224,7 +224,7 @@
         if (b.dataset.cataloguePage) { page += Number(b.dataset.cataloguePage); renderList(); }
         if (b.dataset.mockId) {
           const m = data.mocks.find(m => m.id === b.dataset.mockId); if (!m) return;
-          if (m.engine === 'reading') launchReading(m.id); else if(m.engine==='speaking')launchSpeaking(m.id);else launchWriting(m.id);
+          if (m.engine === 'reading') launchReading(m.id); else if(m.engine==='speaking')launchSpeaking(m.id);else {const saved=progress.mocks?.[m.id];if(m.module==='listening'&&saved?.status==='In progress'&&saved.attemptId)launchWriting(m.id,{attemptId:saved.attemptId,legacy:saved.engine==='writing-lab'});else launchWriting(m.id);}
         }
       };
       host.oninput = e => { if (e.target.id === 'catalogue-search') { filters.search = e.target.value; page = 0; renderList(); } };

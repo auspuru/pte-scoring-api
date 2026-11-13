@@ -1,0 +1,1612 @@
+{
+  "schemaVersion": 1,
+  "format": "listening-skill-20261113.1",
+  "scope": "New Listening starts include all Listening-contributing oral tasks; saved sectional attempts remain unchanged.",
+  "papers": [
+    {
+      "id": "listening-mock-1",
+      "title": "Listening Sectional Mock 1",
+      "version": 1,
+      "questionCount": 34,
+      "counts": {
+        "rs": 10,
+        "rl": 2,
+        "asq": 5,
+        "sgd": 2,
+        "sst": 1,
+        "lmcma": 2,
+        "lfi": 2,
+        "hcs": 2,
+        "lmcsa": 2,
+        "smw": 1,
+        "hiw": 2,
+        "wfd": 3
+      },
+      "order": [
+        "rs",
+        "rl",
+        "asq",
+        "sgd",
+        "sst",
+        "lmcma",
+        "lfi",
+        "hcs",
+        "lmcsa",
+        "smw",
+        "hiw",
+        "wfd"
+      ],
+      "estimatedMinutes": 53,
+      "clocks": {
+        "spoken": "Existing per-task prompt, preparation and response windows",
+        "sstSeconds": 600,
+        "listeningSharedSeconds": 1500
+      },
+      "sources": [
+        {
+          "id": "lm1-rs-01",
+          "type": "rs",
+          "origins": [
+            "full-mock-1-v2-prediction-selection",
+            "content/writing-predictions-sep-2026.js",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-rs-01"
+            }
+          ],
+          "audioSha256": "b8ec80a7133550fe0b2fd341ae7f91d47844ef6db4a515469809f78dc39c5ddb",
+          "audioSeconds": 5.184
+        },
+        {
+          "id": "lm1-rs-02",
+          "type": "rs",
+          "origins": [
+            "full-mock-1-v2-prediction-selection",
+            "content/writing-predictions-sep-2026.js",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-rs-02"
+            }
+          ],
+          "audioSha256": "2ec53c8eeb765218fa83ecb531bed288cf5fc17758ff7599806df5c5752957f3",
+          "audioSeconds": 3.936
+        },
+        {
+          "id": "lm1-rs-03",
+          "type": "rs",
+          "origins": [
+            "full-mock-1-v2-prediction-selection",
+            "content/writing-predictions-sep-2026.js",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-rs-03"
+            }
+          ],
+          "audioSha256": "3b4cb65d35f8c4767e18401d4f6ca2a4a5dbf01c5ede8618b3752e75d7136efe",
+          "audioSeconds": 4.464
+        },
+        {
+          "id": "lm1-rs-04",
+          "type": "rs",
+          "origins": [
+            "full-mock-1-v2-prediction-selection",
+            "content/writing-predictions-sep-2026.js",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-rs-04"
+            }
+          ],
+          "audioSha256": "575193d22744d08d99555bc55d8e22ada7b496e9aa610d45c9dd41beb1c0e317",
+          "audioSeconds": 4.656
+        },
+        {
+          "id": "lm1-rs-05",
+          "type": "rs",
+          "origins": [
+            "full-mock-1-v2-prediction-selection",
+            "content/writing-predictions-sep-2026.js",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-rs-05"
+            }
+          ],
+          "audioSha256": "425e583d89275c6ac1848a2953f61449df0fa46ea77391b82af3d6241e197594",
+          "audioSeconds": 4.248
+        },
+        {
+          "id": "lm1-rs-06",
+          "type": "rs",
+          "origins": [
+            "full-mock-1-v2-prediction-selection",
+            "content/writing-predictions-sep-2026.js",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-rs-06"
+            }
+          ],
+          "audioSha256": "7b6061238b37991d7a8b1ccd5f5686f399beb92fb8cd4d9dbf1f6e386985a2e4",
+          "audioSeconds": 3.888
+        },
+        {
+          "id": "lm1-rs-07",
+          "type": "rs",
+          "origins": [
+            "full-mock-1-v2-prediction-selection",
+            "content/writing-predictions-sep-2026.js",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-rs-07"
+            }
+          ],
+          "audioSha256": "66d59c8b7508cf388c86f9bd50ff87e6aead9a60c445cbccb2c9114a7547d8cf",
+          "audioSeconds": 5.064
+        },
+        {
+          "id": "lm1-rs-08",
+          "type": "rs",
+          "origins": [
+            "full-mock-1-v2-prediction-selection",
+            "content/writing-predictions-sep-2026.js",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-rs-08"
+            }
+          ],
+          "audioSha256": "e2ede6181dcc2785d287ca5a9ab6674ac8acc006c01f1c5e2a7c8845edf98382",
+          "audioSeconds": 4.824
+        },
+        {
+          "id": "lm1-rs-09",
+          "type": "rs",
+          "origins": [
+            "full-mock-1-v2-prediction-selection",
+            "content/writing-predictions-sep-2026.js",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-rs-09"
+            }
+          ],
+          "audioSha256": "64c383579b98ae9d82df61f9eb709fe9277f3db59b2552238b6cfd9f0989c89b",
+          "audioSeconds": 4.896
+        },
+        {
+          "id": "lm1-rs-10",
+          "type": "rs",
+          "origins": [
+            "full-mock-1-v2-prediction-selection",
+            "content/writing-predictions-sep-2026.js",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-rs-10"
+            }
+          ],
+          "audioSha256": "300416a370c7884f2eaa9e84a2f9c67f61c1f6cddd127d665f7c08240b070575",
+          "audioSeconds": 4.704
+        },
+        {
+          "id": "lm1-rl-01",
+          "type": "rl",
+          "origins": [
+            {
+              "kind": "existing-speaking-neural",
+              "file": "content/speaking-bank.js",
+              "questionId": "rl-1",
+              "manifest": "content/speaking-audio-manifest.js"
+            }
+          ],
+          "audioSha256": "09a4e04e22b1228b8309602a7aea8734488253ed0921a56bee5a25ea6e6dcdf5",
+          "audioSeconds": 67.872
+        },
+        {
+          "id": "lm1-rl-02",
+          "type": "rl",
+          "origins": [
+            {
+              "kind": "existing-speaking-neural",
+              "file": "content/speaking-bank.js",
+              "questionId": "rl-2",
+              "manifest": "content/speaking-audio-manifest.js"
+            }
+          ],
+          "audioSha256": "b39c6e91228fe257a82f609c2de004b1442ea0329fcd0963cded5f5edf3f332a",
+          "audioSeconds": 79.2
+        },
+        {
+          "id": "lm1-asq-01",
+          "type": "asq",
+          "origins": [
+            "full-mock-1-v1-authoring",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-asq-01"
+            }
+          ],
+          "audioSha256": "37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a",
+          "audioSeconds": 3.6
+        },
+        {
+          "id": "lm1-asq-02",
+          "type": "asq",
+          "origins": [
+            "full-mock-1-v1-authoring",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-asq-02"
+            }
+          ],
+          "audioSha256": "f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62",
+          "audioSeconds": 3.36
+        },
+        {
+          "id": "lm1-asq-03",
+          "type": "asq",
+          "origins": [
+            "full-mock-1-v1-authoring",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-asq-03"
+            }
+          ],
+          "audioSha256": "cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3",
+          "audioSeconds": 3.984
+        },
+        {
+          "id": "lm1-asq-04",
+          "type": "asq",
+          "origins": [
+            "full-mock-1-v1-authoring",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-asq-04"
+            }
+          ],
+          "audioSha256": "3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6",
+          "audioSeconds": 3.048
+        },
+        {
+          "id": "lm1-asq-05",
+          "type": "asq",
+          "origins": [
+            "full-mock-1-v1-authoring",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-asq-05"
+            }
+          ],
+          "audioSha256": "47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0",
+          "audioSeconds": 3.192
+        },
+        {
+          "id": "lm1-sgd-01",
+          "type": "sgd",
+          "origins": [
+            "full-mock-1-v1-authoring",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-sgd-01"
+            }
+          ],
+          "audioSha256": "70a61518eebd7c3c809e5dcaa57571934f080eb90b3f5624f808aad49582f6ff",
+          "audioSeconds": 108.888
+        },
+        {
+          "id": "lm1-sgd-02",
+          "type": "sgd",
+          "origins": [
+            "full-mock-1-v1-authoring",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-1",
+              "questionId": "fm1-sgd-02"
+            }
+          ],
+          "audioSha256": "7052001c63b407122e0dd2cb40e2d6331e679b1b8152e099c649e88ef2c7eb18",
+          "audioSeconds": 112.608
+        },
+        {
+          "id": "lm1-sst-01",
+          "type": "sst",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "wm1-sst",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "8dd0fd8fe2c222474910877c057c705a9e4d12804236a2ecc304c6d67fd00e10",
+          "audioSeconds": 87.16800000000241
+        },
+        {
+          "id": "lm1-lmcma-02",
+          "type": "lmcma",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "listen-lmcma-sst-urban-trees",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "6f9082ec8b42e61b7dec412f741c396db7f6ae5fa89c27d239d2f3c52886a5fe",
+          "audioSeconds": 82.15200000000222
+        },
+        {
+          "id": "lm1-lmcma-03",
+          "type": "lmcma",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "listen-lmcma-sst-active-learning",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "048e1702a9672c0e626ac2014daf8018b3d177e2434ffb902d2b6b6911405467",
+          "audioSeconds": 69.36000000000173
+        },
+        {
+          "id": "lm1-lfi-04",
+          "type": "lfi",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "listen-lfi-pred26-sst-04",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "36f8e37207c95c051b3a0f7649c46144a588c60a99a54bea782ae65251703fc8",
+          "audioSeconds": 61.584000000001446
+        },
+        {
+          "id": "lm1-lfi-05",
+          "type": "lfi",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "listen-lfi-pred26-sst-05",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "d1b57aa9349447a33d35b5553fd9ad19872ead71c530788373f9f8dff8f9cc64",
+          "audioSeconds": 62.25600000000147
+        },
+        {
+          "id": "lm1-hcs-06",
+          "type": "hcs",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "listen-hcs-sst-sleep-memory",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "85c0455369a7394e6b2f3e0b58f7a14fd5592df8a130b3376012dfe717d3cfba",
+          "audioSeconds": 61.92000000000146
+        },
+        {
+          "id": "lm1-hcs-07",
+          "type": "hcs",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "listen-hcs-sst-water-reuse",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "e19f752ffa0f3ac3210f71008f2c22407a721ed5874e9e72c91f361bc0803247",
+          "audioSeconds": 72.57600000000186
+        },
+        {
+          "id": "lm1-lmcsa-08",
+          "type": "lmcsa",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "listen-lmcsa-sst-repair-cafes",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "6bc1e5e2486a6fd32ab455fc27db54db8deb5ad750ba34fb564185c1e9ec8899",
+          "audioSeconds": 70.03200000000176
+        },
+        {
+          "id": "lm1-lmcsa-09",
+          "type": "lmcsa",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "listen-lmcsa-sst-forecast-uncertainty",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "d0afae9c188758e8745aea966ed300e25f388260b34348974b6bba61fdb1f7f7",
+          "audioSeconds": 73.15200000000188
+        },
+        {
+          "id": "lm1-smw-10",
+          "type": "smw",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "listen-smw-1",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "e8e4ed68ecbdc386117eabc03c77926907c235846bdfd0d2a7e93f0bb874913f",
+          "audioSeconds": 29.78400000000024
+        },
+        {
+          "id": "lm1-hiw-11",
+          "type": "hiw",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "listen-hiw-pred26-sst-10",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "8441e2270b3157021c796a8e7edf18ab712189505155d6b9a0ffa8da8be53915",
+          "audioSeconds": 61.75200000000145
+        },
+        {
+          "id": "lm1-hiw-12",
+          "type": "hiw",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "listen-hiw-pred26-sst-11",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "b96e8ef41ef3bb537900df4668651224932e617f48ea6a7af7664b3dda82fb68",
+          "audioSeconds": 61.824000000001455
+        },
+        {
+          "id": "lm1-wfd-13",
+          "type": "wfd",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "wfd-practice-01",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "2df689e57e36eced2c5eda368c2b6a08f001d26802eee3aa231cf626cc434e79",
+          "audioSeconds": 5.472000000000004
+        },
+        {
+          "id": "lm1-wfd-14",
+          "type": "wfd",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "wfd-practice-02",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "126fd8bf4b551e6965f31c1e1ef7e43577563ec40e77c8e02dc35107a9db1bee",
+          "audioSeconds": 4.464000000000003
+        },
+        {
+          "id": "lm1-wfd-15",
+          "type": "wfd",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-1",
+              "questionId": "wfd-practice-03",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "bf6faa0f0ecd14e47f356a28209213e1d2161538d07773a63307115cdf68e9e2",
+          "audioSeconds": 6.1200000000000045
+        }
+      ],
+      "audience": "Existing signed-in Listening mock users; new attempts only.",
+      "paperHash": "21066dcf8ccc1afd0381b2077ebcc92eef03bb44407f233b9723c241365857c8"
+    },
+    {
+      "id": "listening-mock-2",
+      "title": "Listening Sectional Mock 2",
+      "version": 1,
+      "questionCount": 34,
+      "counts": {
+        "rs": 10,
+        "rl": 2,
+        "asq": 5,
+        "sgd": 2,
+        "sst": 1,
+        "lmcma": 2,
+        "lfi": 2,
+        "hcs": 2,
+        "lmcsa": 2,
+        "smw": 1,
+        "hiw": 2,
+        "wfd": 3
+      },
+      "order": [
+        "rs",
+        "rl",
+        "asq",
+        "sgd",
+        "sst",
+        "lmcma",
+        "lfi",
+        "hcs",
+        "lmcsa",
+        "smw",
+        "hiw",
+        "wfd"
+      ],
+      "estimatedMinutes": 55,
+      "clocks": {
+        "spoken": "Existing per-task prompt, preparation and response windows",
+        "sstSeconds": 600,
+        "listeningSharedSeconds": 1500
+      },
+      "sources": [
+        {
+          "id": "lm2-rs-01",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-15",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-rs-01"
+            }
+          ],
+          "audioSha256": "54f8e51cabafb796b4a65b4d320b111cdbf1c903229724b9a0f108ae090e5e9e",
+          "audioSeconds": 5.4
+        },
+        {
+          "id": "lm2-rs-02",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-16",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-rs-02"
+            }
+          ],
+          "audioSha256": "a22569235b9cb26f5100e2e50ee407fce9a052af1fe908706a20bfd965e73427",
+          "audioSeconds": 4.176
+        },
+        {
+          "id": "lm2-rs-03",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-17",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-rs-03"
+            }
+          ],
+          "audioSha256": "4d5a62a63973800bf2a3d85faeedb857d8c7d70062c4e1435d5b2bb06db4344d",
+          "audioSeconds": 5.304
+        },
+        {
+          "id": "lm2-rs-04",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-18",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-rs-04"
+            }
+          ],
+          "audioSha256": "e1de64206c6395185652bf7d2e28d49695b3c2d8191e91ee04ffaa5742a1e246",
+          "audioSeconds": 4.104
+        },
+        {
+          "id": "lm2-rs-05",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-19",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-rs-05"
+            }
+          ],
+          "audioSha256": "0819491b688eb9679ab3f5a27785cc2a537eb84d31155f95c872107185a3fd47",
+          "audioSeconds": 4.104
+        },
+        {
+          "id": "lm2-rs-06",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-20",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-rs-06"
+            }
+          ],
+          "audioSha256": "36b9cfaa02b621cd7a1c727aa54969992c188b54b0097496a8962552a9dd229a",
+          "audioSeconds": 5.208
+        },
+        {
+          "id": "lm2-rs-07",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-21",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-rs-07"
+            }
+          ],
+          "audioSha256": "0a534888e72c9971c765413610650a2ec7e76b325e7984e06b32ffb61cfd6bc6",
+          "audioSeconds": 5.328
+        },
+        {
+          "id": "lm2-rs-08",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-22",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-rs-08"
+            }
+          ],
+          "audioSha256": "8f8f7d7f6a792347817ae858196b7fcae00bc69a0a66fbb1b14306b16e97d597",
+          "audioSeconds": 4.824
+        },
+        {
+          "id": "lm2-rs-09",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-23",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-rs-09"
+            }
+          ],
+          "audioSha256": "15ded4047f64a39e0e07c2362b04eeaf647ab0240099f4ed86a10112c60a55ee",
+          "audioSeconds": 5.976
+        },
+        {
+          "id": "lm2-rs-10",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-24",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-rs-10"
+            }
+          ],
+          "audioSha256": "b38d46eff0f6f8e1ac1b2742439455cb94439671a30934edf0aa968d9866f8f9",
+          "audioSeconds": 4.464
+        },
+        {
+          "id": "lm2-rl-01",
+          "type": "rl",
+          "origins": [
+            {
+              "kind": "existing-speaking-neural",
+              "file": "content/speaking-bank.js",
+              "questionId": "rl-3",
+              "manifest": "content/speaking-audio-manifest.js"
+            }
+          ],
+          "audioSha256": "0690273f1ab8d3bb2224e9d5d3057dead01690633f605bbf4753b6630da76a8e",
+          "audioSeconds": 78.36
+        },
+        {
+          "id": "lm2-rl-02",
+          "type": "rl",
+          "origins": [
+            {
+              "kind": "existing-speaking-neural",
+              "file": "content/speaking-bank.js",
+              "questionId": "rl-4",
+              "manifest": "content/speaking-audio-manifest.js"
+            }
+          ],
+          "audioSha256": "bcd6d30d94d13787042dd9e3f87be64e671116870f28d629e17f7ee54b263e23",
+          "audioSeconds": 74.04
+        },
+        {
+          "id": "lm2-asq-01",
+          "type": "asq",
+          "origins": [
+            "content/full-mock/papers/full-mock-1.v2.json",
+            "fm1-asq-01",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-asq-01"
+            }
+          ],
+          "audioSha256": "37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a",
+          "audioSeconds": 3.6
+        },
+        {
+          "id": "lm2-asq-02",
+          "type": "asq",
+          "origins": [
+            "content/full-mock/papers/full-mock-1.v2.json",
+            "fm1-asq-02",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-asq-02"
+            }
+          ],
+          "audioSha256": "f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62",
+          "audioSeconds": 3.36
+        },
+        {
+          "id": "lm2-asq-03",
+          "type": "asq",
+          "origins": [
+            "content/full-mock/papers/full-mock-1.v2.json",
+            "fm1-asq-03",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-asq-03"
+            }
+          ],
+          "audioSha256": "cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3",
+          "audioSeconds": 3.984
+        },
+        {
+          "id": "lm2-asq-04",
+          "type": "asq",
+          "origins": [
+            "content/full-mock/papers/full-mock-1.v2.json",
+            "fm1-asq-04",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-asq-04"
+            }
+          ],
+          "audioSha256": "3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6",
+          "audioSeconds": 3.048
+        },
+        {
+          "id": "lm2-asq-05",
+          "type": "asq",
+          "origins": [
+            "content/full-mock/papers/full-mock-1.v2.json",
+            "fm1-asq-05",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-asq-05"
+            }
+          ],
+          "audioSha256": "47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0",
+          "audioSeconds": 3.192
+        },
+        {
+          "id": "lm2-sgd-01",
+          "type": "sgd",
+          "origins": [
+            "content/speaking-bank.js",
+            "sgd-user-20261030-01",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-sgd-01"
+            }
+          ],
+          "audioSha256": "8cdebdaa7a68690d5784888115bf7b32d427d33132e77676f993fb6c809c8438",
+          "audioSeconds": 159.36
+        },
+        {
+          "id": "lm2-sgd-02",
+          "type": "sgd",
+          "origins": [
+            "content/speaking-bank.js",
+            "sgd-user-20261030-02",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-2",
+              "questionId": "fm2-sgd-02"
+            }
+          ],
+          "audioSha256": "36d2764184a9c277beba8b4dc295699fcaa505fc89f6345cdfaeb6ff21dde328",
+          "audioSeconds": 145.704
+        },
+        {
+          "id": "lm2-sst-01",
+          "type": "sst",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "pred26-sst-16",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "700a24cd7ef2762246f41d34b7e7a8b43cb57f9ad57a5897bedbb0578fa441c2",
+          "audioSeconds": 61.87200000000146
+        },
+        {
+          "id": "lm2-lmcma-02",
+          "type": "lmcma",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "listen-lmcma-sst-food-waste",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "e301055a421c9536b017fa732a577709bad91f607814517c035b37df42de7128",
+          "audioSeconds": 74.23200000000192
+        },
+        {
+          "id": "lm2-lmcma-03",
+          "type": "lmcma",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "listen-lmcma-sst-hybrid-work",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "5f92a3d545f178c4d60c4651fc9dcec75f189c236eda9ad0aee1b92bc9ebeb2b",
+          "audioSeconds": 78.72000000000209
+        },
+        {
+          "id": "lm2-lfi-04",
+          "type": "lfi",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "listen-lfi-pred26-sst-06",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "9726b222067a368fcf9585f9feeecb1d22cbb4a8b8ee4403fb5091abbcfbbb04",
+          "audioSeconds": 62.04000000000146
+        },
+        {
+          "id": "lm2-lfi-05",
+          "type": "lfi",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "listen-lfi-pred26-sst-07",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "818c4ca080bc7cdb03c9efe5af9ca9426b92e26e6763751d06254883fc2b5b4c",
+          "audioSeconds": 61.536000000001444
+        },
+        {
+          "id": "lm2-hcs-06",
+          "type": "hcs",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "listen-hcs-sst-public-transport",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "6da6514f452b96036df49e8718ad9b42d33ab6dd7c667ce925f8f3ac446b2282",
+          "audioSeconds": 72.19200000000184
+        },
+        {
+          "id": "lm2-hcs-07",
+          "type": "hcs",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "listen-hcs-sst-digital-archives",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "557888b121c08938cdf54cf91e813a8b95df148ce586c248e396373ae52dfc6d",
+          "audioSeconds": 67.87200000000168
+        },
+        {
+          "id": "lm2-lmcsa-08",
+          "type": "lmcsa",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "listen-lmcsa-sst-shared-workspaces",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "ca1298c3c1bd51d8f61ebd3fbb733955cda1012beb7cf09c176acdf5f29b11e8",
+          "audioSeconds": 72.88800000000187
+        },
+        {
+          "id": "lm2-lmcsa-09",
+          "type": "lmcsa",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "listen-lmcsa-pred26-sst-01",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "9f182f84014fc348e05385c4835046dd03fa184b85e7026a9ae8fe94687a98c1",
+          "audioSeconds": 61.94400000000146
+        },
+        {
+          "id": "lm2-smw-10",
+          "type": "smw",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "listen-smw-2",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "a65b72f821bfdaf2e48e389425f8fad3928d6df859c12ac44c2963dafa25e71e",
+          "audioSeconds": 30.744000000000277
+        },
+        {
+          "id": "lm2-hiw-11",
+          "type": "hiw",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "listen-hiw-pred26-sst-12",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "9d9b4716d4b085b8bbf040cfd91bd3b35379af088343b2ff5f595b4dc1015dc4",
+          "audioSeconds": 62.088000000001465
+        },
+        {
+          "id": "lm2-hiw-12",
+          "type": "hiw",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "listen-hiw-pred26-sst-13",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "feab05fa3ca7b4c4d8bf7a2d663101b574a3df44d21832279e32e45421dbab91",
+          "audioSeconds": 61.87200000000146
+        },
+        {
+          "id": "lm2-wfd-13",
+          "type": "wfd",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "wfd-practice-04",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "f1d0d8d0b83bdd42ff1b83697c9d1248c97fa585b3d403fc3d2c54fc36a35805",
+          "audioSeconds": 6.216000000000005
+        },
+        {
+          "id": "lm2-wfd-14",
+          "type": "wfd",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "wfd-practice-05",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "5e95a51b329e783782c61ef26e5bf28a489f1177733b6b0c760f7ace2fce303a",
+          "audioSeconds": 6.288000000000005
+        },
+        {
+          "id": "lm2-wfd-15",
+          "type": "wfd",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-2",
+              "questionId": "wfd-practice-06",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "83f455f092a5bd3f4a4120a7cbb933591294bf6c6d171c5c6897b37025c56fd4",
+          "audioSeconds": 5.784000000000004
+        }
+      ],
+      "audience": "Existing signed-in Listening mock users; new attempts only.",
+      "paperHash": "01f0f2493d03bd23917aaf8a3034ea2e992cde9670b6d82b917142913555f7c3"
+    },
+    {
+      "id": "listening-mock-3",
+      "title": "Listening Sectional Mock 3",
+      "version": 1,
+      "questionCount": 34,
+      "counts": {
+        "rs": 10,
+        "rl": 2,
+        "asq": 5,
+        "sgd": 2,
+        "sst": 1,
+        "lmcma": 2,
+        "lfi": 2,
+        "hcs": 2,
+        "lmcsa": 2,
+        "smw": 1,
+        "hiw": 2,
+        "wfd": 3
+      },
+      "order": [
+        "rs",
+        "rl",
+        "asq",
+        "sgd",
+        "sst",
+        "lmcma",
+        "lfi",
+        "hcs",
+        "lmcsa",
+        "smw",
+        "hiw",
+        "wfd"
+      ],
+      "estimatedMinutes": 55,
+      "clocks": {
+        "spoken": "Existing per-task prompt, preparation and response windows",
+        "sstSeconds": 600,
+        "listeningSharedSeconds": 1500
+      },
+      "sources": [
+        {
+          "id": "lm3-rs-01",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-01",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-rs-01"
+            }
+          ],
+          "audioSha256": "b8ec80a7133550fe0b2fd341ae7f91d47844ef6db4a515469809f78dc39c5ddb",
+          "audioSeconds": 5.184
+        },
+        {
+          "id": "lm3-rs-02",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-07",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-rs-02"
+            }
+          ],
+          "audioSha256": "66d59c8b7508cf388c86f9bd50ff87e6aead9a60c445cbccb2c9114a7547d8cf",
+          "audioSeconds": 5.064
+        },
+        {
+          "id": "lm3-rs-03",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-11",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-rs-03"
+            }
+          ],
+          "audioSha256": "95b66cacc2d7b5b4e12b7b5c4c16691ebc22b46308e416cac84e444b67e7b7d2",
+          "audioSeconds": 5.112
+        },
+        {
+          "id": "lm3-rs-04",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-25",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-rs-04"
+            }
+          ],
+          "audioSha256": "d5c7974a7377976286b61c319a38174f9a5edae6d45b4b6f99a2a0eb0423a5b9",
+          "audioSeconds": 5.064
+        },
+        {
+          "id": "lm3-rs-05",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-29",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-rs-05"
+            }
+          ],
+          "audioSha256": "4f4e357fb6c33f912469ee77c93e263a30d5557b0a0f6e5af345fecb251829c8",
+          "audioSeconds": 5.256
+        },
+        {
+          "id": "lm3-rs-06",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-30",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-rs-06"
+            }
+          ],
+          "audioSha256": "50fc68cfe37f9b4e6c14a533b9ce97584d03a9abf16a24b708220ac93dc50eee",
+          "audioSeconds": 5.04
+        },
+        {
+          "id": "lm3-rs-07",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-31",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-rs-07"
+            }
+          ],
+          "audioSha256": "63208dd37a5fc66ad8df2c0e1d57b70aaabad32d3694dd55a0e9774b39e152f4",
+          "audioSeconds": 4.704
+        },
+        {
+          "id": "lm3-rs-08",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-32",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-rs-08"
+            }
+          ],
+          "audioSha256": "91f169682476d631c7103c56d3c8ae55ce231ef5911f8f6790da2e2dea843396",
+          "audioSeconds": 3.984
+        },
+        {
+          "id": "lm3-rs-09",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-33",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-rs-09"
+            }
+          ],
+          "audioSha256": "281c568293b9863a797ccee11f166da761ac2e64cabc7c18cc7159edc03d32e1",
+          "audioSeconds": 5.304
+        },
+        {
+          "id": "lm3-rs-10",
+          "type": "rs",
+          "origins": [
+            "content/writing-predictions-sep-2026.js",
+            "pred26-wfd-34",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-rs-10"
+            }
+          ],
+          "audioSha256": "3d649ae259abc08febb8c76b5c75b20750bd607632720409e66fdf6d16cdb57a",
+          "audioSeconds": 3.432
+        },
+        {
+          "id": "lm3-rl-01",
+          "type": "rl",
+          "origins": [
+            {
+              "kind": "existing-speaking-neural",
+              "file": "content/speaking-bank.js",
+              "questionId": "rl-5",
+              "manifest": "content/speaking-audio-manifest.js"
+            }
+          ],
+          "audioSha256": "4670f59e4fed130de732b2de47ce1973c6910b02c1340ba41d9d09303cbb3cb7",
+          "audioSeconds": 73.632
+        },
+        {
+          "id": "lm3-rl-02",
+          "type": "rl",
+          "origins": [
+            {
+              "kind": "existing-speaking-neural",
+              "file": "content/speaking-bank.js",
+              "questionId": "rl-2",
+              "manifest": "content/speaking-audio-manifest.js"
+            }
+          ],
+          "audioSha256": "b39c6e91228fe257a82f609c2de004b1442ea0329fcd0963cded5f5edf3f332a",
+          "audioSeconds": 79.2
+        },
+        {
+          "id": "lm3-asq-01",
+          "type": "asq",
+          "origins": [
+            "content/full-mock/papers/full-mock-1.v2.json",
+            "fm1-asq-01",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-asq-01"
+            }
+          ],
+          "audioSha256": "37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a",
+          "audioSeconds": 3.6
+        },
+        {
+          "id": "lm3-asq-02",
+          "type": "asq",
+          "origins": [
+            "content/full-mock/papers/full-mock-1.v2.json",
+            "fm1-asq-02",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-asq-02"
+            }
+          ],
+          "audioSha256": "f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62",
+          "audioSeconds": 3.36
+        },
+        {
+          "id": "lm3-asq-03",
+          "type": "asq",
+          "origins": [
+            "content/full-mock/papers/full-mock-1.v2.json",
+            "fm1-asq-03",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-asq-03"
+            }
+          ],
+          "audioSha256": "cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3",
+          "audioSeconds": 3.984
+        },
+        {
+          "id": "lm3-asq-04",
+          "type": "asq",
+          "origins": [
+            "content/full-mock/papers/full-mock-1.v2.json",
+            "fm1-asq-04",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-asq-04"
+            }
+          ],
+          "audioSha256": "3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6",
+          "audioSeconds": 3.048
+        },
+        {
+          "id": "lm3-asq-05",
+          "type": "asq",
+          "origins": [
+            "content/full-mock/papers/full-mock-1.v2.json",
+            "fm1-asq-05",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-asq-05"
+            }
+          ],
+          "audioSha256": "47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0",
+          "audioSeconds": 3.192
+        },
+        {
+          "id": "lm3-sgd-01",
+          "type": "sgd",
+          "origins": [
+            "content/speaking-bank.js",
+            "sgd-user-20261030-03",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-sgd-01"
+            }
+          ],
+          "audioSha256": "8a1df71a16d0ffcd7bdc77475035ccb655dafe4dabd70a3a743d654ec05a5654",
+          "audioSeconds": 166.704
+        },
+        {
+          "id": "lm3-sgd-02",
+          "type": "sgd",
+          "origins": [
+            "content/speaking-bank.js",
+            "sgd-user-20261030-04",
+            {
+              "kind": "retained-frozen-recording",
+              "paper": "full-mock-3",
+              "questionId": "fm3-sgd-02"
+            }
+          ],
+          "audioSha256": "e62526aee63bac04b4022a449efbadf7c2da7e1578c28f4452f6825ba6e4d6e3",
+          "audioSeconds": 151.368
+        },
+        {
+          "id": "lm3-sst-01",
+          "type": "sst",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "pred26-sst-17",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "fb5c05c3b61486d36bf15b7fc67f757c86de0798157b73d6c416cc6f6f07ccf2",
+          "audioSeconds": 61.87200000000146
+        },
+        {
+          "id": "lm3-lmcma-02",
+          "type": "lmcma",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "listen-lmcma-sst-community-museums",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "603e21c2461cc3a2b238612f6d9feff516f3c55de7f9794445e631044f98822f",
+          "audioSeconds": 81.02400000000218
+        },
+        {
+          "id": "lm3-lmcma-03",
+          "type": "lmcma",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "listen-lmcma-sst-citizen-science",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "4e1b8bea20949abb612204b80799a2dd8c9bf96a54c94c2b8defbf40fcb1b989",
+          "audioSeconds": 83.42400000000227
+        },
+        {
+          "id": "lm3-lfi-04",
+          "type": "lfi",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "listen-lfi-pred26-sst-08",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "bd52c07cb153689473d16ad82111e0a5064b54c9936342baeac94d9c574a73fb",
+          "audioSeconds": 62.064000000001464
+        },
+        {
+          "id": "lm3-lfi-05",
+          "type": "lfi",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "listen-lfi-pred26-sst-09",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "9aafb44512d7310e46ca2eb41716593d915d388204be3a19b6be64ef3ebf71b7",
+          "audioSeconds": 61.70400000000145
+        },
+        {
+          "id": "lm3-hcs-06",
+          "type": "hcs",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "listen-hcs-sst-urban-pollinators",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "db836e4c82a57bd17fcd5e6c20ae673048147d1f96d3ed19d49bc13b7456e635",
+          "audioSeconds": 78.43200000000208
+        },
+        {
+          "id": "lm3-hcs-07",
+          "type": "hcs",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "listen-hcs-sst-peer-feedback",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "2607ea790b1b2bec8739d897b09389c0dbeda1635f7913e490508f679061fa6f",
+          "audioSeconds": 64.29600000000154
+        },
+        {
+          "id": "lm3-lmcsa-08",
+          "type": "lmcsa",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "listen-lmcsa-pred26-sst-02",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "e069e242540a4c33650975346063099c73e2cf1d4c524f1bc1fb889e6c167e04",
+          "audioSeconds": 62.01600000000146
+        },
+        {
+          "id": "lm3-lmcsa-09",
+          "type": "lmcsa",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "listen-lmcsa-pred26-sst-03",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "571464d26dc39c8da7d85fdd63b5ca1909f86e8b385d2a5d07aca4f01a130431",
+          "audioSeconds": 62.20800000000147
+        },
+        {
+          "id": "lm3-smw-10",
+          "type": "smw",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "listen-smw-3",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "0bc9dece15edd084c0f8a7c1524c704116c48884b7a9339b56eee6d12b6506fb",
+          "audioSeconds": 29.52000000000023
+        },
+        {
+          "id": "lm3-hiw-11",
+          "type": "hiw",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "listen-hiw-pred26-sst-14",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "30d9f446e909b84229e38fc9b04ed91622ff06df37f91bc8aeeba89071791d31",
+          "audioSeconds": 61.51200000000144
+        },
+        {
+          "id": "lm3-hiw-12",
+          "type": "hiw",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "listen-hiw-pred26-sst-15",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "af75d2e01390de27c7c8510610f9c7c7c1226aa39028ed67376a03ef42e21230",
+          "audioSeconds": 61.46400000000144
+        },
+        {
+          "id": "lm3-wfd-13",
+          "type": "wfd",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "wfd-practice-07",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "b52ad485a4e393dc3ff05ef046f99b792d74c7a240d49d3f9ac515b6a2aaaa8c",
+          "audioSeconds": 5.184000000000004
+        },
+        {
+          "id": "lm3-wfd-14",
+          "type": "wfd",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "wfd-practice-08",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "296ade8c5e4332157e8380e6e7ee948f229c2f7800860b019a67811ac1685811",
+          "audioSeconds": 5.952000000000004
+        },
+        {
+          "id": "lm3-wfd-15",
+          "type": "wfd",
+          "origins": [
+            {
+              "kind": "existing-listening-sectional",
+              "paper": "listening-mock-3",
+              "questionId": "wfd-practice-09",
+              "sourceFile": "content/listening-mocks.js"
+            }
+          ],
+          "audioSha256": "2e54930525e330659d4a219074d3f31b69333068b6f89a7d74d1962d316f6e3a",
+          "audioSeconds": 6.0480000000000045
+        }
+      ],
+      "audience": "Existing signed-in Listening mock users; new attempts only.",
+      "paperHash": "b6762ebf289ede259eaca2f32883f4b09743e830f944515c50f0974a92dc3964"
+    }
+  ],
+  "scoringSourcesDigest": "308e6555f51021673e2f27b4ab2f17f6600dd0750e35a96f5f9d120c09138a54"
+}

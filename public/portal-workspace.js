@@ -31,9 +31,10 @@
     dictation: { pane: 'writingLabScreen', nav: 'nav-practice-hub', labTab: 'wfd', title: 'Write From Dictation', path: 'dictation', eyebrow: 'Listening Practice · Dictation', context: '' },
     ...Object.fromEntries(Object.entries({lmcma:'Multiple Choice, Multiple Answers',lfi:'Fill in the Blanks',hcs:'Highlight Correct Summary',lmcsa:'Multiple Choice, Single Answer',smw:'Select Missing Word',hiw:'Highlight Incorrect Words'}).map(([type,title])=>['listening-'+type,{pane:'writingLabScreen',nav:'nav-practice-hub',labTab:type,title,path:'listening-'+type,eyebrow:'Listening Practice',context:''}])),
     'listening-mocks': { pane:'mockTestsPane',nav:'nav-mock-tests',catalogueModule:'listening',title:'Listening sectional mocks',path:'listening-mocks',eyebrow:'Mock Tests · Listening',context:'' },
-    'listening-run': { pane:'writingLabScreen',nav:'nav-mock-tests',labTab:'mocks',title:'Listening sectional mock',path:'listening-attempt',eyebrow:'Mock Tests · Listening',context:'' },
-    'listening-history': { pane:'writingLabScreen',nav:'nav-saved-results',labTab:'history',title:'Listening mock attempts',path:'listening-mock-attempts',eyebrow:'Mock Tests · Saved attempts',context:'' },
+    'listening-run': { pane:'fullMockPane',nav:'nav-mock-tests',fullMock:true,listeningMock:true,title:'Listening sectional mock',path:'listening-attempt',eyebrow:'Mock Tests · Listening',context:'' },
+    'listening-history': { pane:'fullMockPane',nav:'nav-saved-results',fullMock:true,listeningMock:true,mockHistory:true,title:'Listening mock attempts',path:'listening-mock-attempts',eyebrow:'Mock Tests · Saved attempts',context:'' },
     'writing-mocks': { pane: 'mockTestsPane', nav: 'nav-mock-tests', catalogueModule: 'writing', title: 'Writing sectional mocks', path: 'writing-mocks', eyebrow: 'Mock Tests · Writing', context: '' },
+    'listening-legacy-history': {pane:'writingLabScreen',nav:'nav-saved-results',labTab:'history',title:'Earlier Listening attempts',path:'listening-earlier-attempts',eyebrow:'Mock Tests · Saved attempts',context:''},
     'writing-run': { pane: 'writingLabScreen', nav: 'nav-mock-tests', labTab: 'mocks', title: 'Writing sectional mock', path: 'writing-attempt', eyebrow: 'Mock Tests · Writing', context: '' },
     'writing-history': { pane: 'writingLabScreen', nav: 'nav-saved-results', labTab: 'history', title: 'Writing mock attempts', path: 'writing-mock-attempts', eyebrow: 'Mock Tests · Saved attempts', context: '' },
     library: { pane: 'libraryPane', title: 'Essay Library', path: 'library', eyebrow: 'Review · Saved writing', context: '' },
@@ -114,7 +115,7 @@
       if(changed&&current==='practice-sets')win.RandomPractice?.leave?.();
       if (changed && routes[current]?.pane === 'speakingPane') win.SpeakingPractice?.leave();
       if (changed && routes[current]?.pane === 'speakingMockPane') win.SpeakingMock?.leave();
-      if (changed && routes[current]?.pane === 'fullMockPane') win.FullMock?.leave();
+      if (changed && routes[current]?.pane === 'fullMockPane') {win.FullMock?.leave();win.ListeningMock?.leave();}
       if (changed && routes[current]?.pane === 'readingPane') win.ReadingPractice?.leave();
       if (changed && routes[current]?.pane === 'writingLabScreen' && routes[section]?.pane !== 'writingLabScreen') {
         win.WritingLab?.leave?.();
@@ -209,7 +210,7 @@
         ready = true;
         onNavigate(routeFromHash(win.location.hash), { ...requestFromHash(win.location.hash,win.history.state,getUserId()), history: 'replace', focus: false });
       },
-      reset() { win.PortalExamMode?.reset(); win.ReadingPractice?.reset(); win.SpeakingPractice?.reset(); win.SpeakingMock?.reset(); win.FullMock?.reset(); win.WritingLab?.reset?.(); ready = false; current = null; closeMenu(); },
+      reset() { win.PortalExamMode?.reset(); win.ReadingPractice?.reset(); win.SpeakingPractice?.reset(); win.SpeakingMock?.reset(); win.FullMock?.reset(); win.ListeningMock?.reset(); win.WritingLab?.reset?.(); ready = false; current = null; closeMenu(); },
       closeMenu
     };
   }

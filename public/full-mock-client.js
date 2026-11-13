@@ -1,7 +1,11 @@
 (function (root, factory) {
   const api = factory();
   if (typeof module === 'object' && module.exports) module.exports = api;
-  else root.FullMock = api.createController(root, { getUserId: () => typeof currentUserId === 'undefined' ? '' : currentUserId });
+  else {
+    const getUserId=()=>typeof currentUserId==='undefined'?'':currentUserId;
+    root.FullMock=api.createController(root,{getUserId});
+    root.ListeningMock=api.createController(root,{getUserId,kind:'listening'});
+  }
 })(typeof globalThis === 'undefined' ? this : globalThis, function () {
   'use strict';
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -36,12 +40,12 @@
     return (q.passage ? '<p class="fm-passage">' + esc(q.passage) + '</p>' : '') + '<fieldset class="fm-choices"><legend>' + esc(q.prompt || 'Select the best response.') + '</legend>'
       + (q.choices || []).map((choice, index) => '<label><input type="' + (multiple ? 'checkbox' : 'radio') + '" name="fm-choice" data-fm-choice="' + index + '"' + (values.includes(index) ? ' checked' : '') + '><span>' + esc(choice) + '</span></label>').join('') + '</fieldset>';
   }
-  function createPendingStore(env) {
+  function createPendingStore(env,kind='full') {
     let opened;
     function database() {
       if (!opened) opened = new Promise((resolve, reject) => {
         if (!env.indexedDB) { reject(Error('Website storage is required to keep your test responses safe.')); return; }
-        const request = env.indexedDB.open('ipt-full-mock-v1', 1);
+        const request = env.indexedDB.open(kind==='listening'?'ipt-listening-mock-v1':'ipt-full-mock-v1', 1);
         request.onupgradeneeded = () => request.result.createObjectStore('pending', { keyPath: 'key' });
         request.onsuccess = () => resolve(request.result); request.onerror = () => reject(request.error || Error('Website storage could not open.'));
       }).catch(error => { opened = null; throw error; });
@@ -65,8 +69,9 @@
     }
     return { put: (key, value) => write('put', key, value), delete: key => write('delete', key), list };
   }
-  function createController(env, { getUserId = () => env.currentUserId || '', pending = createPendingStore(env) } = {}) {
-    const doc = env.document, OWNER = 'full-mock';
+  function createController(env, { getUserId = () => env.currentUserId || '', pending, kind='full' } = {}) {
+    pending ||= createPendingStore(env,kind);
+    const doc = env.document, OWNER = kind==='listening'?'listening-mock':'full-mock',apiBase=kind==='listening'?'/api/listening-mocks':'/api/full-mocks',mockLabel=kind==='listening'?'Listening Mock':'Full Mock';
     let host, owner = '', generation = 0, attempt = null, claim = null, stream = null, context = null, analyser = null,
       timer = null, poller = null, flushing = false, loadingState = false, advancing = false, capture = null,
       output = null, outputUrl = null, imageUrl = null, played = '', rendering = '', draft = [], sequence = -1,
@@ -106,7 +111,7 @@
       const headers = { 'x-session-token': sessionToken(), ...(claim ? { 'x-full-mock-control': claim.controlToken } : {}), ...options.headers };
       if (body !== undefined) headers['Content-Type'] = options.raw ? options.mime : 'application/json';
       let reply;
-      try { reply = await env.fetch('/api/full-mocks' + route, { method: options.method || (body === undefined ? 'GET' : 'POST'), headers,
+      try { reply = await env.fetch(apiBase + route, { method: options.method || (body === undefined ? 'GET' : 'POST'), headers,
         body: body === undefined ? undefined : options.raw ? body : JSON.stringify(body), cache: 'no-store', signal: env.AbortSignal?.timeout?.(20000) }); }
       catch { throw Object.assign(Error(attempt?.status === 'submitted' ? 'Connection interrupted. Your submitted answers are saved. Retry when connected.' : 'Connection interrupted. Responses on this device will retry when connected; the exam clock continues.'), { network: true }); }
       const data = await reply.json(); if (uid() !== expectedOwner || owner !== expectedOwner) throw Error('Your account changed.');
@@ -126,18 +131,21 @@
     async function open(options = {}) {
       reset(); owner = uid(); if (!owner) return;
       host = doc.getElementById('fullMockPane'); const ticket = ++generation;
-      shell('<p role="status">Loading Full Mock…</p>');
+      shell('<p role="status">Loading '+mockLabel+'…</p>');
       try {
-        const [catalog, history] = await Promise.all([api('/catalog'), api('/attempts')]); if (!valid(ticket)) return;
+        const [catalog, history,legacy] = await Promise.all([api('/catalog'), api('/attempts'),kind==='listening'?api('/legacy-attempts'):Promise.resolve([])]); if (!valid(ticket)) return;
         (catalog.papers || []).forEach(paper => paperTitles.set(paper.id, paper.title));
         if (options.attemptId) {
           if (history.some(row => row.id === options.attemptId && row.status === 'submitted')) { await resume(options.attemptId, 'submitted'); return; }
-          shell('<h1>Continue your full mock</h1><p>Your saved timer continues while you reconnect.</p><button class="portal-button primary" data-fm="resume" data-id="' + esc(options.attemptId) + '">Continue</button><p id="fm-notice" role="status"></p>'); return;
+          shell('<h1>Continue your mock</h1><p>Your saved timer continues while you reconnect.</p><button class="portal-button primary" data-fm="resume" data-id="' + esc(options.attemptId) + '">Continue</button><p id="fm-notice" role="status"></p>'); return;
         }
-        shell('<header class="fm-hub-header"><span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><h1>Full Mock Tests</h1><p>A continuous test covering Speaking, Writing, Reading and Listening.</p></header>'
-          + (catalog.available ? catalog.papers.map(paper => '<article class="fm-card"><span class="fm-badge">Full Mock</span><h2>' + esc(paper.title) + '</h2><p>65 scored questions · 22 task types · unscored introduction</p><p>Use headphones and a working microphone. Audio plays once, answers save as you work, and you cannot return to earlier questions.</p><button type="button" class="portal-button primary" data-fm="setup" data-paper="' + esc(paper.id) + '">Check equipment</button></article>').join('') : '<p>Full mocks are being prepared. Your sectional mocks remain available.</p>')
-          + '<h2>Saved attempts</h2>' + reports.history(history) + '<p id="fm-notice" role="status"></p>');
-      } catch (error) { if (valid(ticket)) { shell('<h1>Full Mock</h1><p id="fm-notice" role="alert"></p><button class="portal-button" data-fm="reload">Retry</button>'); notice(error.message, true); } }
+        if(options.paperId){if(!paperTitles.has(options.paperId))throw Error('This paper is unavailable.');setup(options.paperId);return;}
+        const listening=kind==='listening';
+        const earlier=legacy.length?'<h2>Earlier Listening attempts</h2><p>These saved attempts retain their original questions and results.</p>'+legacy.map(row=>'<article class="fm-card"><h3>'+esc(row.title)+'</h3><p>'+esc(row.questionCount)+' questions · '+esc(row.status==='active'?'In progress':row.score90==null?'Assessing':row.score90+' /90')+'</p><button type="button" class="portal-button" data-fm="legacy" data-id="'+esc(row.id)+'">'+(row.status==='active'?'Continue':'Open saved result')+'</button></article>').join(''):'';
+        shell('<header class="fm-hub-header"><span class="fm-eyebrow">IPT BRISBANE · '+(listening?'LISTENING':'FULL MOCK')+'</span><h1>'+(listening?(options.historyOnly?'Listening mock attempts':'Listening Mock Tests'):'Full Mock Tests')+'</h1><p>'+(listening?'Speaking tasks that contribute to Listening, followed by the Listening section.':'A continuous test covering Speaking, Writing, Reading and Listening.')+'</p></header>'
+          + (options.historyOnly?'':catalog.available ? catalog.papers.map(paper => '<article class="fm-card"><span class="fm-badge">'+(listening?'Listening':'Full Mock')+'</span><h2>' + esc(paper.title) + '</h2><p>'+esc(paper.questionCount)+' scored questions · '+esc(paper.taskTypeCount)+' task types'+(listening?' · about '+esc(paper.minutes)+' minutes':' · unscored introduction')+'</p><p>Use headphones and a working microphone. Audio plays once, answers save as you work, and you cannot return to earlier questions.</p><button type="button" class="portal-button primary" data-fm="setup" data-paper="' + esc(paper.id) + '">Check equipment</button></article>').join('') : '<p>Mocks are being prepared. Your saved attempts remain available.</p>')
+          + '<h2>Saved attempts</h2>' + reports.history(history,{module:kind}) + earlier+'<p id="fm-notice" role="status"></p>');
+      } catch (error) { if (valid(ticket)) { shell('<h1>'+mockLabel+'</h1><p id="fm-notice" role="alert"></p><button class="portal-button" data-fm="reload">Retry</button>'); notice(error.message, true); } }
     }
     async function microphone() {
       if (stream?.getAudioTracks().some(track => track.readyState !== 'ended')) return;
@@ -234,7 +242,7 @@
       const ticket = generation;
       equipmentStarting = true; equipmentControls();
       try {
-        if (!env.PortalExamMode?.prepare) throw Error('Reload the portal to start this full mock in fullscreen.');
+        if (!env.PortalExamMode?.prepare) throw Error('Reload the portal to start this mock in fullscreen.');
         const ready = await env.PortalExamMode.prepare(OWNER, host, { immediate:true });
         if (!ready || !valid(ticket)) return;
         await unlockAudio(); if (!valid(ticket)) return; let id;
@@ -255,7 +263,7 @@
       try {
         const value = await api('/attempts/' + id); if (!valid(ticket)) return; attempt = value;
         if (knownStatus !== 'submitted'&&!value.pause) {
-          if (!env.PortalExamMode?.prepare) throw Error('Reload the portal to continue this full mock in fullscreen.');
+          if (!env.PortalExamMode?.prepare) throw Error('Reload the portal to continue this mock in fullscreen.');
           const ready = await env.PortalExamMode.prepare(OWNER, host, { immediate:true });
           if (!ready || !valid(ticket)) return;
         }
@@ -337,7 +345,7 @@
       const target = doc.getElementById(targetId); if (!target || reviewUrls.has(targetId)) return;
       button.disabled = true;
       try {
-        const route = '/api/full-mocks/attempts/' + encodeURIComponent(id) + '/review/' + encodeURIComponent(item.question.id) + (kind === 'recording' ? '/recordings/' + encodeURIComponent(segment) : '/media/' + encodeURIComponent(asset));
+        const route = apiBase+'/attempts/' + encodeURIComponent(id) + '/review/' + encodeURIComponent(item.question.id) + (kind === 'recording' ? '/recordings/' + encodeURIComponent(segment) : '/media/' + encodeURIComponent(asset));
         const reply = await env.fetch(route, { headers:{ 'x-session-token':sessionToken() }, cache:'no-store', signal:env.AbortSignal?.timeout?.(20000) });
         if (!reply.ok) throw Error('Review media could not load. Retry when connected.');
         const blob = await reply.blob();
@@ -365,20 +373,20 @@
         syncReport(); return;
       }
       if(attempt.pause){stopCapture();stopPrompt();rendering='paused:'+attempt.pause.id;env.clearInterval(timer);env.clearInterval(poller);env.PortalExamMode?.set(OWNER,false,host);
-        shell('<section class="fm-transition"><span class="fm-eyebrow">FULL MOCK PAUSED</span><h1>'+esc(attempt.title)+'</h1><p>Question '+(attempt.index||'Introduction')+' of 65. Your remaining time, answer and recorded audio are saved.</p><p id="fm-save-status" role="status">Saving any final recording segment…</p><p id="fm-notice" role="status"></p><button type="button" class="portal-button primary" data-fm="unpause">Continue full mock</button></section>');flush();return;}
+        shell('<section class="fm-transition"><span class="fm-eyebrow">'+mockLabel.toUpperCase()+' PAUSED</span><h1>'+esc(attempt.title)+'</h1><p>Question '+(attempt.index||'Introduction')+' of '+attempt.scoredQuestionCount+'. Your remaining time, answer and recorded audio are saved.</p><p id="fm-save-status" role="status">Saving any final recording segment…</p><p id="fm-notice" role="status"></p><button type="button" class="portal-button primary" data-fm="unpause">Continue mock</button></section>');flush();return;}
       if (attempt.transition) {
         const part = attempt.transition, key = 'transition:' + part.id;
         if (rendering === key) return;
         stopCapture(); stopPrompt(); rendering = key;
-        shell('<section class="fm-transition" aria-labelledby="fm-part-title"><span class="fm-eyebrow">PART ' + part.part + ' OF 3</span><h1 id="fm-part-title">' + esc(part.title) + '</h1><p>Read the instructions before you begin.</p><ul>' + part.details.map(text => '<li>' + esc(text) + '</li>').join('') + '</ul><p>You cannot return to a completed question or an earlier part.</p><p>Timing begins when you select Begin section.</p>' + volumeControl() + '<p id="fm-notice" role="status"></p><button type="button" class="portal-button primary" data-fm="begin-section">Begin section →</button></section>');
+        shell('<section class="fm-transition" aria-labelledby="fm-part-title"><span class="fm-eyebrow">PART ' + part.part + ' OF '+(part.partCount||3)+'</span><h1 id="fm-part-title">' + esc(part.title) + '</h1><p>Read the instructions before you begin.</p><ul>' + part.details.map(text => '<li>' + esc(text) + '</li>').join('') + '</ul><p>You cannot return to a completed question or an earlier part.</p><p>Timing begins when you select Begin section.</p>' + volumeControl() + '<p id="fm-notice" role="status"></p><button type="button" class="portal-button primary" data-fm="begin-section">Begin section →</button></section>');
         return;
       }
       if (rendering === attempt.current.token) return;
       stopCapture(); stopPrompt(); rendering = attempt.current.token; played = ''; cued = ''; sequence = attempt.draftSequence; draft = structuredClone(attempt.draft || []);
       const q = attempt.question;
-      shell((attempt.preview ? '<div class="fm-preview-tools"><button type="button" class="fm-text-button" data-fm="end">Finish test early</button></div>' : '') + '<header class="fm-exam-header"><div><span class="fm-eyebrow">IPT BRISBANE · FULL MOCK</span><strong>' + esc(q.type === 'intro' ? 'Personal Introduction · Not scored' : q.name) + '</strong></div><div class="fm-exam-meta"><span class="fm-badge">Full Mock</span><span>' + (attempt.index === 0 ? 'Introduction' : 'Question ' + attempt.index + ' of 65') + '</span><span class="fm-timer"><small id="fm-clock-label">Time remaining</small><strong id="fm-time" aria-label="Time remaining"></strong></span>' + volumeControl() + '</div></header><main class="fm-exam-body"><p class="fm-instruction">' + esc(q.instruction) + '</p>'
+      shell((attempt.preview ? '<div class="fm-preview-tools"><button type="button" class="fm-text-button" data-fm="end">Finish test early</button></div>' : '') + '<header class="fm-exam-header"><div><span class="fm-eyebrow">IPT BRISBANE · '+mockLabel.toUpperCase()+'</span><strong>' + esc(q.type === 'intro' ? 'Personal Introduction · Not scored' : q.name) + '</strong></div><div class="fm-exam-meta"><span class="fm-badge">Full Mock</span><span>' + (attempt.index === 0 ? 'Introduction' : 'Question ' + attempt.index + ' of '+attempt.scoredQuestionCount) + '</span><span class="fm-timer"><small id="fm-clock-label">Time remaining</small><strong id="fm-time" aria-label="Time remaining"></strong></span>' + volumeControl() + '</div></header><main class="fm-exam-body"><p class="fm-instruction">' + esc(q.instruction) + '</p>'
         + (q.audio ? '<section class="fm-prompt"><span id="fm-audio-status" role="status">Audio will play automatically.</span><button type="button" class="portal-button" data-fm="audio" id="fm-audio-resume" hidden>Resume remaining audio</button></section>' : '')
-        + '<div id="fm-question">' + renderQuestion(q, draft) + '</div>' + (speech(q.type) ? '<button class="portal-button" data-fm="mic" id="fm-mic-resume" hidden>Reconnect microphone</button>' : '') + '<p id="fm-save-status" class="fm-save-status" role="status">Responses save automatically.</p><p id="fm-notice" role="status"></p></main><footer class="fm-exam-footer"><div>' + (speech(q.type) ? '<button class="fm-text-button" data-fm="skip">Skip this item</button>' : '') + '</div><div><button type="button" class="portal-button" data-fm="pause">Pause mock</button> <button class="portal-button primary" id="fm-next" data-fm="next">' + (attempt.index === 65 ? 'Submit test' : 'Next') + ' →</button></div></footer>');
+        + '<div id="fm-question">' + renderQuestion(q, draft) + '</div>' + (speech(q.type) ? '<button class="portal-button" data-fm="mic" id="fm-mic-resume" hidden>Reconnect microphone</button>' : '') + '<p id="fm-save-status" class="fm-save-status" role="status">Responses save automatically.</p><p id="fm-notice" role="status"></p></main><footer class="fm-exam-footer"><div>' + (speech(q.type) ? '<button class="fm-text-button" data-fm="skip">Skip this item</button>' : '') + '</div><div><button type="button" class="portal-button" data-fm="pause">Pause mock</button> <button class="portal-button primary" id="fm-next" data-fm="next">' + (attempt.index === attempt.scoredQuestionCount ? 'Submit test' : 'Next') + ' →</button></div></footer>');
       recoverDraft(rendering).catch(error => notice(error.message, true)); loadMedia(rendering); if (speech(q.type)) prepareSegment(rendering);
       doc.getElementById('fm-question')?.querySelector('textarea,input,select,button')?.focus({ preventScroll: true });
       host.scrollTop = 0; env.scrollTo?.({ top:0, left:0, behavior:'auto' });
@@ -390,7 +398,7 @@
     }
     function stopPrompt() { doc.getElementById('fm-image-dialog')?.close?.(); if (output) { output.pause(); output.removeAttribute?.('src'); output.load?.(); } if (outputUrl) env.URL.revokeObjectURL(outputUrl); outputUrl = null; if (imageUrl) env.URL.revokeObjectURL(imageUrl); imageUrl = null; }
     async function mediaBlob(asset, token) {
-      const reply = await env.fetch('/api/full-mocks/attempts/' + attempt.id + '/media/' + asset, { headers: { 'x-session-token': sessionToken() }, cache: 'no-store' });
+      const reply = await env.fetch(apiBase+'/attempts/' + attempt.id + '/media/' + asset, { headers: { 'x-session-token': sessionToken() }, cache: 'no-store' });
       if (!reply.ok) throw Error('Question media could not load. Your clock continues; the interruption is recorded for review.');
       const blob = await reply.blob(); if (rendering !== token) return null; return blob;
     }
@@ -472,7 +480,7 @@
     }
     async function unpauseMock(){
       if(advancing||!attempt?.pause)return;advancing=true;const ticket=generation,id=attempt.id,pauseId=attempt.pause.id;
-      try{if(!env.PortalExamMode?.prepare)throw Error('Reload the portal to continue this full mock in fullscreen.');
+      try{if(!env.PortalExamMode?.prepare)throw Error('Reload the portal to continue this mock in fullscreen.');
         const ready=await env.PortalExamMode.prepare(OWNER,host,{immediate:true});if(!ready||!valid(ticket))return;
         await unlockAudio();if(!valid(ticket))return;
         await establishClaim();if(!valid(ticket))return;
@@ -569,7 +577,7 @@
       } catch (error) { notice(error.message, true); }
       finally {
         advancing = false; const current = doc.getElementById('fm-question'); if (current) current.inert = false;
-        const next = doc.getElementById('fm-next'); if (next) next.textContent = (attempt?.index === 65 ? 'Submit test' : 'Next') + ' →';
+        const next = doc.getElementById('fm-next'); if (next) next.textContent = (attempt?.index === attempt?.scoredQuestionCount ? 'Submit test' : 'Next') + ' →';
         if (valid(ticket)) { tick(); void flush(); }
       }
     }
@@ -612,6 +620,7 @@
       const button = event.target.closest('[data-fm]'); if (!button || button.disabled) return;
       try {
         switch (button.dataset.fm) {
+          case 'legacy':env.switchSection?.('listening-legacy-history',{labRequest:{attemptId:button.dataset.id}});break;
           case 'image': {
             const dialog=doc.getElementById('fm-image-dialog');
             if(imageUrl&&dialog?.showModal){const picture=dialog.querySelector('img');picture.src=imageUrl;picture.style.width=Math.max(1600,doc.getElementById('fm-image')?.naturalWidth||0)+'px';dialog.showModal();}

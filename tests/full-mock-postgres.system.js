@@ -149,3 +149,18 @@ test('PostgreSQL: competing Speaking timeout publications preserve 17 marks and 
  const result=require('../speaking-mock-report').summarize(saved).azure;assert.equal(result.assessedCount,27);assert.equal(result.excludedCount,0);assert.equal(result.deadlineUnattemptedCount,10);
  const again=await services[1].repair('alice',a.id,body);assert(again.ready);assert.equal((await restarted.get('alice',a.id)).deadlineZeroPublication.at,3000);
 });
+
+test('PostgreSQL: integrated Listening attempts and recording bytes remain isolated from Full Mocks across pools',async t=>{
+ const db=await database(t),lp=require('../listening-mock/papers').registeredPapers()[0],full=createStore({pool:db.first}),listening=createStore({pool:db.pool(),namespace:'listening_mock'});
+ await Promise.all([full.initialise(),listening.initialise()]);const id=randomUUID(),segment=randomUUID();
+ await full.create('alice',id,paper,make,1000);await listening.create('alice',id,lp,(id,at)=>session.create(id,lp,at),1000);
+ await full.putChunk('alice',id,segment,0,'audio/webm',Buffer.from('full-recording'));
+ await listening.putChunk('alice',id,segment,0,'audio/webm',Buffer.from('listening-recording'));
+ const restarted=createStore({pool:db.pool(),namespace:'listening_mock'});await restarted.initialise();
+ assert.equal((await restarted.get('alice',id)).paper.id,lp.id);assert.equal((await full.get('alice',id)).paper.id,paper.id);
+ assert.equal((await restarted.getChunk('alice',id,segment,0)).bytes.toString(),'listening-recording');assert.equal((await full.getChunk('alice',id,segment,0)).bytes.toString(),'full-recording');
+ assert.equal(await restarted.get('bob',id),null);assert.equal(await restarted.getChunk('bob',id,segment,0),null);
+ const starts=await Promise.all([listening,restarted].map(store=>store.create('alice',randomUUID(),lp,(id,at)=>session.create(id,lp,at),2000)));assert(starts.every(row=>row.state.id===id));
+ const other=require('../listening-mock/papers').registeredPapers()[1];await restarted.create('alice',randomUUID(),other,(id,at)=>session.create(id,other,at),2000);
+ assert.equal((await full.list('alice')).length,1);assert.equal((await listening.list('alice')).length,2);
+});

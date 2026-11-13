@@ -62,6 +62,7 @@ jobs:
             .cache/essay-guide-*.png
             .cache/swt-review-*.png
             .cache/swt-mock-*.png
+            .cache/listening-skill-*.png
             .cache/full-mock-flow-*.png
             .cache/reading-history-*.png
             .cache/swt-practice-*.png

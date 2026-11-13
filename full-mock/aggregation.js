@@ -100,4 +100,7 @@ function aggregate(paper, state, {ignorePublication=false}={}) {
     weightingVersion: configured.version, practiceIndexPolicy: configured.practiceIndex, groups, profiles,
     items: rows.map(({ id, type, valid, status, result, exclusion }) => ({ id, type, status, ...(exclusion ? { exclusion } : {}), ...(valid ? { total: result.total, maximum: result.maximum, scores: result.scores, maxima: result.maxima, version: result.version, ...(result.unavailableTraits ? {unavailableTraits:result.unavailableTraits} : {}) } : {}) })) };
 }
-module.exports = { VERSION, COMPLETION_POLICY, availableMarks, inputHash, nativeValid, partialValid, bounds, aggregate };
+function aggregateByPaper(paper,state,options){
+  return paper.module==='listening'?require('../listening-mock/aggregation').aggregate(paper,state,options):aggregate(paper,state,options);
+}
+module.exports = { VERSION, COMPLETION_POLICY, availableMarks, inputHash, nativeValid, partialValid, bounds, aggregate:aggregateByPaper };

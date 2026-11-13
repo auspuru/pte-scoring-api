@@ -12578,8 +12578,8 @@ function ensureSpeakingMockRuntimeLoaded() {
 let fullMockRuntimeLoadPromise = null;
 function ensureFullMockRuntimeLoaded() {
   if (window.FullMock) return Promise.resolve(window.FullMock);
-  if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-ee5bf1beefb5', 'full mock report')
-    .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-3a65f2532d32', 'full mock'))
+  if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-d78e9eb912e6', 'full mock report')
+    .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-7fa1028832da', 'full mock'))
     .then(() => { if (!window.FullMock) throw Error('Full mock did not load.'); return window.FullMock; })
     .catch(error => { fullMockRuntimeLoadPromise = null; throw error; });
   return fullMockRuntimeLoadPromise;
@@ -12588,7 +12588,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-e6c9efc1b89d', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-ccc3f6ea6490', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -12676,11 +12676,12 @@ async function getPortalCatalogueProgress() {
       if (!response.ok) throw Error('Practice progress could not load.');
       return response.json();
     };
-    const [catalogRead,speakingRead,writingRead,speakingMockRead]=await Promise.allSettled([
+    const [catalogRead,speakingRead,writingRead,speakingMockRead,listeningMockRead]=await Promise.allSettled([
       read('/api/speaking/catalog',true),
       token?read('/api/speaking/attempts',true):Promise.resolve([]),
       token?getPortalWritingAttempts():Promise.resolve([]),
-      token?read('/api/speaking-mocks/attempts',true):Promise.resolve([])
+      token?read('/api/speaking-mocks/attempts',true):Promise.resolve([]),
+      token?read('/api/listening-mocks/attempts',true):Promise.resolve([])
     ]);
     if (uid!==canonicalClientUserId(currentUserId) || token!==sessionToken) return {practice:{},mocks:{}};
     const result={ practice:{ swt:{count:Array.isArray(passages)?passages.length:0}, practice:{count:Array.isArray(essays)?essays.length:0} }, mocks:{} };
@@ -12739,13 +12740,15 @@ async function getPortalCatalogueProgress() {
             if(['lmcma','lfi','hcs','lmcsa','smw','hiw'].includes(attempt.kind))setLatestPracticeMeta(result.practice,'listening-'+attempt.kind,at);
             if(attempt.kind==='mock'&&attempt.testId){
               const done=attempt.status==='submitted', prior=result.mocks[attempt.testId];
-              if(!prior || done || prior.status!=='Done')result.mocks[attempt.testId]={status:done?'Done':'In progress',date:at};
+              if(attempt.module==='listening'){if(!prior||at>prior.date)result.mocks[attempt.testId]={status:done?'Done':'In progress',date:at,attemptId:attempt.id,engine:'writing-lab'};}
+              else if(!prior || done || prior.status!=='Done')result.mocks[attempt.testId]={status:done?'Done':'In progress',date:at};
             }
           }
         }
       }catch(_){}
     }
     if(speakingMockRead.status==='fulfilled')for(const a of speakingMockRead.value||[]){const prior=result.mocks[a.paperId],at=Number(a.startedAt||0);if(!prior||at>prior.date)result.mocks[a.paperId]={status:a.status==='active'?'In progress':'Done',date:at};}
+    if(listeningMockRead.status==='fulfilled')for(const a of listeningMockRead.value||[]){const prior=result.mocks[a.paperId],at=Number(a.submittedAt||a.createdAt||0);if(!prior||a.status==='active'||at>prior.date)result.mocks[a.paperId]={status:a.status==='active'?'In progress':'Done',date:at,attemptId:a.id,engine:'listening-mock'};}
     cache.at=Date.now();cache.value=result;
     return result;
   })();
@@ -12760,7 +12763,7 @@ function initialisePortalWorkspace() {
     document, navigate: switchSection, canAccessSpeaking:canUseSpeaking, getSessionToken:()=>sessionToken,
     launchSpeaking: paperId => switchSection('speaking-run', {mockRequest:{paperId}}),
     launchReading: mockId => switchSection('reading', { readingRequest: { mockId } }),
-    launchWriting: testId => switchSection(testId.startsWith('listening-mock-')?'listening-run':'writing-run', { labRequest: { testId } }),
+    launchWriting: (testId,target) => switchSection(testId.startsWith('listening-mock-')?'listening-run':'writing-run', {labRequest:{testId,...(target?.legacy?{attemptId:target.attemptId}:{})},...(!target?.legacy&&target?.attemptId?{mockRequest:{attemptId:target.attemptId}}:{})}),
     getProgress: getPortalCatalogueProgress
   });
   // Progress and Writing Lab are loaded only when needed so the
@@ -12816,6 +12819,7 @@ function switchSection(section, options = {}) {
   if (section === 'test-centre') section = 'mock-tests';
   // Older teacher assignments retain their original reading-engine question identity.
   if(['listening-hcs','listening-hiw'].includes(section) && options.readingRequest) section+='-bank';
+  if(section==='listening-run'&&options.labRequest?.attemptId)section='listening-legacy-history';
   const route = PortalWorkspace.routes[section];
   if (route?.labTab) {
     portalWorkspace.activate(section, options);
@@ -12880,7 +12884,7 @@ function switchSection(section, options = {}) {
   if(active==='practice-sets')ensureRandomPracticeRuntimeLoaded().then(controller=>{if(portalWorkspace.current()===active)controller.open();}).catch(error=>{const host=document.getElementById('randomPracticePane');if(host)host.innerHTML='<p role="alert">Practice sets could not load. Return to Practice and retry.</p>';toast(error.message,true);});
   if (active === 'practice-hub') portalCatalogue.openPractice();
   if(activeRoute?.speakingMock)ensureSpeakingMockRuntimeLoaded().then(mock=>{if(portalWorkspace.current()===active)mock.open({...options.mockRequest,history:activeRoute.mockHistory});}).catch(error=>{const host=document.getElementById('speakingMockPane');if(host)host.innerHTML='<p role="alert">Speaking mock could not load. Return to Mock Tests and retry.</p>';toast(error.message,true);});
-  if (activeRoute?.fullMock) ensureFullMockRuntimeLoaded().then(mock => { if (portalWorkspace.current() === active) mock.open(options.mockRequest || {}); }).catch(error => { const host = document.getElementById('fullMockPane'); if (host) host.innerHTML = '<p role="alert">Full Mock could not load. Return to Mock Tests and retry.</p>'; toast(error.message, true); });
+  if (activeRoute?.fullMock) ensureFullMockRuntimeLoaded().then(mock => { if (portalWorkspace.current() === active) (activeRoute.listeningMock?window.ListeningMock:mock).open({...options.mockRequest,...(activeRoute.listeningMock?{paperId:options.labRequest?.testId,historyOnly:!!activeRoute.mockHistory}:{})}); }).catch(error => { const host = document.getElementById('fullMockPane'); if (host) host.innerHTML = '<p role="alert">Full Mock could not load. Return to Mock Tests and retry.</p>'; toast(error.message, true); });
   if (activeRoute?.pane === 'mockTestsPane') portalCatalogue.openMocks({ module: route?.catalogueModule });
   if (active === 'dashboard') {
     updateDashboard();
@@ -13148,16 +13152,18 @@ async function refreshWritingPortalResume(localCandidate) {
   if (portalResumeCache.uid === uid && portalResumeCache.token === token && Date.now() - portalResumeCache.at < 10000) item = portalResumeCache.item;
   else {
     try {
-      const rows = await getPortalWritingAttempts();
+      const [rows,listening] = await Promise.all([getPortalWritingAttempts(),fetch(API_URL+'/api/listening-mocks/attempts',{signal:AbortSignal.timeout(10000),headers:{'x-session-token':token}}).then(r=>r.ok?r.json():[]).catch(()=>[])]);
       const active = (Array.isArray(rows) ? rows : []).filter(a => ['active','ready'].includes(a.status))
         .sort((a,b)=>Number(b.startedAt || 0)-Number(a.startedAt || 0))[0];
       if (active) item = {
         engine:'writing-lab', id:active.id,
-        route:active.kind==='mock'?(active.module==='listening'?'listening-run':'writing-run'):active.kind==='wfd'?'dictation':active.kind==='sst'?'spoken-text':'listening-'+active.kind,
+        route:active.kind==='mock'?(active.module==='listening'?'listening-legacy-history':'writing-run'):active.kind==='wfd'?'dictation':active.kind==='sst'?'spoken-text':'listening-'+active.kind,
         at:Number(active.startedAt || 0), title:active.title || 'Writing practice',
         detail:active.kind==='mock'?'Question '+(Number(active.index || 0)+1)+' of '+(active.questions || 1):'Saved listening practice',
         subdetail:active.kind==='mock'?'Timer continues while you are away':'Resume from your saved response'
       };
+      const integrated=(Array.isArray(listening)?listening:[]).filter(a=>a.status==='active').sort((a,b)=>b.createdAt-a.createdAt)[0];
+      if(integrated&&Number(integrated.createdAt)>=(item?.at||0))item={engine:'listening-mock',id:integrated.id,route:'listening-run',at:Number(integrated.createdAt),title:integrated.title,detail:integrated.completedCount+'/'+integrated.expectedCount+' questions completed',subdetail:'Your answers and recordings are saved'};
       portalResumeCache = { uid, token, at:Date.now(), item };
     } catch (_) { return; }
   }
@@ -13187,6 +13193,7 @@ function resumePortalActivity() {
   if (target.engine === 'essay') return resumePortalEssay();
   if (target.engine === 'reading') return switchSection(target.route || 'reading', { readingRequest:{ attemptId:target.id } });
   if (target.engine === 'writing-lab') return switchSection(target.route || 'writing-run', { labRequest:{ attemptId:target.id } });
+  if (target.engine === 'listening-mock') return switchSection('listening-run', { mockRequest:{ attemptId:target.id } });
 }
 
 window.addEventListener?.('pte:attempt-completed', () => {

@@ -59,7 +59,15 @@ function snapshot(engine,a,record){
   }else return null;
   return base;
 }
-function createSources({pool,speakingStore,writingStore,fullStore,loadReading}){
+function integratedListening(record){
+  const value=snapshot('full',record.state,record),a=record.state;
+  const reasons=new Set(['transcription-unavailable','delivery-unavailable','writing-unavailable','content-unavailable','recording-missing','recording-incomplete','version-mismatch','assessment-unavailable']);
+  return {...value,pendingQuestions:record.paper.questions.flatMap((c,index)=>{
+    const job=a.assessment?.items?.[c.id];if(job?.status==='assessed')return [];
+    return[{questionNumber:index+1,task:c.question.type,status:job?.status||'pending',reason:reasons.has(job?.reason)?job.reason:'assessment-pending',uncertain:Object.values(job?.stages||{}).some(s=>s.uncertain===true),nextRetryAt:a.assessment?.recovery?.nextAt||null}];
+  })};
+}
+function createSources({pool,speakingStore,writingStore,fullStore,listeningStore,loadReading}){
   const stores={speaking:speakingStore,writing:writingStore,listening:writingStore};
   const sources={};
   for(const engine of ['speaking','writing','listening','full']){
@@ -67,12 +75,22 @@ function createSources({pool,speakingStore,writingStore,fullStore,loadReading}){
     const column=engine==='full'?'state':'data';
     sources[engine]={
       async get(uid,id){
+        if(engine==='listening'&&listeningStore){const current=await listeningStore.get(uid,id);if(current)return integratedListening(current);}
         const record=engine==='full'?await fullStore.get(uid,id):await stores[engine].get(uid,id,{omitMockAudio:true});
         const value=snapshot(engine,engine==='full'?record?.state:record,record);
         return value&&['writing','listening'].includes(engine)?{...value,pendingQuestions:pendingQuestions(record)}:value;
       },
       async scan({since,cursor,limit}){
         if(!pool)return{rows:[],nextCursor:''};
+        if(engine==='listening'&&listeningStore){
+          const rows=(await pool.query(`SELECT * FROM (
+            SELECT id::text||':legacy' AS cursor_key,username,data AS value,NULL::jsonb AS paper,false AS integrated FROM writing_lab_attempts WHERE data->>'module'='listening' AND data->>'kind'='mock'
+            UNION ALL SELECT id::text||':integrated',username,state,paper,true FROM listening_mock_attempts
+          ) saved WHERE cursor_key>$1 AND value->>'status'='submitted'
+          AND COALESCE(CASE WHEN jsonb_typeof(value->'submittedAt')='number' THEN (value->>'submittedAt')::numeric END,CASE WHEN jsonb_typeof(value->'finishedAt')='number' THEN (value->>'finishedAt')::numeric END,0)>=$2
+          ORDER BY cursor_key LIMIT $3`,[cursor,since,limit])).rows;
+          return{rows:rows.map(row=>({username:row.username,snapshot:row.integrated?integratedListening({state:row.value,paper:row.paper}):snapshot('listening',row.value)})).filter(row=>row.snapshot?.isMock),nextCursor:rows.length===limit?rows.at(-1).cursor_key:''};
+        }
         // Speaking submission notices do not need question text, transcripts or audio.
         const projection=engine==='speaking'?"data-'responses'-'questions'":column;
         const timestamps=engine==='full'?['submittedAt','finishedAt']:['finishedAt'];

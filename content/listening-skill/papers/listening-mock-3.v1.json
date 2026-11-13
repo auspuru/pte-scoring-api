@@ -1,0 +1,2679 @@
+{
+  "schemaVersion": 1,
+  "id": "listening-mock-3",
+  "version": 1,
+  "module": "listening",
+  "format": "listening-skill-20261113.1",
+  "title": "Listening Sectional Mock 3",
+  "status": "released",
+  "createdAt": "2026-11-13",
+  "skipIntroduction": true,
+  "introduction": {
+    "type": "intro",
+    "scored": false,
+    "preparationSeconds": 25,
+    "responseSeconds": 30,
+    "id": "fm1-intro",
+    "instruction": "Introduce yourself after the preparation period. This familiarisation recording is not scored."
+  },
+  "clockPolicy": {
+    "overallCountdown": false,
+    "speakingWriting": "per-item",
+    "readingSeconds": 1500,
+    "sstSeconds": 600,
+    "sstIncludesPlayback": true,
+    "listeningAfterSstSeconds": 1500,
+    "sharedListeningClockContinuesBetweenItems": true
+  },
+  "sections": {
+    "speaking-writing": {
+      "part": 1,
+      "title": "Speaking tasks",
+      "details": [
+        "Complete Repeat Sentence, Retell Lecture, Answer Short Question and Summarise Group Discussion.",
+        "Listen once, then record your response.",
+        "Each task has its own preparation and response window."
+      ]
+    },
+    "listening": {
+      "part": 2,
+      "title": "Listening tasks",
+      "details": [
+        "Summarise Spoken Text has 10 minutes, including audio playback.",
+        "The remaining Listening questions share one 25-minute timer."
+      ]
+    }
+  },
+  "estimatedMinutes": 55,
+  "scoringSourcesAtFreeze": {
+    "schemaVersion": 1,
+    "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
+    "files": {
+      "azure-continuous-delivery.js": {
+        "sha256": "63533d41e2a176c765ff82e4b9c301fe6e9ad4d431d699afa3917cdc7701aa65",
+        "version": null
+      },
+      "delivery-rubric.js": {
+        "sha256": "ff0deff2081f49d45387d72be41f8f952938e813ae0399317c601e876a9147b3",
+        "version": "intelligibility-delivery-v5"
+      },
+      "describe-image-academy.js": {
+        "sha256": "209828a9894cdfe2be8546b771fc37d5e85595f4d82417b8fa772c9372aea74e",
+        "version": null
+      },
+      "describe-image-academy/chart-readings.js": {
+        "sha256": "4db9d5ab581a785e9ebdb8af9592a0b6b9734cba39d1a91739342aa03751b2cb",
+        "version": null
+      },
+      "describe-image-academy/content.js": {
+        "sha256": "b65c21c4e259f40fd5601f25986a9f3a822d3900e26dd7ba125a3c71559677e4",
+        "version": null
+      },
+      "describe-image-academy/image-claims.js": {
+        "sha256": "e2aebb389813e6f95bec08013e2f7f78c304079bdf52e9cc345f3a3c8e2b2faa",
+        "version": null
+      },
+      "describe-image-academy/response-selection.js": {
+        "sha256": "d667b0247e271fd3236a4aaa24a7900e6b6337a2ae00f5f3c1399760329f56df",
+        "version": null
+      },
+      "describe-image-academy/review-evidence.js": {
+        "sha256": "70b5568c8e73fc60883232e5615ff2e2ccde56b44924ded5fb6390421a0db58f",
+        "version": null
+      },
+      "describe-image-academy/score-impact.js": {
+        "sha256": "165ebfdea44d159f1f4b0ceb6c7f52a6c17280d242a3c4761559d9301ca8ce75",
+        "version": null
+      },
+      "describe-image-academy/scoring-policy.js": {
+        "sha256": "79f1046717e860d26824f2a883f2bf50138a38ba39e20076197334c4349836c1",
+        "version": null
+      },
+      "describe-image-feedback.js": {
+        "sha256": "9007b443fa29d350ddcac535bb9ded9548a3ee9c63698d53405a892d53ae5f23",
+        "version": null
+      },
+      "describe-image-feedback/scoring-policy.js": {
+        "sha256": "e3ab902ec27dad63aa3deade1da6b1d048376b2625a9e0f138b97356151515ec",
+        "version": null
+      },
+      "di-reference.js": {
+        "sha256": "3699d9f1ef5c01503add68ec7bf5f8e0675b81fc8367da777a2eb05f5239921e",
+        "version": null
+      },
+      "essay-assessment-service.js": {
+        "sha256": "a95f563194088c4fe5d03e7b9b6ca951b1fbb1a84d9a81ececd84e59f5bed02c",
+        "version": null
+      },
+      "essay-evidence.js": {
+        "sha256": "2e28d4904e75e848590de8f37cf182a8d1740dd51cb5200a7c57f4ee8f1c7dc0",
+        "version": null
+      },
+      "essay-judge-format.js": {
+        "sha256": "2b71a72a2272e779130caee01c8fc06b97cae69ff85a96a95a5d8f80bd341b06",
+        "version": null
+      },
+      "essay-openai-format.js": {
+        "sha256": "28cdccc0f9097aab19bffa4a99bfb93bf2e3e61c0a2f33d37dfc73c57bd35285",
+        "version": null
+      },
+      "essay-provider.js": {
+        "sha256": "1d0adabaf1722922942cb7adba2849f76b8539812a858ab21c09926929e717ce",
+        "version": null
+      },
+      "full-mock/access.js": {
+        "sha256": "e0d65c72cf660e5d1b9cf13c5a74c77cc57356f71f19b87f20ed066c3ccb53b3",
+        "version": null
+      },
+      "full-mock/adapters.js": {
+        "sha256": "5c2c387e5f72c37acca92db0ee43d162366f5c44262bd98eba7cfbb50279905f",
+        "version": "full-mock-adapters-2026-10-29.2"
+      },
+      "full-mock/aggregation.js": {
+        "sha256": "6fcd85d0317145d0b0686882f998659c1c8326bf5165a95ae14f5c28894b488d",
+        "version": "full-mock-aggregation-2026-10-29.1"
+      },
+      "full-mock/api.js": {
+        "sha256": "c47c1a2fafa9c9963448008af78c311180a53f7c0454e0942fe95a1158e7baa1",
+        "version": null
+      },
+      "full-mock/asq-scoring.js": {
+        "sha256": "03af8e89e9af544436e574de97596672398a2bf10540080db0e89317ce2fcf8c",
+        "version": "full-mock-asq-2026-10-28.1"
+      },
+      "full-mock/assessment.js": {
+        "sha256": "cc4f00ccc8061aed2f10a8a7558be45ce5105da1489ca0a09158a257e08ae7f2",
+        "version": "full-mock-assessment-2026-10-29.1"
+      },
+      "full-mock/audit.js": {
+        "sha256": "aa28fcc602bdbf1ed1c9805739540f91f22c35f9cc37a57a23d24af397e930d8",
+        "version": null
+      },
+      "full-mock/blueprint.js": {
+        "sha256": "ee5f56f160821e6f3bd8ead5a797f4d46114aef0b14b06bbfeabdc6665e0330e",
+        "version": null
+      },
+      "full-mock/delivery-reassessment.js": {
+        "sha256": "f88c111dc01558160462e708fbf1a174d2ed33959f1c161dd46f00f412c4e34f",
+        "version": null
+      },
+      "full-mock/exclusions.js": {
+        "sha256": "e2ccb984ff76df986b3b661f2cbffff3732b4d1373a43f8b400872eaf489c183",
+        "version": null
+      },
+      "full-mock/paper.js": {
+        "sha256": "0c172feefc2d7e447338ef10c11fc23405a53b9c65508550fe665ccdfc1fd8df",
+        "version": null
+      },
+      "full-mock/profiles.js": {
+        "sha256": "8e9659f3d82839a445ec6cb0212d3e7456bb3c4442146a56a0ba721b1994df18",
+        "version": "full-mock-profiles-2026-10-29.1"
+      },
+      "full-mock/recording.js": {
+        "sha256": "480756dcae089f44f6153f6a45ff849a713d8e68b2076df0a4d34a41d9060f63",
+        "version": "full-mock-recording-2026-10-29.2"
+      },
+      "full-mock/report.js": {
+        "sha256": "ac24552ccc718109c77481bd5682a42613d42af3cf3e35cffaab342656b33aea",
+        "version": "full-mock-report-2026-10-29.1"
+      },
+      "full-mock/rubrics.js": {
+        "sha256": "117c51a483f49d5f4127055001698aedc2ddb4004940751b4fe25cf66959e02a",
+        "version": null
+      },
+      "full-mock/session.js": {
+        "sha256": "f45a5c4919e60f496298d8d687836ac090d6a0b99891d9323a3f43fc60fffed5",
+        "version": "full-mock-session-2026-10-29.2"
+      },
+      "full-mock/store.js": {
+        "sha256": "c9be0d9aad6d36e9ec0167c416785299a65bfd8529fe43d6f43d3a1192852711",
+        "version": null
+      },
+      "gpt-speaking-delivery.js": {
+        "sha256": "cb42317a9cf1b4f34dbdcceeb32ff7df509fe55a449e518b6a312d40142cb580",
+        "version": null,
+        "versionExpression": "'gpt-delivery-2026-10-25.1:' + MODEL"
+      },
+      "listening-mock/aggregation.js": {
+        "sha256": "b73c2e0ef55e495a73cea01b459eff93e09957c5c313bff1ae4b2fbf7b6313b3",
+        "version": null
+      },
+      "listening-scoring.js": {
+        "sha256": "f3ecff70034f0f641248b47a2f457979934bd7ef034f0214dda452988331536c",
+        "version": null
+      },
+      "local-scoring-engine.js": {
+        "sha256": "52f605df6952c3de6894dd9f5357a4a97f5c84c19be93581af7ea3a8f69ef6ac",
+        "version": null
+      },
+      "mock-content-assessment.js": {
+        "sha256": "f418438dd65ac47a81ee93faf62dbae5e5c7d7aa92c0ee4e30cb0d8eaa984253",
+        "version": null
+      },
+      "mock-content-provider.js": {
+        "sha256": "3efa737c0e2a8ae047bd24b0c140f6cc2c67e2329cb3184950ef38bb1f5e8492",
+        "version": null
+      },
+      "mock-result-review.js": {
+        "sha256": "6b129f42dfebb0b46fb0f99d582398540ea1b96c3c0a37f1c459fc3841581878",
+        "version": null
+      },
+      "public/essay-scoring.js": {
+        "sha256": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
+        "version": "essay-unified-2.6"
+      },
+      "public/reading-mock-tools.js": {
+        "sha256": "6766b45368eb780a587dcac94cb2520fdd28520ce7a7b76dade61a93ad5dfee1",
+        "version": null
+      },
+      "public/reading-practice.js": {
+        "sha256": "599581dd69ca81bdd1520512e007c8889376af9e5bcf273a163ee106e8b66f7a",
+        "version": null
+      },
+      "public/writing-lab-report.js": {
+        "sha256": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
+        "version": null
+      },
+      "server.js": {
+        "sha256": "78940169dd76568c0d6b403dbea0888313f089f7bc952aeb23c1e478bd6f19e2",
+        "version": null
+      },
+      "situation-content-policy.js": {
+        "sha256": "a38eea55cc0dbec6e6011d59a50b91068bd61e866b6a3103337eb5085e2036fd",
+        "version": "functional-situation-content-2026-10-24.1"
+      },
+      "speaking-delivery.js": {
+        "sha256": "b4b046add57ba7f7f0031fc4c6db9d618fdc5abee1db452e693bd1c4970c5ad7",
+        "version": null
+      },
+      "speaking-judge-format.js": {
+        "sha256": "09d30d083c0171ad3aa3a571ea15bc9b16176253733fe1ca8c895e0685fd252c",
+        "version": null
+      },
+      "speaking-lab.js": {
+        "sha256": "4c94f66a4693c05c655d33f5bdbc5d99de9414f6667d0f820ef1e9460c3bcc7c",
+        "version": null
+      },
+      "speaking-scoring.js": {
+        "sha256": "0c673372149fe2732f7aa6b950862ea01ce4c6473e5df4a55daf49d2740ca3a2",
+        "version": "speaking-content-2026-10-25.2"
+      },
+      "spoken-summary-policy.js": {
+        "sha256": "469d8543929f1035310868a6153e89424d1fef084e61c0a47e70892a5ae7a2e4",
+        "version": "connected-spoken-summary-2026-10-25.1"
+      },
+      "swt-form-policy.js": {
+        "sha256": "43ffe8755a7b025cbb9ba354fb69058d85d90d716666ed0233a5826c678bb2c2",
+        "version": null
+      },
+      "swt-judge-format.js": {
+        "sha256": "ef669a5e3fc732d4df51923959ee8b93d272fbb7510c85d717bf6bf6a21cf520",
+        "version": null
+      },
+      "swt-judgment-service.js": {
+        "sha256": "345c834b13ce1c94313270442852d71c20598d4e22de8c2fed13639b5d95015b",
+        "version": null
+      },
+      "swt-reference.js": {
+        "sha256": "252823dcc952fa561195591c79e79855d388a8c4f2e39a7b7534d1c74dd36a3a",
+        "version": null
+      },
+      "swt-scoring-policy.js": {
+        "sha256": "d369ae53a42633f4b6acfa49480b563229bac19fad28d6a6a41df59fbb16d81b",
+        "version": "20.3.16"
+      },
+      "writing-lab-scoring.js": {
+        "sha256": "c28a7def1c8eda1961b57ea342c6e8ce3501c24eb92e905005a6cbee250ff312",
+        "version": "exam-practice-2026-10-09.1"
+      }
+    }
+  },
+  "editorial": {
+    "studentReleaseApproved": true,
+    "provenance": "Retained native oral questions and exact existing sectional Listening questions; all audio reused from neural recordings.",
+    "humanListeningReview": "No new human listening review asserted."
+  },
+  "questions": [
+    {
+      "id": "listening-mock-3/lm3-rs-01",
+      "question": {
+        "id": "lm3-rs-01",
+        "type": "rs",
+        "title": "Flexible online study",
+        "voice": "nova",
+        "text": "Online classes can give learners more control over the pace of study.",
+        "sample": "Online classes can give learners more control over the pace of study.",
+        "predictionSource": {
+          "provider": "PTE Nepal",
+          "week": "21-27 September 2026",
+          "checkedAt": "2026-09-23",
+          "lastReviewed": "2026-09-24",
+          "contentStatus": "adapted-for-full-mock",
+          "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+          "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+          "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+          "task": "wfd",
+          "sourceId": "20003618",
+          "sourceTitle": "Flexible online study",
+          "targetTask": "rs",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "pred26-wfd-01",
+        "contentOrigin": {
+          "kind": "prediction",
+          "source": "content/writing-predictions-sep-2026.js",
+          "sourceId": "pred26-wfd-01",
+          "sourceFingerprint": "bf11b71fb87014b2c8233d879c6feaa78f3c293727b534f006c58e67791c3bd2",
+          "selectedAt": "2026-11-02",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "sourceQuestionId": "fm3-rs-01"
+      },
+      "origins": [
+        "content/writing-predictions-sep-2026.js",
+        "pred26-wfd-01",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-rs-01"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/b8ec80a7133550fe0b2fd341ae7f91d47844ef6db4a515469809f78dc39c5ddb.mp3",
+        "entry": {
+          "textSha256": "0591ac81cbd7793b6f2d831da9416acecd0b55829d1d3f78d97a09f61f1b5a7e",
+          "audioSha256": "b8ec80a7133550fe0b2fd341ae7f91d47844ef6db4a515469809f78dc39c5ddb",
+          "bytes": 62541,
+          "seconds": 5.184,
+          "voice": "en-AU-NatashaNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/full-mock/assets/b8ec80a7133550fe0b2fd341ae7f91d47844ef6db4a515469809f78dc39c5ddb.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-rs-02",
+      "question": {
+        "id": "lm3-rs-02",
+        "type": "rs",
+        "title": "Limits of a theory",
+        "voice": "alloy",
+        "text": "There is no doubt that this theory still has several important limitations.",
+        "sample": "There is no doubt that this theory still has several important limitations.",
+        "predictionSource": {
+          "provider": "PTE Nepal",
+          "week": "21-27 September 2026",
+          "checkedAt": "2026-09-23",
+          "lastReviewed": "2026-09-24",
+          "contentStatus": "adapted-for-full-mock",
+          "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+          "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+          "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+          "task": "wfd",
+          "sourceId": "20000177",
+          "sourceTitle": "Limits of a theory",
+          "targetTask": "rs",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "pred26-wfd-07",
+        "contentOrigin": {
+          "kind": "prediction",
+          "source": "content/writing-predictions-sep-2026.js",
+          "sourceId": "pred26-wfd-07",
+          "sourceFingerprint": "3955b3466c35d1e4249c0f00cf56c6fe9c23eba13a6da4bc86ec93864983e4f2",
+          "selectedAt": "2026-11-02",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "sourceQuestionId": "fm3-rs-02"
+      },
+      "origins": [
+        "content/writing-predictions-sep-2026.js",
+        "pred26-wfd-07",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-rs-02"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/66d59c8b7508cf388c86f9bd50ff87e6aead9a60c445cbccb2c9114a7547d8cf.mp3",
+        "entry": {
+          "textSha256": "43531890c0bec4daa8c7ce759e9fbd6a7c70406cf215211f2c21921e543548cd",
+          "audioSha256": "66d59c8b7508cf388c86f9bd50ff87e6aead9a60c445cbccb2c9114a7547d8cf",
+          "bytes": 61101,
+          "seconds": 5.064,
+          "voice": "en-GB-SoniaNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/full-mock/assets/66d59c8b7508cf388c86f9bd50ff87e6aead9a60c445cbccb2c9114a7547d8cf.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-rs-03",
+      "question": {
+        "id": "lm3-rs-03",
+        "type": "rs",
+        "title": "Modern architecture",
+        "voice": "alloy",
+        "text": "Her design combines several of the strongest features of modern architecture.",
+        "sample": "Her design combines several of the strongest features of modern architecture.",
+        "predictionSource": {
+          "provider": "PTE Nepal",
+          "week": "21-27 September 2026",
+          "checkedAt": "2026-09-23",
+          "lastReviewed": "2026-09-24",
+          "contentStatus": "adapted-for-full-mock",
+          "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+          "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+          "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+          "task": "wfd",
+          "sourceId": "20003751",
+          "sourceTitle": "Modern architecture",
+          "targetTask": "rs",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "pred26-wfd-11",
+        "contentOrigin": {
+          "kind": "prediction",
+          "source": "content/writing-predictions-sep-2026.js",
+          "sourceId": "pred26-wfd-11",
+          "sourceFingerprint": "ae2cfd853531bac2fd2a528da456f70e3db15a5fa0fed24738a69c33fc53bbc8",
+          "selectedAt": "2026-11-02",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "sourceQuestionId": "fm3-rs-03"
+      },
+      "origins": [
+        "content/writing-predictions-sep-2026.js",
+        "pred26-wfd-11",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-rs-03"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/95b66cacc2d7b5b4e12b7b5c4c16691ebc22b46308e416cac84e444b67e7b7d2.mp3",
+        "entry": {
+          "textSha256": "0bf8ff62a3bc302c98064b30603a957c1fdfcbab0723433cd43112288edde58d",
+          "audioSha256": "95b66cacc2d7b5b4e12b7b5c4c16691ebc22b46308e416cac84e444b67e7b7d2",
+          "bytes": 61677,
+          "seconds": 5.112,
+          "voice": "en-GB-SoniaNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/full-mock/assets/95b66cacc2d7b5b4e12b7b5c4c16691ebc22b46308e416cac84e444b67e7b7d2.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-rs-04",
+      "question": {
+        "id": "lm3-rs-04",
+        "type": "rs",
+        "title": "Engaging learners",
+        "voice": "nova",
+        "text": "Teachers are looking for new ways to keep learners actively engaged.",
+        "sample": "Teachers are looking for new ways to keep learners actively engaged.",
+        "predictionSource": {
+          "provider": "PTE Nepal",
+          "week": "21-27 September 2026",
+          "checkedAt": "2026-09-23",
+          "lastReviewed": "2026-09-24",
+          "contentStatus": "adapted-for-full-mock",
+          "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+          "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+          "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+          "task": "wfd",
+          "sourceId": "20003645",
+          "sourceTitle": "Engaging learners",
+          "targetTask": "rs",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "pred26-wfd-25",
+        "contentOrigin": {
+          "kind": "prediction",
+          "source": "content/writing-predictions-sep-2026.js",
+          "sourceId": "pred26-wfd-25",
+          "sourceFingerprint": "f7d5e9ac54768cf7e187a3289c9891e56e462045d755074ea611f7e6af2d4119",
+          "selectedAt": "2026-11-02",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "sourceQuestionId": "fm3-rs-04"
+      },
+      "origins": [
+        "content/writing-predictions-sep-2026.js",
+        "pred26-wfd-25",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-rs-04"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/d5c7974a7377976286b61c319a38174f9a5edae6d45b4b6f99a2a0eb0423a5b9.mp3",
+        "entry": {
+          "textSha256": "5c7504a87c8ab62663e91725f1427becb24f4d9ff43c004b757f6137292a22ab",
+          "audioSha256": "d5c7974a7377976286b61c319a38174f9a5edae6d45b4b6f99a2a0eb0423a5b9",
+          "bytes": 61101,
+          "seconds": 5.064,
+          "voice": "en-AU-NatashaNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/full-mock/assets/d5c7974a7377976286b61c319a38174f9a5edae6d45b4b6f99a2a0eb0423a5b9.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-rs-05",
+      "question": {
+        "id": "lm3-rs-05",
+        "type": "rs",
+        "title": "Seminar assembly",
+        "voice": "nova",
+        "text": "Students should assemble in the seminar hall before the announcement begins.",
+        "sample": "Students should assemble in the seminar hall before the announcement begins.",
+        "predictionSource": {
+          "provider": "PTE Nepal",
+          "week": "21-27 September 2026",
+          "checkedAt": "2026-09-23",
+          "lastReviewed": "2026-09-24",
+          "contentStatus": "adapted-for-full-mock",
+          "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+          "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+          "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+          "task": "wfd",
+          "sourceId": "20003599",
+          "sourceTitle": "Seminar assembly",
+          "targetTask": "rs",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "pred26-wfd-29",
+        "contentOrigin": {
+          "kind": "prediction",
+          "source": "content/writing-predictions-sep-2026.js",
+          "sourceId": "pred26-wfd-29",
+          "sourceFingerprint": "da31f012a628e551fd6efb727b93934b893a6862336d3c748db73c513d8ebb55",
+          "selectedAt": "2026-11-02",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "sourceQuestionId": "fm3-rs-05"
+      },
+      "origins": [
+        "content/writing-predictions-sep-2026.js",
+        "pred26-wfd-29",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-rs-05"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/4f4e357fb6c33f912469ee77c93e263a30d5557b0a0f6e5af345fecb251829c8.mp3",
+        "entry": {
+          "textSha256": "6c9d86dd4bc3cf181621e68c3afb808a324b6d34e1e6fef6ffe32f0c13781893",
+          "audioSha256": "4f4e357fb6c33f912469ee77c93e263a30d5557b0a0f6e5af345fecb251829c8",
+          "bytes": 63405,
+          "seconds": 5.256,
+          "voice": "en-AU-NatashaNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/full-mock/assets/4f4e357fb6c33f912469ee77c93e263a30d5557b0a0f6e5af345fecb251829c8.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-rs-06",
+      "question": {
+        "id": "lm3-rs-06",
+        "type": "rs",
+        "title": "Marine environment",
+        "voice": "onyx",
+        "text": "Pollution and unsustainable development have seriously damaged marine environments.",
+        "sample": "Pollution and unsustainable development have seriously damaged marine environments.",
+        "predictionSource": {
+          "provider": "PTE Nepal",
+          "week": "21-27 September 2026",
+          "checkedAt": "2026-09-23",
+          "lastReviewed": "2026-09-24",
+          "contentStatus": "adapted-for-full-mock",
+          "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+          "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+          "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+          "task": "wfd",
+          "sourceId": "20003593",
+          "sourceTitle": "Marine environment",
+          "targetTask": "rs",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "pred26-wfd-30",
+        "contentOrigin": {
+          "kind": "prediction",
+          "source": "content/writing-predictions-sep-2026.js",
+          "sourceId": "pred26-wfd-30",
+          "sourceFingerprint": "34942009cba448b67111dd1fd2523138e94ff0fb6baed93d9a1eda6054ce3690",
+          "selectedAt": "2026-11-02",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "sourceQuestionId": "fm3-rs-06"
+      },
+      "origins": [
+        "content/writing-predictions-sep-2026.js",
+        "pred26-wfd-30",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-rs-06"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/50fc68cfe37f9b4e6c14a533b9ce97584d03a9abf16a24b708220ac93dc50eee.mp3",
+        "entry": {
+          "textSha256": "cb04b09b66e8943f31489e81a206bd51a57582d2dbe1c014b690e53a170c5a30",
+          "audioSha256": "50fc68cfe37f9b4e6c14a533b9ce97584d03a9abf16a24b708220ac93dc50eee",
+          "bytes": 60813,
+          "seconds": 5.04,
+          "voice": "en-AU-WilliamNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/full-mock/assets/50fc68cfe37f9b4e6c14a533b9ce97584d03a9abf16a24b708220ac93dc50eee.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-rs-07",
+      "question": {
+        "id": "lm3-rs-07",
+        "type": "rs",
+        "title": "Social trends",
+        "voice": "alloy",
+        "text": "Designers need to keep up with important changes in social trends.",
+        "sample": "Designers need to keep up with important changes in social trends.",
+        "predictionSource": {
+          "provider": "PTE Nepal",
+          "week": "21-27 September 2026",
+          "checkedAt": "2026-09-23",
+          "lastReviewed": "2026-09-24",
+          "contentStatus": "adapted-for-full-mock",
+          "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+          "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+          "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+          "task": "wfd",
+          "sourceId": "20003592",
+          "sourceTitle": "Social trends",
+          "targetTask": "rs",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "pred26-wfd-31",
+        "contentOrigin": {
+          "kind": "prediction",
+          "source": "content/writing-predictions-sep-2026.js",
+          "sourceId": "pred26-wfd-31",
+          "sourceFingerprint": "eae7e2ce3f7e9480604315c1d51abb8e876db06d0119310cf2b56d1b19080969",
+          "selectedAt": "2026-11-02",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "sourceQuestionId": "fm3-rs-07"
+      },
+      "origins": [
+        "content/writing-predictions-sep-2026.js",
+        "pred26-wfd-31",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-rs-07"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/63208dd37a5fc66ad8df2c0e1d57b70aaabad32d3694dd55a0e9774b39e152f4.mp3",
+        "entry": {
+          "textSha256": "e7d8dc4af0748bdedaa46db68ad2c014e788b290ca76dcbb36a6858d79517705",
+          "audioSha256": "63208dd37a5fc66ad8df2c0e1d57b70aaabad32d3694dd55a0e9774b39e152f4",
+          "bytes": 56781,
+          "seconds": 4.704,
+          "voice": "en-GB-SoniaNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/full-mock/assets/63208dd37a5fc66ad8df2c0e1d57b70aaabad32d3694dd55a0e9774b39e152f4.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-rs-08",
+      "question": {
+        "id": "lm3-rs-08",
+        "type": "rs",
+        "title": "Lunchroom drinks",
+        "voice": "fable",
+        "text": "Coffee and tea are available for staff in the lunchroom.",
+        "sample": "Coffee and tea are available for staff in the lunchroom.",
+        "predictionSource": {
+          "provider": "PTE Nepal",
+          "week": "21-27 September 2026",
+          "checkedAt": "2026-09-23",
+          "lastReviewed": "2026-09-24",
+          "contentStatus": "adapted-for-full-mock",
+          "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+          "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+          "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+          "task": "wfd",
+          "sourceId": "20003583",
+          "sourceTitle": "Lunchroom drinks",
+          "targetTask": "rs",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "pred26-wfd-32",
+        "contentOrigin": {
+          "kind": "prediction",
+          "source": "content/writing-predictions-sep-2026.js",
+          "sourceId": "pred26-wfd-32",
+          "sourceFingerprint": "5b0870243d615f23cc72609381ada5a6918acf229f5407ceccd15204939c9da5",
+          "selectedAt": "2026-11-02",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "sourceQuestionId": "fm3-rs-08"
+      },
+      "origins": [
+        "content/writing-predictions-sep-2026.js",
+        "pred26-wfd-32",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-rs-08"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/91f169682476d631c7103c56d3c8ae55ce231ef5911f8f6790da2e2dea843396.mp3",
+        "entry": {
+          "textSha256": "4745882f696e16a327f732d588fd7e7e2f3e5d6b0882bce485abb56a3caacc1f",
+          "audioSha256": "91f169682476d631c7103c56d3c8ae55ce231ef5911f8f6790da2e2dea843396",
+          "bytes": 48141,
+          "seconds": 3.984,
+          "voice": "en-GB-RyanNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/full-mock/assets/91f169682476d631c7103c56d3c8ae55ce231ef5911f8f6790da2e2dea843396.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-rs-09",
+      "question": {
+        "id": "lm3-rs-09",
+        "type": "rs",
+        "title": "Published articles",
+        "voice": "nova",
+        "text": "A new collection of academic articles has recently been published.",
+        "sample": "A new collection of academic articles has recently been published.",
+        "predictionSource": {
+          "provider": "PTE Nepal",
+          "week": "21-27 September 2026",
+          "checkedAt": "2026-09-23",
+          "lastReviewed": "2026-09-24",
+          "contentStatus": "adapted-for-full-mock",
+          "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+          "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+          "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+          "task": "wfd",
+          "sourceId": "20003576",
+          "sourceTitle": "Published articles",
+          "targetTask": "rs",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "pred26-wfd-33",
+        "contentOrigin": {
+          "kind": "prediction",
+          "source": "content/writing-predictions-sep-2026.js",
+          "sourceId": "pred26-wfd-33",
+          "sourceFingerprint": "fe69359f76ced8754a519a026e27d01fe14737672396544862b0089b22cbc8f6",
+          "selectedAt": "2026-11-02",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "sourceQuestionId": "fm3-rs-09"
+      },
+      "origins": [
+        "content/writing-predictions-sep-2026.js",
+        "pred26-wfd-33",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-rs-09"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/281c568293b9863a797ccee11f166da761ac2e64cabc7c18cc7159edc03d32e1.mp3",
+        "entry": {
+          "textSha256": "ce7fbc60a8460f6fe2c4c0727304f97fc20c2ac568de4face14f5f7e727f1fb3",
+          "audioSha256": "281c568293b9863a797ccee11f166da761ac2e64cabc7c18cc7159edc03d32e1",
+          "bytes": 63981,
+          "seconds": 5.304,
+          "voice": "en-AU-NatashaNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/full-mock/assets/281c568293b9863a797ccee11f166da761ac2e64cabc7c18cc7159edc03d32e1.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-rs-10",
+      "question": {
+        "id": "lm3-rs-10",
+        "type": "rs",
+        "title": "Laptop use",
+        "voice": "onyx",
+        "text": "You may use a laptop during the lecture if necessary.",
+        "sample": "You may use a laptop during the lecture if necessary.",
+        "predictionSource": {
+          "provider": "PTE Nepal",
+          "week": "21-27 September 2026",
+          "checkedAt": "2026-09-23",
+          "lastReviewed": "2026-09-24",
+          "contentStatus": "adapted-for-full-mock",
+          "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+          "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+          "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+          "task": "wfd",
+          "sourceId": "20003552",
+          "sourceTitle": "Laptop use",
+          "targetTask": "rs",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "instruction": "Listen once. After the short start tone, repeat the sentence. You have 15 seconds to respond.",
+        "difficulty": {
+          "band": "medium",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires accurate detail, sentence structure or comparison of plausible alternatives."
+        },
+        "preparation": 0,
+        "seconds": 15,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "pred26-wfd-34",
+        "contentOrigin": {
+          "kind": "prediction",
+          "source": "content/writing-predictions-sep-2026.js",
+          "sourceId": "pred26-wfd-34",
+          "sourceFingerprint": "2bfddca155e60632e6d24af8107aa9cab220caf6b12bddcc4ee1574fd872bec9",
+          "selectedAt": "2026-11-02",
+          "adaptation": "Existing WFD prediction sentence and unchanged recording used for Repeat Sentence."
+        },
+        "sourceQuestionId": "fm3-rs-10"
+      },
+      "origins": [
+        "content/writing-predictions-sep-2026.js",
+        "pred26-wfd-34",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-rs-10"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/3d649ae259abc08febb8c76b5c75b20750bd607632720409e66fdf6d16cdb57a.mp3",
+        "entry": {
+          "textSha256": "6dda666128634fabcfd130a86e74368db28ce1d8fba68af27b8ebf654ad14243",
+          "audioSha256": "3d649ae259abc08febb8c76b5c75b20750bd607632720409e66fdf6d16cdb57a",
+          "bytes": 41517,
+          "seconds": 3.432,
+          "voice": "en-AU-WilliamNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/full-mock/assets/3d649ae259abc08febb8c76b5c75b20750bd607632720409e66fdf6d16cdb57a.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-rl-01",
+      "question": {
+        "id": "lm3-rl-01",
+        "type": "rl",
+        "name": "Retell Lecture",
+        "preparation": 10,
+        "seconds": 40,
+        "instruction": "Listen once, then use 10 seconds to prepare. After the tone, retell the lecture in your own words within 40 seconds.",
+        "title": "Making online surveys more representative",
+        "text": "An online survey can collect responses quickly, but a large number of answers does not automatically make the results representative. The people who notice a survey and choose to complete it may differ from those who do not participate. For instance, a questionnaire shared only through a student society may mainly reach members of that society. Researchers should therefore define the population they want to understand before deciding how to recruit respondents. Clear, neutral questions are also important. A question that assumes a service is excellent may encourage favourable answers and obscure genuine concerns. Short pilot studies can reveal confusing wording or missing response options. During analysis, researchers should examine which groups are underrepresented and explain the limitations openly. They should not claim that a convenient sample speaks for everyone. Good survey practice combines thoughtful recruitment, careful question design and honest interpretation. Speed and convenience are useful, but they cannot replace attention to the quality of the evidence.",
+        "facts": [
+          "A large online sample is not automatically representative.",
+          "Self-selection and narrow recruitment can exclude important groups.",
+          "Define the intended population and use clear, neutral questions.",
+          "Pilot testing can identify confusing wording and missing options.",
+          "Analyse underrepresentation and report limitations honestly."
+        ],
+        "sample": "The lecture explains that online surveys are not necessarily representative, even when many people respond. Self-selection and limited recruitment can bias the sample. Researchers should identify their target population, use neutral questions and pilot the questionnaire. They must also check which groups are underrepresented and acknowledge limitations. Overall, reliable evidence depends on good design and honest interpretation, not simply fast data collection.",
+        "sourceQuestionId": "rl-5",
+        "sourceId": "rl-5",
+        "startCueMs": 300,
+        "playbackDelaySeconds": 3,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        {
+          "kind": "existing-speaking-neural",
+          "file": "content/speaking-bank.js",
+          "questionId": "rl-5",
+          "manifest": "content/speaking-audio-manifest.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/4670f59e4fed130de732b2de47ce1973c6910b02c1340ba41d9d09303cbb3cb7.mp3",
+        "entry": {
+          "textSha256": "2296790d490f0346fdc85ee647141ea2bb9d0cb49b335c791567299eecb82173",
+          "audioSha256": "4670f59e4fed130de732b2de47ce1973c6910b02c1340ba41d9d09303cbb3cb7",
+          "bytes": 442029,
+          "seconds": 73.632,
+          "voices": [
+            "en-AU-NatashaNeural"
+          ],
+          "path": "content/listening-skill/assets/4670f59e4fed130de732b2de47ce1973c6910b02c1340ba41d9d09303cbb3cb7.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-rl-02",
+      "question": {
+        "id": "lm3-rl-02",
+        "type": "rl",
+        "name": "Retell Lecture",
+        "preparation": 10,
+        "seconds": 40,
+        "instruction": "Listen once, then use 10 seconds to prepare. After the tone, retell the lecture in your own words within 40 seconds.",
+        "title": "Testing as a learning activity",
+        "text": "Many people think that a test only measures what a student has already learned. In fact, a short practice test can also be a learning activity. When students try to recall an idea without looking at their notes, they practise retrieving it from memory. This effort can make later recall easier. Simply rereading a familiar page may create confidence, but that confidence does not always reflect an ability to explain the material independently. Practice questions can reveal the difference. Feedback remains essential, because students need to identify and correct mistakes rather than repeatedly rehearse them. Timing matters too. Several short sessions spread across a week are generally more useful than one long session immediately before an examination. Practice testing should also include explanations and applications, not just isolated facts. A student who can connect an idea to a new example is demonstrating deeper understanding. The purpose, then, is not to increase pressure through constant formal examinations. It is to use manageable retrieval activities, followed by feedback, to guide effective learning.",
+        "facts": [
+          "Practice tests can support learning as well as measure it.",
+          "Retrieving ideas independently develops recall and reveals gaps that rereading may hide.",
+          "Feedback is needed to correct mistakes.",
+          "Practice should be spaced and include explanation or application.",
+          "The aim is useful low-pressure learning, not more formal examinations."
+        ],
+        "sample": "The lecture describes practice testing as a learning tool, not just a way to measure achievement. Recalling ideas independently strengthens retrieval and exposes gaps that rereading may conceal. However, students need feedback to correct errors. The speaker also recommends short, spaced sessions and questions that require explanation or application. The overall aim is manageable, meaningful practice rather than increasing pressure through frequent formal examinations.",
+        "sourceQuestionId": "rl-2",
+        "sourceId": "rl-2",
+        "startCueMs": 300,
+        "playbackDelaySeconds": 3,
+        "silenceTimeoutSeconds": 3
+      },
+      "origins": [
+        {
+          "kind": "existing-speaking-neural",
+          "file": "content/speaking-bank.js",
+          "questionId": "rl-2",
+          "manifest": "content/speaking-audio-manifest.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/b39c6e91228fe257a82f609c2de004b1442ea0329fcd0963cded5f5edf3f332a.mp3",
+        "entry": {
+          "textSha256": "9721a3dafb6735898d5f5b88b603f53a645a730514031bb05564fabd64a755aa",
+          "audioSha256": "b39c6e91228fe257a82f609c2de004b1442ea0329fcd0963cded5f5edf3f332a",
+          "bytes": 475437,
+          "seconds": 79.2,
+          "voices": [
+            "en-AU-NatashaNeural"
+          ],
+          "path": "content/listening-skill/assets/b39c6e91228fe257a82f609c2de004b1442ea0329fcd0963cded5f5edf3f332a.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-asq-01",
+      "question": {
+        "id": "lm3-asq-01",
+        "type": "asq",
+        "title": "A person who writes",
+        "contentOrigin": {
+          "kind": "repository-approved",
+          "source": "content/full-mock/papers/full-mock-1.v2.json",
+          "sourceId": "fm1-asq-01",
+          "sourceFingerprint": "d4bd13293a7217971658e1f9b219bff6b5c8c123f35d7901ae48a59d5f423fed",
+          "selectedAt": "2026-11-02"
+        },
+        "text": "What do we call the person who writes a book or a novel?",
+        "acceptedAnswers": [
+          "author",
+          "writer"
+        ],
+        "sample": "author",
+        "audioRate": "-5%",
+        "instruction": "Listen once and answer in one word or a short phrase. Recording opens without a start tone. You have 10 seconds.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "preparation": 0,
+        "seconds": 10,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 0,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "fm1-asq-01",
+        "sourceQuestionId": "fm3-asq-01"
+      },
+      "origins": [
+        "content/full-mock/papers/full-mock-1.v2.json",
+        "fm1-asq-01",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-asq-01"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a.mp3",
+          "textSha256": "c04aa4bb76593db1d4a367665e22158b8a528c2bde05bf71336379f5c6e46d45",
+          "audioSha256": "37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a",
+          "bytes": 21837,
+          "seconds": 3.6,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-5%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-asq-02",
+      "question": {
+        "id": "lm3-asq-02",
+        "type": "asq",
+        "title": "Measuring temperature",
+        "contentOrigin": {
+          "kind": "repository-approved",
+          "source": "content/full-mock/papers/full-mock-1.v2.json",
+          "sourceId": "fm1-asq-02",
+          "sourceFingerprint": "6af64c6c94e30c7488e89b1ca2d61b8c9930602d7cd00cdf61ac28515b0cc4ec",
+          "selectedAt": "2026-11-02"
+        },
+        "text": "Which instrument do you use to measure the temperature of a room?",
+        "acceptedAnswers": [
+          "thermometer"
+        ],
+        "sample": "thermometer",
+        "audioRate": "-5%",
+        "instruction": "Listen once and answer in one word or a short phrase. Recording opens without a start tone. You have 10 seconds.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "preparation": 0,
+        "seconds": 10,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 0,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "fm1-asq-02",
+        "sourceQuestionId": "fm3-asq-02"
+      },
+      "origins": [
+        "content/full-mock/papers/full-mock-1.v2.json",
+        "fm1-asq-02",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-asq-02"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62.mp3",
+          "textSha256": "c9e1681c36339de5e9aa9a7915d13bc8439e6dfbdaf6fb732dae7e5eaabc7469",
+          "audioSha256": "f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62",
+          "bytes": 20397,
+          "seconds": 3.36,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-5%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-asq-03",
+      "question": {
+        "id": "lm3-asq-03",
+        "type": "asq",
+        "title": "Time of day",
+        "contentOrigin": {
+          "kind": "repository-approved",
+          "source": "content/full-mock/papers/full-mock-1.v2.json",
+          "sourceId": "fm1-asq-03",
+          "sourceFingerprint": "899634866aaa8c753801c713641c72f61c1d4b87383c466af37d5edf0cac3717",
+          "selectedAt": "2026-11-02"
+        },
+        "text": "If a meeting begins at noon, at what time of day does it start?",
+        "acceptedAnswers": [
+          "noon",
+          "midday",
+          "twelve",
+          "12",
+          "twelve pm",
+          "12 pm",
+          "12pm",
+          "12:00",
+          "12:00 pm",
+          "twelve o'clock",
+          "12 o'clock"
+        ],
+        "sample": "noon",
+        "audioRate": "-5%",
+        "instruction": "Listen once and answer in one word or a short phrase. Recording opens without a start tone. You have 10 seconds.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "preparation": 0,
+        "seconds": 10,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 0,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "fm1-asq-03",
+        "sourceQuestionId": "fm3-asq-03"
+      },
+      "origins": [
+        "content/full-mock/papers/full-mock-1.v2.json",
+        "fm1-asq-03",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-asq-03"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3.mp3",
+          "textSha256": "eb6d0f4c7f73c5b5cbb685852467d1ba0311262312d1abf2fc3850995b937e5d",
+          "audioSha256": "cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3",
+          "bytes": 24141,
+          "seconds": 3.984,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-5%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-asq-04",
+      "question": {
+        "id": "lm3-asq-04",
+        "type": "asq",
+        "title": "A shape",
+        "contentOrigin": {
+          "kind": "repository-approved",
+          "source": "content/full-mock/papers/full-mock-1.v2.json",
+          "sourceId": "fm1-asq-04",
+          "sourceFingerprint": "9d75c6707dbdd3c997155bc7d2feb4d617aee5863a752ee05a88f7ca3058e5cd",
+          "selectedAt": "2026-11-02"
+        },
+        "text": "How many equal sides are there in a square?",
+        "acceptedAnswers": [
+          "four",
+          "4"
+        ],
+        "sample": "four",
+        "audioRate": "-5%",
+        "instruction": "Listen once and answer in one word or a short phrase. Recording opens without a start tone. You have 10 seconds.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "preparation": 0,
+        "seconds": 10,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 0,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "fm1-asq-04",
+        "sourceQuestionId": "fm3-asq-04"
+      },
+      "origins": [
+        "content/full-mock/papers/full-mock-1.v2.json",
+        "fm1-asq-04",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-asq-04"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6.mp3",
+          "textSha256": "cad9fb9778ba688e0d41a938d1c8c6591303c25ed7398959fafd1671a4a2ae6f",
+          "audioSha256": "3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6",
+          "bytes": 18525,
+          "seconds": 3.048,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-15%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-asq-05",
+      "question": {
+        "id": "lm3-asq-05",
+        "type": "asq",
+        "title": "A direction",
+        "contentOrigin": {
+          "kind": "repository-approved",
+          "source": "content/full-mock/papers/full-mock-1.v2.json",
+          "sourceId": "fm1-asq-05",
+          "sourceFingerprint": "e108b61509f4c9e3390ede18f319e7e876cdac2b57c129230ac6daac3c09c55c",
+          "selectedAt": "2026-11-02"
+        },
+        "text": "What is the opposite direction to north on a compass?",
+        "acceptedAnswers": [
+          "south"
+        ],
+        "sample": "south",
+        "audioRate": "-5%",
+        "instruction": "Listen once and answer in one word or a short phrase. Recording opens without a start tone. You have 10 seconds.",
+        "difficulty": {
+          "band": "easy",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "A short direct prompt, simple visual or common grammatical relationship."
+        },
+        "preparation": 0,
+        "seconds": 10,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 0,
+        "silenceTimeoutSeconds": 3,
+        "sourceId": "fm1-asq-05",
+        "sourceQuestionId": "fm3-asq-05"
+      },
+      "origins": [
+        "content/full-mock/papers/full-mock-1.v2.json",
+        "fm1-asq-05",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-asq-05"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0.mp3",
+        "entry": {
+          "path": "content/full-mock/assets/47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0.mp3",
+          "textSha256": "2e4b16774d69f27767f1a5162eb805beda55b968e34ac6768a277eeeff581c6f",
+          "audioSha256": "47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0",
+          "bytes": 19389,
+          "seconds": 3.192,
+          "voices": [
+            "en_US-ljspeech-high"
+          ],
+          "generator": "piper-tts 1.3.0 (local)",
+          "rate": "-5%",
+          "voiceModelSha256": "5d4f08ba6a2a48c44592eed3ce56bf85e9de3dd4e20df90541ae68a8310c029a",
+          "voiceModelRevision": "5041a7a49ae5b3a0f30e6837769eb03fdbb231bd",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-probed",
+          "humanListeningReview": "pending",
+          "endCue": false
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-sgd-01",
+      "question": {
+        "name": "Summarise Group Discussion",
+        "instruction": "Listen to the three speakers once. Prepare for 10 seconds, then summarise their discussion within two minutes.",
+        "id": "lm3-sgd-01",
+        "type": "sgd",
+        "title": "Campus part-time jobs",
+        "narration": "Three students are debating the pros and cons of campus part-time jobs, gathered at a corner table in the student lounge, the air filled with the faint smell of coffee and the rustle of textbook pages.",
+        "turns": [
+          [
+            "Speaker 1",
+            "I think working part-time on campus is a total waste of energy. Last month I took a job at the library desk, and between shelving books and scanning IDs, I barely had any mental capacity left for my coursework. I ended up dozing off during my morning lectures twice last week."
+          ],
+          [
+            "Speaker 2",
+            "Actually, I find my part-time job at the academic office really helpful. It forces me to manage my time better. I used to procrastinate all afternoon, but now I block out my shifts and study hours in advance. Plus, I'm earning my own spending money it feels good not to have to ask my parents for every little thing."
+          ],
+          [
+            "Speaker 3",
+            "But the workload is no joke. I tried working at the campus café last semester and it drained me completely. Some days I'd finish my shift at 8 pm, and then still have to write a lab report due at midnight. I got so stressed I had to quit after a month. It's not just about time it's the mental toll."
+          ],
+          [
+            "Speaker 1",
+            "Exactly! And let's be honest most of these jobs don't even relate to our future careers. I'd rather join a student club or work on a project that actually builds my resume. Stuffing envelopes or swiping cards isn't going to help me get into grad school."
+          ],
+          [
+            "Speaker 2",
+            "I see what you mean, but you're overlooking the soft skills. I've learned to talk to supervisors, handle complaints, and show up on time that's real-world experience. And it's not always about the job itself; it's about showing you can balance responsibilities."
+          ],
+          [
+            "Speaker 3",
+            "I guess, but I still think it depends on your schedule. If you're taking 18 credits like I am this semester, adding a job is just unrealistic. The stress isn't sustainable. Maybe if the university limited work hours to under 10 per week... but even then, I'd rather use that time to review or sleep."
+          ],
+          [
+            "Speaker 1",
+            "Same. I'd prefer a work-study program that's more flexible and aligned with my major. Maybe assisting a professor with research instead of stacking books. That way I'm earning and learning at the same time. Otherwise, it just feels like trading precious study hours for tasks that don't contribute to my long-term goals."
+          ],
+          [
+            "Speaker 2",
+            "That's a fair point. I wouldn't say no to a more relevant job either. But still, even a simple job teaches discipline. And let's be real not all of us can get those research assistant roles. Sometimes starting with a basic job can actually open doors to those better opportunities later on."
+          ],
+          [
+            "Speaker 3",
+            "Well, if I'm going to work, I'd want it to mean something beyond the pay check. Otherwise, I'd rather focus on my grades. There has to be a balance. Burnout is real, and no amount of money is worth compromising both my health and academic performance."
+          ]
+        ],
+        "facts": [
+          "The discussion weighs campus part-time jobs against study demands and wellbeing.",
+          "Speaker 1 finds library work exhausting and insufficiently related to future career goals.",
+          "Speaker 1 would prefer flexible work-study or research assistance aligned with their major.",
+          "Speaker 2 says office work improves time management, financial independence, communication, reliability and discipline.",
+          "Speaker 2 accepts that relevant work is preferable but argues basic jobs can lead to better opportunities.",
+          "Speaker 3 describes café work causing stress, quitting after a month, and an unsustainable workload with 18 credits.",
+          "Speaker 3 prioritises health and grades and considers limited hours, while the group recognises the need for balance without fully agreeing on the value of campus work."
+        ],
+        "sample": "The students discuss whether campus part-time jobs are worthwhile. The first speaker says library work drains energy and offers little career relevance, preferring flexible work connected to their major, such as research assistance. The second values office work for income, better time management and transferable skills, arguing that basic jobs can also lead to better opportunities. The third describes quitting a café job because of stress and conflicting deadlines, and believes heavy study loads leave little room for employment. Although more relevant work appeals to the group, their views remain different. The discussion highlights balancing income and experience against academic performance and health.",
+        "source": {
+          "kind": "user-supplied-transcript",
+          "date": "2026-10-30",
+          "image": "AdobeExpressPhotos_c0b1846dbca24098b0490884d3e4956a_CopyEdited.png",
+          "contentStatus": "transcribed-user-provided"
+        },
+        "audioRate": "-17%",
+        "text": "Narration: Three students are debating the pros and cons of campus part-time jobs, gathered at a corner table in the student lounge, the air filled with the faint smell of coffee and the rustle of textbook pages.\nSpeaker 1: I think working part-time on campus is a total waste of energy. Last month I took a job at the library desk, and between shelving books and scanning IDs, I barely had any mental capacity left for my coursework. I ended up dozing off during my morning lectures twice last week.\nSpeaker 2: Actually, I find my part-time job at the academic office really helpful. It forces me to manage my time better. I used to procrastinate all afternoon, but now I block out my shifts and study hours in advance. Plus, I'm earning my own spending money it feels good not to have to ask my parents for every little thing.\nSpeaker 3: But the workload is no joke. I tried working at the campus café last semester and it drained me completely. Some days I'd finish my shift at 8 pm, and then still have to write a lab report due at midnight. I got so stressed I had to quit after a month. It's not just about time it's the mental toll.\nSpeaker 1: Exactly! And let's be honest most of these jobs don't even relate to our future careers. I'd rather join a student club or work on a project that actually builds my resume. Stuffing envelopes or swiping cards isn't going to help me get into grad school.\nSpeaker 2: I see what you mean, but you're overlooking the soft skills. I've learned to talk to supervisors, handle complaints, and show up on time that's real-world experience. And it's not always about the job itself; it's about showing you can balance responsibilities.\nSpeaker 3: I guess, but I still think it depends on your schedule. If you're taking 18 credits like I am this semester, adding a job is just unrealistic. The stress isn't sustainable. Maybe if the university limited work hours to under 10 per week... but even then, I'd rather use that time to review or sleep.\nSpeaker 1: Same. I'd prefer a work-study program that's more flexible and aligned with my major. Maybe assisting a professor with research instead of stacking books. That way I'm earning and learning at the same time. Otherwise, it just feels like trading precious study hours for tasks that don't contribute to my long-term goals.\nSpeaker 2: That's a fair point. I wouldn't say no to a more relevant job either. But still, even a simple job teaches discipline. And let's be real not all of us can get those research assistant roles. Sometimes starting with a basic job can actually open doors to those better opportunities later on.\nSpeaker 3: Well, if I'm going to work, I'd want it to mean something beyond the pay check. Otherwise, I'd rather focus on my grades. There has to be a balance. Burnout is real, and no amount of money is worth compromising both my health and academic performance.",
+        "difficulty": {
+          "band": "hard",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires connecting several ideas or speakers and preserving relationships."
+        },
+        "preparation": 10,
+        "seconds": 120,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "sourceId": "sgd-user-20261030-03",
+        "contentOrigin": {
+          "kind": "user-supplied",
+          "source": "content/speaking-bank.js",
+          "sourceId": "sgd-user-20261030-03",
+          "sourceFingerprint": "e7d3ee299b35287b0b3164a032f5dad63cb3904c0381635f1a06967d5b2cc38a",
+          "selectedAt": "2026-11-02"
+        },
+        "sourceQuestionId": "fm3-sgd-01"
+      },
+      "origins": [
+        "content/speaking-bank.js",
+        "sgd-user-20261030-03",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-sgd-01"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/8a1df71a16d0ffcd7bdc77475035ccb655dafe4dabd70a3a743d654ec05a5654.mp3",
+        "entry": {
+          "textSha256": "bb340a1bd2ee9433eda6a0081b9f213d4ccf02e3f4e6c709996a2699f7cd4fcd",
+          "audioSha256": "8a1df71a16d0ffcd7bdc77475035ccb655dafe4dabd70a3a743d654ec05a5654",
+          "bytes": 1000461,
+          "seconds": 166.704,
+          "voices": [
+            "piper:en_GB-vctk-medium.onnx:p225",
+            "piper:en_GB-vctk-medium.onnx:p237",
+            "piper:en_GB-vctk-medium.onnx:p238"
+          ],
+          "speakerVoices": {
+            "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+            "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+            "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+          },
+          "turnSpeakers": [
+            "Speaker 1",
+            "Speaker 2",
+            "Speaker 3",
+            "Speaker 1",
+            "Speaker 2",
+            "Speaker 3",
+            "Speaker 1",
+            "Speaker 2",
+            "Speaker 3"
+          ],
+          "speakerAccents": {
+            "Speaker 1": "English",
+            "Speaker 2": "Scottish",
+            "Speaker 3": "NorthernIrish"
+          },
+          "narrationIncluded": true,
+          "narrationSha256": "3d997603fbcf38b7e64efda6da85ed994ea896d931cedba30c851c88156d217f",
+          "profileVersion": "sgd-contrasting-voices-20261030-1",
+          "rate": "-17%",
+          "targetWordsPerMinute": 180,
+          "generator": "piper-tts 1.3.0",
+          "source": "sgd-voice-source.json",
+          "path": "content/full-mock/assets/8a1df71a16d0ffcd7bdc77475035ccb655dafe4dabd70a3a743d654ec05a5654.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-sgd-02",
+      "question": {
+        "name": "Summarise Group Discussion",
+        "instruction": "Listen to the three speakers once. Prepare for 10 seconds, then summarise their discussion within two minutes.",
+        "id": "lm3-sgd-02",
+        "type": "sgd",
+        "title": "On-campus and off-campus housing",
+        "narration": "Three students are talking about their living experiences in on-campus dorms and off-campus housing.",
+        "turns": [
+          [
+            "Speaker 1",
+            "I live in a house off campus with my friends. It's quite far from the school, but I am lucky because I live close to bus stops and it is very convenient. Also, our landlord is nice and takes care of things like cleaning and other problems around the house."
+          ],
+          [
+            "Speaker 2",
+            "I live in the school dormitory, which is very convenient, and there are places where I can study. Actually, I'd be quite happy to share a house with friends off campus, but the rent is too expensive. Also, I don't want to get up early, and the dormitory is very close to the teaching buildings."
+          ],
+          [
+            "Speaker 3",
+            "I also live in the school dormitory. If anything in the dorm breaks, it gets repaired soon, so students don't have to bother with it. Some friends living outside have problems with water and have to wait for a long time to have it fixed."
+          ],
+          [
+            "Speaker 1",
+            "That's honestly a huge advantage of living on campus. Even though our landlord is responsible and helpful, off-campus maintenance is really slow in general. We once had a water leakage issue and waited nearly a week for someone to fix it, which was really troublesome."
+          ],
+          [
+            "Speaker 2",
+            "While dorm life has plenty of benefits, it definitely comes with some annoying downsides as well. The fire alarm in our dormitory building often goes off in the middle of the night. Whenever the alarm goes off, we have to leave the building and wait until it has been checked. I'm fed up with being forced to get out of bed and evacuate outside because of fire alarms on cold winter nights."
+          ],
+          [
+            "Speaker 3",
+            "I totally agree with your opinion. I've experienced two fire alarms in the dorm, and both times they were caused by someone using a toaster illegally in the building. Can't they find the people who are cooking illegally and deal with them more quickly? Still, I think the system is quite safe, so I accept this accommodation plan."
+          ],
+          [
+            "Speaker 1",
+            "I had no idea dorm life had such annoying safety issues. Living off-campus definitely gives us more private space and flexible schedules. We can cook freely in our own kitchen without violating any campus rules, and we never suffer from sudden fire alarms at night."
+          ],
+          [
+            "Speaker 2",
+            "That sounds really relaxing, but off-campus accommodation still has obvious drawbacks. Apart from the high rent and slow maintenance, you also have to spend plenty of time on daily housework and commuting every single day."
+          ],
+          [
+            "Speaker 3",
+            "Exactly. Every living option has its own pros and cons. On-campus dorms are affordable, safe and time-saving, while off-campus houses provide more freedom and privacy. It all depends on personal study habits and lifestyle choices."
+          ]
+        ],
+        "facts": [
+          "The students compare on-campus dormitories with off-campus shared housing.",
+          "Speaker 1 values living with friends off campus, nearby buses, privacy, freedom and flexible cooking, but describes slow repairs.",
+          "Speaker 2 values dormitory convenience, study spaces, affordability and proximity to teaching buildings.",
+          "Speakers 2 and 3 complain about night-time fire alarms and evacuations; Speaker 3 still considers the dormitory safe.",
+          "Speaker 3 highlights quick on-campus repairs, unlike some off-campus water problems.",
+          "Speaker 2 notes that off-campus housing adds rent, maintenance, housework and commuting burdens.",
+          "Speaker 3 concludes that each option has trade-offs and the choice depends on study habits and lifestyle."
+        ],
+        "sample": "The students compare university dormitories and off-campus housing. The first speaker enjoys sharing a house with friends, nearby transport and greater privacy and freedom, but acknowledges that repairs can be slow. The second values affordable dormitory accommodation close to classrooms and study spaces, while the third highlights prompt maintenance. However, both dormitory residents complain about disruptive fire alarms at night, although the third still considers the system safe. The second also notes the higher rent, housework and commuting associated with living off campus. They conclude that dormitories offer convenience and affordability, whereas private housing offers independence, and the best choice depends on individual habits and priorities.",
+        "source": {
+          "kind": "user-supplied-transcript",
+          "date": "2026-10-30",
+          "image": "AdobeExpressPhotos_5b59236be7d34fce8617748fa561a571_CopyEdited.png",
+          "contentStatus": "transcribed-user-provided"
+        },
+        "audioRate": "-17%",
+        "text": "Narration: Three students are talking about their living experiences in on-campus dorms and off-campus housing.\nSpeaker 1: I live in a house off campus with my friends. It's quite far from the school, but I am lucky because I live close to bus stops and it is very convenient. Also, our landlord is nice and takes care of things like cleaning and other problems around the house.\nSpeaker 2: I live in the school dormitory, which is very convenient, and there are places where I can study. Actually, I'd be quite happy to share a house with friends off campus, but the rent is too expensive. Also, I don't want to get up early, and the dormitory is very close to the teaching buildings.\nSpeaker 3: I also live in the school dormitory. If anything in the dorm breaks, it gets repaired soon, so students don't have to bother with it. Some friends living outside have problems with water and have to wait for a long time to have it fixed.\nSpeaker 1: That's honestly a huge advantage of living on campus. Even though our landlord is responsible and helpful, off-campus maintenance is really slow in general. We once had a water leakage issue and waited nearly a week for someone to fix it, which was really troublesome.\nSpeaker 2: While dorm life has plenty of benefits, it definitely comes with some annoying downsides as well. The fire alarm in our dormitory building often goes off in the middle of the night. Whenever the alarm goes off, we have to leave the building and wait until it has been checked. I'm fed up with being forced to get out of bed and evacuate outside because of fire alarms on cold winter nights.\nSpeaker 3: I totally agree with your opinion. I've experienced two fire alarms in the dorm, and both times they were caused by someone using a toaster illegally in the building. Can't they find the people who are cooking illegally and deal with them more quickly? Still, I think the system is quite safe, so I accept this accommodation plan.\nSpeaker 1: I had no idea dorm life had such annoying safety issues. Living off-campus definitely gives us more private space and flexible schedules. We can cook freely in our own kitchen without violating any campus rules, and we never suffer from sudden fire alarms at night.\nSpeaker 2: That sounds really relaxing, but off-campus accommodation still has obvious drawbacks. Apart from the high rent and slow maintenance, you also have to spend plenty of time on daily housework and commuting every single day.\nSpeaker 3: Exactly. Every living option has its own pros and cons. On-campus dorms are affordable, safe and time-saving, while off-campus houses provide more freedom and privacy. It all depends on personal study habits and lifestyle choices.",
+        "difficulty": {
+          "band": "hard",
+          "basis": "editorial",
+          "calibrated": false,
+          "rationale": "Requires connecting several ideas or speakers and preserving relationships."
+        },
+        "preparation": 10,
+        "seconds": 120,
+        "playbackDelaySeconds": 3,
+        "playOnce": true,
+        "startCueMs": 300,
+        "sourceId": "sgd-user-20261030-04",
+        "contentOrigin": {
+          "kind": "user-supplied",
+          "source": "content/speaking-bank.js",
+          "sourceId": "sgd-user-20261030-04",
+          "sourceFingerprint": "ca48b5a21547542f1531e6792401a680b942b28d0c64464d2a7b099d0e7ebe7d",
+          "selectedAt": "2026-11-02"
+        },
+        "sourceQuestionId": "fm3-sgd-02"
+      },
+      "origins": [
+        "content/speaking-bank.js",
+        "sgd-user-20261030-04",
+        {
+          "kind": "retained-frozen-recording",
+          "paper": "full-mock-3",
+          "questionId": "fm3-sgd-02"
+        }
+      ],
+      "audio": {
+        "path": "content/full-mock/assets/e62526aee63bac04b4022a449efbadf7c2da7e1578c28f4452f6825ba6e4d6e3.mp3",
+        "entry": {
+          "textSha256": "7b18a8022c5be685b0eb1e871626e00370944490210e6ca34cf6c94f464c786c",
+          "audioSha256": "e62526aee63bac04b4022a449efbadf7c2da7e1578c28f4452f6825ba6e4d6e3",
+          "bytes": 908445,
+          "seconds": 151.368,
+          "voices": [
+            "piper:en_GB-vctk-medium.onnx:p225",
+            "piper:en_GB-vctk-medium.onnx:p237",
+            "piper:en_GB-vctk-medium.onnx:p238"
+          ],
+          "speakerVoices": {
+            "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+            "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+            "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+          },
+          "turnSpeakers": [
+            "Speaker 1",
+            "Speaker 2",
+            "Speaker 3",
+            "Speaker 1",
+            "Speaker 2",
+            "Speaker 3",
+            "Speaker 1",
+            "Speaker 2",
+            "Speaker 3"
+          ],
+          "speakerAccents": {
+            "Speaker 1": "English",
+            "Speaker 2": "Scottish",
+            "Speaker 3": "NorthernIrish"
+          },
+          "narrationIncluded": true,
+          "narrationSha256": "aded6e8ce550560994ce0df77940aefff7a58f8aaca8dac526d66c10a09db148",
+          "profileVersion": "sgd-contrasting-voices-20261030-1",
+          "rate": "-17%",
+          "targetWordsPerMinute": 180,
+          "generator": "piper-tts 1.3.0",
+          "source": "sgd-voice-source.json",
+          "path": "content/full-mock/assets/e62526aee63bac04b4022a449efbadf7c2da7e1578c28f4452f6825ba6e4d6e3.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-sst-01",
+      "question": {
+        "id": "lm3-sst-01",
+        "type": "sst",
+        "title": "Bee Hives",
+        "topic": "Biology",
+        "minutes": 10,
+        "voice": "nova",
+        "text": "A honeybee colony functions through highly specialised roles that allow thousands of insects to behave as a coordinated system. The queen lays eggs, workers gather food and maintain the hive, and male drones have a narrower reproductive role. Worker bees perform demanding tasks throughout short lives, while new generations continually replace those that die. Communication and division of labour allow the colony to regulate food, temperature and care for developing bees. Studying a hive shows how cooperation among individuals can produce behaviour that is more complex than the actions of any single bee.",
+        "keyPoints": [
+          "A honeybee colony functions through highly specialised roles that allow thousands of insects to behave as a coordinated system.",
+          "The queen lays eggs, workers gather food and maintain the hive, and male drones have a narrower reproductive role.",
+          "Worker bees perform demanding tasks throughout short lives, while new generations continually replace those that die.",
+          "Communication and division of labour allow the colony to regulate food, temperature and care for developing bees."
+        ],
+        "sample": "A honeybee colony functions through highly specialised roles that allow thousands of insects to behave as a coordinated system; the queen lays eggs, workers gather food and maintain the hive, and male drones have a narrower reproductive role; and worker bees perform demanding tasks throughout short lives, while new generations continually replace those that die.",
+        "predictionSource": {
+          "provider": "PTE Nepal",
+          "week": "21-27 September 2026",
+          "checkedAt": "2026-09-23",
+          "lastReviewed": "2026-09-24",
+          "contentStatus": "adapted",
+          "swtUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-written-text/",
+          "sstUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-summarize-spoken-text/",
+          "wfdUrl": "https://ptenepal.com/blog/pte-prediction-sep21-27-2026-write-from-dictation/",
+          "task": "sst",
+          "sourceId": "13000517",
+          "sourceTitle": "Bee Hives"
+        },
+        "sourceQuestionId": "pred26-sst-17",
+        "instruction": "Listen once and write a 50–70 word summary. Your 10 minutes include listening to the recording.",
+        "playbackDelaySeconds": 3,
+        "seconds": 600
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "pred26-sst-17",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/fb5c05c3b61486d36bf15b7fc67f757c86de0798157b73d6c416cc6f6f07ccf2.mp3",
+        "entry": {
+          "textSha256": "f0280e975170325db852e15ca7d85c9dd97ee897943e302159da1cbdfa4c196e",
+          "audioSha256": "fb5c05c3b61486d36bf15b7fc67f757c86de0798157b73d6c416cc6f6f07ccf2",
+          "bytes": 742797,
+          "seconds": 61.87200000000146,
+          "voice": "en-AU-NatashaNeural",
+          "rate": "-35%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-10-08",
+          "pacing": "native-neural-rate",
+          "targetSeconds": 62,
+          "path": "content/listening-skill/assets/fb5c05c3b61486d36bf15b7fc67f757c86de0798157b73d6c416cc6f6f07ccf2.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-lmcma-02",
+      "question": {
+        "id": "lm3-lmcma-02",
+        "type": "lmcma",
+        "audioId": "sst-community-museums",
+        "title": "Museums and community stories",
+        "text": "A museum collection can tell us about the past, but the meaning of an object is not always obvious from its appearance. A simple tool may reveal little until someone explains who used it, how it was made, and why it mattered in everyday life. This is one reason museums increasingly invite communities to contribute stories as well as objects. Personal accounts can connect a collection to experiences that formal records overlook. However, collecting a story creates responsibilities. Contributors should understand how their words will be used, and museums should distinguish personal memories from independently verified facts. Different people may remember the same event in different ways. Presenting these differences carefully can encourage visitors to think about how historical knowledge is constructed. Digital recordings can make stories available to wider audiences, but they also require attention to accessibility and long-term preservation. A recording is of limited value if future visitors cannot open it or understand it. Community participation therefore involves an ongoing relationship. Museums need to combine professional care with respect for contributors, allowing collections to represent a broader range of experiences without abandoning careful interpretation.",
+        "prompt": "Which TWO responsibilities are mentioned for museums collecting personal stories?",
+        "choices": [
+          "Explaining to contributors how their words will be used.",
+          "Treating every memory as an independently verified fact.",
+          "Removing all conflicting accounts.",
+          "Prioritising recordings over long-term accessibility.",
+          "Distinguishing memories from verified information."
+        ],
+        "answers": [
+          0,
+          4
+        ],
+        "explanation": "Contributors should understand how stories will be used, and interpretation should distinguish personal memory from independently verified facts.",
+        "minutes": 25,
+        "timeGroup": "listening",
+        "sourceQuestionId": "listen-lmcma-sst-community-museums",
+        "instruction": "Listen once and select all correct responses. Incorrect selections lose points, with a minimum item score of zero.",
+        "playbackDelaySeconds": 7
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "listen-lmcma-sst-community-museums",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/603e21c2461cc3a2b238612f6d9feff516f3c55de7f9794445e631044f98822f.mp3",
+        "entry": {
+          "textSha256": "f7f1e0a1d78cfc2f6247eec5fbb39440956fb7796d1f28f941ebcf2cdc8b5c01",
+          "audioSha256": "603e21c2461cc3a2b238612f6d9feff516f3c55de7f9794445e631044f98822f",
+          "bytes": 972621,
+          "seconds": 81.02400000000218,
+          "voice": "en-US-GuyNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/listening-skill/assets/603e21c2461cc3a2b238612f6d9feff516f3c55de7f9794445e631044f98822f.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-lmcma-03",
+      "question": {
+        "id": "lm3-lmcma-03",
+        "type": "lmcma",
+        "audioId": "sst-citizen-science",
+        "title": "Citizens collecting scientific data",
+        "text": "Scientific research sometimes requires observations from more places than a small professional team can visit. Volunteers can help by recording birds, measuring rainfall or photographing changes along a coastline. Their contribution can reveal patterns across wide areas and long periods. However, collecting more observations does not automatically produce reliable evidence. Participants need clear instructions about what to record and how to report uncertainty. For example, a volunteer who cannot identify a bird should be able to mark the observation as uncertain instead of guessing. Researchers also need to consider where observations come from. Easily accessible parks may receive many visits, while remote locations remain poorly represented. Training, checks by experienced observers and careful analysis can reduce these problems, although they cannot remove every source of error. There is also an educational benefit: participants learn how scientific questions are investigated and why conclusions sometimes change. This benefit is stronger when researchers share results and explain how the observations were used. Citizen science therefore works best as a partnership, combining public participation with professional guidance, transparent methods and continuing communication.",
+        "prompt": "Which TWO measures help make volunteer observations reliable?",
+        "choices": [
+          "Collecting only in easily accessible parks.",
+          "Asking volunteers to guess uncertain identifications.",
+          "Providing clear recording instructions.",
+          "Allowing participants to report uncertainty.",
+          "Assuming that a larger dataset removes all error."
+        ],
+        "answers": [
+          2,
+          3
+        ],
+        "explanation": "Clear instructions and uncertainty reporting support reliable observations. More data alone does not remove bias or error.",
+        "minutes": 25,
+        "timeGroup": "listening",
+        "sourceQuestionId": "listen-lmcma-sst-citizen-science",
+        "instruction": "Listen once and select all correct responses. Incorrect selections lose points, with a minimum item score of zero.",
+        "playbackDelaySeconds": 7
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "listen-lmcma-sst-citizen-science",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/4e1b8bea20949abb612204b80799a2dd8c9bf96a54c94c2b8defbf40fcb1b989.mp3",
+        "entry": {
+          "textSha256": "62c638025efee71c8566d9837415fab91cdbe5a94cf06ad9fe97347db7090cbb",
+          "audioSha256": "4e1b8bea20949abb612204b80799a2dd8c9bf96a54c94c2b8defbf40fcb1b989",
+          "bytes": 1001421,
+          "seconds": 83.42400000000227,
+          "voice": "en-AU-NatashaNeural",
+          "rate": "+5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/listening-skill/assets/4e1b8bea20949abb612204b80799a2dd8c9bf96a54c94c2b8defbf40fcb1b989.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-lfi-04",
+      "question": {
+        "id": "lm3-lfi-04",
+        "type": "lfi",
+        "audioId": "pred26-sst-08",
+        "title": "Shifting Economic Priorities",
+        "text": "An economy built heavily around private cars can create jobs and mobility while also encouraging congestion, fuel use and dispersed urban development. Diversifying investment toward public transport, renewable energy and efficient urban infrastructure can create different industries and employment opportunities. The transition is not immediate because workers, businesses and communities depend on existing supply chains. Policy needs to support retraining and new investment while improving alternatives that people can actually use. Changing economic priorities works best when environmental goals are linked with practical plans for employment, transport and regional development.",
+        "passage": "An economy built heavily around private cars can create jobs and mobility while also encouraging [[1]], fuel use and dispersed urban development. Diversifying [[2]] toward public transport, renewable energy and efficient urban infrastructure can create different industries and employment opportunities. The transition is not [[3]] because workers, businesses and communities depend on existing supply chains. Policy needs to support [[4]] and new investment while improving alternatives that people can actually use. Changing economic priorities works best when environmental goals are linked with practical plans for employment, transport and [[5]] development.",
+        "answers": [
+          "congestion",
+          "investment",
+          "immediate",
+          "retraining",
+          "regional"
+        ],
+        "prompt": "Listen and type the missing words in the transcript.",
+        "explanation": "Each blank must match the word spoken in the recording, with correct spelling.",
+        "minutes": 25,
+        "timeGroup": "listening",
+        "sourceQuestionId": "listen-lfi-pred26-sst-08",
+        "instruction": "Listen once and type the missing words into the transcript. Check your spelling.",
+        "playbackDelaySeconds": 7
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "listen-lfi-pred26-sst-08",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/bd52c07cb153689473d16ad82111e0a5064b54c9936342baeac94d9c574a73fb.mp3",
+        "entry": {
+          "textSha256": "ee8f82dffd99ba8e796b292e1acf8826545019ae29f3703fdeee9340919fa6a6",
+          "audioSha256": "bd52c07cb153689473d16ad82111e0a5064b54c9936342baeac94d9c574a73fb",
+          "bytes": 745101,
+          "seconds": 62.064000000001464,
+          "voice": "en-GB-RyanNeural",
+          "rate": "-33%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-10-08",
+          "pacing": "native-neural-rate",
+          "targetSeconds": 62,
+          "path": "content/listening-skill/assets/bd52c07cb153689473d16ad82111e0a5064b54c9936342baeac94d9c574a73fb.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-lfi-05",
+      "question": {
+        "id": "lm3-lfi-05",
+        "type": "lfi",
+        "audioId": "pred26-sst-09",
+        "title": "Railway Cards",
+        "text": "Rail travel cards can make frequent journeys cheaper and reduce the time passengers spend purchasing individual tickets. Different schemes may target students, older travellers, commuters or families, so the value depends on a passenger’s actual pattern of travel. Some cards provide discounts while others work as prepaid or subscription products. Travellers should compare eligibility rules, peak-hour limits and the number of trips required before the card becomes economical. The main advantage is convenience, but a travel card is useful only when its conditions match the way the passenger normally travels.",
+        "passage": "Rail travel cards can make [[1]] journeys cheaper and reduce the time passengers spend purchasing [[2]] tickets. Different schemes may target students, older travellers, commuters or families, so the value depends on a passenger’s actual pattern of travel. Some cards provide discounts while others work as prepaid or [[3]] products. Travellers should compare [[4]] rules, peak-hour limits and the number of trips required before the card becomes economical. The main advantage is [[5]], but a travel card is useful only when its conditions match the way the passenger normally travels.",
+        "answers": [
+          "frequent",
+          "individual",
+          "subscription",
+          "eligibility",
+          "convenience"
+        ],
+        "prompt": "Listen and type the missing words in the transcript.",
+        "explanation": "Each blank must match the word spoken in the recording, with correct spelling.",
+        "minutes": 25,
+        "timeGroup": "listening",
+        "sourceQuestionId": "listen-lfi-pred26-sst-09",
+        "instruction": "Listen once and type the missing words into the transcript. Check your spelling.",
+        "playbackDelaySeconds": 7
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "listen-lfi-pred26-sst-09",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/9aafb44512d7310e46ca2eb41716593d915d388204be3a19b6be64ef3ebf71b7.mp3",
+        "entry": {
+          "textSha256": "c0dc727bbf58f0bfd4ec5245bd2f881238880b43424994dc2028c725ddfb5c30",
+          "audioSha256": "9aafb44512d7310e46ca2eb41716593d915d388204be3a19b6be64ef3ebf71b7",
+          "bytes": 740781,
+          "seconds": 61.70400000000145,
+          "voice": "en-AU-NatashaNeural",
+          "rate": "-35%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-10-08",
+          "pacing": "native-neural-rate",
+          "targetSeconds": 62,
+          "path": "content/listening-skill/assets/9aafb44512d7310e46ca2eb41716593d915d388204be3a19b6be64ef3ebf71b7.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-hcs-06",
+      "question": {
+        "id": "lm3-hcs-06",
+        "type": "hcs",
+        "audioId": "sst-urban-pollinators",
+        "title": "Habitats for urban pollinators",
+        "text": "Gardens, balconies and roadside planting can provide food for pollinating insects in cities. However, a patch of colourful flowers is only one part of a useful habitat. Different insects are active at different times, so a range of plants that flower across the seasons can provide a more continuous food supply. Suitable nesting places matter as well. Some insects use bare ground, while others shelter in hollow stems or small cavities. Tidying every corner of a garden may therefore remove useful habitat. The location of planting also influences its value. Small spaces can act as connections between larger green areas, helping insects move through neighbourhoods. Yet planting plans should reflect local conditions rather than copying a single list of fashionable flowers. Gardeners need to consider climate, water availability and the needs of local species. Monitoring visits can show which plants are being used, although one afternoon of observation is unlikely to reveal the complete picture. Supporting urban pollinators involves a network of food, shelter and connected spaces. Long-term care and seasonal variety are more useful measures of success than the immediate appearance of a flower bed.",
+        "prompt": "Select the summary that best matches the recording.",
+        "choices": [
+          "Pollinator habitats need connected food and shelter across seasons, locally suitable planting and continuing monitoring rather than colourful displays alone.",
+          "Only large parks can support pollinators, so small gardens have no useful role.",
+          "A short period of intense flowering supplies every insect with enough food for the whole year.",
+          "Once flowering plants are installed, habitats no longer need monitoring or care."
+        ],
+        "answer": 0,
+        "explanation": "Seasonal variety, nesting spaces, links between green areas and continuing care support different pollinators.",
+        "minutes": 25,
+        "timeGroup": "listening",
+        "sourceQuestionId": "listen-hcs-sst-urban-pollinators",
+        "instruction": "Listen once and select the summary that best represents the recording.",
+        "playbackDelaySeconds": 3
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "listen-hcs-sst-urban-pollinators",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/db836e4c82a57bd17fcd5e6c20ae673048147d1f96d3ed19d49bc13b7456e635.mp3",
+        "entry": {
+          "textSha256": "d292578a762e5b89e87c91bcf4dff81fe16514021da0e3e2039958542a54fc6a",
+          "audioSha256": "db836e4c82a57bd17fcd5e6c20ae673048147d1f96d3ed19d49bc13b7456e635",
+          "bytes": 941517,
+          "seconds": 78.43200000000208,
+          "voice": "en-AU-NatashaNeural",
+          "rate": "+5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/listening-skill/assets/db836e4c82a57bd17fcd5e6c20ae673048147d1f96d3ed19d49bc13b7456e635.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-hcs-07",
+      "question": {
+        "id": "lm3-hcs-07",
+        "type": "hcs",
+        "audioId": "sst-peer-feedback",
+        "title": "Learning through peer feedback",
+        "text": "Asking students to comment on one another's work can create valuable learning opportunities, but the quality of the activity depends on its design. Without guidance, comments may remain vague, such as saying that an essay is good or needs improvement. Clear criteria help students identify specific features and explain why they matter. Looking at an example together before reviewing classmates' work can establish a shared understanding of those criteria. The student giving feedback benefits too, because evaluating someone else's choices can reveal possibilities for their own writing. However, a reviewer should not be expected to act as a substitute teacher or to assign a definitive grade. Comments are suggestions that the writer must consider alongside the task requirements. Time for revision is essential. If feedback arrives after an assignment is finished, students may have little reason to use it. A respectful classroom environment also makes it easier to ask questions and acknowledge uncertainty. Effective peer feedback is therefore a cycle of observation, explanation and revision. Its purpose is to develop judgement and improve work, rather than simply to distribute marking among students.",
+        "prompt": "Select the summary that best matches the recording.",
+        "choices": [
+          "Peer feedback works best when students replace teachers as the final authority on grades.",
+          "The purpose of peer feedback is to distribute marking work without changing how students learn.",
+          "Students benefit most from receiving large quantities of comments immediately before submission.",
+          "Clear criteria, specific respectful comments and time for revision allow peer feedback to develop judgement and improve learning alongside teacher assessment."
+        ],
+        "answer": 3,
+        "explanation": "Peer review is a learning cycle that develops judgement; clear criteria and opportunities to revise matter more than simply distributing marking.",
+        "minutes": 25,
+        "timeGroup": "listening",
+        "sourceQuestionId": "listen-hcs-sst-peer-feedback",
+        "instruction": "Listen once and select the summary that best represents the recording.",
+        "playbackDelaySeconds": 3
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "listen-hcs-sst-peer-feedback",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/2607ea790b1b2bec8739d897b09389c0dbeda1635f7913e490508f679061fa6f.mp3",
+        "entry": {
+          "textSha256": "96ee413bab6d2d2a5403c9c3108e3e8b4da08d9c6847d86d403cc8c1a5a89ac2",
+          "audioSha256": "2607ea790b1b2bec8739d897b09389c0dbeda1635f7913e490508f679061fa6f",
+          "bytes": 771885,
+          "seconds": 64.29600000000154,
+          "voice": "en-AU-WilliamNeural",
+          "rate": "+5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/listening-skill/assets/2607ea790b1b2bec8739d897b09389c0dbeda1635f7913e490508f679061fa6f.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-lmcsa-08",
+      "question": {
+        "id": "lm3-lmcsa-08",
+        "type": "lmcsa",
+        "audioId": "pred26-sst-02",
+        "title": "Management",
+        "text": "Managers work under time pressure, but continuing education can broaden the perspectives they bring to difficult decisions. Reading outside a narrow professional field exposes leaders to different ways of thinking about people, markets and organisations. Formal study is valuable when it helps a manager connect experience with concepts such as strategy, motivation, ethics and organisational design. Experience alone can produce habits that work in one situation but fail in another. Effective managers keep learning so they can explain their decisions, adapt methods and lead teams with a wider understanding of the organisation.",
+        "prompt": "Why should managers continue learning beyond their immediate field?",
+        "choices": [
+          "To replace all practical experience with theory.",
+          "To avoid having to explain difficult decisions.",
+          "To broaden their perspectives and adapt their decisions.",
+          "To apply the same habits in every situation."
+        ],
+        "answer": 2,
+        "explanation": "Continuing education connects experience with broader ideas and supports adaptation to different situations.",
+        "minutes": 25,
+        "timeGroup": "listening",
+        "sourceQuestionId": "listen-lmcsa-pred26-sst-02",
+        "instruction": "Listen once and select one response to the question.",
+        "playbackDelaySeconds": 5
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "listen-lmcsa-pred26-sst-02",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/e069e242540a4c33650975346063099c73e2cf1d4c524f1bc1fb889e6c167e04.mp3",
+        "entry": {
+          "textSha256": "341373554753a5d5e50f10c4f0e2eb7e6299bf3dbaa32fda9eafe18c8ced7fdd",
+          "audioSha256": "e069e242540a4c33650975346063099c73e2cf1d4c524f1bc1fb889e6c167e04",
+          "bytes": 744525,
+          "seconds": 62.01600000000146,
+          "voice": "en-AU-WilliamNeural",
+          "rate": "-43%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-10-08",
+          "pacing": "native-neural-rate",
+          "targetSeconds": 62,
+          "path": "content/listening-skill/assets/e069e242540a4c33650975346063099c73e2cf1d4c524f1bc1fb889e6c167e04.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-lmcsa-09",
+      "question": {
+        "id": "lm3-lmcsa-09",
+        "type": "lmcsa",
+        "audioId": "pred26-sst-03",
+        "title": "Emotions",
+        "text": "People differ in how strongly their moods change, with some experiencing sharp emotional swings and others remaining comparatively steady. Emotional health does not require constant excitement because a calm sense of satisfaction can be more sustainable than repeated extreme highs. A moderate level of challenge can support attention and growth, while excessive stress may reduce judgement and well-being. Contentment also does not mean passivity; it can coexist with ambition and effort. The useful goal is emotional balance, where people can respond to problems without being controlled by every temporary feeling.",
+        "prompt": "Which emotional state does the speaker recommend?",
+        "choices": [
+          "Calm satisfaction combined with a moderate level of challenge.",
+          "Constant excitement and repeated extreme highs.",
+          "Contentment that excludes ambition or effort.",
+          "Allowing temporary feelings to determine every decision."
+        ],
+        "answer": 0,
+        "explanation": "The speaker recommends emotional balance, where contentment can coexist with challenge, ambition and effort.",
+        "minutes": 25,
+        "timeGroup": "listening",
+        "sourceQuestionId": "listen-lmcsa-pred26-sst-03",
+        "instruction": "Listen once and select one response to the question.",
+        "playbackDelaySeconds": 5
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "listen-lmcsa-pred26-sst-03",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/571464d26dc39c8da7d85fdd63b5ca1909f86e8b385d2a5d07aca4f01a130431.mp3",
+        "entry": {
+          "textSha256": "42357ab1358a441d304b20084f2ae030cd67aeb1de5663cf9358706a0ff44142",
+          "audioSha256": "571464d26dc39c8da7d85fdd63b5ca1909f86e8b385d2a5d07aca4f01a130431",
+          "bytes": 746829,
+          "seconds": 62.20800000000147,
+          "voice": "en-GB-SoniaNeural",
+          "rate": "-41%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-10-08",
+          "pacing": "native-neural-rate",
+          "targetSeconds": 62,
+          "path": "content/listening-skill/assets/571464d26dc39c8da7d85fdd63b5ca1909f86e8b385d2a5d07aca4f01a130431.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-smw-10",
+      "question": {
+        "id": "lm3-smw-10",
+        "type": "smw",
+        "title": "Learning from a failed prototype",
+        "text": "An engineering team built a small model of a bridge before approving the final design. When the model bent under a heavy load, the team did not regard the experiment as wasted effort. Sensors showed exactly where the structure was weakest, allowing the engineers to change the supports before construction began. Testing at this early stage was useful because a problem discovered in a model is usually easier and cheaper to correct than",
+        "choices": [
+          "one discovered in the completed structure",
+          "a prediction made before testing",
+          "one discussed in a classroom",
+          "a delay in ordering equipment"
+        ],
+        "answer": 0,
+        "explanation": "Early testing allows weaknesses to be corrected before construction, when correction would be more difficult and expensive.",
+        "audioMode": "runtime-neural",
+        "ttsModel": "tts-1-hd",
+        "voice": "nova",
+        "audioSpeed": 0.95,
+        "audioEndCue": true,
+        "prompt": "The recording ends with a beep. Select the missing words that best complete it.",
+        "minutes": 25,
+        "timeGroup": "listening",
+        "sourceQuestionId": "listen-smw-3",
+        "instruction": "Listen once. A beep replaces the ending. Select the words that best complete the recording.",
+        "playbackDelaySeconds": 3
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "listen-smw-3",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/0bc9dece15edd084c0f8a7c1524c704116c48884b7a9339b56eee6d12b6506fb.mp3",
+        "entry": {
+          "generator": "Existing portal runtime neural recording",
+          "model": "tts-1-hd",
+          "voice": "nova",
+          "sourceUrl": "https://swt.up.railway.app/writing-audio/listen-smw-3.mp3",
+          "endCue": true,
+          "path": "content/listening-skill/assets/0bc9dece15edd084c0f8a7c1524c704116c48884b7a9339b56eee6d12b6506fb.mp3",
+          "textSha256": "7bb43d0472efc685c5e4159c39a07e43a7e408d6d097544e85e16f0e3d93d16b",
+          "audioSha256": "0bc9dece15edd084c0f8a7c1524c704116c48884b7a9339b56eee6d12b6506fb",
+          "bytes": 709101,
+          "seconds": 29.52000000000023,
+          "validationStatus": "decoded-and-frame-validated"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-hiw-11",
+      "question": {
+        "id": "lm3-hiw-11",
+        "type": "hiw",
+        "audioId": "pred26-sst-14",
+        "title": "Information Technology",
+        "text": "Information technology allows organisations to store, process and exchange data at a scale that has transformed work and public services. Digital systems can improve access to education, healthcare and communication across long distances. The same systems create responsibilities around privacy, cybersecurity, reliability and unequal access. Organisations need clear rules for who can use data and how failures are detected and corrected. Technology creates the greatest benefit when convenience and innovation are matched by security, accountability and support for users.",
+        "passage": "Information technology allows organisations to store, protect and exchange data at a scale that has transformed work and public services. Digital systems can improve access to production, healthcare and communication across long distances. The same systems create responsibilities around priority, cybersecurity, reliability and unequal access. Organisations need clear rules for who can use data and how failures are detected and corrected. Technology creates the greatest benefit when convenience and innovation are matched by security, availability and support for users.",
+        "answers": [
+          6,
+          26,
+          39,
+          74
+        ],
+        "prompt": "Click the words in the transcript that differ from the recording.",
+        "explanation": "Compare the highlighted transcript words with the original recording. Correct selections gain one point; incorrect selections lose one point, with a minimum of zero.",
+        "minutes": 25,
+        "timeGroup": "listening",
+        "sourceQuestionId": "listen-hiw-pred26-sst-14",
+        "instruction": "Follow the transcript while listening once. Select words that differ from the recording. Incorrect selections lose points, with a zero floor.",
+        "playbackDelaySeconds": 10
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "listen-hiw-pred26-sst-14",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/30d9f446e909b84229e38fc9b04ed91622ff06df37f91bc8aeeba89071791d31.mp3",
+        "entry": {
+          "textSha256": "7148e73144f498e5c9f256edd98f1507099b404bfa56c4e9e21014fa32a50934",
+          "audioSha256": "30d9f446e909b84229e38fc9b04ed91622ff06df37f91bc8aeeba89071791d31",
+          "bytes": 738477,
+          "seconds": 61.51200000000144,
+          "voice": "en-AU-WilliamNeural",
+          "rate": "-44%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-10-08",
+          "pacing": "native-neural-rate",
+          "targetSeconds": 62,
+          "path": "content/listening-skill/assets/30d9f446e909b84229e38fc9b04ed91622ff06df37f91bc8aeeba89071791d31.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-hiw-12",
+      "question": {
+        "id": "lm3-hiw-12",
+        "type": "hiw",
+        "audioId": "pred26-sst-15",
+        "title": "Paper Rejection",
+        "text": "Rejection is common in academic publishing and can be especially discouraging for researchers at the beginning of their careers. A rejected paper is not always worthless because reviewers may identify weak evidence, unclear argument or missing literature that can be improved. Researchers should separate useful criticism from comments that are less relevant to the goals of the study. Revising carefully before sending the work to another journal can strengthen both the paper and the author’s future research practice. Persistence matters, but so does learning from feedback rather than submitting the same unchanged manuscript repeatedly.",
+        "passage": "Rejection is common in academic publishing and can be especially encouraging for researchers at the beginning of their careers. A rejected paper is not always worthless because reviewers may identify weak confidence, unclear argument or missing literature that can be improved. Researchers should separate useful criticism from comments that are less relevant to the goals of the study. reviewing carefully before sending the work to another journal can strengthen both the paper and the author’s future research practice. Persistence matters, but so does learning from feedback rather than submitting the same unpublished manuscript repeatedly.",
+        "answers": [
+          10,
+          31,
+          58,
+          91
+        ],
+        "prompt": "Click the words in the transcript that differ from the recording.",
+        "explanation": "Compare the highlighted transcript words with the original recording. Correct selections gain one point; incorrect selections lose one point, with a minimum of zero.",
+        "minutes": 25,
+        "timeGroup": "listening",
+        "sourceQuestionId": "listen-hiw-pred26-sst-15",
+        "instruction": "Follow the transcript while listening once. Select words that differ from the recording. Incorrect selections lose points, with a zero floor.",
+        "playbackDelaySeconds": 10
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "listen-hiw-pred26-sst-15",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/af75d2e01390de27c7c8510610f9c7c7c1226aa39028ed67376a03ef42e21230.mp3",
+        "entry": {
+          "textSha256": "3553fb8de4fed022c8020036921e3668139a441e595492260ce1cf91662be701",
+          "audioSha256": "af75d2e01390de27c7c8510610f9c7c7c1226aa39028ed67376a03ef42e21230",
+          "bytes": 737901,
+          "seconds": 61.46400000000144,
+          "voice": "en-GB-SoniaNeural",
+          "rate": "-40%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-10-08",
+          "pacing": "native-neural-rate",
+          "targetSeconds": 62,
+          "path": "content/listening-skill/assets/af75d2e01390de27c7c8510610f9c7c7c1226aa39028ed67376a03ef42e21230.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-wfd-13",
+      "question": {
+        "id": "lm3-wfd-13",
+        "type": "wfd",
+        "title": "Question 13",
+        "minutes": 25,
+        "voice": "onyx",
+        "text": "The final examination will cover topics discussed throughout the entire academic year.",
+        "sample": "The final examination will cover topics discussed throughout the entire academic year.",
+        "keyPoints": [
+          "The final examination will cover topics discussed throughout the entire academic year."
+        ],
+        "timeGroup": "listening",
+        "sourceQuestionId": "wfd-practice-07",
+        "instruction": "Listen once and type the sentence you hear. Check the words and their spelling.",
+        "playbackDelaySeconds": 3
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "wfd-practice-07",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/b52ad485a4e393dc3ff05ef046f99b792d74c7a240d49d3f9ac515b6a2aaaa8c.mp3",
+        "entry": {
+          "textSha256": "0a1278d216f8de788fb65c12adbabca8f3086886448947e431974abbe6d57ad8",
+          "audioSha256": "b52ad485a4e393dc3ff05ef046f99b792d74c7a240d49d3f9ac515b6a2aaaa8c",
+          "bytes": 62541,
+          "seconds": 5.184000000000004,
+          "voice": "en-AU-WilliamNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/listening-skill/assets/b52ad485a4e393dc3ff05ef046f99b792d74c7a240d49d3f9ac515b6a2aaaa8c.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-wfd-14",
+      "question": {
+        "id": "lm3-wfd-14",
+        "type": "wfd",
+        "title": "Question 14",
+        "minutes": 25,
+        "voice": "fable",
+        "text": "Researchers collected additional evidence to support their original interpretation of the results.",
+        "sample": "Researchers collected additional evidence to support their original interpretation of the results.",
+        "keyPoints": [
+          "Researchers collected additional evidence to support their original interpretation of the results."
+        ],
+        "timeGroup": "listening",
+        "sourceQuestionId": "wfd-practice-08",
+        "instruction": "Listen once and type the sentence you hear. Check the words and their spelling.",
+        "playbackDelaySeconds": 3
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "wfd-practice-08",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/296ade8c5e4332157e8380e6e7ee948f229c2f7800860b019a67811ac1685811.mp3",
+        "entry": {
+          "textSha256": "0401b2ee1e40b68ae2620b2dca640f8c1ba95c210b0c2ba562a4ce4f318ab9a0",
+          "audioSha256": "296ade8c5e4332157e8380e6e7ee948f229c2f7800860b019a67811ac1685811",
+          "bytes": 71757,
+          "seconds": 5.952000000000004,
+          "voice": "en-GB-RyanNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/listening-skill/assets/296ade8c5e4332157e8380e6e7ee948f229c2f7800860b019a67811ac1685811.mp3"
+        }
+      }
+    },
+    {
+      "id": "listening-mock-3/lm3-wfd-15",
+      "question": {
+        "id": "lm3-wfd-15",
+        "type": "wfd",
+        "title": "Question 15",
+        "minutes": 25,
+        "voice": "shimmer",
+        "text": "The library provides quiet study areas for both undergraduate and postgraduate students.",
+        "sample": "The library provides quiet study areas for both undergraduate and postgraduate students.",
+        "keyPoints": [
+          "The library provides quiet study areas for both undergraduate and postgraduate students."
+        ],
+        "timeGroup": "listening",
+        "sourceQuestionId": "wfd-practice-09",
+        "instruction": "Listen once and type the sentence you hear. Check the words and their spelling.",
+        "playbackDelaySeconds": 3
+      },
+      "origins": [
+        {
+          "kind": "existing-listening-sectional",
+          "paper": "listening-mock-3",
+          "questionId": "wfd-practice-09",
+          "sourceFile": "content/listening-mocks.js"
+        }
+      ],
+      "audio": {
+        "path": "content/listening-skill/assets/2e54930525e330659d4a219074d3f31b69333068b6f89a7d74d1962d316f6e3a.mp3",
+        "entry": {
+          "textSha256": "f6e9358b1e30c2e82aaba54f6c14fc9dc0085ea3dc9ef5abc21131c7a323ef5d",
+          "audioSha256": "2e54930525e330659d4a219074d3f31b69333068b6f89a7d74d1962d316f6e3a",
+          "bytes": 72909,
+          "seconds": 6.0480000000000045,
+          "voice": "en-GB-SoniaNeural",
+          "rate": "-5%",
+          "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+          "validationStatus": "decoded-and-frame-validated",
+          "validatedAt": "2026-09-24",
+          "path": "content/listening-skill/assets/2e54930525e330659d4a219074d3f31b69333068b6f89a7d74d1962d316f6e3a.mp3"
+        }
+      }
+    }
+  ],
+  "assets": [
+    {
+      "path": "content/full-mock/assets/b8ec80a7133550fe0b2fd341ae7f91d47844ef6db4a515469809f78dc39c5ddb.mp3",
+      "sha256": "b8ec80a7133550fe0b2fd341ae7f91d47844ef6db4a515469809f78dc39c5ddb",
+      "bytes": 62541,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/66d59c8b7508cf388c86f9bd50ff87e6aead9a60c445cbccb2c9114a7547d8cf.mp3",
+      "sha256": "66d59c8b7508cf388c86f9bd50ff87e6aead9a60c445cbccb2c9114a7547d8cf",
+      "bytes": 61101,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/95b66cacc2d7b5b4e12b7b5c4c16691ebc22b46308e416cac84e444b67e7b7d2.mp3",
+      "sha256": "95b66cacc2d7b5b4e12b7b5c4c16691ebc22b46308e416cac84e444b67e7b7d2",
+      "bytes": 61677,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/d5c7974a7377976286b61c319a38174f9a5edae6d45b4b6f99a2a0eb0423a5b9.mp3",
+      "sha256": "d5c7974a7377976286b61c319a38174f9a5edae6d45b4b6f99a2a0eb0423a5b9",
+      "bytes": 61101,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/4f4e357fb6c33f912469ee77c93e263a30d5557b0a0f6e5af345fecb251829c8.mp3",
+      "sha256": "4f4e357fb6c33f912469ee77c93e263a30d5557b0a0f6e5af345fecb251829c8",
+      "bytes": 63405,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/50fc68cfe37f9b4e6c14a533b9ce97584d03a9abf16a24b708220ac93dc50eee.mp3",
+      "sha256": "50fc68cfe37f9b4e6c14a533b9ce97584d03a9abf16a24b708220ac93dc50eee",
+      "bytes": 60813,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/63208dd37a5fc66ad8df2c0e1d57b70aaabad32d3694dd55a0e9774b39e152f4.mp3",
+      "sha256": "63208dd37a5fc66ad8df2c0e1d57b70aaabad32d3694dd55a0e9774b39e152f4",
+      "bytes": 56781,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/91f169682476d631c7103c56d3c8ae55ce231ef5911f8f6790da2e2dea843396.mp3",
+      "sha256": "91f169682476d631c7103c56d3c8ae55ce231ef5911f8f6790da2e2dea843396",
+      "bytes": 48141,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/281c568293b9863a797ccee11f166da761ac2e64cabc7c18cc7159edc03d32e1.mp3",
+      "sha256": "281c568293b9863a797ccee11f166da761ac2e64cabc7c18cc7159edc03d32e1",
+      "bytes": 63981,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/3d649ae259abc08febb8c76b5c75b20750bd607632720409e66fdf6d16cdb57a.mp3",
+      "sha256": "3d649ae259abc08febb8c76b5c75b20750bd607632720409e66fdf6d16cdb57a",
+      "bytes": 41517,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/4670f59e4fed130de732b2de47ce1973c6910b02c1340ba41d9d09303cbb3cb7.mp3",
+      "sha256": "4670f59e4fed130de732b2de47ce1973c6910b02c1340ba41d9d09303cbb3cb7",
+      "bytes": 442029,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/b39c6e91228fe257a82f609c2de004b1442ea0329fcd0963cded5f5edf3f332a.mp3",
+      "sha256": "b39c6e91228fe257a82f609c2de004b1442ea0329fcd0963cded5f5edf3f332a",
+      "bytes": 475437,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a.mp3",
+      "sha256": "37e6de965808647caaa6360f6756107a6ea4043db0e5bdfee8248fca5b5f509a",
+      "bytes": 21837,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62.mp3",
+      "sha256": "f1d43cb7f61d89693fb1c856bc527a67734fa2ac82aa8e9f0a4265fc27587e62",
+      "bytes": 20397,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3.mp3",
+      "sha256": "cf5f8a89a3026746b33195db802210d07a5308e13c509c4edfe6893710c22aa3",
+      "bytes": 24141,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6.mp3",
+      "sha256": "3cd25f4a12f027c8e46d173eee0c3eb7a5d5477827c1312dc752eafd80b914e6",
+      "bytes": 18525,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0.mp3",
+      "sha256": "47358cb8ceeb9b41d7f6feb35026292201c45774f70a9e9eb97cc900c70f79b0",
+      "bytes": 19389,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/8a1df71a16d0ffcd7bdc77475035ccb655dafe4dabd70a3a743d654ec05a5654.mp3",
+      "sha256": "8a1df71a16d0ffcd7bdc77475035ccb655dafe4dabd70a3a743d654ec05a5654",
+      "bytes": 1000461,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/full-mock/assets/e62526aee63bac04b4022a449efbadf7c2da7e1578c28f4452f6825ba6e4d6e3.mp3",
+      "sha256": "e62526aee63bac04b4022a449efbadf7c2da7e1578c28f4452f6825ba6e4d6e3",
+      "bytes": 908445,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/fb5c05c3b61486d36bf15b7fc67f757c86de0798157b73d6c416cc6f6f07ccf2.mp3",
+      "sha256": "fb5c05c3b61486d36bf15b7fc67f757c86de0798157b73d6c416cc6f6f07ccf2",
+      "bytes": 742797,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/603e21c2461cc3a2b238612f6d9feff516f3c55de7f9794445e631044f98822f.mp3",
+      "sha256": "603e21c2461cc3a2b238612f6d9feff516f3c55de7f9794445e631044f98822f",
+      "bytes": 972621,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/4e1b8bea20949abb612204b80799a2dd8c9bf96a54c94c2b8defbf40fcb1b989.mp3",
+      "sha256": "4e1b8bea20949abb612204b80799a2dd8c9bf96a54c94c2b8defbf40fcb1b989",
+      "bytes": 1001421,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/bd52c07cb153689473d16ad82111e0a5064b54c9936342baeac94d9c574a73fb.mp3",
+      "sha256": "bd52c07cb153689473d16ad82111e0a5064b54c9936342baeac94d9c574a73fb",
+      "bytes": 745101,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/9aafb44512d7310e46ca2eb41716593d915d388204be3a19b6be64ef3ebf71b7.mp3",
+      "sha256": "9aafb44512d7310e46ca2eb41716593d915d388204be3a19b6be64ef3ebf71b7",
+      "bytes": 740781,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/db836e4c82a57bd17fcd5e6c20ae673048147d1f96d3ed19d49bc13b7456e635.mp3",
+      "sha256": "db836e4c82a57bd17fcd5e6c20ae673048147d1f96d3ed19d49bc13b7456e635",
+      "bytes": 941517,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/2607ea790b1b2bec8739d897b09389c0dbeda1635f7913e490508f679061fa6f.mp3",
+      "sha256": "2607ea790b1b2bec8739d897b09389c0dbeda1635f7913e490508f679061fa6f",
+      "bytes": 771885,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/e069e242540a4c33650975346063099c73e2cf1d4c524f1bc1fb889e6c167e04.mp3",
+      "sha256": "e069e242540a4c33650975346063099c73e2cf1d4c524f1bc1fb889e6c167e04",
+      "bytes": 744525,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/571464d26dc39c8da7d85fdd63b5ca1909f86e8b385d2a5d07aca4f01a130431.mp3",
+      "sha256": "571464d26dc39c8da7d85fdd63b5ca1909f86e8b385d2a5d07aca4f01a130431",
+      "bytes": 746829,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/0bc9dece15edd084c0f8a7c1524c704116c48884b7a9339b56eee6d12b6506fb.mp3",
+      "sha256": "0bc9dece15edd084c0f8a7c1524c704116c48884b7a9339b56eee6d12b6506fb",
+      "bytes": 709101,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/30d9f446e909b84229e38fc9b04ed91622ff06df37f91bc8aeeba89071791d31.mp3",
+      "sha256": "30d9f446e909b84229e38fc9b04ed91622ff06df37f91bc8aeeba89071791d31",
+      "bytes": 738477,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/af75d2e01390de27c7c8510610f9c7c7c1226aa39028ed67376a03ef42e21230.mp3",
+      "sha256": "af75d2e01390de27c7c8510610f9c7c7c1226aa39028ed67376a03ef42e21230",
+      "bytes": 737901,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/b52ad485a4e393dc3ff05ef046f99b792d74c7a240d49d3f9ac515b6a2aaaa8c.mp3",
+      "sha256": "b52ad485a4e393dc3ff05ef046f99b792d74c7a240d49d3f9ac515b6a2aaaa8c",
+      "bytes": 62541,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/296ade8c5e4332157e8380e6e7ee948f229c2f7800860b019a67811ac1685811.mp3",
+      "sha256": "296ade8c5e4332157e8380e6e7ee948f229c2f7800860b019a67811ac1685811",
+      "bytes": 71757,
+      "mime": "audio/mpeg"
+    },
+    {
+      "path": "content/listening-skill/assets/2e54930525e330659d4a219074d3f31b69333068b6f89a7d74d1962d316f6e3a.mp3",
+      "sha256": "2e54930525e330659d4a219074d3f31b69333068b6f89a7d74d1962d316f6e3a",
+      "bytes": 72909,
+      "mime": "audio/mpeg"
+    }
+  ]
+}

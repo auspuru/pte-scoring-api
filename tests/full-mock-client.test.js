@@ -20,10 +20,12 @@ const storage = () => { const values = new Map(); return { getItem: key => value
 
 // A real DOM, IndexedDB transactions and authenticated HTTP routes; only browser
 // hardware and scheduling are substituted. Hardware/mobile QA remains Phase 6.
-async function fixture(t, type = 'intro', sectionTransitions = false) {
+async function fixture(t, type = 'intro', sectionTransitions = false,selectedPaper=paper) {
+  const paper=selectedPaper,listening=paper.module==='listening';
+  if(listening&&type==='intro')type='rs';
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'full-mock-client-')), app = express(); app.use(express.json());
   let now = 1000000, owner = 'alice', offline = false, closing = false, interceptor, deferStop = false, metadataReady = true;
-  const service = installFullMock(app, { directory, verifyToken: token => ['alice', 'bob'].includes(token) ? token : null,
+  const service = installFullMock(app, { directory,...(listening?{variant:'listening',paper,papers:[paper],legacyAttempts:async()=>[{id:'legacy-id',title:'Earlier Listening',questionCount:15,status:'active'}]}:{}), verifyToken: token => ['alice', 'bob'].includes(token) ? token : null,
     getAccount: async () => ({ role: 'admin' }), now: () => now, sectionTransitions });
   const id = randomUUID();
   await service.store.create('alice', id, paper, (key, at) => session.create(key, paper, at, { preview: true, sectionTransitions }), now);
@@ -65,7 +67,7 @@ async function fixture(t, type = 'intro', sectionTransitions = false) {
       return interceptor ? interceptor(route, init, send) : send();
     } };
   env.sessionStorage.setItem('pte_session_token', owner);
-  const pending = createPendingStore(env), client = createController(env, { pending, getUserId: () => owner });
+  const pending = createPendingStore(env,listening?'listening':'full'), client = createController(env, { pending, getUserId: () => owner,...(listening?{kind:'listening'}:{}) });
   t.after(async () => { closing = true; client.reset(); await Promise.allSettled([...flights]); server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); await fs.rm(directory, { recursive: true, force: true, maxRetries: 3, retryDelay: 10 }); });
   const click = async selector => { const target = document.querySelector(selector); assert(target, 'Missing ' + selector); await document.getElementById('fullMockPane').onclick({ target }); };
   async function step(ms) { now += ms; for (const fn of [...intervals.values()]) fn(); for (const [key, value] of [...timeouts]) if (value.at <= now) { timeouts.delete(key); value.fn(); } await settle(); }
@@ -512,4 +514,16 @@ test('A failed answer save blocks Next and keeps the exact draft available for a
   await f.step(3001); assert.equal(f.audio.at(-1).volume, 0.35);
   assert.equal((await f.state()).current.endsAt, before.current.endsAt);
   await f.click('[data-fm="skip"]'); assert.equal(f.document.getElementById('fm-volume').value, '0.35');
+});
+
+test('Integrated Listening player isolates requests and IndexedDB, starts the selected paper and retains legacy navigation',async t=>{
+ const paper=require('../listening-mock/papers').registeredPapers()[2],h=await fixture(t,'rs',true,paper);
+ await h.client.open({paperId:paper.id});assert(h.document.getElementById('fullMockPane').textContent.includes(paper.title));
+ assert(h.requests.every(r=>r.route.startsWith('/api/listening-mocks/')));
+ await h.pending.list('alice');const databases=await h.env.indexedDB.databases();assert(databases.some(d=>d.name==='ipt-listening-mock-v1'));assert(!databases.some(d=>d.name==='ipt-full-mock-v1'));
+ await h.client.open({historyOnly:true});assert(h.document.getElementById('fullMockPane').textContent.includes('Earlier Listening'));
+ let routed;h.env.switchSection=(route,options)=>{routed={route,options};};
+ await h.click('[data-fm="legacy"]');assert.equal(routed.route,'listening-legacy-history');assert.equal(routed.options.labRequest.attemptId,'legacy-id');
+ await h.resume();const state=await h.state();assert.equal(state.paperId,paper.id);assert.equal(state.index,1);assert(h.document.querySelector('.fm-transition').textContent.includes('OF 2'));
+ await h.click('[data-fm="begin-section"]');assert(h.document.querySelector('.fm-exam-meta').textContent.includes('Question 1 of 34'));
 });

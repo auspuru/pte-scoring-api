@@ -278,8 +278,15 @@
       dialog.onclose=()=>resolve(accepted);
     });
   }
+  function openIntegratedListening(testId) {
+    if(!(catalog?.listeningMocks||[]).some(m=>m.id===testId&&m.format==='listening-skill-20261113.1'))return false;
+    if(window.switchSection)window.switchSection('listening-run',{labRequest:{testId}});
+    else location.assign('/index#/listening-mocks');
+    return true;
+  }
   async function start(testId, button, serial=++navigationSerial,practiceSet) {
     if(!username) { notify('Sign in from your workspace first. Your existing account works here.'); return; }
+    if(openIntegratedListening(testId))return;
     const mock=practiceSet?{minutes:practiceSet.count*2}:[...catalog.mocks,...(catalog.listeningMocks||[])].find(m=>m.id===testId);
     if(mock && !await confirmAction(practiceSet?'Begin your practice set?':'Ready to begin?','Allow '+mock.minutes+' minutes. The timer continues if you leave. During the mock, Next locks each answer and you cannot return to an earlier question.','Begin '+mock.minutes+'-minute mock')) return;
     if (serial!==navigationSerial || !workspaceVisible) return;
@@ -311,6 +318,7 @@
   }
   async function reattempt(testId,button,serial=++navigationSerial) {
     if(!username || !testId) return;
+    if(openIntegratedListening(testId))return;
     if(attempt?.kind==='mock')return;
     button.disabled=true;
     try {
