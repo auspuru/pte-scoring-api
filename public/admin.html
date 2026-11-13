@@ -105,12 +105,14 @@ h1 { font-family: var(--font-d); font-size: 1.8rem; color: var(--ink); margin-bo
   font-size: 0.95rem; font-family: var(--font); margin-bottom: 16px; background: var(--bg); color: var(--ink);
 }
 .auth-card input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
-.auth-card > button:not(.theme-toggle) {
+.auth-card > button:not(.theme-toggle), #staffSignIn {
   width: 100%; padding: 12px; background: var(--accent); color: #fff; border: none;
   border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 700; cursor: pointer;
   font-family: var(--font); transition: background 0.2s ease;
 }
-.auth-card > button:not(.theme-toggle):hover { background: var(--accent-dark); }
+.auth-card > button:not(.theme-toggle):hover, #staffSignIn:hover { background: var(--accent-dark); }
+#staffSignIn { min-height:48px; }
+#staffLoginForm { margin-bottom:22px; }
 .auth-error {
   color: var(--red); font-size: 0.85rem; margin-bottom: 12px; display: none;
   background: var(--red-light); padding: 8px 12px; border-radius: var(--radius-sm); border: 1px solid rgba(239, 68, 68, 0.2);
@@ -421,7 +423,7 @@ tr:hover td { background: var(--surface-dim); }
     <input id="staffUsername" name="username" autocomplete="username" required>
     <label class="admin-field-label" for="staffPassword">Password</label>
     <input type="password" id="staffPassword" name="password" autocomplete="current-password" required>
-    <button type="submit" id="staffSignIn">Sign in with username and password</button>
+    <button type="submit" id="staffSignIn">Sign in</button>
   </form>
   <p class="admin-auth-copy">Or use existing admin-key access.</p>
   <div class="auth-error" id="authError" role="alert"></div>

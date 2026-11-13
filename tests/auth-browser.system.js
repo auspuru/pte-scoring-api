@@ -8,6 +8,7 @@ test('Staff username and password sign-in survives reload and signs out on deskt
  for(const [name,width] of [['desktop',1363],['mobile',390]]){
   const page=await browser.newPage();await page.setViewport({width,height:900});await page.goto(f.base+'/admin');
   await page.waitForSelector('#staffUsername',{visible:true});await page.type('#staffUsername','staff-browser');await page.type('#staffPassword',password);
+  assert.equal(await page.$eval('#staffSignIn',button=>{const rect=button.getBoundingClientRect();return rect.height>=44&&rect.width>=button.form.clientWidth*.9;}),true);
   await page.screenshot({path:require('node:path').join(__dirname,'../.cache/admin-staff-login-'+name+'.png'),fullPage:true});
   await page.click('#staffSignIn');await page.waitForFunction(()=>getComputedStyle(document.getElementById('dashboard')).display!=='none');
   assert.equal(await page.$eval('#staffPassword',e=>e.value),'');
