@@ -181,8 +181,8 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
   await page.click('[data-mock-tab="feedback"]');
   await page.waitForSelector('[data-mock-panel="feedback"]:not([hidden]) .ipr-impact-feedback');
   assert.equal(await page.$$eval('[data-impact-profile]',nodes=>nodes.length),listening?1:5);
-  await clickControl(page,'[data-impact-profile="'+(listening?'listening':'writing')+'"] > summary');
-  assert(await page.$eval('[data-impact-profile="'+(listening?'listening':'writing')+'"]',node=>node.open));
+  if(listening)assert(await page.$eval('[data-impact-profile="listening"]',node=>node.tagName==='ARTICLE'&&!node.closest('[hidden]')));
+  else {await clickControl(page,'[data-impact-profile="writing"] > summary');assert(await page.$eval('[data-impact-profile="writing"]',node=>node.open));}
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Feedback overflows viewport');
   await page.click('[data-mock-tab="analysis"]');
   await page.waitForSelector('[data-mock-panel="analysis"]:not([hidden])');
@@ -195,6 +195,7 @@ for (const [mobile, paper] of [[false,loadPaper()],[true,loadPaper()],[false,loa
   for (const type of listening?['rs','rl','asq','sgd']:['ra','rs']) { const index = paper.questions.findIndex(row => row.question.type === type) + 1; assert(saved.responses[index].segments.some(segment => segment.finished && segment.chunkCount > 0)); }
   assert.equal(await page.$$eval('.ipr-overall,.ipr-skill', nodes => nodes.length),listening?2:5); assert.equal(await page.$$eval('#fm-review-select option', nodes => nodes.length),count);
   if(!listening){await page.click('[data-fm="review-type"][data-type="di"]'); await page.click('[data-kind="image"]'); await page.waitForFunction(() => document.querySelector('#fm-review-image img')?.naturalWidth > 0);}
+  if(listening)await page.click('[data-mock-tab="answers"]');
   await page.waitForSelector('[data-mock-panel="answers"]:not([hidden])');
   await page.select('#fm-review-select', result.items.find(item => item.type === 'rs').id); await page.click('[data-kind="prompt"]'); await page.waitForSelector('#fm-review-prompt audio');
   await page.select('#fm-review-select', result.items.find(item => item.type === (listening?'rs':'ra')).id); await page.click('[data-kind="recording"]:not([disabled])'); await page.waitForSelector('#fm-review-detail audio');
