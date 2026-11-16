@@ -569,3 +569,15 @@ test('Resume draft from the Speaking row adopts the current filtered question qu
  const h=harness();await h.controller.open('di');await h.click({speakingQuestion:'di-3'});const id=[...h.attempts.keys()][0];await h.click({speakingAction:'list'});await h.host.onchange({target:{id:'speaking-image-category',value:'line'}});
  await h.click({speakingAttempt:id,speakingResumeQuestion:'di-3'});assert.match(h.host.innerHTML,/Question 1 of 1/);assert.match(h.host.innerHTML,/data-speaking-move="1" disabled/);assert.equal(h.attempts.size,1);h.controller.reset();
 });
+
+for(const mode of ['session-over-stale-local','session-with-blocked-local','local-with-blocked-session','impersonation-first'])test('Speaking practice authenticates catalogue and attempts: '+mode,async()=>{
+ const h=harness(),sessionToken='current-session-token',localToken=mode==='session-over-stale-local'?'expired-local-token':'current-local-token',impersonation='current-impersonation-token';
+ const originalGet=h.env.localStorage.getItem;
+ h.env.localStorage.getItem=key=>{if(mode==='session-with-blocked-local')throw Error('Storage blocked');return key==='pte_session_token'?localToken:originalGet(key);};
+ h.env.sessionStorage.getItem=key=>{if(mode==='local-with-blocked-session')throw Error('Storage blocked');return key==='pte_impersonate_token'&&mode==='impersonation-first'?impersonation:key==='pte_session_token'?sessionToken:null;};
+ const expected=mode==='impersonation-first'?impersonation:mode==='local-with-blocked-session'?localToken:sessionToken,send=h.env.fetch,seen=[];
+ h.env.fetch=async(url,options)=>{const actual=options.headers['x-session-token'];seen.push(actual);return actual===expected?send(url,options):{ok:false,status:401,json:async()=>({error:'Please sign in to your practice account.'})};};
+ await h.controller.open('ra');const question=bank.questions.find(q=>q.type==='ra');
+ assert(h.nodes.get('speaking-library-list')?.innerHTML.includes('data-speaking-question="'+question.id+'"'),'A valid portal session must open Speaking practice.');
+ await h.click({speakingQuestion:question.id});assert.equal(h.attempts.size,1);assert(seen.length>=2);assert(seen.every(token=>token===expected));h.controller.reset();
+});
