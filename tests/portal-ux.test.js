@@ -30,7 +30,14 @@ test('Pinned browser assets and licence notices match the installed packages and
 });
 test('Practice controllers retain the reviewed standalone navigation and exact native capture, saving, mock and report implementation',()=>{
  const sha=s=>crypto.createHash('sha256').update(s).digest('hex');
- const speaking=fs.readFileSync(path.join(root,'public/speaking-practice.js'),'utf8').split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')&&!line.includes('env.PortalUx?.recording(node);')).join('\n');
+ // Project only the reviewed session-token fix back to the original reader.
+ // All native capture, saving, cues and reports must retain their existing hash.
+ const reader=`    const token=()=>{
+      try{const current=env.sessionStorage?.getItem('pte_impersonate_token')||env.sessionStorage?.getItem('pte_session_token');if(current)return current;}catch{}
+      try{return env.localStorage?.getItem('pte_session_token')||'';}catch{return '';}
+    };`;
+ const source=fs.readFileSync(path.join(root,'public/speaking-practice.js'),'utf8');assert(source.includes(reader),'The reviewed token reader must match exactly.');
+ const speaking=source.replace(reader,"    const token=()=>{try{return env.sessionStorage.getItem('pte_impersonate_token')||env.localStorage.getItem('pte_session_token')||'';}catch{return '';}};").split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')&&!line.includes('env.PortalUx?.recording(node);')).join('\n');
  const reading=fs.readFileSync(path.join(root,'public/reading-practice.js'),'utf8').split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')).join('\n');
  assert.equal(sha(speaking),'b51151b59a4709287febee3d8c79ed2a4471cc190181a9128bb29509acbfa92c');
  assert.equal(sha(reading),'599581dd69ca81bdd1520512e007c8889376af9e5bcf273a163ee106e8b66f7a');

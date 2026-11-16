@@ -40,7 +40,10 @@
     const assessmentRequests=new Map(),contentRetries=new Set(),imageRetries=new Set();
     const libraryFilters=new Map(),pageSize=20;
     const filters=()=>{if(!libraryFilters.has(activeType))libraryFilters.set(activeType,{search:'',category:'all',page:0});return libraryFilters.get(activeType);};
-    const token=()=>{try{return env.sessionStorage.getItem('pte_impersonate_token')||env.localStorage.getItem('pte_session_token')||'';}catch{return '';}};
+    const token=()=>{
+      try{const current=env.sessionStorage?.getItem('pte_impersonate_token')||env.sessionStorage?.getItem('pte_session_token');if(current)return current;}catch{}
+      try{return env.localStorage?.getItem('pte_session_token')||'';}catch{return '';}
+    };
     const identity=()=>String(getUserId()||'').trim().toLowerCase();
     const localKey=a=>'ipt-speaking:'+owner+':'+a.id;
     const message=text=>{notice=text;const node=doc.getElementById('speaking-notice');if(node)node.textContent=text;};
