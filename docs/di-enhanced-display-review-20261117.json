@@ -1,0 +1,1199 @@
+{
+  "reviewedCollection": 209,
+  "matchingPortalImages": 119,
+  "approvedDisplays": 59,
+  "retainedDisplays": 60,
+  "sourceOfTruth": "Original supplied images and existing scoring references",
+  "records": [
+    {
+      "questionId": "di-pred-3000195",
+      "collectionNumber": 19,
+      "title": "Keyboard Hand Position",
+      "originalSha256": "fe06bafbdf2c04707d9bc5812826cd5e781b56c737e06582fd58921ccef330a7",
+      "candidateSha256": "73435fc80511f83fd1c8806b40cc9577f754110e736081c5a32f8a0b8a8d1fcd",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000186",
+      "collectionNumber": 1,
+      "title": "Average Rainfall",
+      "originalSha256": "9848084bdc3dca8ddda55e2b23565b74e37333c645a462152447a47d4e14598d",
+      "candidateSha256": "960d41a9958de1d56ef953305ebc2c7138e70d7f4795e62133e22928e4ed11b6",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000137",
+      "collectionNumber": 12,
+      "title": "India Land Use",
+      "originalSha256": "ede267351b791246f361a2c34c4ba1fddf4aca54aa0d02a0192ce6e626cd8578",
+      "candidateSha256": "48d7bab6d2d8365976f6db3f3d7e91922e360e42c9389c3e629cdce0a83c4973",
+      "decision": "retained-existing-display",
+      "review": "Held: land-use texture/regions were regenerated and small original legend remains uncertain.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000134",
+      "collectionNumber": 21,
+      "title": "Earth’s Structure",
+      "originalSha256": "8cce603b4e1d6cdb67e68e0cf7aaa9566c6271db7231d6d2a1aa3dee5cd82edc",
+      "candidateSha256": "593551b625a9b6abbe9541a6e4df6031c9465e21152a9d748375ce5b35372192",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000125",
+      "collectionNumber": 16,
+      "title": "Bird Feeder",
+      "originalSha256": "800d0a50d00304397760ae005bf535da54e47e51b104d8b8d7bad70d39394127",
+      "candidateSha256": "bf327001a87def2eff3fa359e7380f7eb0de681d9125052caa13ced2f705aabd",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000370",
+      "collectionNumber": 8,
+      "title": "Athletics Participation Survey",
+      "originalSha256": "8dfa0f0046b17c7c70e8382539963e5ca9ffc322b55c0e66f8c47e496366dfc3",
+      "candidateSha256": "5db6b59c1106b638456d6d92b210af1a710994f7ad838a7805a414ecb21d981b",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000365",
+      "collectionNumber": 24,
+      "title": "Population Density",
+      "originalSha256": "7b6d96f5dc5aeb3e14c7f3d1d5441d47665e2a3e62348bef2d25a2f5f8799fa3",
+      "candidateSha256": "2afac119930da0ea8de234bcda9fff8263a9e9c73ba7ed019504218d4f340749",
+      "decision": "retained-existing-display",
+      "review": "Held: original numerical map legend is too small to verify reliably.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000354",
+      "collectionNumber": 25,
+      "title": "Trading Goods",
+      "originalSha256": "ea1bff69e33065609a918a54fdf27bda9cdbe92a9b680cbaf65068b3cb152325",
+      "candidateSha256": "3f49f168b11714383359142107b72ef17c0834711d8a5a6abf4a7209e749f221",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000349",
+      "collectionNumber": 10,
+      "title": "Earth’s Climate Zones",
+      "originalSha256": "1ade44bc6a2707fed093ad48f8d2af40b7b9cf669e201bbd1eeff6a74ea478c2",
+      "candidateSha256": "36fc41929a50a21b6b63c5a08a46924158bb3c400b1bd011fdafedc2842e834c",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000422",
+      "collectionNumber": 9,
+      "title": "International Student Funding",
+      "originalSha256": "9eba90fd6e8cb94d6cb572754ea61d4247158375ddbc47489afcf33ba0213cbe",
+      "candidateSha256": "cf71d5e767645f2b96e4760b182fed429ce15a2e30f4204399e101272a19548f",
+      "decision": "retained-existing-display",
+      "review": "Rejected: Other Sources percentage change lost the minus sign (-14% became 14%).",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000411",
+      "collectionNumber": 22,
+      "title": "Rainfall vs Temperature",
+      "originalSha256": "e37271995224a53192d43288bc1ffb4141eabe9ce36c9516ced60a8d8be953ab",
+      "candidateSha256": "533f0b50d48b18e79280c4b5538c182dbc228a75491191d1151fb204bd3ffdff",
+      "decision": "retained-existing-display",
+      "review": "Rejected: rainfall bar heights and temperature geometry differ from the original.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000392",
+      "collectionNumber": 11,
+      "title": "Australian Population Density",
+      "originalSha256": "0436b5e9d2819450ed0ec6c1aa1364fb446ca05c1b09e000e308e045ca3f1756",
+      "candidateSha256": "83c1635e132ab08a11b58031d3834d598cbbb4f7ef69bf6612e677bbf12a0f84",
+      "decision": "retained-existing-display",
+      "review": "Rejected: population dot placements were regenerated; exact spatial data cannot be preserved.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000375",
+      "collectionNumber": 26,
+      "title": "Australian Population",
+      "originalSha256": "4bbd258178e9619d098bd235f60531d395b842fb6931444e622e943a43326e59",
+      "candidateSha256": "4ea13eb8b964b60e0d735f3cd44dba946cda5c968dbf1a2b654788869e939cb5",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000481",
+      "collectionNumber": 7,
+      "title": "Population Doubling Time",
+      "originalSha256": "fc3c676f50e0e978db62a2415a63653b49d1aceb52804655bb9a74aa590b57cc",
+      "candidateSha256": "3a668cfed113125199fffca6a52db5054330deb300ad3d0d815d8658c393f9f8",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000469",
+      "collectionNumber": 14,
+      "title": "Quiz Process Flow",
+      "originalSha256": "5d6bd90bb134be6fb19ad77219d8ec94e542227c0f60927168f4100b74db9b46",
+      "candidateSha256": "d169542fd656679896ed5b62eb34e98a8ea3f1674d048d17d2ac432b82c7406a",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000461",
+      "collectionNumber": 27,
+      "title": "Pupil–Teacher Ratio",
+      "originalSha256": "21085ffb8c93aba970e321976e1e9f18985be675aedd387d58368401f6d0ebc9",
+      "candidateSha256": "2824ce9d021fd9ad0616b6ab740553d3e4798e2cd069e385bba27f486dc8c527",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000429",
+      "collectionNumber": 28,
+      "title": "Sitting Posture",
+      "originalSha256": "3388f137645d9fa5ce7b0c7eb7556c3ce65585bd14e2fc07c133a0aa70cee0e9",
+      "candidateSha256": "fa71918ac19f626bb4920d1f013385313b6fec2c61a4e54b2f0e6535e76e8aeb",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000579",
+      "collectionNumber": 29,
+      "title": "Drinking Habits",
+      "originalSha256": "00a7978d5403c9a98686b88513552669302327ea0678bd768cd3cf5d066e423d",
+      "candidateSha256": "29a8fbe69b6a8fd1449255d714f883591459515f25a6d25fd1b3ec11607dd3ab",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000561",
+      "collectionNumber": 15,
+      "title": "Closed-Loop Recycling",
+      "originalSha256": "763b0d95db58964c2a500c621a55bb689140ec93c8a6ed051bbdb49355b7ecf4",
+      "candidateSha256": "6da141a3eea1bbf6345d66eb830ec92bfed73b608a7f3c1f81b115d810514bcb",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000560",
+      "collectionNumber": 30,
+      "title": "Homologies",
+      "originalSha256": "dc193e3f7ffe9594263f060a5437c6d193dccc6cb995a241adcbfb5ddfa92218",
+      "candidateSha256": "26a3965f069ea3080e90801ab9db42d25a94378a73bebe2473c112d1fd2290c6",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000542",
+      "collectionNumber": 17,
+      "title": "Laboratory",
+      "originalSha256": "77d705c8eec30ff46b4f37aba0f266fec43fa7879779eebfe910e83404bc0e0a",
+      "candidateSha256": "611b9fc887037c82d6916405676afb83ec28da2fe1af147a725d7e2985d1a168",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000589",
+      "collectionNumber": 31,
+      "title": "Climate Zones",
+      "originalSha256": "7f12d20a28e574fceab4fa8d22165b77fb6465cf4ca1ea7398e4d612ad0f30c1",
+      "candidateSha256": "2db1da9ebc871ee64c0845c6009909b0bf6feb131fded6c96335aa1fa7e35e7c",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000587",
+      "collectionNumber": 32,
+      "title": "US States",
+      "originalSha256": "d3f0f14f4d9de4db7e2d7866a62653b63dbc256339c50e26277395fd2218ec4b",
+      "candidateSha256": "e01ba971848db2f0db56172644f9f1c20f4a148acaa5a45826d1e97627eec61c",
+      "decision": "retained-existing-display",
+      "review": "Held: original values have no defined measurement quantity or unit.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-pred-3000586",
+      "collectionNumber": 33,
+      "title": "Average Rainfall",
+      "originalSha256": "4e9c530bedfe3fa99c368784c05b842674064cc5de4d7c16489b5775d3e11f48",
+      "candidateSha256": "f987de07431bed568fba3656b5e06e7ede595f50533fc8a583790be3bd2c7908",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000580",
+      "collectionNumber": 34,
+      "title": "Population Density",
+      "originalSha256": "9104ab00b491ae9a9d11964ccf135294dca2651bf75ec7a878810b9210b948f8",
+      "candidateSha256": "d133502cc64304e8f0a7d9035a720ac773c3b48574e25fdfb93834fae295eb86",
+      "decision": "retained-existing-display",
+      "review": "Rejected: highest density legend changed from 500.0 or more to 100.0 or more.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000603",
+      "collectionNumber": 20,
+      "title": "Tree Structure",
+      "originalSha256": "4169062433d9f777053053212a09a78c44651869d7abc88ffdd9c5ef9226d9d4",
+      "candidateSha256": "2b89988844abbd8f8a22139fb83a32df36e8bf424d984085412244d9e88496a1",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-pred-3000601",
+      "collectionNumber": 35,
+      "title": "Number of Bonds",
+      "originalSha256": "076997dc02bad8221538bdedc3c1fac7eeaaf637c34ca6b60ebd2bb292933fa9",
+      "candidateSha256": "05ebc7daf28e4b42947faf5232f08e4c7280f36011d5fec3439908acae6e567d",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000594",
+      "collectionNumber": 23,
+      "title": "World Water Distribution",
+      "originalSha256": "1901483ff1f347c7ed5666fbfa8722f8cc5a3349f59c1be561b4519d8c6a4ada",
+      "candidateSha256": "d1f8d3c4fed6ea6a8a3a67a75adcb153f1655352107bdc0db4f9575744ada70f",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000669",
+      "collectionNumber": 36,
+      "title": "World Water Distribution",
+      "originalSha256": "7a982c62ebd748f1ad52a8468928949334febcfc1047f16615569da885d00425",
+      "candidateSha256": "c52874a403fdf082615ef34f0f391f82628556015f9f2f72c0c02c1919c17234",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000665",
+      "collectionNumber": 37,
+      "title": "Lecture Hall",
+      "originalSha256": "1186e59f47da913b95ffdf7532e8c5736718bdc6f17bdec6cd0b902030a0ea56",
+      "candidateSha256": "da17c7286689ee0a8e9da7fae5dda6345899a27919409b0b880662772286fee0",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000664",
+      "collectionNumber": 38,
+      "title": "Adults vs Teens",
+      "originalSha256": "0c1250275aa69d1cce4612d170a42fbe9ec6d44cd7bf169fec3ef624fc2dafcd",
+      "candidateSha256": "afa31d2bf75af6e3e15cec8ab216856d90a8eeacaeeee7bbddef3c2092c8dd7e",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000708",
+      "collectionNumber": 18,
+      "title": "Garden Instructions",
+      "originalSha256": "9c5d87197a53af69b2aa01267b8113b0d9eb2d9fde43ebd7d52f7136ebb9e30f",
+      "candidateSha256": "95d615f01cf13b0f68a0dab9c5651f1442fdf2bfa63d85fa0969c14bd3e1b79f",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000707",
+      "collectionNumber": 39,
+      "title": "Ice Thickness",
+      "originalSha256": "343bea8d6ebc2f9acd9a54f99fe9387ac227903516d595bb6c07bc183b58f1f2",
+      "candidateSha256": "126347574e15d9d41a1229a1875e5413f95aa13974124c590afda5c937fb9c3d",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000704",
+      "collectionNumber": 40,
+      "title": "Iron Age Hut",
+      "originalSha256": "2e0e39c6f36e4eb006d96da986454825a4c8f36833944ef7c5ccd86ab7d2f569",
+      "candidateSha256": "4d9cff78c8a827dc5f8e4fb8ec48bc25c615d62f28d48b1465d8d28c264d6f43",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000697",
+      "collectionNumber": 41,
+      "title": "Protective Equipment",
+      "originalSha256": "0f65b67846fbd770844ef2c1192473d703c84a440d04edd9a184c30b4949f586",
+      "candidateSha256": "bd00f4a2be4a687195d11b8eb2f867ee2d6c7d0bb86b9d94e0703cb61781270a",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-pred-3000742",
+      "collectionNumber": 42,
+      "title": "Weekly Household Spending",
+      "originalSha256": "800ae617dcca5184639210b23b1f39ab079cae53d206ed783dbc3e9b27b15380",
+      "candidateSha256": "d70db4431981d4a3e3a46ec565991c3444730f536d302d9900e555b99e1e4a88",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000739",
+      "collectionNumber": 43,
+      "title": "American Fast Food",
+      "originalSha256": "6c6d54ed645fc3e317f88c4f2af9d0303e148401a99ff34bf8e93337d0ef2219",
+      "candidateSha256": "bd6e356e346bd3af994ccfbe9ce181ecc1d71f22ea8c0b5d1f0d2e77a7ed98a9",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000726",
+      "collectionNumber": 44,
+      "title": "Plastic Bottle Recycling",
+      "originalSha256": "ac6e535ebb9e06179fefabd8d0f3658a7f0bb47d740462fdce530763cf62b248",
+      "candidateSha256": "19a8623b5ee0b3240888ee82d5448d769ec517db59c8f482f301c0e128d0aee2",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3001061",
+      "collectionNumber": 45,
+      "title": "Taxation by Countries",
+      "originalSha256": "9c2789e3ba2ceee4fade30e3e3519eaf3a8917f122078a586ce0b87e1fc9f3d9",
+      "candidateSha256": "dad871fb1d8704fa45560e6ccb3db50fc0531c52137a8e94549e7ca122acede8",
+      "decision": "retained-existing-display",
+      "review": "Held: original country labels and values are missing/cropped.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000885",
+      "collectionNumber": 46,
+      "title": "Honey Production",
+      "originalSha256": "227997cba862b13d7ba6b59944041549118be86aa9ffe796fa7f71f7ae4294cf",
+      "candidateSha256": "ca533ec398d8d628e3fcca07712a250342521ba984a10b3894d484d79baf13c4",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3000881",
+      "collectionNumber": 5,
+      "title": "2014 Diamond Production",
+      "originalSha256": "fda638def95b5e5fbcc2f6ecb0bfe8951e5881683bbb3bf9ae3fd9635fbf54a6",
+      "candidateSha256": "e7fcddabcc9514fc48b330bec381db80aafcd5439665c60bffcb1c37458613fc",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3001369",
+      "collectionNumber": 47,
+      "title": "Influenced English",
+      "originalSha256": "992f76e4787c5c7eac7259494c12b6184b2107b21bd0f2e66115e9a14fd38c1b",
+      "candidateSha256": "9639aa9f03a8c64a5afbfe61f66632a1ce03a5cec460f98239b44b4f1cf1edd3",
+      "decision": "retained-existing-display",
+      "review": "Held: original pie has no labels, title, values or legend.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-pred-3001366",
+      "collectionNumber": 2,
+      "title": "Gender Social Activities",
+      "originalSha256": "13d2a8decae121de8f0a119de3354c9efe2664cb489f54a9ef861b4014cea66d",
+      "candidateSha256": "ef9174c004d7b2d7ddb6c330ad8ded6117cffb8dca2ed337a213b74a9fd86557",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3001356",
+      "collectionNumber": 13,
+      "title": "Apple Life Cycle",
+      "originalSha256": "a741d4065023c54f8cc1681235ddecfeb19d41bf7aa04221e93349abd6aee829",
+      "candidateSha256": "8378b877266503f4f0cd1ba0b6db1b5089145b8a0c168f8aaba155d737c7816e",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3001078",
+      "collectionNumber": 48,
+      "title": "Good and Bad Habits",
+      "originalSha256": "fd0775374a6c00cf6c4f2b00d48a64f48cc7ac6c0808ce361c0987f7c7616348",
+      "candidateSha256": "ca3ca02e1e4ce7694e8d0b0b76e819a4c6f33da5a2b12fefd1cb3c82325da356",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3001409",
+      "collectionNumber": 49,
+      "title": "Television Viewing Time",
+      "originalSha256": "b6202f12016d4bdbe270823a6a848c7b652d0d5c1c0f5a4a252c692a79005200",
+      "candidateSha256": "cbb298cc2e93418598282a05742ef06f93e128651508da81085c99ac7ee908e8",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3001403",
+      "collectionNumber": 6,
+      "title": "Foreign Language Motivation",
+      "originalSha256": "f47aab7600764bfceaceefe6e2c9e8ef7f631f63dad66264ef53920f3470e623",
+      "candidateSha256": "adc8c467bd385d09a8b9e0fc0f520d2e3b2c12d020a43121c2b94c90a77f86a4",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3001398",
+      "collectionNumber": 3,
+      "title": "Australian Birth Trends",
+      "originalSha256": "62af7d2ed3b2c143993010481e93dde77fb726417f09867e88f02bb94b3c4ee4",
+      "candidateSha256": "92438dca58df43ae62871406f8e38d20c3d458684c98238dfb130af77d8592b8",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-pred-3001386",
+      "collectionNumber": 4,
+      "title": "Pet Household Owners",
+      "originalSha256": "a27805eb504980e59e4c2ddf0df3394a884e3ac48bc88627b90f97af20de1dc0",
+      "candidateSha256": "6b0d89b5a780be906f68d4ce6b65860f7c485ee4ca20471ed117892abe5e311a",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "mock-di-reference-20261111-browser-june",
+      "collectionNumber": 171,
+      "title": "Browser usage on Wikimedia, June 2011",
+      "originalSha256": "4f69f6521b86a1c8d525c9ddf6711f35a71eee9ca27ad849865a31eb0512a23e",
+      "candidateSha256": "1e3c1b8bcf225023e1c4302ed10c28864895685f8d79dc8ae353a08299afa748",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "mock-di-reference-20261111-transport",
+      "collectionNumber": 172,
+      "title": "Transport modes in a European city, 1960–2000",
+      "originalSha256": "006ab69d7c730dfab1e7aa61d7e6979043fe7db7e8fa0bf7ccb0466929f6371b",
+      "candidateSha256": "823a9b863b38af15947dfa8d171851dbf82b3c1dcf10007e59d0a110c2bf6130",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "mock-di-reference-20261111-pop-music",
+      "collectionNumber": 173,
+      "title": "Percentage of people in Britain who buy pop music",
+      "originalSha256": "a9ccf4a7f9af338fff632541542def99cd5ea4faf7d13e2d43ae0a5980f0e229",
+      "candidateSha256": "a099f02996cf5781836dd952b455cf71fb75c6492a2cd3507f5aa72118e5ec62",
+      "decision": "retained-existing-display",
+      "review": "Rejected: generated male/female bar heights differ from original.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "mock-di-reference-20261111-tomato-cycle",
+      "collectionNumber": 174,
+      "title": "Tomato plant life cycle",
+      "originalSha256": "bf9d3f39d2d145f3972c8268ec797da256e47286f4e473d66fce871aca231eff",
+      "candidateSha256": "dc3e34f1931ee5fd872ebc36dd0aeb1d86923f035aaeacc2f4605bfddb333cfe",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111701",
+      "collectionNumber": 137,
+      "title": "Campus Facilities Floor Plan",
+      "originalSha256": "0ccc20d83face7d1bbc3491ebfb97a343aa758887b3fa0bd47fda4068f41daef",
+      "candidateSha256": "61e5acd43bb363adbd593449ba72460096472de2b13472af3845b6b8044f9c4a",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111702",
+      "collectionNumber": 138,
+      "title": "Music Streaming by Age",
+      "originalSha256": "23fa00bbb6399b57e7be361aec31129c620a1e84a4b9b50862cddfb31fec3657",
+      "candidateSha256": "118eb9be2b3a2ed15ec729f731d537cf14f807f94a8652e5151229cea2676c0e",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111703",
+      "collectionNumber": 139,
+      "title": "Overseas Visitors to Canada, 2009–2010",
+      "originalSha256": "af9f14426683967d3f705d9f06d06211878e2891bace3172207431dd8f5f0c6f",
+      "candidateSha256": "a6b9dae456cffa39e79f365fc0b29cb3031f49524a828745ee30a1cfbac4e0a0",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111704",
+      "collectionNumber": 140,
+      "title": "Household Pets Expenditure in Australia",
+      "originalSha256": "7253a625fa98f49b3bc602d5901733531c50efc5a5165a32ded65418f31be611",
+      "candidateSha256": "0e3c47463bfa28c0ab4292ac0400f2003d96f056b86c3140cca24712e4887193",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111705",
+      "collectionNumber": 141,
+      "title": "Time Spent on Technology Products",
+      "originalSha256": "721da6ab3753b36bf63a52a5da683021141238ef89870c600f75ae3005277cca",
+      "candidateSha256": "bbe44fc66bc5f5327ea1a934be040cd815da8c1d3158d00a245f49af1ba00378",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111706",
+      "collectionNumber": 142,
+      "title": "Food Supply Chain",
+      "originalSha256": "7fd5352cfa6eb89e76c7330d67d3ab69d51e8cbada63b7250e4842b1b265856a",
+      "candidateSha256": "4a7b3df3dabad85cb40a108fce7f7aedfe5a3fcb7260fc0dc9804b8d5de420a0",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111707",
+      "collectionNumber": 143,
+      "title": "Taiwan Bicycle Production, Imports and Exports",
+      "originalSha256": "3f3cc6774e80efa6c3c7bd3891ba42b043973fee0aaa4716213d1305f8216542",
+      "candidateSha256": "af85f2050efd95e5e9b7d2157bbac47efad40f1fd83f5fa628afd4ff8f61abe6",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111708",
+      "collectionNumber": 144,
+      "title": "Apartments and Detached Houses in Canadian Cities",
+      "originalSha256": "8083ce1703d84a58eaaa81230d7e26cf0efef38639af41839aa3cc7fbd2dc6c9",
+      "candidateSha256": "2d661932eab158c3818862e94daa324b29de1baf600ce0d198dc5e1b89502164",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111709",
+      "collectionNumber": 145,
+      "title": "River Flow in Straight and Curved Channels",
+      "originalSha256": "1fda18dad6b706bed59f018353e8685b83455b8ad05004d3c202dd9741e52c7d",
+      "candidateSha256": "24cd209a1a9efabff7f3e049f2f34c1aa67efec39e7994575c52f14d71254d27",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-user-2026111710",
+      "collectionNumber": 146,
+      "title": "Male and Female Participation in Sport",
+      "originalSha256": "927f04244d669206530c30ee1edd5fc6ddaa1c2f695010aedcd6757f09315059",
+      "candidateSha256": "d5dd919bbf61de29b64784d2dab5a480ffc7d9fc30655c4444b29a28ebc6a764",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111711",
+      "collectionNumber": 147,
+      "title": "World Renewable Electricity Generation",
+      "originalSha256": "8cb8393d481008eaf4dcbba0784187a5eebac698dd05ea6a0a0710337341675c",
+      "candidateSha256": "0fe23067c06f47f353b19ae47089ac8064d556aa3a1c70fc43bf78415ffab6e4",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111712",
+      "collectionNumber": 148,
+      "title": "Leisure Centre Usage Over One Day",
+      "originalSha256": "91172937a6b7dda13b6046ed432f1f24c71702655a6e080e3182710f249c5175",
+      "candidateSha256": "00597541fb69b94825aaee9637621f45ef30692dc4d598dd6643b905fe6babc5",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111713",
+      "collectionNumber": 149,
+      "title": "Sunlight Received by Forest Layers",
+      "originalSha256": "ec952f7bce569ad1c13c2151fc3408fc10e0db3de5b8eb248b1ef7d18b55093d",
+      "candidateSha256": "42bd46d3b51e352f593c13be508d22144c5c6881e7802a066bf022e4efb8ab47",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111714",
+      "collectionNumber": 150,
+      "title": "International Students in Canada",
+      "originalSha256": "45a34b166e69d6ef259f3cf9936b82e00b9ce1b868d43932af9947aa09a4eade",
+      "candidateSha256": "55f2821f6a92c9b4097a22d48e7f6192e3d7416a9161108f3b9f13e61f641567",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111715",
+      "collectionNumber": 151,
+      "title": "GDP Accumulated Growth at Constant Prices",
+      "originalSha256": "595e95ce9f08c546adc861f9ddddd90800eb6f52bc412945bc239be2c19a0845",
+      "candidateSha256": "12a59e5b57115c1762391968b1e6081a38027339d0d4d12454a78b3166a253ff",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111716",
+      "collectionNumber": 152,
+      "title": "Relative Sizes of Planets",
+      "originalSha256": "5a739b93639ad674ac3a139e3be91fde0857c7c008ec32adfa4fffb482493160",
+      "candidateSha256": "52a9026e74b71db94be347f96e87f40f3efd5fc87a80831dd116f5bb9d1b5726",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111717",
+      "collectionNumber": 153,
+      "title": "Heights of Four Tree Species",
+      "originalSha256": "1d3637ca0ccc77c9b37ec75d9108e6794b31864ad3ce33823dbe6a68d19ac479",
+      "candidateSha256": "5d0a2d41a5b6b90561c248a20bf14f7a038a58676e4974fbb65083e975251483",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111718",
+      "collectionNumber": 154,
+      "title": "Layers of the Earth",
+      "originalSha256": "9ce80a44d08d5e0000b7c634a1ccd359d4240c3d8b9e4c334d2f37568d50c131",
+      "candidateSha256": "26809979f58adfcc55ca018c98aa26021df5eb1ce1ad8b1b5bf70b5b5c1b2ad7",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111719",
+      "collectionNumber": 155,
+      "title": "Global Warming Predictions",
+      "originalSha256": "f285894a28a5a92c89029fc72b26bfc5bee585f2da9522b41c19b1d08a5a21e0",
+      "candidateSha256": "ebfb4f27595a9c623197a76b09f7fa70dfd9499e4f81b51bb62a19ef5dc9f973",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111720",
+      "collectionNumber": 156,
+      "title": "Articles Published by University Professors",
+      "originalSha256": "ad0fbe6050b69f99637adc8016f7f06d1ed5df6d1f2e052bee11a30825d8f70e",
+      "candidateSha256": "3e0f288ad786dad5c532a836e536bdaefba46b8b256e1d1fce396b52bdfbaa44",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111721",
+      "collectionNumber": 157,
+      "title": "Life Cycle of an Apple Tree",
+      "originalSha256": "c392bee1c7ccc0159b7df9866322206af7ae3eb16c8d70a0d85167e20296c4f1",
+      "candidateSha256": "b9859f5202e5fe3340a8c78f71c5672f82e67224644366a9a35be2cd9ec88aa4",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-user-2026111722",
+      "collectionNumber": 158,
+      "title": "Migration of the Blackpoll Bird",
+      "originalSha256": "cf275099fa16b679679efe303d0e18284aaa34dde972c6d68b43343404752bae",
+      "candidateSha256": "33d7f8a1c4647cd9ae90979bd76039bdc7ef9fe18f82f7d797858db6ae555c41",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111723",
+      "collectionNumber": 159,
+      "title": "Food Price and Oil Price",
+      "originalSha256": "15f82c2d5ca7402984153ef46641d087a1bd4bdbc927d8ad62ee290fb109cbfb",
+      "candidateSha256": "ebf7626dd97e894b7aab228bd836d8fa74bdc8c910e78289f309c4df8007b6d3",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111724",
+      "collectionNumber": 160,
+      "title": "Carbon Dioxide and Temperature over 400,000 Years",
+      "originalSha256": "7e575483b2950c52734ce1685399e927bb444edd0e2d0b4d78cb913c2d6cbf6f",
+      "candidateSha256": "93ae37077c7c9e3b0ef8181b7451226dc240c2557286cb90374b9ddb9f42c8e7",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111725",
+      "collectionNumber": 161,
+      "title": "The Eatwell Plate",
+      "originalSha256": "a61e2344b8e645c0ceaaf50a0df9a4e4dbf14a8b5b58df2582f340f290a11270",
+      "candidateSha256": "3f3b57bca23c34b9a3ac411943bb63ae8d662e6907a01ce8984acd3f2221fe79",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111726",
+      "collectionNumber": 162,
+      "title": "Beijing Daily High and Low Temperatures",
+      "originalSha256": "d0d38901b93b979fa9cdec4fb0febb35f6b449ff884024a5428abbf1e5166025",
+      "candidateSha256": "dbbf2be29ff9a5ea6ad2ac10f867c0078509c7468e2977fe71bcd3015a8674e5",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111727",
+      "collectionNumber": 163,
+      "title": "Pre-tax Profits of the 1,000 Largest Banks",
+      "originalSha256": "f7c48116bd7f1fbc00b8a2b4a75729f3c340d7962da221a98732897a4e0401aa",
+      "candidateSha256": "c8d7a7a6f5bec70754f60b98923416d4c77e71cd459a97e9decd1d3947d8ad30",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-user-2026111728",
+      "collectionNumber": 164,
+      "title": "Life Expectancy at Birth by Sex",
+      "originalSha256": "1dbaa55ca3926ad60599288e5f728e3d316f4346c287335181c03e36d669fa16",
+      "candidateSha256": "d6600630430d8d8cbfd8a7f9a4fab96b8c782906d5898c1f4786e78a20ecb71e",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111729",
+      "collectionNumber": 165,
+      "title": "Housefly Life Cycle",
+      "originalSha256": "5e40479a45505a00f9961aa8ff2efa62afb541986e7131164158c427cc5fb6f7",
+      "candidateSha256": "0c0dd3b84212fb19778a1510b2a4b3ff31fc5b7aafede50254576a941b30246c",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111730",
+      "collectionNumber": 166,
+      "title": "Internet Population by Country",
+      "originalSha256": "f89ab2da4b0245fc2d224e20a2a8aaaf4410b870e7273cd7785d5c8d79d4dbf9",
+      "candidateSha256": "a2460e3149b5eeff36c6ca4a8a1d5f74cec0576a6d0ee657d18f04be59f2f799",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111731",
+      "collectionNumber": 167,
+      "title": "Causes of Deforestation in the Brazilian Amazon",
+      "originalSha256": "fcbfd64b4c7f8387b312145234ad302bec1bcdb85112610e0f7f3190bb4e50e6",
+      "candidateSha256": "ecb48634c8df8fd4038f210a35fe55015d22d674a57efdde81ccd1ac98dfe6e8",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111732",
+      "collectionNumber": 168,
+      "title": "Government Expenditure on Education",
+      "originalSha256": "303a374a0352f7cbe89367a288d03be8f549e0058b22f2418f854f817602bc4c",
+      "candidateSha256": "d3db7077995feb8215378ff09fa28d3af985bc629da7e45d2d9323a726024369",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111733",
+      "collectionNumber": 169,
+      "title": "Iceberg Melting and Ocean-floor Deposition",
+      "originalSha256": "aa6b7fa2695955e46b3d0026b82bf9b36a8ba3ff7e133898a3339a1b2ccec576",
+      "candidateSha256": "4a97d3e254dba20bd7cc99cdca289f954153ae493113ecce23698278dea58c59",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111734",
+      "collectionNumber": 170,
+      "title": "Women in the Labor Force by Marital Status",
+      "originalSha256": "7b8c42541e65a1461df1cbf6fbcab72790e3ea1f75d27c458ad817a1c85a13f8",
+      "candidateSha256": "d31cca0633b44a89ba5a8b4fcde2acb0d26dd24f9630043c6b13b1652262881b",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111735",
+      "collectionNumber": 209,
+      "title": "Screenshot 2026-11-17 144144",
+      "originalSha256": "229498338c3b3845921061aee555c937ce1f96837a706b781807fdef95d14876",
+      "candidateSha256": "ddd4bab1455ef05bc7c8d6d6b8967ec960d6d94d36f6329e305d15c72d4ceaf6",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111736",
+      "collectionNumber": 208,
+      "title": "Screenshot 2026-11-17 144150",
+      "originalSha256": "2abbe8cc384d9f22566acbf8ebaa394b3abc2df4740f56bcf32fed4b7b6130d1",
+      "candidateSha256": "6ffc1b6380f822e4822cdb372fd9289b0380cd70c0817bf8bdc0932ff3615a8c",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111737",
+      "collectionNumber": 207,
+      "title": "Screenshot 2026-11-17 144221",
+      "originalSha256": "1e4978df1a8ed7cea822d6e5adf58632183b96634a2081ba6cbcbfe5bd62a518",
+      "candidateSha256": "a10955d4370dc365f2f3761a63dc0771253a65cc14959c31fd847f338ea21307",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111738",
+      "collectionNumber": 206,
+      "title": "Screenshot 2026-11-17 144237",
+      "originalSha256": "f6128ac417f8ae48f375129c5157a46432de3283ec4694cc2c163b5d2ff625b9",
+      "candidateSha256": "295114da99f37faf960a1336395da504c7b7805ed9f08add6f9c3b258be235ca",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111739",
+      "collectionNumber": 205,
+      "title": "Screenshot 2026-11-17 144245",
+      "originalSha256": "fc3ed595d3a90601c14040e9b6250ab951980a3f2d75944ba671c65f67987a84",
+      "candidateSha256": "2840c46a130c7a8dad3e548868f7f6c01ebfe43aa33d99b5a4f27b79631ba407",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-user-2026111740",
+      "collectionNumber": 204,
+      "title": "Screenshot 2026-11-17 144254",
+      "originalSha256": "b6341a51a8a9dacae7b402fae2a2b510b4a3cd27217c134cb84f3dd8322a2e89",
+      "candidateSha256": "27a2229c26b2b22085cb50e401ef7aaea1ad618309d3a4b10af3360f2ff5e4eb",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111741",
+      "collectionNumber": 203,
+      "title": "Screenshot 2026-11-17 144301",
+      "originalSha256": "3706c664707e4c4d53601ac4ac58a92060671ce0f46efc69b4feceb73ccbb6df",
+      "candidateSha256": "4c3eb14a9cb0d1fab5b8126e56bf4a16c2cf9f611219cba50e64509effd0cb8c",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111742",
+      "collectionNumber": 202,
+      "title": "Screenshot 2026-11-17 144308",
+      "originalSha256": "8f1bd6ff46ed35877318f5229c0778ea884880e4706be2e88c14f354de3e7679",
+      "candidateSha256": "f75b3b25ba5c3a4f3ae991afb0aae335a9f0c5103235d6608507f6f4ffedfa48",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111743",
+      "collectionNumber": 201,
+      "title": "Screenshot 2026-11-17 144315",
+      "originalSha256": "47bbb585b3f126e21baf36bdbb162912d5d32e53dc9d034693107256f900c09d",
+      "candidateSha256": "4cc48fc5a9197f1ac4e2037d1719c798e2b0cc60f7799d64b731bcc560766347",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-user-2026111744",
+      "collectionNumber": 200,
+      "title": "Screenshot 2026-11-17 144324",
+      "originalSha256": "7cc5759265d9530ff956a6a24e98bcd53c9dfeefcd642af407f10d022e0d6142",
+      "candidateSha256": "6db0b64d5f94b5d4ed10bdbba4007fef8312ca25ca2c9ea5ce07153c0d55970a",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-user-2026111745",
+      "collectionNumber": 199,
+      "title": "Screenshot 2026-11-17 144334",
+      "originalSha256": "e37755e183f979f56f3454fed5a0beb24ec55771bf3d53dabe39bd47b56585bc",
+      "candidateSha256": "6f479f3139d2cb63a4968d243e8ec8209e965fdfcbdd0518b1772041e023a4ce",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111746",
+      "collectionNumber": 198,
+      "title": "Screenshot 2026-11-17 144342",
+      "originalSha256": "b2491cf6833c7d401d360bfb5125a8f74710066a17253fbbdf4c4892e463deca",
+      "candidateSha256": "f9006beb50fff182e2c4ed3e9361e1dc01f8c03486c542d8251342517d9d4ef7",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111747",
+      "collectionNumber": 197,
+      "title": "Screenshot 2026-11-17 144353",
+      "originalSha256": "12fb23fe66abe7ed515586d373d3249accbf4602b4b0da38b49ac45a3954995a",
+      "candidateSha256": "74cbf1109149410857699c6e1fbb43bbabead78f8158225beade192c1c6b40d2",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111748",
+      "collectionNumber": 196,
+      "title": "Screenshot 2026-11-17 144403",
+      "originalSha256": "45b58875b93c01f34c87067351f68f1ed5e148d6404eb12a65450c022f4a9f31",
+      "candidateSha256": "ca622eee366af9b028aba2e4b35998b0d190029eeef3621b6482b7f75b58a784",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-user-2026111749",
+      "collectionNumber": 195,
+      "title": "Screenshot 2026-11-17 144412",
+      "originalSha256": "90595280d9c5bd8b8e99a7a47b5e73fe610d425bfdf5e9c7b43087a1d437093a",
+      "candidateSha256": "211369f1bf9223cbe0f233d2384483a43aea673cdadd9fbe8f10dfb4b7693c2b",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111750",
+      "collectionNumber": 192,
+      "title": "Screenshot 2026-11-17 144518",
+      "originalSha256": "ac50708d7289b06792414d991a0cadd423440bed271668e9d8bc301446ce28dd",
+      "candidateSha256": "60363bb7108189af463e7cd89b07bc7f421ae36b8c327f275b32f22683814e71",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111751",
+      "collectionNumber": 191,
+      "title": "Screenshot 2026-11-17 144526",
+      "originalSha256": "82229f3fc07c297b9c91322f2e54e42f02f4b1a6a4d08ac086bbb23af1eef4c9",
+      "candidateSha256": "3661e88759cfefc3f6962e4001b8199946a52de54e06d421209078320e17cdd9",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111752",
+      "collectionNumber": 190,
+      "title": "Screenshot 2026-11-17 144542",
+      "originalSha256": "521318f6cf96a221d5a96674321e344903325f978908173e55e67eb92477e634",
+      "candidateSha256": "660e9a2349557d0c105ad9953682f9b4b279b6a736576c9b334b95a12e42a51e",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111753",
+      "collectionNumber": 189,
+      "title": "Screenshot 2026-11-17 144549",
+      "originalSha256": "3b97015a41ca676970599b50bd74f36a1da60c8301937d3ead02ae1ca00d60b1",
+      "candidateSha256": "5f967e959eceb3c688f9df5b197a40b0ccc401d178ad87b3f1b94405196d7ca4",
+      "decision": "retained-existing-display",
+      "review": "Rejected: population-growth peak geometry/value differs from original.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111754",
+      "collectionNumber": 187,
+      "title": "Screenshot 2026-11-17 144604",
+      "originalSha256": "46833c7405433dc63039cda8778ecec60e1c6e4ec227df1f2178fea95e16066c",
+      "candidateSha256": "df5213231bb12e22787d32221f0d9dcfa6b7eb2772bdf9c1a8348e14a016edc1",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111755",
+      "collectionNumber": 186,
+      "title": "Screenshot 2026-11-17 144614",
+      "originalSha256": "5d4d0414e28e4bafc2d155a1b60830ca434fcff1074f53b03385ff261064b5ac",
+      "candidateSha256": "0389f22f9b7da4f6d201b13cedc80e433b5bf7191f93f71f7f8b0e3d78dbd9b1",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111756",
+      "collectionNumber": 185,
+      "title": "Screenshot 2026-11-17 144636",
+      "originalSha256": "c3f672c143bb38f7c162966655a41b5210c6741e6c9dfcf84df2ae4030637c86",
+      "candidateSha256": "fd68415197bf1ae3d1a3c1e0d619859ab64c5d3932f1edd2bff3aa63884e3689",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111757",
+      "collectionNumber": 184,
+      "title": "Screenshot 2026-11-17 144644",
+      "originalSha256": "55194e0727e40d3d0924bcb04081fbe037c646457949289510da3712668b3547",
+      "candidateSha256": "8bb6aba02a27eb6b6201c1d2c9ffd590334e83a2cd0b7e974bd57ce971d3577c",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111758",
+      "collectionNumber": 183,
+      "title": "Screenshot 2026-11-17 144657",
+      "originalSha256": "8509dea19362affe913a93b85c405afd7a96a62cf22c975f4e406bcde27aaf78",
+      "candidateSha256": "6326c731e3b9142bb2e63128b9dce997099810ebdd1b2ff6fc67ee369b9cd3bd",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111759",
+      "collectionNumber": 182,
+      "title": "Screenshot 2026-11-17 144723",
+      "originalSha256": "cc797f29d226529000b90b4dd2bcb027c4b1eefeb8b5b888325f1337887ea2b4",
+      "candidateSha256": "d578fc0645f80b3a4f32889bee84cc5625107880e53a8316895b01524958e3e1",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111760",
+      "collectionNumber": 181,
+      "title": "Screenshot 2026-11-17 144735",
+      "originalSha256": "268a489f3b802dffd3df25245f6d123b384840abf158a76b8876f99d0c78b9f9",
+      "candidateSha256": "0e43ddccadebe8a7d23138e0c9502fcbd996a7747f3364e00ac91c6074e568a2",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-user-2026111761",
+      "collectionNumber": 180,
+      "title": "Screenshot 2026-11-17 144752",
+      "originalSha256": "3ca4c2128e5088c3e436de64968e9f2b64c13caf93712c6d5c662ba49f95b49d",
+      "candidateSha256": "12208c56262aba6ea507166c3bb1bea2c2b2371703dcf86a22f567971346549b",
+      "decision": "retained-existing-display",
+      "review": "Held: original intermediate ages are ellipses and most values are missing.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111762",
+      "collectionNumber": 179,
+      "title": "Screenshot 2026-11-17 144814",
+      "originalSha256": "04071b5a86215f02d6ad550945ee4fa52ad1e04ff3c49d46a9e9d27aae82f736",
+      "candidateSha256": "5d7af13d1a6d4fcb74f79456a6cfbb88360cd629c1ac703deb67f6d39240d26c",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "NO_OCR_DIFFERENCE_DETECTED"
+    },
+    {
+      "questionId": "di-user-2026111763",
+      "collectionNumber": 178,
+      "title": "Screenshot 2026-11-17 144824",
+      "originalSha256": "f3d745baba0d2dbaa72115d6f8e594ccdda9e70ccb2771765a35f48f3aff7200",
+      "candidateSha256": "23597be207b38615c63b432f7ae0ebf9476c1788e267fd78a4be8246faaf1235",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111764",
+      "collectionNumber": 177,
+      "title": "Screenshot 2026-11-17 144852",
+      "originalSha256": "eb0c0c4df54002369022defaf349e880f9b8ecc18f286c8ff00a707a523525d0",
+      "candidateSha256": "d7adaa1bb40f21b311b098371ab23f0b5ad3a62d791cc9c30c4036a75f79d327",
+      "decision": "approved-display",
+      "review": "Assistant visual comparison against original labels, units, values and main relationships; no independent human review claimed.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111765",
+      "collectionNumber": 176,
+      "title": "Screenshot 2026-11-17 144903",
+      "originalSha256": "0693d2c9349a293ebe96db14bf54f5873f0d48f7351a7b8b757c9cc4559cd581",
+      "candidateSha256": "b4df2eb63f9c984da587007fc1ba530b5eeb11b5ba2476479155af475cc67020",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    },
+    {
+      "questionId": "di-user-2026111766",
+      "collectionNumber": 175,
+      "title": "Screenshot 2026-11-17 144914",
+      "originalSha256": "2c64820ecdbf6ab3127be147404743ff394719fa41c8b43f8883f6ff559cd5fc",
+      "candidateSha256": "0857e656b2167ae14b1d0cfb1abfd24c195208cc4c39361917a2ffecb4141343",
+      "decision": "retained-existing-display",
+      "review": "Held: content/geometry drift, unclear source, or full-fidelity review unresolved. Original and existing display retained.",
+      "ocrStatus": "REVIEW"
+    }
+  ]
+}
