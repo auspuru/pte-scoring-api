@@ -2441,5 +2441,869 @@
       "description": "The graph compares labour-force participation percentages of married and unmarried women aged 25–54 from 1900 to the end of the displayed period around 2010. Unmarried women's participation rises from about 51% to 80%, while married women's rises from about 6% to 74%. Unmarried women remain higher throughout, but the gap narrows considerably as married women's participation increases."
     },
     "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111735",
+    "title": "Composition of E-waste",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111735.png",
+    "facts": [
+      "The stacked diagram divides e-waste into electronic and electric waste, each accounting for 50%.",
+      "Washing machines, dryers and air conditioners make up 30%, and refrigerators contribute 20%.",
+      "DVD/VCR players and similar equipment and telephones each account for 15%; televisions and monitors each contribute 10%."
+    ],
+    "sample": "The given image provides the detailed information about composition of e-waste. The stacked diagram divides e-waste into electronic and electric waste, each accounting for 50%. Washing machines, dryers and air conditioners make up 30%, and refrigerators contribute 20%. DVD/VCR players and similar equipment and telephones each account for 15%; televisions and monitors each contribute 10%.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144144.png",
+      "sourceTitle": "Composition of E-waste",
+      "suppliedFile": "Screenshot 2026-11-17 144144.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Composition of E-waste",
+      "description": "The stacked diagram divides e-waste into electronic and electric waste, each accounting for 50%. Washing machines, dryers and air conditioners make up 30%, and refrigerators contribute 20%. DVD/VCR players and similar equipment and telephones each account for 15%; televisions and monitors each contribute 10%."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111736",
+    "title": "US Households Keeping Pets",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111736.png",
+    "facts": [
+      "The chart shows numbers of US households keeping pets, in millions, with a total of 84.9 million.",
+      "Dogs lead at 63.4 million households, followed by cats at 42.7 million and freshwater fish at 11.5 million.",
+      "Horses and saltwater fish have the smallest labelled totals, at 1.6 million each; individual categories can overlap because households may keep several pet types."
+    ],
+    "sample": "The given image provides the detailed information about us households keeping pets. The chart shows numbers of US households keeping pets, in millions, with a total of 84.9 million. Dogs lead at 63.4 million households, followed by cats at 42.7 million and freshwater fish at 11.5 million. Horses and saltwater fish have the smallest labelled totals, at 1.6 million each; individual categories can overlap because households may keep several pet types.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144150.png",
+      "sourceTitle": "US Households Keeping Pets",
+      "suppliedFile": "Screenshot 2026-11-17 144150.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "US Households Keeping Pets",
+      "description": "The chart shows numbers of US households keeping pets, in millions, with a total of 84.9 million. Dogs lead at 63.4 million households, followed by cats at 42.7 million and freshwater fish at 11.5 million. Horses and saltwater fish have the smallest labelled totals, at 1.6 million each; individual categories can overlap because households may keep several pet types."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111737",
+    "title": "Formal and Informal Volunteering by Gender",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111737.png",
+    "facts": [
+      "The chart compares male and female percentages in formal and informal volunteering.",
+      "Formal volunteering is 20% for males and about 32% for females; informal volunteering is 25% and 40% respectively.",
+      "Female participation is higher in both categories, and informal volunteering exceeds formal volunteering for each gender."
+    ],
+    "sample": "The given image provides the detailed information about formal and informal volunteering by gender. The chart compares male and female percentages in formal and informal volunteering. Formal volunteering is 20% for males and about 32% for females; informal volunteering is 25% and 40% respectively. Female participation is higher in both categories, and informal volunteering exceeds formal volunteering for each gender.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144221.png",
+      "sourceTitle": "Formal and Informal Volunteering by Gender",
+      "suppliedFile": "Screenshot 2026-11-17 144221.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Formal and Informal Volunteering by Gender",
+      "description": "The chart compares male and female percentages in formal and informal volunteering. Formal volunteering is 20% for males and about 32% for females; informal volunteering is 25% and 40% respectively. Female participation is higher in both categories, and informal volunteering exceeds formal volunteering for each gender."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111738",
+    "title": "Average Weekly Household Spending, 2015–2016",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/2026111738.png",
+    "facts": [
+      "The dot chart compares average weekly household spending on six goods and services in 2015–2016, in dollars.",
+      "Current housing costs are highest at about $270, followed by food and non-alcoholic beverages near $235 and transport near $205.",
+      "Alcoholic beverages, personal care and tobacco products are much lower; tobacco is the smallest category at roughly $13."
+    ],
+    "sample": "The given image provides the detailed information about average weekly household spending, 2015–2016. The dot chart compares average weekly household spending on six goods and services in 2015–2016, in dollars. Current housing costs are highest at about $270, followed by food and non-alcoholic beverages near $235 and transport near $205. Alcoholic beverages, personal care and tobacco products are much lower; tobacco is the smallest category at roughly $13.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144237.png",
+      "sourceTitle": "Average Weekly Household Spending, 2015–2016",
+      "suppliedFile": "Screenshot 2026-11-17 144237.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Average Weekly Household Spending, 2015–2016",
+      "description": "The dot chart compares average weekly household spending on six goods and services in 2015–2016, in dollars. Current housing costs are highest at about $270, followed by food and non-alcoholic beverages near $235 and transport near $205. Alcoholic beverages, personal care and tobacco products are much lower; tobacco is the smallest category at roughly $13."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111739",
+    "title": "Small Business in Thailand",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/2026111739.png",
+    "facts": [
+      "The pie chart labels three business-size categories in Thailand by employee numbers and percentage shares.",
+      "Small businesses with 3–6 employees are labelled 66%, and medium businesses with 7–50 employees are labelled 28%.",
+      "Large businesses with 50 or more employees account for the remaining labelled 6%, making them the smallest category."
+    ],
+    "sample": "The given image provides the detailed information about small business in thailand. The pie chart labels three business-size categories in Thailand by employee numbers and percentage shares. Small businesses with 3–6 employees are labelled 66%, and medium businesses with 7–50 employees are labelled 28%. Large businesses with 50 or more employees account for the remaining labelled 6%, making them the smallest category.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144245.png",
+      "sourceTitle": "Small Business in Thailand",
+      "suppliedFile": "Screenshot 2026-11-17 144245.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "Small Business in Thailand",
+      "description": "The pie chart labels three business-size categories in Thailand by employee numbers and percentage shares. Small businesses with 3–6 employees are labelled 66%, and medium businesses with 7–50 employees are labelled 28%. Large businesses with 50 or more employees account for the remaining labelled 6%, making them the smallest category."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111740",
+    "title": "Club Membership in New Zealand",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111740.png",
+    "facts": [
+      "The chart compares percentages belonging to different club types in New Zealand for the year ended March 2015.",
+      "Sport is the most common at approximately 28%, followed by religion near 21% and hobbies near 15%.",
+      "Political clubs are the least common at around 2%; professional and volunteer clubs each attract approximately 11%."
+    ],
+    "sample": "The given image provides the detailed information about club membership in new zealand. The chart compares percentages belonging to different club types in New Zealand for the year ended March 2015. Sport is the most common at approximately 28%, followed by religion near 21% and hobbies near 15%. Political clubs are the least common at around 2%; professional and volunteer clubs each attract approximately 11%.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144254.png",
+      "sourceTitle": "Club Membership in New Zealand",
+      "suppliedFile": "Screenshot 2026-11-17 144254.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Club Membership in New Zealand",
+      "description": "The chart compares percentages belonging to different club types in New Zealand for the year ended March 2015. Sport is the most common at approximately 28%, followed by religion near 21% and hobbies near 15%. Political clubs are the least common at around 2%; professional and volunteer clubs each attract approximately 11%."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111741",
+    "title": "Feature Film Production by Nation in 2011",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111741.png",
+    "facts": [
+      "The chart compares feature-film production in fifteen nations in 2011.",
+      "India leads with approximately 1,250 films, followed by Nigeria near 1,000 and the USA near 820.",
+      "China and Japan follow at roughly 590 and 440, while Canada has the smallest bar, below 100 films."
+    ],
+    "sample": "The given image provides the detailed information about feature film production by nation in 2011. The chart compares feature-film production in fifteen nations in 2011. India leads with approximately 1,250 films, followed by Nigeria near 1,000 and the USA near 820. China and Japan follow at roughly 590 and 440, while Canada has the smallest bar, below 100 films.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144301.png",
+      "sourceTitle": "Feature Film Production by Nation in 2011",
+      "suppliedFile": "Screenshot 2026-11-17 144301.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Feature Film Production by Nation in 2011",
+      "description": "The chart compares feature-film production in fifteen nations in 2011. India leads with approximately 1,250 films, followed by Nigeria near 1,000 and the USA near 820. China and Japan follow at roughly 590 and 440, while Canada has the smallest bar, below 100 films."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111742",
+    "title": "Vehicles Licensed in Britain by Fuel Type",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111742.png",
+    "facts": [
+      "The graph compares licensed vehicles in Britain, in millions, for petrol, diesel and alternative fuels from 1994 to 2016.",
+      "Petrol remains the largest category, rising to about 22 million in the mid-2000s before declining to around 18 million.",
+      "Diesel increases steadily from roughly 1.5 million to 12 million; alternative-fuel vehicles remain well below 1 million."
+    ],
+    "sample": "The given image provides the detailed information about vehicles licensed in britain by fuel type. The graph compares licensed vehicles in Britain, in millions, for petrol, diesel and alternative fuels from 1994 to 2016. Petrol remains the largest category, rising to about 22 million in the mid-2000s before declining to around 18 million. Diesel increases steadily from roughly 1.5 million to 12 million; alternative-fuel vehicles remain well below 1 million.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144308.png",
+      "sourceTitle": "Vehicles Licensed in Britain by Fuel Type",
+      "suppliedFile": "Screenshot 2026-11-17 144308.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Vehicles Licensed in Britain by Fuel Type",
+      "description": "The graph compares licensed vehicles in Britain, in millions, for petrol, diesel and alternative fuels from 1994 to 2016. Petrol remains the largest category, rising to about 22 million in the mid-2000s before declining to around 18 million. Diesel increases steadily from roughly 1.5 million to 12 million; alternative-fuel vehicles remain well below 1 million."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111743",
+    "title": "Renewable Energy Shares and Sector Targets",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111743.png",
+    "facts": [
+      "The diagram compares renewable energy shares for heat, electricity and transport against their targets.",
+      "Electricity has the highest share at 22.31%, compared with a 30% target; heat is 5.64% against 12%.",
+      "Transport has the lowest share at 4.23%, compared with a 10% target; all three sectors are below target."
+    ],
+    "sample": "The given image provides the detailed information about renewable energy shares and sector targets. The diagram compares renewable energy shares for heat, electricity and transport against their targets. Electricity has the highest share at 22.31%, compared with a 30% target; heat is 5.64% against 12%. Transport has the lowest share at 4.23%, compared with a 10% target; all three sectors are below target.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144315.png",
+      "sourceTitle": "Renewable Energy Shares and Sector Targets",
+      "suppliedFile": "Screenshot 2026-11-17 144315.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Renewable Energy Shares and Sector Targets",
+      "description": "The diagram compares renewable energy shares for heat, electricity and transport against their targets. Electricity has the highest share at 22.31%, compared with a 30% target; heat is 5.64% against 12%. Transport has the lowest share at 4.23%, compared with a 10% target; all three sectors are below target."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111744",
+    "title": "Customer Purchasing Reasons",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111744.png",
+    "facts": [
+      "The chart shows percentages selecting each reason as an important purchasing factor.",
+      "Price dominates at 54.6%, followed by company name at 24.7%; friends' recommendations account for 6.8% and quality for 5.6%.",
+      "Product variety is 4.3%, advertising 2.6%, store location 1.2% and other reasons 0.2%."
+    ],
+    "sample": "The given image provides the detailed information about customer purchasing reasons. The chart shows percentages selecting each reason as an important purchasing factor. Price dominates at 54.6%, followed by company name at 24.7%; friends' recommendations account for 6.8% and quality for 5.6%. Product variety is 4.3%, advertising 2.6%, store location 1.2% and other reasons 0.2%.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144324.png",
+      "sourceTitle": "Customer Purchasing Reasons",
+      "suppliedFile": "Screenshot 2026-11-17 144324.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Customer Purchasing Reasons",
+      "description": "The chart shows percentages selecting each reason as an important purchasing factor. Price dominates at 54.6%, followed by company name at 24.7%; friends' recommendations account for 6.8% and quality for 5.6%. Product variety is 4.3%, advertising 2.6%, store location 1.2% and other reasons 0.2%."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111745",
+    "title": "Adult BMI Height and Weight Chart",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/2026111745.png",
+    "facts": [
+      "The chart relates adult height in centimetres and feet/inches to weight in kilograms and stones/pounds.",
+      "It marks underweight, healthy weight, overweight and obese regions, with boundaries labelled BMI 18.5, 25 and 30.",
+      "At greater heights, the weight range within each BMI category shifts upwards."
+    ],
+    "sample": "The given image provides the detailed information about adult bmi height and weight chart. The chart relates adult height in centimetres and feet/inches to weight in kilograms and stones/pounds. It marks underweight, healthy weight, overweight and obese regions, with boundaries labelled BMI 18.5, 25 and 30. At greater heights, the weight range within each BMI category shifts upwards.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144334.png",
+      "sourceTitle": "Adult BMI Height and Weight Chart",
+      "suppliedFile": "Screenshot 2026-11-17 144334.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Adult BMI Height and Weight Chart",
+      "description": "The chart relates adult height in centimetres and feet/inches to weight in kilograms and stones/pounds. It marks underweight, healthy weight, overweight and obese regions, with boundaries labelled BMI 18.5, 25 and 30. At greater heights, the weight range within each BMI category shifts upwards."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111746",
+    "title": "Formation and Deposition of Acid Rain",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/2026111746.png",
+    "facts": [
+      "The diagram traces emissions from industry, transportation, ore smelting and power generation.",
+      "Nitrogen oxides and sulfur dioxide enter the atmosphere and undergo chemical transformation into nitric and sulfuric acids.",
+      "The diagram shows both dry fallout of particles and gases and precipitation as acid rain, fog, snow and mist."
+    ],
+    "sample": "The given image provides the detailed information about formation and deposition of acid rain. The diagram traces emissions from industry, transportation, ore smelting and power generation. Nitrogen oxides and sulfur dioxide enter the atmosphere and undergo chemical transformation into nitric and sulfuric acids. The diagram shows both dry fallout of particles and gases and precipitation as acid rain, fog, snow and mist.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144342.png",
+      "sourceTitle": "Formation and Deposition of Acid Rain",
+      "suppliedFile": "Screenshot 2026-11-17 144342.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Formation and Deposition of Acid Rain",
+      "description": "The diagram traces emissions from industry, transportation, ore smelting and power generation. Nitrogen oxides and sulfur dioxide enter the atmosphere and undergo chemical transformation into nitric and sulfuric acids. The diagram shows both dry fallout of particles and gases and precipitation as acid rain, fog, snow and mist."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111747",
+    "title": "Annual Arrests for Using Illegal Drugs",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111747.png",
+    "facts": [
+      "The graph shows annual numbers of arrests for using illegal drugs from 1991 to 2005.",
+      "Arrests rise from 10 in 1991 to around 60 during 1995–1997 and peak at 70 in 2000.",
+      "They fall sharply to about 15 in 2001, recover to 55 in 2002 and finish at 40 in 2005."
+    ],
+    "sample": "The given image provides the detailed information about annual arrests for using illegal drugs. The graph shows annual numbers of arrests for using illegal drugs from 1991 to 2005. Arrests rise from 10 in 1991 to around 60 during 1995–1997 and peak at 70 in 2000. They fall sharply to about 15 in 2001, recover to 55 in 2002 and finish at 40 in 2005.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144353.png",
+      "sourceTitle": "Annual Arrests for Using Illegal Drugs",
+      "suppliedFile": "Screenshot 2026-11-17 144353.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Annual Arrests for Using Illegal Drugs",
+      "description": "The graph shows annual numbers of arrests for using illegal drugs from 1991 to 2005. Arrests rise from 10 in 1991 to around 60 during 1995–1997 and peak at 70 in 2000. They fall sharply to about 15 in 2001, recover to 55 in 2002 and finish at 40 in 2005."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111748",
+    "title": "Foreign Language Proficiency by Gender",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111748.png",
+    "facts": [
+      "The chart compares percentages of male and female students proficient in a foreign language across six countries.",
+      "India has the highest percentages, approximately 56% for males and 68% for females; Romania follows at about 42% and 65%.",
+      "Females have higher proficiency in every displayed country except Thailand; China has the lowest male percentage, near 17%."
+    ],
+    "sample": "The given image provides the detailed information about foreign language proficiency by gender. The chart compares percentages of male and female students proficient in a foreign language across six countries. India has the highest percentages, approximately 56% for males and 68% for females; Romania follows at about 42% and 65%. Females have higher proficiency in every displayed country except Thailand; China has the lowest male percentage, near 17%.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144403.png",
+      "sourceTitle": "Foreign Language Proficiency by Gender",
+      "suppliedFile": "Screenshot 2026-11-17 144403.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Foreign Language Proficiency by Gender",
+      "description": "The chart compares percentages of male and female students proficient in a foreign language across six countries. India has the highest percentages, approximately 56% for males and 68% for females; Romania follows at about 42% and 65%. Females have higher proficiency in every displayed country except Thailand; China has the lowest male percentage, near 17%."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111749",
+    "title": "Annual Meat Consumption per Person",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111749.png",
+    "facts": [
+      "The graph compares annual per-capita meat consumption in kilograms for six countries from 1961 to 2009.",
+      "The USA remains highest, rising overall from about 90 kilograms to around 120, while Brazil rises from roughly 30 to 85 and China from under 10 to nearly 60.",
+      "Liberia, India and Ethiopia remain much lower; Brazil and China show substantial long-term increases."
+    ],
+    "sample": "The given image provides the detailed information about annual meat consumption per person. The graph compares annual per-capita meat consumption in kilograms for six countries from 1961 to 2009. The USA remains highest, rising overall from about 90 kilograms to around 120, while Brazil rises from roughly 30 to 85 and China from under 10 to nearly 60. Liberia, India and Ethiopia remain much lower; Brazil and China show substantial long-term increases.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144412.png",
+      "sourceTitle": "Annual Meat Consumption per Person",
+      "suppliedFile": "Screenshot 2026-11-17 144412.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Annual Meat Consumption per Person",
+      "description": "The graph compares annual per-capita meat consumption in kilograms for six countries from 1961 to 2009. The USA remains highest, rising overall from about 90 kilograms to around 120, while Brazil rises from roughly 30 to 85 and China from under 10 to nearly 60. Liberia, India and Ethiopia remain much lower; Brazil and China show substantial long-term increases."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111750",
+    "title": "Global Distribution of Tropical Rainforests",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/2026111750.png",
+    "facts": [
+      "The world map highlights the distribution of tropical rainforests in green.",
+      "Major concentrations occur in tropical South America, central Africa and Southeast Asia, including Indonesia and nearby islands.",
+      "The highlighted regions are concentrated around the tropics rather than the high northern latitudes."
+    ],
+    "sample": "The given image provides the detailed information about global distribution of tropical rainforests. The world map highlights the distribution of tropical rainforests in green. Major concentrations occur in tropical South America, central Africa and Southeast Asia, including Indonesia and nearby islands. The highlighted regions are concentrated around the tropics rather than the high northern latitudes.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144518.png",
+      "sourceTitle": "Global Distribution of Tropical Rainforests",
+      "suppliedFile": "Screenshot 2026-11-17 144518.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Global Distribution of Tropical Rainforests",
+      "description": "The world map highlights the distribution of tropical rainforests in green. Major concentrations occur in tropical South America, central Africa and Southeast Asia, including Indonesia and nearby islands. The highlighted regions are concentrated around the tropics rather than the high northern latitudes."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111751",
+    "title": "Annual Sunshine Hours in France",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/2026111751.png",
+    "facts": [
+      "The map divides France into annual-sunshine bands ranging from less than 1,750 to more than 2,750 hours.",
+      "Northern areas generally receive fewer sunshine hours, while southern and especially southeastern areas receive more.",
+      "The darkest red areas on the Mediterranean coast exceed 2,750 hours, compared with the lightest areas in the north below 1,750."
+    ],
+    "sample": "The given image provides the detailed information about annual sunshine hours in france. The map divides France into annual-sunshine bands ranging from less than 1,750 to more than 2,750 hours. Northern areas generally receive fewer sunshine hours, while southern and especially southeastern areas receive more. The darkest red areas on the Mediterranean coast exceed 2,750 hours, compared with the lightest areas in the north below 1,750.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144526.png",
+      "sourceTitle": "Annual Sunshine Hours in France",
+      "suppliedFile": "Screenshot 2026-11-17 144526.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Annual Sunshine Hours in France",
+      "description": "The map divides France into annual-sunshine bands ranging from less than 1,750 to more than 2,750 hours. Northern areas generally receive fewer sunshine hours, while southern and especially southeastern areas receive more. The darkest red areas on the Mediterranean coast exceed 2,750 hours, compared with the lightest areas in the north below 1,750."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111752",
+    "title": "Pet Expenditure in the United States",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/2026111752.png",
+    "facts": [
+      "The pie chart shows four categories of pet expenditure in the United States.",
+      "Veterinary care and wellbeing take the largest share at 47%, followed by food and litter at 41%.",
+      "Grooming and boarding services account for 10%, while pet purchases are smallest at 2%; the two largest categories total 88%."
+    ],
+    "sample": "The given image provides the detailed information about pet expenditure in the united states. The pie chart shows four categories of pet expenditure in the United States. Veterinary care and wellbeing take the largest share at 47%, followed by food and litter at 41%. Grooming and boarding services account for 10%, while pet purchases are smallest at 2%; the two largest categories total 88%.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144542.png",
+      "sourceTitle": "Pet Expenditure in the United States",
+      "suppliedFile": "Screenshot 2026-11-17 144542.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "Pet Expenditure in the United States",
+      "description": "The pie chart shows four categories of pet expenditure in the United States. Veterinary care and wellbeing take the largest share at 47%, followed by food and litter at 41%. Grooming and boarding services account for 10%, while pet purchases are smallest at 2%; the two largest categories total 88%."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111753",
+    "title": "Components of Population Growth in Canada",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111753.png",
+    "facts": [
+      "The graph shows total population growth, natural increase and net international migration in thousands from 1978/1979 to 2008/2009.",
+      "Total growth peaks near 480,000 around 1988/1989, declines afterwards and finishes above 400,000.",
+      "Natural increase falls overall from about 200,000 to roughly 130,000, while net migration fluctuates and ends near 280,000, exceeding natural increase."
+    ],
+    "sample": "The given image provides the detailed information about components of population growth in canada. The graph shows total population growth, natural increase and net international migration in thousands from 1978/1979 to 2008/2009. Total growth peaks near 480,000 around 1988/1989, declines afterwards and finishes above 400,000. Natural increase falls overall from about 200,000 to roughly 130,000, while net migration fluctuates and ends near 280,000, exceeding natural increase.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144549.png",
+      "sourceTitle": "Components of Population Growth in Canada",
+      "suppliedFile": "Screenshot 2026-11-17 144549.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Components of Population Growth in Canada",
+      "description": "The graph shows total population growth, natural increase and net international migration in thousands from 1978/1979 to 2008/2009. Total growth peaks near 480,000 around 1988/1989, declines afterwards and finishes above 400,000. Natural increase falls overall from about 200,000 to roughly 130,000, while net migration fluctuates and ends near 280,000, exceeding natural increase."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111754",
+    "title": "Estimated Monthly Jeans Sales in Turkey",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111754.png",
+    "facts": [
+      "The chart compares estimated monthly jeans sales for Mango Co. and Jack & Jones Co. in Turkey, in thousands of pairs.",
+      "Jack & Jones generally sells more, reaching about 900,000 pairs in December compared with Mango's 600,000.",
+      "Mango exceeds Jack & Jones in July and August, while both companies show higher sales towards the end of the year."
+    ],
+    "sample": "The given image provides the detailed information about estimated monthly jeans sales in turkey. The chart compares estimated monthly jeans sales for Mango Co. and Jack & Jones Co. in Turkey, in thousands of pairs. Jack & Jones generally sells more, reaching about 900,000 pairs in December compared with Mango's 600,000. Mango exceeds Jack & Jones in July and August, while both companies show higher sales towards the end of the year.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144604.png",
+      "sourceTitle": "Estimated Monthly Jeans Sales in Turkey",
+      "suppliedFile": "Screenshot 2026-11-17 144604.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Estimated Monthly Jeans Sales in Turkey",
+      "description": "The chart compares estimated monthly jeans sales for Mango Co. and Jack & Jones Co. in Turkey, in thousands of pairs. Jack & Jones generally sells more, reaching about 900,000 pairs in December compared with Mango's 600,000. Mango exceeds Jack & Jones in July and August, while both companies show higher sales towards the end of the year."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111755",
+    "title": "Daily Time Use of University and College Students",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/2026111755.png",
+    "facts": [
+      "The pie chart shows daily hours for university and college students, excluding part-time students, averaged across non-holiday weekdays in 2003–2007.",
+      "Sleeping is the largest activity at 8.3 hours, followed by leisure and sports at 3.9, education at 3.2 and work-related activities at 3.0.",
+      "Other activities take 2.3 hours, travel 1.5, eating and drinking 1.0 and grooming 0.8, totalling 24 hours."
+    ],
+    "sample": "The given image provides the detailed information about daily time use of university and college students. The pie chart shows daily hours for university and college students, excluding part-time students, averaged across non-holiday weekdays in 2003–2007. Sleeping is the largest activity at 8.3 hours, followed by leisure and sports at 3.9, education at 3.2 and work-related activities at 3.0. Other activities take 2.3 hours, travel 1.5, eating and drinking 1.0 and grooming 0.8, totalling 24 hours.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144614.png",
+      "sourceTitle": "Daily Time Use of University and College Students",
+      "suppliedFile": "Screenshot 2026-11-17 144614.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "Daily Time Use of University and College Students",
+      "description": "The pie chart shows daily hours for university and college students, excluding part-time students, averaged across non-holiday weekdays in 2003–2007. Sleeping is the largest activity at 8.3 hours, followed by leisure and sports at 3.9, education at 3.2 and work-related activities at 3.0. Other activities take 2.3 hours, travel 1.5, eating and drinking 1.0 and grooming 0.8, totalling 24 hours."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111756",
+    "title": "Regional Shares of Legal Immigrants, 1992–2012",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111756.png",
+    "facts": [
+      "The stacked bars compare regional percentage shares of legal immigrants in 1992 and 2012.",
+      "Latin America and the Caribbean decline from 44% to 38%, while Asia-Pacific rises from 36% to 38%, creating a tie in 2012.",
+      "Sub-Saharan Africa increases from 2% to 9% and the Middle East/North Africa from 3% to 6%; Europe falls from 13% to 8% and North America from 2% to 1%."
+    ],
+    "sample": "The given image provides the detailed information about regional shares of legal immigrants, 1992–2012. The stacked bars compare regional percentage shares of legal immigrants in 1992 and 2012. Latin America and the Caribbean decline from 44% to 38%, while Asia-Pacific rises from 36% to 38%, creating a tie in 2012. Sub-Saharan Africa increases from 2% to 9% and the Middle East/North Africa from 3% to 6%; Europe falls from 13% to 8% and North America from 2% to 1%.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144636.png",
+      "sourceTitle": "Regional Shares of Legal Immigrants, 1992–2012",
+      "suppliedFile": "Screenshot 2026-11-17 144636.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Regional Shares of Legal Immigrants, 1992–2012",
+      "description": "The stacked bars compare regional percentage shares of legal immigrants in 1992 and 2012. Latin America and the Caribbean decline from 44% to 38%, while Asia-Pacific rises from 36% to 38%, creating a tie in 2012. Sub-Saharan Africa increases from 2% to 9% and the Middle East/North Africa from 3% to 6%; Europe falls from 13% to 8% and North America from 2% to 1%."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111757",
+    "title": "Examples of Input, Process and Output",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/2026111757.png",
+    "facts": [
+      "The diagram gives two examples of an input-process-output sequence.",
+      "In manufacturing, materials enter a factory process and emerge as a product, illustrated by a bicycle.",
+      "In computing, data enter a computer process and emerge as information; both examples show an input being transformed into an output."
+    ],
+    "sample": "The given image provides the detailed information about examples of input, process and output. The diagram gives two examples of an input-process-output sequence. In manufacturing, materials enter a factory process and emerge as a product, illustrated by a bicycle. In computing, data enter a computer process and emerge as information; both examples show an input being transformed into an output.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144644.png",
+      "sourceTitle": "Examples of Input, Process and Output",
+      "suppliedFile": "Screenshot 2026-11-17 144644.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Examples of Input, Process and Output",
+      "description": "The diagram gives two examples of an input-process-output sequence. In manufacturing, materials enter a factory process and emerge as a product, illustrated by a bicycle. In computing, data enter a computer process and emerge as information; both examples show an input being transformed into an output."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111758",
+    "title": "Chiang Mai Monthly Temperature and Rainfall",
+    "imageCategory": "mixed",
+    "imageUrl": "/assets/di-predictions-20260930/2026111758.png",
+    "facts": [
+      "The chart compares monthly average high and low temperatures in degrees Celsius with precipitation in millimetres for Chiang Mai, Thailand.",
+      "Average highs peak near 36 degrees in April, while lows peak near 24 degrees around June; temperatures are lower during winter.",
+      "Rainfall is concentrated in the middle of the year and peaks near 250 millimetres in September, with very little rain in the early months."
+    ],
+    "sample": "The given image provides the detailed information about chiang mai monthly temperature and rainfall. The chart compares monthly average high and low temperatures in degrees Celsius with precipitation in millimetres for Chiang Mai, Thailand. Average highs peak near 36 degrees in April, while lows peak near 24 degrees around June; temperatures are lower during winter. Rainfall is concentrated in the middle of the year and peaks near 250 millimetres in September, with very little rain in the early months.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144657.png",
+      "sourceTitle": "Chiang Mai Monthly Temperature and Rainfall",
+      "suppliedFile": "Screenshot 2026-11-17 144657.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "mixed",
+      "title": "Chiang Mai Monthly Temperature and Rainfall",
+      "description": "The chart compares monthly average high and low temperatures in degrees Celsius with precipitation in millimetres for Chiang Mai, Thailand. Average highs peak near 36 degrees in April, while lows peak near 24 degrees around June; temperatures are lower during winter. Rainfall is concentrated in the middle of the year and peaks near 250 millimetres in September, with very little rain in the early months."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111759",
+    "title": "Global Wind Power Capacity, 1996–2012",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111759.png",
+    "facts": [
+      "The graph shows global wind power capacity in gigawatts from 1996 to 2012.",
+      "Capacity rises every year, from 6.1 gigawatts in 1996 to 74 in 2006, 159 in 2009 and 283 in 2012.",
+      "Growth accelerates over time, with the largest absolute annual increase shown between 2011 and 2012, from 238 to 283 gigawatts."
+    ],
+    "sample": "The given image provides the detailed information about global wind power capacity, 1996–2012. The graph shows global wind power capacity in gigawatts from 1996 to 2012. Capacity rises every year, from 6.1 gigawatts in 1996 to 74 in 2006, 159 in 2009 and 283 in 2012. Growth accelerates over time, with the largest absolute annual increase shown between 2011 and 2012, from 238 to 283 gigawatts.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144723.png",
+      "sourceTitle": "Global Wind Power Capacity, 1996–2012",
+      "suppliedFile": "Screenshot 2026-11-17 144723.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Global Wind Power Capacity, 1996–2012",
+      "description": "The graph shows global wind power capacity in gigawatts from 1996 to 2012. Capacity rises every year, from 6.1 gigawatts in 1996 to 74 in 2006, 159 in 2009 and 283 in 2012. Growth accelerates over time, with the largest absolute annual increase shown between 2011 and 2012, from 238 to 283 gigawatts."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111760",
+    "title": "Approximate Composition of Air",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/2026111760.png",
+    "facts": [
+      "The pie chart shows the approximate composition of air by gas.",
+      "Nitrogen forms the largest share at 79%, oxygen accounts for 20%, and other gases contribute 1%.",
+      "Nitrogen and oxygen together make up 99% of the air shown."
+    ],
+    "sample": "The given image provides the detailed information about approximate composition of air. The pie chart shows the approximate composition of air by gas. Nitrogen forms the largest share at 79%, oxygen accounts for 20%, and other gases contribute 1%. Nitrogen and oxygen together make up 99% of the air shown.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144735.png",
+      "sourceTitle": "Approximate Composition of Air",
+      "suppliedFile": "Screenshot 2026-11-17 144735.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "Approximate Composition of Air",
+      "description": "The pie chart shows the approximate composition of air by gas. Nitrogen forms the largest share at 79%, oxygen accounts for 20%, and other gases contribute 1%. Nitrogen and oxygen together make up 99% of the air shown."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111761",
+    "title": "Age Comparison of Male and Female Graduates",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111761.png",
+    "facts": [
+      "The diagram compares male and female graduate percentages across age bands, with females on the left and males on the right.",
+      "The largest labelled shares occur in the band marked 1–15, at 15.5% for females and 20.5% for males.",
+      "The smallest labelled shares occur at 85+, at 0.4% for females and 0.8% for males; displayed bars become smaller towards the older end."
+    ],
+    "sample": "The given image provides the detailed information about age comparison of male and female graduates. The diagram compares male and female graduate percentages across age bands, with females on the left and males on the right. The largest labelled shares occur in the band marked 1–15, at 15.5% for females and 20.5% for males. The smallest labelled shares occur at 85+, at 0.4% for females and 0.8% for males; displayed bars become smaller towards the older end.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144752.png",
+      "sourceTitle": "Age Comparison of Male and Female Graduates",
+      "suppliedFile": "Screenshot 2026-11-17 144752.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Age Comparison of Male and Female Graduates",
+      "description": "The diagram compares male and female graduate percentages across age bands, with females on the left and males on the right. The largest labelled shares occur in the band marked 1–15, at 15.5% for females and 20.5% for males. The smallest labelled shares occur at 85+, at 0.4% for females and 0.8% for males; displayed bars become smaller towards the older end."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111762",
+    "title": "Popularity of Cultural Websites in Scotland, 2013",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111762.png",
+    "facts": [
+      "The chart compares percentages of adults using different cultural websites in Scotland in 2013.",
+      "None of these is the largest response at about 55%; theatre/concert websites lead the named categories at roughly 31%.",
+      "Historical/heritage and arts websites are each near 19%, museums/galleries about 18%, libraries 11% and archives or records about 7%."
+    ],
+    "sample": "The given image provides the detailed information about popularity of cultural websites in scotland, 2013. The chart compares percentages of adults using different cultural websites in Scotland in 2013. None of these is the largest response at about 55%; theatre/concert websites lead the named categories at roughly 31%. Historical/heritage and arts websites are each near 19%, museums/galleries about 18%, libraries 11% and archives or records about 7%.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144814.png",
+      "sourceTitle": "Popularity of Cultural Websites in Scotland, 2013",
+      "suppliedFile": "Screenshot 2026-11-17 144814.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Popularity of Cultural Websites in Scotland, 2013",
+      "description": "The chart compares percentages of adults using different cultural websites in Scotland in 2013. None of these is the largest response at about 55%; theatre/concert websites lead the named categories at roughly 31%. Historical/heritage and arts websites are each near 19%, museums/galleries about 18%, libraries 11% and archives or records about 7%."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111763",
+    "title": "Agreement Levels in Survey Responses",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111763.png",
+    "facts": [
+      "The horizontal bar chart shows numbers of responses across five agreement categories.",
+      "Agree is largest at roughly 1,650 responses, followed by strongly agree near 1,200 and neither agree nor disagree near 1,000.",
+      "Strongly disagree records around 700 responses, while disagree is smallest at approximately 500; agreement categories exceed disagreement categories."
+    ],
+    "sample": "The given image provides the detailed information about agreement levels in survey responses. The horizontal bar chart shows numbers of responses across five agreement categories. Agree is largest at roughly 1,650 responses, followed by strongly agree near 1,200 and neither agree nor disagree near 1,000. Strongly disagree records around 700 responses, while disagree is smallest at approximately 500; agreement categories exceed disagreement categories.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144824.png",
+      "sourceTitle": "Agreement Levels in Survey Responses",
+      "suppliedFile": "Screenshot 2026-11-17 144824.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Agreement Levels in Survey Responses",
+      "description": "The horizontal bar chart shows numbers of responses across five agreement categories. Agree is largest at roughly 1,650 responses, followed by strongly agree near 1,200 and neither agree nor disagree near 1,000. Strongly disagree records around 700 responses, while disagree is smallest at approximately 500; agreement categories exceed disagreement categories."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111764",
+    "title": "Cat Ownership by Country in 2017",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111764.png",
+    "facts": [
+      "The chart compares the share of people owning cats in selected countries in 2017.",
+      "Russia leads at 59%, followed by the United States at 43%, Argentina at 41% and Italy at 40%.",
+      "South Korea has the smallest share at 9%; Japan and China are each at 16%, while France and Vietnam each record 39%."
+    ],
+    "sample": "The given image provides the detailed information about cat ownership by country in 2017. The chart compares the share of people owning cats in selected countries in 2017. Russia leads at 59%, followed by the United States at 43%, Argentina at 41% and Italy at 40%. South Korea has the smallest share at 9%; Japan and China are each at 16%, while France and Vietnam each record 39%.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144852.png",
+      "sourceTitle": "Cat Ownership by Country in 2017",
+      "suppliedFile": "Screenshot 2026-11-17 144852.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Cat Ownership by Country in 2017",
+      "description": "The chart compares the share of people owning cats in selected countries in 2017. Russia leads at 59%, followed by the United States at 43%, Argentina at 41% and Italy at 40%. South Korea has the smallest share at 9%; Japan and China are each at 16%, while France and Vietnam each record 39%."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111765",
+    "title": "Home Ownership and Unemployment Rates",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111765.png",
+    "facts": [
+      "The graph compares home ownership and unemployment percentages from 1986 to the early 2010s using separate vertical scales.",
+      "The dashed home-ownership series declines overall from about 73% to around 65%.",
+      "The solid unemployment series peaks near 11% around 1991, falls to roughly 3% in the mid-2000s and rises again to approximately 6.5% near the end."
+    ],
+    "sample": "The given image provides the detailed information about home ownership and unemployment rates. The graph compares home ownership and unemployment percentages from 1986 to the early 2010s using separate vertical scales. The dashed home-ownership series declines overall from about 73% to around 65%. The solid unemployment series peaks near 11% around 1991, falls to roughly 3% in the mid-2000s and rises again to approximately 6.5% near the end.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144903.png",
+      "sourceTitle": "Home Ownership and Unemployment Rates",
+      "suppliedFile": "Screenshot 2026-11-17 144903.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Home Ownership and Unemployment Rates",
+      "description": "The graph compares home ownership and unemployment percentages from 1986 to the early 2010s using separate vertical scales. The dashed home-ownership series declines overall from about 73% to around 65%. The solid unemployment series peaks near 11% around 1991, falls to roughly 3% in the mid-2000s and rises again to approximately 6.5% near the end."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111766",
+    "title": "Annual Height Increase in Boys and Girls",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111766.png",
+    "facts": [
+      "The graph compares annual height increases in centimetres for boys and girls from infancy to age 18.",
+      "Both begin above 25 centimetres and fall rapidly to about 6 centimetres by age four, remaining near that level through much of childhood.",
+      "Girls' later growth peak occurs earlier, around age 12, while boys peak around 14; both rates fall close to zero by age 18."
+    ],
+    "sample": "The given image provides the detailed information about annual height increase in boys and girls. The graph compares annual height increases in centimetres for boys and girls from infancy to age 18. Both begin above 25 centimetres and fall rapidly to about 6 centimetres by age four, remaining near that level through much of childhood. Girls' later growth peak occurs earlier, around age 12, while boys peak around 14; both rates fall close to zero by age 18.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceId": "Screenshot 2026-11-17 144914.png",
+      "sourceTitle": "Annual Height Increase in Boys and Girls",
+      "suppliedFile": "Screenshot 2026-11-17 144914.png",
+      "suppliedArchive": "Screenshot 2026-11-17 144914.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Annual Height Increase in Boys and Girls",
+      "description": "The graph compares annual height increases in centimetres for boys and girls from infancy to age 18. Both begin above 25 centimetres and fall rapidly to about 6 centimetres by age four, remaining near that level through much of childhood. Girls' later growth peak occurs earlier, around age 12, while boys peak around 14; both rates fall close to zero by age 18."
+    },
+    "optionalFactIndices": []
   }
 ]
