@@ -1,0 +1,1762 @@
+{
+  "version": "di-display-2026-10-28.1",
+  "sourceRepository": "auspuru/Describe",
+  "sourceCommit": "fd65b34bd66849e2148188e05f4e14a78fb77d76",
+  "purpose": "Verified display-only versions of the same supplied images. Canonical scoring images and references are unchanged.",
+  "limitation": "Resampling improves display size and edges but cannot recover unreadable source text. No image model or guessed values are used.",
+  "entries": {
+    "di-pred-3000195": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000195.png",
+      "originalSha256": "fe06bafbdf2c04707d9bc5812826cd5e781b56c737e06582fd58921ccef330a7",
+      "displayImageUrl": "/assets/di-display-20261028/3000195-6b783c6f309e.webp",
+      "displaySha256": "6b783c6f309e05b10081a4d95a2a74da516e6401132cfe381e704d5e078fd048",
+      "bytes": 643154,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000195.webp",
+      "legend": [],
+      "originalDimensions": [
+        422,
+        362
+      ],
+      "displayDimensions": [
+        1688,
+        1448
+      ],
+      "roundTripRmse": 0.013252
+    },
+    "di-pred-3000186": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000186.png",
+      "originalSha256": "9848084bdc3dca8ddda55e2b23565b74e37333c645a462152447a47d4e14598d",
+      "displayImageUrl": "/assets/di-display-20261028/3000186-af1a9cccac87.svg",
+      "displaySha256": "af1a9cccac8759d439d73968503921bc204d3a54a77848b50d51d0c421daa62d",
+      "bytes": 2227,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/average-rainfall.svg",
+      "legend": []
+    },
+    "di-pred-3000137": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000137.png",
+      "originalSha256": "ede267351b791246f361a2c34c4ba1fddf4aca54aa0d02a0192ce6e626cd8578",
+      "displayImageUrl": "/assets/di-display-20261028/3000137-c4260540a4fc.webp",
+      "displaySha256": "c4260540a4fc7eb7f4b6215288036075299ed14286f5c633dc64c6094cfadeff",
+      "bytes": 1681454,
+      "derivation": "same-image-higher-resolution",
+      "academyAsset": "assets/clear/upscaled/3000137.webp",
+      "legend": [
+        [
+          "Arable land",
+          "#f4fa80"
+        ],
+        [
+          "Forests",
+          "#007541"
+        ],
+        [
+          "Non-agricultural land",
+          "#b65128"
+        ],
+        [
+          "Plantation",
+          "#4ee900"
+        ],
+        [
+          "Scrub and grass",
+          "#e18bf5"
+        ],
+        [
+          "Unproductive land",
+          "#f9c877"
+        ]
+      ]
+    },
+    "di-pred-3000134": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000134.png",
+      "originalSha256": "8cce603b4e1d6cdb67e68e0cf7aaa9566c6271db7231d6d2a1aa3dee5cd82edc",
+      "displayImageUrl": "/assets/di-display-20261028/3000134-7b93b5aa96ea.webp",
+      "displaySha256": "7b93b5aa96eadbf3e0ee141249a542ac4611da7adf2220d00b0fdf400bb462e9",
+      "bytes": 649190,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000134.webp",
+      "legend": [],
+      "originalDimensions": [
+        342,
+        301
+      ],
+      "displayDimensions": [
+        1368,
+        1204
+      ],
+      "roundTripRmse": 0.012369
+    },
+    "di-pred-3000125": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000125.png",
+      "originalSha256": "800d0a50d00304397760ae005bf535da54e47e51b104d8b8d7bad70d39394127",
+      "displayImageUrl": "/assets/di-display-20261028/3000125-f623ffc6fc7f.webp",
+      "displaySha256": "f623ffc6fc7fce55d8f65a7cc50b8ac53c20fc595b3c9ebf45382a4756cb49a9",
+      "bytes": 813620,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000125.webp",
+      "legend": [],
+      "originalDimensions": [
+        487,
+        285
+      ],
+      "displayDimensions": [
+        1461,
+        855
+      ],
+      "roundTripRmse": 0.008232
+    },
+    "di-pred-3000370": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000370.png",
+      "originalSha256": "8dfa0f0046b17c7c70e8382539963e5ca9ffc322b55c0e66f8c47e496366dfc3",
+      "displayImageUrl": "/assets/di-display-20261104/3000370-cf5f3a16b4b7.jpg",
+      "displaySha256": "cf5f3a16b4b76182cc76ffcbf964ace372ba8aa52ba3c12560667e22d9c6cfae",
+      "bytes": 38145,
+      "derivation": "same-image-higher-resolution",
+      "legend": [],
+      "limitations": [
+        "The curves have no exact labels for every point; plotted participant counts are approximate, not a complete numerical series."
+      ],
+      "source": {
+        "url": "https://api.ptenepal.com/api/ptenepal/uploads/public/di-3000370.jpeg",
+        "reviewedAt": "2026-11-04",
+        "method": "Compared title, axes, series, labels and plotted values with the supplied original; exact downloaded bytes retained."
+      }
+    },
+    "di-pred-3000365": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000365.png",
+      "originalSha256": "7b6d96f5dc5aeb3e14c7f3d1d5441d47665e2a3e62348bef2d25a2f5f8799fa3",
+      "displayImageUrl": "/assets/di-display-20261028/3000365-cbfd7d5a3cc9.png",
+      "displaySha256": "cbfd7d5a3cc94bc26b1f40f3e57b550b83ea6c72da2f323c12b2d84d59c441f1",
+      "bytes": 1181860,
+      "derivation": "same-image-higher-resolution",
+      "academyAsset": "assets/clear/world-population-density-1994.png",
+      "legend": [
+        [
+          "Fewer than 2 people per km²",
+          "#e6e6e6"
+        ],
+        [
+          "2–10 people per km²",
+          "#99ff99"
+        ],
+        [
+          "11–40 people per km²",
+          "#ff8000"
+        ],
+        [
+          "41–100 people per km²",
+          "#ff0000"
+        ],
+        [
+          "101–500 people per km²",
+          "#cc0000"
+        ],
+        [
+          "More than 500 people per km²",
+          "#ff00ff"
+        ]
+      ],
+      "source": {
+        "asset": "assets/clear/world-population-density-1994.png",
+        "sha256": "cbfd7d5a3cc94bc26b1f40f3e57b550b83ea6c72da2f323c12b2d84d59c441f1",
+        "dimensions": [
+          6693,
+          3977
+        ],
+        "url": "https://upload.wikimedia.org/wikipedia/commons/archive/4/49/20200504023515%21World_population_density_1994_-_with_equator.png",
+        "sourcePage": "https://commons.wikimedia.org/wiki/File:World_population_density_1994_-_with_equator.png",
+        "reviewedAt": "2026-10-24",
+        "method": "Visual comparison of geography, boundaries, equator, colour classes, labels and legend against the canonical image.",
+        "notes": "USDA, public domain; archived 2016 rendition preserves the original colour classes and equator."
+      }
+    },
+    "di-pred-3000354": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000354.png",
+      "originalSha256": "ea1bff69e33065609a918a54fdf27bda9cdbe92a9b680cbaf65068b3cb152325",
+      "displayImageUrl": "/assets/di-display-20261028/3000354-2dc6b393f71a.webp",
+      "displaySha256": "2dc6b393f71a1a52e1630a5931cf9b1f0f1b33d1a796279d2e0fb60a1d69eb63",
+      "bytes": 508824,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000354.webp",
+      "legend": [],
+      "originalDimensions": [
+        495,
+        275
+      ],
+      "displayDimensions": [
+        1485,
+        825
+      ],
+      "roundTripRmse": 0.010182
+    },
+    "di-pred-3000349": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000349.png",
+      "originalSha256": "1ade44bc6a2707fed093ad48f8d2af40b7b9cf669e201bbd1eeff6a74ea478c2",
+      "displayImageUrl": "/assets/di-display-20261028/3000349-0aef59fefb02.jpg",
+      "displaySha256": "0aef59fefb0289cbdd29199e2970722ca93979c0c1fa17a616992bccaf15416a",
+      "bytes": 46081,
+      "derivation": "same-image-higher-resolution",
+      "academyAsset": "assets/clear/earth-climate-zones.jpg",
+      "legend": [
+        [
+          "Polar zone",
+          "#f192bc"
+        ],
+        [
+          "Temperate zone",
+          "#f2be43"
+        ],
+        [
+          "Tropical zone",
+          "#a0bf58"
+        ]
+      ],
+      "source": {
+        "asset": "assets/clear/earth-climate-zones.jpg",
+        "sha256": "0aef59fefb0289cbdd29199e2970722ca93979c0c1fa17a616992bccaf15416a",
+        "dimensions": [
+          702,
+          521
+        ],
+        "url": "https://api.ptenepal.com/api/ptenepal/uploads/public/di-3000349.jpeg",
+        "sourcePage": "https://ptenepal.com/pte-predictions/describe-image/#q84",
+        "reviewedAt": "2026-10-24",
+        "method": "Visual comparison of geography, boundaries, equator, colour classes, labels and legend against the canonical image.",
+        "notes": "Higher-resolution copy of the same provider image; no redrawing or resampling."
+      }
+    },
+    "di-pred-3000422": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000422.png",
+      "originalSha256": "9eba90fd6e8cb94d6cb572754ea61d4247158375ddbc47489afcf33ba0213cbe",
+      "displayImageUrl": "/assets/di-display-20261028/3000422-026f13b0c4f6.svg",
+      "displaySha256": "026f13b0c4f608937e1d8e01c4efba09f496fae7bcbc9aecda962901401af89f",
+      "bytes": 7711,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000422.svg",
+      "legend": []
+    },
+    "di-pred-3000411": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000411.png",
+      "originalSha256": "e37271995224a53192d43288bc1ffb4141eabe9ce36c9516ced60a8d8be953ab",
+      "displayImageUrl": "/assets/di-display-20261028/3000411-43deacf14ae0.webp",
+      "displaySha256": "43deacf14ae063bb1ff5088e07d810c2c914d299859e577ea49689105f4e24b7",
+      "bytes": 225284,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000411.webp",
+      "legend": [],
+      "originalDimensions": [
+        504,
+        257
+      ],
+      "displayDimensions": [
+        1512,
+        771
+      ],
+      "roundTripRmse": 0.00998,
+      "limitations": [
+        "No measurement units or exact monthly data labels are printed; preserve the original and use approximate chart readings only."
+      ]
+    },
+    "di-pred-3000392": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000392.png",
+      "originalSha256": "0436b5e9d2819450ed0ec6c1aa1364fb446ca05c1b09e000e308e045ca3f1756",
+      "displayImageUrl": "/assets/di-display-20261028/3000392-c1e5ac45a40e.webp",
+      "displaySha256": "c1e5ac45a40ee89e1ba113e2cd9b71e752a813e289e86356b607c68b6db5027e",
+      "bytes": 717388,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000392.webp",
+      "legend": [],
+      "originalDimensions": [
+        386,
+        325
+      ],
+      "displayDimensions": [
+        1544,
+        1300
+      ],
+      "roundTripRmse": 0.020948
+    },
+    "di-pred-3000375": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000375.png",
+      "originalSha256": "4bbd258178e9619d098bd235f60531d395b842fb6931444e622e943a43326e59",
+      "displayImageUrl": "/assets/di-display-20261028/3000375-b72161b6e379.svg",
+      "displaySha256": "b72161b6e37984887f65631fa47090e318a2198749d8ee16dde219cbe61cf5c0",
+      "bytes": 4336,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000375.svg",
+      "legend": []
+    },
+    "di-pred-3000481": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000481.png",
+      "originalSha256": "fc3c676f50e0e978db62a2415a63653b49d1aceb52804655bb9a74aa590b57cc",
+      "displayImageUrl": "/assets/di-display-20261104/3000481-a85edba58534.jpg",
+      "displaySha256": "a85edba5853460778155efa7a0e640f5729779292c406c921c2ddc3287802052",
+      "bytes": 24929,
+      "derivation": "same-image-higher-resolution",
+      "legend": [],
+      "limitations": [
+        "The projected lower-right annotation is too small for reliable transcription; no forecast numbers are inferred."
+      ],
+      "source": {
+        "url": "https://api.ptenepal.com/api/ptenepal/uploads/public/di-3000481.jpeg",
+        "reviewedAt": "2026-11-04",
+        "method": "Compared title, axes, series, labels and plotted values with the supplied original; exact downloaded bytes retained."
+      }
+    },
+    "di-pred-3000469": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000469.png",
+      "originalSha256": "5d6bd90bb134be6fb19ad77219d8ec94e542227c0f60927168f4100b74db9b46",
+      "displayImageUrl": "/assets/di-display-20261028/3000469-0e836f3dc0ba.webp",
+      "displaySha256": "0e836f3dc0bab6ab3a7206539d5d6d5ab9cd5791c4244099e57ce03f822d14d6",
+      "bytes": 324820,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000469.webp",
+      "legend": [],
+      "originalDimensions": [
+        455,
+        342
+      ],
+      "displayDimensions": [
+        1365,
+        1026
+      ],
+      "roundTripRmse": 0.008202
+    },
+    "di-pred-3000461": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000461.png",
+      "originalSha256": "21085ffb8c93aba970e321976e1e9f18985be675aedd387d58368401f6d0ebc9",
+      "displayImageUrl": "/assets/di-display-20261028/3000461-922d2a9dd080.webp",
+      "displaySha256": "922d2a9dd0808b2c70a97e185dcb94ce5b4310e0482227a5a290602b89d0fa92",
+      "bytes": 185494,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000461.webp",
+      "legend": [],
+      "originalDimensions": [
+        502,
+        301
+      ],
+      "displayDimensions": [
+        1506,
+        903
+      ],
+      "roundTripRmse": 0.00345,
+      "limitations": [
+        "Bar percentages are estimated from the vertical axis; exact unlabelled heights are not inferred."
+      ]
+    },
+    "di-pred-3000429": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000429.png",
+      "originalSha256": "3388f137645d9fa5ce7b0c7eb7556c3ce65585bd14e2fc07c133a0aa70cee0e9",
+      "displayImageUrl": "/assets/di-display-20261028/3000429-bb6c7d3a3db8.webp",
+      "displaySha256": "bb6c7d3a3db829e29221a4b1ca221734512b7502d3c62baa76f5b5be2bb8594e",
+      "bytes": 618132,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000429.webp",
+      "legend": [],
+      "originalDimensions": [
+        423,
+        338
+      ],
+      "displayDimensions": [
+        1692,
+        1352
+      ],
+      "roundTripRmse": 0.005098
+    },
+    "di-pred-3000579": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000579.png",
+      "originalSha256": "00a7978d5403c9a98686b88513552669302327ea0678bd768cd3cf5d066e423d",
+      "displayImageUrl": "/assets/di-display-20261028/3000579-4b17eec6dad3.webp",
+      "displaySha256": "4b17eec6dad38d67a501e434669a1e6d06ab6d14c62ba450d1d3a12fac0df92f",
+      "bytes": 535224,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000579.webp",
+      "legend": [
+        [
+          "Heavy drinker",
+          "#8cac12"
+        ],
+        [
+          "Light drinker",
+          "#c11610"
+        ],
+        [
+          "Ex-drinker",
+          "#ffce19"
+        ],
+        [
+          "Never drinker",
+          "#2699b6"
+        ]
+      ],
+      "originalDimensions": [
+        391,
+        271
+      ],
+      "displayDimensions": [
+        1564,
+        1084
+      ],
+      "roundTripRmse": 0.005871,
+      "limitations": [
+        "No exact percentages are printed on the segments; the stacked distribution is interpreted qualitatively."
+      ]
+    },
+    "di-pred-3000561": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000561.png",
+      "originalSha256": "763b0d95db58964c2a500c621a55bb689140ec93c8a6ed051bbdb49355b7ecf4",
+      "displayImageUrl": "/assets/di-display-20261028/3000561-576caf91cb99.webp",
+      "displaySha256": "576caf91cb995a3987ca1c8ffe736e5a3e72f53da403e58b8fc391358c100da7",
+      "bytes": 339432,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000561.webp",
+      "legend": [],
+      "originalDimensions": [
+        473,
+        338
+      ],
+      "displayDimensions": [
+        1419,
+        1014
+      ],
+      "roundTripRmse": 0.005317
+    },
+    "di-pred-3000560": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000560.png",
+      "originalSha256": "dc193e3f7ffe9594263f060a5437c6d193dccc6cb995a241adcbfb5ddfa92218",
+      "displayImageUrl": "/assets/di-display-20261028/3000560-4b55df6ad2f0.webp",
+      "displaySha256": "4b55df6ad2f0145a41daadef941b0103023fdeaa72e79fa3312e204a52fd73c1",
+      "bytes": 242918,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000560.webp",
+      "legend": [],
+      "originalDimensions": [
+        501,
+        375
+      ],
+      "displayDimensions": [
+        1503,
+        1125
+      ],
+      "roundTripRmse": 0.008815
+    },
+    "di-pred-3000542": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000542.png",
+      "originalSha256": "77d705c8eec30ff46b4f37aba0f266fec43fa7879779eebfe910e83404bc0e0a",
+      "displayImageUrl": "/assets/di-display-20261028/3000542-5bfc22dc08fb.webp",
+      "displaySha256": "5bfc22dc08fb76e3c5214cda319aee2d165db9634379fdb6f23e5f2d7f78e74f",
+      "bytes": 768522,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000542.webp",
+      "legend": [],
+      "originalDimensions": [
+        381,
+        284
+      ],
+      "displayDimensions": [
+        1524,
+        1136
+      ],
+      "roundTripRmse": 0.006526
+    },
+    "di-pred-3000589": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000589.png",
+      "originalSha256": "7f12d20a28e574fceab4fa8d22165b77fb6465cf4ca1ea7398e4d612ad0f30c1",
+      "displayImageUrl": "/assets/di-display-20261028/3000589-4b3c65831768.webp",
+      "displaySha256": "4b3c65831768baa3d951c1ec112e864bf58a34ea7c892892c2d1719650067d5f",
+      "bytes": 439174,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000589.webp",
+      "legend": [
+        [
+          "Hot humid",
+          "#ef141c"
+        ],
+        [
+          "Warm humid",
+          "#ed5f89"
+        ],
+        [
+          "Hot dry summer, warm winter",
+          "#ffac08"
+        ],
+        [
+          "Hot dry summer, cold winter",
+          "#ffff00"
+        ],
+        [
+          "Temperate",
+          "#28ef51"
+        ],
+        [
+          "Cool temperate",
+          "#0cace2"
+        ]
+      ],
+      "originalDimensions": [
+        348,
+        379
+      ],
+      "displayDimensions": [
+        1392,
+        1516
+      ],
+      "roundTripRmse": 0.006519
+    },
+    "di-pred-3000587": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000587.png",
+      "originalSha256": "d3f0f14f4d9de4db7e2d7866a62653b63dbc256339c50e26277395fd2218ec4b",
+      "displayImageUrl": "/assets/di-display-20261028/3000587-28943d487d5a.svg",
+      "displaySha256": "28943d487d5a5f8fdcb147774af92d7ebe128652bd5a8aca257f74cc89b093f7",
+      "bytes": 3545,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000587.svg",
+      "legend": []
+    },
+    "di-pred-3000586": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000586.png",
+      "originalSha256": "4e9c530bedfe3fa99c368784c05b842674064cc5de4d7c16489b5775d3e11f48",
+      "displayImageUrl": "/assets/di-display-20261028/3000586-ca5d9b32f672.svg",
+      "displaySha256": "ca5d9b32f672dc87987d6eccde66a365c27a7025ce8d306949bf6975889dbbfd",
+      "bytes": 5934,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000586.svg",
+      "legend": []
+    },
+    "di-pred-3000580": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000580.png",
+      "originalSha256": "9104ab00b491ae9a9d11964ccf135294dca2651bf75ec7a878810b9210b948f8",
+      "displayImageUrl": "/assets/di-display-20261028/3000580-1f4427e76647.webp",
+      "displaySha256": "1f4427e7664785f60880e5bb865b83b744970f6bc804eec547039ee4e6dd287b",
+      "bytes": 518458,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000580.webp",
+      "legend": [
+        [
+          "100 or more people per sq km",
+          "#f6502b"
+        ],
+        [
+          "10 to 100 people per sq km",
+          "#ff9060"
+        ],
+        [
+          "1 to 10 people per sq km",
+          "#ffb47b"
+        ],
+        [
+          "0.1 to 1 person per sq km",
+          "#f9d989"
+        ],
+        [
+          "Less than 0.1 person per sq km",
+          "#fff7ba"
+        ]
+      ],
+      "originalDimensions": [
+        374,
+        349
+      ],
+      "displayDimensions": [
+        1496,
+        1396
+      ],
+      "roundTripRmse": 0.004221
+    },
+    "di-pred-3000603": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000603.png",
+      "originalSha256": "4169062433d9f777053053212a09a78c44651869d7abc88ffdd9c5ef9226d9d4",
+      "displayImageUrl": "/assets/di-display-20261028/3000603-b0a9fd6fdf70.webp",
+      "displaySha256": "b0a9fd6fdf70ccc1d43454fa39f7c5c146bb94cca3973d9897c4906bb058b34a",
+      "bytes": 455264,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000603.webp",
+      "legend": [],
+      "originalDimensions": [
+        282,
+        233
+      ],
+      "displayDimensions": [
+        1128,
+        932
+      ],
+      "roundTripRmse": 0.012685
+    },
+    "di-pred-3000601": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000601.png",
+      "originalSha256": "076997dc02bad8221538bdedc3c1fac7eeaaf637c34ca6b60ebd2bb292933fa9",
+      "displayImageUrl": "/assets/di-display-20261028/3000601-8d2055181257.svg",
+      "displaySha256": "8d2055181257abf21c39dfd61678722dab1999fef9dee6b38d80ca868a2b8cf7",
+      "bytes": 4203,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000601.svg",
+      "legend": []
+    },
+    "di-pred-3000594": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000594.png",
+      "originalSha256": "1901483ff1f347c7ed5666fbfa8722f8cc5a3349f59c1be561b4519d8c6a4ada",
+      "displayImageUrl": "/assets/di-display-20261028/3000594-34e96b28403b.webp",
+      "displaySha256": "34e96b28403b9e81a315b852deadfadeb6a758fd1a7166673a8dc94d57829fa1",
+      "bytes": 424922,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000594.webp",
+      "legend": [],
+      "originalDimensions": [
+        382,
+        282
+      ],
+      "displayDimensions": [
+        1528,
+        1128
+      ],
+      "roundTripRmse": 0.007055
+    },
+    "di-pred-3000669": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000669.png",
+      "originalSha256": "7a982c62ebd748f1ad52a8468928949334febcfc1047f16615569da885d00425",
+      "displayImageUrl": "/assets/di-display-20261028/3000669-00fdfa9a15fb.webp",
+      "displaySha256": "00fdfa9a15fb636933337a130bcfb28b631b180f4f534ca57384edca40e1f7d3",
+      "bytes": 493192,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000669.webp",
+      "legend": [],
+      "originalDimensions": [
+        281,
+        307
+      ],
+      "displayDimensions": [
+        1124,
+        1228
+      ],
+      "roundTripRmse": 0.013495,
+      "limitations": [
+        "The source prints an inconsistent freshwater subtotal; retain its literal labels and do not infer corrected totals or normalize the percentages."
+      ]
+    },
+    "di-pred-3000665": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000665.png",
+      "originalSha256": "1186e59f47da913b95ffdf7532e8c5736718bdc6f17bdec6cd0b902030a0ea56",
+      "displayImageUrl": "/assets/di-display-20261028/3000665-7969f2ebab40.webp",
+      "displaySha256": "7969f2ebab40fdc49f05545f08dd68d96e90d6aa8a74812504bf8646c29927e5",
+      "bytes": 706248,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000665.webp",
+      "legend": [],
+      "originalDimensions": [
+        459,
+        383
+      ],
+      "displayDimensions": [
+        1377,
+        1149
+      ],
+      "roundTripRmse": 0.005362
+    },
+    "di-pred-3000664": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000664.png",
+      "originalSha256": "0c1250275aa69d1cce4612d170a42fbe9ec6d44cd7bf169fec3ef624fc2dafcd",
+      "displayImageUrl": "/assets/di-display-20261028/3000664-b0adee37e7cd.svg",
+      "displaySha256": "b0adee37e7cdfb3369a4e6bb3d3bf20f8d4d35f057704b454f1293e3747e8303",
+      "bytes": 6174,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000664.svg",
+      "legend": []
+    },
+    "di-pred-3000708": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000708.png",
+      "originalSha256": "9c5d87197a53af69b2aa01267b8113b0d9eb2d9fde43ebd7d52f7136ebb9e30f",
+      "displayImageUrl": "/assets/di-display-20261028/3000708-bdf8aa1a7c06.webp",
+      "displaySha256": "bdf8aa1a7c0607d99dbe253fd9fc1bbaf1f6153990e2de4dd7f25e80e59203b9",
+      "bytes": 912952,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000708.webp",
+      "legend": [],
+      "originalDimensions": [
+        503,
+        328
+      ],
+      "displayDimensions": [
+        1509,
+        984
+      ],
+      "roundTripRmse": 0.007682
+    },
+    "di-pred-3000707": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000707.png",
+      "originalSha256": "343bea8d6ebc2f9acd9a54f99fe9387ac227903516d595bb6c07bc183b58f1f2",
+      "displayImageUrl": "/assets/di-display-20261028/3000707-96cd6413ca6a.webp",
+      "displaySha256": "96cd6413ca6ac0411f0755e94a8c0b7e0373d825403c967b9bafa8e625086c95",
+      "bytes": 826490,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000707.webp",
+      "legend": [],
+      "originalDimensions": [
+        503,
+        293
+      ],
+      "displayDimensions": [
+        1509,
+        879
+      ],
+      "roundTripRmse": 0.004636
+    },
+    "di-pred-3000704": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000704.png",
+      "originalSha256": "2e0e39c6f36e4eb006d96da986454825a4c8f36833944ef7c5ccd86ab7d2f569",
+      "displayImageUrl": "/assets/di-display-20261028/3000704-b6f0a49c7e53.webp",
+      "displaySha256": "b6f0a49c7e5334acd113265e0b36345ec8aa9eb7c2754b957b848b0560a0633a",
+      "bytes": 125068,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000704.webp",
+      "legend": [],
+      "originalDimensions": [
+        503,
+        278
+      ],
+      "displayDimensions": [
+        1509,
+        834
+      ],
+      "roundTripRmse": 0.004578
+    },
+    "di-pred-3000697": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000697.png",
+      "originalSha256": "0f65b67846fbd770844ef2c1192473d703c84a440d04edd9a184c30b4949f586",
+      "displayImageUrl": "/assets/di-display-20261028/3000697-5c7019d7fc4d.webp",
+      "displaySha256": "5c7019d7fc4d03db43587bda10ee3fce4d1d5b20fe77256d152752a114b55eb3",
+      "bytes": 796968,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000697.webp",
+      "legend": [],
+      "originalDimensions": [
+        388,
+        372
+      ],
+      "displayDimensions": [
+        1552,
+        1488
+      ],
+      "roundTripRmse": 0.00682
+    },
+    "di-pred-3000742": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000742.png",
+      "originalSha256": "800ae617dcca5184639210b23b1f39ab079cae53d206ed783dbc3e9b27b15380",
+      "displayImageUrl": "/assets/di-display-20261028/3000742-ba0adb2946d2.webp",
+      "displaySha256": "ba0adb2946d2dd1b7fd56662264fffaaf4397232fbc7e5ecdb79de2de8e6e2f6",
+      "bytes": 529584,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000742.webp",
+      "legend": [],
+      "originalDimensions": [
+        505,
+        335
+      ],
+      "displayDimensions": [
+        1515,
+        1005
+      ],
+      "roundTripRmse": 0.008751
+    },
+    "di-pred-3000739": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000739.png",
+      "originalSha256": "6c6d54ed645fc3e317f88c4f2af9d0303e148401a99ff34bf8e93337d0ef2219",
+      "displayImageUrl": "/assets/di-display-20261028/3000739-77a79d8c12d4.webp",
+      "displaySha256": "77a79d8c12d48d9678cf8c8ffdffa2dda7fa080127320a9ca93914a29134bc03",
+      "bytes": 392704,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000739.webp",
+      "legend": [],
+      "originalDimensions": [
+        505,
+        317
+      ],
+      "displayDimensions": [
+        1515,
+        951
+      ],
+      "roundTripRmse": 0.011252,
+      "limitations": [
+        "Percentages are approximate readings of bars; the source does not label every bar with an exact value."
+      ]
+    },
+    "di-pred-3000726": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000726.png",
+      "originalSha256": "ac6e535ebb9e06179fefabd8d0f3658a7f0bb47d740462fdce530763cf62b248",
+      "displayImageUrl": "/assets/di-display-20261028/3000726-9dce785517c7.webp",
+      "displaySha256": "9dce785517c7bd1f83b8a9501bdf7fd8c289d0f0397806449c7edb96cad9767b",
+      "bytes": 541914,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000726.webp",
+      "legend": [],
+      "originalDimensions": [
+        361,
+        379
+      ],
+      "displayDimensions": [
+        1444,
+        1516
+      ],
+      "roundTripRmse": 0.008785
+    },
+    "di-pred-3001061": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001061.png",
+      "originalSha256": "9c2789e3ba2ceee4fade30e3e3519eaf3a8917f122078a586ce0b87e1fc9f3d9",
+      "displayImageUrl": "/assets/di-display-20261028/3001061-c36d7654beb4.webp",
+      "displaySha256": "c36d7654beb4bcd94fcc3994a7367f8ab75a0685dc35a5a1687bd7e85841a51c",
+      "bytes": 129118,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3001061.webp",
+      "legend": [],
+      "originalDimensions": [
+        486,
+        197
+      ],
+      "displayDimensions": [
+        1458,
+        591
+      ],
+      "roundTripRmse": 0.008749,
+      "limitations": [
+        "Several country labels and unlabelled bar values are absent or illegible in the original; no names or missing percentages are invented."
+      ]
+    },
+    "di-pred-3000885": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000885.png",
+      "originalSha256": "227997cba862b13d7ba6b59944041549118be86aa9ffe796fa7f71f7ae4294cf",
+      "displayImageUrl": "/assets/di-display-20261028/3000885-e538acc8f87a.webp",
+      "displaySha256": "e538acc8f87ad20039cfe150ed55ab4e3d051b05ca38b88086cd0a044fef57f0",
+      "bytes": 341486,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3000885.webp",
+      "legend": [
+        [
+          "10–16.38% of national honey production",
+          "#a7410b"
+        ],
+        [
+          "3–10%",
+          "#f69821"
+        ],
+        [
+          "1–3%",
+          "#ffd391"
+        ],
+        [
+          "0–1%",
+          "#fff0d6"
+        ]
+      ],
+      "originalDimensions": [
+        446,
+        305
+      ],
+      "displayDimensions": [
+        1338,
+        915
+      ],
+      "roundTripRmse": 0.009806,
+      "limitations": [
+        "Individual states are not named on the map; do not assign exact percentages or names to an unlabeled state."
+      ]
+    },
+    "di-pred-3000881": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000881.png",
+      "originalSha256": "fda638def95b5e5fbcc2f6ecb0bfe8951e5881683bbb3bf9ae3fd9635fbf54a6",
+      "displayImageUrl": "/assets/di-display-20261028/3000881-229807afc83b.svg",
+      "displaySha256": "229807afc83b313fbbc041cad5e265d7650a90d26bf91fe6f0b7a4a6e96a28a0",
+      "bytes": 3510,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3000881.svg",
+      "legend": []
+    },
+    "di-pred-3001369": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001369.png",
+      "originalSha256": "992f76e4787c5c7eac7259494c12b6184b2107b21bd0f2e66115e9a14fd38c1b",
+      "displayImageUrl": "/assets/di-display-20261028/3001369-077de1eb6cbf.webp",
+      "displaySha256": "077de1eb6cbf70fceef769e9d393d9dfa6541cdfc5742b2851bef09a74441f1b",
+      "bytes": 209622,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3001369.webp",
+      "legend": [],
+      "originalDimensions": [
+        502,
+        375
+      ],
+      "displayDimensions": [
+        1506,
+        1125
+      ],
+      "roundTripRmse": 0.002115,
+      "limitations": [
+        "The original has no readable labels, legend or numerical values; exact categories and shares cannot be recovered from this image."
+      ]
+    },
+    "di-pred-3001366": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001366.png",
+      "originalSha256": "13d2a8decae121de8f0a119de3354c9efe2664cb489f54a9ef861b4014cea66d",
+      "displayImageUrl": "/assets/di-display-20261028/3001366-2eacaa5de25f.svg",
+      "displaySha256": "2eacaa5de25f797120a24c56a8a8f51cdbb55ee86b77c7b12f949bb4de44c9ab",
+      "bytes": 3055,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/social-activities.svg",
+      "legend": []
+    },
+    "di-pred-3001356": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001356.png",
+      "originalSha256": "a741d4065023c54f8cc1681235ddecfeb19d41bf7aa04221e93349abd6aee829",
+      "displayImageUrl": "/assets/di-display-20261028/3001356-cf0e271a2d3d.webp",
+      "displaySha256": "cf0e271a2d3d3b80c3becbc9ee1d77cf98d64bbad466e60cbc84f75750baec27",
+      "bytes": 429598,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3001356.webp",
+      "legend": [],
+      "originalDimensions": [
+        502,
+        309
+      ],
+      "displayDimensions": [
+        1506,
+        927
+      ],
+      "roundTripRmse": 0.003213
+    },
+    "di-pred-3001078": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001078.png",
+      "originalSha256": "fd0775374a6c00cf6c4f2b00d48a64f48cc7ac6c0808ce361c0987f7c7616348",
+      "displayImageUrl": "/assets/di-display-20261028/3001078-672669ca09b1.webp",
+      "displaySha256": "672669ca09b1b8dacb3c85875d3340b6d0e81675354640bb82d8b4fa9af55e9c",
+      "bytes": 674038,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3001078.webp",
+      "legend": [],
+      "originalDimensions": [
+        496,
+        385
+      ],
+      "displayDimensions": [
+        1488,
+        1155
+      ],
+      "roundTripRmse": 0.004617
+    },
+    "di-pred-3001409": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001409.png",
+      "originalSha256": "b6202f12016d4bdbe270823a6a848c7b652d0d5c1c0f5a4a252c692a79005200",
+      "displayImageUrl": "/assets/di-display-20261028/3001409-1e9b25928140.webp",
+      "displaySha256": "1e9b259281408a9bbf6e42e7d55d7ca1fccf243fa8dfad5f523d510a2cf9419a",
+      "bytes": 95504,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3001409.webp",
+      "legend": [],
+      "originalDimensions": [
+        324,
+        335
+      ],
+      "displayDimensions": [
+        1296,
+        1340
+      ],
+      "roundTripRmse": 0.018648,
+      "limitations": [
+        "Frequencies are approximate bar readings; do not infer that they are percentages or exact labelled counts."
+      ]
+    },
+    "di-pred-3001403": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001403.png",
+      "originalSha256": "f47aab7600764bfceaceefe6e2c9e8ef7f631f63dad66264ef53920f3470e623",
+      "displayImageUrl": "/assets/di-display-20261028/3001403-caab74e56c68.svg",
+      "displaySha256": "caab74e56c68bc04441e9a8a6ebc9f287d02e96e5b6e579f887aaff6a567efef",
+      "bytes": 4954,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3001403.svg",
+      "legend": []
+    },
+    "di-pred-3001398": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001398.png",
+      "originalSha256": "62af7d2ed3b2c143993010481e93dde77fb726417f09867e88f02bb94b3c4ee4",
+      "displayImageUrl": "/assets/di-display-20261028/3001398-0ef0b52c8e9e.webp",
+      "displaySha256": "0ef0b52c8e9ec5dc0f27ccbf9806e8e05c38a504e47751b1a7d209bd856d6119",
+      "bytes": 405326,
+      "derivation": "source-resampling",
+      "academyAsset": "assets/clear/upscaled/3001398.webp",
+      "legend": [],
+      "originalDimensions": [
+        303,
+        387
+      ],
+      "displayDimensions": [
+        1212,
+        1548
+      ],
+      "roundTripRmse": 0.010481
+    },
+    "di-pred-3001386": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001386.png",
+      "originalSha256": "a27805eb504980e59e4c2ddf0df3394a884e3ac48bc88627b90f97af20de1dc0",
+      "displayImageUrl": "/assets/di-display-20261028/3001386-43589fe5de62.svg",
+      "displaySha256": "43589fe5de625fb23a979b3f27a1fce3465fe23cdecd1288471adf62cb92b800",
+      "bytes": 5381,
+      "derivation": "verified-vector",
+      "academyAsset": "assets/clear/verified/3001386.svg",
+      "legend": []
+    },
+    "mock-di-web-20261110-population": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/population.png",
+      "originalSha256": "5483c523229e31e73b0e8082d2081c669fd39e45f9cc85eb7547ba47955ada04",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/population.png",
+      "displaySha256": "5483c523229e31e73b0e8082d2081c669fd39e45f9cc85eb7547ba47955ada04",
+      "bytes": 53197,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-life-expectancy": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/life-expectancy.png",
+      "originalSha256": "12bf4c4aaaf0f80b5f45e488a8bc1ad4d5dd349bf4c66ef1b38ff67478a2c011",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/life-expectancy.png",
+      "displaySha256": "12bf4c4aaaf0f80b5f45e488a8bc1ad4d5dd349bf4c66ef1b38ff67478a2c011",
+      "bytes": 55220,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-share-of-individuals-using-the-internet": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/share-of-individuals-using-the-internet.png",
+      "originalSha256": "0b3c0a015ae889895e1606cffe519b5f5ed04b7322c681e4b8b7e43749f293de",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/share-of-individuals-using-the-internet.png",
+      "displaySha256": "0b3c0a015ae889895e1606cffe519b5f5ed04b7322c681e4b8b7e43749f293de",
+      "bytes": 44183,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-annual-co2-emissions-per-country": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/annual-co2-emissions-per-country.png",
+      "originalSha256": "035f9b15b27c3265e28774e14b606d563482ce20436895b3592e8ed773bc44da",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/annual-co2-emissions-per-country.png",
+      "displaySha256": "035f9b15b27c3265e28774e14b606d563482ce20436895b3592e8ed773bc44da",
+      "bytes": 47749,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-children-born-per-woman": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/children-born-per-woman.png",
+      "originalSha256": "174a9ca4c7d656ebd7c8c73ad6eadd28a761b6e89f2f44ba1c9e0a1e511d9522",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/children-born-per-woman.png",
+      "displaySha256": "174a9ca4c7d656ebd7c8c73ad6eadd28a761b6e89f2f44ba1c9e0a1e511d9522",
+      "bytes": 55826,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-child-mortality": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/child-mortality.png",
+      "originalSha256": "f0d8d466348af543fea5f757c2b094101ba574a58a4a67ff465013c9bff462b2",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/child-mortality.png",
+      "displaySha256": "f0d8d466348af543fea5f757c2b094101ba574a58a4a67ff465013c9bff462b2",
+      "bytes": 46380,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-share-of-population-urban": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/share-of-population-urban.png",
+      "originalSha256": "27f5170b738149e666609d362df1cd3a4b4d18c4d6b2ce29f970a9bc63d4f361",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/share-of-population-urban.png",
+      "displaySha256": "27f5170b738149e666609d362df1cd3a4b4d18c4d6b2ce29f970a9bc63d4f361",
+      "bytes": 48052,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-gdp-per-capita-worldbank": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/gdp-per-capita-worldbank.png",
+      "originalSha256": "f8e7dd3f9937f95d592609b17527c23afb53b88abed1ff0a26ed538cf634c362",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/gdp-per-capita-worldbank.png",
+      "displaySha256": "f8e7dd3f9937f95d592609b17527c23afb53b88abed1ff0a26ed538cf634c362",
+      "bytes": 42331,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-web-20261110-water-cycle": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/water-cycle.png",
+      "originalSha256": "bb62f4cd2c0fc098d0ec0dbbc10a4771f6ef91bbb59811fb199947159166340d",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/water-cycle-display.png",
+      "displaySha256": "42430087a4aacf9cf403b9fb0237606def35b54fcd7983da8e299279aff8a69f",
+      "bytes": 1393603,
+      "derivation": "publisher-resampling",
+      "legend": [],
+      "displaySourceUrl": "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/styles/full_width/public/media/images/USGS_WaterCycle_English_ONLINE_20230302.png?itok=tAVM8IYl",
+      "originalDimensions": [
+        11400,
+        7800
+      ],
+      "displayDimensions": [
+        1336,
+        914
+      ]
+    },
+    "mock-di-web-20261110-solar-system-sizes": {
+      "originalImageUrl": "/assets/speaking-mocks-20261110/solar-system-sizes.jpg",
+      "originalSha256": "276bce1cb5cbf55e6bbc965b2afee3491bff2f2cddf36727c60fd1770d27ee05",
+      "displayImageUrl": "/assets/speaking-mocks-20261110/solar-system-sizes.jpg",
+      "displaySha256": "276bce1cb5cbf55e6bbc965b2afee3491bff2f2cddf36727c60fd1770d27ee05",
+      "bytes": 47879,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-reference-20261111-browser-june": {
+      "originalImageUrl": "/assets/speaking-mock-4-20261111/browser-june.png",
+      "originalSha256": "4f69f6521b86a1c8d525c9ddf6711f35a71eee9ca27ad849865a31eb0512a23e",
+      "displayImageUrl": "/assets/speaking-mock-4-20261111/browser-june.png",
+      "displaySha256": "4f69f6521b86a1c8d525c9ddf6711f35a71eee9ca27ad849865a31eb0512a23e",
+      "bytes": 42343,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-reference-20261111-transport": {
+      "originalImageUrl": "/assets/speaking-mock-4-20261111/transport.jpg",
+      "originalSha256": "006ab69d7c730dfab1e7aa61d7e6979043fe7db7e8fa0bf7ccb0466929f6371b",
+      "displayImageUrl": "/assets/speaking-mock-4-20261111/transport.jpg",
+      "displaySha256": "006ab69d7c730dfab1e7aa61d7e6979043fe7db7e8fa0bf7ccb0466929f6371b",
+      "bytes": 18736,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-reference-20261111-pop-music": {
+      "originalImageUrl": "/assets/speaking-mock-4-20261111/pop-music.png",
+      "originalSha256": "a9ccf4a7f9af338fff632541542def99cd5ea4faf7d13e2d43ae0a5980f0e229",
+      "displayImageUrl": "/assets/speaking-mock-4-20261111/pop-music.png",
+      "displaySha256": "a9ccf4a7f9af338fff632541542def99cd5ea4faf7d13e2d43ae0a5980f0e229",
+      "bytes": 11261,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-reference-20261111-tomato-cycle": {
+      "originalImageUrl": "/assets/speaking-mock-4-20261111/tomato-cycle.jpg",
+      "originalSha256": "bf9d3f39d2d145f3972c8268ec797da256e47286f4e473d66fce871aca231eff",
+      "displayImageUrl": "/assets/speaking-mock-4-20261111/tomato-cycle.jpg",
+      "displaySha256": "bf9d3f39d2d145f3972c8268ec797da256e47286f4e473d66fce871aca231eff",
+      "bytes": 14536,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-reference-20261111-arable-crops-2006": {
+      "originalImageUrl": "/assets/speaking-mock-5-20261111/arable-2006.jpg",
+      "originalSha256": "9d6e5b882239a5033083796754bfd057906f01d15f8e1b6f711b82839b5b62fa",
+      "displayImageUrl": "/assets/speaking-mock-5-20261111/arable-2006.jpg",
+      "displaySha256": "9d6e5b882239a5033083796754bfd057906f01d15f8e1b6f711b82839b5b62fa",
+      "bytes": 7219,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-reference-20261111-classical-music-britain": {
+      "originalImageUrl": "/assets/speaking-mock-5-20261111/classical-music.png",
+      "originalSha256": "9e6ff04bdd7498f0fa9b706c3adc25bf3b766d457bc0a42fbb3e3bbddd96a362",
+      "displayImageUrl": "/assets/speaking-mock-5-20261111/classical-music.png",
+      "displaySha256": "9e6ff04bdd7498f0fa9b706c3adc25bf3b766d457bc0a42fbb3e3bbddd96a362",
+      "bytes": 11657,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "mock-di-reference-20261111-asian-elephants-comparison": {
+      "originalImageUrl": "/assets/speaking-mock-5-20261111/asian-elephants.png",
+      "originalSha256": "206a4d01de71aa6a19e71193ce6f95d80eddd4ddc90771f57f8d8574db25b48f",
+      "displayImageUrl": "/assets/speaking-mock-5-20261111/asian-elephants.png",
+      "displaySha256": "206a4d01de71aa6a19e71193ce6f95d80eddd4ddc90771f57f8d8574db25b48f",
+      "bytes": 12369,
+      "derivation": "unaltered-internet-original",
+      "legend": []
+    },
+    "di-user-2026111701": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111701.png",
+      "originalSha256": "0ccc20d83face7d1bbc3491ebfb97a343aa758887b3fa0bd47fda4068f41daef",
+      "displayImageUrl": "/assets/di-display-20261028/2026111701-0ccc20d83fac.png",
+      "displaySha256": "0ccc20d83face7d1bbc3491ebfb97a343aa758887b3fa0bd47fda4068f41daef",
+      "bytes": 493473,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111702": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111702.png",
+      "originalSha256": "23fa00bbb6399b57e7be361aec31129c620a1e84a4b9b50862cddfb31fec3657",
+      "displayImageUrl": "/assets/di-display-20261028/2026111702-23fa00bbb639.png",
+      "displaySha256": "23fa00bbb6399b57e7be361aec31129c620a1e84a4b9b50862cddfb31fec3657",
+      "bytes": 269815,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111703": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111703.png",
+      "originalSha256": "af9f14426683967d3f705d9f06d06211878e2891bace3172207431dd8f5f0c6f",
+      "displayImageUrl": "/assets/di-display-20261028/2026111703-af9f14426683.png",
+      "displaySha256": "af9f14426683967d3f705d9f06d06211878e2891bace3172207431dd8f5f0c6f",
+      "bytes": 244022,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111704": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111704.png",
+      "originalSha256": "7253a625fa98f49b3bc602d5901733531c50efc5a5165a32ded65418f31be611",
+      "displayImageUrl": "/assets/di-display-20261028/2026111704-7253a625fa98.png",
+      "displaySha256": "7253a625fa98f49b3bc602d5901733531c50efc5a5165a32ded65418f31be611",
+      "bytes": 282119,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111705": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111705.png",
+      "originalSha256": "721da6ab3753b36bf63a52a5da683021141238ef89870c600f75ae3005277cca",
+      "displayImageUrl": "/assets/di-display-20261028/2026111705-721da6ab3753.png",
+      "displaySha256": "721da6ab3753b36bf63a52a5da683021141238ef89870c600f75ae3005277cca",
+      "bytes": 196594,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111706": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111706.png",
+      "originalSha256": "7fd5352cfa6eb89e76c7330d67d3ab69d51e8cbada63b7250e4842b1b265856a",
+      "displayImageUrl": "/assets/di-display-20261028/2026111706-7fd5352cfa6e.png",
+      "displaySha256": "7fd5352cfa6eb89e76c7330d67d3ab69d51e8cbada63b7250e4842b1b265856a",
+      "bytes": 284927,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111707": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111707.png",
+      "originalSha256": "3f3cc6774e80efa6c3c7bd3891ba42b043973fee0aaa4716213d1305f8216542",
+      "displayImageUrl": "/assets/di-display-20261028/2026111707-3f3cc6774e80.png",
+      "displaySha256": "3f3cc6774e80efa6c3c7bd3891ba42b043973fee0aaa4716213d1305f8216542",
+      "bytes": 278178,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111708": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111708.png",
+      "originalSha256": "8083ce1703d84a58eaaa81230d7e26cf0efef38639af41839aa3cc7fbd2dc6c9",
+      "displayImageUrl": "/assets/di-display-20261028/2026111708-8083ce1703d8.png",
+      "displaySha256": "8083ce1703d84a58eaaa81230d7e26cf0efef38639af41839aa3cc7fbd2dc6c9",
+      "bytes": 1417957,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111709": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111709.png",
+      "originalSha256": "1fda18dad6b706bed59f018353e8685b83455b8ad05004d3c202dd9741e52c7d",
+      "displayImageUrl": "/assets/di-display-20261028/2026111709-1fda18dad6b7.png",
+      "displaySha256": "1fda18dad6b706bed59f018353e8685b83455b8ad05004d3c202dd9741e52c7d",
+      "bytes": 383236,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111710": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111710.png",
+      "originalSha256": "927f04244d669206530c30ee1edd5fc6ddaa1c2f695010aedcd6757f09315059",
+      "displayImageUrl": "/assets/di-display-20261028/2026111710-927f04244d66.png",
+      "displaySha256": "927f04244d669206530c30ee1edd5fc6ddaa1c2f695010aedcd6757f09315059",
+      "bytes": 642486,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111711": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111711.png",
+      "originalSha256": "8cb8393d481008eaf4dcbba0784187a5eebac698dd05ea6a0a0710337341675c",
+      "displayImageUrl": "/assets/di-display-20261028/2026111711-8cb8393d4810.png",
+      "displaySha256": "8cb8393d481008eaf4dcbba0784187a5eebac698dd05ea6a0a0710337341675c",
+      "bytes": 340338,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111712": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111712.png",
+      "originalSha256": "91172937a6b7dda13b6046ed432f1f24c71702655a6e080e3182710f249c5175",
+      "displayImageUrl": "/assets/di-display-20261028/2026111712-91172937a6b7.png",
+      "displaySha256": "91172937a6b7dda13b6046ed432f1f24c71702655a6e080e3182710f249c5175",
+      "bytes": 617493,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111713": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111713.png",
+      "originalSha256": "ec952f7bce569ad1c13c2151fc3408fc10e0db3de5b8eb248b1ef7d18b55093d",
+      "displayImageUrl": "/assets/di-display-20261028/2026111713-ec952f7bce56.png",
+      "displaySha256": "ec952f7bce569ad1c13c2151fc3408fc10e0db3de5b8eb248b1ef7d18b55093d",
+      "bytes": 962143,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111714": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111714.png",
+      "originalSha256": "45a34b166e69d6ef259f3cf9936b82e00b9ce1b868d43932af9947aa09a4eade",
+      "displayImageUrl": "/assets/di-display-20261028/2026111714-45a34b166e69.png",
+      "displaySha256": "45a34b166e69d6ef259f3cf9936b82e00b9ce1b868d43932af9947aa09a4eade",
+      "bytes": 626397,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111715": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111715.png",
+      "originalSha256": "595e95ce9f08c546adc861f9ddddd90800eb6f52bc412945bc239be2c19a0845",
+      "displayImageUrl": "/assets/di-display-20261028/2026111715-595e95ce9f08.png",
+      "displaySha256": "595e95ce9f08c546adc861f9ddddd90800eb6f52bc412945bc239be2c19a0845",
+      "bytes": 1238690,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111716": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111716.png",
+      "originalSha256": "5a739b93639ad674ac3a139e3be91fde0857c7c008ec32adfa4fffb482493160",
+      "displayImageUrl": "/assets/di-display-20261028/2026111716-5a739b93639a.png",
+      "displaySha256": "5a739b93639ad674ac3a139e3be91fde0857c7c008ec32adfa4fffb482493160",
+      "bytes": 828668,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111717": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111717.png",
+      "originalSha256": "1d3637ca0ccc77c9b37ec75d9108e6794b31864ad3ce33823dbe6a68d19ac479",
+      "displayImageUrl": "/assets/di-display-20261028/2026111717-1d3637ca0ccc.png",
+      "displaySha256": "1d3637ca0ccc77c9b37ec75d9108e6794b31864ad3ce33823dbe6a68d19ac479",
+      "bytes": 452047,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111718": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111718.png",
+      "originalSha256": "9ce80a44d08d5e0000b7c634a1ccd359d4240c3d8b9e4c334d2f37568d50c131",
+      "displayImageUrl": "/assets/di-display-20261028/2026111718-9ce80a44d08d.png",
+      "displaySha256": "9ce80a44d08d5e0000b7c634a1ccd359d4240c3d8b9e4c334d2f37568d50c131",
+      "bytes": 734331,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111719": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111719.png",
+      "originalSha256": "f285894a28a5a92c89029fc72b26bfc5bee585f2da9522b41c19b1d08a5a21e0",
+      "displayImageUrl": "/assets/di-display-20261028/2026111719-f285894a28a5.png",
+      "displaySha256": "f285894a28a5a92c89029fc72b26bfc5bee585f2da9522b41c19b1d08a5a21e0",
+      "bytes": 575078,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111720": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111720.png",
+      "originalSha256": "ad0fbe6050b69f99637adc8016f7f06d1ed5df6d1f2e052bee11a30825d8f70e",
+      "displayImageUrl": "/assets/di-display-20261028/2026111720-ad0fbe6050b6.png",
+      "displaySha256": "ad0fbe6050b69f99637adc8016f7f06d1ed5df6d1f2e052bee11a30825d8f70e",
+      "bytes": 237402,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111721": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111721.png",
+      "originalSha256": "c392bee1c7ccc0159b7df9866322206af7ae3eb16c8d70a0d85167e20296c4f1",
+      "displayImageUrl": "/assets/di-display-20261028/2026111721-c392bee1c7cc.png",
+      "displaySha256": "c392bee1c7ccc0159b7df9866322206af7ae3eb16c8d70a0d85167e20296c4f1",
+      "bytes": 367738,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111722": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111722.png",
+      "originalSha256": "cf275099fa16b679679efe303d0e18284aaa34dde972c6d68b43343404752bae",
+      "displayImageUrl": "/assets/di-display-20261028/2026111722-cf275099fa16.png",
+      "displaySha256": "cf275099fa16b679679efe303d0e18284aaa34dde972c6d68b43343404752bae",
+      "bytes": 319307,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111723": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111723.png",
+      "originalSha256": "15f82c2d5ca7402984153ef46641d087a1bd4bdbc927d8ad62ee290fb109cbfb",
+      "displayImageUrl": "/assets/di-display-20261028/2026111723-15f82c2d5ca7.png",
+      "displaySha256": "15f82c2d5ca7402984153ef46641d087a1bd4bdbc927d8ad62ee290fb109cbfb",
+      "bytes": 776905,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111724": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111724.png",
+      "originalSha256": "7e575483b2950c52734ce1685399e927bb444edd0e2d0b4d78cb913c2d6cbf6f",
+      "displayImageUrl": "/assets/di-display-20261028/2026111724-7e575483b295.png",
+      "displaySha256": "7e575483b2950c52734ce1685399e927bb444edd0e2d0b4d78cb913c2d6cbf6f",
+      "bytes": 795300,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111725": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111725.png",
+      "originalSha256": "a61e2344b8e645c0ceaaf50a0df9a4e4dbf14a8b5b58df2582f340f290a11270",
+      "displayImageUrl": "/assets/di-display-20261028/2026111725-a61e2344b8e6.png",
+      "displaySha256": "a61e2344b8e645c0ceaaf50a0df9a4e4dbf14a8b5b58df2582f340f290a11270",
+      "bytes": 890083,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111726": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111726.png",
+      "originalSha256": "d0d38901b93b979fa9cdec4fb0febb35f6b449ff884024a5428abbf1e5166025",
+      "displayImageUrl": "/assets/di-display-20261028/2026111726-d0d38901b93b.png",
+      "displaySha256": "d0d38901b93b979fa9cdec4fb0febb35f6b449ff884024a5428abbf1e5166025",
+      "bytes": 395605,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111727": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111727.png",
+      "originalSha256": "f7c48116bd7f1fbc00b8a2b4a75729f3c340d7962da221a98732897a4e0401aa",
+      "displayImageUrl": "/assets/di-display-20261028/2026111727-f7c48116bd7f.png",
+      "displaySha256": "f7c48116bd7f1fbc00b8a2b4a75729f3c340d7962da221a98732897a4e0401aa",
+      "bytes": 218250,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111728": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111728.png",
+      "originalSha256": "1dbaa55ca3926ad60599288e5f728e3d316f4346c287335181c03e36d669fa16",
+      "displayImageUrl": "/assets/di-display-20261028/2026111728-1dbaa55ca392.png",
+      "displaySha256": "1dbaa55ca3926ad60599288e5f728e3d316f4346c287335181c03e36d669fa16",
+      "bytes": 313624,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111729": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111729.png",
+      "originalSha256": "5e40479a45505a00f9961aa8ff2efa62afb541986e7131164158c427cc5fb6f7",
+      "displayImageUrl": "/assets/di-display-20261028/2026111729-5e40479a4550.png",
+      "displaySha256": "5e40479a45505a00f9961aa8ff2efa62afb541986e7131164158c427cc5fb6f7",
+      "bytes": 458544,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111730": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111730.png",
+      "originalSha256": "f89ab2da4b0245fc2d224e20a2a8aaaf4410b870e7273cd7785d5c8d79d4dbf9",
+      "displayImageUrl": "/assets/di-display-20261028/2026111730-f89ab2da4b02.png",
+      "displaySha256": "f89ab2da4b0245fc2d224e20a2a8aaaf4410b870e7273cd7785d5c8d79d4dbf9",
+      "bytes": 208792,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111731": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111731.png",
+      "originalSha256": "fcbfd64b4c7f8387b312145234ad302bec1bcdb85112610e0f7f3190bb4e50e6",
+      "displayImageUrl": "/assets/di-display-20261028/2026111731-fcbfd64b4c7f.png",
+      "displaySha256": "fcbfd64b4c7f8387b312145234ad302bec1bcdb85112610e0f7f3190bb4e50e6",
+      "bytes": 653200,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111732": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111732.png",
+      "originalSha256": "303a374a0352f7cbe89367a288d03be8f549e0058b22f2418f854f817602bc4c",
+      "displayImageUrl": "/assets/di-display-20261028/2026111732-303a374a0352.png",
+      "displaySha256": "303a374a0352f7cbe89367a288d03be8f549e0058b22f2418f854f817602bc4c",
+      "bytes": 398951,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111733": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111733.png",
+      "originalSha256": "aa6b7fa2695955e46b3d0026b82bf9b36a8ba3ff7e133898a3339a1b2ccec576",
+      "displayImageUrl": "/assets/di-display-20261028/2026111733-aa6b7fa26959.png",
+      "displaySha256": "aa6b7fa2695955e46b3d0026b82bf9b36a8ba3ff7e133898a3339a1b2ccec576",
+      "bytes": 528032,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111734": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111734.png",
+      "originalSha256": "7b8c42541e65a1461df1cbf6fbcab72790e3ea1f75d27c458ad817a1c85a13f8",
+      "displayImageUrl": "/assets/di-display-20261028/2026111734-7b8c42541e65.png",
+      "displaySha256": "7b8c42541e65a1461df1cbf6fbcab72790e3ea1f75d27c458ad817a1c85a13f8",
+      "bytes": 237530,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111735": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111735.png",
+      "originalSha256": "229498338c3b3845921061aee555c937ce1f96837a706b781807fdef95d14876",
+      "displayImageUrl": "/assets/di-display-20261028/2026111735-229498338c3b.png",
+      "displaySha256": "229498338c3b3845921061aee555c937ce1f96837a706b781807fdef95d14876",
+      "bytes": 240102,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111736": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111736.png",
+      "originalSha256": "2abbe8cc384d9f22566acbf8ebaa394b3abc2df4740f56bcf32fed4b7b6130d1",
+      "displayImageUrl": "/assets/di-display-20261028/2026111736-2abbe8cc384d.png",
+      "displaySha256": "2abbe8cc384d9f22566acbf8ebaa394b3abc2df4740f56bcf32fed4b7b6130d1",
+      "bytes": 139841,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111737": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111737.png",
+      "originalSha256": "1e4978df1a8ed7cea822d6e5adf58632183b96634a2081ba6cbcbfe5bd62a518",
+      "displayImageUrl": "/assets/di-display-20261028/2026111737-1e4978df1a8e.png",
+      "displaySha256": "1e4978df1a8ed7cea822d6e5adf58632183b96634a2081ba6cbcbfe5bd62a518",
+      "bytes": 100382,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111738": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111738.png",
+      "originalSha256": "f6128ac417f8ae48f375129c5157a46432de3283ec4694cc2c163b5d2ff625b9",
+      "displayImageUrl": "/assets/di-display-20261028/2026111738-f6128ac417f8.png",
+      "displaySha256": "f6128ac417f8ae48f375129c5157a46432de3283ec4694cc2c163b5d2ff625b9",
+      "bytes": 412777,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111739": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111739.png",
+      "originalSha256": "fc3ed595d3a90601c14040e9b6250ab951980a3f2d75944ba671c65f67987a84",
+      "displayImageUrl": "/assets/di-display-20261028/2026111739-fc3ed595d3a9.png",
+      "displaySha256": "fc3ed595d3a90601c14040e9b6250ab951980a3f2d75944ba671c65f67987a84",
+      "bytes": 369131,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111740": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111740.png",
+      "originalSha256": "b6341a51a8a9dacae7b402fae2a2b510b4a3cd27217c134cb84f3dd8322a2e89",
+      "displayImageUrl": "/assets/di-display-20261028/2026111740-b6341a51a8a9.png",
+      "displaySha256": "b6341a51a8a9dacae7b402fae2a2b510b4a3cd27217c134cb84f3dd8322a2e89",
+      "bytes": 204288,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111741": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111741.png",
+      "originalSha256": "3706c664707e4c4d53601ac4ac58a92060671ce0f46efc69b4feceb73ccbb6df",
+      "displayImageUrl": "/assets/di-display-20261028/2026111741-3706c664707e.png",
+      "displaySha256": "3706c664707e4c4d53601ac4ac58a92060671ce0f46efc69b4feceb73ccbb6df",
+      "bytes": 379443,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111742": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111742.png",
+      "originalSha256": "8f1bd6ff46ed35877318f5229c0778ea884880e4706be2e88c14f354de3e7679",
+      "displayImageUrl": "/assets/di-display-20261028/2026111742-8f1bd6ff46ed.png",
+      "displaySha256": "8f1bd6ff46ed35877318f5229c0778ea884880e4706be2e88c14f354de3e7679",
+      "bytes": 325258,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111743": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111743.png",
+      "originalSha256": "47bbb585b3f126e21baf36bdbb162912d5d32e53dc9d034693107256f900c09d",
+      "displayImageUrl": "/assets/di-display-20261028/2026111743-47bbb585b3f1.png",
+      "displaySha256": "47bbb585b3f126e21baf36bdbb162912d5d32e53dc9d034693107256f900c09d",
+      "bytes": 496267,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111744": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111744.png",
+      "originalSha256": "7cc5759265d9530ff956a6a24e98bcd53c9dfeefcd642af407f10d022e0d6142",
+      "displayImageUrl": "/assets/di-display-20261028/2026111744-7cc5759265d9.png",
+      "displaySha256": "7cc5759265d9530ff956a6a24e98bcd53c9dfeefcd642af407f10d022e0d6142",
+      "bytes": 260739,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111745": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111745.png",
+      "originalSha256": "e37755e183f979f56f3454fed5a0beb24ec55771bf3d53dabe39bd47b56585bc",
+      "displayImageUrl": "/assets/di-display-20261028/2026111745-e37755e183f9.png",
+      "displaySha256": "e37755e183f979f56f3454fed5a0beb24ec55771bf3d53dabe39bd47b56585bc",
+      "bytes": 315136,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111746": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111746.png",
+      "originalSha256": "b2491cf6833c7d401d360bfb5125a8f74710066a17253fbbdf4c4892e463deca",
+      "displayImageUrl": "/assets/di-display-20261028/2026111746-b2491cf6833c.png",
+      "displaySha256": "b2491cf6833c7d401d360bfb5125a8f74710066a17253fbbdf4c4892e463deca",
+      "bytes": 1181194,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111747": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111747.png",
+      "originalSha256": "12fb23fe66abe7ed515586d373d3249accbf4602b4b0da38b49ac45a3954995a",
+      "displayImageUrl": "/assets/di-display-20261028/2026111747-12fb23fe66ab.png",
+      "displaySha256": "12fb23fe66abe7ed515586d373d3249accbf4602b4b0da38b49ac45a3954995a",
+      "bytes": 287358,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111748": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111748.png",
+      "originalSha256": "45b58875b93c01f34c87067351f68f1ed5e148d6404eb12a65450c022f4a9f31",
+      "displayImageUrl": "/assets/di-display-20261028/2026111748-45b58875b93c.png",
+      "displaySha256": "45b58875b93c01f34c87067351f68f1ed5e148d6404eb12a65450c022f4a9f31",
+      "bytes": 240127,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111749": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111749.png",
+      "originalSha256": "90595280d9c5bd8b8e99a7a47b5e73fe610d425bfdf5e9c7b43087a1d437093a",
+      "displayImageUrl": "/assets/di-display-20261028/2026111749-90595280d9c5.png",
+      "displaySha256": "90595280d9c5bd8b8e99a7a47b5e73fe610d425bfdf5e9c7b43087a1d437093a",
+      "bytes": 240283,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111750": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111750.png",
+      "originalSha256": "ac50708d7289b06792414d991a0cadd423440bed271668e9d8bc301446ce28dd",
+      "displayImageUrl": "/assets/di-display-20261028/2026111750-ac50708d7289.png",
+      "displaySha256": "ac50708d7289b06792414d991a0cadd423440bed271668e9d8bc301446ce28dd",
+      "bytes": 780302,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111751": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111751.png",
+      "originalSha256": "82229f3fc07c297b9c91322f2e54e42f02f4b1a6a4d08ac086bbb23af1eef4c9",
+      "displayImageUrl": "/assets/di-display-20261028/2026111751-82229f3fc07c.png",
+      "displaySha256": "82229f3fc07c297b9c91322f2e54e42f02f4b1a6a4d08ac086bbb23af1eef4c9",
+      "bytes": 562004,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111752": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111752.png",
+      "originalSha256": "521318f6cf96a221d5a96674321e344903325f978908173e55e67eb92477e634",
+      "displayImageUrl": "/assets/di-display-20261028/2026111752-521318f6cf96.png",
+      "displaySha256": "521318f6cf96a221d5a96674321e344903325f978908173e55e67eb92477e634",
+      "bytes": 368492,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111753": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111753.png",
+      "originalSha256": "3b97015a41ca676970599b50bd74f36a1da60c8301937d3ead02ae1ca00d60b1",
+      "displayImageUrl": "/assets/di-display-20261028/2026111753-3b97015a41ca.png",
+      "displaySha256": "3b97015a41ca676970599b50bd74f36a1da60c8301937d3ead02ae1ca00d60b1",
+      "bytes": 456060,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111754": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111754.png",
+      "originalSha256": "46833c7405433dc63039cda8778ecec60e1c6e4ec227df1f2178fea95e16066c",
+      "displayImageUrl": "/assets/di-display-20261028/2026111754-46833c740543.png",
+      "displaySha256": "46833c7405433dc63039cda8778ecec60e1c6e4ec227df1f2178fea95e16066c",
+      "bytes": 333508,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111755": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111755.png",
+      "originalSha256": "5d4d0414e28e4bafc2d155a1b60830ca434fcff1074f53b03385ff261064b5ac",
+      "displayImageUrl": "/assets/di-display-20261028/2026111755-5d4d0414e28e.png",
+      "displaySha256": "5d4d0414e28e4bafc2d155a1b60830ca434fcff1074f53b03385ff261064b5ac",
+      "bytes": 470956,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111756": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111756.png",
+      "originalSha256": "c3f672c143bb38f7c162966655a41b5210c6741e6c9dfcf84df2ae4030637c86",
+      "displayImageUrl": "/assets/di-display-20261028/2026111756-c3f672c143bb.png",
+      "displaySha256": "c3f672c143bb38f7c162966655a41b5210c6741e6c9dfcf84df2ae4030637c86",
+      "bytes": 137518,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111757": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111757.png",
+      "originalSha256": "55194e0727e40d3d0924bcb04081fbe037c646457949289510da3712668b3547",
+      "displayImageUrl": "/assets/di-display-20261028/2026111757-55194e0727e4.png",
+      "displaySha256": "55194e0727e40d3d0924bcb04081fbe037c646457949289510da3712668b3547",
+      "bytes": 450132,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111758": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111758.png",
+      "originalSha256": "8509dea19362affe913a93b85c405afd7a96a62cf22c975f4e406bcde27aaf78",
+      "displayImageUrl": "/assets/di-display-20261028/2026111758-8509dea19362.png",
+      "displaySha256": "8509dea19362affe913a93b85c405afd7a96a62cf22c975f4e406bcde27aaf78",
+      "bytes": 621339,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111759": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111759.png",
+      "originalSha256": "cc797f29d226529000b90b4dd2bcb027c4b1eefeb8b5b888325f1337887ea2b4",
+      "displayImageUrl": "/assets/di-display-20261028/2026111759-cc797f29d226.png",
+      "displaySha256": "cc797f29d226529000b90b4dd2bcb027c4b1eefeb8b5b888325f1337887ea2b4",
+      "bytes": 517624,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111760": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111760.png",
+      "originalSha256": "268a489f3b802dffd3df25245f6d123b384840abf158a76b8876f99d0c78b9f9",
+      "displayImageUrl": "/assets/di-display-20261028/2026111760-268a489f3b80.png",
+      "displaySha256": "268a489f3b802dffd3df25245f6d123b384840abf158a76b8876f99d0c78b9f9",
+      "bytes": 134230,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111761": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111761.png",
+      "originalSha256": "3ca4c2128e5088c3e436de64968e9f2b64c13caf93712c6d5c662ba49f95b49d",
+      "displayImageUrl": "/assets/di-display-20261028/2026111761-3ca4c2128e50.png",
+      "displaySha256": "3ca4c2128e5088c3e436de64968e9f2b64c13caf93712c6d5c662ba49f95b49d",
+      "bytes": 321512,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111762": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111762.png",
+      "originalSha256": "04071b5a86215f02d6ad550945ee4fa52ad1e04ff3c49d46a9e9d27aae82f736",
+      "displayImageUrl": "/assets/di-display-20261028/2026111762-04071b5a8621.png",
+      "displaySha256": "04071b5a86215f02d6ad550945ee4fa52ad1e04ff3c49d46a9e9d27aae82f736",
+      "bytes": 148153,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111763": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111763.png",
+      "originalSha256": "f3d745baba0d2dbaa72115d6f8e594ccdda9e70ccb2771765a35f48f3aff7200",
+      "displayImageUrl": "/assets/di-display-20261028/2026111763-f3d745baba0d.png",
+      "displaySha256": "f3d745baba0d2dbaa72115d6f8e594ccdda9e70ccb2771765a35f48f3aff7200",
+      "bytes": 66251,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111764": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111764.png",
+      "originalSha256": "eb0c0c4df54002369022defaf349e880f9b8ecc18f286c8ff00a707a523525d0",
+      "displayImageUrl": "/assets/di-display-20261028/2026111764-eb0c0c4df540.png",
+      "displaySha256": "eb0c0c4df54002369022defaf349e880f9b8ecc18f286c8ff00a707a523525d0",
+      "bytes": 284228,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111765": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111765.png",
+      "originalSha256": "0693d2c9349a293ebe96db14bf54f5873f0d48f7351a7b8b757c9cc4559cd581",
+      "displayImageUrl": "/assets/di-display-20261028/2026111765-0693d2c9349a.png",
+      "displaySha256": "0693d2c9349a293ebe96db14bf54f5873f0d48f7351a7b8b757c9cc4559cd581",
+      "bytes": 539629,
+      "derivation": "original-copy",
+      "legend": []
+    },
+    "di-user-2026111766": {
+      "originalImageUrl": "/assets/di-predictions-20260930/2026111766.png",
+      "originalSha256": "2c64820ecdbf6ab3127be147404743ff394719fa41c8b43f8883f6ff559cd5fc",
+      "displayImageUrl": "/assets/di-display-20261028/2026111766-2c64820ecdbf.png",
+      "displaySha256": "2c64820ecdbf6ab3127be147404743ff394719fa41c8b43f8883f6ff559cd5fc",
+      "bytes": 227410,
+      "derivation": "original-copy",
+      "legend": []
+    }
+  }
+}
