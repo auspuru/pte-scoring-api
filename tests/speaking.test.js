@@ -3,8 +3,8 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const bank=require('../content/speaking-bank'),scoring=require('../speaking-scoring'),delivery=require('../speaking-delivery'),{installSpeakingLab,transcribeRecording,question}=require('../speaking-lab');
 const {createStore}=require('../writing-lab-store'),localEngine=require('../local-scoring-engine');
 test('Speaking questions include the original situation practice set, samples and verified audio',()=>{
-  assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:144,recordings:85});
-  assert(!bank.types.asq);assert.equal(new Set(bank.questions.map(q=>q.sample)).size,144);
+  assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:178,recordings:85});
+  assert(!bank.types.asq);assert.equal(new Set(bank.questions.map(q=>q.sample)).size,178);
   for(const q of bank.questions.filter(q=>q.type==='sgd'))assert.equal(new Set(q.turns.map(t=>t[0])).size,3);
 });
 test('Read Aloud checks omissions, insertions and replacements without inventing a delivery score',()=>{

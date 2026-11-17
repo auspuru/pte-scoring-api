@@ -1523,5 +1523,889 @@
       "title": "Pet Household Owners",
       "description": "The pie chart compares households owning different kinds of pets. Dogs have the largest share at 45 percent, followed by cats at 29 percent. Freshwater fish account for 8 percent and birds 6 percent, with the remaining pet categories smaller."
     }
+  },
+  {
+    "id": "di-user-2026111701",
+    "title": "Campus Facilities Floor Plan",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/2026111701.png",
+    "facts": [
+      "The floor plan shows a food court, café, ATM, toilets and stairways.",
+      "The food court is at the upper left and the café at the lower left, while the ATM and toilets are on the right.",
+      "The upper stairway leads towards the quad; another stairway is at the bottom."
+    ],
+    "sample": "The given image provides the detailed information about campus facilities floor plan. The floor plan shows a food court, café, ATM, toilets and stairways. The food court is at the upper left and the café at the lower left, while the ATM and toilets are on the right. The upper stairway leads towards the quad; another stairway is at the bottom.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Campus Facilities Floor Plan",
+      "suppliedFile": "Screenshot 2026-11-17 125242.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Campus Facilities Floor Plan",
+      "description": "The floor plan shows a food court, café, ATM, toilets and stairways. The food court is at the upper left and the café at the lower left, while the ATM and toilets are on the right. The upper stairway leads towards the quad; another stairway is at the bottom."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111702",
+    "title": "Music Streaming by Age",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111702.png",
+    "facts": [
+      "The chart compares US streaming-service use in the past month across ages 12–24, 25–54 and 55+.",
+      "Pandora leads at 55%, 33% and 11% respectively; iTunes Radio records 17%, 7% and 3%.",
+      "Spotify records 16%, 5% and 1%; use of all three services declines with age."
+    ],
+    "sample": "The given image provides the detailed information about music streaming by age. The chart compares US streaming-service use in the past month across ages 12–24, 25–54 and 55+. Pandora leads at 55%, 33% and 11% respectively; iTunes Radio records 17%, 7% and 3%. Spotify records 16%, 5% and 1%; use of all three services declines with age.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Music Streaming by Age",
+      "suppliedFile": "Screenshot 2026-11-17 125248.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Music Streaming by Age",
+      "description": "The chart compares US streaming-service use in the past month across ages 12–24, 25–54 and 55+. Pandora leads at 55%, 33% and 11% respectively; iTunes Radio records 17%, 7% and 3%. Spotify records 16%, 5% and 1%; use of all three services declines with age."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111703",
+    "title": "Overseas Visitors to Canada, 2009–2010",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111703.png",
+    "facts": [
+      "The chart compares overseas visitors to Canada by country in 2009 and 2010, in millions.",
+      "The UK leads, rising from about 8.2 to 8.5 million, followed by the USA at about 7.5 and 7.8 million.",
+      "All displayed countries increase slightly; South Korea has the smallest totals, around 1.2 and 1.3 million."
+    ],
+    "sample": "The given image provides the detailed information about overseas visitors to canada, 2009–2010. The chart compares overseas visitors to Canada by country in 2009 and 2010, in millions. The UK leads, rising from about 8.2 to 8.5 million, followed by the USA at about 7.5 and 7.8 million. All displayed countries increase slightly; South Korea has the smallest totals, around 1.2 and 1.3 million.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Overseas Visitors to Canada, 2009–2010",
+      "suppliedFile": "Screenshot 2026-11-17 125256.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Overseas Visitors to Canada, 2009–2010",
+      "description": "The chart compares overseas visitors to Canada by country in 2009 and 2010, in millions. The UK leads, rising from about 8.2 to 8.5 million, followed by the USA at about 7.5 and 7.8 million. All displayed countries increase slightly; South Korea has the smallest totals, around 1.2 and 1.3 million."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111704",
+    "title": "Household Pets Expenditure in Australia",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111704.png",
+    "facts": [
+      "The graph compares dog and cat expenditure in Australian dollars across age groups.",
+      "Both peak among people aged 45–54, at AUD 180 for dogs and AUD 160 for cats.",
+      "Dog expenditure exceeds cat expenditure in every group; spending falls after the peak to AUD 100 and AUD 90 among those aged 75+."
+    ],
+    "sample": "The given image provides the detailed information about household pets expenditure in australia. The graph compares dog and cat expenditure in Australian dollars across age groups. Both peak among people aged 45–54, at AUD 180 for dogs and AUD 160 for cats. Dog expenditure exceeds cat expenditure in every group; spending falls after the peak to AUD 100 and AUD 90 among those aged 75+.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Household Pets Expenditure in Australia",
+      "suppliedFile": "Screenshot 2026-11-17 125302.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Household Pets Expenditure in Australia",
+      "description": "The graph compares dog and cat expenditure in Australian dollars across age groups. Both peak among people aged 45–54, at AUD 180 for dogs and AUD 160 for cats. Dog expenditure exceeds cat expenditure in every group; spending falls after the peak to AUD 100 and AUD 90 among those aged 75+."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111705",
+    "title": "Time Spent on Technology Products",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/2026111705.png",
+    "facts": [
+      "The diagram compares daily time spent using technology products in hours.",
+      "Phone use is 2.5 hours per day, the shared laptop-and-tablet label shows 3.5 hours, and TV use is 1.5 hours.",
+      "The laptop-and-tablet category has the most time and television the least."
+    ],
+    "sample": "The given image provides the detailed information about time spent on technology products. The diagram compares daily time spent using technology products in hours. Phone use is 2.5 hours per day, the shared laptop-and-tablet label shows 3.5 hours, and TV use is 1.5 hours. The laptop-and-tablet category has the most time and television the least.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Time Spent on Technology Products",
+      "suppliedFile": "Screenshot 2026-11-17 125309.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Time Spent on Technology Products",
+      "description": "The diagram compares daily time spent using technology products in hours. Phone use is 2.5 hours per day, the shared laptop-and-tablet label shows 3.5 hours, and TV use is 1.5 hours. The laptop-and-tablet category has the most time and television the least."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111706",
+    "title": "Food Supply Chain",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/2026111706.png",
+    "facts": [
+      "The diagram traces the food supply chain from farming through a factory to transportation.",
+      "Transportation branches into retail and services, both of which supply the consumer.",
+      "The final arrow leads from the consumer to recycling."
+    ],
+    "sample": "The given image provides the detailed information about food supply chain. The diagram traces the food supply chain from farming through a factory to transportation. Transportation branches into retail and services, both of which supply the consumer. The final arrow leads from the consumer to recycling.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Food Supply Chain",
+      "suppliedFile": "Screenshot 2026-11-17 125315.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Food Supply Chain",
+      "description": "The diagram traces the food supply chain from farming through a factory to transportation. Transportation branches into retail and services, both of which supply the consumer. The final arrow leads from the consumer to recycling."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111707",
+    "title": "Taiwan Bicycle Production, Imports and Exports",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111707.png",
+    "facts": [
+      "The graph shows bicycle production, exports and imports in units from 1965 to 2019.",
+      "Production and exports move closely together, peaking above 10 million units in the mid-1980s before declining overall.",
+      "Production and exports finish near 2 million units; imports are much lower and peak around 1 million in the late 2000s."
+    ],
+    "sample": "The given image provides the detailed information about taiwan bicycle production, imports and exports. The graph shows bicycle production, exports and imports in units from 1965 to 2019. Production and exports move closely together, peaking above 10 million units in the mid-1980s before declining overall. Production and exports finish near 2 million units; imports are much lower and peak around 1 million in the late 2000s.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Taiwan Bicycle Production, Imports and Exports",
+      "suppliedFile": "Screenshot 2026-11-17 125321.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Taiwan Bicycle Production, Imports and Exports",
+      "description": "The graph shows bicycle production, exports and imports in units from 1965 to 2019. Production and exports move closely together, peaking above 10 million units in the mid-1980s before declining overall. Production and exports finish near 2 million units; imports are much lower and peak around 1 million in the late 2000s."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111708",
+    "title": "Apartments and Detached Houses in Canadian Cities",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111708.png",
+    "facts": [
+      "The chart compares percentages of apartments and single-detached houses in six Canadian metropolitan centres.",
+      "Vancouver and Montréal each show 58% apartments, versus 29% and 33% single-detached houses; Toronto shows 44% and 40%.",
+      "Detached houses are more common in Ottawa–Gatineau, Edmonton and Calgary; Calgary shows 25% apartments and 58% detached houses."
+    ],
+    "sample": "The given image provides the detailed information about apartments and detached houses in canadian cities. The chart compares percentages of apartments and single-detached houses in six Canadian metropolitan centres. Vancouver and Montréal each show 58% apartments, versus 29% and 33% single-detached houses; Toronto shows 44% and 40%. Detached houses are more common in Ottawa–Gatineau, Edmonton and Calgary; Calgary shows 25% apartments and 58% detached houses.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Apartments and Detached Houses in Canadian Cities",
+      "suppliedFile": "Screenshot 2026-11-17 125326.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Apartments and Detached Houses in Canadian Cities",
+      "description": "The chart compares percentages of apartments and single-detached houses in six Canadian metropolitan centres. Vancouver and Montréal each show 58% apartments, versus 29% and 33% single-detached houses; Toronto shows 44% and 40%. Detached houses are more common in Ottawa–Gatineau, Edmonton and Calgary; Calgary shows 25% apartments and 58% detached houses."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111709",
+    "title": "River Flow in Straight and Curved Channels",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/2026111709.png",
+    "facts": [
+      "The diagram compares river flow across sections A and B of a channel.",
+      "At straight section A, the fastest flow is near the surface in the centre and the slowest is near the bed and banks.",
+      "At bend B, the fastest flow shifts towards the deeper outer bank, away from the shallow inner bank."
+    ],
+    "sample": "The given image provides the detailed information about river flow in straight and curved channels. The diagram compares river flow across sections A and B of a channel. At straight section A, the fastest flow is near the surface in the centre and the slowest is near the bed and banks. At bend B, the fastest flow shifts towards the deeper outer bank, away from the shallow inner bank.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "River Flow in Straight and Curved Channels",
+      "suppliedFile": "Screenshot 2026-11-17 125332.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "River Flow in Straight and Curved Channels",
+      "description": "The diagram compares river flow across sections A and B of a channel. At straight section A, the fastest flow is near the surface in the centre and the slowest is near the bed and banks. At bend B, the fastest flow shifts towards the deeper outer bank, away from the shallow inner bank."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111710",
+    "title": "Male and Female Participation in Sport",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111710.png",
+    "facts": [
+      "The chart compares male and female participation percentages in four sports.",
+      "Football is 70% male and 30% female; cricket is 60% and 40%, and basketball is 55% and 45%.",
+      "Tennis reverses the pattern at 40% male and 60% female; basketball has the smallest gender gap."
+    ],
+    "sample": "The given image provides the detailed information about male and female participation in sport. The chart compares male and female participation percentages in four sports. Football is 70% male and 30% female; cricket is 60% and 40%, and basketball is 55% and 45%. Tennis reverses the pattern at 40% male and 60% female; basketball has the smallest gender gap.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Male and Female Participation in Sport",
+      "suppliedFile": "Screenshot 2026-11-17 125340.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Male and Female Participation in Sport",
+      "description": "The chart compares male and female participation percentages in four sports. Football is 70% male and 30% female; cricket is 60% and 40%, and basketball is 55% and 45%. Tennis reverses the pattern at 40% male and 60% female; basketball has the smallest gender gap."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111711",
+    "title": "World Renewable Electricity Generation",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111711.png",
+    "facts": [
+      "The stacked area chart shows world renewable electricity generation in terawatt-hours from 1965 to 2022.",
+      "The total rises from under 1,000 TWh to over 8,000 TWh, with faster growth after 2010.",
+      "Hydropower remains the largest source, while wind and solar expand substantially in recent years alongside other renewables."
+    ],
+    "sample": "The given image provides the detailed information about world renewable electricity generation. The stacked area chart shows world renewable electricity generation in terawatt-hours from 1965 to 2022. The total rises from under 1,000 TWh to over 8,000 TWh, with faster growth after 2010. Hydropower remains the largest source, while wind and solar expand substantially in recent years alongside other renewables.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "World Renewable Electricity Generation",
+      "suppliedFile": "Screenshot 2026-11-17 125359.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "World Renewable Electricity Generation",
+      "description": "The stacked area chart shows world renewable electricity generation in terawatt-hours from 1965 to 2022. The total rises from under 1,000 TWh to over 8,000 TWh, with faster growth after 2010. Hydropower remains the largest source, while wind and solar expand substantially in recent years alongside other renewables."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111712",
+    "title": "Leisure Centre Usage Over One Day",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111712.png",
+    "facts": [
+      "The chart compares numbers of people using four facilities at 10 am, 1 pm and 9 pm.",
+      "The swimming pool is busiest at 10 am with about 38 people, falling to 32 at 1 pm and 14 at 9 pm.",
+      "The gym peaks at 35 people at 9 pm; tennis courts have the fewest users at each time, and the café is busiest at 10 am."
+    ],
+    "sample": "The given image provides the detailed information about leisure centre usage over one day. The chart compares numbers of people using four facilities at 10 am, 1 pm and 9 pm. The swimming pool is busiest at 10 am with about 38 people, falling to 32 at 1 pm and 14 at 9 pm. The gym peaks at 35 people at 9 pm; tennis courts have the fewest users at each time, and the café is busiest at 10 am.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Leisure Centre Usage Over One Day",
+      "suppliedFile": "Screenshot 2026-11-17 125405.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Leisure Centre Usage Over One Day",
+      "description": "The chart compares numbers of people using four facilities at 10 am, 1 pm and 9 pm. The swimming pool is busiest at 10 am with about 38 people, falling to 32 at 1 pm and 14 at 9 pm. The gym peaks at 35 people at 9 pm; tennis courts have the fewest users at each time, and the café is busiest at 10 am."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111713",
+    "title": "Sunlight Received by Forest Layers",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/2026111713.png",
+    "facts": [
+      "The diagram compares received sunlight at emergent, canopy, under-canopy and shrub levels of a forest.",
+      "The sunlight symbols become progressively smaller from the emergents to the shrub level.",
+      "The tallest trees receive the most sunlight, while vegetation near the ground receives the least."
+    ],
+    "sample": "The given image provides the detailed information about sunlight received by forest layers. The diagram compares received sunlight at emergent, canopy, under-canopy and shrub levels of a forest. The sunlight symbols become progressively smaller from the emergents to the shrub level. The tallest trees receive the most sunlight, while vegetation near the ground receives the least.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Sunlight Received by Forest Layers",
+      "suppliedFile": "Screenshot 2026-11-17 125412.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Sunlight Received by Forest Layers",
+      "description": "The diagram compares received sunlight at emergent, canopy, under-canopy and shrub levels of a forest. The sunlight symbols become progressively smaller from the emergents to the shrub level. The tallest trees receive the most sunlight, while vegetation near the ground receives the least."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111714",
+    "title": "International Students in Canada",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111714.png",
+    "facts": [
+      "The chart compares international student numbers in thousands for 1992–2000 and 1992–2008 by country.",
+      "China leads at about 130,000 and 300,000, followed by India at about 95,000 and 220,000.",
+      "The later period has higher numbers for every displayed country; Iceland has the smallest numbers."
+    ],
+    "sample": "The given image provides the detailed information about international students in canada. The chart compares international student numbers in thousands for 1992–2000 and 1992–2008 by country. China leads at about 130,000 and 300,000, followed by India at about 95,000 and 220,000. The later period has higher numbers for every displayed country; Iceland has the smallest numbers.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "International Students in Canada",
+      "suppliedFile": "Screenshot 2026-11-17 125423.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "International Students in Canada",
+      "description": "The chart compares international student numbers in thousands for 1992–2000 and 1992–2008 by country. China leads at about 130,000 and 300,000, followed by India at about 95,000 and 220,000. The later period has higher numbers for every displayed country; Iceland has the smallest numbers."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111715",
+    "title": "GDP Accumulated Growth at Constant Prices",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111715.png",
+    "facts": [
+      "The chart compares accumulated GDP growth percentages for 1990–1998 and 1990–2006 across countries.",
+      "China is highest in both periods, at approximately 125% and 325%.",
+      "The longer period shows greater growth for every country; Ireland, Singapore, India and Korea are among the other strong performers."
+    ],
+    "sample": "The given image provides the detailed information about gdp accumulated growth at constant prices. The chart compares accumulated GDP growth percentages for 1990–1998 and 1990–2006 across countries. China is highest in both periods, at approximately 125% and 325%. The longer period shows greater growth for every country; Ireland, Singapore, India and Korea are among the other strong performers.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "GDP Accumulated Growth at Constant Prices",
+      "suppliedFile": "Screenshot 2026-11-17 125757.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "GDP Accumulated Growth at Constant Prices",
+      "description": "The chart compares accumulated GDP growth percentages for 1990–1998 and 1990–2006 across countries. China is highest in both periods, at approximately 125% and 325%. The longer period shows greater growth for every country; Ireland, Singapore, India and Korea are among the other strong performers."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111716",
+    "title": "Relative Sizes of Planets",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/2026111716.png",
+    "facts": [
+      "The illustration compares the relative sizes of planets, including Jupiter, Saturn, Uranus, Neptune and Earth.",
+      "Jupiter is the largest shown and Saturn, distinguished by its rings, is the next largest.",
+      "Uranus and Neptune are much smaller than the two largest planets but substantially larger than Earth."
+    ],
+    "sample": "The given image provides the detailed information about relative sizes of planets. The illustration compares the relative sizes of planets, including Jupiter, Saturn, Uranus, Neptune and Earth. Jupiter is the largest shown and Saturn, distinguished by its rings, is the next largest. Uranus and Neptune are much smaller than the two largest planets but substantially larger than Earth.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Relative Sizes of Planets",
+      "suppliedFile": "Screenshot 2026-11-17 125810.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Relative Sizes of Planets",
+      "description": "The illustration compares the relative sizes of planets, including Jupiter, Saturn, Uranus, Neptune and Earth. Jupiter is the largest shown and Saturn, distinguished by its rings, is the next largest. Uranus and Neptune are much smaller than the two largest planets but substantially larger than Earth."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111717",
+    "title": "Heights of Four Tree Species",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111717.png",
+    "facts": [
+      "The illustration compares heights of hemlock, cedar, spruce and Douglas fir in feet.",
+      "Hemlock is 130 feet, cedar 200 feet and spruce 230 feet.",
+      "Douglas fir is tallest at 280 feet, while hemlock is shortest, a difference of 150 feet."
+    ],
+    "sample": "The given image provides the detailed information about heights of four tree species. The illustration compares heights of hemlock, cedar, spruce and Douglas fir in feet. Hemlock is 130 feet, cedar 200 feet and spruce 230 feet. Douglas fir is tallest at 280 feet, while hemlock is shortest, a difference of 150 feet.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Heights of Four Tree Species",
+      "suppliedFile": "Screenshot 2026-11-17 125820.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Heights of Four Tree Species",
+      "description": "The illustration compares heights of hemlock, cedar, spruce and Douglas fir in feet. Hemlock is 130 feet, cedar 200 feet and spruce 230 feet. Douglas fir is tallest at 280 feet, while hemlock is shortest, a difference of 150 feet."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111718",
+    "title": "Layers of the Earth",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/2026111718.png",
+    "facts": [
+      "The cross-section identifies the Earth's inner core, outer core, mantle and crust.",
+      "The inner core is labelled 800 miles (1,300 kilometres), the outer core 1,400 miles (2,250 kilometres), and the mantle 1,800 miles (2,900 kilometres).",
+      "The crust is the thin outermost layer, labelled 5 to 25 miles (8 to 40 kilometres)."
+    ],
+    "sample": "The given image provides the detailed information about layers of the earth. The cross-section identifies the Earth's inner core, outer core, mantle and crust. The inner core is labelled 800 miles (1,300 kilometres), the outer core 1,400 miles (2,250 kilometres), and the mantle 1,800 miles (2,900 kilometres). The crust is the thin outermost layer, labelled 5 to 25 miles (8 to 40 kilometres).",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Layers of the Earth",
+      "suppliedFile": "Screenshot 2026-11-17 125828.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Layers of the Earth",
+      "description": "The cross-section identifies the Earth's inner core, outer core, mantle and crust. The inner core is labelled 800 miles (1,300 kilometres), the outer core 1,400 miles (2,250 kilometres), and the mantle 1,800 miles (2,900 kilometres). The crust is the thin outermost layer, labelled 5 to 25 miles (8 to 40 kilometres)."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111719",
+    "title": "Global Warming Predictions",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/2026111719.png",
+    "facts": [
+      "The world map predicts temperature increases in 2070–2100 relative to the 1960–1990 average using HadCM3.",
+      "The colour scale ranges from 0 to 8 degrees Celsius, with darker reds indicating greater warming.",
+      "High northern latitudes and parts of South America show strong warming, while many ocean areas show smaller increases."
+    ],
+    "sample": "The given image provides the detailed information about global warming predictions. The world map predicts temperature increases in 2070–2100 relative to the 1960–1990 average using HadCM3. The colour scale ranges from 0 to 8 degrees Celsius, with darker reds indicating greater warming. High northern latitudes and parts of South America show strong warming, while many ocean areas show smaller increases.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Global Warming Predictions",
+      "suppliedFile": "Screenshot 2026-11-17 130047.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Global Warming Predictions",
+      "description": "The world map predicts temperature increases in 2070–2100 relative to the 1960–1990 average using HadCM3. The colour scale ranges from 0 to 8 degrees Celsius, with darker reds indicating greater warming. High northern latitudes and parts of South America show strong warming, while many ocean areas show smaller increases."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111720",
+    "title": "Articles Published by University Professors",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111720.png",
+    "facts": [
+      "The graph compares annual numbers of articles by male and female university professors from 2006 to 2012.",
+      "Male output stays around 3,000–3,300, while female output rises from 1,000 to 3,000 with a dip in 2009.",
+      "Male output remains higher throughout, but the gap narrows substantially by 2012."
+    ],
+    "sample": "The given image provides the detailed information about articles published by university professors. The graph compares annual numbers of articles by male and female university professors from 2006 to 2012. Male output stays around 3,000–3,300, while female output rises from 1,000 to 3,000 with a dip in 2009. Male output remains higher throughout, but the gap narrows substantially by 2012.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Articles Published by University Professors",
+      "suppliedFile": "Screenshot 2026-11-17 130100.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Articles Published by University Professors",
+      "description": "The graph compares annual numbers of articles by male and female university professors from 2006 to 2012. Male output stays around 3,000–3,300, while female output rises from 1,000 to 3,000 with a dip in 2009. Male output remains higher throughout, but the gap narrows substantially by 2012."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111721",
+    "title": "Life Cycle of an Apple Tree",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/2026111721.png",
+    "facts": [
+      "The diagram presents a repeating apple-tree life cycle.",
+      "A flower develops into fruit containing seeds; the seeds produce a sprout.",
+      "The sprout grows into a tree, which produces flowers and begins the cycle again."
+    ],
+    "sample": "The given image provides the detailed information about life cycle of an apple tree. The diagram presents a repeating apple-tree life cycle. A flower develops into fruit containing seeds; the seeds produce a sprout. The sprout grows into a tree, which produces flowers and begins the cycle again.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Life Cycle of an Apple Tree",
+      "suppliedFile": "Screenshot 2026-11-17 130107.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Life Cycle of an Apple Tree",
+      "description": "The diagram presents a repeating apple-tree life cycle. A flower develops into fruit containing seeds; the seeds produce a sprout. The sprout grows into a tree, which produces flowers and begins the cycle again."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111722",
+    "title": "Migration of the Blackpoll Bird",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/2026111722.png",
+    "facts": [
+      "The map shows the Blackpoll bird's breeding and wintering ranges and seasonal migration across the Americas.",
+      "The breeding range spans northern North America, while the wintering range is in northern South America.",
+      "Spring migration heads north towards the breeding area and fall migration heads south towards the wintering area."
+    ],
+    "sample": "The given image provides the detailed information about migration of the blackpoll bird. The map shows the Blackpoll bird's breeding and wintering ranges and seasonal migration across the Americas. The breeding range spans northern North America, while the wintering range is in northern South America. Spring migration heads north towards the breeding area and fall migration heads south towards the wintering area.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Migration of the Blackpoll Bird",
+      "suppliedFile": "Screenshot 2026-11-17 130117.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Migration of the Blackpoll Bird",
+      "description": "The map shows the Blackpoll bird's breeding and wintering ranges and seasonal migration across the Americas. The breeding range spans northern North America, while the wintering range is in northern South America. Spring migration heads north towards the breeding area and fall migration heads south towards the wintering area."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111723",
+    "title": "Food Price and Oil Price",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111723.png",
+    "facts": [
+      "The graph compares oil prices in dollars with a food price index from 2000 through 2009.",
+      "Both rise sharply before peaking around 2008, with oil near $130 and the food index above 210, then drop steeply.",
+      "Both recover afterwards; by the end oil is near $80 and the food price index is around 200."
+    ],
+    "sample": "The given image provides the detailed information about food price and oil price. The graph compares oil prices in dollars with a food price index from 2000 through 2009. Both rise sharply before peaking around 2008, with oil near $130 and the food index above 210, then drop steeply. Both recover afterwards; by the end oil is near $80 and the food price index is around 200.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Food Price and Oil Price",
+      "suppliedFile": "Screenshot 2026-11-17 130123.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Food Price and Oil Price",
+      "description": "The graph compares oil prices in dollars with a food price index from 2000 through 2009. Both rise sharply before peaking around 2008, with oil near $130 and the food index above 210, then drop steeply. Both recover afterwards; by the end oil is near $80 and the food price index is around 200."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111724",
+    "title": "Carbon Dioxide and Temperature over 400,000 Years",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111724.png",
+    "facts": [
+      "The graph compares atmospheric carbon dioxide in ppmv with temperature change from the present across roughly 400,000 years.",
+      "Carbon dioxide fluctuates between about 180 and 300 ppmv, while temperature change ranges roughly from minus 10 to plus 4 degrees Celsius.",
+      "The two series show similar repeated rises and falls, with high carbon dioxide generally accompanying warmer temperatures."
+    ],
+    "sample": "The given image provides the detailed information about carbon dioxide and temperature over 400,000 years. The graph compares atmospheric carbon dioxide in ppmv with temperature change from the present across roughly 400,000 years. Carbon dioxide fluctuates between about 180 and 300 ppmv, while temperature change ranges roughly from minus 10 to plus 4 degrees Celsius. The two series show similar repeated rises and falls, with high carbon dioxide generally accompanying warmer temperatures.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Carbon Dioxide and Temperature over 400,000 Years",
+      "suppliedFile": "Screenshot 2026-11-17 130136.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Carbon Dioxide and Temperature over 400,000 Years",
+      "description": "The graph compares atmospheric carbon dioxide in ppmv with temperature change from the present across roughly 400,000 years. Carbon dioxide fluctuates between about 180 and 300 ppmv, while temperature change ranges roughly from minus 10 to plus 4 degrees Celsius. The two series show similar repeated rises and falls, with high carbon dioxide generally accompanying warmer temperatures."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111725",
+    "title": "The Eatwell Plate",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/2026111725.png",
+    "facts": [
+      "The plate groups foods into five categories to illustrate a balanced diet.",
+      "Fruit and vegetables and bread, rice, potatoes, pasta and other starchy foods occupy the two largest sections.",
+      "Milk and dairy and non-dairy protein foods have smaller portions; foods and drinks high in fat or sugar occupy the smallest section."
+    ],
+    "sample": "The given image provides the detailed information about the eatwell plate. The plate groups foods into five categories to illustrate a balanced diet. Fruit and vegetables and bread, rice, potatoes, pasta and other starchy foods occupy the two largest sections. Milk and dairy and non-dairy protein foods have smaller portions; foods and drinks high in fat or sugar occupy the smallest section.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "The Eatwell Plate",
+      "suppliedFile": "Screenshot 2026-11-17 130145.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "The Eatwell Plate",
+      "description": "The plate groups foods into five categories to illustrate a balanced diet. Fruit and vegetables and bread, rice, potatoes, pasta and other starchy foods occupy the two largest sections. Milk and dairy and non-dairy protein foods have smaller portions; foods and drinks high in fat or sugar occupy the smallest section."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111726",
+    "title": "Beijing Daily High and Low Temperatures",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111726.png",
+    "facts": [
+      "The graph shows Beijing's daily high and low temperatures in degrees centigrade across the months.",
+      "Both peak around July, at approximately 30 degrees for daily highs and 21 degrees for lows.",
+      "Winter is coldest, with January lows near minus 10 degrees; highs remain above lows throughout the year."
+    ],
+    "sample": "The given image provides the detailed information about beijing daily high and low temperatures. The graph shows Beijing's daily high and low temperatures in degrees centigrade across the months. Both peak around July, at approximately 30 degrees for daily highs and 21 degrees for lows. Winter is coldest, with January lows near minus 10 degrees; highs remain above lows throughout the year.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Beijing Daily High and Low Temperatures",
+      "suppliedFile": "Screenshot 2026-11-17 130200.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Beijing Daily High and Low Temperatures",
+      "description": "The graph shows Beijing's daily high and low temperatures in degrees centigrade across the months. Both peak around July, at approximately 30 degrees for daily highs and 21 degrees for lows. Winter is coldest, with January lows near minus 10 degrees; highs remain above lows throughout the year."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111727",
+    "title": "Pre-tax Profits of the 1,000 Largest Banks",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/2026111727.png",
+    "facts": [
+      "The doughnut charts compare regional shares of pre-tax bank profits in 2007 and 2011.",
+      "Total profits fall from $786 billion to $762 billion; Asia Pacific's share rises from 18.9% to 53.9%.",
+      "Western Europe's share drops from 46.2% to 6.3%, while North America falls from 26.5% to 23.4%, shifting the largest share towards Asia Pacific."
+    ],
+    "sample": "The given image provides the detailed information about pre-tax profits of the 1,000 largest banks. The doughnut charts compare regional shares of pre-tax bank profits in 2007 and 2011. Total profits fall from $786 billion to $762 billion; Asia Pacific's share rises from 18.9% to 53.9%. Western Europe's share drops from 46.2% to 6.3%, while North America falls from 26.5% to 23.4%, shifting the largest share towards Asia Pacific.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Pre-tax Profits of the 1,000 Largest Banks",
+      "suppliedFile": "Screenshot 2026-11-17 130306.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "Pre-tax Profits of the 1,000 Largest Banks",
+      "description": "The doughnut charts compare regional shares of pre-tax bank profits in 2007 and 2011. Total profits fall from $786 billion to $762 billion; Asia Pacific's share rises from 18.9% to 53.9%. Western Europe's share drops from 46.2% to 6.3%, while North America falls from 26.5% to 23.4%, shifting the largest share towards Asia Pacific."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111728",
+    "title": "Life Expectancy at Birth by Sex",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111728.png",
+    "facts": [
+      "The chart shows life expectancy at birth in years for males and females from 1881–1890 to 2011–2013.",
+      "Both rise substantially, from approximately 47 years for males and 50 for females to around 80 and 84 years respectively.",
+      "Female life expectancy is higher throughout, while both series briefly flatten around the 1960s and 1970s."
+    ],
+    "sample": "The given image provides the detailed information about life expectancy at birth by sex. The chart shows life expectancy at birth in years for males and females from 1881–1890 to 2011–2013. Both rise substantially, from approximately 47 years for males and 50 for females to around 80 and 84 years respectively. Female life expectancy is higher throughout, while both series briefly flatten around the 1960s and 1970s.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Life Expectancy at Birth by Sex",
+      "suppliedFile": "Screenshot 2026-11-17 131040.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Life Expectancy at Birth by Sex",
+      "description": "The chart shows life expectancy at birth in years for males and females from 1881–1890 to 2011–2013. Both rise substantially, from approximately 47 years for males and 50 for females to around 80 and 84 years respectively. Female life expectancy is higher throughout, while both series briefly flatten around the 1960s and 1970s."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111729",
+    "title": "Housefly Life Cycle",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/2026111729.png",
+    "facts": [
+      "The diagram shows the repeating life cycle of a housefly.",
+      "An adult fly lays eggs, which develop through the first, second and third larval stages.",
+      "The larva becomes a pupa and then an adult fly, completing the cycle."
+    ],
+    "sample": "The given image provides the detailed information about housefly life cycle. The diagram shows the repeating life cycle of a housefly. An adult fly lays eggs, which develop through the first, second and third larval stages. The larva becomes a pupa and then an adult fly, completing the cycle.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Housefly Life Cycle",
+      "suppliedFile": "Screenshot 2026-11-17 131046.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Housefly Life Cycle",
+      "description": "The diagram shows the repeating life cycle of a housefly. An adult fly lays eggs, which develop through the first, second and third larval stages. The larva becomes a pupa and then an adult fly, completing the cycle."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111730",
+    "title": "Internet Population by Country",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/2026111730.png",
+    "facts": [
+      "The chart compares internet users in millions across fifteen countries.",
+      "China has the most at about 180 million, followed by the US at about 165 million and Japan at 60 million.",
+      "The remaining countries are below 40 million; Mexico and the Netherlands have the smallest bars, near 13 million each."
+    ],
+    "sample": "The given image provides the detailed information about internet population by country. The chart compares internet users in millions across fifteen countries. China has the most at about 180 million, followed by the US at about 165 million and Japan at 60 million. The remaining countries are below 40 million; Mexico and the Netherlands have the smallest bars, near 13 million each.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Internet Population by Country",
+      "suppliedFile": "Screenshot 2026-11-17 131052.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Internet Population by Country",
+      "description": "The chart compares internet users in millions across fifteen countries. China has the most at about 180 million, followed by the US at about 165 million and Japan at 60 million. The remaining countries are below 40 million; Mexico and the Netherlands have the smallest bars, near 13 million each."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111731",
+    "title": "Causes of Deforestation in the Brazilian Amazon",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/2026111731.png",
+    "facts": [
+      "The chart presents causes of deforestation in the Brazilian Amazon during 2000–2005.",
+      "Cattle ranching dominates at 65–70%, followed by small-scale agriculture at 20–25%.",
+      "Large-scale agriculture contributes 5–10%, logging 2–3%, and other causes 1–2%."
+    ],
+    "sample": "The given image provides the detailed information about causes of deforestation in the brazilian amazon. The chart presents causes of deforestation in the Brazilian Amazon during 2000–2005. Cattle ranching dominates at 65–70%, followed by small-scale agriculture at 20–25%. Large-scale agriculture contributes 5–10%, logging 2–3%, and other causes 1–2%.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Causes of Deforestation in the Brazilian Amazon",
+      "suppliedFile": "Screenshot 2026-11-17 131106.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "Causes of Deforestation in the Brazilian Amazon",
+      "description": "The chart presents causes of deforestation in the Brazilian Amazon during 2000–2005. Cattle ranching dominates at 65–70%, followed by small-scale agriculture at 20–25%. Large-scale agriculture contributes 5–10%, logging 2–3%, and other causes 1–2%."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111732",
+    "title": "Government Expenditure on Education",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/2026111732.png",
+    "facts": [
+      "The diagram presents government education expenditure across four sectors and an Education Investment Fund.",
+      "Higher education receives $1.8 billion, vocational educational training $2 billion, schools $3–4 billion and early childhood $0.8–1.4 billion.",
+      "Schools have the largest allocation among the four sectors; the separate Education Investment Fund is labelled $11 billion."
+    ],
+    "sample": "The given image provides the detailed information about government expenditure on education. The diagram presents government education expenditure across four sectors and an Education Investment Fund. Higher education receives $1.8 billion, vocational educational training $2 billion, schools $3–4 billion and early childhood $0.8–1.4 billion. Schools have the largest allocation among the four sectors; the separate Education Investment Fund is labelled $11 billion.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Government Expenditure on Education",
+      "suppliedFile": "Screenshot 2026-11-17 131115.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Government Expenditure on Education",
+      "description": "The diagram presents government education expenditure across four sectors and an Education Investment Fund. Higher education receives $1.8 billion, vocational educational training $2 billion, schools $3–4 billion and early childhood $0.8–1.4 billion. Schools have the largest allocation among the four sectors; the separate Education Investment Fund is labelled $11 billion."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111733",
+    "title": "Iceberg Melting and Ocean-floor Deposition",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/2026111733.png",
+    "facts": [
+      "The diagram shows a glacier forming icebergs containing ice-rafted debris.",
+      "Ocean currents transport the icebergs, which progressively melt as they travel.",
+      "As the ice melts, the carried debris falls and accumulates on the ocean floor."
+    ],
+    "sample": "The given image provides the detailed information about iceberg melting and ocean-floor deposition. The diagram shows a glacier forming icebergs containing ice-rafted debris. Ocean currents transport the icebergs, which progressively melt as they travel. As the ice melts, the carried debris falls and accumulates on the ocean floor.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Iceberg Melting and Ocean-floor Deposition",
+      "suppliedFile": "Screenshot 2026-11-17 131125.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Iceberg Melting and Ocean-floor Deposition",
+      "description": "The diagram shows a glacier forming icebergs containing ice-rafted debris. Ocean currents transport the icebergs, which progressively melt as they travel. As the ice melts, the carried debris falls and accumulates on the ocean floor."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-2026111734",
+    "title": "Women in the Labor Force by Marital Status",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/2026111734.png",
+    "facts": [
+      "The graph compares labour-force participation percentages of married and unmarried women aged 25–54 from 1900 to the end of the displayed period around 2010.",
+      "Unmarried women's participation rises from about 51% to 80%, while married women's rises from about 6% to 74%.",
+      "Unmarried women remain higher throughout, but the gap narrows considerably as married women's participation increases."
+    ],
+    "sample": "The given image provides the detailed information about women in the labor force by marital status. The graph compares labour-force participation percentages of married and unmarried women aged 25–54 from 1900 to the end of the displayed period around 2010. Unmarried women's participation rises from about 51% to 80%, while married women's rises from about 6% to 74%. Unmarried women remain higher throughout, but the gap narrows considerably as married women's participation increases.",
+    "predictionSource": {
+      "provider": "User-supplied screenshots",
+      "sourceTitle": "Women in the Labor Force by Marital Status",
+      "suppliedFile": "Screenshot 2026-11-17 131148.png",
+      "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
+      "date": "2026-11-17",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Women in the Labor Force by Marital Status",
+      "description": "The graph compares labour-force participation percentages of married and unmarried women aged 25–54 from 1900 to the end of the displayed period around 2010. Unmarried women's participation rises from about 51% to 80%, while married women's rises from about 6% to 74%. Unmarried women remain higher throughout, but the gap narrows considerably as married women's participation increases."
+    },
+    "optionalFactIndices": []
   }
 ]

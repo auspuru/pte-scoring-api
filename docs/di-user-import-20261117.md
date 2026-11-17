@@ -1,0 +1,9 @@
+# Describe Image practice import — 17 November 2026
+
+Added 34 unique user-supplied screenshots from `Screenshot 2026-11-17 125359.zip` to individual Describe Image practice. The archive contains 35 entries: `Screenshot 2026-11-17 125359.png` occurs twice with identical bytes. The two Canada international-student images in the chat depict the same chart; the archive supplies one copy. No external question IDs or publication dates are inferred.
+
+Stable IDs: `di-user-2026111701` through `di-user-2026111734`. Original PNG bytes, attribution and watermarks are preserved. Each distinct display path contains an identical copy, marked `original-copy`; original and display SHA256 values are recorded. References use readable labels and approximate chart values where appropriate. The laptop/tablet shared time label is treated as one category, and iceberg deposition describes the carried debris rather than claiming ice survives on the ocean floor.
+
+The archive images were visually checked against the supplied chart/diagram set. Each question has a grounded reference and a sample under 100 words. Existing reference versions and mappings remain unchanged. Existing practice questions, mock selections, timings, scoring and saved attempts remain unchanged. Four existing tests update only their expected collection counts.
+
+Validation: original/display checksum validators; Speaking content validator; all 34 entries checked through a local catalogue and authenticated synthetic attempts, including original/display image delivery, transcript persistence and matching sample snapshots with 25-second preparation and 40-second response. A before/after snapshot comparison checks existing bank questions/types, mock exports and old reference/display entries. The cloud skill's bundled scope helper was unavailable, so the equivalent snapshot comparison was run locally. No live student attempts or paid assessments were used.
