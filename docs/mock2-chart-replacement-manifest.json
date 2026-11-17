@@ -1,0 +1,21 @@
+{
+  "engine": "full",
+  "paper": {
+    "id": "full-mock-2",
+    "version": 5,
+    "sha256": "f97355d9e31a72e96b3ab75718012b6e21e5bae89ba90474a9fe4e040d6905ae",
+    "title": "IPT Brisbane — Full Mock 2",
+    "status": "frozen-draft",
+    "available": false,
+    "scoredQuestionCount": 65,
+    "taskTypeCount": 22,
+    "file": "content/full-mock/papers/full-mock-2.v5.json"
+  },
+  "slot": "full-mock-2/fm2-di-01",
+  "source": "di-pred-3000186",
+  "units": "inches",
+  "timing": "unchanged",
+  "scoring": "existing rainfall facts/sample/reference reused",
+  "historical": "all previous versions retained",
+  "overlap": "rainfall source also used in Full Mock 1"
+}
