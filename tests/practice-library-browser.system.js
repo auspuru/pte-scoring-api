@@ -26,3 +26,23 @@ for(const width of [1366,1920])test('Unified practice library '+width+'px: all 2
  await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#swtQuestionLibrary.active [data-swt-open="1"]',{visible:true});await page.locator('[data-swt-open="1"]').click();await page.waitForSelector('#summaryInput',{visible:true});await page.type('#summaryInput','An unfinished summary remains recoverable.');await page.locator('[data-writing-return="swt"]').click();await page.waitForSelector('[data-swt-resume="1"]',{visible:true});await page.locator('[data-swt-open="1"]').click();await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'');await page.locator('[data-writing-return="swt"]').click();await page.waitForSelector('[data-swt-resume="1"]',{visible:true});await page.locator('[data-swt-resume="1"]').click();await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),'An unfinished summary remains recoverable.');
  assert.deepEqual(errors,[]);assert.deepEqual(grades,[]);
 });
+
+
+test('Essay and SWT question lists show the newest score and recognise a legacy prompt identity',{timeout:90000},async t=>{
+ const f=await fixture(t),username='question-list-scores',password='Synthetic-pass-123';const registration=await f.request('/api/auth/register',{username,password,email:username+'@example.test'});
+ const browser=await puppeteer.launch({headless:true,executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH||undefined});t.after(()=>browser.close());const page=await browser.newPage();await page.setViewport({width:1366,height:900});
+ await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForFunction(()=>document.getElementById('loadingVeil')?.classList.contains('hidden')&&passages.length>1&&essays.length>1);
+ await page.evaluate(()=>{
+  const q=essays.find(e=>e.question?.trim()),date=Date.now();
+  savePracticeHistory([{id:'older-high-score',date:date-2000,questionId:q.id,questionTitle:q.title,questionText:q.question,essayText:'An older synthetic answer.',scores:{total:26}},{id:'newer-legacy-score',date:date-1000,questionId:'previous-library-id',questionTitle:q.title,questionText:q.question,essayText:'The latest synthetic answer.',scores:{total:0}}]);
+  switchSection('practice');
+ });
+ await page.waitForSelector('#practiceQuestionPicker .practice-library-score');const row=await page.$eval('#practiceQuestionPicker .practice-library-row',node=>node.textContent);assert.match(row,/Completed · 2 saved attempts/);assert.match(row,/Latest score: 0 \/ 26/);assert(!row.includes('Not attempted'));
+ await require('node:fs/promises').mkdir(require('node:path').join(__dirname,'../.cache'),{recursive:true});await page.screenshot({path:require('node:path').join(__dirname,'../.cache/practice-library-latest-essay-score.png')});
+ await page.select('#essayQuestionStatus','done');await page.waitForFunction(()=>document.querySelectorAll('#practiceQuestionPicker .practice-library-row').length===1);await page.select('#essayQuestionStatus','new');await page.waitForFunction(()=>!document.querySelector('#practiceQuestionPicker .practice-library-score'));
+ // Feed saved SWT history through normal account sync, then open its question list.
+ const passage=(await f.request('/api/passages')).body.passages[0],timestamp=Date.now();
+ await f.request('/api/sync/'+username,{history:{[passage.id]:[{timestamp:timestamp-1000,text:'An older synthetic summary.',trait_scores:{content:3,form:1,grammar:2,vocabulary:2},overall_score:80},{timestamp,text:'A newer synthetic summary.',trait_scores:{content:0,form:0,grammar:0,vocabulary:0},overall_score:0}]}},registration.body.token);
+ await page.reload();await page.waitForFunction(()=>document.getElementById('loadingVeil')?.classList.contains('hidden'));await page.evaluate(()=>switchSection('swt'));await page.waitForSelector('#swtQuestionRows .practice-library-score');
+ const swt=await page.$eval('#swtQuestionRows .practice-library-score',node=>node.textContent);assert.match(swt,/Latest score: 0 \/ 9/);
+});

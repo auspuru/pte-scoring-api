@@ -126,3 +126,19 @@ test('Legacy embedded Listening uses the same versioned shared renderer and styl
  for(const file of ['practice-studio.js','practice-studio.css','listening-studio.js']){const hash=createHash('sha256').update(fs.readFileSync(path.join(root,'public',file))).digest('hex').slice(0,12);assert(html.includes('/'+file+'?v=sha256-'+hash),file);}
  assert(html.indexOf('/practice-studio.js?')<html.indexOf('/listening-studio.js?'));
 });
+
+
+test('Question list scores use the newest saved result, including zero and pending, without changing history',()=>{
+ const attempts=[{id:'best',date:10,scores:{total:26}},{id:'recent',date:30,scores:{total:0}},{id:'middle',date:20,scores:{total:18}}],before=JSON.stringify(attempts);
+ assert.match(studio.latestWritingScore(attempts,'essay'),/^Latest score: 0 \/ 26 · /);
+ assert.match(studio.latestWritingScore([...attempts,{date:40,score_provisional:true,scores:{total:26}}],'essay'),/^Latest attempt: Score pending/);
+ assert.match(studio.latestWritingScore([{date:40,scores:{total:null}}],'essay'),/^Latest score unavailable/);
+ assert.match(studio.latestWritingScore([{timestamp:20,trait_scores:{content:3,form:1,grammar:2,vocabulary:2},overall_score:80}],'swt'),/^Latest score: 8 \/ 9/);
+ assert.match(studio.latestWritingScore([{timestamp:20,overall_score:70}],'swt'),/^Latest score: 70 \/ 90 estimate/);
+ assert.equal(studio.latestWritingScore([],'essay'),'');assert.equal(JSON.stringify(attempts),before);
+ const html=studio.libraryRows([{id:'q',number:1,title:'Essay',latestScore:'Latest score: <unsafe>',actions:'<button>Practise</button>'}]);assert.match(html,/practice-library-score/);assert(!html.includes('<unsafe>'));
+});
+test('Essay attempt matching uses the actual prompt and retains legacy ID-only records without title collisions',()=>{
+ const q={id:'seed_0',question:'Discuss libraries and digital learning.'},rows=[{id:'current',questionId:'seed_0',questionText:q.question},{id:'legacy',questionId:'old-seed',questionText:'Discuss libraries and  digital learning.'},{id:'id-only',questionId:'seed_0'},{id:'reused-id',questionId:'seed_0',questionText:'Discuss a different topic.'},{id:'same-title',questionTitle:'Same title',questionText:'Another question.'}];
+ assert.deepEqual(studio.essayAttempts(q,rows).map(a=>a.id),['current','legacy','id-only']);
+});
