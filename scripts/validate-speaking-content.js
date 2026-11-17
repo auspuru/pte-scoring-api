@@ -10,7 +10,7 @@ function validate() {
   for(const q of bank.questions) {
     assert(q.sample&&q.sample.trim(),q.id+' sample');
     if(['ra','rts'].includes(q.type))assert(q.text.split(/\s+/).length<=60,q.id+' prompt length');
-    if(q.type==='di'){assert(q.sample.startsWith('The given image provides the detailed information about'));assert(q.facts.length>=2);if(q.imageUrl){assert(/^\/assets\/di-predictions-20260930\/\d+\.png$/.test(q.imageUrl));assert(fs.statSync(path.join(__dirname,'../public',q.imageUrl)).size>0);assert.equal(q.predictionSource.contentStatus,'verbatim-user-provided');}}
+    if(q.type==='di'){assert(q.sample.startsWith('The given image provides the detailed information about'));assert(q.facts.length>=2);if(q.imageUrl){assert(/^\/assets\/di-predictions-20260930\/\d+\.(?:png|jpg|jpeg)$/.test(q.imageUrl));assert(fs.statSync(path.join(__dirname,'../public',q.imageUrl)).size>0);assert.equal(q.predictionSource.contentStatus,'verbatim-user-provided');}}
     if(q.type==='sgd')assert.equal(new Set(q.turns.map(t=>t[0])).size,3);
     if(q.audioPrompt===false){assert.equal(q.type,'rts');assert(q.text.endsWith('?'));}
     if(q.type==='rts'){assert.match(q.text,/What would you say to [^?]+\?$/);assert.equal(q.preparation,10);assert.equal(q.seconds,40);}

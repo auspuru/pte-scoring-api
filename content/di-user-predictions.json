@@ -3305,5 +3305,2793 @@
       "description": "The graph compares annual height increases in centimetres for boys and girls from infancy to age 18. Both begin above 25 centimetres and fall rapidly to about 6 centimetres by age four, remaining near that level through much of childhood. Girls' later growth peak occurs earlier, around age 12, while boys peak around 14; both rates fall close to zero by age 18."
     },
     "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001446",
+    "title": "River Water Speed (source image variant)",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3001446.jpg",
+    "facts": [
+      "The diagram compares water flow at a straight section and a bend in a river.",
+      "At section A, the fastest water is near the surface and centre, and the slowest is near the river bed.",
+      "At bend B, the fastest flow is towards the deeper outer bank, while the shallower inner bank has slower flow."
+    ],
+    "sample": "The given image provides the detailed information about river water speed (source image variant). The diagram compares water flow at a straight section and a bend in a river. At section A, the fastest water is near the surface and centre, and the slowest is near the river bed. At bend B, the fastest flow is towards the deeper outer bank, while the shallower inner bank has slower flow.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001446",
+      "sourceTitle": "River Water Speed",
+      "suppliedFile": "KEEP__050__river-water-speed-5b9f1485.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 50,
+      "collectionOriginalSha256": "5b9f148560211282198059275da825d07a47ab91dc2b612a956af89bd5fb5bf0",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111709",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "other",
+      "title": "River Water Speed (source image variant)",
+      "description": "The diagram compares water flow at a straight section and a bend in a river. At section A, the fastest water is near the surface and centre, and the slowest is near the river bed. At bend B, the fastest flow is towards the deeper outer bank, while the shallower inner bank has slower flow."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001445",
+    "title": "Apartment and House (source image variant)",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3001445.jpg",
+    "facts": [
+      "The chart compares apartments and single-detached houses in six Canadian metropolitan areas.",
+      "Vancouver and Montreal each have 58 percent apartments, compared with 29 and 33 percent single-detached houses respectively.",
+      "Toronto has 44 percent apartments and 40 percent detached houses; Ottawa-Gatineau has 31 and 45 percent, Edmonton 27 and 57 percent, and Calgary 25 and 58 percent.",
+      "Apartments are more common in the first three cities, while detached houses are more common in the other three."
+    ],
+    "sample": "The given image provides the detailed information about apartment and house (source image variant). The chart compares apartments and single-detached houses in six Canadian metropolitan areas. Vancouver and Montreal each have 58 percent apartments, compared with 29 and 33 percent single-detached houses respectively. Toronto has 44 percent apartments and 40 percent detached houses; Ottawa-Gatineau has 31 and 45 percent, Edmonton 27 and 57 percent, and Calgary 25 and 58 percent.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001445",
+      "sourceTitle": "Apartment and House",
+      "suppliedFile": "KEEP__051__apartment-and-house-ce26704b.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 51,
+      "collectionOriginalSha256": "ce26704b2e0b5636d4ad2ae84297e84b586020af9f6e85b4876f4e86440a7d64",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111708",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Apartment and House (source image variant)",
+      "description": "The chart compares apartments and single-detached houses in six Canadian metropolitan areas. Vancouver and Montreal each have 58 percent apartments, compared with 29 and 33 percent single-detached houses respectively. Toronto has 44 percent apartments and 40 percent detached houses; Ottawa-Gatineau has 31 and 45 percent, Edmonton 27 and 57 percent, and Calgary 25 and 58 percent. Apartments are more common in the first three cities, while detached houses are more common in the other three."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001428",
+    "title": "International Students",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3001428.jpg",
+    "facts": [
+      "The grouped bar chart shows numbers of international students in Canada by country, in thousands, for the labelled periods 1992–2000 and 1992–2008.",
+      "China has the largest displayed numbers, including 301 thousand for 1992–2008; India follows with 221 thousand.",
+      "South Korea and Japan have 119 and 112 thousand respectively in the longer period.",
+      "The longer-period bars are generally higher than the earlier-period bars; Italy has one of the smallest displayed totals at 3 thousand."
+    ],
+    "sample": "The given image provides the detailed information about international students. The grouped bar chart shows numbers of international students in Canada by country, in thousands, for the labelled periods 1992–2000 and 1992–2008. China has the largest displayed numbers, including 301 thousand for 1992–2008; India follows with 221 thousand. South Korea and Japan have 119 and 112 thousand respectively in the longer period.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001428",
+      "sourceTitle": "International Students",
+      "suppliedFile": "KEEP__052__international-students-5b02b28e.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 52,
+      "collectionOriginalSha256": "5b02b28eabcc462b838d03921911d7827074b2fefb0149543f30a9d92e9a6a45",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "International Students",
+      "description": "The grouped bar chart shows numbers of international students in Canada by country, in thousands, for the labelled periods 1992–2000 and 1992–2008. China has the largest displayed numbers, including 301 thousand for 1992–2008; India follows with 221 thousand. South Korea and Japan have 119 and 112 thousand respectively in the longer period. The longer-period bars are generally higher than the earlier-period bars; Italy has one of the smallest displayed totals at 3 thousand."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001385",
+    "title": "Weekly Household Spending",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3001385.jpg",
+    "facts": [
+      "The horizontal bar chart compares average weekly household spending on goods and services in 2015–16, in dollars.",
+      "Current housing costs are highest at about 280 dollars, followed by food and non-alcoholic beverages at about 240 dollars.",
+      "Transport is approximately 205 dollars and recreation approximately 170 dollars.",
+      "Tobacco products are the smallest category, at roughly 15 dollars; personal care and alcoholic beverages are also among the smaller categories."
+    ],
+    "sample": "The given image provides the detailed information about weekly household spending. The horizontal bar chart compares average weekly household spending on goods and services in 2015–16, in dollars. Current housing costs are highest at about 280 dollars, followed by food and non-alcoholic beverages at about 240 dollars. Transport is approximately 205 dollars and recreation approximately 170 dollars.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001385",
+      "sourceTitle": "Weekly Household Spending",
+      "suppliedFile": "KEEP__053__weekly-household-spending-3e8b41d8.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 53,
+      "collectionOriginalSha256": "3e8b41d85eaca84642be4fc70e739e7ff83b27bcad0dd01df1a04827ddd362bc",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Weekly Household Spending",
+      "description": "The horizontal bar chart compares average weekly household spending on goods and services in 2015–16, in dollars. Current housing costs are highest at about 280 dollars, followed by food and non-alcoholic beverages at about 240 dollars. Transport is approximately 205 dollars and recreation approximately 170 dollars. Tobacco products are the smallest category, at roughly 15 dollars; personal care and alcoholic beverages are also among the smaller categories."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001358",
+    "title": "Shopping for School",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3001358.jpg",
+    "facts": [
+      "The two photographs show a schoolgirl with school supplies in a shop.",
+      "In the left photograph an adult woman helps the girl try or choose a colourful backpack.",
+      "In the right photograph the girl wears a pink backpack and holds pencils, with stationery on the surrounding shelves."
+    ],
+    "sample": "The given image provides the detailed information about shopping for school. The two photographs show a schoolgirl with school supplies in a shop. In the left photograph an adult woman helps the girl try or choose a colourful backpack. In the right photograph the girl wears a pink backpack and holds pencils, with stationery on the surrounding shelves.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001358",
+      "sourceTitle": "Shopping for School",
+      "suppliedFile": "KEEP__054__shopping-for-school-4375c1c5.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 54,
+      "collectionOriginalSha256": "4375c1c5df99fa2e02a71439e6e60aa8f8935c9d74eafba18cf0c9ebb97f3b99",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Shopping for School",
+      "description": "The two photographs show a schoolgirl with school supplies in a shop. In the left photograph an adult woman helps the girl try or choose a colourful backpack. In the right photograph the girl wears a pink backpack and holds pencils, with stationery on the surrounding shelves."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001357",
+    "title": "Cat Owners (source image variant)",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3001357.jpg",
+    "facts": [
+      "The horizontal bar chart shows the share of people who own a cat in selected countries in 2017.",
+      "Russia has the highest share at 59 percent, followed by the United States at 43 percent, Argentina at 41 percent and Italy at 40 percent.",
+      "France and Vietnam both have 39 percent; Brazil has 36 percent, Thailand 33 percent and the United Kingdom 32 percent.",
+      "Germany has 26 percent, Turkey 19 percent, India 18 percent, China and Japan 16 percent each, and South Korea the lowest at 9 percent."
+    ],
+    "sample": "The given image provides the detailed information about cat owners (source image variant). The horizontal bar chart shows the share of people who own a cat in selected countries in 2017. Russia has the highest share at 59 percent, followed by the United States at 43 percent, Argentina at 41 percent and Italy at 40 percent. France and Vietnam both have 39 percent; Brazil has 36 percent, Thailand 33 percent and the United Kingdom 32 percent.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001357",
+      "sourceTitle": "Cat Owners",
+      "suppliedFile": "KEEP__055__cat-owners-afa3976c.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 55,
+      "collectionOriginalSha256": "afa3976cc6513c337bae30f636c19dd4ec76a6dab496cea95d2e3f0599444b2b",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111764",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Cat Owners (source image variant)",
+      "description": "The horizontal bar chart shows the share of people who own a cat in selected countries in 2017. Russia has the highest share at 59 percent, followed by the United States at 43 percent, Argentina at 41 percent and Italy at 40 percent. France and Vietnam both have 39 percent; Brazil has 36 percent, Thailand 33 percent and the United Kingdom 32 percent. Germany has 26 percent, Turkey 19 percent, India 18 percent, China and Japan 16 percent each, and South Korea the lowest at 9 percent."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001354",
+    "title": "Work Travel Time",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/3001354.jpg",
+    "facts": [
+      "The pie chart shows travel times to work in Ontario in 2016.",
+      "The largest group travels for 15–29 minutes at 32.2 percent, followed by less than 15 minutes at 24.0 percent.",
+      "Journeys of 30–44 minutes account for 21.3 percent, more than one hour for 12.4 percent, and 45–59 minutes for the smallest share, 10.1 percent."
+    ],
+    "sample": "The given image provides the detailed information about work travel time. The pie chart shows travel times to work in Ontario in 2016. The largest group travels for 15–29 minutes at 32.2 percent, followed by less than 15 minutes at 24.0 percent. Journeys of 30–44 minutes account for 21.3 percent, more than one hour for 12.4 percent, and 45–59 minutes for the smallest share, 10.1 percent.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001354",
+      "sourceTitle": "Work Travel Time",
+      "suppliedFile": "KEEP__056__work-travel-time-2802f9ac.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 56,
+      "collectionOriginalSha256": "2802f9ac5411c770a8a8c360a1f6c83b763f6f506a1fad6430b08a8c774af850",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "Work Travel Time",
+      "description": "The pie chart shows travel times to work in Ontario in 2016. The largest group travels for 15–29 minutes at 32.2 percent, followed by less than 15 minutes at 24.0 percent. Journeys of 30–44 minutes account for 21.3 percent, more than one hour for 12.4 percent, and 45–59 minutes for the smallest share, 10.1 percent."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000703",
+    "title": "Instant Coffee",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/3000703.jpg",
+    "facts": [
+      "The six panels illustrate preparing and drinking instant coffee.",
+      "Water and a packet of coffee are added to a cup.",
+      "Sugar and creamer are then added, and the drink is stirred with a spoon.",
+      "The last panel shows a person drinking the prepared coffee."
+    ],
+    "sample": "The given image provides the detailed information about instant coffee. The six panels illustrate preparing and drinking instant coffee. Water and a packet of coffee are added to a cup. Sugar and creamer are then added, and the drink is stirred with a spoon.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000703",
+      "sourceTitle": "Instant Coffee",
+      "suppliedFile": "KEEP__057__instant-coffee-300d7a79.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 57,
+      "collectionOriginalSha256": "300d7a797979c870b1bc303b12f13b6430fd7935841eb5ee9a1b8b2bfc51ce8e",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Instant Coffee",
+      "description": "The six panels illustrate preparing and drinking instant coffee. Water and a packet of coffee are added to a cup. Sugar and creamer are then added, and the drink is stirred with a spoon. The last panel shows a person drinking the prepared coffee."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001439",
+    "title": "Types of Dwellings",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3001439.jpg",
+    "facts": [
+      "The chart compares apartment dwellings and single-detached houses in six Canadian cities.",
+      "Vancouver and Montreal each have 58 percent apartments and 42 percent detached houses; Toronto has 52 and 48 percent respectively.",
+      "Edmonton has 35 percent apartments and 65 percent houses, Ottawa 28 and 72 percent, and Calgary 20 and 80 percent.",
+      "Apartments are more common in the first three cities; houses are more common in the other three, especially Calgary."
+    ],
+    "sample": "The given image provides the detailed information about types of dwellings. The chart compares apartment dwellings and single-detached houses in six Canadian cities. Vancouver and Montreal each have 58 percent apartments and 42 percent detached houses; Toronto has 52 and 48 percent respectively. Edmonton has 35 percent apartments and 65 percent houses, Ottawa 28 and 72 percent, and Calgary 20 and 80 percent.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001439",
+      "sourceTitle": "Types of Dwellings",
+      "suppliedFile": "KEEP__058__types-of-dwellings-24ed965f.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 58,
+      "collectionOriginalSha256": "24ed965fcb283f5ac6aaf4d9803b48afd21748f0d3796ba841cfd3f56ae81f96",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Types of Dwellings",
+      "description": "The chart compares apartment dwellings and single-detached houses in six Canadian cities. Vancouver and Montreal each have 58 percent apartments and 42 percent detached houses; Toronto has 52 and 48 percent respectively. Edmonton has 35 percent apartments and 65 percent houses, Ottawa 28 and 72 percent, and Calgary 20 and 80 percent. Apartments are more common in the first three cities; houses are more common in the other three, especially Calgary."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001437",
+    "title": "School Walking Distance",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3001437.jpg",
+    "facts": [
+      "The grouped bar chart shows the percentages of students who walk to school in the UK, by distance and age.",
+      "For distances under one mile, 87 percent of 5–10 year olds and 95 percent of 11–16 year olds walk; at one to two miles the shares are 70 and 85 percent.",
+      "At two to five miles the shares fall to 5 and 10 percent, and at five or more miles to 0 and 5 percent.",
+      "Walking becomes much less common as distance increases, and the older group has a higher share in every distance category."
+    ],
+    "sample": "The given image provides the detailed information about school walking distance. The grouped bar chart shows the percentages of students who walk to school in the UK, by distance and age. For distances under one mile, 87 percent of 5–10 year olds and 95 percent of 11–16 year olds walk; at one to two miles the shares are 70 and 85 percent. At two to five miles the shares fall to 5 and 10 percent, and at five or more miles to 0 and 5 percent.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001437",
+      "sourceTitle": "School Walking Distance",
+      "suppliedFile": "KEEP__059__school-walking-distance-34a16347.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 59,
+      "collectionOriginalSha256": "34a1634716a65dff43fc0a3502b2686a6e8eda1ac8585694e43d179558d25914",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "School Walking Distance",
+      "description": "The grouped bar chart shows the percentages of students who walk to school in the UK, by distance and age. For distances under one mile, 87 percent of 5–10 year olds and 95 percent of 11–16 year olds walk; at one to two miles the shares are 70 and 85 percent. At two to five miles the shares fall to 5 and 10 percent, and at five or more miles to 0 and 5 percent. Walking becomes much less common as distance increases, and the older group has a higher share in every distance category."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001436",
+    "title": "Renewable Electricity (source image variant)",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3001436.jpg",
+    "facts": [
+      "The stacked area chart shows world renewable electricity generation from 1965 to 2022 in terawatt-hours.",
+      "Total generation rises from about 1000 TWh to more than 8000 TWh, with faster growth towards the end.",
+      "Hydropower remains the largest individual source throughout.",
+      "Wind and solar expand strongly in the later years, alongside growth in other renewables."
+    ],
+    "sample": "The given image provides the detailed information about renewable electricity (source image variant). The stacked area chart shows world renewable electricity generation from 1965 to 2022 in terawatt-hours. Total generation rises from about 1000 TWh to more than 8000 TWh, with faster growth towards the end. Hydropower remains the largest individual source throughout.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001436",
+      "sourceTitle": "Renewable Electricity",
+      "suppliedFile": "KEEP__060__renewable-electricity-c557b5d1.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 60,
+      "collectionOriginalSha256": "c557b5d14f92e1d24e8b7af0dbea9805e14f978f4cfaf691dcd4753e47e5ab38",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111711",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Renewable Electricity (source image variant)",
+      "description": "The stacked area chart shows world renewable electricity generation from 1965 to 2022 in terawatt-hours. Total generation rises from about 1000 TWh to more than 8000 TWh, with faster growth towards the end. Hydropower remains the largest individual source throughout. Wind and solar expand strongly in the later years, alongside growth in other renewables."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001433",
+    "title": "Plant Nursery Activities",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3001433.jpg",
+    "facts": [
+      "The photograph shows a group of people working among plants in a nursery or greenhouse.",
+      "People in the foreground are planting or repotting plants at a wooden workbench.",
+      "Other people carry or move plants, while a person on a ladder tends hanging plants on the right.",
+      "The space contains many potted plants, shelves and gardening materials."
+    ],
+    "sample": "The given image provides the detailed information about plant nursery activities. The photograph shows a group of people working among plants in a nursery or greenhouse. People in the foreground are planting or repotting plants at a wooden workbench. Other people carry or move plants, while a person on a ladder tends hanging plants on the right.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001433",
+      "sourceTitle": "Plant Nursery Activities",
+      "suppliedFile": "KEEP__061__plant-nursery-activities-5af7c8fd.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 61,
+      "collectionOriginalSha256": "5af7c8fdbc42e872bff4c94e0b466d4851888217c2fafc934153f152691330ac",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Plant Nursery Activities",
+      "description": "The photograph shows a group of people working among plants in a nursery or greenhouse. People in the foreground are planting or repotting plants at a wooden workbench. Other people carry or move plants, while a person on a ladder tends hanging plants on the right. The space contains many potted plants, shelves and gardening materials."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001431",
+    "title": "Friends at Cafe",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3001431.jpg",
+    "facts": [
+      "The photograph shows four people sitting together at a cafe table.",
+      "They are smiling and talking to one another, with cups and food on the table.",
+      "The cafe counter and menu boards are behind them, and plants and windows are visible to the left."
+    ],
+    "sample": "The given image provides the detailed information about friends at cafe. The photograph shows four people sitting together at a cafe table. They are smiling and talking to one another, with cups and food on the table. The cafe counter and menu boards are behind them, and plants and windows are visible to the left.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001431",
+      "sourceTitle": "Friends at Cafe",
+      "suppliedFile": "KEEP__062__friends-at-cafe-7c97a421.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 62,
+      "collectionOriginalSha256": "7c97a4211d7f0fb0c4fcbb67d91e7c91d0bd7c2b2ebe9fe40847eb2eb8cbe0ee",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Friends at Cafe",
+      "description": "The photograph shows four people sitting together at a cafe table. They are smiling and talking to one another, with cups and food on the table. The cafe counter and menu boards are behind them, and plants and windows are visible to the left."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001426",
+    "title": "Egg Experiment",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3001426.jpg",
+    "facts": [
+      "The fresh egg test compares eggs of different ages placed in glasses of water.",
+      "A fresh egg lies flat on the bottom; a one-week-old egg tilts upwards while remaining near the bottom.",
+      "A two-to-three-week-old egg is shown higher in the water, and a very old egg floats near the surface.",
+      "The displayed egg position rises as its age increases."
+    ],
+    "sample": "The given image provides the detailed information about egg experiment. The fresh egg test compares eggs of different ages placed in glasses of water. A fresh egg lies flat on the bottom; a one-week-old egg tilts upwards while remaining near the bottom. A two-to-three-week-old egg is shown higher in the water, and a very old egg floats near the surface.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001426",
+      "sourceTitle": "Egg Experiment",
+      "suppliedFile": "KEEP__063__egg-experiment-41168a99.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 63,
+      "collectionOriginalSha256": "41168a99c082efc628256f4027d9755f988be4a81a648f335f989d8e6ca92985",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Egg Experiment",
+      "description": "The fresh egg test compares eggs of different ages placed in glasses of water. A fresh egg lies flat on the bottom; a one-week-old egg tilts upwards while remaining near the bottom. A two-to-three-week-old egg is shown higher in the water, and a very old egg floats near the surface. The displayed egg position rises as its age increases."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001420",
+    "title": "Number of Vehicles (source image variant)",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3001420.jpg",
+    "facts": [
+      "The line graph shows vehicles licensed in Britain from 1994 to 2016, in millions, by diesel, petrol and alternative fuels.",
+      "Petrol remains the largest category, rising from about 19 million to a peak near 22 million around 2004 before declining to about 18 million.",
+      "Diesel increases steadily from under 2 million to about 12 million.",
+      "Alternative-fuel vehicles remain close to zero on this scale, with a small increase towards the end."
+    ],
+    "sample": "The given image provides the detailed information about number of vehicles (source image variant). The line graph shows vehicles licensed in Britain from 1994 to 2016, in millions, by diesel, petrol and alternative fuels. Petrol remains the largest category, rising from about 19 million to a peak near 22 million around 2004 before declining to about 18 million. Diesel increases steadily from under 2 million to about 12 million.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001420",
+      "sourceTitle": "Number of Vehicles",
+      "suppliedFile": "KEEP__064__number-of-vehicles-835eebf7.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 64,
+      "collectionOriginalSha256": "835eebf7004fcbe1441c44ff35c15c545dc5bc2e34006db3177926a5302599ec",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111742",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Number of Vehicles (source image variant)",
+      "description": "The line graph shows vehicles licensed in Britain from 1994 to 2016, in millions, by diesel, petrol and alternative fuels. Petrol remains the largest category, rising from about 19 million to a peak near 22 million around 2004 before declining to about 18 million. Diesel increases steadily from under 2 million to about 12 million. Alternative-fuel vehicles remain close to zero on this scale, with a small increase towards the end."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001417",
+    "title": "Grasshopper Life Cycle",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/3001417.jpg",
+    "facts": [
+      "The diagram shows the grasshopper life cycle.",
+      "Eggs develop into a nymph, which grows into an adult.",
+      "The adult produces eggs and the arrows return to the beginning of the cycle."
+    ],
+    "sample": "The given image provides the detailed information about grasshopper life cycle. The diagram shows the grasshopper life cycle. Eggs develop into a nymph, which grows into an adult. The adult produces eggs and the arrows return to the beginning of the cycle.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001417",
+      "sourceTitle": "Grasshopper Life Cycle",
+      "suppliedFile": "KEEP__065__grasshopper-life-cycle-6807075c.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 65,
+      "collectionOriginalSha256": "6807075c909e072707a42ab07f8ba10ae3a2448237df9b74cb7afaaecbe5e20e",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Grasshopper Life Cycle",
+      "description": "The diagram shows the grasshopper life cycle. Eggs develop into a nymph, which grows into an adult. The adult produces eggs and the arrows return to the beginning of the cycle."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001415",
+    "title": "Gender Birth Rates",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/3001415.jpg",
+    "facts": [
+      "The two pie charts compare the distribution of male and female births across the days of the week.",
+      "Both charts use categories Monday, Tuesday, Wednesday, Thursday, Friday, Saturday and Sunday.",
+      "The relative slice sizes differ between the male and female charts.",
+      "No numerical percentages are printed on the slices, so exact shares cannot be verified from labels."
+    ],
+    "sample": "The given image provides the detailed information about gender birth rates. The two pie charts compare the distribution of male and female births across the days of the week. Both charts use categories Monday, Tuesday, Wednesday, Thursday, Friday, Saturday and Sunday. The relative slice sizes differ between the male and female charts.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001415",
+      "sourceTitle": "Gender Birth Rates",
+      "suppliedFile": "KEEP__066__gender-birth-rates-26447e45.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 66,
+      "collectionOriginalSha256": "26447e45e1725a8a532b9a866214d4772bee5f10cb257fb7c9aa879c15977442",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "Gender Birth Rates",
+      "description": "The two pie charts compare the distribution of male and female births across the days of the week. Both charts use categories Monday, Tuesday, Wednesday, Thursday, Friday, Saturday and Sunday. The relative slice sizes differ between the male and female charts. No numerical percentages are printed on the slices, so exact shares cannot be verified from labels."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001414",
+    "title": "Annual Height Increase (source image variant)",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3001414.jpg",
+    "facts": [
+      "The line graph compares annual height increase for boys and girls from age zero to eighteen, in centimetres.",
+      "Growth is highest at birth, at roughly 26–27 centimetres, and falls rapidly in the first few years.",
+      "Both series stay near 6 centimetres through much of childhood before showing a smaller adolescent increase.",
+      "The girls' adolescent peak occurs earlier; the boys' later peak is higher, near age fourteen, and both series fall towards zero by eighteen."
+    ],
+    "sample": "The given image provides the detailed information about annual height increase (source image variant). The line graph compares annual height increase for boys and girls from age zero to eighteen, in centimetres. Growth is highest at birth, at roughly 26–27 centimetres, and falls rapidly in the first few years. Both series stay near 6 centimetres through much of childhood before showing a smaller adolescent increase.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001414",
+      "sourceTitle": "Annual Height Increase",
+      "suppliedFile": "KEEP__067__annual-height-increase-98fa5795.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 67,
+      "collectionOriginalSha256": "98fa5795026271a3eecb74ad01c0a481c81ee3a6891bd26d4acccaf32e729697",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111766",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Annual Height Increase (source image variant)",
+      "description": "The line graph compares annual height increase for boys and girls from age zero to eighteen, in centimetres. Growth is highest at birth, at roughly 26–27 centimetres, and falls rapidly in the first few years. Both series stay near 6 centimetres through much of childhood before showing a smaller adolescent increase. The girls' adolescent peak occurs earlier; the boys' later peak is higher, near age fourteen, and both series fall towards zero by eighteen."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001411",
+    "title": "Gender Based Workforce",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3001411.jpg",
+    "facts": [
+      "The stacked bar chart compares men and women across employees, non-employees, retired people and people who never entered the workforce.",
+      "Men account for approximately three quarters of employees, non-employees and retired people, with women accounting for approximately one quarter.",
+      "Among people who never entered the workforce, the split is much closer, at roughly 53 percent men and 47 percent women.",
+      "Men have a larger share in every displayed group, but the last group has the smallest gender gap."
+    ],
+    "sample": "The given image provides the detailed information about gender based workforce. The stacked bar chart compares men and women across employees, non-employees, retired people and people who never entered the workforce. Men account for approximately three quarters of employees, non-employees and retired people, with women accounting for approximately one quarter. Among people who never entered the workforce, the split is much closer, at roughly 53 percent men and 47 percent women.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001411",
+      "sourceTitle": "Gender Based Workforce",
+      "suppliedFile": "KEEP__068__gender-based-workforce-73849335.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 68,
+      "collectionOriginalSha256": "7384933589f6af49cdb745b580e01f10a07b5a59e7440b2ddc771712fb9c6746",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Gender Based Workforce",
+      "description": "The stacked bar chart compares men and women across employees, non-employees, retired people and people who never entered the workforce. Men account for approximately three quarters of employees, non-employees and retired people, with women accounting for approximately one quarter. Among people who never entered the workforce, the split is much closer, at roughly 53 percent men and 47 percent women. Men have a larger share in every displayed group, but the last group has the smallest gender gap."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001408",
+    "title": "Satellite Image",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/3001408.jpg",
+    "facts": [
+      "The satellite image shows a coastal coal-terminal complex with labelled stockyards and loading facilities.",
+      "A stockyard inset appears on the left; long conveyor or jetty structures extend from the land into the sea.",
+      "The labels identify Dalrymple Bay Coal Terminal and Hay Point Coal Terminal.",
+      "The image contrasts storage areas on land with offshore loading structures."
+    ],
+    "sample": "The given image provides the detailed information about satellite image. The satellite image shows a coastal coal-terminal complex with labelled stockyards and loading facilities. A stockyard inset appears on the left; long conveyor or jetty structures extend from the land into the sea. The labels identify Dalrymple Bay Coal Terminal and Hay Point Coal Terminal.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001408",
+      "sourceTitle": "Satellite Image",
+      "suppliedFile": "KEEP__069__satellite-image-3d0311f6.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 69,
+      "collectionOriginalSha256": "3d0311f6a6271540c04748ffed1dbd7b1ec62bdf3296a45eacb915a5bc30c7fe",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Satellite Image",
+      "description": "The satellite image shows a coastal coal-terminal complex with labelled stockyards and loading facilities. A stockyard inset appears on the left; long conveyor or jetty structures extend from the land into the sea. The labels identify Dalrymple Bay Coal Terminal and Hay Point Coal Terminal. The image contrasts storage areas on land with offshore loading structures."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001410",
+    "title": "Student Daily Activities",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/3001410.jpg",
+    "facts": [
+      "The pie chart shows a student's daily activities.",
+      "Sleep has the largest share at 30 percent, followed by college hours at 25 percent and study at 20 percent.",
+      "Recreation accounts for 12 percent, other activities for 8 percent, and play the smallest share at 5 percent.",
+      "Sleep and college hours together take more than half of the total."
+    ],
+    "sample": "The given image provides the detailed information about student daily activities. The pie chart shows a student's daily activities. Sleep has the largest share at 30 percent, followed by college hours at 25 percent and study at 20 percent. Recreation accounts for 12 percent, other activities for 8 percent, and play the smallest share at 5 percent.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001410",
+      "sourceTitle": "Student Daily Activities",
+      "suppliedFile": "KEEP__070__student-daily-activities-965fb0d1.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 70,
+      "collectionOriginalSha256": "965fb0d11b1c1580569112e87bf3f0ff2b637fc07c66e83be30fc56fa8a7061d",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "Student Daily Activities",
+      "description": "The pie chart shows a student's daily activities. Sleep has the largest share at 30 percent, followed by college hours at 25 percent and study at 20 percent. Recreation accounts for 12 percent, other activities for 8 percent, and play the smallest share at 5 percent. Sleep and college hours together take more than half of the total."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001383",
+    "title": "Online Ordering Process",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/3001383.jpg",
+    "facts": [
+      "The diagram shows an ordering system connecting restaurant tables, a phone, a computer and printers.",
+      "Orders from table 1 and table 2 go through a mobile phone to a computer.",
+      "The computer sends the orders along two branches to printers associated with food and the bar.",
+      "The arrows show information moving from the tables towards the separate service areas."
+    ],
+    "sample": "The given image provides the detailed information about online ordering process. The diagram shows an ordering system connecting restaurant tables, a phone, a computer and printers. Orders from table 1 and table 2 go through a mobile phone to a computer. The computer sends the orders along two branches to printers associated with food and the bar.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001383",
+      "sourceTitle": "Online Ordering Process",
+      "suppliedFile": "KEEP__071__online-ordering-process-594d4bf2.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 71,
+      "collectionOriginalSha256": "594d4bf2095b48b29510ba72e2aed5869a260083158d496ab54377312975d7dc",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Online Ordering Process",
+      "description": "The diagram shows an ordering system connecting restaurant tables, a phone, a computer and printers. Orders from table 1 and table 2 go through a mobile phone to a computer. The computer sends the orders along two branches to printers associated with food and the bar. The arrows show information moving from the tables towards the separate service areas."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001379",
+    "title": "Canada Tourism Stats",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3001379.jpg",
+    "facts": [
+      "The bar chart shows annual inbound tourist arrivals in Canada from 2017 to 2023, in millions.",
+      "Arrivals rise from 20.9 million in 2017 to 21.1 million in 2018 and a peak of 22.1 million in 2019.",
+      "They fall sharply to 3.0 million in 2020 and 3.1 million in 2021.",
+      "Arrivals recover to 12.8 million in 2022 and 18.3 million in 2023, still below the 2019 peak."
+    ],
+    "sample": "The given image provides the detailed information about canada tourism stats. The bar chart shows annual inbound tourist arrivals in Canada from 2017 to 2023, in millions. Arrivals rise from 20.9 million in 2017 to 21.1 million in 2018 and a peak of 22.1 million in 2019. They fall sharply to 3.0 million in 2020 and 3.1 million in 2021.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001379",
+      "sourceTitle": "Canada Tourism Stats",
+      "suppliedFile": "KEEP__072__canada-tourism-stats-3552cc85.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 72,
+      "collectionOriginalSha256": "3552cc855c1950db1ab77fd30f0e5c7efe7038fdda98d881636c65a7d6e8a1c1",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Canada Tourism Stats",
+      "description": "The bar chart shows annual inbound tourist arrivals in Canada from 2017 to 2023, in millions. Arrivals rise from 20.9 million in 2017 to 21.1 million in 2018 and a peak of 22.1 million in 2019. They fall sharply to 3.0 million in 2020 and 3.1 million in 2021. Arrivals recover to 12.8 million in 2022 and 18.3 million in 2023, still below the 2019 peak."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3001371",
+    "title": "Smartphone Growth",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3001371.jpg",
+    "facts": [
+      "The line graph shows the percentage of US adults owning any cellphone and owning a smartphone over time.",
+      "Ownership of any cellphone increases from about 60 percent in the early 2000s to almost all adults by the end.",
+      "Smartphone ownership rises from about 35 percent around 2011 to about 90 percent in the latest year.",
+      "Smartphone ownership stays below any-cellphone ownership, but the gap narrows substantially."
+    ],
+    "sample": "The given image provides the detailed information about smartphone growth. The line graph shows the percentage of US adults owning any cellphone and owning a smartphone over time. Ownership of any cellphone increases from about 60 percent in the early 2000s to almost all adults by the end. Smartphone ownership rises from about 35 percent around 2011 to about 90 percent in the latest year.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3001371",
+      "sourceTitle": "Smartphone Growth",
+      "suppliedFile": "KEEP__073__smartphone-growth-ef01430b.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 73,
+      "collectionOriginalSha256": "ef01430b6c45ea10a304824c289b866b2b45f7660b501e04a5c11666af9a71aa",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Smartphone Growth",
+      "description": "The line graph shows the percentage of US adults owning any cellphone and owning a smartphone over time. Ownership of any cellphone increases from about 60 percent in the early 2000s to almost all adults by the end. Smartphone ownership rises from about 35 percent around 2011 to about 90 percent in the latest year. Smartphone ownership stays below any-cellphone ownership, but the gap narrows substantially."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000845",
+    "title": "Biggest Chocolate Consumers",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3000845.jpg",
+    "facts": [
+      "The bar chart compares annual chocolate consumption per person in ten countries, in pounds.",
+      "Switzerland is highest at 19.8 pounds, followed by Germany at 17.4; Ireland and the United Kingdom are equal at 16.3.",
+      "Norway has 14.6 pounds, Sweden 11.9, Australia 10.8 and the Netherlands 10.4.",
+      "The United States has 9.5 pounds and France the lowest at 9.3 pounds."
+    ],
+    "sample": "The given image provides the detailed information about biggest chocolate consumers. The bar chart compares annual chocolate consumption per person in ten countries, in pounds. Switzerland is highest at 19.8 pounds, followed by Germany at 17.4; Ireland and the United Kingdom are equal at 16.3. Norway has 14.6 pounds, Sweden 11.9, Australia 10.8 and the Netherlands 10.4.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000845",
+      "sourceTitle": "Biggest Chocolate Consumers",
+      "suppliedFile": "KEEP__074__biggest-chocolate-consumers-5b6ad11b.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 74,
+      "collectionOriginalSha256": "5b6ad11bd2585e85d06b86d96d47b3ba4a8f1d258a4f21e847422f829eabaa24",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Biggest Chocolate Consumers",
+      "description": "The bar chart compares annual chocolate consumption per person in ten countries, in pounds. Switzerland is highest at 19.8 pounds, followed by Germany at 17.4; Ireland and the United Kingdom are equal at 16.3. Norway has 14.6 pounds, Sweden 11.9, Australia 10.8 and the Netherlands 10.4. The United States has 9.5 pounds and France the lowest at 9.3 pounds."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000835",
+    "title": "Australian Climate Region",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/3000835.jpg",
+    "facts": [
+      "The map shows climate regions across Australia using eight colours.",
+      "The legend distinguishes warm temperate moist and dry, cool temperate moist and dry, and tropical montane, wet, moist and dry climates.",
+      "A large tropical dry region covers much of the interior; tropical moist areas occur along the northern edge.",
+      "Temperate regions are concentrated along southern and eastern parts of the country and Tasmania."
+    ],
+    "sample": "The given image provides the detailed information about australian climate region. The map shows climate regions across Australia using eight colours. The legend distinguishes warm temperate moist and dry, cool temperate moist and dry, and tropical montane, wet, moist and dry climates. A large tropical dry region covers much of the interior; tropical moist areas occur along the northern edge.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000835",
+      "sourceTitle": "Australian Climate Region",
+      "suppliedFile": "KEEP__075__australian-climate-region-0bfaf262.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 75,
+      "collectionOriginalSha256": "0bfaf2621a2b0af58b7ded472274d424f88ea80a04f77f14e086c93e0230cd77",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Australian Climate Region",
+      "description": "The map shows climate regions across Australia using eight colours. The legend distinguishes warm temperate moist and dry, cool temperate moist and dry, and tropical montane, wet, moist and dry climates. A large tropical dry region covers much of the interior; tropical moist areas occur along the northern edge. Temperate regions are concentrated along southern and eastern parts of the country and Tasmania."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000834",
+    "title": "New Zealand Housing",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3000834.jpg",
+    "facts": [
+      "The line graph compares real house-price indices in New Zealand and the OECD from 1990 to 2014, with 1990 equal to 100.",
+      "New Zealand's index increases strongly overall to roughly 270 by the end, despite a decline after a mid-2000s peak.",
+      "The OECD index increases more modestly to around 120–130.",
+      "The gap between New Zealand and the OECD becomes much wider over the period."
+    ],
+    "sample": "The given image provides the detailed information about new zealand housing. The line graph compares real house-price indices in New Zealand and the OECD from 1990 to 2014, with 1990 equal to 100. New Zealand's index increases strongly overall to roughly 270 by the end, despite a decline after a mid-2000s peak. The OECD index increases more modestly to around 120–130.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000834",
+      "sourceTitle": "New Zealand Housing",
+      "suppliedFile": "KEEP__076__new-zealand-housing-e2165af6.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 76,
+      "collectionOriginalSha256": "e2165af684a73958fc36e2b27566a51be00593ccbee1e115538cf0ef97531280",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "New Zealand Housing",
+      "description": "The line graph compares real house-price indices in New Zealand and the OECD from 1990 to 2014, with 1990 equal to 100. New Zealand's index increases strongly overall to roughly 270 by the end, despite a decline after a mid-2000s peak. The OECD index increases more modestly to around 120–130. The gap between New Zealand and the OECD becomes much wider over the period."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000717",
+    "title": "Mobile Internet Users",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3000717.jpg",
+    "facts": [
+      "The bar chart shows the percentage of internet users who accessed the internet through a mobile phone in Great Britain in 2011, by age.",
+      "The share declines with age, from about 70 percent for 16–24 year olds to roughly 65 percent for 25–34 and just under 50 percent for 35–44.",
+      "The 45–54 group has about 33 percent, the 55–64 group around 21 percent, and the 65-plus group the lowest at about 8 percent."
+    ],
+    "sample": "The given image provides the detailed information about mobile internet users. The bar chart shows the percentage of internet users who accessed the internet through a mobile phone in Great Britain in 2011, by age. The share declines with age, from about 70 percent for 16–24 year olds to roughly 65 percent for 25–34 and just under 50 percent for 35–44. The 45–54 group has about 33 percent, the 55–64 group around 21 percent, and the 65-plus group the lowest at about 8 percent.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000717",
+      "sourceTitle": "Mobile Internet Users",
+      "suppliedFile": "KEEP__077__mobile-internet-users-26e8e506.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 77,
+      "collectionOriginalSha256": "26e8e506d2fa7425ae161a51304a0cfd4ef90c88e8eceddd65b5429474ae71dd",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Mobile Internet Users",
+      "description": "The bar chart shows the percentage of internet users who accessed the internet through a mobile phone in Great Britain in 2011, by age. The share declines with age, from about 70 percent for 16–24 year olds to roughly 65 percent for 25–34 and just under 50 percent for 35–44. The 45–54 group has about 33 percent, the 55–64 group around 21 percent, and the 65-plus group the lowest at about 8 percent."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000715",
+    "title": "Ship Lock Chamber",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/3000715.jpg",
+    "facts": [
+      "The three panels show a ship passing through a lock from a higher water level to a lower one.",
+      "The ship approaches gate A from the higher side, then enters the chamber between gates A and B.",
+      "The water level in the chamber falls, lowering the ship.",
+      "Gate B opens and the ship exits onto the lower waterway; the diagram also labels lower channels C and D."
+    ],
+    "sample": "The given image provides the detailed information about ship lock chamber. The three panels show a ship passing through a lock from a higher water level to a lower one. The ship approaches gate A from the higher side, then enters the chamber between gates A and B. The water level in the chamber falls, lowering the ship.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000715",
+      "sourceTitle": "Ship Lock Chamber",
+      "suppliedFile": "KEEP__078__ship-lock-chamber-d063d751.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 78,
+      "collectionOriginalSha256": "d063d7514b278ea883b991cf8c6290b34c2b9403fc5dc3554004938a11f8557f",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Ship Lock Chamber",
+      "description": "The three panels show a ship passing through a lock from a higher water level to a lower one. The ship approaches gate A from the higher side, then enters the chamber between gates A and B. The water level in the chamber falls, lowering the ship. Gate B opens and the ship exits onto the lower waterway; the diagram also labels lower channels C and D."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000714",
+    "title": "e-Waste",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3000714.jpg",
+    "facts": [
+      "The stacked chart shows the composition of e-waste as percentages.",
+      "Monitors and televisions each account for 10 percent; computers and related equipment account for 15 percent, and DVD, VCR and other entertainment players another 15 percent.",
+      "Refrigerators account for 20 percent, while washing machines and other domestic electrical appliances account for the largest portion, 30 percent.",
+      "The upper electronic-waste group and lower electric-waste group each total 50 percent."
+    ],
+    "sample": "The given image provides the detailed information about e-waste. The stacked chart shows the composition of e-waste as percentages. Monitors and televisions each account for 10 percent; computers and related equipment account for 15 percent, and DVD, VCR and other entertainment players another 15 percent. Refrigerators account for 20 percent, while washing machines and other domestic electrical appliances account for the largest portion, 30 percent.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000714",
+      "sourceTitle": "e-Waste",
+      "suppliedFile": "KEEP__079__e-waste-ffe734f6.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 79,
+      "collectionOriginalSha256": "ffe734f63790cf50b50316468c1a9a2a1904d9503062435267af75a9f2fb41c7",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "e-Waste",
+      "description": "The stacked chart shows the composition of e-waste as percentages. Monitors and televisions each account for 10 percent; computers and related equipment account for 15 percent, and DVD, VCR and other entertainment players another 15 percent. Refrigerators account for 20 percent, while washing machines and other domestic electrical appliances account for the largest portion, 30 percent. The upper electronic-waste group and lower electric-waste group each total 50 percent."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000709",
+    "title": "Mosquito Life Cycle",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/3000709.jpg",
+    "facts": [
+      "The diagram illustrates the mosquito life cycle.",
+      "An adult mosquito lays eggs, which develop into larvae and then pupae in water.",
+      "An adult emerges from the pupa and continues the cycle.",
+      "Arrows connect the stages in order."
+    ],
+    "sample": "The given image provides the detailed information about mosquito life cycle. The diagram illustrates the mosquito life cycle. An adult mosquito lays eggs, which develop into larvae and then pupae in water. An adult emerges from the pupa and continues the cycle.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000709",
+      "sourceTitle": "Mosquito Life Cycle",
+      "suppliedFile": "KEEP__080__mosquito-life-cycle-abbbd77d.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 80,
+      "collectionOriginalSha256": "abbbd77d9109adabffdae76291476e007eb4c1058a1a5f9448a9ef8a4f120df5",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Mosquito Life Cycle",
+      "description": "The diagram illustrates the mosquito life cycle. An adult mosquito lays eggs, which develop into larvae and then pupae in water. An adult emerges from the pupa and continues the cycle. Arrows connect the stages in order."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000693",
+    "title": "Customer at a Cafe",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000693.jpg",
+    "facts": [
+      "The photograph shows a customer and a member of staff at a cafe counter.",
+      "The staff member holds a tablet or ordering device while speaking to the customer.",
+      "The customer stands at the counter, with other staff, customers and cafe equipment in the background."
+    ],
+    "sample": "The given image provides the detailed information about customer at a cafe. The photograph shows a customer and a member of staff at a cafe counter. The staff member holds a tablet or ordering device while speaking to the customer. The customer stands at the counter, with other staff, customers and cafe equipment in the background.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000693",
+      "sourceTitle": "Customer at a Cafe",
+      "suppliedFile": "KEEP__081__customer-at-a-cafe-c84cc4a0.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 81,
+      "collectionOriginalSha256": "c84cc4a0a3e4155bea3faa7de0ed6bc50740a2ac547552acf2b3748cf65ea5f9",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Customer at a Cafe",
+      "description": "The photograph shows a customer and a member of staff at a cafe counter. The staff member holds a tablet or ordering device while speaking to the customer. The customer stands at the counter, with other staff, customers and cafe equipment in the background."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000690",
+    "title": "Grapes Distribution Cycle",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/3000690.jpg",
+    "facts": [
+      "The diagram shows a circular distribution process for grapes.",
+      "Grapes on a vine are collected and transported by truck.",
+      "They pass along a conveyor and are packed in a box before reaching a shopping trolley.",
+      "Arrows connect the stages and return to the fruit stage."
+    ],
+    "sample": "The given image provides the detailed information about grapes distribution cycle. The diagram shows a circular distribution process for grapes. Grapes on a vine are collected and transported by truck. They pass along a conveyor and are packed in a box before reaching a shopping trolley.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000690",
+      "sourceTitle": "Grapes Distribution Cycle",
+      "suppliedFile": "KEEP__082__grapes-distribution-cycle-7162c890.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 82,
+      "collectionOriginalSha256": "7162c890865a956ad1b2ed17fbdf2e65e1a4d17712a8ef787d9ec285f5c90027",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Grapes Distribution Cycle",
+      "description": "The diagram shows a circular distribution process for grapes. Grapes on a vine are collected and transported by truck. They pass along a conveyor and are packed in a box before reaching a shopping trolley. Arrows connect the stages and return to the fruit stage."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000683",
+    "title": "UK Income Demographics",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3000683.jpg",
+    "facts": [
+      "The graph shows median pre-tax income in the UK by age and gender, in pounds.",
+      "The lines represent men, women and both genders together.",
+      "Income rises sharply from the youngest group into middle age, then generally falls in older age groups.",
+      "Men's income is highest across the age groups, women have the lowest line, and the combined line lies between them; male income peaks around 30000 pounds in middle age."
+    ],
+    "sample": "The given image provides the detailed information about uk income demographics. The graph shows median pre-tax income in the UK by age and gender, in pounds. The lines represent men, women and both genders together. Income rises sharply from the youngest group into middle age, then generally falls in older age groups.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000683",
+      "sourceTitle": "UK Income Demographics",
+      "suppliedFile": "KEEP__083__uk-income-demographics-da7f15f0.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 83,
+      "collectionOriginalSha256": "da7f15f0b328dccde1f23dac9f12d4d360cf4305f7ec589164ba56f279f4782f",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "UK Income Demographics",
+      "description": "The graph shows median pre-tax income in the UK by age and gender, in pounds. The lines represent men, women and both genders together. Income rises sharply from the youngest group into middle age, then generally falls in older age groups. Men's income is highest across the age groups, women have the lowest line, and the combined line lies between them; male income peaks around 30000 pounds in middle age."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000674",
+    "title": "Types of Penguins",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000674.jpg",
+    "facts": [
+      "The diagram compares the heights of six penguin species against a vertical scale.",
+      "The labelled species are Chinstrap, Emperor, Gentoo, Adelie, King and Macaroni.",
+      "The Emperor penguin is tallest at roughly 120 centimetres, followed by the King penguin at roughly 100 centimetres.",
+      "The other four are shorter, with the Chinstrap and Adelie among the smallest at around 65–70 centimetres."
+    ],
+    "sample": "The given image provides the detailed information about types of penguins. The diagram compares the heights of six penguin species against a vertical scale. The labelled species are Chinstrap, Emperor, Gentoo, Adelie, King and Macaroni. The Emperor penguin is tallest at roughly 120 centimetres, followed by the King penguin at roughly 100 centimetres.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000674",
+      "sourceTitle": "Types of Penguins",
+      "suppliedFile": "KEEP__084__types-of-penguins-5fd1dc8c.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 84,
+      "collectionOriginalSha256": "5fd1dc8c20ac5e6210382bc12d2cb0af6e7f04aaf88a7d67518f534741d20cea",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Types of Penguins",
+      "description": "The diagram compares the heights of six penguin species against a vertical scale. The labelled species are Chinstrap, Emperor, Gentoo, Adelie, King and Macaroni. The Emperor penguin is tallest at roughly 120 centimetres, followed by the King penguin at roughly 100 centimetres. The other four are shorter, with the Chinstrap and Adelie among the smallest at around 65–70 centimetres."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000662",
+    "title": "Virus Function",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/3000662.jpg",
+    "facts": [
+      "The diagram shows a virus entering a host cell, reproducing and being released.",
+      "The labelled stages are adsorption, entry, replication, assembly and release.",
+      "The virus attaches to and enters the cell; new viral components are replicated and assembled inside.",
+      "The final stage releases many new virus particles from the cell."
+    ],
+    "sample": "The given image provides the detailed information about virus function. The diagram shows a virus entering a host cell, reproducing and being released. The labelled stages are adsorption, entry, replication, assembly and release. The virus attaches to and enters the cell; new viral components are replicated and assembled inside.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000662",
+      "sourceTitle": "Virus Function",
+      "suppliedFile": "KEEP__085__virus-function-8ce94ea8.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 85,
+      "collectionOriginalSha256": "8ce94ea84ea63bd0d212b0f172a470e82eccf0efba30fd166fe6ba52a5f558e0",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Virus Function",
+      "description": "The diagram shows a virus entering a host cell, reproducing and being released. The labelled stages are adsorption, entry, replication, assembly and release. The virus attaches to and enters the cell; new viral components are replicated and assembled inside. The final stage releases many new virus particles from the cell."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000645",
+    "title": "Solar Eclipse",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000645.jpg",
+    "facts": [
+      "The diagram shows the alignment of the Sun, Moon and Earth during a solar eclipse.",
+      "The Moon lies between the Sun and Earth, casting a shadow onto Earth.",
+      "The narrow umbra corresponds to a total eclipse, while the wider penumbra corresponds to a partial eclipse.",
+      "The diagram also marks the Earth's orbit and the Moon's orbit."
+    ],
+    "sample": "The given image provides the detailed information about solar eclipse. The diagram shows the alignment of the Sun, Moon and Earth during a solar eclipse. The Moon lies between the Sun and Earth, casting a shadow onto Earth. The narrow umbra corresponds to a total eclipse, while the wider penumbra corresponds to a partial eclipse.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000645",
+      "sourceTitle": "Solar Eclipse",
+      "suppliedFile": "KEEP__086__solar-eclipse-62c64596.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 86,
+      "collectionOriginalSha256": "62c645969632e5f9a83c756d8763909b40aa96b44186bd9ee5fcadb87cafc112",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Solar Eclipse",
+      "description": "The diagram shows the alignment of the Sun, Moon and Earth during a solar eclipse. The Moon lies between the Sun and Earth, casting a shadow onto Earth. The narrow umbra corresponds to a total eclipse, while the wider penumbra corresponds to a partial eclipse. The diagram also marks the Earth's orbit and the Moon's orbit."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000636",
+    "title": "Australian Age Groups",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3000636.jpg",
+    "facts": [
+      "The population pyramid shows age groups in Australia, split into females and males.",
+      "For ages 0–19, the displayed shares are 13.3 percent female and 14 percent male; for ages 20–39, they are 14.8 and 15 percent.",
+      "For ages 40–59, they are 13.1 percent female and 13.3 percent male; for 60–79, 7 and 6.5 percent; for 80-plus, 1.9 and 1.1 percent.",
+      "The 20–39 group is largest on both sides, while the 80-plus group is smallest; women have a larger share than men in the two oldest groups."
+    ],
+    "sample": "The given image provides the detailed information about australian age groups. The population pyramid shows age groups in Australia, split into females and males. For ages 0–19, the displayed shares are 13.3 percent female and 14 percent male; for ages 20–39, they are 14.8 and 15 percent. For ages 40–59, they are 13.1 percent female and 13.3 percent male; for 60–79, 7 and 6.5 percent; for 80-plus, 1.9 and 1.1 percent.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000636",
+      "sourceTitle": "Australian Age Groups",
+      "suppliedFile": "KEEP__087__australian-age-groups-63ad7ae3.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 87,
+      "collectionOriginalSha256": "63ad7ae345287b106e57453464b224bfb3c317b415a050c27b8a2482e982db2d",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Australian Age Groups",
+      "description": "The population pyramid shows age groups in Australia, split into females and males. For ages 0–19, the displayed shares are 13.3 percent female and 14 percent male; for ages 20–39, they are 14.8 and 15 percent. For ages 40–59, they are 13.1 percent female and 13.3 percent male; for 60–79, 7 and 6.5 percent; for 80-plus, 1.9 and 1.1 percent. The 20–39 group is largest on both sides, while the 80-plus group is smallest; women have a larger share than men in the two oldest groups."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000616",
+    "title": "Graduation Lab",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/3000616.jpg",
+    "facts": [
+      "The floor plan shows the layout of a graduation laboratory.",
+      "Three offices, storage and toilets are grouped in the upper-left area, with a corridor and an entrance on the left.",
+      "Animal Sciences and Plant Sciences rooms are along the bottom.",
+      "A computer station is in the upper-right area, with a larger table and seating area below it."
+    ],
+    "sample": "The given image provides the detailed information about graduation lab. The floor plan shows the layout of a graduation laboratory. Three offices, storage and toilets are grouped in the upper-left area, with a corridor and an entrance on the left. Animal Sciences and Plant Sciences rooms are along the bottom.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000616",
+      "sourceTitle": "Graduation Lab",
+      "suppliedFile": "KEEP__088__graduation-lab-9870c4cf.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 88,
+      "collectionOriginalSha256": "9870c4cf46af21f4550d7f4137efbb4ad25c7deb4b79a6b58eccb0ce57a23d43",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Graduation Lab",
+      "description": "The floor plan shows the layout of a graduation laboratory. Three offices, storage and toilets are grouped in the upper-left area, with a corridor and an entrance on the left. Animal Sciences and Plant Sciences rooms are along the bottom. A computer station is in the upper-right area, with a larger table and seating area below it."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000537",
+    "title": "Media in UK",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3000537.jpg",
+    "facts": [
+      "The grouped bar chart compares Internet, radio, TV and newspaper figures in the UK for 2001, 2003 and 2005.",
+      "Internet increases from 40 to 50 to 60 percent, while radio falls from 63 to 50 to 40 percent.",
+      "TV is almost unchanged at 20, 20 and 19 percent; newspapers have the lowest figures at 5, 3 and 3 percent.",
+      "Radio leads initially, but Internet is highest by 2005."
+    ],
+    "sample": "The given image provides the detailed information about media in uk. The grouped bar chart compares Internet, radio, TV and newspaper figures in the UK for 2001, 2003 and 2005. Internet increases from 40 to 50 to 60 percent, while radio falls from 63 to 50 to 40 percent. TV is almost unchanged at 20, 20 and 19 percent; newspapers have the lowest figures at 5, 3 and 3 percent.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000537",
+      "sourceTitle": "Media in UK",
+      "suppliedFile": "KEEP__089__media-in-uk-de46636d.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 89,
+      "collectionOriginalSha256": "de46636d420dd94691a13f0beeeecfb69850333fc1192cb794cbc010c1ae33ec",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Media in UK",
+      "description": "The grouped bar chart compares Internet, radio, TV and newspaper figures in the UK for 2001, 2003 and 2005. Internet increases from 40 to 50 to 60 percent, while radio falls from 63 to 50 to 40 percent. TV is almost unchanged at 20, 20 and 19 percent; newspapers have the lowest figures at 5, 3 and 3 percent. Radio leads initially, but Internet is highest by 2005."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000532",
+    "title": "Total Solar Eclipse",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000532.jpg",
+    "facts": [
+      "The diagram explains how a total solar eclipse works.",
+      "The Moon is between the Sun and Earth, and its shadow falls onto Earth.",
+      "The umbra is labelled as the shadow's fully shaded core and the penumbra as its partially shaded outer region.",
+      "The image also shows the Moon's and Earth's orbits and the location of the total eclipse."
+    ],
+    "sample": "The given image provides the detailed information about total solar eclipse. The diagram explains how a total solar eclipse works. The Moon is between the Sun and Earth, and its shadow falls onto Earth. The umbra is labelled as the shadow's fully shaded core and the penumbra as its partially shaded outer region.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000532",
+      "sourceTitle": "Total Solar Eclipse",
+      "suppliedFile": "KEEP__090__total-solar-eclipse-410121f8.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 90,
+      "collectionOriginalSha256": "410121f8ad52fbd7efd85f5739875a7993be1521c27ce07c7a3a3346edc43ed1",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Total Solar Eclipse",
+      "description": "The diagram explains how a total solar eclipse works. The Moon is between the Sun and Earth, and its shadow falls onto Earth. The umbra is labelled as the shadow's fully shaded core and the penumbra as its partially shaded outer region. The image also shows the Moon's and Earth's orbits and the location of the total eclipse."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000517",
+    "title": "Fish Size Chart",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000517.jpg",
+    "facts": [
+      "The picture compares the length of a fish at four ages.",
+      "At one year the fish is 9 centimetres long, at two years 14 centimetres, and at three years 16 centimetres.",
+      "At four years it reaches 25 centimetres, the longest displayed length.",
+      "Fish length increases with age, with the largest shown gain between three and four years."
+    ],
+    "sample": "The given image provides the detailed information about fish size chart. The picture compares the length of a fish at four ages. At one year the fish is 9 centimetres long, at two years 14 centimetres, and at three years 16 centimetres. At four years it reaches 25 centimetres, the longest displayed length.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000517",
+      "sourceTitle": "Fish Size Chart",
+      "suppliedFile": "KEEP__091__fish-size-chart-84974f79.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 91,
+      "collectionOriginalSha256": "84974f7912e7ee2475404649482d808fd07707b7be679fecb57f521757dfb14f",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Fish Size Chart",
+      "description": "The picture compares the length of a fish at four ages. At one year the fish is 9 centimetres long, at two years 14 centimetres, and at three years 16 centimetres. At four years it reaches 25 centimetres, the longest displayed length. Fish length increases with age, with the largest shown gain between three and four years."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000508",
+    "title": "UK Visitor Movement",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3000508.jpg",
+    "facts": [
+      "The line graph compares overseas residents' visits to the UK and UK residents' visits abroad from 1989 to 2009, in millions.",
+      "UK residents' visits abroad are higher throughout, rising from around 30 million to a peak near 70 million before falling to around 60 million.",
+      "Overseas visits to the UK increase more modestly, from roughly 18 million to around 30 million.",
+      "Both series decline towards the end, and outbound visits remain well above inbound visits."
+    ],
+    "sample": "The given image provides the detailed information about uk visitor movement. The line graph compares overseas residents' visits to the UK and UK residents' visits abroad from 1989 to 2009, in millions. UK residents' visits abroad are higher throughout, rising from around 30 million to a peak near 70 million before falling to around 60 million. Overseas visits to the UK increase more modestly, from roughly 18 million to around 30 million.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000508",
+      "sourceTitle": "UK Visitor Movement",
+      "suppliedFile": "KEEP__092__uk-visitor-movement-a219b2f1.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 92,
+      "collectionOriginalSha256": "a219b2f1c29ffa787b71b40aed1faebf90b7b71c890db83156ec4d688f62690a",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "UK Visitor Movement",
+      "description": "The line graph compares overseas residents' visits to the UK and UK residents' visits abroad from 1989 to 2009, in millions. UK residents' visits abroad are higher throughout, rising from around 30 million to a peak near 70 million before falling to around 60 million. Overseas visits to the UK increase more modestly, from roughly 18 million to around 30 million. Both series decline towards the end, and outbound visits remain well above inbound visits."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000500",
+    "title": "Fishes & Moon Phases",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000500.jpg",
+    "facts": [
+      "The image compares underwater fish distributions beneath four different phases of the Moon.",
+      "The panels show crescent, half, full and crescent-shaped moons above the water.",
+      "Fish are concentrated at different depths in the panels, with a cluster near the bottom in the left panel and more scattered fish in the full-moon panel.",
+      "There is no numerical catch-rate scale or printed fish-count data, so exact catch rates cannot be verified."
+    ],
+    "sample": "The given image provides the detailed information about fishes & moon phases. The image compares underwater fish distributions beneath four different phases of the Moon. The panels show crescent, half, full and crescent-shaped moons above the water. Fish are concentrated at different depths in the panels, with a cluster near the bottom in the left panel and more scattered fish in the full-moon panel.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000500",
+      "sourceTitle": "Fishes & Moon Phases",
+      "suppliedFile": "KEEP__093__fishes---moon-phases-b23987f6.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 93,
+      "collectionOriginalSha256": "b23987f69f15ca062323afdb694de763dd38e1c7196d7b32bf0d47bde7985ecb",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Fishes & Moon Phases",
+      "description": "The image compares underwater fish distributions beneath four different phases of the Moon. The panels show crescent, half, full and crescent-shaped moons above the water. Fish are concentrated at different depths in the panels, with a cluster near the bottom in the left panel and more scattered fish in the full-moon panel. There is no numerical catch-rate scale or printed fish-count data, so exact catch rates cannot be verified."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000339",
+    "title": "Sweden Government Budget",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000339.jpg",
+    "facts": [
+      "The infographic shows Sweden's government budget in 2018, in billions of Swedish kronor.",
+      "Revenue is 1043 billion SEK and expenditure is 999 billion SEK.",
+      "Revenue exceeds expenditure, producing a budget surplus of 44 billion SEK."
+    ],
+    "sample": "The given image provides the detailed information about sweden government budget. The infographic shows Sweden's government budget in 2018, in billions of Swedish kronor. Revenue is 1043 billion SEK and expenditure is 999 billion SEK. Revenue exceeds expenditure, producing a budget surplus of 44 billion SEK.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000339",
+      "sourceTitle": "Sweden Government Budget",
+      "suppliedFile": "KEEP__094__sweden-government-budget-903f431a.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 94,
+      "collectionOriginalSha256": "903f431a533852b03235e9daf2e04e874a4c8c0814d6d041c05a54fbc75d0b59",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Sweden Government Budget",
+      "description": "The infographic shows Sweden's government budget in 2018, in billions of Swedish kronor. Revenue is 1043 billion SEK and expenditure is 999 billion SEK. Revenue exceeds expenditure, producing a budget surplus of 44 billion SEK."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000324",
+    "title": "Vancouver Airport",
+    "imageCategory": "mixed",
+    "imageUrl": "/assets/di-predictions-20260930/3000324.jpg",
+    "facts": [
+      "The mixed chart shows monthly temperature and precipitation at Vancouver International Airport.",
+      "The temperature line rises from about 4 degrees Celsius in January to around 18 degrees in July and August, then falls towards winter.",
+      "Precipitation is lowest in July and August. It peaks in November at about 180 millimetres, with December slightly lower.",
+      "The warmer summer months are drier, while the cooler winter months are wetter."
+    ],
+    "sample": "The given image provides the detailed information about vancouver airport. The mixed chart shows monthly temperature and precipitation at Vancouver International Airport. The temperature line rises from about 4 degrees Celsius in January to around 18 degrees in July and August, then falls towards winter. Precipitation is lowest in July and August. It peaks in November at about 180 millimetres, with December slightly lower.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000324",
+      "sourceTitle": "Vancouver Airport",
+      "suppliedFile": "KEEP__095__vancouver-airport-920f4824.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 95,
+      "collectionOriginalSha256": "920f48241bac2c623bf22149298107945ace81acf43e6372a911017816a03694",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "mixed",
+      "title": "Vancouver Airport",
+      "description": "The mixed chart shows monthly temperature and precipitation at Vancouver International Airport. The temperature line rises from about 4 degrees Celsius in January to around 18 degrees in July and August, then falls towards winter. Precipitation is lowest in July and August. It peaks in November at about 180 millimetres, with December slightly lower. The warmer summer months are drier, while the cooler winter months are wetter."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000311",
+    "title": "Employment Rates",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3000311.jpg",
+    "facts": [
+      "The grouped bar chart compares male and female employment rates in Australia, Switzerland, Iceland, the UK, New Zealand and the USA in 1995 and 2005.",
+      "Male rates are higher than female rates in each country and year. For both men and women, employment rates are higher in 2005 than in 1995 in every displayed country.",
+      "Iceland has the highest displayed male rate, just over 80 percent in 2005.",
+      "Female rates also rise across all countries, with the lowest displayed female rates in 1995 around 25–30 percent in New Zealand and Australia."
+    ],
+    "sample": "The given image provides the detailed information about employment rates. The grouped bar chart compares male and female employment rates in Australia, Switzerland, Iceland, the UK, New Zealand and the USA in 1995 and 2005. Male rates are higher than female rates in each country and year. For both men and women, employment rates are higher in 2005 than in 1995 in every displayed country. Iceland has the highest displayed male rate, just over 80 percent in 2005.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000311",
+      "sourceTitle": "Employment Rates",
+      "suppliedFile": "KEEP__096__employment-rates-6d9da9c6.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 96,
+      "collectionOriginalSha256": "6d9da9c635a47f252e3f216a7f969b0a17fa1e3cf6ea7654903e0059dd76ff72",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Employment Rates",
+      "description": "The grouped bar chart compares male and female employment rates in Australia, Switzerland, Iceland, the UK, New Zealand and the USA in 1995 and 2005. Male rates are higher than female rates in each country and year. For both men and women, employment rates are higher in 2005 than in 1995 in every displayed country. Iceland has the highest displayed male rate, just over 80 percent in 2005. Female rates also rise across all countries, with the lowest displayed female rates in 1995 around 25–30 percent in New Zealand and Australia."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000307",
+    "title": "Home Activity Hours",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3000307.jpg",
+    "facts": [
+      "The grouped bar chart compares men's and women's average weekly hours on activities around the home.",
+      "Women spend more time cooking, cleaning, washing up and reading; men spend more time gardening, surfing the Internet and watching television.",
+      "Cooking takes about 15 hours for women and 9 for men, while Internet use takes about 12 hours for men and 4 for women.",
+      "Television accounts for approximately 14 hours for men and 12 for women; gardening is among the smallest categories for both."
+    ],
+    "sample": "The given image provides the detailed information about home activity hours. The grouped bar chart compares men's and women's average weekly hours on activities around the home. Women spend more time cooking, cleaning, washing up and reading; men spend more time gardening, surfing the Internet and watching television. Cooking takes about 15 hours for women and 9 for men, while Internet use takes about 12 hours for men and 4 for women.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000307",
+      "sourceTitle": "Home Activity Hours",
+      "suppliedFile": "KEEP__097__home-activity-hours-e7964be9.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 97,
+      "collectionOriginalSha256": "e7964be9956a7d8a26c2f252cad904a7526d7e40db5a918a2ad2f9172f21458a",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Home Activity Hours",
+      "description": "The grouped bar chart compares men's and women's average weekly hours on activities around the home. Women spend more time cooking, cleaning, washing up and reading; men spend more time gardening, surfing the Internet and watching television. Cooking takes about 15 hours for women and 9 for men, while Internet use takes about 12 hours for men and 4 for women. Television accounts for approximately 14 hours for men and 12 for women; gardening is among the smallest categories for both."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000295",
+    "title": "Sports Player's Salaries",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3000295.jpg",
+    "facts": [
+      "The line graph shows annual salaries of baseball, football and basketball players from 1970 to 2000, in US dollars.",
+      "All three sports show an overall increase; basketball rises fastest and finishes highest at roughly 2.3 million dollars.",
+      "Baseball ends around 1.6 million dollars, while football ends lowest at about 0.75 million.",
+      "Football peaks around 1995 and then declines slightly, while the other two series continue increasing."
+    ],
+    "sample": "The given image provides the detailed information about sports player's salaries. The line graph shows annual salaries of baseball, football and basketball players from 1970 to 2000, in US dollars. All three sports show an overall increase; basketball rises fastest and finishes highest at roughly 2.3 million dollars. Baseball ends around 1.6 million dollars, while football ends lowest at about 0.75 million.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000295",
+      "sourceTitle": "Sports Player's Salaries",
+      "suppliedFile": "KEEP__098__sports-player-s-salaries-9f36567d.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 98,
+      "collectionOriginalSha256": "9f36567d9bdc94e8c4e30936f5574b6705028ef56ea3e87a3dca73f3b2b87585",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Sports Player's Salaries",
+      "description": "The line graph shows annual salaries of baseball, football and basketball players from 1970 to 2000, in US dollars. All three sports show an overall increase; basketball rises fastest and finishes highest at roughly 2.3 million dollars. Baseball ends around 1.6 million dollars, while football ends lowest at about 0.75 million. Football peaks around 1995 and then declines slightly, while the other two series continue increasing."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000268",
+    "title": "Food and Oil Prices (source image variant)",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3000268.jpg",
+    "facts": [
+      "The line graph compares oil prices and a food-price index from 2000 to 2009, using separate vertical scales.",
+      "Both series rise overall towards a major peak around 2008, then fall sharply.",
+      "Both recover after the drop, although the ending values remain below their earlier peaks.",
+      "Oil prices are measured in dollars on the left axis, while the food-price index uses the right axis; their numbers are not directly interchangeable."
+    ],
+    "sample": "The given image provides the detailed information about food and oil prices (source image variant). The line graph compares oil prices and a food-price index from 2000 to 2009, using separate vertical scales. Both series rise overall towards a major peak around 2008, then fall sharply. Both recover after the drop, although the ending values remain below their earlier peaks.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000268",
+      "sourceTitle": "Food and Oil Prices",
+      "suppliedFile": "KEEP__099__food-and-oil-prices-9eb4caa7.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 99,
+      "collectionOriginalSha256": "9eb4caa7a63b6248c333960cc4cfd85e2adaa477e611a07ae5aa92cd7b31a09c",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111723",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Food and Oil Prices (source image variant)",
+      "description": "The line graph compares oil prices and a food-price index from 2000 to 2009, using separate vertical scales. Both series rise overall towards a major peak around 2008, then fall sharply. Both recover after the drop, although the ending values remain below their earlier peaks. Oil prices are measured in dollars on the left axis, while the food-price index uses the right axis; their numbers are not directly interchangeable."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000251",
+    "title": "Stock Market",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3000251.jpg",
+    "facts": [
+      "The line graph shows the S&P/ASX 200 stock index during a trading day.",
+      "The index rises sharply after 10:00 and fluctuates close to 3500 in the late morning.",
+      "It then falls and rebounds several times before ending the plotted segment around 3480 shortly after noon.",
+      "The printed time axis continues to 4:00, but the data line stops much earlier; no later movements are shown."
+    ],
+    "sample": "The given image provides the detailed information about stock market. The line graph shows the S&P/ASX 200 stock index during a trading day. The index rises sharply after 10:00 and fluctuates close to 3500 in the late morning. It then falls and rebounds several times before ending the plotted segment around 3480 shortly after noon.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000251",
+      "sourceTitle": "Stock Market",
+      "suppliedFile": "KEEP__100__stock-market-78aedeee.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 100,
+      "collectionOriginalSha256": "78aedeeee84c5bb48a41d710d0ea318ddf748dc08e8dc4784b50fdfa44d2eebb",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Stock Market",
+      "description": "The line graph shows the S&P/ASX 200 stock index during a trading day. The index rises sharply after 10:00 and fluctuates close to 3500 in the late morning. It then falls and rebounds several times before ending the plotted segment around 3480 shortly after noon. The printed time axis continues to 4:00, but the data line stops much earlier; no later movements are shown."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000250",
+    "title": "Population in European Countries",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3000250.jpg",
+    "facts": [
+      "The grouped bar chart compares populations of seven major European countries in an earlier year and in 2007, in millions.",
+      "Germany has the largest displayed population at just over 80 million in both periods, while Poland has the smallest at roughly 38 million.",
+      "Turkey shows the largest increase, from just over 60 million to about 73 million; Spain, France, Italy and the UK also rise.",
+      "The title labels the earlier year 1997, while the legend labels it 1996; either label should be treated as a source inconsistency rather than a learner error."
+    ],
+    "sample": "The given image provides the detailed information about population in european countries. The grouped bar chart compares populations of seven major European countries in an earlier year and in 2007, in millions. Germany has the largest displayed population at just over 80 million in both periods, while Poland has the smallest at roughly 38 million. Turkey shows the largest increase, from just over 60 million to about 73 million; Spain, France, Italy and the UK also rise.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000250",
+      "sourceTitle": "Population in European Countries",
+      "suppliedFile": "KEEP__101__population-in-european-countries-d5121fc4.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 101,
+      "collectionOriginalSha256": "d5121fc4ec18024349dcf222cec5eb76094ec9c69b6001f8d425ce9e666d0dd1",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Population in European Countries",
+      "description": "The grouped bar chart compares populations of seven major European countries in an earlier year and in 2007, in millions. Germany has the largest displayed population at just over 80 million in both periods, while Poland has the smallest at roughly 38 million. Turkey shows the largest increase, from just over 60 million to about 73 million; Spain, France, Italy and the UK also rise. The title labels the earlier year 1997, while the legend labels it 1996; either label should be treated as a source inconsistency rather than a learner error."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000243",
+    "title": "Oxbow Lake",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/3000243.jpg",
+    "facts": [
+      "The two diagrams show the formation of an oxbow lake from a river meander.",
+      "In the first stage the river loops around a narrow neck of land.",
+      "A new channel cuts across the neck, while sand and silt block the old loop.",
+      "The cut-off loop becomes an oxbow lake, separate from the main channel."
+    ],
+    "sample": "The given image provides the detailed information about oxbow lake. The two diagrams show the formation of an oxbow lake from a river meander. In the first stage the river loops around a narrow neck of land. A new channel cuts across the neck, while sand and silt block the old loop.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000243",
+      "sourceTitle": "Oxbow Lake",
+      "suppliedFile": "KEEP__102__oxbow-lake-1a4fc92c.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 102,
+      "collectionOriginalSha256": "1a4fc92cfbacc2b1e7ad9dd32e0dcedcd55422e8bd56a07c4880714979aa0a11",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Oxbow Lake",
+      "description": "The two diagrams show the formation of an oxbow lake from a river meander. In the first stage the river loops around a narrow neck of land. A new channel cuts across the neck, while sand and silt block the old loop. The cut-off loop becomes an oxbow lake, separate from the main channel."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000241",
+    "title": "Laws in Brazil",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3000241.jpg",
+    "facts": [
+      "The line graph shows the number of laws in Brazil from 1953 to 1993.",
+      "The number rises overall from roughly 100 to more than 2200.",
+      "Growth is gradual at first and becomes much faster towards the end of the period.",
+      "A short flatter section in the 1980s is followed by a steep final rise."
+    ],
+    "sample": "The given image provides the detailed information about laws in brazil. The line graph shows the number of laws in Brazil from 1953 to 1993. The number rises overall from roughly 100 to more than 2200. Growth is gradual at first and becomes much faster towards the end of the period.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000241",
+      "sourceTitle": "Laws in Brazil",
+      "suppliedFile": "KEEP__103__laws-in-brazil-4aa7934c.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 103,
+      "collectionOriginalSha256": "4aa7934c5eb609182196470755f03cd29be342207392f46125cbe0445c141ed3",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Laws in Brazil",
+      "description": "The line graph shows the number of laws in Brazil from 1953 to 1993. The number rises overall from roughly 100 to more than 2200. Growth is gradual at first and becomes much faster towards the end of the period. A short flatter section in the 1980s is followed by a steep final rise."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000234",
+    "title": "Library Plan",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/3000234.jpg",
+    "facts": [
+      "The library plan shows five numbered rooms or areas, an entrance, a corridor, toilets and an elevator.",
+      "Areas 1, 2 and 3 run across the top, with area 3 the widest of those three.",
+      "Areas 4 and 5 are below the corridor; female and male toilets and the elevator are to the lower right.",
+      "The numbered function key has blank descriptions, so the uses of areas 1–5 are not specified in the source."
+    ],
+    "sample": "The given image provides the detailed information about library plan. The library plan shows five numbered rooms or areas, an entrance, a corridor, toilets and an elevator. Areas 1, 2 and 3 run across the top, with area 3 the widest of those three. Areas 4 and 5 are below the corridor; female and male toilets and the elevator are to the lower right.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000234",
+      "sourceTitle": "Library Plan",
+      "suppliedFile": "UNCLEAR__104__library-plan-c0ec8d82.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 104,
+      "collectionOriginalSha256": "c0ec8d828879c98ec78da1e499edb8963bc185aba25f8e0d15e28c752662545a",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Library Plan",
+      "description": "The library plan shows five numbered rooms or areas, an entrance, a corridor, toilets and an elevator. Areas 1, 2 and 3 run across the top, with area 3 the widest of those three. Areas 4 and 5 are below the corridor; female and male toilets and the elevator are to the lower right. The numbered function key has blank descriptions, so the uses of areas 1–5 are not specified in the source."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000233",
+    "title": "Types of Trees (source image variant)",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000233.jpg",
+    "facts": [
+      "The diagram compares the heights of four tree species in feet.",
+      "Hemlock is shortest at 130 feet, followed by Cedar at 200 feet and Spruce at 230 feet.",
+      "Douglas Fir is tallest at 280 feet.",
+      "The displayed tree heights increase from left to right."
+    ],
+    "sample": "The given image provides the detailed information about types of trees (source image variant). The diagram compares the heights of four tree species in feet. Hemlock is shortest at 130 feet, followed by Cedar at 200 feet and Spruce at 230 feet. Douglas Fir is tallest at 280 feet.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000233",
+      "sourceTitle": "Types of Trees",
+      "suppliedFile": "KEEP__105__types-of-trees-79bf3927.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 105,
+      "collectionOriginalSha256": "79bf3927697a9c8e2e226f064b4c999fcca14c53455fd3d3d8cb360799688fe6",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111717",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Types of Trees (source image variant)",
+      "description": "The diagram compares the heights of four tree species in feet. Hemlock is shortest at 130 feet, followed by Cedar at 200 feet and Spruce at 230 feet. Douglas Fir is tallest at 280 feet. The displayed tree heights increase from left to right."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000229",
+    "title": "Temperature and CO2",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3000229.jpg",
+    "facts": [
+      "The line graph compares temperature and carbon-dioxide levels over the last 400000 years.",
+      "Temperature is shown in Fahrenheit relative to today on the left axis, and CO2 in parts per million on the right.",
+      "Both series show repeated rises and falls, with many peaks occurring at similar times.",
+      "Near the present the CO2 line rises sharply above earlier peaks; the graph shows association, not a separate causal experiment."
+    ],
+    "sample": "The given image provides the detailed information about temperature and co2. The line graph compares temperature and carbon-dioxide levels over the last 400000 years. Temperature is shown in Fahrenheit relative to today on the left axis, and CO2 in parts per million on the right. Both series show repeated rises and falls, with many peaks occurring at similar times.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000229",
+      "sourceTitle": "Temperature and CO2",
+      "suppliedFile": "KEEP__106__temperature-and-co2-c46d6f89.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 106,
+      "collectionOriginalSha256": "c46d6f896c27d9c578f74bdaf64e46fbe9bba5be7cf476e41f33ad55271e2b40",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Temperature and CO2",
+      "description": "The line graph compares temperature and carbon-dioxide levels over the last 400000 years. Temperature is shown in Fahrenheit relative to today on the left axis, and CO2 in parts per million on the right. Both series show repeated rises and falls, with many peaks occurring at similar times. Near the present the CO2 line rises sharply above earlier peaks; the graph shows association, not a separate causal experiment."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000224",
+    "title": "Food Pyramid",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000224.jpg",
+    "facts": [
+      "The food pyramid arranges food and drink groups in layers.",
+      "Water forms the broad base, followed by bread and cereals and fruits and vegetables.",
+      "Milk, cheese and eggs and meat, poultry, sausage and fish occupy the next layer.",
+      "Junk food, sweets and sugar drinks occupy the small top layer."
+    ],
+    "sample": "The given image provides the detailed information about food pyramid. The food pyramid arranges food and drink groups in layers. Water forms the broad base, followed by bread and cereals and fruits and vegetables. Milk, cheese and eggs and meat, poultry, sausage and fish occupy the next layer.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000224",
+      "sourceTitle": "Food Pyramid",
+      "suppliedFile": "KEEP__107__food-pyramid-0d61190a.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 107,
+      "collectionOriginalSha256": "0d61190a0e3331a46911bee4276dce2a8f10af8eda4709dbcd62647a80263c8f",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Food Pyramid",
+      "description": "The food pyramid arranges food and drink groups in layers. Water forms the broad base, followed by bread and cereals and fruits and vegetables. Milk, cheese and eggs and meat, poultry, sausage and fish occupy the next layer. Junk food, sweets and sugar drinks occupy the small top layer."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000222",
+    "title": "Precipitation Process",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/3000222.jpg",
+    "facts": [
+      "The diagram illustrates the water cycle between a body of water, clouds, mountains and rivers.",
+      "Water evaporates from the surface and moves into the atmosphere.",
+      "Clouds are transported towards land and precipitation falls over the mountains.",
+      "Water flows through rivers and the ground back towards the larger body of water, completing the cycle."
+    ],
+    "sample": "The given image provides the detailed information about precipitation process. The diagram illustrates the water cycle between a body of water, clouds, mountains and rivers. Water evaporates from the surface and moves into the atmosphere. Clouds are transported towards land and precipitation falls over the mountains.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000222",
+      "sourceTitle": "Precipitation Process",
+      "suppliedFile": "KEEP__108__precipitation-process-0b7855dd.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 108,
+      "collectionOriginalSha256": "0b7855dd34704d71469c9533f60c70d1fc09ac664c73340e1dab8c29cbfa65fe",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Precipitation Process",
+      "description": "The diagram illustrates the water cycle between a body of water, clouds, mountains and rivers. Water evaporates from the surface and moves into the atmosphere. Clouds are transported towards land and precipitation falls over the mountains. Water flows through rivers and the ground back towards the larger body of water, completing the cycle."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000217",
+    "title": "Process of Germination",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/3000217.jpg",
+    "facts": [
+      "The diagram shows successive stages of seed germination in soil.",
+      "A root emerges from the seed and grows downwards.",
+      "A shoot grows upwards through the soil, then raises the seed leaves above the surface.",
+      "Leaves develop and the root system becomes larger as the young plant grows."
+    ],
+    "sample": "The given image provides the detailed information about process of germination. The diagram shows successive stages of seed germination in soil. A root emerges from the seed and grows downwards. A shoot grows upwards through the soil, then raises the seed leaves above the surface.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000217",
+      "sourceTitle": "Process of Germination",
+      "suppliedFile": "KEEP__109__process-of-germination-5a2e0f89.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 109,
+      "collectionOriginalSha256": "5a2e0f89f5a552b8a3811b46cfc4ec0b8b40010f1889191d5fa65d0d9902a611",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Process of Germination",
+      "description": "The diagram shows successive stages of seed germination in soil. A root emerges from the seed and grows downwards. A shoot grows upwards through the soil, then raises the seed leaves above the surface. Leaves develop and the root system becomes larger as the young plant grows."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000216",
+    "title": "Bird Migration Route (source image variant)",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/3000216.jpg",
+    "facts": [
+      "The map shows a bird-migration route between North and South America.",
+      "The breeding range is shaded across northern North America, while the wintering range is in northern and central South America.",
+      "Yellow and green arrows indicate spring and fall migration routes between the two ranges.",
+      "The spring arrow points northwards and the fall arrow southwards."
+    ],
+    "sample": "The given image provides the detailed information about bird migration route (source image variant). The map shows a bird-migration route between North and South America. The breeding range is shaded across northern North America, while the wintering range is in northern and central South America. Yellow and green arrows indicate spring and fall migration routes between the two ranges.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000216",
+      "sourceTitle": "Bird Migration Route",
+      "suppliedFile": "KEEP__110__bird-migration-route-102c6c09.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 110,
+      "collectionOriginalSha256": "102c6c09fb2c5c94de2e7e86d3863ecfc486ddc3438e0de71f9d881d364ef92d",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111722",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Bird Migration Route (source image variant)",
+      "description": "The map shows a bird-migration route between North and South America. The breeding range is shaded across northern North America, while the wintering range is in northern and central South America. Yellow and green arrows indicate spring and fall migration routes between the two ranges. The spring arrow points northwards and the fall arrow southwards."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000213",
+    "title": "Lunar Cycle - Fish Catch Rates",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000213.jpg",
+    "facts": [
+      "The diagram compares fish positions under four lunar phases, from the bottom to the surface of the water.",
+      "Fish are clustered near the bottom in the first panel and around mid-depth in the second.",
+      "The full-moon panel has fewer, more scattered fish, while the last crescent panel has a cluster nearer the surface.",
+      "Although the title refers to catch rates, no numeric catch-rate values are printed; describe the visible fish distributions rather than inventing measured rates."
+    ],
+    "sample": "The given image provides the detailed information about lunar cycle - fish catch rates. The diagram compares fish positions under four lunar phases, from the bottom to the surface of the water. Fish are clustered near the bottom in the first panel and around mid-depth in the second. The full-moon panel has fewer, more scattered fish, while the last crescent panel has a cluster nearer the surface.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000213",
+      "sourceTitle": "Lunar Cycle - Fish Catch Rates",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 111,
+      "collectionOriginalSha256": "8ab23a16339141f15a5ebcfe30ab21c08975d2dbf4a98083c8167d7c3bc0cde8",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "page": 24
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Lunar Cycle - Fish Catch Rates",
+      "description": "The diagram compares fish positions under four lunar phases, from the bottom to the surface of the water. Fish are clustered near the bottom in the first panel and around mid-depth in the second. The full-moon panel has fewer, more scattered fish, while the last crescent panel has a cluster nearer the surface. Although the title refers to catch rates, no numeric catch-rate values are printed; describe the visible fish distributions rather than inventing measured rates."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000208",
+    "title": "Solar Yard Lights",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000208.jpg",
+    "facts": [
+      "The exploded diagram shows the parts of a solar yard light.",
+      "A glass cover is at the top, with solar cells and a photoresistor below it.",
+      "A battery, controller board and LED are arranged inside the body above the lamp cover.",
+      "The parts are shown separated vertically to explain how they fit together."
+    ],
+    "sample": "The given image provides the detailed information about solar yard lights. The exploded diagram shows the parts of a solar yard light. A glass cover is at the top, with solar cells and a photoresistor below it. A battery, controller board and LED are arranged inside the body above the lamp cover.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000208",
+      "sourceTitle": "Solar Yard Lights",
+      "suppliedFile": "KEEP__112__solar-yard-lights-d406361a.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 112,
+      "collectionOriginalSha256": "d406361a8e49d45ab26466486c97408ebe41693335bfe58707ba22f412a9e76b",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Solar Yard Lights",
+      "description": "The exploded diagram shows the parts of a solar yard light. A glass cover is at the top, with solar cells and a photoresistor below it. A battery, controller board and LED are arranged inside the body above the lamp cover. The parts are shown separated vertically to explain how they fit together."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000202",
+    "title": "Global Warming Predictions (source image variant)",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/3000202.jpg",
+    "facts": [
+      "The world map shows predicted temperature increases for 2070–2100 compared with the 1960–1990 average.",
+      "The colour scale runs from 0 to 8 degrees Celsius, from light colours to dark red.",
+      "Much of the northern high latitudes and parts of South America show larger projected increases than many ocean areas.",
+      "The map presents model predictions, not observed temperatures for those future years."
+    ],
+    "sample": "The given image provides the detailed information about global warming predictions (source image variant). The world map shows predicted temperature increases for 2070–2100 compared with the 1960–1990 average. The colour scale runs from 0 to 8 degrees Celsius, from light colours to dark red. Much of the northern high latitudes and parts of South America show larger projected increases than many ocean areas.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000202",
+      "sourceTitle": "Global Warming Predictions",
+      "suppliedFile": "KEEP__113__global-warming-predictions-9a36febc.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 113,
+      "collectionOriginalSha256": "9a36febcf0d8a09f13093e1753f7a4560ec3ea3ec979cfbab8f454bf835eba1c",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111719",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Global Warming Predictions (source image variant)",
+      "description": "The world map shows predicted temperature increases for 2070–2100 compared with the 1960–1990 average. The colour scale runs from 0 to 8 degrees Celsius, from light colours to dark red. Much of the northern high latitudes and parts of South America show larger projected increases than many ocean areas. The map presents model predictions, not observed temperatures for those future years."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000199",
+    "title": "Adult BMI Chart",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000199.jpg",
+    "facts": [
+      "The adult BMI chart relates height in metres to weight in kilograms.",
+      "Coloured diagonal bands mark underweight, healthy weight, overweight, obese and extreme obese categories.",
+      "At a given height, higher weight moves upwards through the bands; at a given weight, greater height moves towards lower BMI categories.",
+      "The figure shows categories for combinations of height and weight rather than separate percentages or a time trend."
+    ],
+    "sample": "The given image provides the detailed information about adult bmi chart. The adult BMI chart relates height in metres to weight in kilograms. Coloured diagonal bands mark underweight, healthy weight, overweight, obese and extreme obese categories. At a given height, higher weight moves upwards through the bands; at a given weight, greater height moves towards lower BMI categories.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000199",
+      "sourceTitle": "Adult BMI Chart",
+      "suppliedFile": "KEEP__114__adult-bmi-chart-84fda56b.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 114,
+      "collectionOriginalSha256": "84fda56b8f57a8fb6db060d32cd8c651e530b25837648c6f378371e4f9d6f8a2",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Adult BMI Chart",
+      "description": "The adult BMI chart relates height in metres to weight in kilograms. Coloured diagonal bands mark underweight, healthy weight, overweight, obese and extreme obese categories. At a given height, higher weight moves upwards through the bands; at a given weight, greater height moves towards lower BMI categories. The figure shows categories for combinations of height and weight rather than separate percentages or a time trend."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000185",
+    "title": "Household Energy Consumption",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/3000185.jpg",
+    "facts": [
+      "The pie chart shows average household energy consumption.",
+      "Other appliances account for 24 percent, water heating 23 percent, and heating and cooling 20 percent.",
+      "Refrigeration uses 12 percent and lighting 11 percent.",
+      "Cooking and standby power are joint smallest at 5 percent each."
+    ],
+    "sample": "The given image provides the detailed information about household energy consumption. The pie chart shows average household energy consumption. Other appliances account for 24 percent, water heating 23 percent, and heating and cooling 20 percent. Refrigeration uses 12 percent and lighting 11 percent.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000185",
+      "sourceTitle": "Household Energy Consumption",
+      "suppliedFile": "KEEP__115__household-energy-consumption-bb335cd5.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 115,
+      "collectionOriginalSha256": "bb335cd5f629530faa6a62ba418730ea96683e56e824b14c44d52e8ccc9b77dd",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "Household Energy Consumption",
+      "description": "The pie chart shows average household energy consumption. Other appliances account for 24 percent, water heating 23 percent, and heating and cooling 20 percent. Refrigeration uses 12 percent and lighting 11 percent. Cooking and standby power are joint smallest at 5 percent each."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000172",
+    "title": "Jill's Math Scores",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3000172.jpg",
+    "facts": [
+      "The line graph shows Jill's secondary-school maths scores by grade, as percentages.",
+      "The scores are 72 in grade 7, 75 in grade 8 and 81 in grade 9.",
+      "There is a slight dip to 80 in grade 10, followed by 83 in grade 11 and the highest score, 91, in grade 12.",
+      "The overall trend is upward, with the largest increase between grades 11 and 12."
+    ],
+    "sample": "The given image provides the detailed information about jill's math scores. The line graph shows Jill's secondary-school maths scores by grade, as percentages. The scores are 72 in grade 7, 75 in grade 8 and 81 in grade 9. There is a slight dip to 80 in grade 10, followed by 83 in grade 11 and the highest score, 91, in grade 12.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000172",
+      "sourceTitle": "Jill's Math Scores",
+      "suppliedFile": "KEEP__116__jill-s-math-scores-1f4b6b2e.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 116,
+      "collectionOriginalSha256": "1f4b6b2e6730d60007e6270436c6b69faec53de61ad00fe13836ca7674bb6374",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Jill's Math Scores",
+      "description": "The line graph shows Jill's secondary-school maths scores by grade, as percentages. The scores are 72 in grade 7, 75 in grade 8 and 81 in grade 9. There is a slight dip to 80 in grade 10, followed by 83 in grade 11 and the highest score, 91, in grade 12. The overall trend is upward, with the largest increase between grades 11 and 12."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000161",
+    "title": "Use of Technology",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/3000161.jpg",
+    "facts": [
+      "The bar chart compares numbers of users of six technologies, in millions.",
+      "Telephone is highest at 8 million users, followed by TV at 6 million and computers at about 4.5 million.",
+      "Radio has about 3.5 million users, iPod 1 million and webcam the lowest at about 0.5 million.",
+      "The telephone has far more users than the two smallest categories."
+    ],
+    "sample": "The given image provides the detailed information about use of technology. The bar chart compares numbers of users of six technologies, in millions. Telephone is highest at 8 million users, followed by TV at 6 million and computers at about 4.5 million. Radio has about 3.5 million users, iPod 1 million and webcam the lowest at about 0.5 million.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000161",
+      "sourceTitle": "Use of Technology",
+      "suppliedFile": "KEEP__117__use-of-technology-f479c78c.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 117,
+      "collectionOriginalSha256": "f479c78cb827adf8fc5c210020ee196f63cd38f380f092d2ccf09facda30e176",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Use of Technology",
+      "description": "The bar chart compares numbers of users of six technologies, in millions. Telephone is highest at 8 million users, followed by TV at 6 million and computers at about 4.5 million. Radio has about 3.5 million users, iPod 1 million and webcam the lowest at about 0.5 million. The telephone has far more users than the two smallest categories."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000154",
+    "title": "Iron Age Hut",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/3000154.jpg",
+    "facts": [
+      "The cutaway diagram shows the construction and interior of an Iron Age hut.",
+      "Large timbers support a thick thatched roof, and smoke is released through the thatch without a chimney.",
+      "The interior labels include an upright loom, beds, a main hearth, a small domed kiln and logs for sitting.",
+      "The lower walls are labelled wattle and daub; an upper space is used for smoking and preserving meat and fish."
+    ],
+    "sample": "The given image provides the detailed information about iron age hut. The cutaway diagram shows the construction and interior of an Iron Age hut. Large timbers support a thick thatched roof, and smoke is released through the thatch without a chimney. The interior labels include an upright loom, beds, a main hearth, a small domed kiln and logs for sitting.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000154",
+      "sourceTitle": "Iron Age Hut",
+      "suppliedFile": "KEEP__118__iron-age-hut-e69f1b15.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 118,
+      "collectionOriginalSha256": "e69f1b15e08791bdece18714c941f040c8a999130929f891738876681bf9fcaf",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Iron Age Hut",
+      "description": "The cutaway diagram shows the construction and interior of an Iron Age hut. Large timbers support a thick thatched roof, and smoke is released through the thatch without a chimney. The interior labels include an upright loom, beds, a main hearth, a small domed kiln and logs for sitting. The lower walls are labelled wattle and daub; an upper space is used for smoking and preserving meat and fish."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000148",
+    "title": "Tropical Rain Forests (source image variant)",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/3000148.jpg",
+    "facts": [
+      "The world map shows the distribution of tropical rain forests in green.",
+      "Large areas appear in northern South America, central Africa and Southeast Asia.",
+      "The rain forests are concentrated near the equator rather than in polar regions.",
+      "The background labels continents and oceans, allowing comparisons of where the forests occur."
+    ],
+    "sample": "The given image provides the detailed information about tropical rain forests (source image variant). The world map shows the distribution of tropical rain forests in green. Large areas appear in northern South America, central Africa and Southeast Asia. The rain forests are concentrated near the equator rather than in polar regions.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000148",
+      "sourceTitle": "Tropical Rain Forests",
+      "suppliedFile": "KEEP__119__tropical-rain-forests-223c64ee.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 119,
+      "collectionOriginalSha256": "223c64eebe85b586b20ff349705f71105dd1a754e79d7ddfcd7ea274471327eb",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111750",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Tropical Rain Forests (source image variant)",
+      "description": "The world map shows the distribution of tropical rain forests in green. Large areas appear in northern South America, central Africa and Southeast Asia. The rain forests are concentrated near the equator rather than in polar regions. The background labels continents and oceans, allowing comparisons of where the forests occur."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000145",
+    "title": "Composition of Air (source image variant)",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/3000145.jpg",
+    "facts": [
+      "The pie chart shows the approximate composition of air.",
+      "Nitrogen forms the largest share at 79 percent, oxygen accounts for 20 percent and other gases the smallest share at 1 percent.",
+      "The note says other gases include carbon dioxide at 0.03 percent and small proportions of gases such as argon and water vapour."
+    ],
+    "sample": "The given image provides the detailed information about composition of air (source image variant). The pie chart shows the approximate composition of air. Nitrogen forms the largest share at 79 percent, oxygen accounts for 20 percent and other gases the smallest share at 1 percent. The note says other gases include carbon dioxide at 0.03 percent and small proportions of gases such as argon and water vapour.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000145",
+      "sourceTitle": "Composition of Air",
+      "suppliedFile": "KEEP__120__composition-of-air-fbcdd37c.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 120,
+      "collectionOriginalSha256": "fbcdd37c1f16741a728e31cd795ae79709f9d29ae563375ff44f32cb0d47a28a",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111760",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "Composition of Air (source image variant)",
+      "description": "The pie chart shows the approximate composition of air. Nitrogen forms the largest share at 79 percent, oxygen accounts for 20 percent and other gases the smallest share at 1 percent. The note says other gases include carbon dioxide at 0.03 percent and small proportions of gases such as argon and water vapour."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000141",
+    "title": "Cell Phone Usage",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3000141.jpg",
+    "facts": [
+      "The line graph shows cellphone use in Brazil from 1996 to 2002 for men, women and both sexes.",
+      "The combined series is highest throughout, rising overall from about 3000 to about 3700 people, with a dip around 1999–2000.",
+      "The male and female lines are much lower and close together, generally around 1500–1900 people.",
+      "Both male and female use increase overall despite short-term fluctuations."
+    ],
+    "sample": "The given image provides the detailed information about cell phone usage. The line graph shows cellphone use in Brazil from 1996 to 2002 for men, women and both sexes. The combined series is highest throughout, rising overall from about 3000 to about 3700 people, with a dip around 1999–2000. The male and female lines are much lower and close together, generally around 1500–1900 people.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000141",
+      "sourceTitle": "Cell Phone Usage",
+      "suppliedFile": "KEEP__121__cell-phone-usage-147c2955.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 121,
+      "collectionOriginalSha256": "147c29557c8d98d57dbb3b9534ce46ff5713a8c578b2c80178183d8552f766e2",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Cell Phone Usage",
+      "description": "The line graph shows cellphone use in Brazil from 1996 to 2002 for men, women and both sexes. The combined series is highest throughout, rising overall from about 3000 to about 3700 people, with a dip around 1999–2000. The male and female lines are much lower and close together, generally around 1500–1900 people. Both male and female use increase overall despite short-term fluctuations."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000139",
+    "title": "Beijing Daily Temperatures (source image variant)",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/3000139.jpg",
+    "facts": [
+      "The graph shows average daily high and low temperatures in Beijing across the months of the year, with Celsius and Fahrenheit scales.",
+      "Both lines rise from winter to summer and then decline towards December.",
+      "Daily highs peak around 30 degrees Celsius in June and July, while daily lows peak near 20 degrees in July.",
+      "The lowest temperatures occur in winter, and daily highs remain above daily lows throughout the year."
+    ],
+    "sample": "The given image provides the detailed information about beijing daily temperatures (source image variant). The graph shows average daily high and low temperatures in Beijing across the months of the year, with Celsius and Fahrenheit scales. Both lines rise from winter to summer and then decline towards December. Daily highs peak around 30 degrees Celsius in June and July, while daily lows peak near 20 degrees in July.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000139",
+      "sourceTitle": "Beijing Daily Temperatures",
+      "suppliedFile": "KEEP__122__beijing-daily-temperatures-57f0ec02.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 122,
+      "collectionOriginalSha256": "57f0ec02aa489b25d180d909a787d2847f52cbfa6fadf1fac90bc48c4bf696a4",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/",
+      "sourceVariantOf": "di-user-2026111726",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Beijing Daily Temperatures (source image variant)",
+      "description": "The graph shows average daily high and low temperatures in Beijing across the months of the year, with Celsius and Fahrenheit scales. Both lines rise from winter to summer and then decline towards December. Daily highs peak around 30 degrees Celsius in June and July, while daily lows peak near 20 degrees in July. The lowest temperatures occur in winter, and daily highs remain above daily lows throughout the year."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-pred-3000114",
+    "title": "Water Wheel",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/3000114.jpg",
+    "facts": [
+      "The diagram shows a backshot waterwheel and the direction of its rotation.",
+      "Water travels along the headrace at the top and falls onto the upper part of the wheel.",
+      "The flow turns the wheel and then leaves along the tailrace at the bottom.",
+      "Arrows show the water moving from left to right through the channels and the wheel turning anticlockwise."
+    ],
+    "sample": "The given image provides the detailed information about water wheel. The diagram shows a backshot waterwheel and the direction of its rotation. Water travels along the headrace at the top and falls onto the upper part of the wheel. The flow turns the wheel and then leaves along the tailrace at the bottom.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "3000114",
+      "sourceTitle": "Water Wheel",
+      "suppliedFile": "KEEP__123__water-wheel-ccf79ba8.jpg",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 123,
+      "collectionOriginalSha256": "ccf79ba877c46ec0c417f20d32621b09bb7f9411b41f2064161adb1faab738a9",
+      "sourcePeriodStart": "2026-10-19",
+      "sourcePeriodEnd": "2026-10-25",
+      "url": "https://ptenepal.com/pte-predictions/describe-image/"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Water Wheel",
+      "description": "The diagram shows a backshot waterwheel and the direction of its rotation. Water travels along the headrace at the top and falls onto the upper part of the wheel. The flow turns the wheel and then leaves along the tailrace at the bottom. Arrows show the water moving from left to right through the channels and the wheel turning anticlockwise."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-01",
+    "title": "Egg Freshness Test",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/20261117724.png",
+    "facts": [
+      "The diagram compares four egg positions in glasses of water as a freshness test.",
+      "The fresh egg rests at the bottom; the one-week-old egg tilts upward while remaining near the bottom.",
+      "The stale egg is more upright in the water, while the egg labelled bad floats at the surface."
+    ],
+    "sample": "The given image provides the detailed information about egg freshness test. The diagram compares four egg positions in glasses of water as a freshness test. The fresh egg rests at the bottom; the one-week-old egg tilts upward while remaining near the bottom. The stale egg is more upright in the water, while the egg labelled bad floats at the surface.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-01",
+      "sourceTitle": "Egg Freshness Test",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 124,
+      "collectionOriginalSha256": "7f9ae8267fef443dd24e3630a68119ffa5f7d995198f37900e8c2c2ae54eac86",
+      "page": 2
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Egg Freshness Test",
+      "description": "The diagram compares four egg positions in glasses of water as a freshness test. The fresh egg rests at the bottom; the one-week-old egg tilts upward while remaining near the bottom. The stale egg is more upright in the water, while the egg labelled bad floats at the surface."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-02",
+    "title": "Renewable Energy Share by Sector (source image variant)",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/20261117725.png",
+    "facts": [
+      "The chart compares renewable energy shares in heat, electricity and transport against their targets.",
+      "Electricity has the highest share at 22.31%, against a 30% target.",
+      "Heat has a 5.64% share against a 12% target, and transport has the lowest share at 4.23% against a 10% target.",
+      "All three shares are below their targets."
+    ],
+    "sample": "The given image provides the detailed information about renewable energy share by sector (source image variant). The chart compares renewable energy shares in heat, electricity and transport against their targets. Electricity has the highest share at 22.31%, against a 30% target. Heat has a 5.64% share against a 12% target, and transport has the lowest share at 4.23% against a 10% target.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-02",
+      "sourceTitle": "Renewable Energy Share by Sector",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 125,
+      "collectionOriginalSha256": "7a47f3e84bd664d8f00e05ba87c836e50c6e6a999a6923c9d87741476050093d",
+      "page": 3,
+      "sourceVariantOf": "di-user-2026111743",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Renewable Energy Share by Sector (source image variant)",
+      "description": "The chart compares renewable energy shares in heat, electricity and transport against their targets. Electricity has the highest share at 22.31%, against a 30% target. Heat has a 5.64% share against a 12% target, and transport has the lowest share at 4.23% against a 10% target. All three shares are below their targets."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-03",
+    "title": "Layers of the Earth (source image variant)",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/20261117726.png",
+    "facts": [
+      "The cutaway diagram shows the Earth’s crust, mantle, outer core and inner core.",
+      "The crust is the thin outer layer, the mantle lies below it, and the outer core surrounds the inner core.",
+      "Labels give approximately 800 miles for the inner core, 1,400 miles for the outer core, 1,800 miles for the mantle and 5 to 25 miles for the crust."
+    ],
+    "sample": "The given image provides the detailed information about layers of the earth (source image variant). The cutaway diagram shows the Earth’s crust, mantle, outer core and inner core. The crust is the thin outer layer, the mantle lies below it, and the outer core surrounds the inner core. Labels give approximately 800 miles for the inner core, 1,400 miles for the outer core, 1,800 miles for the mantle and 5 to 25 miles for the crust.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-03",
+      "sourceTitle": "Layers of the Earth",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 126,
+      "collectionOriginalSha256": "8cf504d329ee2c4d36ee0f08fecc3fe3ce45adf8dca554089e2b14fdcbdf9200",
+      "page": 4,
+      "sourceVariantOf": "di-user-2026111718",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Layers of the Earth (source image variant)",
+      "description": "The cutaway diagram shows the Earth’s crust, mantle, outer core and inner core. The crust is the thin outer layer, the mantle lies below it, and the outer core surrounds the inner core. Labels give approximately 800 miles for the inner core, 1,400 miles for the outer core, 1,800 miles for the mantle and 5 to 25 miles for the crust."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-04",
+    "title": "Elderly Care in a Park",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/20261117727.png",
+    "facts": [
+      "The photograph shows a man standing behind a woman seated in a wheelchair in a park.",
+      "They are outdoors on grass, surrounded by trees and green vegetation.",
+      "The man has his hands near the wheelchair handles, and both people appear to be smiling."
+    ],
+    "sample": "The given image provides the detailed information about elderly care in a park. The photograph shows a man standing behind a woman seated in a wheelchair in a park. They are outdoors on grass, surrounded by trees and green vegetation. The man has his hands near the wheelchair handles, and both people appear to be smiling.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-04",
+      "sourceTitle": "Elderly Care in a Park",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 127,
+      "collectionOriginalSha256": "078fd1d48f364d1f2cba53cf525d6984f442bdcebbbf9a6ff5ca5e30cd3fb04f",
+      "page": 5
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Elderly Care in a Park",
+      "description": "The photograph shows a man standing behind a woman seated in a wheelchair in a park. They are outdoors on grass, surrounded by trees and green vegetation. The man has his hands near the wheelchair handles, and both people appear to be smiling."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-05",
+    "title": "Food for Brain Health (source image variant)",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/20261117728.png",
+    "facts": [
+      "The infographic contrasts two head silhouettes filled with different foods under the heading Best Food for Brain Health.",
+      "One head contains items such as burgers, sweets and drinks, while the other contains fruit, vegetables and other foods.",
+      "A low battery symbol appears beside the first head and a fuller battery symbol beside the second."
+    ],
+    "sample": "The given image provides the detailed information about food for brain health (source image variant). The infographic contrasts two head silhouettes filled with different foods under the heading Best Food for Brain Health. One head contains items such as burgers, sweets and drinks, while the other contains fruit, vegetables and other foods. A low battery symbol appears beside the first head and a fuller battery symbol beside the second.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-05",
+      "sourceTitle": "Food for Brain Health",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 128,
+      "collectionOriginalSha256": "e8f153b64415af92759d439b9fca4d66c069fc996fa010c9db8dbd127029a5f6",
+      "page": 6,
+      "sourceVariantOf": "di-pred-3001078",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Food for Brain Health (source image variant)",
+      "description": "The infographic contrasts two head silhouettes filled with different foods under the heading Best Food for Brain Health. One head contains items such as burgers, sweets and drinks, while the other contains fruit, vegetables and other foods. A low battery symbol appears beside the first head and a fuller battery symbol beside the second."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-06",
+    "title": "Healthy Weight: Adult BMI Chart (source image variant)",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/20261117729.png",
+    "facts": [
+      "The chart relates adult height and weight to body mass index categories.",
+      "Height is shown horizontally in centimetres and feet and inches, while weight is shown vertically in kilograms and pounds.",
+      "The coloured regions identify underweight, healthy weight range, overweight and obese, with boundaries labelled BMI 18.5, 25 and 30.",
+      "At a fixed height, increasing weight moves upward through these regions."
+    ],
+    "sample": "The given image provides the detailed information about healthy weight: adult bmi chart (source image variant). The chart relates adult height and weight to body mass index categories. Height is shown horizontally in centimetres and feet and inches, while weight is shown vertically in kilograms and pounds. The coloured regions identify underweight, healthy weight range, overweight and obese, with boundaries labelled BMI 18.5, 25 and 30.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-06",
+      "sourceTitle": "Healthy Weight: Adult BMI Chart",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 129,
+      "collectionOriginalSha256": "c7e404c7e61a1cf28c8941b051b6721dfb0093137179602070289f938f12bb5f",
+      "page": 7,
+      "sourceVariantOf": "di-user-2026111745",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Healthy Weight: Adult BMI Chart (source image variant)",
+      "description": "The chart relates adult height and weight to body mass index categories. Height is shown horizontally in centimetres and feet and inches, while weight is shown vertically in kilograms and pounds. The coloured regions identify underweight, healthy weight range, overweight and obese, with boundaries labelled BMI 18.5, 25 and 30. At a fixed height, increasing weight moves upward through these regions."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-08",
+    "title": "Government Expenditure on Education",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/20261117730.png",
+    "facts": [
+      "The pyramid presents government expenditure on education across four sectors.",
+      "Higher education at the top is labelled $1.8 billion, followed by vocational education and training at $2 billion.",
+      "Schools are labelled $3–4 billion and early childhood $0.8–1.4 billion.",
+      "Schools have the largest labelled expenditure range, although early childhood forms the widest visual tier."
+    ],
+    "sample": "The given image provides the detailed information about government expenditure on education. The pyramid presents government expenditure on education across four sectors. Higher education at the top is labelled $1.8 billion, followed by vocational education and training at $2 billion. Schools are labelled $3–4 billion and early childhood $0.8–1.4 billion.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-08",
+      "sourceTitle": "Government Expenditure on Education",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 130,
+      "collectionOriginalSha256": "1c9b9982f97b89cbc15880556c3c02454019c98b61170ef5f900d9109fe02d00",
+      "page": 10
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Government Expenditure on Education",
+      "description": "The pyramid presents government expenditure on education across four sectors. Higher education at the top is labelled $1.8 billion, followed by vocational education and training at $2 billion. Schools are labelled $3–4 billion and early childhood $0.8–1.4 billion. Schools have the largest labelled expenditure range, although early childhood forms the widest visual tier."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-10",
+    "title": "Formation of Acid Rain",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/20261117731.png",
+    "facts": [
+      "The diagram illustrates the formation of acid rain.",
+      "Buildings and industrial areas appear below a cloud, with the Sun’s energy driving photochemical reactions.",
+      "Oxidation is labelled inside the cloud, and rainfall beneath it is labelled acid rain.",
+      "The rain falls over land, trees and a body of water."
+    ],
+    "sample": "The given image provides the detailed information about formation of acid rain. The diagram illustrates the formation of acid rain. Buildings and industrial areas appear below a cloud, with the Sun’s energy driving photochemical reactions. Oxidation is labelled inside the cloud, and rainfall beneath it is labelled acid rain.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-10",
+      "sourceTitle": "Formation of Acid Rain",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 131,
+      "collectionOriginalSha256": "34d4087be0b580939b14a469c07770e792c88bf9d42cdc400cb2c6c288fad6b7",
+      "page": 14
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Formation of Acid Rain",
+      "description": "The diagram illustrates the formation of acid rain. Buildings and industrial areas appear below a cloud, with the Sun’s energy driving photochemical reactions. Oxidation is labelled inside the cloud, and rainfall beneath it is labelled acid rain. The rain falls over land, trees and a body of water."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-11",
+    "title": "Typing Postures (source image variant)",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/20261117732.png",
+    "facts": [
+      "The diagram contrasts hand and wrist positions for typing, labelled right and wrong.",
+      "The correct examples show straight wrists and balanced hand placement over the keyboard.",
+      "The incorrect examples show bent or twisted wrists, in both overhead and side views."
+    ],
+    "sample": "The given image provides the detailed information about typing postures (source image variant). The diagram contrasts hand and wrist positions for typing, labelled right and wrong. The correct examples show straight wrists and balanced hand placement over the keyboard. The incorrect examples show bent or twisted wrists, in both overhead and side views.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-11",
+      "sourceTitle": "Typing Postures",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 132,
+      "collectionOriginalSha256": "fb583ddcbd61e52e47cae5909f831cc65a8bd9416174112f5b193628b68af32d",
+      "page": 16,
+      "sourceVariantOf": "di-pred-3000195",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "other",
+      "title": "Typing Postures (source image variant)",
+      "description": "The diagram contrasts hand and wrist positions for typing, labelled right and wrong. The correct examples show straight wrists and balanced hand placement over the keyboard. The incorrect examples show bent or twisted wrists, in both overhead and side views."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-12",
+    "title": "Annual Mean Temperature",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/20261117733.png",
+    "facts": [
+      "The world map uses colours to show annual mean temperature.",
+      "Its scale runs from about minus 50 to 30 degrees Celsius, with a Fahrenheit scale also provided.",
+      "Red and orange regions are concentrated in tropical and subtropical areas, while blue and purple areas occur towards the poles.",
+      "The broad pattern is warmer temperatures near the equator and colder temperatures towards the polar regions."
+    ],
+    "sample": "The given image provides the detailed information about annual mean temperature. The world map uses colours to show annual mean temperature. Its scale runs from about minus 50 to 30 degrees Celsius, with a Fahrenheit scale also provided. Red and orange regions are concentrated in tropical and subtropical areas, while blue and purple areas occur towards the poles.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-12",
+      "sourceTitle": "Annual Mean Temperature",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 133,
+      "collectionOriginalSha256": "f30234949148f944a20254678955c993167e15a551e98c2472c36a39ed034d74",
+      "page": 18
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Annual Mean Temperature",
+      "description": "The world map uses colours to show annual mean temperature. Its scale runs from about minus 50 to 30 degrees Celsius, with a Fahrenheit scale also provided. Red and orange regions are concentrated in tropical and subtropical areas, while blue and purple areas occur towards the poles. The broad pattern is warmer temperatures near the equator and colder temperatures towards the polar regions."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-13",
+    "title": "The Eatwell Plate (source image variant)",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/20261117734.png",
+    "facts": [
+      "The Eatwell Plate divides a balanced diet into five food groups.",
+      "Fruit and vegetables, and bread, rice, potatoes, pasta and other starchy foods occupy the two largest sections.",
+      "Smaller sections represent milk and dairy foods, and meat, fish, eggs, beans and other non-dairy protein sources.",
+      "Foods and drinks high in fat or sugar occupy the smallest section; no numerical percentages are printed."
+    ],
+    "sample": "The given image provides the detailed information about the eatwell plate (source image variant). The Eatwell Plate divides a balanced diet into five food groups. Fruit and vegetables, and bread, rice, potatoes, pasta and other starchy foods occupy the two largest sections. Smaller sections represent milk and dairy foods, and meat, fish, eggs, beans and other non-dairy protein sources.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-13",
+      "sourceTitle": "The Eatwell Plate",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 134,
+      "collectionOriginalSha256": "0915a41bcf75263bf7b2f23b4e6225880fe14749287ecc8dbe00baefab3ce74d",
+      "page": 20,
+      "sourceVariantOf": "di-user-2026111725",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "The Eatwell Plate (source image variant)",
+      "description": "The Eatwell Plate divides a balanced diet into five food groups. Fruit and vegetables, and bread, rice, potatoes, pasta and other starchy foods occupy the two largest sections. Smaller sections represent milk and dairy foods, and meat, fish, eggs, beans and other non-dairy protein sources. Foods and drinks high in fat or sugar occupy the smallest section; no numerical percentages are printed."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-14",
+    "title": "Lunar Eclipse",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/20261117735.png",
+    "facts": [
+      "The diagram shows the Sun on the left, Earth in the middle and Moon on the right.",
+      "Earth blocks some sunlight and casts a shadow behind it towards the Moon.",
+      "The dark central shadow is labelled umbra, and the lighter outer shadow is labelled penumbra.",
+      "The diagram also labels Earth’s orbit and the Moon’s orbit."
+    ],
+    "sample": "The given image provides the detailed information about lunar eclipse. The diagram shows the Sun on the left, Earth in the middle and Moon on the right. Earth blocks some sunlight and casts a shadow behind it towards the Moon. The dark central shadow is labelled umbra, and the lighter outer shadow is labelled penumbra.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-14",
+      "sourceTitle": "Lunar Eclipse",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 135,
+      "collectionOriginalSha256": "8917a775e191b6a476cb413c5941b602b963185b0c73a9bcb1a175a55bf8c377",
+      "page": 22
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Lunar Eclipse",
+      "description": "The diagram shows the Sun on the left, Earth in the middle and Moon on the right. Earth blocks some sunlight and casts a shadow behind it towards the Moon. The dark central shadow is labelled umbra, and the lighter outer shadow is labelled penumbra. The diagram also labels Earth’s orbit and the Moon’s orbit."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-ipt-di-20261106-17",
+    "title": "Seed Germination and Plant Growth",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/20261117736.png",
+    "facts": [
+      "The diagram shows successive stages of a seed developing into a young plant.",
+      "A root emerges and grows down into the soil, while a shoot grows upward.",
+      "The shoot rises above the soil and develops leaves.",
+      "Later stages show a taller plant with more leaves and a branching root system."
+    ],
+    "sample": "The given image provides the detailed information about seed germination and plant growth. The diagram shows successive stages of a seed developing into a young plant. A root emerges and grows down into the soil, while a shoot grows upward. The shoot rises above the soil and develops leaves.",
+    "predictionSource": {
+      "provider": "User-supplied IPT Brisbane document",
+      "sourceId": "ipt-di-20261106-17",
+      "sourceTitle": "Seed Germination and Plant Growth",
+      "suppliedFile": "IPT_Brisbane_Branded_PTE_Describe_Image_Prediction_Document (1).pdf",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 136,
+      "collectionOriginalSha256": "0718c01b6bcd13cb3e34f2c146335940ac0a80f878e27623438c0f01b452b879",
+      "page": 28
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Seed Germination and Plant Growth",
+      "description": "The diagram shows successive stages of a seed developing into a young plant. A root emerges and grows down into the soil, while a shoot grows upward. The shoot rises above the soil and develops leaves. Later stages show a taller plant with more leaves and a branching root system."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-upload-20261117-188",
+    "title": "Drinking Habits (source image variant)",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/20261117788.png",
+    "facts": [
+      "The stacked bar chart compares drinking habits in the United States across age groups 16–24, 25–34, 35–44, 45–54, 55–64 and 65–74.",
+      "The legend categories are heavy drinker in green, light drinker in red, ex-drinker in yellow and never drinker in blue.",
+      "Ex-drinkers have their largest share in the oldest group, while light drinkers generally become less common. Never drinkers form the largest single section in each age group, although their share is lower at the oldest ages. Individual segment percentages are not printed."
+    ],
+    "sample": "The given image provides the detailed information about drinking habits (source image variant). The stacked bar chart compares drinking habits in the United States across age groups 16–24, 25–34, 35–44, 45–54, 55–64 and 65–74. The legend categories are heavy drinker in green, light drinker in red, ex-drinker in yellow and never drinker in blue. Ex-drinkers have their largest share in the oldest group, while light drinkers generally become less common. Never drinkers form the largest single section in each age group, although their share is lower at the oldest ages. Individual segment percentages are not printed.",
+    "predictionSource": {
+      "provider": "User-supplied screenshot",
+      "sourceId": "Screenshot 2026-11-17 144557.png",
+      "sourceTitle": "Screenshot 2026-11-17 144557",
+      "suppliedFile": "Screenshot 2026-11-17 144557.png",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 188,
+      "collectionOriginalSha256": "b534ac98c2d3650567007876e8bbfa1ea6ab386ada3f95d07dd584d7babea358",
+      "sourceArchive": "Screenshot 2026-11-17 144914.zip",
+      "sourceVariantOf": "di-pred-3000579",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Drinking Habits (source image variant)",
+      "description": "The stacked bar chart compares drinking habits in the United States across age groups 16–24, 25–34, 35–44, 45–54, 55–64 and 65–74. The legend categories are heavy drinker in green, light drinker in red, ex-drinker in yellow and never drinker in blue. Ex-drinkers have their largest share in the oldest group, while light drinkers generally become less common. Never drinkers form the largest single section in each age group, although their share is lower at the oldest ages. Individual segment percentages are not printed."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-upload-20261117-193",
+    "title": "Climate Zones (source image variant)",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/20261117793.png",
+    "facts": [
+      "The map shows Australian climate zones based on temperature and humidity.",
+      "The six legend categories are hot humid; warm humid; hot dry summer, warm winter; hot dry summer, cold winter; temperate; and cool temperate.",
+      "Hot humid conditions in red occupy the far north; orange and yellow dry-climate regions cover broad inland areas.",
+      "Green temperate regions occur along parts of the southern and eastern coasts; blue cool temperate areas appear in the far southeast and Tasmania.",
+      "The legend also shows warm humid conditions in pink. The map is categorical and has no numerical rainfall or temperature values."
+    ],
+    "sample": "The given image provides the detailed information about climate zones (source image variant). The map shows Australian climate zones based on temperature and humidity. The six legend categories are hot humid; warm humid; hot dry summer, warm winter; hot dry summer, cold winter; temperate; and cool temperate. Hot humid conditions in red occupy the far north; orange and yellow dry-climate regions cover broad inland areas.",
+    "predictionSource": {
+      "provider": "User-supplied screenshot",
+      "sourceId": "Screenshot 2026-11-17 144455.png",
+      "sourceTitle": "Screenshot 2026-11-17 144455",
+      "suppliedFile": "Screenshot 2026-11-17 144455.png",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 193,
+      "collectionOriginalSha256": "08afd0b82664ba8b0aed7589140f154d2712cf0cfea3e85783b7e73bf01debdd",
+      "sourceArchive": "Screenshot 2026-11-17 144914.zip",
+      "sourceVariantOf": "di-pred-3000589",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Climate Zones (source image variant)",
+      "description": "The map shows Australian climate zones based on temperature and humidity. The six legend categories are hot humid; warm humid; hot dry summer, warm winter; hot dry summer, cold winter; temperate; and cool temperate. Hot humid conditions in red occupy the far north; orange and yellow dry-climate regions cover broad inland areas. Green temperate regions occur along parts of the southern and eastern coasts; blue cool temperate areas appear in the far southeast and Tasmania. The legend also shows warm humid conditions in pink. The map is categorical and has no numerical rainfall or temperature values."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-upload-20261117-194",
+    "title": "World Water Distribution (source image variant)",
+    "imageCategory": "other",
+    "imageUrl": "/assets/di-predictions-20260930/20261117794.png",
+    "facts": [
+      "The diagram shows 1386000000 cubic kilometres of global water, divided into 97.5 percent saltwater and 2.5 percent freshwater. The labelled total freshwater volume is 35029000 cubic kilometres.",
+      "The freshwater breakdown shows glaciers and permanent snow at 68.7 percent, groundwater at 30.06 percent, ground ice and permafrost at 0.86 percent, and other water at 1.22 percent. These are the printed labels; do not rescale them to force an exact total.",
+      "The small-store labels are lakes 0.26 percent, soil 0.05 percent, atmosphere 0.04 percent, wetlands 0.03 percent, rivers 0.006 percent, and plants and animals 0.003 percent. The enlarged bars are marked times 12 and times 30. Their magnification is not a change in water volume."
+    ],
+    "sample": "The given image provides the detailed information about world water distribution (source image variant). The diagram shows 1386000000 cubic kilometres of global water, divided into 97.5 percent saltwater and 2.5 percent freshwater. The labelled total freshwater volume is 35029000 cubic kilometres. The freshwater breakdown shows glaciers and permanent snow at 68.7 percent, groundwater at 30.06 percent, ground ice and permafrost at 0.86 percent, and other water at 1.22 percent. These are the printed labels; do not rescale them to force an exact total.",
+    "predictionSource": {
+      "provider": "User-supplied screenshot",
+      "sourceId": "Screenshot 2026-11-17 144443.png",
+      "sourceTitle": "Screenshot 2026-11-17 144443",
+      "suppliedFile": "Screenshot 2026-11-17 144443.png",
+      "contentStatus": "verbatim-user-provided",
+      "collectionNumber": 194,
+      "collectionOriginalSha256": "71dd488dba47e6a9a409e18a77026eeeac35719b7d01d868a63bff6c720b7023",
+      "sourceArchive": "Screenshot 2026-11-17 144914.zip",
+      "sourceVariantOf": "di-pred-3000669",
+      "variantReason": "Alternate supplied image of the same stimulus; original file and provenance retained."
+    },
+    "visual": {
+      "kind": "other",
+      "title": "World Water Distribution (source image variant)",
+      "description": "The diagram shows 1386000000 cubic kilometres of global water, divided into 97.5 percent saltwater and 2.5 percent freshwater. The labelled total freshwater volume is 35029000 cubic kilometres. The freshwater breakdown shows glaciers and permanent snow at 68.7 percent, groundwater at 30.06 percent, ground ice and permafrost at 0.86 percent, and other water at 1.22 percent. These are the printed labels; do not rescale them to force an exact total. The small-store labels are lakes 0.26 percent, soil 0.05 percent, atmosphere 0.04 percent, wetlands 0.03 percent, rivers 0.006 percent, and plants and animals 0.003 percent. The enlarged bars are marked times 12 and times 30. Their magnification is not a change in water volume."
+    },
+    "optionalFactIndices": []
   }
 ]
