@@ -216,3 +216,33 @@ body.portal-layout:not(.portal-exam-active) #portalSidebar [data-layout-assistan
 }
 
 }
+
+/* Desktop portal fills the browser; protected exams and print keep their native layouts. */
+@media screen and (min-width: 1000px) {
+ body.portal-layout:not(.portal-exam-active) .portal-layout-header-inner,
+ body.portal-layout:not(.portal-exam-active) .topbar,
+ body.portal-layout:not(.portal-exam-active) #portalContent > .pane:not(.portal-layout-report),
+ body.portal-layout:not(.portal-exam-active) #portalContent > .pane.portal-layout-report {
+  width:100%;max-width:none;margin-inline:0;
+ }
+ body.portal-layout:not(.portal-exam-active) .pane.portal-layout-question {
+  max-width:none!important;
+ }
+ body.portal-layout:not(.portal-exam-active) .pane.portal-layout-report {
+  padding-inline:32px;
+ }
+ body.portal-layout:not(.portal-exam-active) #impersonateBanner {
+  max-width:none;
+ }
+ body.portal-layout:not(.portal-exam-active) #speakingPane .speaking-workspace,
+ body.portal-layout:not(.portal-exam-active) #speakingPane .speaking-workspace[data-practice-question],
+ body.portal-layout:not(.portal-exam-active) #practiceScreen .practice-content,
+ body.portal-layout:not(.portal-exam-active) #writingLabScreen .studio-focused .studio-center,
+ body.portal-layout:not(.portal-exam-active) .portal-layout-question .practice-studio-content,
+ body.portal-layout:not(.portal-exam-active) .portal-layout-question .reading-individual-layout,
+ body.portal-layout:not(.portal-exam-active) .portal-layout-question .studio-center,
+ body.portal-layout:not(.portal-exam-active) .portal-layout-question #swtPracticeGrid,
+ body.portal-layout:not(.portal-exam-active) .portal-layout-question .simulator-mode {
+  width:100%;max-width:none;
+ }
+}
