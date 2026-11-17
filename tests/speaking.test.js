@@ -3,8 +3,8 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const bank=require('../content/speaking-bank'),scoring=require('../speaking-scoring'),delivery=require('../speaking-delivery'),{installSpeakingLab,transcribeRecording,question}=require('../speaking-lab');
 const {createStore}=require('../writing-lab-store'),localEngine=require('../local-scoring-engine');
 test('Speaking questions include the original situation practice set, samples and verified audio',()=>{
-  assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:210,recordings:85});
-  assert(!bank.types.asq);assert.equal(new Set(bank.questions.map(q=>q.sample)).size,210);
+  assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:300,recordings:85});
+  assert(!bank.types.asq);assert.equal(new Set(bank.questions.map(q=>q.sample)).size,300);
   for(const q of bank.questions.filter(q=>q.type==='sgd'))assert.equal(new Set(q.turns.map(t=>t[0])).size,3);
 });
 test('Read Aloud checks omissions, insertions and replacements without inventing a delivery score',()=>{
@@ -171,15 +171,31 @@ test('Attempt tables are namespaced and cannot accept an arbitrary SQL identifie
 test('Speaking API preserves private recordings, transcript revisions, samples, reattempts and score retries',async t=>{
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-test-')),app=require('express')();app.use(require('express').json());let failModel=false,failDelivery=false;
   const deliveryResult={deliveryVersion:delivery.VERSION,pronunciation:{score:4,maximum:5,raw:84,accuracy:86,prosody:78,words:[{word:'environmental',accuracy:61,errorType:'Mispronunciation'}]},fluency:{score:4,maximum:5,raw:82},deliveryStatus:'Audio assessed — PTE-style practice estimate',deliveryAssessment:'Independent practice estimate from the saved recording; not Pearson scoring.',deliveryProvider:'azure-speech-pronunciation'};
-  const {store}=installSpeakingLab(app,{directory,verifyToken:t=>['alice','bob'].includes(t)?t:null,getAccount:async()=>({}),transcriptionAvailable:true,deliveryAssessmentAvailable:true,
+  const {store}=installSpeakingLab(app,{directory,verifyToken:t=>['alice','bob'].includes(t)||/^import-\d+$/.test(t)?t:null,getAccount:async()=>({}),transcriptionAvailable:true,deliveryAssessmentAvailable:true,
     transcribe:async()=>bank.questions[0].text,assessDelivery:async()=>{if(failDelivery)throw Error('azure offline');return deliveryResult;},callModel:async (prompt,context)=>{if(failModel)throw Error('offline');if(context?.contentPolicy===require('../describe-image-academy').VERSION)return {judgment:{score:6,relevance:'image-specific',accuracy:'accurate',requiredEvidence:{quote:context.transcript.slice(0,400),factIndices:[0],kind:'relationship'},otherEvidence:[],scoreImpact:null},reason:'The connected sample explains the main features.',nextStep:'Keep the connected comparisons.'};const data=JSON.parse(prompt.split('DATA=')[1]);return modelResult({type:data.type,facts:data.facts||[]},data.student);}});
   const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(async()=>{await new Promise(r=>server.close(r));await fs.rm(directory,{recursive:true,force:true});});
   const base='http://127.0.0.1:'+server.address().port;
   async function request(route,body,user='alice',raw=false) {const r=await fetch(base+'/api/speaking'+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':user,'Content-Type':raw?'audio/webm':'application/json'},body:body===undefined?undefined:raw?body:JSON.stringify(body)});return {status:r.status,body:await r.json()};}
-  const catalog=await request('/catalog',undefined,'');assert.equal(catalog.body.questions.length,208);
+  const catalog=await request('/catalog',undefined,'');assert.equal(catalog.body.questions.length,297);
   for(const id of ['di-pred-3001061','di-pred-3001369'])assert(!catalog.body.questions.some(q=>q.id===id));
   assert.deepEqual(catalog.body.questions.filter(q=>q.type==='di'&&!q.predictionSource).map(q=>q.imageCategory),['bar','pie','line','table','process']);
   assert(catalog.body.questions.every(q=>!q.visual&&!q.facts&&!q.sample));
+  const imported=require('../content/di-import-20261117.json');
+  for(const row of imported.entries){
+    const visible=catalog.body.questions.find(q=>q.id===row.id),testUser='import-'+row.collectionNumber;
+    if(row.status!=='available'){
+      assert.equal(visible,undefined);
+      assert.equal((await request('/attempts',{id:crypto.randomUUID(),questionId:row.id},testUser)).status,422);
+      continue;
+    }
+    assert(visible,row.id+' catalogue visibility');
+    const started=await request('/attempts',{id:crypto.randomUUID(),questionId:row.id},testUser);assert.equal(started.status,200);assert.equal(started.body.question.imageUrl,row.imageUrl);assert.equal(started.body.question.displayImageUrl,row.displayImageUrl);
+    assert.equal(started.body.question.preparation,25);assert.equal(started.body.question.seconds,40);
+    const saved=await request('/attempts/'+started.body.id+'/transcript',{text:'A saved practice response.',revision:0},testUser);
+    assert.equal(saved.status,200);assert.equal(saved.body.transcript,'A saved practice response.');
+    assert.equal((await request('/attempts/'+started.body.id,undefined,testUser)).body.question.imageUrl,row.imageUrl);
+  }
+
   assert.equal((await request('/attempts',undefined,'')).status,401);
   const id=crypto.randomUUID(),q=bank.questions[0];
   let a=(await request('/attempts',{id,questionId:q.id})).body;assert.equal(a.status,'draft');assert.equal(a.question.sample,undefined);

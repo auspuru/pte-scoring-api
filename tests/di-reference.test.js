@@ -3,7 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const {manifest,apply,referenceFor}=require('../di-reference'),{hash}=require('../scoring-jobs');
 const bank=require('../content/speaking-bank'),mock=require('../content/speaking-mocks'),mapping=require('../describe-image-feedback').mapping;
 test('every practice and mock DI reference is bound to its source image, optional facts and spoken sample',()=>{
-  assert.equal(require('../scripts/verify-di-reference-sync').verify().questions,137);
+  assert.equal(require('../scripts/verify-di-reference-sync').verify().questions,227);
   const items=mock.papers.flatMap(p=>p.questions.filter(q=>q.type==='di'));assert.equal(items.length,25);
   for(const q of items){const entry=manifest.entries[q.id];assert.equal(hash(mapping(q)),entry.mappingHash);assert.deepEqual(q.imageReference.source,entry.source);}
   const rainfall=bank.questions.find(q=>q.id==='di-pred-3000411');assert.match(rainfall.facts.join(' '),/October/);assert.match(rainfall.sample,/October/);assert(!/November|autumn/.test(rainfall.sample));
@@ -31,4 +31,17 @@ test('new reference descriptors travel with a durable receipt while legacy reque
   const receipt=await client.submit(args);assert.deepEqual(body.reference,referenceFor(q));assert.deepEqual(receipt,prepared);
   const legacy=structuredClone(q);delete legacy.imageReference;prepared=null;await client.submit({...args,question:legacy});assert.equal(Object.hasOwn(body,'reference'),false);
   const content=require('../visual-academy-client').contentResult({status:'scored',score:6,max:6,imageReference:referenceFor(q)},null);assert.deepEqual(content.imageReference,referenceFor(q));
+});
+
+test('all 209 supplied source files are covered and remaining variants retain explicit provenance',()=>{
+  const imported=require('../content/di-import-20261117.json'),bank=require('../content/speaking-bank'),refs=require('../di-reference').manifest;
+  const sources=new Set(Object.values(refs.entries).map(e=>e.source.sha256));
+  assert.equal(imported.collectionSources.length,209);assert.equal(new Set(imported.collectionSources.map(x=>x.sha256)).size,209);
+  for(const source of imported.collectionSources)assert(sources.has(source.sha256),'Missing collection image '+source.number);
+  assert.equal(imported.entries.length,90);assert.equal(imported.entries.filter(e=>e.sourceVariantOf).length,22);
+  for(const row of imported.entries){
+    const q=bank.questions.find(q=>q.id===row.id);assert(q);assert.equal(q.imageReference.source.sha256,row.originalSha256);
+    assert.equal(require('../di-practice-references').available(q),row.status==='available');
+    if(row.sourceVariantOf){assert(refs.entries[row.sourceVariantOf]);assert.equal(q.predictionSource.sourceVariantOf,row.sourceVariantOf);assert.match(q.title,/source image variant/);}
+  }
 });
