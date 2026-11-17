@@ -4027,17 +4027,17 @@
         "facts": [
           "The graph compares home ownership and unemployment percentages from 1986 to the early 2010s using separate vertical scales.",
           "The dashed home-ownership series declines overall from about 73% to around 65%.",
-          "The solid unemployment series peaks near 11% around 1991, falls to roughly 3% in the mid-2000s and rises again to approximately 6.5% near the end."
+          "The solid unemployment series peaks near 11% around 1991, falls to around 4% during the 2000s and rises again to approximately 6.5% near the end."
         ],
         "visual": {
           "kind": "line",
           "title": "Home Ownership and Unemployment Rates",
-          "description": "The graph compares home ownership and unemployment percentages from 1986 to the early 2010s using separate vertical scales. The dashed home-ownership series declines overall from about 73% to around 65%. The solid unemployment series peaks near 11% around 1991, falls to roughly 3% in the mid-2000s and rises again to approximately 6.5% near the end."
+          "description": "The graph compares home ownership and unemployment percentages from 1986 to the early 2010s using separate vertical scales. The dashed home-ownership series declines overall from about 73% to around 65%. The solid unemployment series peaks near 11% around 1991, falls to around 4% during the 2000s and rises again to approximately 6.5% near the end."
         },
         "optionalFactIndices": []
       },
-      "mappingHash": "59dbf3d4c75d32b43ac1d0905f92a7883ede16ca8fe0c2e046550bf223e2c2c0",
-      "sample": "The given image provides the detailed information about home ownership and unemployment rates. The graph compares home ownership and unemployment percentages from 1986 to the early 2010s using separate vertical scales. The dashed home-ownership series declines overall from about 73% to around 65%. The solid unemployment series peaks near 11% around 1991, falls to roughly 3% in the mid-2000s and rises again to approximately 6.5% near the end."
+      "mappingHash": "53f290e2cd1e07f5269e7edc9a9b178ebef015342b307d4909ea68a71fba1602",
+      "sample": "The given image provides the detailed information about home ownership and unemployment rates. The graph compares home ownership and unemployment percentages from 1986 to the early 2010s using separate vertical scales. The dashed home-ownership series declines overall from about 73% to around 65%. The solid unemployment series peaks near 11% around 1991, falls to around 4% during the 2000s and rises again to approximately 6.5% near the end."
     },
     "di-user-2026111766": {
       "source": {
