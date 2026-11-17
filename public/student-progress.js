@@ -13,6 +13,19 @@ function ratio(total,maximum){
  const t=numeric(total),m=numeric(maximum);
  return Number.isFinite(t)&&Number.isFinite(m)&&m>0?Math.max(0,Math.min(1,t/m)):null;
 }
+function savedScore(total,maximum,suffix=''){
+ return Number.isFinite(total)&&Number.isFinite(maximum)&&maximum>0&&total>=0&&total<=maximum?total+' / '+maximum+suffix:'Score unavailable';
+}
+function swtScore(a){
+ if(a.score_provisional||a.ai_feedback_degraded)return 'Pending';
+ const parts=['content','form','grammar','vocabulary'].map(k=>a.trait_scores?.[k]);
+ return parts.every(Number.isFinite)?savedScore(parts.reduce((n,x)=>n+x,0),9):savedScore(a.overall_score,90,' estimate');
+}
+function speakingScore(a){
+ const r=a.result;
+ if(!r||a.assessment?.status==='pending'||a.assessment?.status==='error'||r.scoringMode==='local'||r.score_provisional)return 'Pending';
+ return savedScore(r.total,r.maximum,' content');
+}
 function scoredPoints(rows,score,when,source='practice'){
  return rows.map(row=>({value:score(row),at:stamp(when(row)),source}))
   .filter(item=>Number.isFinite(item.value))
@@ -160,15 +173,15 @@ function model(data,writing,speaking=[]){
   ...swt.map(a=>({title:'Summarise Written Text',route:'swt',at:a.timestamp,result:Number.isFinite(a.overall_score)?a.overall_score+'/90 estimate':null}))
  ].sort((a,b)=>stamp(b.at)-stamp(a.at)).slice(0,8);
  const activity=[
-  ...activePractice.map(a=>({...a,status:'Saved draft',action:'Continue response'})),
-  ...essays.map(a=>({engine:'essay',id:a.id,title:a.questionTitle||'Write Essay',task:'Write Essay',route:'practice',at:a.date||a.updatedAt,status:'Feedback ready',action:'View response & feedback'})),
+  ...activePractice.map(a=>({...a,scoreText:'Not scored',status:'Saved draft',action:'Continue response'})),
+  ...essays.map(a=>({engine:'essay',id:a.id,scoreText:a.score_provisional||a.ai_feedback_degraded?'Pending':savedScore(a.scores?.total,26),title:a.questionTitle||'Write Essay',task:'Write Essay',route:'practice',at:a.date||a.updatedAt,status:'Feedback ready',action:'View response & feedback'})),
   ...Object.entries(data.swt||{}).flatMap(([passageId,attempts])=>(Array.isArray(attempts)?attempts:[]).filter(Boolean).map((a,index)=>({
-   engine:'swt',id:passageId+':'+(a.timestamp||index),passageId,timestamp:a.timestamp,responseText:a.text,attemptIndex:index,
+   engine:'swt',id:passageId+':'+(a.timestamp||index),scoreText:swtScore(a),passageId,timestamp:a.timestamp,responseText:a.text,attemptIndex:index,
    title:(data.passages||[]).find(p=>String(p.id)===String(passageId))?.title||'SWT passage '+passageId,task:'Summarise Written Text',route:'swt',at:a.timestamp,status:'Feedback ready',action:'View response & feedback'
   }))),
-  ...practiceReading.map(a=>({engine:'reading',id:a.id,title:a.questions?.[0]?.title||a.name||'Reading practice',task:readingMeta[a.questions?.[0]?.type]?.name||'Reading practice',route:readingMeta[a.questions?.[0]?.type]?.route||'reading',at:a.finishedAt||a.startedAt,status:a.pending?'Assessment pending':'Feedback ready',action:'View response & feedback'})),
-  ...(Array.isArray(speaking)?speaking:[]).filter(a=>a?.status==='submitted').map(a=>({engine:'speaking',id:a.id,title:a.title||a.questionId||speakingMeta[a.type]?.name||'Speaking practice',task:speakingMeta[a.type]?.name||'Speaking practice',route:speakingMeta[a.type]?.route||'practice-hub',at:a.finishedAt||a.startedAt,status:a.result?'Feedback ready':'Assessment pending',action:'View response & feedback'})),
-  ...writing.filter(a=>a?.kind!=='mock'&&a?.status==='submitted').map(a=>({engine:'writing',id:a.id,title:a.title||'Saved practice',task:a.kind==='sst'?'Summarise Spoken Text':a.kind==='wfd'?'Write From Dictation':listeningMeta[a.kind]?.name||'Listening practice',route:a.kind==='sst'?'spoken-text':a.kind==='wfd'?'dictation':listeningMeta[a.kind]?.route||'writing-history',at:a.finishedAt||a.startedAt,status:a.total==null?'Assessment pending':'Feedback ready',action:'View response & feedback'}))
+  ...practiceReading.map(a=>({engine:'reading',id:a.id,scoreText:a.pending?'Pending':savedScore(a.earned??a.total,a.possible??a.maximum),title:a.questions?.[0]?.title||a.name||'Reading practice',task:readingMeta[a.questions?.[0]?.type]?.name||'Reading practice',route:readingMeta[a.questions?.[0]?.type]?.route||'reading',at:a.finishedAt||a.startedAt,status:a.pending?'Assessment pending':'Feedback ready',action:'View response & feedback'})),
+  ...(Array.isArray(speaking)?speaking:[]).filter(a=>a?.status==='submitted').map(a=>({engine:'speaking',id:a.id,scoreText:speakingScore(a),title:a.title||a.questionId||speakingMeta[a.type]?.name||'Speaking practice',task:speakingMeta[a.type]?.name||'Speaking practice',route:speakingMeta[a.type]?.route||'practice-hub',at:a.finishedAt||a.startedAt,status:a.result?'Feedback ready':'Assessment pending',action:'View response & feedback'})),
+  ...writing.filter(a=>a?.kind!=='mock'&&a?.status==='submitted').map(a=>({engine:'writing',id:a.id,scoreText:a.total==null||a.score_provisional?'Pending':savedScore(a.total,a.maximum),title:a.title||'Saved practice',task:a.kind==='sst'?'Summarise Spoken Text':a.kind==='wfd'?'Write From Dictation':listeningMeta[a.kind]?.name||'Listening practice',route:a.kind==='sst'?'spoken-text':a.kind==='wfd'?'dictation':listeningMeta[a.kind]?.route||'writing-history',at:a.finishedAt||a.startedAt,status:a.total==null?'Assessment pending':'Feedback ready',action:'View response & feedback'}))
  ].sort((a,b)=>stamp(b.at)-stamp(a.at));
  return {activity,mocks,groups,areas,weakest,recent,recentWriting,activePractice,practice:groups.reduce((n,g)=>n+g.count,0),complete:mocks.filter(a=>a.done).length,active:mocks.filter(a=>!a.done).length,days:days.size};
 }
@@ -180,7 +193,7 @@ function create({document:doc,identity,loadLocal,refreshLocal,navigate,review,fe
   const mocksOpen=host().querySelector('details.progress-section')?.open;
   const m=model(local,writing,speaking);current=m;currentOwner=identity();
   const rows=m.activity.slice(0,visibleCount);
-  const row=(a,index)=>'<button type="button" class="progress-attempt" data-progress-key="'+esc([a.engine,a.id,a.timestamp].join(':'))+'" data-progress-attempt="'+index+'"><span class="progress-attempt-copy"><strong>'+esc(a.title)+'</strong><span class="progress-caption">'+esc(a.task||a.title)+' · '+date(a.at)+' · '+esc(a.status)+'</span></span><span class="progress-attempt-action">'+esc(a.action)+' <span aria-hidden="true">→</span></span></button>';
+  const row=(a,index)=>'<button type="button" class="progress-attempt" data-progress-key="'+esc([a.engine,a.id,a.timestamp].join(':'))+'" data-progress-attempt="'+index+'"><span class="progress-attempt-copy"><strong>'+esc(a.title)+'</strong><span class="progress-caption">'+esc(a.task||a.title)+' · '+date(a.at)+' · '+esc(a.status)+'</span><span class="progress-attempt-score">Score: '+esc(a.scoreText)+'</span></span><span class="progress-attempt-action">'+esc(a.action)+' <span aria-hidden="true">→</span></span></button>';
   host().innerHTML='<div class="progress-heading"><div><h2>My Progress</h2><p>Your latest questions first. Select a response to review your saved work and feedback.</p></div><button type="button" class="portal-button" data-progress-refresh>Refresh</button></div>'+
    (error?'<p class="progress-notice" role="alert">'+esc(error)+' <button type="button" class="portal-button" data-progress-refresh>Retry</button></p>':'')+
    (pending?'<p class="progress-caption" role="status">Refreshing saved activity…</p>':'')+

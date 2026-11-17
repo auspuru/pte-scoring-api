@@ -1,18 +1,18 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),puppeteer=require('puppeteer');
 const {fixture}=require('./helpers/auth-server');const root=path.resolve(__dirname,'..');
-async function setup(t){
+async function setup(t,extra={}){
  const f=await fixture(t),username='ux-browser',password='Synthetic-pass-123';await f.request('/api/auth/register',{username,password,email:'ux@example.test'});await f.request('/api/admin/speaking-access',{username,enabled:true},undefined,true);
  const login=(await f.request('/api/auth/login',{username,password})).body;
  const passages=(await f.request('/api/passages')).body.passages;const history=Array.from({length:43},(_,i)=>({text:'Saved synthetic summary number '+i+'.',timestamp:Date.now()-i*3600000,overall_score:80,trait_scores:{content:3,form:1,grammar:2,vocabulary:2}}));
  const grouped={};history.forEach((row,i)=>(grouped[passages[Math.floor(i/10)].id]??=[]).push(row));
- await f.request('/api/sync/'+username,{history:grouped},login.token);
+ await f.request('/api/sync/'+username,{history:grouped,...extra},login.token);
  const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{}),args:['--autoplay-policy=no-user-gesture-required']});t.after(()=>browser.close());const page=await browser.newPage();page.setDefaultTimeout(15000);await page.setViewport({width:1363,height:950});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForSelector('.portal-layout-skills');return{f,page,errors,token:login.token,history};
 }
 test('UX libraries: fuzzy catalogue search, real progress chart, sortable/searchable history and exact saved response',{timeout:90000},async t=>{
  const {page,errors,history}=await setup(t);await page.locator('#nav-progress').click();await page.waitForSelector('.portal-ux-history:not([hidden]) .tabulator-row');await page.waitForFunction(()=>window.Chart&&Chart.getChart(document.querySelector('.portal-ux-chart canvas')));
- assert.equal(await page.$$eval('.portal-ux-history .tabulator-row',rows=>rows.length),20);assert.equal(await page.$eval('.portal-ux-history [role=status]',e=>e.textContent),'43 saved questions');
+ assert.equal(await page.$eval('.portal-ux-history .tabulator-row [tabulator-field=scoreText]',e=>e.textContent.trim()),'8 / 9');assert.equal(await page.$$eval('.portal-ux-history .tabulator-row',rows=>rows.length),20);assert.equal(await page.$eval('.portal-ux-history [role=status]',e=>e.textContent),'43 saved questions');
  await page.locator('.portal-ux-history-tools button').click();await page.waitForFunction(()=>document.querySelector('.progress-recent>.progress-attempts')?.hidden===false);assert.equal(await page.$$eval('.progress-recent>.progress-attempts [data-progress-attempt]',rows=>rows.length),20);
  await page.locator('.portal-ux-history-tools button').click();await page.waitForFunction(()=>document.querySelector('.progress-recent>.progress-attempts')?.hidden===true);await page.waitForSelector('.portal-ux-grid .tabulator-row');
  await page.type('.portal-ux-history input[type=search]','impossible-xzq');await page.waitForFunction(()=>document.querySelector('.portal-ux-history [role=status]').textContent==='0 of 43 saved questions');assert.equal(await page.$$eval('.portal-ux-history .tabulator-row',rows=>rows.length),0);
@@ -53,4 +53,14 @@ test('UX history keeps a focused saved response usable when the optional table f
  assert.equal(await page.evaluate(()=>document.activeElement.dataset.progressAttempt),'0');
  assert.equal(await page.$eval('.portal-ux-history-tools button',node=>node.textContent),'Table view');
  await page.keyboard.press('Enter');await page.waitForFunction(text=>document.getElementById('swtResultsScreen')?.textContent.includes(text),{},history[0].text);assert.deepEqual(errors,[]);
+});
+
+test('Recent essay scores are visible in table and list views, including zero and draft states',{timeout:90000},async t=>{
+ const stamp=Date.now(),{page,errors}=await setup(t,{practiceHistory:[{id:'essay-new',date:stamp+2,questionTitle:'Newest essay score',questionText:'Discuss the topic.',essayText:'A saved synthetic essay.',scores:{total:21}},{id:'essay-old',date:stamp+1,questionTitle:'Earlier zero score',questionText:'Discuss the topic.',essayText:'Another saved synthetic essay.',scores:{total:0}}],essayDraft:{essayText:'A synthetic unfinished response.',updatedAt:stamp+3}});
+ await page.locator('#nav-progress').click();await page.waitForSelector('.portal-ux-history:not([hidden]) .tabulator-row');
+ const entries=await page.$$eval('.portal-ux-grid .tabulator-row',rows=>rows.map(row=>({title:row.querySelector('[tabulator-field=title]').textContent.trim(),score:row.querySelector('[tabulator-field=scoreText]').textContent.trim()})));
+ assert.equal(entries.find(r=>r.title==='Newest essay score').score,'21 / 26');assert.equal(entries.find(r=>r.title==='Earlier zero score').score,'0 / 26');assert.equal(entries.find(r=>r.title==='Write Essay').score,'Not scored');
+ await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.$eval('.progress-recent',node=>node.scrollIntoView({block:'start'}));await page.screenshot({path:path.join(root,'.cache/portal-layout-ux-scores.png')});
+ await page.locator('.portal-ux-history-tools button').click();await page.waitForFunction(()=>document.querySelector('.progress-recent>.progress-attempts')?.hidden===false);
+ const text=await page.$eval('.progress-recent>.progress-attempts',node=>node.textContent);assert.match(text,/Score: 21 \/ 26/);assert.match(text,/Score: 0 \/ 26/);assert.match(text,/Score: Not scored/);assert.deepEqual(errors,[]);
 });

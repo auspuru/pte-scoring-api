@@ -48,6 +48,7 @@
     {title:'Question',field:'title',minWidth:210,widthGrow:3,formatter:textCell},
     {title:'Task',field:'task',minWidth:150,widthGrow:2,formatter:cell=>{const node=doc.createElement('span');node.textContent=cell.getValue()||cell.getRow().getData().title;return node;}},
     {title:'Date',field:'dateValue',sorter:'number',width:125,formatter:cell=>{const node=doc.createElement('span');node.textContent=cell.getValue()?new Date(cell.getValue()).toLocaleDateString('en-AU',{timeZone:'Australia/Brisbane'}):'Unavailable';return node;}},
+    {title:'Score',field:'scoreText',minWidth:140,headerSort:false,formatter:textCell},
     {title:'Status',field:'status',minWidth:150,formatter:textCell},
     {title:'Open',field:'rowIndex',width:100,headerSort:false,formatter:cell=>{const button=doc.createElement('button');button.type='button';button.className='portal-button';button.dataset.progressAttempt=String(cell.getValue());button.textContent=cell.getRow().getData().status==='Saved draft'?'Continue':'Review';button.setAttribute('aria-label',button.textContent+' '+cell.getRow().getData().title);return button;}}
    ]});

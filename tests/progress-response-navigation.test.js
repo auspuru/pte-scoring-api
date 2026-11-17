@@ -19,13 +19,26 @@ test('Recent questions merge all practice engines newest first, retaining exact 
  assert.equal(m.activity.at(-1).responseText,'Older summary');
  assert.equal(m.activity[2].route,'listening-hcs-bank');
 });
+test('Recent rows show exact saved marks and scales, retain zeros, and distinguish provisional and missing results',()=>{
+ const ctx=progressContext();
+ const data={essays:[{id:'older',date:1,scores:{total:0}},{id:'newer',date:2,scores:{total:21}},{id:'missing',date:3,scores:{total:null}}],essayDraft:{essayText:'An unfinished answer',updatedAt:20},swt:{1:[{timestamp:4,trait_scores:{content:3,form:1,grammar:2,vocabulary:2},overall_score:80},{timestamp:5,overall_score:72},{timestamp:6,score_provisional:true,overall_score:90}]},reading:{history:[{id:'reading-zero',practiceUid:'q1',done:true,startedAt:7,earned:0,possible:3,questions:[{type:'mcma'}]},{id:'reading-pending',practiceUid:'q2',done:true,pending:true,startedAt:8,earned:2,possible:3,questions:[{type:'mcma'}]}]}};
+ const writing=[{id:'wfd',kind:'wfd',status:'submitted',startedAt:9,total:7,maximum:9},{id:'sst-pending',kind:'sst',status:'submitted',startedAt:10,total:null,maximum:12}];
+ const speaking=[{id:'confirmed',type:'di',status:'submitted',startedAt:11,result:{total:5,maximum:6,scoringMode:'ai'}},{id:'provisional',type:'di',status:'submitted',startedAt:12,result:{total:6,maximum:6,scoringMode:'local'}}];
+ const before=JSON.stringify({data,writing,speaking}),rows=ctx.StudentProgress.model(data,writing,speaking).activity;
+ const score=id=>rows.find(r=>r.id===id).scoreText;
+ assert.equal(score('older'),'0 / 26');assert.equal(score('newer'),'21 / 26');assert.equal(score('missing'),'Score unavailable');assert.equal(score('essay-draft'),'Not scored');
+ assert.equal(score('1:4'),'8 / 9');assert.equal(score('1:5'),'72 / 90 estimate');assert.equal(score('1:6'),'Pending');
+ assert.equal(score('reading-zero'),'0 / 3');assert.equal(score('reading-pending'),'Pending');assert.equal(score('wfd'),'7 / 9');assert.equal(score('sst-pending'),'Pending');
+ assert.equal(score('confirmed'),'5 / 6 content');assert.equal(score('provisional'),'Pending');
+ assert.equal(JSON.stringify({data,writing,speaking}),before,'Displaying scores must never change saved marks');
+});
 test('Simple progress rows open exact responses, retain older pages, and reject a stale account click',async()=>{
  let user={uid:'alice',token:'alice-session'};const opened=[],routed=[];
  const ctx=progressContext();const essays=Array.from({length:23},(_,i)=>({id:'essay-'+i,date:i+1,questionTitle:i===22?'<img src=x onerror=alert(1)>':'Essay '+i,scores:{total:20}}));
  const controller=ctx.StudentProgress.create({document:ctx.document,identity:()=>user,navigate:r=>routed.push(r),review:a=>opened.push(a),loadLocal:async()=>({essays}),fetch:async()=>({ok:true,json:async()=>[]})});
  await controller.open();const host=ctx.document.getElementById('progressPane');
  assert.equal(host.querySelector('h3').textContent,'Recently attempted questions');
- assert.equal(host.querySelectorAll('[data-progress-attempt]').length,20);
+ assert.equal(host.querySelectorAll('[data-progress-attempt]').length,20);assert.equal(host.querySelector('.progress-attempt-score').textContent,'Score: 20 / 26');
  assert.equal(host.querySelectorAll('img').length,0);
  assert.doesNotMatch(host.textContent,/Task trends|Suggested focus|Cross-task percentages/);
  await host.onclick({target:host.querySelector('[data-progress-attempt="0"]')});
