@@ -3,7 +3,17 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const bank=require('../content/speaking-mocks'),manifest=require('../docs/speaking-mocks-4-5-manifest.json');
 const hash=v=>crypto.createHash('sha256').update(v).digest('hex');
 test('new selectable papers preserve all old paper snapshots and use ten distinct internet originals',()=>{
- for(const p of bank.papers.slice(0,3))assert.equal(hash(JSON.stringify(p)),manifest.existingPaperHashes[p.id]);
+ for(const p of bank.papers.slice(0,3)){
+  const original=structuredClone(p);
+  if(p.id==='speaking-mock-3'){
+   assert.equal(p.contentVersion,2);
+   assert.equal(p.questions.filter(q=>q.id==='di-pred-3000739').length,1);
+   assert(!p.questions.some(q=>q.id==='di-pred-3000481'));
+   original.questions=original.questions.map(q=>q.id==='di-pred-3000739'?structuredClone(require('../content/speaking-bank').questions.find(q=>q.id==='di-pred-3000481')):q);
+   delete original.contentVersion;
+  }
+  assert.equal(hash(JSON.stringify(original)),manifest.existingPaperHashes[p.id],'All original paper fields except the reviewed Mock 3 image slot remain pinned');
+ }
  const seen=new Set(),sourceIds=new Set();
  for(const p of bank.papers){for(const q of p.questions.filter(q=>q.type==='di')){
   const bytes=fs.readFileSync(path.join(__dirname,'../public',q.imageUrl)),sha=hash(bytes);assert(!seen.has(sha),'Repeated image '+q.id);seen.add(sha);

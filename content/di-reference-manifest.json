@@ -799,7 +799,12 @@
         "optionalFactIndices": []
       },
       "mappingHash": "95238b0bcbd56465f0029773aadb69655d63ead4777ed9bc701999647ff25945",
-      "sample": "The given image provides the detailed information about world population doubling time. The time falls from 544 years in 1715 to 304 years in 1804 and 166 years in 1881. It continues declining and reaches 39 years in 1999. Overall, the population takes much less time to double in the later periods."
+      "sample": "The given image provides the detailed information about world population doubling time. The time falls from 544 years in 1715 to 304 years in 1804 and 166 years in 1881. It continues declining and reaches 39 years in 1999. Overall, the population takes much less time to double in the later periods.",
+      "assessmentAvailability": {
+        "status": "needs-clearer-source",
+        "reason": "The lower-right population-doubling annotations overlap and remain unreadable in both the original and the higher-resolution display source.",
+        "sourceSha256": "fc3c676f50e0e978db62a2415a63653b49d1aceb52804655bb9a74aa590b57cc"
+      }
     },
     "di-pred-3000542": {
       "academyId": "3000542",
@@ -1461,7 +1466,12 @@
         "optionalFactIndices": []
       },
       "mappingHash": "088e0091a9be2ebf70285febd6d9695002166fd388a62171a9f67f235b71d6e5",
-      "sample": "The given image provides the detailed information about average weekly household spending in 2015–2016. Housing is the largest category at 164 euros, followed by transport at 124 and food at 123. Education and training is the smallest displayed category at 18 euros. Overall, housing, transport and food account for much higher weekly spending than the smaller categories."
+      "sample": "The given image provides the detailed information about average weekly household spending in 2015–2016. Housing is the largest category at 164 euros, followed by transport at 124 and food at 123. Education and training is the smallest displayed category at 18 euros. Overall, housing, transport and food account for much higher weekly spending than the smaller categories.",
+      "assessmentAvailability": {
+        "status": "needs-clearer-source",
+        "reason": "The household-expenditure infographic is cropped on both side edges; enlarging the low-resolution source retains blur and missing edge content.",
+        "sourceSha256": "800ae617dcca5184639210b23b1f39ab079cae53d206ed783dbc3e9b27b15380"
+      }
     },
     "di-pred-3000881": {
       "academyId": "3000881",

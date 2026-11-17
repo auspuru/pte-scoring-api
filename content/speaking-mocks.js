@@ -83,6 +83,10 @@ for(const [number,offset,lectures,discussions,situations] of [
 }
 // Retain old prompt identities for audio links in immutable saved attempts.
 const historicalQuestions=papers.flatMap(p=>p.questions);
+// New Mock 3 attempts use a readable fast-food-frequency chart; existing attempts retain their saved questions.
+const clearImagePaper=papers.find(p=>p.id==='speaking-mock-3');
+clearImagePaper.questions=clearImagePaper.questions.map(q=>q.id==='di-pred-3000481'?pick('di-pred-3000739'):q);
+clearImagePaper.contentVersion=2;
 for(const [offset,number,lastIds] of [[0,4,['wfd-practice-26','wfd-practice-27']],[1,5,['wfd-practice-36','wfd-practice-37']]]){
   const current=papers.find(p=>p.id==='speaking-mock-'+number);
   const repeats=[...easySentences.slice(offset*8,offset*8+8).map(q=>source({...bank.types.rs,...structuredClone(q)},'speaking')),
