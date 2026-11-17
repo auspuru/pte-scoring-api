@@ -176,8 +176,8 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
   const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(async()=>{await new Promise(r=>server.close(r));await fs.rm(directory,{recursive:true,force:true});});
   const base='http://127.0.0.1:'+server.address().port;
   async function request(route,body,user='alice',raw=false) {const r=await fetch(base+'/api/speaking'+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':user,'Content-Type':raw?'audio/webm':'application/json'},body:body===undefined?undefined:raw?body:JSON.stringify(body)});return {status:r.status,body:await r.json()};}
-  const catalog=await request('/catalog',undefined,'');assert.equal(catalog.body.questions.length,176);
-  for(const id of ['di-pred-3001061','di-pred-3001369'])assert(!catalog.body.questions.some(q=>q.id===id));
+  const catalog=await request('/catalog',undefined,'');assert.equal(catalog.body.questions.length,174);
+  for(const id of ['di-pred-3001061','di-pred-3001369','di-pred-3000481','di-pred-3000742'])assert(!catalog.body.questions.some(q=>q.id===id));
   assert.deepEqual(catalog.body.questions.filter(q=>q.type==='di'&&!q.predictionSource).map(q=>q.imageCategory),['bar','pie','line','table','process']);
   assert(catalog.body.questions.every(q=>!q.visual&&!q.facts&&!q.sample));
   assert.equal((await request('/attempts',undefined,'')).status,401);
