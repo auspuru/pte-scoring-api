@@ -23,6 +23,7 @@ test('legacy practice retains its original reference and new snapshot references
 });
 test('all current Speaking mock DI slots have eligible source-bound references and retained Full Mocks keep their frozen mappings',()=>{
  for(const p of require('../content/speaking-mocks').papers)for(const q of p.questions.filter(q=>q.type==='di')){assert(practice.available(q),p.id+' '+q.id);assert.equal(hash(mapping(q)),refs.manifest.entries[q.id].mappingHash);}
+ const paper3=require('../content/speaking-mocks').papers.find(p=>p.id==='speaking-mock-3');assert.equal(paper3.contentVersion,2);assert(!paper3.questions.some(q=>q.id==='di-pred-3000481'));assert(paper3.questions.some(q=>q.id==='di-pred-3000739'));
  for(const version of [1,2]){const p=require('../content/full-mock/papers/full-mock-1.v'+version+'.json');for(const {question:q} of p.questions.filter(s=>s.question.type==='di')){assert.equal(hash(mapping(q)),q.imageReference.mappingHash);assert.deepEqual(q.imageReference.source,refs.manifest.entries[q.imageReference.questionId].source);}}
 });
 test('practice catalogue and direct starts hold unclear images while existing attempts remain readable and resumable',async t=>{
@@ -31,13 +32,13 @@ test('practice catalogue and direct starts hold unclear images while existing at
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(async()=>{await service.waitForAssessments();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
  const base='http://127.0.0.1:'+server.address().port+'/api/speaking';
  const request=async(route,body)=>{const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':'alice','Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});return{status:r.status,data:await r.json()};};
- const catalogue=await request('/catalog');assert.equal(catalogue.status,200);assert.equal(catalogue.data.questions.filter(q=>q.type==='di').length,86);
- for(const id of ['3001061','3001369']){
+ const catalogue=await request('/catalog');assert.equal(catalogue.status,200);assert.equal(catalogue.data.questions.filter(q=>q.type==='di').length,84);
+ for(const id of ['3001061','3001369','3000481','3000742']){
   const qid='di-pred-'+id;assert(!catalogue.data.questions.some(q=>q.id===qid));
   const blocked=await request('/attempts',{id:randomUUID(),questionId:qid});assert.equal(blocked.status,422);assert.match(blocked.data.error,/clearer source/);
   const idOld=randomUUID(),savedResult={content:4,total:4,maximum:6,scoringMode:'ai',marker:'confirmed'};
   await service.store.update('alice',idOld,()=>({id:idOld,questionId:qid,status:'submitted',startedAt:1,transcript:'A retained answer.',revision:1,result:savedResult}));
-  const old=await request('/attempts/'+idOld);assert.equal(old.status,200);assert.equal(old.data.question.sample,history.entries[qid].sample);
+  const old=await request('/attempts/'+idOld);assert.equal(old.status,200);assert.equal(old.data.question.sample,(history.entries[qid]?.sample||question(id).sample));
   assert.equal((await request('/attempts',{id:idOld,questionId:qid})).status,200);assert.deepEqual((await service.store.update('alice',idOld,a=>a)).result,savedResult);
  }
  const id=randomUUID(),newAttempt=await request('/attempts',{id,questionId:'di-pred-3000137'});assert.equal(newAttempt.status,200);assert.equal(newAttempt.data.question.sample,undefined);assert.equal(newAttempt.data.question.facts,undefined);
