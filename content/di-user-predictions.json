@@ -1541,7 +1541,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125242.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125242.png"
     },
     "visual": {
       "kind": "map",
@@ -1567,7 +1568,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125248.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125248.png"
     },
     "visual": {
       "kind": "bar",
@@ -1593,7 +1595,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125256.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125256.png"
     },
     "visual": {
       "kind": "bar",
@@ -1619,7 +1622,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125302.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125302.png"
     },
     "visual": {
       "kind": "line",
@@ -1645,7 +1649,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125309.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125309.png"
     },
     "visual": {
       "kind": "other",
@@ -1671,7 +1676,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125315.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125315.png"
     },
     "visual": {
       "kind": "process",
@@ -1697,7 +1703,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125321.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125321.png"
     },
     "visual": {
       "kind": "line",
@@ -1723,7 +1730,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125326.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125326.png"
     },
     "visual": {
       "kind": "bar",
@@ -1749,7 +1757,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125332.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125332.png"
     },
     "visual": {
       "kind": "other",
@@ -1775,7 +1784,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125340.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125340.png"
     },
     "visual": {
       "kind": "bar",
@@ -1801,7 +1811,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125359.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125359.png"
     },
     "visual": {
       "kind": "line",
@@ -1827,7 +1838,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125405.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125405.png"
     },
     "visual": {
       "kind": "bar",
@@ -1853,7 +1865,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125412.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125412.png"
     },
     "visual": {
       "kind": "other",
@@ -1879,7 +1892,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125423.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125423.png"
     },
     "visual": {
       "kind": "bar",
@@ -1905,7 +1919,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125757.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125757.png"
     },
     "visual": {
       "kind": "bar",
@@ -1931,7 +1946,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125810.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125810.png"
     },
     "visual": {
       "kind": "other",
@@ -1957,7 +1973,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125820.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125820.png"
     },
     "visual": {
       "kind": "bar",
@@ -1983,7 +2000,8 @@
       "suppliedFile": "Screenshot 2026-11-17 125828.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 125828.png"
     },
     "visual": {
       "kind": "other",
@@ -2009,7 +2027,8 @@
       "suppliedFile": "Screenshot 2026-11-17 130047.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 130047.png"
     },
     "visual": {
       "kind": "map",
@@ -2035,7 +2054,8 @@
       "suppliedFile": "Screenshot 2026-11-17 130100.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 130100.png"
     },
     "visual": {
       "kind": "line",
@@ -2061,7 +2081,8 @@
       "suppliedFile": "Screenshot 2026-11-17 130107.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 130107.png"
     },
     "visual": {
       "kind": "process",
@@ -2087,7 +2108,8 @@
       "suppliedFile": "Screenshot 2026-11-17 130117.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 130117.png"
     },
     "visual": {
       "kind": "map",
@@ -2113,7 +2135,8 @@
       "suppliedFile": "Screenshot 2026-11-17 130123.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 130123.png"
     },
     "visual": {
       "kind": "line",
@@ -2139,7 +2162,8 @@
       "suppliedFile": "Screenshot 2026-11-17 130136.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 130136.png"
     },
     "visual": {
       "kind": "line",
@@ -2165,7 +2189,8 @@
       "suppliedFile": "Screenshot 2026-11-17 130145.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 130145.png"
     },
     "visual": {
       "kind": "pie",
@@ -2191,7 +2216,8 @@
       "suppliedFile": "Screenshot 2026-11-17 130200.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 130200.png"
     },
     "visual": {
       "kind": "line",
@@ -2217,7 +2243,8 @@
       "suppliedFile": "Screenshot 2026-11-17 130306.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 130306.png"
     },
     "visual": {
       "kind": "pie",
@@ -2243,7 +2270,8 @@
       "suppliedFile": "Screenshot 2026-11-17 131040.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 131040.png"
     },
     "visual": {
       "kind": "line",
@@ -2269,7 +2297,8 @@
       "suppliedFile": "Screenshot 2026-11-17 131046.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 131046.png"
     },
     "visual": {
       "kind": "process",
@@ -2295,7 +2324,8 @@
       "suppliedFile": "Screenshot 2026-11-17 131052.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 131052.png"
     },
     "visual": {
       "kind": "bar",
@@ -2321,7 +2351,8 @@
       "suppliedFile": "Screenshot 2026-11-17 131106.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 131106.png"
     },
     "visual": {
       "kind": "pie",
@@ -2347,7 +2378,8 @@
       "suppliedFile": "Screenshot 2026-11-17 131115.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 131115.png"
     },
     "visual": {
       "kind": "other",
@@ -2373,7 +2405,8 @@
       "suppliedFile": "Screenshot 2026-11-17 131125.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 131125.png"
     },
     "visual": {
       "kind": "process",
@@ -2399,7 +2432,8 @@
       "suppliedFile": "Screenshot 2026-11-17 131148.png",
       "suppliedArchive": "Screenshot 2026-11-17 125359.zip",
       "date": "2026-11-17",
-      "contentStatus": "verbatim-user-provided"
+      "contentStatus": "verbatim-user-provided",
+      "sourceId": "Screenshot 2026-11-17 131148.png"
     },
     "visual": {
       "kind": "line",
