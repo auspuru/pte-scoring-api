@@ -6,7 +6,7 @@ const speechFiles = ['speaking-scoring.js', 'delivery-rubric.js', 'gpt-speaking-
 const writingFiles = ['writing-lab-scoring.js', 'local-scoring-engine.js', 'public/writing-lab-report.js'];
 const academyFiles = ['describe-image-academy.js', 'describe-image-academy/content.js', 'describe-image-academy/scoring-policy.js',
   'describe-image-academy/chart-readings.js', 'describe-image-academy/review-evidence.js', 'describe-image-academy/image-claims.js',
-  'describe-image-academy/response-selection.js', 'describe-image-academy/score-impact.js'];
+  'describe-image-academy/response-selection.js', 'describe-image-academy/score-impact.js', 'describe-image-academy/number-context.js'];
 const RUBRICS = {
   ra: { rule: 'word-errors', traits: { content: 'prompt-word-count', pronunciation: 5, fluency: 5 }, gates: ['content'], files: speechFiles },
   rs: { rule: 'word-sequences', traits: { content: 3, pronunciation: 5, fluency: 5 }, gates: ['content'], files: speechFiles },

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "2f5776bf5eca29c9074cd95f4ffae9a548d32ea8",
-  "checkedAt": "2026-11-13",
-  "scope": "Reviewed Azure pronunciation and fluency bands for new Read Aloud, Repeat Sentence and free-response assessments; frozen older attempts keep their policy and saved marks.",
+  "baseCommit": "c51f89a",
+  "checkedAt": "2026-11-17",
+  "scope": "Authorized Describe Image numerical-context policy: credit figures as developed comparisons only when their meaning is identified in the whole response. Other task graders, weights and saved marks remain unchanged.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -31,6 +31,10 @@
         "sha256": "e2aebb389813e6f95bec08013e2f7f78c304079bdf52e9cc345f3a3c8e2b2faa",
         "version": null
       },
+      "describe-image-academy/number-context.js": {
+        "sha256": "d51f54071da3436aa626f31be99bb1865133c0f9dac67d361320d197dbb48ee3",
+        "version": null
+      },
       "describe-image-academy/response-selection.js": {
         "sha256": "d667b0247e271fd3236a4aaa24a7900e6b6337a2ae00f5f3c1399760329f56df",
         "version": null
@@ -44,7 +48,7 @@
         "version": null
       },
       "describe-image-academy/scoring-policy.js": {
-        "sha256": "79f1046717e860d26824f2a883f2bf50138a38ba39e20076197334c4349836c1",
+        "sha256": "d9cdb884d5c02829930d72b4ca14995f9d6bd838cdad6db600ef295802021e70",
         "version": null
       },
       "describe-image-feedback.js": {
@@ -52,7 +56,7 @@
         "version": null
       },
       "describe-image-feedback/scoring-policy.js": {
-        "sha256": "e3ab902ec27dad63aa3deade1da6b1d048376b2625a9e0f138b97356151515ec",
+        "sha256": "9b549248047a3cfb97debaa6020f7ca5b936658a490ead5cbc94753cd9e2016f",
         "version": null
       },
       "di-reference.js": {
@@ -136,7 +140,7 @@
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
-        "sha256": "117c51a483f49d5f4127055001698aedc2ddb4004940751b4fe25cf66959e02a",
+        "sha256": "cda5a433b6f1d293425da9f840d1b65671b8f769d11a8953cd73a52a4ec7ea72",
         "version": null
       },
       "full-mock/session.js": {
