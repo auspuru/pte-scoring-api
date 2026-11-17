@@ -246,3 +246,15 @@ body.portal-layout:not(.portal-exam-active) #portalSidebar [data-layout-assistan
   width:100%;max-width:none;
  }
 }
+
+/* Shared task lists must fill desktop panes as well as active questions. */
+@media screen and (min-width:1000px) {
+ body.portal-layout:not(.portal-exam-active) :is(#speakingPane,#readingPane,#swtPane,#practiceScreen,#writingLabScreen,#lab) .practice-question-library,
+ body.portal-layout:not(.portal-exam-active) .practice-studio:has(.practice-question-library),
+ body.portal-layout:not(.portal-exam-active) #swtPane .swt-shell:has(.practice-question-library),
+ body.portal-layout:not(.portal-exam-active) #swtPane .swt-sub-screen:has(.practice-question-library),
+ body.portal-layout:not(.portal-exam-active) #writingLabScreen .studio-focused:has(.practice-question-library),
+ body.portal-layout:not(.portal-exam-active) :is(#writingLabScreen,#lab) .listening-studio:has(.practice-question-library) {
+  width:100%;max-width:none;margin-inline:0;
+ }
+}
