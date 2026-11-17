@@ -68,8 +68,29 @@
   function attemptHistory(rows,{empty='No earlier attempts for this question.',label='Previous attempts'}={}) {
     return '<section class="practice-attempt-history" aria-label="'+esc(label)+'"><header><h3>'+esc(label)+' <span>'+rows.length+'</span></h3><p>For this question · Newest first · Your saved responses and feedback remain separate.</p></header>'+(rows.length?'<div class="practice-attempt-table-scroll"><table><thead><tr><th>Attempt</th><th>Saved · Brisbane</th><th>Mode</th><th>Status</th><th><span class="sr-only">Open result</span></th></tr></thead><tbody>'+rows.map(row=>'<tr data-practice-attempt="'+esc(row.id)+'"><td>'+esc(row.label)+'</td><td>'+esc(row.date)+'</td><td>'+esc(row.mode)+'</td><td>'+esc(row.status)+'</td><td>'+row.actions+'</td></tr>').join('')+'</tbody></table></div>':'<p class="practice-attempt-empty">'+esc(empty)+'</p>')+'</section>';
   }
+  function essayAttempts(question,attempts=[]) {
+    const text=value=>String(value??'').normalize('NFC').replace(/\s+/g,' ').trim();
+    const prompt=text(question.question);
+    return attempts.filter(a=>{
+      const saved=text(a.questionText);
+      return saved?!!prompt&&saved===prompt:a.questionId!=null&&String(a.questionId)===String(question.id);
+    });
+  }
+  function latestWritingScore(attempts,kind) {
+    if(!attempts?.length)return '';
+    const when=a=>a.date??a.timestamp??a.updatedAt;
+    const stamp=a=>{const value=when(a),n=typeof value==='number'?value:Date.parse(value);return Number.isFinite(n)?n:-Infinity;};
+    const latest=attempts.reduce((best,a)=>stamp(a)>stamp(best)?a:best),traits=latest.trait_scores;
+    const parts=['content','form','grammar','vocabulary'].map(k=>traits?.[k]);
+    const native=kind==='swt'&&parts.every(Number.isFinite);
+    const total=kind==='essay'?latest.scores?.total:native?parts.reduce((n,x)=>n+x,0):latest.overall_score;
+    const maximum=kind==='essay'?26:native?9:90;
+    const pending=latest.score_provisional||latest.ai_feedback_degraded;
+    const label=pending?'Latest attempt: Score pending':Number.isFinite(total)&&total>=0&&total<=maximum?'Latest score: '+total+' / '+maximum+(kind==='swt'&&!native?' estimate':''):'Latest score unavailable';
+    return label+(Number.isFinite(stamp(latest))?' · '+brisbaneDate(when(latest)):'');
+  }
   function libraryRows(rows,{empty='No questions match these filters.'}={}) {
-    return rows.length?rows.map(row=>'<article class="practice-library-row" role="group" aria-label="Question '+esc(row.number)+': '+esc(row.title||row.id)+'" data-question-key="'+esc(row.id)+'"><div class="practice-library-row-copy"><small>Question '+esc(row.number)+' · '+esc(row.id)+'</small><h3>'+esc(row.title||'Question '+row.number)+'</h3><p>'+esc(row.status||'Not attempted')+'</p>'+(row.detail?'<p class="practice-library-detail">'+esc(row.detail)+'</p>':'')+'</div><div class="practice-library-row-actions">'+row.actions+'</div></article>').join(''):'<p class="practice-library-empty" role="status">'+esc(empty)+'</p>';
+    return rows.length?rows.map(row=>'<article class="practice-library-row" role="group" aria-label="Question '+esc(row.number)+': '+esc(row.title||row.id)+'" data-question-key="'+esc(row.id)+'"><div class="practice-library-row-copy"><small>Question '+esc(row.number)+' · '+esc(row.id)+'</small><h3>'+esc(row.title||'Question '+row.number)+'</h3><p>'+esc(row.status||'Not attempted')+'</p>'+(row.latestScore?'<p class="practice-library-detail practice-library-score">'+esc(row.latestScore)+'</p>':'')+(row.detail?'<p class="practice-library-detail">'+esc(row.detail)+'</p>':'')+'</div><div class="practice-library-row-actions">'+row.actions+'</div></article>').join(''):'<p class="practice-library-empty" role="status">'+esc(empty)+'</p>';
   }
   function questionLibrary({skill,title,description='Choose a question before entering your practice workspace.',total=0,searchId='',searchAttrs='',search='',filterId='',filterAttrs='',filter='all',filters=[['all','All questions'],['new','Not attempted'],['draft','In progress'],['done','Completed']],rowsId='',rowsAttrs='',rowsClass='',rows='',options='',extras='',className=''}={}) {
     return '<section class="practice-question-library '+esc(className)+'"><header class="practice-library-heading"><div><p class="practice-library-eyebrow">'+esc(skill)+' practice</p><h2>'+esc(title)+'</h2><p>'+esc(description)+'</p></div><span class="practice-library-count" role="status">'+esc(total)+' questions</span></header>'+(options?'<div class="practice-library-options">'+options+'</div>':'')+'<div class="practice-library-filters"><label>Find a question<input type="search" '+(searchId?'id="'+esc(searchId)+'" ':'')+searchAttrs+' value="'+esc(search)+'" placeholder="Number, title or question ID"></label><label>Show<select '+(filterId?'id="'+esc(filterId)+'" ':'')+filterAttrs+'>'+filters.map(([value,label])=>'<option value="'+esc(value)+'" '+(value===filter?'selected':'')+'>'+esc(label)+'</option>').join('')+'</select></label></div><div class="practice-library-rows '+esc(rowsClass)+'" '+(rowsId?'id="'+esc(rowsId)+'" ':'')+rowsAttrs+'>'+rows+'</div>'+(extras?'<div class="practice-library-extras">'+extras+'</div>':'')+'</section>';
@@ -78,5 +99,5 @@
     const date=new Date(value);if(!Number.isFinite(date.getTime()))return 'Saved attempt';
     return date.toLocaleString('en-AU',{timeZone:'Australia/Brisbane',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
   }
-  return { navigation, heading, wrap, install, focusQuestion, pinNavigation, selectedQueue, questionToolbar, attemptHistory, libraryRows, questionLibrary, brisbaneDate };
+  return { navigation, heading, wrap, install, focusQuestion, pinNavigation, selectedQueue, questionToolbar, attemptHistory, libraryRows, questionLibrary, brisbaneDate, essayAttempts, latestWritingScore };
 });
