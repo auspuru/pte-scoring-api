@@ -49,6 +49,13 @@ test('Available-mark policy is exactly pinned and its legacy adapter projects to
  // that the historical adapter is exactly the previously deployed revision.
  assert.equal(sha(source),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/adapters.js'].sha256);
  const project=(from,to='')=>{assert(source.includes(from),'Expected available-marks projection');source=source.replace(from,to);};
+ // Strip only the reviewed DI policy-routing additions before checking the
+ // exact deployed adapter and the older delivery/completion projections below.
+ project("gradeSpeaking = (q, text, call, contentPolicy) => q.type==='di' ? require('../describe-image-academy').grade(q,text,call,{contentPolicy}) : speech.grade(q, text, call, { academyDescribeImage: true })",
+   "gradeSpeaking = (q, text, call) => speech.grade(q, text, call, { academyDescribeImage: true })");
+ project(', describeImagePolicy','');
+ project('gradeSpeaking(q, transcript, contentModel, describeImagePolicy)','gradeSpeaking(q, transcript, contentModel)');
+ assert.equal(sha(source),require('../content/full-mock/di-number-context-previous-sources.json').files['full-mock/adapters.js'].sha256);
  const whole=require('../content/full-mock/whole-recording-upgrade-pins.json');
  project(`  assessDelivery = require('../azure-continuous-delivery').assessRecording,
   assessLegacyDelivery = assessDelivery === require('../azure-continuous-delivery').assessRecording
