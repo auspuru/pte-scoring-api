@@ -598,7 +598,8 @@ test('Staff login compatibility rejects unreviewed server drift',async t=>{
 test('Listening integration retains exact previous Full Mock snapshots and successful native grades',async t=>{
  let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
  const upgrade=require('../content/full-mock/listening-skill-compatible-sources.json'),original={...structuredClone(f.engine.snapshot),scoringSources:structuredClone(upgrade.previous)};
- assert.equal(digest(original.scoringSources),upgrade.previousDigest);assert.equal(digest(f.engine.snapshot.scoringSources),upgrade.currentDigest);
+ assert.equal(digest(original.scoringSources),upgrade.previousDigest);assert.equal(digest(require('../content/full-mock/di-number-context-previous-sources.json')),upgrade.currentDigest);
+ assert.deepEqual(f.engine.snapshot.scoringSources,require('../content/full-mock/scoring-lock.json').snapshot);
  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
  await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
  const marked=structuredClone((await f.state()).assessment.items);await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal(calls,65);assert.deepEqual((await f.state()).assessment.items,marked);assert.deepEqual((await f.state()).assessment.snapshot,original);

@@ -55,12 +55,12 @@ function objective(q, answer) {
   return null;
 }
 function createAdapters({ transcribe = require('../speaking-lab').transcribeRecording,
-  gradeSpeaking = (q, text, call) => speech.grade(q, text, call, { academyDescribeImage: true }),
+  gradeSpeaking = (q, text, call, contentPolicy) => q.type==='di' ? require('../describe-image-academy').grade(q,text,call,{contentPolicy}) : speech.grade(q, text, call, { academyDescribeImage: true }),
   assessDelivery = require('../azure-continuous-delivery').assessRecording,
   assessLegacyDelivery = assessDelivery === require('../azure-continuous-delivery').assessRecording
     ? require('../speaking-delivery').assessRecording : assessDelivery,
   speakingContentModel, writingContentModel, swtGrader, essayGrader } = {}) {
-  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, deliveryPolicy, legacyDelivery = false, contentOnly = false } = {}) {
+  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, deliveryPolicy, describeImagePolicy, legacyDelivery = false, contentOnly = false } = {}) {
     const stages = structuredClone(previous);
     const failed = reason => ({ status: 'failed', version: VERSION, reason, stages });
     async function stage(name, call, verify = value => value != null) {
@@ -100,7 +100,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
       }
       const contentModel = q.type === 'di' && stages.content?.status === 'failed' && typeof speakingContentModel === 'function'
         ? (prompt, context) => speakingContentModel(prompt, { ...context, recoveryReview: true }) : speakingContentModel;
-      const content = await stage('content', () => gradeSpeaking(q, transcript, contentModel), value => value && Number.isInteger(value.total) && value.total >= 0 && value.total <= maxima(q).content
+      const content = await stage('content', () => gradeSpeaking(q, transcript, contentModel, describeImagePolicy), value => value && Number.isInteger(value.total) && value.total >= 0 && value.total <= maxima(q).content
         && value.maximum === maxima(q).content && !value.score_provisional && !value.needs_semantic_review
         && (['ra','rs'].includes(q.type) || value.scoringMode === 'ai' && value.contentStatus === 'assessed'));
       if (!content) return failed('content-unavailable');

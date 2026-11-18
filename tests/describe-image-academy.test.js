@@ -31,7 +31,7 @@ test('Full mock DI uses the Academy rubric, exact quote schema and one content j
     return format.response(envelope(wire()),context);
   },{academyDescribeImage:true});
   assert.equal(calls,1);assert.equal(result.total,6);assert.equal(result.maximum,6);
-  assert.equal(result.contentPolicyVersion,academy.VERSION);assert.equal(result.academyPolicyVersion,'meaning-first-40s-v5');
+  assert.equal(result.contentPolicyVersion,academy.VERSION);assert.equal(result.academyPolicyVersion,'meaning-first-40s-v6');
   assert.equal(result.academyAssessment.scoreImpact,null);assert.equal(result.contentStatus,'assessed');
   assert.equal(result.academyAssessment.evidence[0].quote,'trips rising from 200 to 450');
 });
