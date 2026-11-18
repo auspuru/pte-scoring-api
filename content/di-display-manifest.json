@@ -2484,6 +2484,1176 @@
       "bytes": 227410,
       "derivation": "original-copy",
       "legend": []
+    },
+    "di-pred-3001446": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001446.jpg",
+      "originalSha256": "5b9f148560211282198059275da825d07a47ab91dc2b612a956af89bd5fb5bf0",
+      "displayImageUrl": "/assets/di-display-20261117/3001446-5b9f14856021.jpg",
+      "displaySha256": "5b9f148560211282198059275da825d07a47ab91dc2b612a956af89bd5fb5bf0",
+      "bytes": 43035,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 50
+      }
+    },
+    "di-pred-3001445": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001445.jpg",
+      "originalSha256": "ce26704b2e0b5636d4ad2ae84297e84b586020af9f6e85b4876f4e86440a7d64",
+      "displayImageUrl": "/assets/di-display-20261117/3001445-ce26704b2e0b.jpg",
+      "displaySha256": "ce26704b2e0b5636d4ad2ae84297e84b586020af9f6e85b4876f4e86440a7d64",
+      "bytes": 65985,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 51
+      }
+    },
+    "di-pred-3001428": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001428.jpg",
+      "originalSha256": "5b02b28eabcc462b838d03921911d7827074b2fefb0149543f30a9d92e9a6a45",
+      "displayImageUrl": "/assets/di-display-20261117/3001428-5b02b28eabcc.jpg",
+      "displaySha256": "5b02b28eabcc462b838d03921911d7827074b2fefb0149543f30a9d92e9a6a45",
+      "bytes": 52556,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 52
+      }
+    },
+    "di-pred-3001385": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001385.jpg",
+      "originalSha256": "3e8b41d85eaca84642be4fc70e739e7ff83b27bcad0dd01df1a04827ddd362bc",
+      "displayImageUrl": "/assets/di-display-20261117/3001385-3e8b41d85eac.jpg",
+      "displaySha256": "3e8b41d85eaca84642be4fc70e739e7ff83b27bcad0dd01df1a04827ddd362bc",
+      "bytes": 42815,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 53
+      }
+    },
+    "di-pred-3001358": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001358.jpg",
+      "originalSha256": "4375c1c5df99fa2e02a71439e6e60aa8f8935c9d74eafba18cf0c9ebb97f3b99",
+      "displayImageUrl": "/assets/di-display-20261117/3001358-4375c1c5df99.jpg",
+      "displaySha256": "4375c1c5df99fa2e02a71439e6e60aa8f8935c9d74eafba18cf0c9ebb97f3b99",
+      "bytes": 60198,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 54
+      }
+    },
+    "di-pred-3001357": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001357.jpg",
+      "originalSha256": "afa3976cc6513c337bae30f636c19dd4ec76a6dab496cea95d2e3f0599444b2b",
+      "displayImageUrl": "/assets/di-display-20261117/3001357-afa3976cc651.jpg",
+      "displaySha256": "afa3976cc6513c337bae30f636c19dd4ec76a6dab496cea95d2e3f0599444b2b",
+      "bytes": 42408,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 55
+      }
+    },
+    "di-pred-3001354": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001354.jpg",
+      "originalSha256": "2802f9ac5411c770a8a8c360a1f6c83b763f6f506a1fad6430b08a8c774af850",
+      "displayImageUrl": "/assets/di-display-20261117/3001354-2802f9ac5411.jpg",
+      "displaySha256": "2802f9ac5411c770a8a8c360a1f6c83b763f6f506a1fad6430b08a8c774af850",
+      "bytes": 30721,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 56
+      }
+    },
+    "di-pred-3000703": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000703.jpg",
+      "originalSha256": "300d7a797979c870b1bc303b12f13b6430fd7935841eb5ee9a1b8b2bfc51ce8e",
+      "displayImageUrl": "/assets/di-display-20261117/3000703-300d7a797979.jpg",
+      "displaySha256": "300d7a797979c870b1bc303b12f13b6430fd7935841eb5ee9a1b8b2bfc51ce8e",
+      "bytes": 36870,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 57
+      }
+    },
+    "di-pred-3001439": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001439.jpg",
+      "originalSha256": "24ed965fcb283f5ac6aaf4d9803b48afd21748f0d3796ba841cfd3f56ae81f96",
+      "displayImageUrl": "/assets/di-display-20261117/3001439-24ed965fcb28.jpg",
+      "displaySha256": "24ed965fcb283f5ac6aaf4d9803b48afd21748f0d3796ba841cfd3f56ae81f96",
+      "bytes": 44218,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 58
+      }
+    },
+    "di-pred-3001437": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001437.jpg",
+      "originalSha256": "34a1634716a65dff43fc0a3502b2686a6e8eda1ac8585694e43d179558d25914",
+      "displayImageUrl": "/assets/di-display-20261117/3001437-34a1634716a6.jpg",
+      "displaySha256": "34a1634716a65dff43fc0a3502b2686a6e8eda1ac8585694e43d179558d25914",
+      "bytes": 31166,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 59
+      }
+    },
+    "di-pred-3001436": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001436.jpg",
+      "originalSha256": "c557b5d14f92e1d24e8b7af0dbea9805e14f978f4cfaf691dcd4753e47e5ab38",
+      "displayImageUrl": "/assets/di-display-20261117/3001436-c557b5d14f92.jpg",
+      "displaySha256": "c557b5d14f92e1d24e8b7af0dbea9805e14f978f4cfaf691dcd4753e47e5ab38",
+      "bytes": 31579,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 60
+      }
+    },
+    "di-pred-3001433": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001433.jpg",
+      "originalSha256": "5af7c8fdbc42e872bff4c94e0b466d4851888217c2fafc934153f152691330ac",
+      "displayImageUrl": "/assets/di-display-20261117/3001433-5af7c8fdbc42.jpg",
+      "displaySha256": "5af7c8fdbc42e872bff4c94e0b466d4851888217c2fafc934153f152691330ac",
+      "bytes": 82205,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 61
+      }
+    },
+    "di-pred-3001431": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001431.jpg",
+      "originalSha256": "7c97a4211d7f0fb0c4fcbb67d91e7c91d0bd7c2b2ebe9fe40847eb2eb8cbe0ee",
+      "displayImageUrl": "/assets/di-display-20261117/3001431-7c97a4211d7f.jpg",
+      "displaySha256": "7c97a4211d7f0fb0c4fcbb67d91e7c91d0bd7c2b2ebe9fe40847eb2eb8cbe0ee",
+      "bytes": 50290,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 62
+      }
+    },
+    "di-pred-3001426": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001426.jpg",
+      "originalSha256": "41168a99c082efc628256f4027d9755f988be4a81a648f335f989d8e6ca92985",
+      "displayImageUrl": "/assets/di-display-20261117/3001426-41168a99c082.jpg",
+      "displaySha256": "41168a99c082efc628256f4027d9755f988be4a81a648f335f989d8e6ca92985",
+      "bytes": 35776,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 63
+      }
+    },
+    "di-pred-3001420": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001420.jpg",
+      "originalSha256": "835eebf7004fcbe1441c44ff35c15c545dc5bc2e34006db3177926a5302599ec",
+      "displayImageUrl": "/assets/di-display-20261117/3001420-835eebf7004f.jpg",
+      "displaySha256": "835eebf7004fcbe1441c44ff35c15c545dc5bc2e34006db3177926a5302599ec",
+      "bytes": 34423,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 64
+      }
+    },
+    "di-pred-3001417": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001417.jpg",
+      "originalSha256": "6807075c909e072707a42ab07f8ba10ae3a2448237df9b74cb7afaaecbe5e20e",
+      "displayImageUrl": "/assets/di-display-20261117/3001417-6807075c909e.jpg",
+      "displaySha256": "6807075c909e072707a42ab07f8ba10ae3a2448237df9b74cb7afaaecbe5e20e",
+      "bytes": 17798,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 65
+      }
+    },
+    "di-pred-3001415": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001415.jpg",
+      "originalSha256": "26447e45e1725a8a532b9a866214d4772bee5f10cb257fb7c9aa879c15977442",
+      "displayImageUrl": "/assets/di-display-20261117/3001415-26447e45e172.jpg",
+      "displaySha256": "26447e45e1725a8a532b9a866214d4772bee5f10cb257fb7c9aa879c15977442",
+      "bytes": 19855,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 66
+      }
+    },
+    "di-pred-3001414": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001414.jpg",
+      "originalSha256": "98fa5795026271a3eecb74ad01c0a481c81ee3a6891bd26d4acccaf32e729697",
+      "displayImageUrl": "/assets/di-display-20261117/3001414-98fa57950262.jpg",
+      "displaySha256": "98fa5795026271a3eecb74ad01c0a481c81ee3a6891bd26d4acccaf32e729697",
+      "bytes": 28741,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 67
+      }
+    },
+    "di-pred-3001411": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001411.jpg",
+      "originalSha256": "7384933589f6af49cdb745b580e01f10a07b5a59e7440b2ddc771712fb9c6746",
+      "displayImageUrl": "/assets/di-display-20261117/3001411-7384933589f6.jpg",
+      "displaySha256": "7384933589f6af49cdb745b580e01f10a07b5a59e7440b2ddc771712fb9c6746",
+      "bytes": 24442,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 68
+      }
+    },
+    "di-pred-3001408": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001408.jpg",
+      "originalSha256": "3d0311f6a6271540c04748ffed1dbd7b1ec62bdf3296a45eacb915a5bc30c7fe",
+      "displayImageUrl": "/assets/di-display-20261117/3001408-3d0311f6a627.jpg",
+      "displaySha256": "3d0311f6a6271540c04748ffed1dbd7b1ec62bdf3296a45eacb915a5bc30c7fe",
+      "bytes": 39018,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 69
+      }
+    },
+    "di-pred-3001410": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001410.jpg",
+      "originalSha256": "965fb0d11b1c1580569112e87bf3f0ff2b637fc07c66e83be30fc56fa8a7061d",
+      "displayImageUrl": "/assets/di-display-20261117/3001410-965fb0d11b1c.jpg",
+      "displaySha256": "965fb0d11b1c1580569112e87bf3f0ff2b637fc07c66e83be30fc56fa8a7061d",
+      "bytes": 16183,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 70
+      }
+    },
+    "di-pred-3001383": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001383.jpg",
+      "originalSha256": "594d4bf2095b48b29510ba72e2aed5869a260083158d496ab54377312975d7dc",
+      "displayImageUrl": "/assets/di-display-20261117/3001383-594d4bf2095b.jpg",
+      "displaySha256": "594d4bf2095b48b29510ba72e2aed5869a260083158d496ab54377312975d7dc",
+      "bytes": 25560,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 71
+      }
+    },
+    "di-pred-3001379": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001379.jpg",
+      "originalSha256": "3552cc855c1950db1ab77fd30f0e5c7efe7038fdda98d881636c65a7d6e8a1c1",
+      "displayImageUrl": "/assets/di-display-20261117/3001379-3552cc855c19.jpg",
+      "displaySha256": "3552cc855c1950db1ab77fd30f0e5c7efe7038fdda98d881636c65a7d6e8a1c1",
+      "bytes": 30977,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 72
+      }
+    },
+    "di-pred-3001371": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3001371.jpg",
+      "originalSha256": "ef01430b6c45ea10a304824c289b866b2b45f7660b501e04a5c11666af9a71aa",
+      "displayImageUrl": "/assets/di-display-20261117/3001371-ef01430b6c45.jpg",
+      "displaySha256": "ef01430b6c45ea10a304824c289b866b2b45f7660b501e04a5c11666af9a71aa",
+      "bytes": 24450,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 73
+      }
+    },
+    "di-pred-3000845": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000845.jpg",
+      "originalSha256": "5b6ad11bd2585e85d06b86d96d47b3ba4a8f1d258a4f21e847422f829eabaa24",
+      "displayImageUrl": "/assets/di-display-20261117/3000845-5b6ad11bd258.jpg",
+      "displaySha256": "5b6ad11bd2585e85d06b86d96d47b3ba4a8f1d258a4f21e847422f829eabaa24",
+      "bytes": 40824,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 74
+      }
+    },
+    "di-pred-3000835": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000835.jpg",
+      "originalSha256": "0bfaf2621a2b0af58b7ded472274d424f88ea80a04f77f14e086c93e0230cd77",
+      "displayImageUrl": "/assets/di-display-20261117/3000835-0bfaf2621a2b.jpg",
+      "displaySha256": "0bfaf2621a2b0af58b7ded472274d424f88ea80a04f77f14e086c93e0230cd77",
+      "bytes": 20156,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 75
+      }
+    },
+    "di-pred-3000834": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000834.jpg",
+      "originalSha256": "e2165af684a73958fc36e2b27566a51be00593ccbee1e115538cf0ef97531280",
+      "displayImageUrl": "/assets/di-display-20261117/3000834-e2165af684a7.jpg",
+      "displaySha256": "e2165af684a73958fc36e2b27566a51be00593ccbee1e115538cf0ef97531280",
+      "bytes": 15237,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 76
+      }
+    },
+    "di-pred-3000717": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000717.jpg",
+      "originalSha256": "26e8e506d2fa7425ae161a51304a0cfd4ef90c88e8eceddd65b5429474ae71dd",
+      "displayImageUrl": "/assets/di-display-20261117/3000717-26e8e506d2fa.jpg",
+      "displaySha256": "26e8e506d2fa7425ae161a51304a0cfd4ef90c88e8eceddd65b5429474ae71dd",
+      "bytes": 16893,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 77
+      }
+    },
+    "di-pred-3000715": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000715.jpg",
+      "originalSha256": "d063d7514b278ea883b991cf8c6290b34c2b9403fc5dc3554004938a11f8557f",
+      "displayImageUrl": "/assets/di-display-20261117/3000715-d063d7514b27.jpg",
+      "displaySha256": "d063d7514b278ea883b991cf8c6290b34c2b9403fc5dc3554004938a11f8557f",
+      "bytes": 46328,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 78
+      }
+    },
+    "di-pred-3000714": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000714.jpg",
+      "originalSha256": "ffe734f63790cf50b50316468c1a9a2a1904d9503062435267af75a9f2fb41c7",
+      "displayImageUrl": "/assets/di-display-20261117/3000714-ffe734f63790.jpg",
+      "displaySha256": "ffe734f63790cf50b50316468c1a9a2a1904d9503062435267af75a9f2fb41c7",
+      "bytes": 16057,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 79
+      }
+    },
+    "di-pred-3000709": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000709.jpg",
+      "originalSha256": "abbbd77d9109adabffdae76291476e007eb4c1058a1a5f9448a9ef8a4f120df5",
+      "displayImageUrl": "/assets/di-display-20261117/3000709-abbbd77d9109.jpg",
+      "displaySha256": "abbbd77d9109adabffdae76291476e007eb4c1058a1a5f9448a9ef8a4f120df5",
+      "bytes": 9141,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 80
+      }
+    },
+    "di-pred-3000693": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000693.jpg",
+      "originalSha256": "c84cc4a0a3e4155bea3faa7de0ed6bc50740a2ac547552acf2b3748cf65ea5f9",
+      "displayImageUrl": "/assets/di-display-20261117/3000693-c84cc4a0a3e4.jpg",
+      "displaySha256": "c84cc4a0a3e4155bea3faa7de0ed6bc50740a2ac547552acf2b3748cf65ea5f9",
+      "bytes": 47405,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 81
+      }
+    },
+    "di-pred-3000690": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000690.jpg",
+      "originalSha256": "7162c890865a956ad1b2ed17fbdf2e65e1a4d17712a8ef787d9ec285f5c90027",
+      "displayImageUrl": "/assets/di-display-20261117/3000690-7162c890865a.jpg",
+      "displaySha256": "7162c890865a956ad1b2ed17fbdf2e65e1a4d17712a8ef787d9ec285f5c90027",
+      "bytes": 23120,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 82
+      }
+    },
+    "di-pred-3000683": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000683.jpg",
+      "originalSha256": "da7f15f0b328dccde1f23dac9f12d4d360cf4305f7ec589164ba56f279f4782f",
+      "displayImageUrl": "/assets/di-display-20261117/3000683-da7f15f0b328.jpg",
+      "displaySha256": "da7f15f0b328dccde1f23dac9f12d4d360cf4305f7ec589164ba56f279f4782f",
+      "bytes": 35399,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 83
+      }
+    },
+    "di-pred-3000674": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000674.jpg",
+      "originalSha256": "5fd1dc8c20ac5e6210382bc12d2cb0af6e7f04aaf88a7d67518f534741d20cea",
+      "displayImageUrl": "/assets/di-display-20261117/3000674-5fd1dc8c20ac.jpg",
+      "displaySha256": "5fd1dc8c20ac5e6210382bc12d2cb0af6e7f04aaf88a7d67518f534741d20cea",
+      "bytes": 31551,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 84
+      }
+    },
+    "di-pred-3000662": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000662.jpg",
+      "originalSha256": "8ce94ea84ea63bd0d212b0f172a470e82eccf0efba30fd166fe6ba52a5f558e0",
+      "displayImageUrl": "/assets/di-display-20261117/3000662-8ce94ea84ea6.jpg",
+      "displaySha256": "8ce94ea84ea63bd0d212b0f172a470e82eccf0efba30fd166fe6ba52a5f558e0",
+      "bytes": 13933,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 85
+      }
+    },
+    "di-pred-3000645": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000645.jpg",
+      "originalSha256": "62c645969632e5f9a83c756d8763909b40aa96b44186bd9ee5fcadb87cafc112",
+      "displayImageUrl": "/assets/di-display-20261117/3000645-62c645969632.jpg",
+      "displaySha256": "62c645969632e5f9a83c756d8763909b40aa96b44186bd9ee5fcadb87cafc112",
+      "bytes": 20572,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 86
+      }
+    },
+    "di-pred-3000636": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000636.jpg",
+      "originalSha256": "63ad7ae345287b106e57453464b224bfb3c317b415a050c27b8a2482e982db2d",
+      "displayImageUrl": "/assets/di-display-20261117/3000636-63ad7ae34528.jpg",
+      "displaySha256": "63ad7ae345287b106e57453464b224bfb3c317b415a050c27b8a2482e982db2d",
+      "bytes": 13864,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 87
+      }
+    },
+    "di-pred-3000616": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000616.jpg",
+      "originalSha256": "9870c4cf46af21f4550d7f4137efbb4ad25c7deb4b79a6b58eccb0ce57a23d43",
+      "displayImageUrl": "/assets/di-display-20261117/3000616-9870c4cf46af.jpg",
+      "displaySha256": "9870c4cf46af21f4550d7f4137efbb4ad25c7deb4b79a6b58eccb0ce57a23d43",
+      "bytes": 16178,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 88
+      }
+    },
+    "di-pred-3000537": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000537.jpg",
+      "originalSha256": "de46636d420dd94691a13f0beeeecfb69850333fc1192cb794cbc010c1ae33ec",
+      "displayImageUrl": "/assets/di-display-20261117/3000537-de46636d420d.jpg",
+      "displaySha256": "de46636d420dd94691a13f0beeeecfb69850333fc1192cb794cbc010c1ae33ec",
+      "bytes": 21770,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 89
+      }
+    },
+    "di-pred-3000532": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000532.jpg",
+      "originalSha256": "410121f8ad52fbd7efd85f5739875a7993be1521c27ce07c7a3a3346edc43ed1",
+      "displayImageUrl": "/assets/di-display-20261117/3000532-410121f8ad52.jpg",
+      "displaySha256": "410121f8ad52fbd7efd85f5739875a7993be1521c27ce07c7a3a3346edc43ed1",
+      "bytes": 19203,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 90
+      }
+    },
+    "di-pred-3000517": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000517.jpg",
+      "originalSha256": "84974f7912e7ee2475404649482d808fd07707b7be679fecb57f521757dfb14f",
+      "displayImageUrl": "/assets/di-display-20261117/3000517-84974f7912e7.jpg",
+      "displaySha256": "84974f7912e7ee2475404649482d808fd07707b7be679fecb57f521757dfb14f",
+      "bytes": 23785,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 91
+      }
+    },
+    "di-pred-3000508": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000508.jpg",
+      "originalSha256": "a219b2f1c29ffa787b71b40aed1faebf90b7b71c890db83156ec4d688f62690a",
+      "displayImageUrl": "/assets/di-display-20261117/3000508-a219b2f1c29f.jpg",
+      "displaySha256": "a219b2f1c29ffa787b71b40aed1faebf90b7b71c890db83156ec4d688f62690a",
+      "bytes": 22167,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 92
+      }
+    },
+    "di-pred-3000500": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000500.jpg",
+      "originalSha256": "b23987f69f15ca062323afdb694de763dd38e1c7196d7b32bf0d47bde7985ecb",
+      "displayImageUrl": "/assets/di-display-20261117/3000500-b23987f69f15.jpg",
+      "displaySha256": "b23987f69f15ca062323afdb694de763dd38e1c7196d7b32bf0d47bde7985ecb",
+      "bytes": 23185,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 93
+      }
+    },
+    "di-pred-3000339": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000339.jpg",
+      "originalSha256": "903f431a533852b03235e9daf2e04e874a4c8c0814d6d041c05a54fbc75d0b59",
+      "displayImageUrl": "/assets/di-display-20261117/3000339-903f431a5338.jpg",
+      "displaySha256": "903f431a533852b03235e9daf2e04e874a4c8c0814d6d041c05a54fbc75d0b59",
+      "bytes": 28808,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 94
+      }
+    },
+    "di-pred-3000324": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000324.jpg",
+      "originalSha256": "920f48241bac2c623bf22149298107945ace81acf43e6372a911017816a03694",
+      "displayImageUrl": "/assets/di-display-20261117/3000324-920f48241bac.jpg",
+      "displaySha256": "920f48241bac2c623bf22149298107945ace81acf43e6372a911017816a03694",
+      "bytes": 33292,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 95
+      }
+    },
+    "di-pred-3000311": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000311.jpg",
+      "originalSha256": "6d9da9c635a47f252e3f216a7f969b0a17fa1e3cf6ea7654903e0059dd76ff72",
+      "displayImageUrl": "/assets/di-display-20261117/3000311-6d9da9c635a4.jpg",
+      "displaySha256": "6d9da9c635a47f252e3f216a7f969b0a17fa1e3cf6ea7654903e0059dd76ff72",
+      "bytes": 26201,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 96
+      }
+    },
+    "di-pred-3000307": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000307.jpg",
+      "originalSha256": "e7964be9956a7d8a26c2f252cad904a7526d7e40db5a918a2ad2f9172f21458a",
+      "displayImageUrl": "/assets/di-display-20261117/3000307-e7964be9956a.jpg",
+      "displaySha256": "e7964be9956a7d8a26c2f252cad904a7526d7e40db5a918a2ad2f9172f21458a",
+      "bytes": 20994,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 97
+      }
+    },
+    "di-pred-3000295": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000295.jpg",
+      "originalSha256": "9f36567d9bdc94e8c4e30936f5574b6705028ef56ea3e87a3dca73f3b2b87585",
+      "displayImageUrl": "/assets/di-display-20261117/3000295-9f36567d9bdc.jpg",
+      "displaySha256": "9f36567d9bdc94e8c4e30936f5574b6705028ef56ea3e87a3dca73f3b2b87585",
+      "bytes": 45060,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 98
+      }
+    },
+    "di-pred-3000268": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000268.jpg",
+      "originalSha256": "9eb4caa7a63b6248c333960cc4cfd85e2adaa477e611a07ae5aa92cd7b31a09c",
+      "displayImageUrl": "/assets/di-display-20261117/3000268-9eb4caa7a63b.jpg",
+      "displaySha256": "9eb4caa7a63b6248c333960cc4cfd85e2adaa477e611a07ae5aa92cd7b31a09c",
+      "bytes": 55414,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 99
+      }
+    },
+    "di-pred-3000251": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000251.jpg",
+      "originalSha256": "78aedeeee84c5bb48a41d710d0ea318ddf748dc08e8dc4784b50fdfa44d2eebb",
+      "displayImageUrl": "/assets/di-display-20261117/3000251-78aedeeee84c.jpg",
+      "displaySha256": "78aedeeee84c5bb48a41d710d0ea318ddf748dc08e8dc4784b50fdfa44d2eebb",
+      "bytes": 20808,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 100
+      }
+    },
+    "di-pred-3000250": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000250.jpg",
+      "originalSha256": "d5121fc4ec18024349dcf222cec5eb76094ec9c69b6001f8d425ce9e666d0dd1",
+      "displayImageUrl": "/assets/di-display-20261117/3000250-d5121fc4ec18.jpg",
+      "displaySha256": "d5121fc4ec18024349dcf222cec5eb76094ec9c69b6001f8d425ce9e666d0dd1",
+      "bytes": 25806,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 101
+      }
+    },
+    "di-pred-3000243": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000243.jpg",
+      "originalSha256": "1a4fc92cfbacc2b1e7ad9dd32e0dcedcd55422e8bd56a07c4880714979aa0a11",
+      "displayImageUrl": "/assets/di-display-20261117/3000243-1a4fc92cfbac.jpg",
+      "displaySha256": "1a4fc92cfbacc2b1e7ad9dd32e0dcedcd55422e8bd56a07c4880714979aa0a11",
+      "bytes": 24734,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 102
+      }
+    },
+    "di-pred-3000241": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000241.jpg",
+      "originalSha256": "4aa7934c5eb609182196470755f03cd29be342207392f46125cbe0445c141ed3",
+      "displayImageUrl": "/assets/di-display-20261117/3000241-4aa7934c5eb6.jpg",
+      "displaySha256": "4aa7934c5eb609182196470755f03cd29be342207392f46125cbe0445c141ed3",
+      "bytes": 25586,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 103
+      }
+    },
+    "di-pred-3000234": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000234.jpg",
+      "originalSha256": "c0ec8d828879c98ec78da1e499edb8963bc185aba25f8e0d15e28c752662545a",
+      "displayImageUrl": "/assets/di-display-20261117/3000234-c0ec8d828879.jpg",
+      "displaySha256": "c0ec8d828879c98ec78da1e499edb8963bc185aba25f8e0d15e28c752662545a",
+      "bytes": 26199,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 104
+      }
+    },
+    "di-pred-3000233": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000233.jpg",
+      "originalSha256": "79bf3927697a9c8e2e226f064b4c999fcca14c53455fd3d3d8cb360799688fe6",
+      "displayImageUrl": "/assets/di-display-20261117/3000233-79bf3927697a.jpg",
+      "displaySha256": "79bf3927697a9c8e2e226f064b4c999fcca14c53455fd3d3d8cb360799688fe6",
+      "bytes": 30468,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 105
+      }
+    },
+    "di-pred-3000229": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000229.jpg",
+      "originalSha256": "c46d6f896c27d9c578f74bdaf64e46fbe9bba5be7cf476e41f33ad55271e2b40",
+      "displayImageUrl": "/assets/di-display-20261117/3000229-c46d6f896c27.jpg",
+      "displaySha256": "c46d6f896c27d9c578f74bdaf64e46fbe9bba5be7cf476e41f33ad55271e2b40",
+      "bytes": 32136,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 106
+      }
+    },
+    "di-pred-3000224": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000224.jpg",
+      "originalSha256": "0d61190a0e3331a46911bee4276dce2a8f10af8eda4709dbcd62647a80263c8f",
+      "displayImageUrl": "/assets/di-display-20261117/3000224-0d61190a0e33.jpg",
+      "displaySha256": "0d61190a0e3331a46911bee4276dce2a8f10af8eda4709dbcd62647a80263c8f",
+      "bytes": 38961,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 107
+      }
+    },
+    "di-pred-3000222": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000222.jpg",
+      "originalSha256": "0b7855dd34704d71469c9533f60c70d1fc09ac664c73340e1dab8c29cbfa65fe",
+      "displayImageUrl": "/assets/di-display-20261117/3000222-0b7855dd3470.jpg",
+      "displaySha256": "0b7855dd34704d71469c9533f60c70d1fc09ac664c73340e1dab8c29cbfa65fe",
+      "bytes": 23417,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 108
+      }
+    },
+    "di-pred-3000217": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000217.jpg",
+      "originalSha256": "5a2e0f89f5a552b8a3811b46cfc4ec0b8b40010f1889191d5fa65d0d9902a611",
+      "displayImageUrl": "/assets/di-display-20261117/3000217-5a2e0f89f5a5.jpg",
+      "displaySha256": "5a2e0f89f5a552b8a3811b46cfc4ec0b8b40010f1889191d5fa65d0d9902a611",
+      "bytes": 30678,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 109
+      }
+    },
+    "di-pred-3000216": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000216.jpg",
+      "originalSha256": "102c6c09fb2c5c94de2e7e86d3863ecfc486ddc3438e0de71f9d881d364ef92d",
+      "displayImageUrl": "/assets/di-display-20261117/3000216-102c6c09fb2c.jpg",
+      "displaySha256": "102c6c09fb2c5c94de2e7e86d3863ecfc486ddc3438e0de71f9d881d364ef92d",
+      "bytes": 15056,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 110
+      }
+    },
+    "di-pred-3000213": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000213.jpg",
+      "originalSha256": "8ab23a16339141f15a5ebcfe30ab21c08975d2dbf4a98083c8167d7c3bc0cde8",
+      "displayImageUrl": "/assets/di-display-20261117/3000213-8ab23a163391.jpg",
+      "displaySha256": "8ab23a16339141f15a5ebcfe30ab21c08975d2dbf4a98083c8167d7c3bc0cde8",
+      "bytes": 36893,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 111
+      }
+    },
+    "di-pred-3000208": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000208.jpg",
+      "originalSha256": "d406361a8e49d45ab26466486c97408ebe41693335bfe58707ba22f412a9e76b",
+      "displayImageUrl": "/assets/di-display-20261117/3000208-d406361a8e49.jpg",
+      "displaySha256": "d406361a8e49d45ab26466486c97408ebe41693335bfe58707ba22f412a9e76b",
+      "bytes": 21148,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 112
+      }
+    },
+    "di-pred-3000202": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000202.jpg",
+      "originalSha256": "9a36febcf0d8a09f13093e1753f7a4560ec3ea3ec979cfbab8f454bf835eba1c",
+      "displayImageUrl": "/assets/di-display-20261117/3000202-9a36febcf0d8.jpg",
+      "displaySha256": "9a36febcf0d8a09f13093e1753f7a4560ec3ea3ec979cfbab8f454bf835eba1c",
+      "bytes": 37975,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 113
+      }
+    },
+    "di-pred-3000199": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000199.jpg",
+      "originalSha256": "84fda56b8f57a8fb6db060d32cd8c651e530b25837648c6f378371e4f9d6f8a2",
+      "displayImageUrl": "/assets/di-display-20261117/3000199-84fda56b8f57.jpg",
+      "displaySha256": "84fda56b8f57a8fb6db060d32cd8c651e530b25837648c6f378371e4f9d6f8a2",
+      "bytes": 24937,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 114
+      }
+    },
+    "di-pred-3000185": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000185.jpg",
+      "originalSha256": "bb335cd5f629530faa6a62ba418730ea96683e56e824b14c44d52e8ccc9b77dd",
+      "displayImageUrl": "/assets/di-display-20261117/3000185-bb335cd5f629.jpg",
+      "displaySha256": "bb335cd5f629530faa6a62ba418730ea96683e56e824b14c44d52e8ccc9b77dd",
+      "bytes": 24548,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 115
+      }
+    },
+    "di-pred-3000172": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000172.jpg",
+      "originalSha256": "1f4b6b2e6730d60007e6270436c6b69faec53de61ad00fe13836ca7674bb6374",
+      "displayImageUrl": "/assets/di-display-20261117/3000172-1f4b6b2e6730.jpg",
+      "displaySha256": "1f4b6b2e6730d60007e6270436c6b69faec53de61ad00fe13836ca7674bb6374",
+      "bytes": 26093,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 116
+      }
+    },
+    "di-pred-3000161": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000161.jpg",
+      "originalSha256": "f479c78cb827adf8fc5c210020ee196f63cd38f380f092d2ccf09facda30e176",
+      "displayImageUrl": "/assets/di-display-20261117/3000161-f479c78cb827.jpg",
+      "displaySha256": "f479c78cb827adf8fc5c210020ee196f63cd38f380f092d2ccf09facda30e176",
+      "bytes": 29000,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 117
+      }
+    },
+    "di-pred-3000154": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000154.jpg",
+      "originalSha256": "e69f1b15e08791bdece18714c941f040c8a999130929f891738876681bf9fcaf",
+      "displayImageUrl": "/assets/di-display-20261117/3000154-e69f1b15e087.jpg",
+      "displaySha256": "e69f1b15e08791bdece18714c941f040c8a999130929f891738876681bf9fcaf",
+      "bytes": 26091,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 118
+      }
+    },
+    "di-pred-3000148": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000148.jpg",
+      "originalSha256": "223c64eebe85b586b20ff349705f71105dd1a754e79d7ddfcd7ea274471327eb",
+      "displayImageUrl": "/assets/di-display-20261117/3000148-223c64eebe85.jpg",
+      "displaySha256": "223c64eebe85b586b20ff349705f71105dd1a754e79d7ddfcd7ea274471327eb",
+      "bytes": 27566,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 119
+      }
+    },
+    "di-pred-3000145": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000145.jpg",
+      "originalSha256": "fbcdd37c1f16741a728e31cd795ae79709f9d29ae563375ff44f32cb0d47a28a",
+      "displayImageUrl": "/assets/di-display-20261117/3000145-fbcdd37c1f16.jpg",
+      "displaySha256": "fbcdd37c1f16741a728e31cd795ae79709f9d29ae563375ff44f32cb0d47a28a",
+      "bytes": 16832,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 120
+      }
+    },
+    "di-pred-3000141": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000141.jpg",
+      "originalSha256": "147c29557c8d98d57dbb3b9534ce46ff5713a8c578b2c80178183d8552f766e2",
+      "displayImageUrl": "/assets/di-display-20261117/3000141-147c29557c8d.jpg",
+      "displaySha256": "147c29557c8d98d57dbb3b9534ce46ff5713a8c578b2c80178183d8552f766e2",
+      "bytes": 29220,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 121
+      }
+    },
+    "di-pred-3000139": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000139.jpg",
+      "originalSha256": "57f0ec02aa489b25d180d909a787d2847f52cbfa6fadf1fac90bc48c4bf696a4",
+      "displayImageUrl": "/assets/di-display-20261117/3000139-57f0ec02aa48.jpg",
+      "displaySha256": "57f0ec02aa489b25d180d909a787d2847f52cbfa6fadf1fac90bc48c4bf696a4",
+      "bytes": 41904,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 122
+      }
+    },
+    "di-pred-3000114": {
+      "originalImageUrl": "/assets/di-predictions-20260930/3000114.jpg",
+      "originalSha256": "ccf79ba877c46ec0c417f20d32621b09bb7f9411b41f2064161adb1faab738a9",
+      "displayImageUrl": "/assets/di-display-20261117/3000114-ccf79ba877c4.jpg",
+      "displaySha256": "ccf79ba877c46ec0c417f20d32621b09bb7f9411b41f2064161adb1faab738a9",
+      "bytes": 32001,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 123
+      }
+    },
+    "di-ipt-di-20261106-01": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117724.png",
+      "originalSha256": "7f9ae8267fef443dd24e3630a68119ffa5f7d995198f37900e8c2c2ae54eac86",
+      "displayImageUrl": "/assets/di-display-20261117/20261117724-7f9ae8267fef.png",
+      "displaySha256": "7f9ae8267fef443dd24e3630a68119ffa5f7d995198f37900e8c2c2ae54eac86",
+      "bytes": 256092,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 124
+      }
+    },
+    "di-ipt-di-20261106-02": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117725.png",
+      "originalSha256": "7a47f3e84bd664d8f00e05ba87c836e50c6e6a999a6923c9d87741476050093d",
+      "displayImageUrl": "/assets/di-display-20261117/20261117725-7a47f3e84bd6.png",
+      "displaySha256": "7a47f3e84bd664d8f00e05ba87c836e50c6e6a999a6923c9d87741476050093d",
+      "bytes": 1169781,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 125
+      }
+    },
+    "di-ipt-di-20261106-03": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117726.png",
+      "originalSha256": "8cf504d329ee2c4d36ee0f08fecc3fe3ce45adf8dca554089e2b14fdcbdf9200",
+      "displayImageUrl": "/assets/di-display-20261117/20261117726-8cf504d329ee.png",
+      "displaySha256": "8cf504d329ee2c4d36ee0f08fecc3fe3ce45adf8dca554089e2b14fdcbdf9200",
+      "bytes": 2882501,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 126
+      }
+    },
+    "di-ipt-di-20261106-04": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117727.png",
+      "originalSha256": "078fd1d48f364d1f2cba53cf525d6984f442bdcebbbf9a6ff5ca5e30cd3fb04f",
+      "displayImageUrl": "/assets/di-display-20261117/20261117727-078fd1d48f36.png",
+      "displaySha256": "078fd1d48f364d1f2cba53cf525d6984f442bdcebbbf9a6ff5ca5e30cd3fb04f",
+      "bytes": 4012975,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 127
+      }
+    },
+    "di-ipt-di-20261106-05": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117728.png",
+      "originalSha256": "e8f153b64415af92759d439b9fca4d66c069fc996fa010c9db8dbd127029a5f6",
+      "displayImageUrl": "/assets/di-display-20261117/20261117728-e8f153b64415.png",
+      "displaySha256": "e8f153b64415af92759d439b9fca4d66c069fc996fa010c9db8dbd127029a5f6",
+      "bytes": 842634,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 128
+      }
+    },
+    "di-ipt-di-20261106-06": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117729.png",
+      "originalSha256": "c7e404c7e61a1cf28c8941b051b6721dfb0093137179602070289f938f12bb5f",
+      "displayImageUrl": "/assets/di-display-20261117/20261117729-c7e404c7e61a.png",
+      "displaySha256": "c7e404c7e61a1cf28c8941b051b6721dfb0093137179602070289f938f12bb5f",
+      "bytes": 825011,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 129
+      }
+    },
+    "di-ipt-di-20261106-08": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117730.png",
+      "originalSha256": "1c9b9982f97b89cbc15880556c3c02454019c98b61170ef5f900d9109fe02d00",
+      "displayImageUrl": "/assets/di-display-20261117/20261117730-1c9b9982f97b.png",
+      "displaySha256": "1c9b9982f97b89cbc15880556c3c02454019c98b61170ef5f900d9109fe02d00",
+      "bytes": 318184,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 130
+      }
+    },
+    "di-ipt-di-20261106-10": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117731.png",
+      "originalSha256": "34d4087be0b580939b14a469c07770e792c88bf9d42cdc400cb2c6c288fad6b7",
+      "displayImageUrl": "/assets/di-display-20261117/20261117731-34d4087be0b5.png",
+      "displaySha256": "34d4087be0b580939b14a469c07770e792c88bf9d42cdc400cb2c6c288fad6b7",
+      "bytes": 1088742,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 131
+      }
+    },
+    "di-ipt-di-20261106-11": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117732.png",
+      "originalSha256": "fb583ddcbd61e52e47cae5909f831cc65a8bd9416174112f5b193628b68af32d",
+      "displayImageUrl": "/assets/di-display-20261117/20261117732-fb583ddcbd61.png",
+      "displaySha256": "fb583ddcbd61e52e47cae5909f831cc65a8bd9416174112f5b193628b68af32d",
+      "bytes": 1249425,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 132
+      }
+    },
+    "di-ipt-di-20261106-12": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117733.png",
+      "originalSha256": "f30234949148f944a20254678955c993167e15a551e98c2472c36a39ed034d74",
+      "displayImageUrl": "/assets/di-display-20261117/20261117733-f30234949148.png",
+      "displaySha256": "f30234949148f944a20254678955c993167e15a551e98c2472c36a39ed034d74",
+      "bytes": 949815,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 133
+      }
+    },
+    "di-ipt-di-20261106-13": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117734.png",
+      "originalSha256": "0915a41bcf75263bf7b2f23b4e6225880fe14749287ecc8dbe00baefab3ce74d",
+      "displayImageUrl": "/assets/di-display-20261117/20261117734-0915a41bcf75.png",
+      "displaySha256": "0915a41bcf75263bf7b2f23b4e6225880fe14749287ecc8dbe00baefab3ce74d",
+      "bytes": 951640,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 134
+      }
+    },
+    "di-ipt-di-20261106-14": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117735.png",
+      "originalSha256": "8917a775e191b6a476cb413c5941b602b963185b0c73a9bcb1a175a55bf8c377",
+      "displayImageUrl": "/assets/di-display-20261117/20261117735-8917a775e191.png",
+      "displaySha256": "8917a775e191b6a476cb413c5941b602b963185b0c73a9bcb1a175a55bf8c377",
+      "bytes": 1005584,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 135
+      }
+    },
+    "di-ipt-di-20261106-17": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117736.png",
+      "originalSha256": "0718c01b6bcd13cb3e34f2c146335940ac0a80f878e27623438c0f01b452b879",
+      "displayImageUrl": "/assets/di-display-20261117/20261117736-0718c01b6bcd.png",
+      "displaySha256": "0718c01b6bcd13cb3e34f2c146335940ac0a80f878e27623438c0f01b452b879",
+      "bytes": 824356,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 136
+      }
+    },
+    "di-upload-20261117-188": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117788.png",
+      "originalSha256": "b534ac98c2d3650567007876e8bbfa1ea6ab386ada3f95d07dd584d7babea358",
+      "displayImageUrl": "/assets/di-display-20261117/20261117788-b534ac98c2d3.png",
+      "displaySha256": "b534ac98c2d3650567007876e8bbfa1ea6ab386ada3f95d07dd584d7babea358",
+      "bytes": 414752,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 188
+      }
+    },
+    "di-upload-20261117-193": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117793.png",
+      "originalSha256": "08afd0b82664ba8b0aed7589140f154d2712cf0cfea3e85783b7e73bf01debdd",
+      "displayImageUrl": "/assets/di-display-20261117/20261117793-08afd0b82664.png",
+      "displaySha256": "08afd0b82664ba8b0aed7589140f154d2712cf0cfea3e85783b7e73bf01debdd",
+      "bytes": 224455,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 193
+      }
+    },
+    "di-upload-20261117-194": {
+      "originalImageUrl": "/assets/di-predictions-20260930/20261117794.png",
+      "originalSha256": "71dd488dba47e6a9a409e18a77026eeeac35719b7d01d868a63bff6c720b7023",
+      "displayImageUrl": "/assets/di-display-20261117/20261117794-71dd488dba47.png",
+      "displaySha256": "71dd488dba47e6a9a409e18a77026eeeac35719b7d01d868a63bff6c720b7023",
+      "bytes": 496855,
+      "derivation": "original-copy",
+      "legend": [],
+      "enhancementReview": {
+        "method": "Create Image enhancement pass completed; generated copy remains unverified. Clear original retained as the authoritative display.",
+        "collectionNumber": 194
+      }
     }
   }
 }

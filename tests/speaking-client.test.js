@@ -342,7 +342,7 @@ test('Unknown visual kinds are never guessed to be photographs; aliases and sour
  assert.equal(h.nodes.get('library-count').textContent,'1 questions');
  assert.match(h.nodes.get('speaking-library-list').innerHTML,/Weekly Prediction/);
  await h.click({speakingAction:'clear-filters'});
- assert.equal(h.nodes.get('library-count').textContent,'120 questions');
+ assert.equal(h.nodes.get('library-count').textContent,'210 questions');
  assert.equal(h.attempts.size,0);
  });
 test('Skipping preparation opens the next question without submitting an empty attempt',async()=>{
