@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "c51f89a",
-  "checkedAt": "2026-11-17",
+  "baseCommit": "fd5de92",
+  "checkedAt": "2026-11-18",
   "scope": "Authorized Describe Image numerical-context policy: credit figures as developed comparisons only when their meaning is identified in the whole response. Other task graders, weights and saved marks remain unchanged.",
   "snapshot": {
     "schemaVersion": 1,
@@ -16,7 +16,7 @@
         "version": "intelligibility-delivery-v5"
       },
       "describe-image-academy.js": {
-        "sha256": "209828a9894cdfe2be8546b771fc37d5e85595f4d82417b8fa772c9372aea74e",
+        "sha256": "2c80d3c9048141891140195f67c7359f7e8ee0ddc2af67193ec703de9a1040d3",
         "version": null
       },
       "describe-image-academy/chart-readings.js": {
@@ -29,6 +29,10 @@
       },
       "describe-image-academy/image-claims.js": {
         "sha256": "e2aebb389813e6f95bec08013e2f7f78c304079bdf52e9cc345f3a3c8e2b2faa",
+        "version": null
+      },
+      "describe-image-academy/legacy-scoring-policy.js": {
+        "sha256": "79f1046717e860d26824f2a883f2bf50138a38ba39e20076197334c4349836c1",
         "version": null
       },
       "describe-image-academy/number-context.js": {
@@ -88,7 +92,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "5c2c387e5f72c37acca92db0ee43d162366f5c44262bd98eba7cfbb50279905f",
+        "sha256": "aaecbbeb87455d9dd14ecfb99dcebe08c13818fdc853fb4953d94fb3b64c1852",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -104,7 +108,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "cc4f00ccc8061aed2f10a8a7558be45ce5105da1489ca0a09158a257e08ae7f2",
+        "sha256": "66b81be1336c4e2db4c6fd27e6c82fa69bf0ce267bb41b1120042a7e43070470",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -140,7 +144,7 @@
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
-        "sha256": "cda5a433b6f1d293425da9f840d1b65671b8f769d11a8953cd73a52a4ec7ea72",
+        "sha256": "83af9ccb19b201c6f069643efec89dc4862f6be5348ddf304fb7e2888de63e48",
         "version": null
       },
       "full-mock/session.js": {

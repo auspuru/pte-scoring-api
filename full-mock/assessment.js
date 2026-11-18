@@ -103,6 +103,18 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  const diUpgrade=require('../content/full-mock/di-number-context-upgrade-pins.json');
+  const diBefore=require('../content/full-mock/di-number-context-previous-sources.json');
+  if([require('../describe-image-academy').VERSION,require('../describe-image-academy').LEGACY_VERSION].includes(saved.configuration.speakingContent.describeImagePolicy)
+    &&digest(diBefore)===diUpgrade.previousDigest
+    &&Object.keys(current.scoringSources.files).sort().join()===diUpgrade.currentFiles.join()
+    &&Object.entries(diUpgrade.changed).every(([name,sha])=>current.scoringSources.files[name]?.sha256===sha)
+    &&Object.entries(diBefore.files).every(([name,pin])=>name in diUpgrade.changed||digest(current.scoringSources.files[name])===digest(pin))){
+    const prior={...current,scoringSources:structuredClone(diBefore),configuration:{...current.configuration,
+      speakingContent:{...current.configuration.speakingContent,describeImagePolicy:saved.configuration.speakingContent.describeImagePolicy}}};
+    if(digest(saved)===digest(prior)||compatibleTransportUpgrade(saved,prior))return true;
+  }
+
   const listeningUpgrade=require('../content/full-mock/listening-skill-compatible-sources.json');
   if(digest(current.scoringSources)===listeningUpgrade.currentDigest&&digest(listeningUpgrade.previous)===listeningUpgrade.previousDigest){
     const prior={...current,scoringSources:listeningUpgrade.previous};
@@ -835,8 +847,9 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
             recording = audio.recording;
           }
           const value = await activeAdapters.assess(q, response, { recording, previous: stages, run: state.assessment.run,
+            describeImagePolicy:state.assessment.snapshot.configuration.speakingContent.describeImagePolicy,
             deliveryPolicy:state.assessment.snapshot.configuration.delivery.version, ...(availableMarks(state)?{completionPolicy:COMPLETION_POLICY}:{}),
-            legacyDelivery:state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256!==currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256,
+            legacyDelivery:![currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256, require('../content/full-mock/di-number-context-previous-sources.json').files['full-mock/adapters.js'].sha256].includes(state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256),
             checkpoint: value => persist({ status: 'processing', stages: value }) });
           const { stages: evidence = stages, ...result } = value;
           if (!['assessed','pending','failed'].includes(result.status) || result.status === 'assessed' && (result.version !== adapterVersion || !(nativeValid(result, maxima(q)) || availableMarks(state) && partialValid(result,maxima(q),evidence,q.type)))) throw Error('Invalid native assessment result.');
@@ -909,7 +922,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
   async function prepareContent(state,q,response,{recording,previous,checkpoint}) {
     const adapter=validate(state);
     const run=1+Math.max(0,...Object.values(previous||{}).map(stage=>Number.isInteger(stage?.attemptedRun)?stage.attemptedRun:0));
-    return adapter.assess(q,response,{recording,previous,checkpoint,run,completionPolicy:COMPLETION_POLICY,contentOnly:true});
+    return adapter.assess(q,response,{recording,previous,checkpoint,run,describeImagePolicy:state.assessment.snapshot.configuration.speakingContent.describeImagePolicy,completionPolicy:COMPLETION_POLICY,contentOnly:true});
   }
   return { snapshot: currentSnapshot, snapshotFor, prepareContent, review:(uid,id,body)=>require('../mock-result-review').fullAction({store,uid,id,body,at:now(),validate,queue}),request,retryUnavailable, wakeMedia, results, recover, start, stop, drain, jobs, validate };
 }

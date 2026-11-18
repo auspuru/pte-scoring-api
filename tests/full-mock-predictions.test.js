@@ -25,8 +25,8 @@ test('Question selection preserves native graders, models, weights and timing; f
   assert.equal(digest(before), '97cebe2ecb2d51a2da15d0aea1004dbd33d7ab1c79ded0174afbc38893fbb458');
   // Instructor publication adds an explicitly pinned support controller;
   // every native grader below must still match its retained baseline.
-  assert.deepEqual([...Object.keys(before.files),'full-mock/exclusions.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','listening-mock/aggregation.js','describe-image-academy/number-context.js'].sort(), Object.keys(after.files).sort());
-  for(const file of ['full-mock/exclusions.js','full-mock/aggregation.js','full-mock/api.js','full-mock/audit.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','listening-mock/aggregation.js','speaking-delivery.js','writing-lab-scoring.js','full-mock/rubrics.js','describe-image-academy/scoring-policy.js','describe-image-feedback/scoring-policy.js','describe-image-academy/number-context.js'])
+  assert.deepEqual([...Object.keys(before.files),'full-mock/exclusions.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','listening-mock/aggregation.js','describe-image-academy/number-context.js','describe-image-academy/legacy-scoring-policy.js'].sort(), Object.keys(after.files).sort());
+  for(const file of ['full-mock/exclusions.js','full-mock/aggregation.js','full-mock/api.js','full-mock/audit.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','listening-mock/aggregation.js','speaking-delivery.js','writing-lab-scoring.js','full-mock/rubrics.js','describe-image-academy/scoring-policy.js','describe-image-feedback/scoring-policy.js','describe-image-academy/number-context.js','describe-image-academy/legacy-scoring-policy.js','describe-image-academy.js'])
     assert.deepEqual(after.files[file],require('../content/full-mock/scoring-lock.json').snapshot.files[file],file);
   // Standalone practice transport can evolve; Full Mock imports only this
   // frozen transcription function from the shared source file.
@@ -38,7 +38,7 @@ test('Question selection preserves native graders, models, weights and timing; f
   // Report-only feedback has its own exact lock and behavioral regressions.
   assert.deepEqual(after.files['full-mock/report.js'],require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/report.js']);
   for (const file of Object.keys(before.files)) {
-    if (!['full-mock/session.js', 'public/reading-mock-tools.js', 'full-mock/paper.js', 'full-mock/assessment.js', 'full-mock/report.js', 'full-mock/adapters.js', 'full-mock/store.js', 'full-mock/aggregation.js', 'full-mock/api.js', 'full-mock/audit.js', 'server.js', 'public/writing-lab-report.js', 'speaking-lab.js', 'public/reading-practice.js', 'speaking-delivery.js', 'writing-lab-scoring.js', 'full-mock/rubrics.js', 'describe-image-academy/scoring-policy.js', 'describe-image-feedback/scoring-policy.js'].includes(file)) assert.deepEqual(after.files[file], before.files[file], file);
+    if (!['full-mock/session.js', 'public/reading-mock-tools.js', 'full-mock/paper.js', 'full-mock/assessment.js', 'full-mock/report.js', 'full-mock/adapters.js', 'full-mock/store.js', 'full-mock/aggregation.js', 'full-mock/api.js', 'full-mock/audit.js', 'server.js', 'public/writing-lab-report.js', 'speaking-lab.js', 'public/reading-practice.js', 'speaking-delivery.js', 'writing-lab-scoring.js', 'full-mock/rubrics.js', 'describe-image-academy/scoring-policy.js', 'describe-image-feedback/scoring-policy.js','describe-image-academy.js'].includes(file)) assert.deepEqual(after.files[file], before.files[file], file);
   }
 });
 

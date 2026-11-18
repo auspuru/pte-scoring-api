@@ -1,13 +1,13 @@
 {
   "baselineCommit": "960d1fd1dc37d5772f24c27286181a0b30d461b2",
-  "scope": "Reviewed Azure delivery bands and skip-audio controls for reattempted questions, preserving frozen older policies, content rubrics and confirmed marks.",
+  "scope": "Reviewed Describe Image numerical-context policy and frozen-policy routing; retained older mock scoring and saved marks.",
   "files": {
     "server.js": "78940169dd76568c0d6b403dbea0888313f089f7bc952aeb23c1e478bd6f19e2",
-    "full-mock/assessment.js": "cc4f00ccc8061aed2f10a8a7558be45ce5105da1489ca0a09158a257e08ae7f2",
-    "full-mock/adapters.js": "5c2c387e5f72c37acca92db0ee43d162366f5c44262bd98eba7cfbb50279905f",
+    "full-mock/assessment.js": "66b81be1336c4e2db4c6fd27e6c82fa69bf0ce267bb41b1120042a7e43070470",
+    "full-mock/adapters.js": "aaecbbeb87455d9dd14ecfb99dcebe08c13818fdc853fb4953d94fb3b64c1852",
     "full-mock/aggregation.js": "6fcd85d0317145d0b0686882f998659c1c8326bf5165a95ae14f5c28894b488d",
     "full-mock/profiles.js": "8e9659f3d82839a445ec6cb0212d3e7456bb3c4442146a56a0ba721b1994df18",
-    "full-mock/rubrics.js": "117c51a483f49d5f4127055001698aedc2ddb4004940751b4fe25cf66959e02a",
+    "full-mock/rubrics.js": "83af9ccb19b201c6f069643efec89dc4862f6be5348ddf304fb7e2888de63e48",
     "full-mock/report.js": "ac24552ccc718109c77481bd5682a42613d42af3cf3e35cffaab342656b33aea",
     "full-mock/api.js": "c47c1a2fafa9c9963448008af78c311180a53f7c0454e0942fe95a1158e7baa1",
     "full-mock/session.js": "f45a5c4919e60f496298d8d687836ac090d6a0b99891d9323a3f43fc60fffed5",
