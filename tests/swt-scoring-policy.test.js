@@ -54,7 +54,8 @@ function functionSource(name) {
 async function grade(fixture, semanticJudgment) {
   let route;
   const context = {
-    ...policy, SwtForm: require('../swt-form-policy'), SWT_SCORING_CRITERIA: policy.SCORING_CRITERIA,
+    ...policy, swtSourceIdentity: policy.sourceIdentity, swtItemScore90: policy.itemScore90,
+    SwtForm: require('../swt-form-policy'), SWT_SCORING_CRITERIA: policy.SCORING_CRITERIA,
     SWT_CONTENT_MAX: 4, SWT_MAX_RAW: 9, DEBUG: false,
     EXTERNAL_SPELLCHECK_ENABLED: false,
     console, setTimeout, clearTimeout,

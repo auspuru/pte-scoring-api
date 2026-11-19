@@ -14,7 +14,8 @@ const serialAccountMutation = AccountSecurity.createSerialQueue();
 const puppeteer = require('puppeteer');
 const { installGracefulShutdown } = require('./graceful-shutdown');
 const { createReadiness } = require('./service-readiness');
-const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt } = require('./swt-scoring-policy');
+const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt,
+  legacyPolicy: legacySwtPolicy, itemScore90: swtItemScore90, sourceIdentity: swtSourceIdentity } = require('./swt-scoring-policy');
 const SwtForm = require('./swt-form-policy');
 const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
 const AccountProgress = require('./public/account-progress');
@@ -856,7 +857,8 @@ const PgStorage = {
         trait_scores: scoreData?.trait_scores || {}, word_count: scoreData?.word_count || 0,
         feedback: scoreData?.feedback || '', content_details: scoreData?.content_details || {},
         skill_contributions: scoreData?.skill_contributions || null,
-        scoring_version: scoreData?.scoring_version || 'unknown'
+        scoring_version: scoreData?.scoring_version || 'unknown',
+        ...(scoreData?.source_identity ? { source_identity: scoreData.source_identity, item_score_90: scoreData.item_score_90, scoring_model: scoreData.scoring_model } : {})
       });
       if (u.history[passageId].length > 10) u.history[passageId] = u.history[passageId].slice(0, 10);
       let total = 0, count = 0;
@@ -1052,7 +1054,8 @@ const JsonStorage = {
       trait_scores: scoreData?.trait_scores || {}, word_count: scoreData?.word_count || 0,
       feedback: scoreData?.feedback || '', content_details: scoreData?.content_details || {},
       skill_contributions: scoreData?.skill_contributions || null,
-      scoring_version: scoreData?.scoring_version || 'unknown'
+      scoring_version: scoreData?.scoring_version || 'unknown',
+      ...(scoreData?.source_identity ? { source_identity: scoreData.source_identity, item_score_90: scoreData.item_score_90, scoring_model: scoreData.scoring_model } : {})
     });
     if (u.history[passageId].length > 10) u.history[passageId] = u.history[passageId].slice(0, 10);
     
@@ -4392,25 +4395,33 @@ function formatKeyElementsHint(keyElements) {
   return parts.join('\n');
 }
 
-async function judgeContentWithClaude(studentText, passageText, keyElements, timeoutMs = 30000) {
+async function judgeContentWithClaude(studentText, passageText, keyElements, timeoutMs = 30000, {legacy=false} = {}) {
   if (!anthropic) return null;
   const kpHint = formatKeyElementsHint(keyElements);
-  return swtJudgmentService.judge(studentText, passageText, kpHint, timeoutMs);
+  return (legacy ? legacySwtJudgmentService : swtJudgmentService).judge(studentText, passageText, kpHint, timeoutMs);
 }
 
-async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = false } = {}) {
+async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = false, legacy = false } = {}) {
   if (!anthropic) return null;
   const format = require('./swt-judge-format');
-  const response = await anthropic.messages.create(format.request(prompt, format.scoringModel(), {semanticReassessment}),
+  const response = await anthropic.messages.create(format.request(prompt, format.scoringModel(), {semanticReassessment,legacy}),
     { timeout: timeoutMs, maxRetries: 0, signal });
   return format.response(response);
 }
 
 const swtJudgmentService = createJudgmentService({
   call: callSwtJudge, buildPrompt: buildJudgingPrompt, policyVersion: POLICY_VERSION,
+  requireEditEvidence: true,
   isComplete: (result, summary, passage) => !applyScoringPolicy(result, summary, passage).needs_semantic_review,
   validationIssues: (result, summary, passage) => applyScoringPolicy(result, summary, passage).assessment_issues,
   onAttemptError: details => console.warn('[swt-grade] attempt failed:', JSON.stringify(details))
+});
+const legacySwtJudgmentService = createJudgmentService({
+  call: (prompt, timeoutMs, options) => callSwtJudge(prompt, timeoutMs, { ...options, legacy:true }),
+  buildPrompt: legacySwtPolicy.buildJudgingPrompt, policyVersion: legacySwtPolicy.POLICY_VERSION,
+  applyPolicy: legacySwtPolicy.applyScoringPolicy,
+  isComplete: (result, summary, passage) => !legacySwtPolicy.applyScoringPolicy(result, summary, passage).needs_semantic_review,
+  validationIssues: (result, summary, passage) => legacySwtPolicy.applyScoringPolicy(result, summary, passage).assessment_issues
 });
 
 // Reference text must be readable independently of AI verification. The UI uses
@@ -4441,7 +4452,7 @@ app.post('/api/swt/sample/:id', async (req, res) => {
     const raw = await judgeContentWithClaude(sample, p.text, p.keyElements);
     if (!raw) return res.json({ status: 'unavailable', sample,
       note: 'The reference could not be checked right now. It is not a verified full-score example.', scoring_version: POLICY_VERSION });
-    const judged = applyScoringPolicy(raw, sample);
+    const judged = applyScoringPolicy(raw, sample, p.text);
     const verified = judged.full_content_eligible && judged.grammar_score === 2 && judged.vocabulary_score === 2;
     const repair = judged.summary_assessment?.next_step
       || [...judged.grammar_annotations, ...judged.vocabulary_annotations].find(a => a.affects_score)?.meaning_effect
@@ -4803,7 +4814,7 @@ app.post('/api/grade', async (req, res) => {
   try {
     let { text, type, prompt, keyPoints, userId } = req.body;
     const passageId = req.body.passageId;
-    if (!text || !type || !prompt) return res.status(400).json({ error: 'Missing fields' });
+    if (!text || !type || typeof prompt !== 'string' || !prompt.trim()) return res.status(400).json({ error: 'Missing fields' });
     // H1 (v19.17): hard length cap BEFORE any Claude call. The form gate rejects
     // >75 words for scoring, but the raw text would still be sent to the paid
     // API. Cap at 4000 chars (~600 words) to prevent token-burning abuse.
@@ -4814,28 +4825,23 @@ app.post('/api/grade', async (req, res) => {
       return res.status(400).json({ error: 'Passage too long.' });
     }
 
-    // ── SOURCE-OF-TRUTH OVERRIDE (v19.11) ──────────────────────────────────
-    // The client sends `prompt` and `keyPoints` from its in-memory passage copy,
-    // which goes STALE the moment an admin edits a passage while a student has
-    // the page open. If the request names a passageId, ignore the client's copy
-    // and score against the passage's CURRENT stored version. This guarantees a
-    // fresh attempt is always graded against the latest key elements, even if
-    // the student never refreshed.
+    // A bank edit during practice must not silently change the text assessed.
+    let sampleReference = null;
     if (passageId != null) {
       try {
         const stored = await PassageAPI.getById(passageId);
         const live = stored && studentPassage(stored);
         if (live) {
-          if (live.text) prompt = live.text;
-          if (live.keyElements && Object.keys(live.keyElements).length) {
-            keyPoints = live.keyElements;
-          }
+          if (live.text !== prompt) return res.status(409).json({ error: 'This passage has changed. Keep your summary and reopen the passage before submitting.' });
+          keyPoints = live.keyElements || {};
+          sampleReference = live.sampleResponse || null;
         }
       } catch (e) {
         console.warn('grade: could not load live passage', passageId, '-', e.message);
         // fall through with the client-supplied values
       }
     }
+    const sourceIdentity = swtSourceIdentity(prompt, { key: keyPoints, sample: sampleReference });
 
     // ── FORM GATE ──
     const form = validateForm(text);
@@ -4865,7 +4871,7 @@ app.post('/api/grade', async (req, res) => {
         improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
         first_person_detected: false, first_person_problematic: false,
         method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
-        scoring_version: POLICY_VERSION, mode: 'local'
+        scoring_version: POLICY_VERSION, source_identity: sourceIdentity, item_score_90: 10, mode: 'local'
       });
     }
 
@@ -4906,7 +4912,7 @@ app.post('/api/grade', async (req, res) => {
       llmJudgment.ideas_partial = [];
       llmJudgment.ideas_missing = missing;
 
-      llmJudgment = applyScoringPolicy(llmJudgment, text);
+      llmJudgment = applyScoringPolicy(llmJudgment, text, prompt);
     }
 
     const fallback = judgeContentLocal(text, prompt, keyPoints, grammar);
@@ -4944,21 +4950,8 @@ app.post('/api/grade', async (req, res) => {
     let rawScore = awardedForm + contentScore + awardedGrammar + awardedVocabulary;
     if (form.overflow_penalty) rawScore -= form.overflow_penalty;
 
-    // Holistic content gates: full content is required for Band 9, but a single
-    // omitted secondary checklist item can still receive Content 4.
-    let contentCapPTE = null;
-    if (contentScore === 0) contentCapPTE = 10;
-    else if (contentScore === 1) contentCapPTE = 38;
-    else if (contentScore === 2) contentCapPTE = 65;
-    else if (contentScore === 3) contentCapPTE = 79;
-
-    // Truly weak cohesion prevents a top score, but it no longer triggers an
-    // excessive PTE-62 cap for an otherwise understandable sentence.
-
     rawScore = Math.max(0, Math.min(maxRaw, rawScore));
-    let overallScore = rawToPTEDynamic(rawScore, maxRaw);
-    // PTE estimates may be capped; the raw score must remain the trait sum.
-    if (contentCapPTE !== null) overallScore = Math.min(overallScore, contentCapPTE);
+    let overallScore = swtItemScore90(contentScore, rawScore);
     if (cohesionPenaltyApplied) overallScore = Math.min(overallScore, 79);
     // Derive every proficiency label from the same capped estimate.
     let band = rawToBandDynamic(pteToRaw(overallScore, maxRaw), maxRaw);
@@ -5112,6 +5105,8 @@ app.post('/api/grade', async (req, res) => {
       first_person_details: firstPerson,
       skill_contributions: skillContributions,
       overall_score: overallScore,
+      item_score_90: overallScore,
+      source_identity: sourceIdentity,
       raw_score: rawScore,
       max_raw_score: maxRaw,                // fixed 9-point SWT ceiling
       total_ideas: totalIdeas,               // diagnostic checklist size
@@ -6514,7 +6509,7 @@ const fullMock = require('./full-mock/api').installFullMock(app, {
     // Attempts frozen before the model change keep their concrete providers.
     // Their successful stages are never repeated or relabelled as GPT grades.
     legacyAdapters: require('./full-mock/adapters').createAdapters({ speakingContentModel, writingContentModel,
-      swtGrader:(question,text)=>judgeContentWithClaude(text,question.text,{}),essayGrader }),
+      swtGrader:(question,text,options)=>judgeContentWithClaude(text,question.text,{},30000,options),essayGrader }),
     legacyProviderConfiguration:require('./full-mock/assessment').legacyConfiguration(),
     providerConfiguration: require('./full-mock/assessment').claudeConfiguration()
   }

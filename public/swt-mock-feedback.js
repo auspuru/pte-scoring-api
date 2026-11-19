@@ -11,7 +11,7 @@
   const a=raw.summary_assessment||{},scores=raw.diagnosticScores||raw.scores||options.scores||{},gated=options.gated===true||raw.gated===true;
   const formKnown=Number.isFinite(scores.form)&&(!gated||raw.diagnosticScores!=null);
   const valid=formKnown?scores.form>=1:null;
-  const needsContent=Number.isFinite(scores.content)&&scores.content<(raw.maxima?.content||options.maxima?.content||4)||['partial','limited'].includes(a.synthesis?.quality);
+  const needsContent=Number.isFinite(scores.content)&&scores.content<(raw.maxima?.content||options.maxima?.content||4)||['partial','limited','assembly'].includes(a.synthesis?.quality);
   const dependency=Array.isArray(a.missing_dependencies)?a.missing_dependencies.find(x=>text(x?.missing_context)):null;
   const language=[];
   if(valid!==false&&!gated)for(const item of Array.isArray(raw.errors)?raw.errors:[]){
@@ -21,9 +21,9 @@
   return {version:1,status:'complete',content:{overview:valid===false?'':text(raw.feedback?.content||raw.overallVerdict||raw.overview),
    action:valid===false?'':needsContent?text(a.next_step)||strings(raw.improvements)[0]||'':'',
    why:valid===false?'':text(dependency?.explanation||a.synthesis?.explanation||a.relationship_explanation),
-   quote:valid===false?'':quote(answer,dependency?.effect)||(['partial','limited'].includes(a.synthesis?.quality)?quote(answer,a.synthesis?.evidence):''),
-   sourceQuote:valid===false?'':quote(source,dependency?.missing_context)||quote(source,a.synthesis?.sourceQuote),
-   repair:valid===false||gated||!(needsContent||language.some(x=>x.required))?'':text(a.repair)},language,
+   quote:valid===false?'':quote(answer,a.content_edit?.target)||quote(answer,dependency?.effect)||(['partial','limited','assembly'].includes(a.synthesis?.quality)?quote(answer,a.synthesis?.evidence):''),
+   sourceQuote:valid===false?'':quote(source,a.content_edit?.source_evidence)||quote(source,dependency?.missing_context)||quote(source,a.synthesis?.sourceQuote),
+   repair:valid===false||!(needsContent||language.some(x=>x.required))?'':text(a.repair)},language,
    form:{valid,reason:valid===false||gated?strings(raw.reasons).join(' '):''},strengths:valid===false?[]:strings(raw.strengths)};
  }
  function render(value,answer='',key='swt'){

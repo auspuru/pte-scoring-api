@@ -16,6 +16,10 @@
     if (!Number.isFinite(total) || !Number.isFinite(maximum) || maximum <= 0 || total < 0 || total > maximum) return null;
     return Math.round(10 + 80 * total / maximum);
   }
+  function itemEstimate(question, result) {
+    if (question?.type === 'swt' && Number.isFinite(result?.itemScore90)) return result.itemScore90;
+    return score90(result?.total, result?.maximum);
+  }
   function minutesFor(questions) {
     return questions.reduce((sum, q, i) => sum + (i && q.timeGroup && q.timeGroup === questions[i - 1].timeGroup ? 0 : q.minutes), 0);
   }
@@ -50,7 +54,8 @@
           weightTotal, fullProfile:supported && missingTypes.length === 0, missingTypes,
           performancePercent:complete ? ratio * 100 : null, calibration:'uncalibrated', conversion:'round(10 + 80 × weighted ratio)' } };
     }
-    return { complete, total, maximum, score90: complete ? score90(total, maximum) : null, byType };
+    const estimate = questions.length === 1 ? itemEstimate(questions[0], results[0]) : score90(total, maximum);
+    return { complete, total, maximum, score90: complete ? estimate : null, byType };
   }
-  return { labels, tokens, maximumFor, score90, minutesFor, summarize, WRITING_WEIGHTS, WEIGHTING_VERSION, isWritingMock, needsReview };
+  return { labels, tokens, maximumFor, score90, itemEstimate, minutesFor, summarize, WRITING_WEIGHTS, WEIGHTING_VERSION, isWritingMock, needsReview };
 });

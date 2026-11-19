@@ -36,9 +36,9 @@
       claimed.push({start,end});
     }
     const dependency=list(a.missing_dependencies).find(d=>d&&clean(d.missing_context));
-    const weakSynthesis=['partial','limited'].includes(a.synthesis?.quality);
-    const quote=!pending&&valid?(exact(text,dependency?.effect)||(weakSynthesis?exact(text,a.synthesis?.evidence):'')):'';
-    const sourceQuote=!pending&&valid?(exact(String(passage?.text||''),dependency?.missing_context)||(weakSynthesis?exact(String(passage?.text||''),a.synthesis?.sourceQuote):'')):'';
+    const weakSynthesis=['partial','limited','assembly'].includes(a.synthesis?.quality);
+    const quote=!pending&&valid?(exact(text,a.content_edit?.target)||exact(text,dependency?.effect)||(weakSynthesis?exact(text,a.synthesis?.evidence):'')):'';
+    const sourceQuote=!pending&&valid?(exact(String(passage?.text||''),a.content_edit?.source_evidence)||exact(String(passage?.text||''),dependency?.missing_context)||(weakSynthesis?exact(String(passage?.text||''),a.synthesis?.sourceQuote):'')):'';
     const contentIssue=!pending&&valid&&(!state.full&&(state.contentGated||Number(data.trait_scores?.content)<Number(data.trait_scores?.content_max||4)||weakSynthesis));
     const action=contentIssue?(clean(a.next_step)||state.priorities[0]?.detail||'Review the main message against the original passage.'):'';
     const why=contentIssue?(clean(dependency?.explanation)||clean(a.synthesis?.explanation)||clean(a.relationship_explanation)):'';

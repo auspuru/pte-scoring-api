@@ -15,7 +15,7 @@
     const content = data.content_details || {};
     const assessment = content.summary_assessment || {};
     const synthesis = assessment.synthesis || {};
-    const synthesisNeedsWork = ['partial', 'limited'].includes(synthesis.quality);
+    const synthesisNeedsWork = ['partial', 'limited', 'assembly'].includes(synthesis.quality);
     const grammar = list((data.grammar_details || {}).grammar_annotations);
     const vocabulary = list((data.vocabulary_details || {}).vocabulary_annotations);
     const provisional = data.score_provisional === true
@@ -83,12 +83,13 @@
     const t = data.trait_scores || {};
     const contentDetails = data.content_details || {};
     const assessment = contentDetails.summary_assessment || {};
-    const synthesisNeedsWork = ['partial', 'limited'].includes((assessment.synthesis || {}).quality);
+    const synthesisNeedsWork = ['partial', 'limited', 'assembly'].includes((assessment.synthesis || {}).quality);
     const content = Math.max(0, Math.min(4, Number(t.content) || 0));
     const raw = (!feedback.formValid || content === 0) ? 0 : ['content', 'form', 'grammar', 'vocabulary'].reduce((n, k) => n + (Number(t[k]) || 0), 0);
     const caps = [15, 38, 65, 79, 90];
     const rawEstimate = raw > 0 ? Math.round(10 + (raw / 9) * 80) : 10;
-    const estimate = feedback.formValid ? Math.min(rawEstimate, caps[Math.floor(content)]) : 10;
+    const estimate = Number.isFinite(data.item_score_90) ? data.item_score_90
+      : feedback.formValid ? Math.min(rawEstimate, caps[Math.floor(content)]) : 10;
     const fullEligible = !feedback.provisional && !synthesisNeedsWork && (contentDetails.full_content_eligible === true
       || (contentDetails.full_content_eligible == null && feedback.full
         && assessment.relationships_clear === true

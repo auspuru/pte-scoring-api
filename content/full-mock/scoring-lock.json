@@ -1,14 +1,18 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "fd5de92",
-  "checkedAt": "2026-11-18",
-  "scope": "Authorized Describe Image numerical-context policy: credit figures as developed comparisons only when their meaning is identified in the whole response. Other task graders, weights and saved marks remain unchanged.",
+  "baseCommit": "bc29298",
+  "checkedAt": "2026-11-19",
+  "scope": "SWT synthesis, evidence-based feedback and item display policy 20.3.17.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
     "files": {
       "azure-continuous-delivery.js": {
         "sha256": "63533d41e2a176c765ff82e4b9c301fe6e9ad4d431d699afa3917cdc7701aa65",
+        "version": null
+      },
+      "content/swt-passage-guides.json": {
+        "sha256": "ed2775637356c65ebf7f673efaa416501be4fc1b8267e2b748170840cb3ce2bd",
         "version": null
       },
       "delivery-rubric.js": {
@@ -92,7 +96,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "aaecbbeb87455d9dd14ecfb99dcebe08c13818fdc853fb4953d94fb3b64c1852",
+        "sha256": "b08379517a343298f7aecc7ef89f7ff06d50a7871a8126ee6efab71d1edf908b",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -108,7 +112,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "66b81be1336c4e2db4c6fd27e6c82fa69bf0ce267bb41b1120042a7e43070470",
+        "sha256": "123c5f5180c1d235257b8891624dc6713dd90f4ae3ec715a9e1f1fab91d8df17",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -144,7 +148,7 @@
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
-        "sha256": "83af9ccb19b201c6f069643efec89dc4862f6be5348ddf304fb7e2888de63e48",
+        "sha256": "eab7444eb3a31660dbe62c6a50d514cd502fda813077d2ce399b5fcf043ff2fe",
         "version": null
       },
       "full-mock/session.js": {
@@ -173,7 +177,7 @@
         "version": null
       },
       "mock-content-assessment.js": {
-        "sha256": "f418438dd65ac47a81ee93faf62dbae5e5c7d7aa92c0ee4e30cb0d8eaa984253",
+        "sha256": "e491ddca35db0b3efd79784945e7d60f1b07ff7e7331ef87efc6df098c681355",
         "version": null
       },
       "mock-content-provider.js": {
@@ -197,11 +201,11 @@
         "version": null
       },
       "public/writing-lab-report.js": {
-        "sha256": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
+        "sha256": "50e64d111540497378c6dfb62e3651ab8d2027dbbb420c21d1b28424cbbaaf0b",
         "version": null
       },
       "server.js": {
-        "sha256": "78940169dd76568c0d6b403dbea0888313f089f7bc952aeb23c1e478bd6f19e2",
+        "sha256": "86ed1c1b8768ecfe646796a2f1b4c0d33090967d1488b81875408ffb3203df0a",
         "version": null
       },
       "situation-content-policy.js": {
@@ -233,11 +237,15 @@
         "version": null
       },
       "swt-judge-format.js": {
-        "sha256": "ef669a5e3fc732d4df51923959ee8b93d272fbb7510c85d717bf6bf6a21cf520",
+        "sha256": "b0a1f168b77f286029d384a5196b5e0b52a9cd41e76efb8f8ff1f997252d036d",
         "version": null
       },
       "swt-judgment-service.js": {
-        "sha256": "345c834b13ce1c94313270442852d71c20598d4e22de8c2fed13639b5d95015b",
+        "sha256": "c6ac3e0fd5685052686a0682e953a6c99b083486ddf3d446a613e0ac3b8a2218",
+        "version": null
+      },
+      "swt-legacy-policy.js": {
+        "sha256": "d369ae53a42633f4b6acfa49480b563229bac19fad28d6a6a41df59fbb16d81b",
         "version": null
       },
       "swt-reference.js": {
@@ -245,11 +253,11 @@
         "version": null
       },
       "swt-scoring-policy.js": {
-        "sha256": "d369ae53a42633f4b6acfa49480b563229bac19fad28d6a6a41df59fbb16d81b",
-        "version": "20.3.16"
+        "sha256": "9802c70c3f6262dd606c7962d8483d8277fa8d56b23f7ea196970f61a1670ce3",
+        "version": "20.3.17"
       },
       "writing-lab-scoring.js": {
-        "sha256": "c28a7def1c8eda1961b57ea342c6e8ce3501c24eb92e905005a6cbee250ff312",
+        "sha256": "f4ca9b8b770ef4c076c38d14faf6f77868e467e88a74e93e440340d3a0c7df5e",
         "version": "exam-practice-2026-10-09.1"
       }
     }

@@ -1,7 +1,8 @@
 'use strict';
 const VERSION = 'exam-practice-2026-10-09.1';
 const SwtForm = require('./swt-form-policy');
-const { POLICY_VERSION: SWT_POLICY_VERSION, SYNTHESIS_GUIDANCE, SYNTHESIS_CONTENT_CAP, validSynthesis, applyScoringPolicy } = require('./swt-scoring-policy');
+const { POLICY_VERSION: SWT_POLICY_VERSION, SYNTHESIS_GUIDANCE, SYNTHESIS_CONTENT_CAP, validSynthesis,
+  applyScoringPolicy, legacyPolicy, itemScore90, sourceIdentity } = require('./swt-scoring-policy');
 const report = require('./public/writing-lab-report');
 const localEngine = require('./local-scoring-engine');
 const essayPolicy = require('./public/essay-scoring');
@@ -116,6 +117,7 @@ function normalize(q, text, raw) {
     feedback.content += ' ' + synthesis.explanation;
   }
   return { version: q.type === 'swt' ? SWT_POLICY_VERSION : VERSION, assessmentType: 'AI practice assessment', scores, maxima, total, maximum, wordCount: form.count, gated, reasons,
+    ...(q.type === 'swt' ? {itemScore90:itemScore90(scores.content,total), source_identity:sourceIdentity(q.text,q.keyPoints)} : {}),
     ...(synthesis ? { summary_assessment: { synthesis }, full_content_eligible: !gated && scores.content === 4 && synthesis.quality === 'effective' } : {}),
     feedback,
     strengths: raw.strengths.filter(x => typeof x === 'string').slice(0,3), improvements: [...reasons, ...improvements], errors };
@@ -164,27 +166,32 @@ async function gradeUnifiedEssay(q, text, call) {
   };
 }
 
-async function gradeUnifiedSwt(q, text, judge) {
+async function gradeUnifiedSwt(q, text, judge, {legacy=false} = {}) {
   const form = formFor('swt', text);
-  if (!form.score) return {...zeroResult('swt',text,form.reasons),version:SWT_POLICY_VERSION,score_provisional:false};
+  const version = legacy ? legacyPolicy.POLICY_VERSION : SWT_POLICY_VERSION;
+  const identity = legacy ? {} : {source_identity:sourceIdentity(q.text,q.keyPoints)};
+  if (!form.score) return {...zeroResult('swt',text,form.reasons),version,score_provisional:false,
+    ...identity,...(legacy?{}:{itemScore90:10})};
   let assessment;
   try {
-    const raw = await judge(q,text);
+    const raw = await judge(q,text,{legacy});
     if (!raw) throw Error('The shared SWT assessment is unavailable.');
-    assessment = applyScoringPolicy(raw,text,q.text);
+    assessment = (legacy ? legacyPolicy.applyScoringPolicy : applyScoringPolicy)(raw,text,q.text);
     if (assessment.needs_semantic_review || !raw.consistency_reviewed) throw Error('The shared SWT review is incomplete.');
   } catch (error) { return localGrade(q,text,{reason:error.message}); }
   const diagnosticScores={content:assessment.content_score,form:form.score,grammar:assessment.grammar_score,vocabulary:assessment.vocabulary_score};
   const gated=assessment.content_score===0;
   const scores=gated ? Object.fromEntries(Object.keys(diagnosticScores).map(k=>[k,0])) : diagnosticScores;
   const a=assessment.summary_assessment;
+  const total=Object.values(scores).reduce((n,v)=>n+v,0);
   const corrections=[...assessment.grammar_annotations,...assessment.vocabulary_annotations];
   const language = key => {
     const items=assessment[key+'_annotations'].filter(item=>item.affects_score);
     return items.map(item=>item.meaning_effect).filter(Boolean).join(' ') || 'Meaning is clear and preserved.';
   };
-  return {version:SWT_POLICY_VERSION,assessmentType:'Unified SWT practice assessment',scoringMode:'claude',score_provisional:false,
-    scores,maxima:MAXIMA.swt,total:Object.values(scores).reduce((n,v)=>n+v,0),maximum:Object.values(MAXIMA.swt).reduce((n,v)=>n+v,0),wordCount:form.count,gated,
+  return {version,assessmentType:'Unified SWT practice assessment',scoringMode:'claude',score_provisional:false,
+    scores,maxima:MAXIMA.swt,total,maximum:9,wordCount:form.count,gated,
+    ...identity,...(legacy?{}:{itemScore90:itemScore90(scores.content,total)}),
     reasons:gated?['The response does not convey the passage’s central message.']:[],...(gated?{diagnosticScores}:{}),
     summary_assessment:a,full_content_eligible:!gated&&assessment.full_content_eligible,needs_semantic_review:false,
     consistency_reviewed:true,scoring_model:assessment.assessment_model||null,

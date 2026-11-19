@@ -11,7 +11,7 @@ const annotation = { type: 'object', additionalProperties: false, properties: {
   meaning_impact: { type: 'string', enum: ['none', 'changed', 'obscured'] },
   meaning_effect: { ...text, description: 'Specific effect on meaning for changed/obscured; otherwise empty.' }, rationale: text
 }, required: ['phrase_span', 'fix', 'severity', 'type', 'meaning_impact', 'meaning_effect', 'rationale'] };
-const tool = {
+const legacyTool = {
   name: 'submit_swt_assessment',
   strict: true,
   description: 'Return the complete SWT assessment under the supplied scoring policy. Evaluate meaning and language independently of the output format. Supply every required property, including a nonempty relationship explanation and empty annotation arrays when no corrections are needed. Cite student evidence using the numbered words; do not rewrite quotations. This tool returns assessment data and performs no external action.',
@@ -48,12 +48,21 @@ const tool = {
     feedback_note: { ...text, description: 'Plain student-facing feedback only. This is the final field; never place other JSON fields inside this string.' }
   }, required: ['content_score', 'grammar_score', 'vocabulary_score', 'cohesion', 'summary_assessment', 'grammar_annotations', 'vocabulary_annotations', 'captured_ideas', 'recommended_swaps', 'feedback_note'] }
 };
+const tool = structuredClone(legacyTool);
+const summarySchema = tool.input_schema.properties.summary_assessment;
+Object.assign(summarySchema.properties, {
+  synthesis_quality: { ...text, description: 'Exactly effective, assembly, partial or limited under the supplied synthesis rules.' },
+  content_edit_operation: { ...text, description: 'add, remove or replace for a Content deduction, otherwise none.' },
+  content_edit_span: { $ref: '#/$defs/span' },
+  content_source_quote: { ...text, description: 'Exact contiguous passage evidence for the Content edit, otherwise empty.' }
+});
+summarySchema.required.push('content_edit_operation', 'content_edit_span', 'content_source_quote');
 const DEFAULT_SCORING_MODEL = 'claude-sonnet-4-6';
 // SWT scoring and its feedback share one dedicated model selection. A global
 // low-cost model used by other tasks must not silently select the SWT scorer.
 function scoringModel() { return process.env.SWT_CLAUDE_MODEL || DEFAULT_SCORING_MODEL; }
-function request(prompt, model = scoringModel(), {semanticReassessment=false} = {}) {
-  return { model:semanticReassessment ? (process.env.SWT_REVIEW_MODEL || scoringModel()) : model, max_tokens: 4000, temperature: 0, tools: [tool],
+function request(prompt, model = scoringModel(), {semanticReassessment=false, legacy=false} = {}) {
+  return { model:semanticReassessment ? (process.env.SWT_REVIEW_MODEL || scoringModel()) : model, max_tokens: 4000, temperature: 0, tools: [legacy ? legacyTool : tool],
     tool_choice: { type: 'tool', name: tool.name }, messages: [{ role: 'user', content: prompt
       + '\n\nOUTPUT CHECK: grammar_annotations and vocabulary_annotations must be separate top-level arrays, including [] when no corrections are needed. Return these arrays before feedback_note. Keep relationship_explanation under 60 words, next_step to one achievable action, and recommended_swaps to at most three useful optional suggestions. Write feedback_note last as short plain feedback, never as escaped JSON containing other fields.' }] };
 }

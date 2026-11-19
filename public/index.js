@@ -16079,9 +16079,11 @@ function showResults(data, passage, spellData, submittedText){
     const confirmed = !data.ai_feedback_degraded && !data.score_provisional;
     const reading = confirmed && Number.isFinite(traits.content) && traits.content >= 0 && traits.content <= cMax
       ? Math.round(10 + 80 * traits.content / cMax) : null;
-    const writing = confirmed && Number.isFinite(rawScore) && Number.isFinite(rawMax) && rawMax > 0
-      ? Math.round(10 + 80 * Math.max(0, Math.min(1, rawScore / rawMax))) : null;
-    readingEstimateEl.innerHTML = window.PteEstimateDisplay.render(reading, writing);
+    const swtItem = Number.isFinite(data.item_score_90);
+    const writing = confirmed ? (swtItem ? display.score
+      : Number.isFinite(rawScore) && Number.isFinite(rawMax) && rawMax > 0
+        ? Math.round(10 + 80 * Math.max(0, Math.min(1, rawScore / rawMax))) : null) : null;
+    readingEstimateEl.innerHTML = window.PteEstimateDisplay.render(reading, writing, {swtItem});
   }
 
   renderOriginality(data, passage, submittedText);

@@ -40,6 +40,9 @@ function normalise(q, raw) {
   if (!raw.maxima || Object.entries(limits).some(([key, max]) => raw.maxima[key] !== max)) throw Error('Native trait maxima changed.');
   const scores = Object.fromEntries(Object.keys(limits).map(key => [key, raw.scores?.[key]]));
   const value = result(q, scores, { nativeVersion: raw.version || raw.scoring_version, native: raw });
+  if (q.type === 'swt' && raw.itemScore90 === 10 && raw.gated && value.total === 0 && raw.maximum === value.maximum) {
+    return { ...value, gated: true, reason: raw.reasons?.[0] || 'Native Content/Form gate' };
+  }
   if (RUBRICS[q.type]?.gates?.some(key => scores[key] === 0)) return zero(q, 'Native Content/Form gate');
   if (value.total !== raw.total || value.maximum !== raw.maximum) throw Error('Native total does not match its traits.');
   return value;
@@ -60,7 +63,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
   assessLegacyDelivery = assessDelivery === require('../azure-continuous-delivery').assessRecording
     ? require('../speaking-delivery').assessRecording : assessDelivery,
   speakingContentModel, writingContentModel, swtGrader, essayGrader } = {}) {
-  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, deliveryPolicy, describeImagePolicy, legacyDelivery = false, contentOnly = false } = {}) {
+  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, deliveryPolicy, describeImagePolicy, legacyDelivery = false, legacySwt = false, contentOnly = false } = {}) {
     const stages = structuredClone(previous);
     const failed = reason => ({ status: 'failed', version: VERSION, reason, stages });
     async function stage(name, call, verify = value => value != null) {
@@ -143,11 +146,14 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
     const answer = Array.isArray(response.answer) ? response.answer : [];
     const marked = objective(q, answer); if (marked) return { ...marked, stages };
     const text = String(answer[0] || '');
+    if (q.type === 'swt' && !legacySwt && !writing.formFor('swt', text).score) {
+      return { ...normalise(q, await writing.gradeUnifiedSwt(q, text, swtGrader)), stages };
+    }
     if (!text.trim()) return { ...zero(q, 'Explicitly unanswered'), stages };
     if (writing.formFor(q.type, text).score === 0) return { ...zero(q, 'Native Form gate'), stages };
     const raw = await stage('writing', async () => {
       let value;
-      if (q.type === 'swt') value = await writing.gradeUnifiedSwt(q, text, swtGrader);
+      if (q.type === 'swt') value = await writing.gradeUnifiedSwt(q, text, swtGrader, {legacy:legacySwt});
       else if (q.type === 'essay') {
         if (!essayGrader) throw Error('Essay assessment unavailable');
         const assessed = await essayGrader.grade(q.text, text, '9', { feedbackV3: true, includeSample: false, totalTimeoutMs: 240000 });
