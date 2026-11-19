@@ -1,6 +1,6 @@
 # SWT scoring candidate 20.3.17
 
-The [passage audit](swt-passage-audit.md) covers 95 exact texts, 119 key/sample variants and 280 question uses from the live standalone snapshot and the bundled banks and papers at `bc29298`. It lists the exact source hash, required meaning, optional details, evidence and reference findings for each text. The scoring prompt uses the matching guide by exact text hash. If a text changes or a new text is added, the grader reads that passage directly.
+The [passage audit](swt-passage-audit.md) covers 95 exact texts, 119 key/sample variants and 280 question uses across all 60 live standalone questions, Writing Lab banks and papers, and active and retained Full Mock papers. A fresh catalogue comparison confirmed that every exact text in this scope receives its matching guide in the shared grader. The audit lists required meaning, optional details, evidence and reference findings for each text. If a text changes or a new text is added, the grader reads that passage directly. Older standalone text and sample revisions are documented in the [pre-revision appendix](swt-archived-passage-review.md).
 
 ## Priority reference proposals
 

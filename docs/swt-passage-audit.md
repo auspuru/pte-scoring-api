@@ -1,6 +1,21 @@
 # SWT passage and reference review
 
-Reviewed the exact public standalone snapshot and the sources bundled at repository commit `bc29298`. The inventory covers **95 distinct exact texts, 119 key/sample variants and 280 uses**, including all 60 live standalone questions, 66 authored question uses across 33 generated Writing Lab prediction mocks, and 34 questions across 17 Full Mock paper versions. The catalogue points to Full Mock 1 v6, 2 v6 and 3 v5, with earlier versions retained. Catalogue version and student availability are separate fields.
+Reviewed the complete SWT bank. The inventory covers **95 distinct exact texts, 119 key/sample variants and 280 question uses** from the live portal and the sources bundled at repository commit `bc29298`. Reconciliation on 19 November 2026 at 13:39 UTC matched every live question's ID, exact text, key and sample to the audited snapshot. Every distinct text in this scope has a matching guide in the candidate grader.
+
+| SWT location | Reviewed question uses |
+| --- | ---: |
+| Live standalone practice, all 60 questions | 60 |
+| Bundled standalone, including seeds, legacy, advanced revisions and user predictions | 81 |
+| Writing Lab prediction bank | 35 |
+| Writing Lab fixed papers, two mocks | 4 |
+| Writing Lab generated prediction papers, 33 mocks | 66 |
+| Full Mock active catalogue versions, papers 1 v6, 2 v6 and 3 v5 | 6 |
+| Full Mock retained previous versions, 14 papers | 28 |
+| **Total question uses** | **280** |
+
+The standalone selection trainer reads from the same live bank. The four named passages in the scoring comparison are examples for paired testing. The shared grading instructions also apply to the other passages listed below.
+
+The [pre-revision appendix](swt-archived-passage-review.md) covers 12 additional older texts and 26 exact reference variants recovered from revision sources. Five sample-only replacements have incomplete historical source provenance. Those records are outside the current catalogue count.
 
 A variant combines exact source text with its key and sample. Editorial notes and object property order do not create a new variant. Representation changes (object versus list) remain mapped. The detailed inventory retains every payload, ID and location. Mechanical Form checks do not establish sample accuracy or synthesis. Identical texts receive one meaning review, with differences called out per reference.
 
