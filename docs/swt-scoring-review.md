@@ -53,4 +53,17 @@ The Full Mock fixture with two SWT results of 8/9 and full native points on othe
 
 Pearson's supplied December, March, October and November comparisons record section scores. October's synonym-only replay stayed at Writing 83 / Reading 27, compared with 86 / 29 for useful clause changes and 88 / 31 for concise paraphrasing. March's synonym change also showed no Writing or Reading gain. November's fuller paraphrasing scored 76 / 23 with other differences in the attempted tasks. The November essay-only replay moved Writing from 75 to 83 while Reading held at 35. Those comparisons motivate testing selection and synthesis with controls. Pearson individual SWT marks are unavailable. [Source and replay notes](https://app.notion.com/p/416c8618676c8147b31ac8864c136bfb).
 
-The remaining review decisions are whether to publish the proposed reference replacements, and whether the configured providers consistently apply the assembly versus integration boundary and propose faithful local edits on real model runs.
+## Live model preview
+
+The first preview used the candidate at `4a9548c` with four public fixtures. The two Web answers used the same screenshot-matched source. The Forecasting answers used the same short portal passage. The locally run candidate used the configured model paths and saved no student attempts.
+
+| Fixture | OpenAI mock scorer | Standalone Claude scorer |
+| --- | --- | --- |
+| Web source-clause assembly | Content 3/4, item 79 | Recognised assembly. The independent repair failed validation, so the score stayed provisional. |
+| Web meaningful rewrite | Content 4/4, item 90 | Content 4/4, item 90 |
+| Forecasting omission at 75 words | Content 3/4, item 79. The repair reduced it to 71 words. | Content 3/4, item 79. The repair reduced it to 71 words but introduced a doubled comma. |
+| Forecasting disconnected phrases | Content 1/4, item 38 | Content 1/4, item 38 |
+
+The edit validator now rejects doubled separators introduced by a proposed edit, while leaving unrelated punctuation in the submitted answer under the usual language rules. The retry identifies which check failed. The prompt directs the reviewer to check the complete repaired sentence and to put a cause next to the claim it explains. The scoring bands and native totals are the same.
+
+Reference replacements remain proposals for review.

@@ -130,7 +130,7 @@ test('The independent assessment caps assembly and invalid correction quotes can
   assert.equal(policy.applyScoringPolicy(invalid,c.answer,c.source.text).summary_assessment.content_edit,null);
 });
 
-function checkForecastEdit(fields) {
+function forecastEditJudgment(fields) {
   const judgment = makeJudgment({answer:forecastAtLimit,quality:'partial',mark:3});
   Object.assign(judgment.summary_assessment, {
     content_edit_operation:'replace',
@@ -138,7 +138,11 @@ function checkForecastEdit(fields) {
     content_source_quote:assumptionsEvidence,
     ...fields
   });
-  const materialised = materialiseEvidence(judgment,forecastAtLimit,forecast.text);
+  return judgment;
+}
+
+function checkForecastEdit(fields) {
+  const materialised = materialiseEvidence(forecastEditJudgment(fields),forecastAtLimit,forecast.text);
   return policy.applyScoringPolicy(materialised,forecastAtLimit,forecast.text);
 }
 
@@ -176,6 +180,59 @@ test('An addition over the word limit is withheld and a cut can make room for th
   assert.equal(edit.revised_word_count,74);
   assert.equal(edit.revised,forecastAtLimit.replace(precisionClause,expandedClause).replace('William Sherden notes that ',''));
   assert.equal(form.formFor(edit.revised).score,1);
+});
+
+const duplicatedComma = {
+  content_edit_span:[61,75],
+  repair:", as forecasters' assumptions about how economies work can vary widely."
+};
+const punctuationRepair = {
+  content_edit_span:[60,75],
+  repair:'spending; different assumptions about the economy, however, make forecasts less precise.'
+};
+
+test('A word-count-safe edit cannot duplicate a neighbouring comma or semicolon', () => {
+  const doubled = [
+    duplicatedComma,
+    {repair:'; however, differing assumptions limit its precision,'}
+  ];
+  for (const fields of doubled) {
+    const checked = checkForecastEdit(fields);
+    assert.equal(checked.needs_semantic_review,true);
+    assert(checked.assessment_issues.includes('content_edit'));
+    assert.equal(checked.summary_assessment.content_edit,null);
+    assert.equal(checked.summary_assessment.repair,'');
+    assert.equal(checked.summary_assessment.next_step,'');
+  }
+  const checked = checkForecastEdit(punctuationRepair);
+  assert.equal(checked.needs_semantic_review,false);
+  const edit = checked.summary_assessment.content_edit;
+  assert.equal(edit.target,'spending, and these different results are discussed by William Sherden in his book on economic forecasting.');
+  assert(edit.revised.endsWith('government '+punctuationRepair.repair));
+  assert.equal(form.formFor(edit.revised).score,1);
+});
+
+test('Independent review can recover from an edit that duplicates the retained comma', async () => {
+  const stages = [];
+  const checked = (raw,answer,passage) => policy.applyScoringPolicy(raw,answer,passage);
+  const service = createJudgmentService({
+    policyVersion:policy.POLICY_VERSION,
+    requireEditEvidence:true,
+    buildPrompt:policy.buildJudgingPrompt,
+    isComplete:(...args)=>!checked(...args).needs_semantic_review,
+    validationIssues:(...args)=>checked(...args).assessment_issues,
+    call:async (prompt,timeout,{stage})=>{
+      stages.push(stage);
+      if (stage==='assessment') return forecastEditJudgment(duplicatedComma);
+      assert.match(prompt,/Correct these invalid fields: content_edit/);
+      assert.match(prompt,/(?:duplicate|double|repeat)[^\n]{0,60}(?:punctuation|comma|semicolon)/i);
+      return forecastEditJudgment(punctuationRepair);
+    }
+  });
+  const reviewed = await service.judge(forecastAtLimit,forecast.text,{});
+  assert.deepEqual(stages,['assessment','review']);
+  assert.equal(reviewed.consistency_reviewed,true);
+  assert.equal(checked(reviewed,forecastAtLimit,forecast.text).summary_assessment.content_edit.text,punctuationRepair.repair);
 });
 
 test('Disconnected phrases get very low Content and contradictory evidence requires review', () => {
