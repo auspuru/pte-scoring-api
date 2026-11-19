@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "baseCommit": "bc29298",
   "checkedAt": "2026-11-19",
-  "scope": "SWT synthesis, evidence-based feedback and item display policy 20.3.17.",
+  "scope": "SWT 20.3.17 synthesis, word-budget-aware feedback and item display.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -237,11 +237,11 @@
         "version": null
       },
       "swt-judge-format.js": {
-        "sha256": "b0a1f168b77f286029d384a5196b5e0b52a9cd41e76efb8f8ff1f997252d036d",
+        "sha256": "1bc228add5bf5186d2147c42749bf06153ae5b43b47e98f163d468fba051d782",
         "version": null
       },
       "swt-judgment-service.js": {
-        "sha256": "c6ac3e0fd5685052686a0682e953a6c99b083486ddf3d446a613e0ac3b8a2218",
+        "sha256": "c6678803771d5d17933aa4e1cc0b3904efb2da1e7dd15f679340b5a85409a16d",
         "version": null
       },
       "swt-legacy-policy.js": {
@@ -253,11 +253,11 @@
         "version": null
       },
       "swt-scoring-policy.js": {
-        "sha256": "9802c70c3f6262dd606c7962d8483d8277fa8d56b23f7ea196970f61a1670ce3",
+        "sha256": "9861ef143ba39bf7f0c61c7b13524e97acc259ef6a7e96b015fe053d8b2d6eb6",
         "version": "20.3.17"
       },
       "writing-lab-scoring.js": {
-        "sha256": "f4ca9b8b770ef4c076c38d14faf6f77868e467e88a74e93e440340d3a0c7df5e",
+        "sha256": "49b5be98d4c12a524f0cb3eba8c21b6227f35d2dbdae029f8488d38e37d48018",
         "version": "exam-practice-2026-10-09.1"
       }
     }

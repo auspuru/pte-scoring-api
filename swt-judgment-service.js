@@ -77,6 +77,7 @@ function materialiseEvidence(result, summary, passage = '') {
       operation: assessment.content_edit_operation,
       target_span: assessment.content_edit_span,
       target: quote(assessment.content_edit_span),
+      cut_span: assessment.content_cut_span,
       source_evidence: assessment.content_source_quote,
       text: assessment.repair
     };
@@ -146,7 +147,7 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
           // reviewer even when its new explanation explicitly rejects them.
           const reviewPrompt = prompt + '\n\nSECOND-PASS CONSISTENCY CHECK:\n'
             + (requireEditEvidence
-              ? 'Prioritise relevant ideas and clear connections. Independently apply the synthesis boundary above. Check whether an apparent connector edit expresses and integrates a supported relationship, or simply joins excerpts. Do not check whether the summary is completely paraphrased. Keep accurate relations accurate even when synthesis is capped. For a deduction verify the student span, precise source support and simple local edit.'
+              ? 'Prioritise relevant ideas and clear connections. Independently apply the synthesis boundary above. Check whether an apparent connector edit integrates a supported relationship or simply joins excerpts, and distinguish both from fragments that give labels without a useful proposition. Do not check whether the summary is completely paraphrased. Keep accurate relations accurate even when synthesis is capped. For a deduction verify the student span, the short source phrase to keep and a simple local edit. Apply it to the whole response, including any separate cut, to check that it is one sentence within 5–75 words.'
               : 'Independently reassess this response from the passage, including synthesis quality. Prioritise relevant ideas and clear connections; useful phrase or clause changes can be sufficient. Do not check whether the summary is completely paraphrased or require transformation proof. Pay particular attention to category-level paraphrases, pronoun referents, locally stated reasons, and additive versus causal links. Confirm a synthesis deduction only with exact student evidence of a real omission, vague connection, repetition, unnecessary detail or poorly selected excerpts; retained source wording and a synonym count do not establish a weakness. A regulatory advantage can explain competitive dominance without naming individual laws; a named invention can be the referent of it despite an intervening clause about motivation. Keep stylistic refinements optional. Do not assume any benchmark guarantees a score. Return a fresh complete JSON assessment with mutually consistent numerical scores, synthesis assessment, semantic flags and short actionable feedback. If the relationships are faithful, set relationships_clear true and material_meaning_change false; assess synthesis separately rather than inventing a meaning error to justify its score. Copy main_idea_evidence and each supporting_evidence as a CONTIGUOUS EXACT substring of the student summary: no inserted brackets, ellipses, paraphrases or altered verb forms.');
           const issues = validationIssues(result, summary, passage);
           // Any scoring deduction needs a stronger independent reading,

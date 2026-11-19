@@ -15864,7 +15864,11 @@ async function scoreSummary(submission = null){
   if(!text){ toast('Write a summary first.'); return; }
   const words = countWords(text);
   if(words < 5){ toast('Too short — minimum 5 words.'); return; }
-  if(words > 75){ toast('Too long — maximum 75 words.'); return; }
+  if(words > 75){
+    const excess = words - 75;
+    toast('Cut at least ' + excess + (excess === 1 ? ' word' : ' words') + ' to reach 75. Start with repeated points or optional examples.');
+    return;
+  }
 
   if(!p){ toast('Passage not loaded.'); return; }
 

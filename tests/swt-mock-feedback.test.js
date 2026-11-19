@@ -32,3 +32,29 @@ test('A content gate preserves diagnostic form; a flattened old gate does not in
  const input={...raw(),gated:true,scores:{content:0,form:0},diagnosticScores:{content:0,form:1}};
  const v=swt.project(input,{confirmed:true,answer,source});assert.equal(v.form.valid,true);assert.equal(v.language.length,0);delete input.diagnosticScores;assert.equal(swt.project(input,{confirmed:true,answer,source}).form.valid,null);
 });
+
+test('Mock reports use the same source fragment and budget for a short verified edit',()=>{
+ const input=raw(),submitted='Trees cool heavily developed cities and improve air quality.',revised='Trees cool cities and improve air quality.';
+ const a=input.summary_assessment;
+ a.content_edit={operation:'replace',target:'heavily developed cities',text:'cities',source_evidence:'cool cities',
+  advice:'Replace “heavily developed cities” with “cities”.',original_word_count:9,revised_word_count:7,revised};
+ a.repair=revised;
+ const v=swt.project(input,{confirmed:true,answer:submitted,source});
+ assert.equal(v.content.action,a.content_edit.advice);
+ const html=swt.render(v,submitted);
+ assert.match(html,/Keep this part of the passage<\/strong><q>cool cities<\/q>/);
+ assert.match(html,/7 of 75 words after the edit · 2 words saved/);
+ assert.match(html,/<details class="swt-mock-repair"><summary>See an example with this edit/);
+ assert.doesNotMatch(html,/data-review-use|data-review-save/);
+
+ const stale=swt.project(input,{confirmed:true,answer:submitted,source:'Plants can improve air quality.'});
+ assert.equal(stale.content.repair,'');
+ assert.doesNotMatch(swt.render(stale,submitted),/Keep this part|words after the edit|Replace “heavily/);
+});
+
+test('The mock Form panel gives word-budget guidance for full-length and over-limit responses',()=>{
+ const saved={version:1,status:'complete',form:{valid:true}};
+ const answer=n=>'Trees '+Array(n-2).fill('cool').join(' ')+' cities.';
+ assert.match(swt.render(saved,answer(75)),/75 is the maximum\. A shorter summary can earn full marks\./);
+ assert.match(swt.render({...saved,form:{valid:false}},answer(76)),/Cut at least 1 word\. Start with repeated points or optional examples\./);
+});

@@ -15,7 +15,8 @@
     const content = data.content_details || {};
     const assessment = content.summary_assessment || {};
     const synthesis = assessment.synthesis || {};
-    const synthesisNeedsWork = ['partial', 'limited', 'assembly'].includes(synthesis.quality);
+    const fragments = synthesis.quality === 'fragments';
+    const synthesisNeedsWork = ['partial', 'limited', 'assembly', 'fragments'].includes(synthesis.quality);
     const grammar = list((data.grammar_details || {}).grammar_annotations);
     const vocabulary = list((data.vocabulary_details || {}).vocabulary_annotations);
     const provisional = data.score_provisional === true
@@ -47,7 +48,10 @@
     } else {
       if (Number(traits.content) < (traits.content_max || 4)) {
         const dependencies = list(assessment.missing_dependencies).filter(d => d && clean(d.missing_context));
-        if (dependencies.length) {
+        if (fragments) {
+          add('Turn the separate phrases into one clear claim',
+            clean(assessment.next_step) || 'Choose the main idea and connect it to the most important supporting idea in one sentence.', assessment.repair);
+        } else if (dependencies.length) {
           const first = dependencies[0];
           add('Connect the idea to its missing context', clean(assessment.next_step) ||
             (clean(first.effect) ? '“' + compact(first.effect) + '” needs this context: ' : '') + clean(first.missing_context), assessment.repair);
@@ -83,7 +87,7 @@
     const t = data.trait_scores || {};
     const contentDetails = data.content_details || {};
     const assessment = contentDetails.summary_assessment || {};
-    const synthesisNeedsWork = ['partial', 'limited', 'assembly'].includes((assessment.synthesis || {}).quality);
+    const synthesisNeedsWork = ['partial', 'limited', 'assembly', 'fragments'].includes(assessment.synthesis?.quality);
     const content = Math.max(0, Math.min(4, Number(t.content) || 0));
     const raw = (!feedback.formValid || content === 0) ? 0 : ['content', 'form', 'grammar', 'vocabulary'].reduce((n, k) => n + (Number(t[k]) || 0), 0);
     const caps = [15, 38, 65, 79, 90];
@@ -99,6 +103,7 @@
     else if (feedback.contentGated) headline = 'Content requirements not met';
     else if (feedback.provisional) headline = 'Provisional result';
     else if (feedback.degraded && data.mode === 'local') headline = 'Local practice result';
+    else if (assessment.synthesis?.quality === 'fragments') headline = 'Connect the separate phrases into one clear claim';
     else if (content <= 1) headline = 'Incomplete summary — limited content';
     else if (synthesisNeedsWork) headline = 'Improve how you combine and rephrase the ideas';
     else if (content <= 2) headline = 'Incomplete summary — key ideas or connections missing';

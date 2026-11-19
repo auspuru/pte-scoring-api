@@ -51,12 +51,13 @@ const legacyTool = {
 const tool = structuredClone(legacyTool);
 const summarySchema = tool.input_schema.properties.summary_assessment;
 Object.assign(summarySchema.properties, {
-  synthesis_quality: { ...text, description: 'Exactly effective, assembly, partial or limited under the supplied synthesis rules.' },
+  synthesis_quality: { ...text, description: 'Exactly effective, assembly, partial, limited or fragments under the supplied synthesis rules.' },
   content_edit_operation: { ...text, description: 'add, remove or replace for a Content deduction, otherwise none.' },
   content_edit_span: { $ref: '#/$defs/span' },
-  content_source_quote: { ...text, description: 'Exact contiguous passage evidence for the Content edit, otherwise empty.' }
+  content_cut_span: { type: 'array', items: { type: 'integer' }, description: 'Inclusive student word numbers for a separate optional cut that makes room, otherwise [].' },
+  content_source_quote: { ...text, description: 'The smallest useful exact contiguous phrase or clause to keep from the passage, otherwise empty.' }
 });
-summarySchema.required.push('content_edit_operation', 'content_edit_span', 'content_source_quote');
+summarySchema.required.push('content_edit_operation', 'content_edit_span', 'content_cut_span', 'content_source_quote');
 const DEFAULT_SCORING_MODEL = 'claude-sonnet-4-6';
 // SWT scoring and its feedback share one dedicated model selection. A global
 // low-cost model used by other tasks must not silently select the SWT scorer.

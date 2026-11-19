@@ -48,3 +48,34 @@ test('Repeated words use their validated word span and ambiguous historical quot
  delete d.grammar_details.grammar_annotations[0].phrase_span;
  assert.equal(review.model(d,passage,text).annotations.length,0);
 });
+
+test('A checked SWT edit leads with the source fragment, shows the new word count and keeps the full example optional',()=>{
+ const d=data(),answer='Trees cool heavily developed cities and improve air quality.',revised='Trees cool cities and improve air quality.';
+ d.trait_scores.content=3;
+ const a=d.content_details.summary_assessment;
+ a.content_edit={operation:'replace',target:'heavily developed cities',text:'cities',source_evidence:'cool cities',
+  advice:'Replace “heavily developed cities” with “cities”.',original_word_count:9,revised_word_count:7,revised};
+ a.repair=revised;
+ const m=review.model(d,passage,answer),html=review.render(m);
+ assert.equal(m.action,a.content_edit.advice);
+ assert.match(html,/Keep this part of the passage<\/strong><q>cool cities<\/q>/);
+ assert.match(html,/7 of 75 words after the edit · 2 words saved/);
+ assert.match(html,/<details class="swt-review-suggestion"><summary>See an example with this edit/);
+ assert.equal(m.usable,true);
+
+ const overflow='Trees '+Array(74).fill('cool').join(' ')+' cities.';
+ a.content_edit.revised=overflow;
+ a.content_edit.revised_word_count=76;
+ a.repair=overflow;
+ const invalid=review.model(d,passage,answer),invalidHtml=review.render(invalid);
+ assert.equal(invalid.repair,'');
+ assert.equal(invalid.usable,false);
+ assert.doesNotMatch(invalidHtml,/data-review-use|words after the edit|Replace “heavily/);
+});
+
+test('The Form panel explains the maximum and how many words an over-limit response needs to cut',()=>{
+ const answer=n=>'Trees '+Array(n-2).fill('cool').join(' ')+' cities.';
+ assert.match(review.render(review.model(data(),passage,answer(75))),/75 is the maximum\. A shorter summary can earn full marks\./);
+ const d=data();d.trait_scores.form=0;
+ assert.match(review.render(review.model(d,passage,answer(77))),/Cut at least 2 words\. Start with repeated points or optional examples\./);
+});
