@@ -130,6 +130,10 @@
       if (!pane || pane.hidden || (active && active.owner !== owner)) return;
       if (active?.pane === pane) {
         const ready = active.options?.pending && !options?.pending;
+        if (active.options?.clipboardEditor !== options?.clipboardEditor) {
+          clipboard = null;
+          internalDrag = false;
+        }
         active.options = options;
         if (ready || !active.locked) unlock(active);
         if(options?.pending) { active.locked = false; lock('fullscreen-required',false); }
@@ -166,16 +170,23 @@
       return ready;
     }
     function editor(target) {
+      if (active?.options?.clipboardEditor && target !== active.options.clipboardEditor) return null;
       return active?.pane.contains(target) && /^(TEXTAREA|INPUT)$/.test(target?.tagName) && !target.disabled && !target.readOnly ? target : null;
     }
     function insert(target, text) {
       const input = editor(target);
       if (!input || text == null) return;
+      if (active.options.clipboardEditor) {
+        input.focus();
+        // Native edits keep the answer's undo history and emit the input event used by autosave.
+        if (doc.execCommand?.(text ? 'insertText' : 'delete', false, text)) return;
+      }
       input.setRangeText(text,input.selectionStart,input.selectionEnd,'end');
       input.dispatchEvent(new win.Event('input',{bubbles:true})); input.focus();
     }
     function copy(target, cut) {
       const input = editor(target);
+      if (!input && active.options.clipboardEditor) return;
       const text = input ? input.value.slice(input.selectionStart,input.selectionEnd) : doc.getSelection?.()?.toString();
       if (text) clipboard = text;
       if (cut && input && text) insert(input,'');
@@ -183,7 +194,10 @@
     function edit(command, target) {
       if (!active?.options) return false;
       if (active.locked) return true;
-      if (command === 'paste') { if (clipboard != null) insert(target,clipboard); else lock('external-paste-blocked'); }
+      if (command === 'undo' || command === 'redo') {
+        const input = editor(target);
+        if (input) { input.focus(); doc.execCommand?.(command); }
+      } else if (command === 'paste') { if (clipboard != null) insert(target,clipboard); else lock('external-paste-blocked'); }
       else copy(target,command === 'cut');
       return true;
     }
@@ -220,10 +234,24 @@
         event.preventDefault(); event.stopImmediatePropagation();
       }
     }, true);
-    doc.addEventListener?.('dragstart', event => { internalDrag = !!active?.pane.contains(event.target); }, true);
+    doc.addEventListener?.('beforeinput', event => {
+      const clipboardEditor = active?.options?.clipboardEditor;
+      if (!clipboardEditor || event.target !== clipboardEditor ||
+          !['insertFromPaste','insertFromPasteAsQuotation','insertFromYank','insertFromDrop'].includes(event.inputType)) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      lock(event.inputType === 'insertFromDrop' ? 'external-drop-blocked' : 'external-paste-blocked');
+    }, true);
+    doc.addEventListener?.('dragstart', event => {
+      internalDrag = !active?.options?.clipboardEditor && !!active?.pane.contains(event.target);
+      if (active?.options?.clipboardEditor) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }, true);
     doc.addEventListener?.('dragend', () => { internalDrag = false; }, true);
     doc.addEventListener?.('drop', event => {
-      if (active?.options && !internalDrag) { event.preventDefault(); event.stopImmediatePropagation(); lock('external-drop-blocked'); }
+      if (active?.options && (active.options.clipboardEditor || !internalDrag)) { event.preventDefault(); event.stopImmediatePropagation(); lock('external-drop-blocked'); }
       internalDrag = false;
     }, true);
     return { set, reset, prepare, edit, reportHTML, isActive:() => !!active, isLocked:owner => !!active?.locked && (!owner || active.owner === owner) };

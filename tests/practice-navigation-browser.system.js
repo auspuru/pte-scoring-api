@@ -370,6 +370,55 @@ for(const width of [1363,390,320])test('SWT mock feedback: submitted Writing and
  if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.$eval('#full-swt-browser .swt-mock-feedback',e=>e.scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:path.join(root,'.cache','swt-mock-'+width+'.png')});}
 });
 
+test('Writing workspace: SWT mock edits use the answer clipboard and preserve undo and redo',{timeout:45000},async t=>{
+ const f=await fixture(t,320),{page}=f;
+ const id='swt-editor-fixture',source='This synthetic source sentence must never be pasted into the response.';
+ f.attempts.set(id,{
+  id,testId:'writing-editor-fixture',kind:'mock',module:'writing',title:'Writing editor fixture',status:'active',
+  startedAt:Date.now(),deadline:Date.now()+600000,index:0,
+  questions:[{id:'swt-editor',type:'swt',title:'SWT editor fixture',text:source,minutes:10}],
+  answers:[''],notes:'',revisions:[0],completed:[null],results:[null],playback:[null]
+ });
+ await page.addScriptTag({url:new URL('/portal-exam-mode.js',page.url()).href});
+ await page.addStyleTag({url:new URL('/portal-exam-mode.css',page.url()).href});
+ await page.bringToFront();
+ await page.evaluate(id=>{
+  // Supply the protected screen state independently of the headless host's fullscreen transition.
+  Object.defineProperty(document,'fullscreenElement',{configurable:true,value:document.documentElement});
+  return WritingLab.open({attemptId:id,tab:'mocks',module:'writing',requestId:id});
+ },id);
+ assert.equal(await page.evaluate(()=>PortalExamMode.isLocked('writing')),false);
+ const answer=()=>page.$eval('#answer',editor=>editor.value);
+ const edit=command=>page.locator('[data-edit="'+command+'"]').click();
+ assert(await page.$eval('.clipboard',bar=>bar.scrollWidth<=bar.clientWidth+1));
+
+ await page.type('#answer','My response');
+ await page.$eval('#answer',editor=>editor.setSelectionRange(0,2));
+ await edit('copy');
+ await page.click('.passage');
+ await page.$eval('.passage',passage=>{
+  const range=document.createRange(),selection=window.getSelection();
+  range.selectNodeContents(passage);selection.removeAllRanges();selection.addRange(range);
+ });
+ await page.keyboard.down('Control');
+ try{await page.keyboard.press('c');}finally{await page.keyboard.up('Control');}
+ await page.$eval('#answer',editor=>editor.setSelectionRange(editor.value.length,editor.value.length));
+ await edit('paste');
+ assert.equal(await answer(),'My responseMy');
+ await edit('undo');
+ assert.equal(await answer(),'My response');
+ await edit('redo');
+ assert.equal(await answer(),'My responseMy');
+ await page.$eval('#answer',editor=>editor.setSelectionRange(0,3));
+ await edit('cut');
+ assert.equal(await answer(),'responseMy');
+ await edit('undo');
+ assert.equal(await answer(),'My responseMy');
+ await edit('redo');
+ assert.equal(await answer(),'responseMy');
+ assert.equal(await page.$eval('#word-count',counter=>counter.textContent),'1');
+});
+
 for(const adminView of [false,true])for(const width of [1363,390,320])test('Reading mock history: '+(adminView?'admin view with blocked cache':'student view')+' restores newest results and exact review links at '+width+'px',{timeout:90000},async t=>{
  const f=await authFixture(t),username='reading-history-browser',password='Synthetic-pass-123';
  const registration=await f.request('/api/auth/register',{username,password,email:username+'@example.test'});assert.equal(registration.body.success,true);
