@@ -12514,11 +12514,11 @@ function ensureReadingRuntimeLoaded() {
   readingRuntimeLoadPromise = (async () => {
     const modules = [
       ['reading-predictions-sep-2026.js?v=1', 'reading predictions'],
-      ['reading-mock-tools.js?v=sha256-6766b45368eb', 'reading mock tools'],
+      ['reading-mock-tools.js?v=sha256-3d835f090b38', 'reading mock tools'],
       ['reading-exam-player.js?v=sha256-855619510b75', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=sha256-98e9c23a186f', 'reading review'],
-      ['reading-practice.js?v=sha256-599581dd69ca', 'reading practice']
+      ['reading-practice.js?v=sha256-2818c3305ae6', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
     // downloads overlap. Initialise the practice client only after all succeed.
@@ -15860,6 +15860,12 @@ async function scoreSummary(submission = null){
   if (!summaryInputEl && !submission) return;
   const text = (submission ? submission.text : summaryInputEl.value).trim();
   const p = submission ? passages.find(x => x.id === submission.passageId) : swtPassageAt(currentPassageId);
+  if (submission && (!p || (submission.passageText !== undefined && submission.passageText !== p.text)
+    || (submission.passageHash && submission.passageHash !== p.passageHash))) {
+    submission.retryAllowed = false;
+    showSwtRetryStatus(false, 'This passage has changed or is unavailable. Your saved summary is still here. Reopen the passage to start a new attempt.');
+    return;
+  }
   const passageId = p?.id;
   if(!text){ toast('Write a summary first.'); return; }
   const words = countWords(text);
@@ -15929,8 +15935,12 @@ async function scoreSummary(submission = null){
 }
 
 function retrySwtAssessment(){
-  if (swtResultSubmission && swtResultSubmission.ownerId === canonicalClientUserId(currentUserId)
-    && swtResultSubmission.token === sessionToken) return scoreSummary(swtResultSubmission);
+  const submission = swtResultSubmission;
+  if (!submission || submission.retryAllowed === false || submission.ownerId !== canonicalClientUserId(currentUserId)
+    || submission.token !== sessionToken || swtPassageStorageId() !== submission.passageId) return;
+  if (document.getElementById('swtPane')?.classList.contains('active') === false
+    || document.getElementById('swtResultsScreen')?.classList.contains('active') === false) return;
+  return scoreSummary(submission);
 }
 
 async function saveAttempt(pid, text, data, spellData){
@@ -16004,11 +16014,15 @@ function formatAttemptTime(iso){
 
 function showResults(data, passage, spellData, submittedText){
   const savedHash = data.source_identity?.passage_sha256;
-  if (savedHash && passage.passageHash && savedHash !== passage.passageHash) {
-    passage = { ...passage, teachingSample:null, sampleResponse:'', sampleVersionMismatch:true };
+  const sourceUnavailable = !!(savedHash && savedHash !== passage.passageHash);
+  if (sourceUnavailable) {
+    passage = { id:passage.id, title:passage.title, text:'', sampleVersionMismatch:true };
   }
+  const assessmentIncomplete = data.ai_feedback_degraded || data.score_provisional;
+  const retryAllowed = !!(assessmentIncomplete && !sourceUnavailable);
   swtResultPassage = passage;
   swtResultSubmission = { passageId: passage.id, text: submittedText || '',
+    passageText: passage.text, passageHash: savedHash || passage.passageHash, retryAllowed,
     ownerId: canonicalClientUserId(currentUserId), token: sessionToken };
   const display = SwtStudentFeedback.presentation(data);
   const traits = data.trait_scores || {};
@@ -16045,28 +16059,14 @@ function showResults(data, passage, spellData, submittedText){
   const heroSummaryEl = document.getElementById('heroSummary');
   if (heroSummaryEl) heroSummaryEl.textContent = buildResultSummary(data, traits);
 
-  const previousRubric = data.scoring_version && data.scoring_version !== '20.3.6';
   const rubricNotice = document.getElementById('swtRubricNotice');
   if (rubricNotice) {
-    rubricNotice.hidden = !previousRubric;
-    rubricNotice.textContent = previousRubric ? '' : '';
+    rubricNotice.hidden = !sourceUnavailable;
+    rubricNotice.textContent = sourceUnavailable ? 'The passage used for this result is unavailable. Your saved summary and feedback are still here.' : '';
   }
   document.querySelectorAll('#swtResultsScreen details').forEach(detail => { detail.open = false; });
-
-  const degradedEl = document.getElementById('aiDegradedNotice');
-  if(degradedEl){
-    if(data.ai_feedback_degraded || data.score_provisional){
-      degradedEl.style.display = '';
-      degradedEl.textContent = 'The full assessment could not be completed. Your summary is still available. Retry the assessment to receive a confirmed score.';
-    } else {
-      degradedEl.style.display = 'none';
-    }
-  }
-  const retryBtn = document.getElementById('swtRetryAssessmentBtn');
-  if (retryBtn) {
-    retryBtn.hidden = !(data.ai_feedback_degraded || data.score_provisional);
-    retryBtn.style.display = retryBtn.hidden ? 'none' : '';
-  }
+  showSwtRetryStatus(retryAllowed, retryAllowed
+    ? 'The full assessment could not be completed. Your summary is still available. Retry the assessment to receive a confirmed score.' : '');
 
   const heroTraitChipsEl = document.getElementById('heroTraitChips');
   if (heroTraitChipsEl) {
@@ -16094,10 +16094,8 @@ function showResults(data, passage, spellData, submittedText){
     readingEstimateEl.innerHTML = window.PteEstimateDisplay.render(reading, writing, {swtItem});
   }
 
-  renderOriginality(data, passage, submittedText);
+  renderSwtSourceEvidence(data, passage, submittedText);
   renderAnnotatedSubmission(data, passage, spellData, submittedText);
-  renderAnnotatedPassage(passage);
-  renderSwtKeyPhrases(passage);
   renderTraitBreakdown(data, traits);
   renderSwtFeedbackReview(data, passage, submittedText);
 
@@ -16114,8 +16112,45 @@ function showResults(data, passage, spellData, submittedText){
   }
   switchSbsView('summary');
 
-  renderAboutPassage(passage);
   updateResultsNav();
+}
+
+function showSwtRetryStatus(available, message){
+  const notice = document.getElementById('aiDegradedNotice');
+  if (notice) {
+    notice.style.display = message ? '' : 'none';
+    notice.textContent = message;
+  }
+  const button = document.getElementById('swtRetryAssessmentBtn');
+  if (button) {
+    button.hidden = !available;
+    button.style.display = available ? '' : 'none';
+  }
+}
+
+function renderSwtSourceEvidence(data, passage, submittedText){
+  const unavailable = passage.sampleVersionMismatch === true;
+  const source = document.getElementById('annotatedPassage');
+  const phrases = document.getElementById('swtKeyPhrases');
+  const overlap = document.getElementById('originalityChecks');
+  const about = document.getElementById('aboutPassageCard');
+  const comparison = document.getElementById('swtComparison');
+  const guide = comparison?.querySelector('.swt-help');
+  for (const element of [source?.closest('.sbs-col'), phrases?.closest('details'), overlap?.closest('details'),
+    about, document.getElementById('sbsTabSample'), document.querySelector('#swtResultsScreen button[onclick="compareSwtSample()"]')]) {
+    if (element) element.hidden = unavailable;
+  }
+  if (guide) guide.hidden = unavailable;
+  if (unavailable) {
+    if (source) source.textContent = '';
+    if (phrases) phrases.replaceChildren();
+    if (overlap) overlap.replaceChildren();
+    return;
+  }
+  renderAnnotatedPassage(passage);
+  renderSwtKeyPhrases(passage);
+  renderOriginality(data, passage, submittedText);
+  renderAboutPassage(passage);
 }
 
 function fmtNum(n){
@@ -16159,7 +16194,7 @@ function renderSwtFeedbackReview(data, passage, submittedText){
     && document.getElementById('swtResultsScreen')?.classList.contains('active');
   SwtFeedbackReview.mount(target, data, passage, submittedText, { isCurrent,
     saveDraft(text){
-      if (!isCurrent()) return false;
+      if (!isCurrent() || passage.sampleVersionMismatch) return false;
       const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
       summaries[passage.id] = { text, timestamp: new Date().toISOString(), score: summaries[passage.id]?.score || 0 };
       const saved = LocalStore.set(getPteStorageKey('summaries'), summaries);
@@ -16168,8 +16203,12 @@ function renderSwtFeedbackReview(data, passage, submittedText){
     },
     continueWriting(){ if (isCurrent()) backToPractice(); }
   });
+  if (passage.sampleVersionMismatch) {
+    target.querySelectorAll('[data-review-source], [data-review-use], #swtReviewRevision').forEach(element => element.remove());
+  }
 }
 function compareSwtSample(){
+  if (swtResultPassage?.sampleVersionMismatch) return;
   switchSbsView('sample');
   const tab = document.getElementById('sbsTabSample');
   if (tab) { tab.scrollIntoView({ block: 'center' }); tab.focus({ preventScroll: true }); }
@@ -16177,7 +16216,7 @@ function compareSwtSample(){
 document.addEventListener('keydown', function(event){
   if (!event.target || !event.target.closest || !event.target.closest('#swtPane [role="tablist"]')) return;
   const list = event.target.closest('[role="tablist"]');
-  const tabs = Array.from(list.querySelectorAll('[role="tab"]'));
+  const tabs = Array.from(list.querySelectorAll('[role="tab"]')).filter(tab => !tab.hidden);
   const index = tabs.indexOf(event.target);
   if (index < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
   event.preventDefault();
@@ -16527,7 +16566,7 @@ function annotateSpelling(clauseOrHtml, spellWords, alreadyHtml){
 }
 
 function switchSbsView(view){
-  const isSample = (view === 'sample');
+  const isSample = view === 'sample' && !swtResultPassage?.sampleVersionMismatch;
   const vSum = document.getElementById('sbsViewSummary');
   const vSam = document.getElementById('sbsViewSample');
   const tSum = document.getElementById('sbsTabSummary');

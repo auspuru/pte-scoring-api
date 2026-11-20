@@ -40,5 +40,5 @@ test('Practice controllers retain the reviewed standalone navigation and exact n
  const speaking=source.replace(reader,"    const token=()=>{try{return env.sessionStorage.getItem('pte_impersonate_token')||env.localStorage.getItem('pte_session_token')||'';}catch{return '';}};").split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')&&!line.includes('env.PortalUx?.recording(node);')).join('\n');
  const reading=fs.readFileSync(path.join(root,'public/reading-practice.js'),'utf8').split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')).join('\n');
  assert.equal(sha(speaking),'b51151b59a4709287febee3d8c79ed2a4471cc190181a9128bb29509acbfa92c');
- assert.equal(sha(reading),'599581dd69ca81bdd1520512e007c8889376af9e5bcf273a163ee106e8b66f7a');
+ assert.equal(sha(reading),require('../docs/portal-layout-preservation.json').files['public/reading-practice.js']);
 });

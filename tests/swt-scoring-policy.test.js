@@ -51,7 +51,7 @@ function functionSource(name) {
   return source.slice(start, end);
 }
 
-async function grade(fixture, semanticJudgment) {
+async function grade(fixture, semanticJudgment, { passageId, getPassage } = {}) {
   let route;
   const context = {
     ...policy, swtSourceIdentity: policy.sourceIdentity, swtItemScore90: policy.itemScore90,
@@ -60,6 +60,7 @@ async function grade(fixture, semanticJudgment) {
     EXTERNAL_SPELLCHECK_ENABLED: false,
     console, setTimeout, clearTimeout,
     app: { post: (_, handler) => { route = handler; } },
+    PassageAPI: { getById: getPassage }, studentPassage: require('../swt-reference').studentPassage,
     detectVerbatim: () => ({ verbatimRate: 0, isVerbatim: false, longestRun: 0 }),
     analyzeSwaps: () => ({ safeSwaps: [], structuralChanges: [], dangerousSwaps: [],
       safeSwapCount: 0, structuralCount: 0, dangerousSwapCount: 0,
@@ -85,12 +86,28 @@ async function grade(fixture, semanticJudgment) {
   vm.runInContext(source.slice(start, end), context);
   let response;
   let status = 200;
-  await route({ body: { text: fixture.summary, type: 'swt', prompt: fixture.passage,
+  await route({ body: { text: fixture.summary, type: 'swt', prompt: fixture.passage, passageId,
     keyPoints: { what: 'Main message', why: 'Reason', how: 'Mechanism', result: 'Conclusion' } } },
   { status(code) { status = code; return this; }, json(body) { response = body; return this; } });
   assert.equal(status, 200, JSON.stringify(response));
   return response;
 }
+
+test('Standalone grading returns the passage reference used for the assessment when the bank changes', async () => {
+  const fixture = fixtures[1];
+  const original = { id: 'snapshot-test', text: fixture.passage, title: 'First version',
+    keyElements: { what: 'First version idea' }, sampleResponse: fixture.summary };
+  const revised = { ...original, text: 'A different source for the same question.', title: 'Second version',
+    keyElements: { what: 'Second version idea' }, sampleResponse: 'Another reference.' };
+  let reads = 0;
+  const result = await grade(fixture, judgment(fixture), { passageId: original.id,
+    getPassage: async () => ++reads === 1 ? original : revised });
+  assert.equal(reads, 1);
+  assert.equal(result.passage_current.title, original.title);
+  assert.equal(result.passage_current.sampleResponse, original.sampleResponse);
+  assert.equal(result.passage_current.keyElements.what, original.keyElements.what);
+  assert.equal(result.source_identity.passage_sha256, policy.sourceIdentity(original.text).passage_sha256);
+});
 
 for (const fixture of fixtures) {
   test(`${fixture.topic}: supplied full-score assessment reaches 9/9 through the grading route`, async () => {

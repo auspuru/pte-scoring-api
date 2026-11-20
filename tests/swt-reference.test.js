@@ -102,10 +102,10 @@ test('Blank SWT samples are restored from reviewed bundled references', () => {
   const standardResult = studentPassage(standard);
   assert.equal(standardResult.sampleResponse, seeds.find(p => p.id === 1).sampleResponse);
 
-  const legacy = { id: 22, title: 'Esports', text: 'Legacy production passage text.', keyElements: { what: 'Esports can support student engagement.' }, sampleResponse: '' };
-  const legacyResult = studentPassage(legacy);
-  assert.match(legacyResult.sampleResponse, /esports programmes/i);
-  assert.equal(legacyResult.sampleRevision, POLICY_VERSION);
+  const originalLegacy = legacy.find(p => p.id === 22);
+  const legacyResult = studentPassage({ ...originalLegacy, sampleResponse: '' });
+  assert.equal(legacyResult.sampleResponse, originalLegacy.sampleResponse);
+  assert.match(legacyResult.teachingSample, /esports/i);
 
   const advanced = require('../content/swt-advanced.json')[0];
   const advancedResult = studentPassage({ ...advanced, id: 44, sampleResponse: '' });
@@ -116,6 +116,11 @@ test('Runtime fallback never overwrites authored samples or mismatched passages'
   const authored = { id: 22, title: 'Esports', text: 'Teacher-edited text.', keyElements: {}, sampleResponse: 'Teacher-authored sample answer.' };
   assert.equal(studentPassage(authored).sampleResponse, authored.sampleResponse);
   assert.equal(fallbackSample({ ...authored, sampleResponse: '' , title: 'Different title' }), null);
+  const editedLegacy = { ...authored, sampleResponse: '' };
+  assert.equal(fallbackSample(editedLegacy), null);
+  const legacyResult = studentPassage(editedLegacy);
+  assert.equal(legacyResult.sampleResponse, '');
+  assert.equal(legacyResult.teachingSample, undefined);
 
   const standard = structuredClone(seeds.find(p => p.id === 1));
   standard.sampleResponse = '';

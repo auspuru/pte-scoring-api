@@ -4832,23 +4832,21 @@ app.post('/api/grade', async (req, res) => {
       return res.status(400).json({ error: 'Passage too long.' });
     }
 
-    // A bank edit during practice must not silently change the text assessed.
-    let sampleReference = null;
+    // Keep the same passage and reference through assessment and feedback.
+    let livePassage = null;
     if (passageId != null) {
       try {
         const stored = await PassageAPI.getById(passageId);
-        const live = stored && studentPassage(stored);
-        if (live) {
-          if (live.text !== prompt) return res.status(409).json({ error: 'This passage has changed. Keep your summary and reopen the passage before submitting.' });
-          keyPoints = live.keyElements || {};
-          sampleReference = live.sampleResponse || null;
-        }
+        if (!stored) return res.status(404).json({ error: 'This passage is no longer available. Keep a copy of your summary.' });
+        livePassage = studentPassage(stored);
       } catch (e) {
         console.warn('grade: could not load live passage', passageId, '-', e.message);
-        // fall through with the client-supplied values
+        return res.status(503).json({ error: 'This passage could not be loaded. Keep your summary and try again.' });
       }
+      if (livePassage.text !== prompt) return res.status(409).json({ error: 'This passage has changed. Keep your summary and reopen the passage before submitting.' });
+      keyPoints = livePassage.keyElements || {};
     }
-    const sourceIdentity = swtSourceIdentity(prompt, { key: keyPoints, sample: sampleReference });
+    const sourceIdentity = swtSourceIdentity(prompt, { key: keyPoints, sample: livePassage?.sampleResponse || null });
 
     // ── FORM GATE ──
     const form = validateForm(text);
@@ -5159,29 +5157,18 @@ app.post('/api/grade', async (req, res) => {
       if (DEBUG) console.error('[grade] NOT saving at grade-time — userId:', userId || '(MISSING)', 'passageId:', req.body.passageId || '(MISSING)', '— note: the sync endpoint is the primary save path, so this alone does not mean data is lost.');
     }
 
-    // v19.11: attach the LIVE passage's key elements + rationale to the response.
-    // The results screen uses this to render "About this passage" and "Key
-    // Element Coverage" from current server data — not the student's stale
-    // in-memory copy. Without this, a student who had the page open before an
-    // admin edit would see the old feedback on a brand-new attempt.
-    if (passageId != null) {
-      try {
-        const stored = await PassageAPI.getById(passageId);
-        const live = stored && studentPassage(stored);
-        if (live) {
-          result.passage_current = {
-            id: live.id,
-            title: live.title,
-            category: live.category,
-            keyElements: live.keyElements || {},
-            keyElementsRationale: live.keyElementsRationale || null,
-            extractionMeta: live.extractionMeta || null,
-            sampleResponse: live.sampleResponse || '',
-            sampleNotes: live.sampleNotes || '',
-            studyGuide: live.studyGuide
-          };
-        }
-      } catch (e) { /* non-fatal — frontend falls back to its own copy */ }
+    if (livePassage) {
+      result.passage_current = {
+        id: livePassage.id,
+        title: livePassage.title,
+        category: livePassage.category,
+        keyElements: keyPoints,
+        keyElementsRationale: livePassage.keyElementsRationale || null,
+        extractionMeta: livePassage.extractionMeta || null,
+        sampleResponse: livePassage.sampleResponse || '',
+        sampleNotes: livePassage.sampleNotes || '',
+        studyGuide: livePassage.studyGuide
+      };
     }
 
     // ── Vocabulary swap suggestions ──

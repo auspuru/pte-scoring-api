@@ -2,7 +2,6 @@
 const seeds = require('./passages.json');
 const advanced = require('./content/swt-advanced.json');
 const advancedRevisions = require('./content/swt-advanced-revisions.json');
-const legacySampleRevisions = require('./content/swt-sample-revisions.json');
 const publicationReferences = require('./content/swt-publication-references.json');
 const { hash } = require('./scoring-jobs');
 const { POLICY_VERSION } = require('./swt-scoring-policy');
@@ -77,27 +76,6 @@ function fallbackSample(passage) {
     && normalize(p.text) === normalize(passage?.text));
   if (advancedSeed && normalize(advancedSeed.sampleResponse)) {
     return { sampleResponse: normalize(advancedSeed.sampleResponse), sampleNotes: normalize(advancedSeed.sampleNotes) };
-  }
-
-  // Production still contains legacy SWT rows that pre-date passages.json.
-  // If this id/title belongs to the current standalone bank but the source text
-  // no longer matches, stop here rather than attaching an older legacy answer
-  // to a teacher-edited passage.
-  const currentIdentity = seeds.find(p => p.id === Number(passage?.id)
-    && normalize(p.title) === normalize(passage?.title));
-  if (currentIdentity) return null;
-
-  // Legacy revision entries are explicitly keyed by the original passage id +
-  // title. Only use them for rows that are not represented by the current
-  // canonical bank; an authored database sample always wins.
-  const legacy = legacySampleRevisions.find(p => Number(p.id) === Number(passage?.id)
-    && normalize(p.title) === normalize(passage?.title));
-  if (legacy && normalize(legacy.sampleResponse)) {
-    return {
-      sampleResponse: normalize(legacy.sampleResponse),
-      sampleNotes: 'Model answer restored from the reviewed SWT sample bank.',
-      sampleRevision: POLICY_VERSION
-    };
   }
 
   return null;

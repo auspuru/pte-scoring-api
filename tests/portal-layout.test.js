@@ -21,47 +21,18 @@ test('Approved practice navigation preserves the original Speaking grading, uplo
 });
 
 test('Writing workspace preserves audited functions through the SWT display and sample updates',()=>{
- const source=fs.readFileSync(path.join(__dirname,'../public/index.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceWritingUpdates.nativeFunctions;
+ const source=fs.readFileSync(path.join(__dirname,'../public/index.js'),'utf8'),lock=require('../docs/portal-layout-preservation.json');
+ const pins={...lock.practiceWritingUpdates.nativeFunctions,...lock.swtPassageVersionUpdates.writingFunctions};
  for(const [name,expected] of Object.entries(pins)){
   const match=new RegExp('^(?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^(?:async )?function /m.exec(source.slice(offset));
-  let body=source.slice(match.index,next?offset+next.index:source.length).trim();
-  if (name==='scoreSummary') {
-   const wordLimit = `  if(words > 75){
-    const excess = words - 75;
-    toast('Cut at least ' + excess + (excess === 1 ? ' word' : ' words') + ' to reach 75. Start with repeated points or optional examples.');
-    return;
-  }`;
-   assert(body.includes(wordLimit));
-   body=body.replace(wordLimit,"  if(words > 75){ toast('Too long — maximum 75 words.'); return; }");
-  }
-  if (name==='showResults') {
-   const itemDisplay = `    const swtItem = Number.isFinite(data.item_score_90);
-    const writing = confirmed ? (swtItem ? display.score
-      : Number.isFinite(rawScore) && Number.isFinite(rawMax) && rawMax > 0
-        ? Math.round(10 + 80 * Math.max(0, Math.min(1, rawScore / rawMax))) : null) : null;
-    readingEstimateEl.innerHTML = window.PteEstimateDisplay.render(reading, writing, {swtItem});`;
-   assert(body.includes(itemDisplay));
-   body=body.replace(itemDisplay,`    const writing = confirmed && Number.isFinite(rawScore) && Number.isFinite(rawMax) && rawMax > 0
-      ? Math.round(10 + 80 * Math.max(0, Math.min(1, rawScore / rawMax))) : null;
-    readingEstimateEl.innerHTML = window.PteEstimateDisplay.render(reading, writing);`);
-   const sampleChanges = [
-    [`  const savedHash = data.source_identity?.passage_sha256;
-  if (savedHash && passage.passageHash && savedHash !== passage.passageHash) {
-    passage = { ...passage, teachingSample:null, sampleResponse:'', sampleVersionMismatch:true };
-  }
-`, ''],
-    ["    const sample = passage.teachingSample || passage.sampleResponse || '';", "    const sample = (passage && passage.sampleResponse) || '';"],
-    ["    sampleNotes.textContent = 'Simple words work when the main ideas connect clearly.';", "    sampleNotes.textContent = 'Open this tab to check the sample with the same rubric used for your summary.';"],
-    ['  renderAboutPassage(passage);\n  updateResultsNav();', '  renderAboutPassage(passage);\n  renderVocabCoach(data);\n  updateResultsNav();']
-   ];
-   for(const [current,previous] of sampleChanges){assert(body.includes(current),current);body=body.replace(current,previous);}
-  }
+  const body=source.slice(match.index,next?offset+next.index:source.length).trim();
   assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);
  }
 });
 
-test('Reading workspace keeps the native answer scoring, explanations, completion and persistence byte-identical',()=>{
- const source=fs.readFileSync(path.join(__dirname,'../public/reading-practice.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceReadingUpdates.nativeFunctions;
+test('Reading workspace pins native scoring, saved results and the reviewed SWT submission path',()=>{
+ const source=fs.readFileSync(path.join(__dirname,'../public/reading-practice.js'),'utf8'),lock=require('../docs/portal-layout-preservation.json');
+ const pins={...lock.practiceReadingUpdates.nativeFunctions,...lock.swtPassageVersionUpdates.readingFunctions};
  for(const [name,expected] of Object.entries(pins)){const match=new RegExp('^  (?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^  (?:async )?function /m.exec(source.slice(offset));const body=source.slice(match.index,next?offset+next.index:source.length).trim();assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);}
 });
 

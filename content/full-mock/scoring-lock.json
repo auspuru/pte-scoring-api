@@ -201,11 +201,11 @@
         "version": "essay-unified-2.6"
       },
       "public/reading-mock-tools.js": {
-        "sha256": "6766b45368eb780a587dcac94cb2520fdd28520ce7a7b76dade61a93ad5dfee1",
+        "sha256": "3d835f090b38872d8a0c2cf6c9f46d20b70e80ec7ba3abc17fd19f993a415160",
         "version": null
       },
       "public/reading-practice.js": {
-        "sha256": "599581dd69ca81bdd1520512e007c8889376af9e5bcf273a163ee106e8b66f7a",
+        "sha256": "2818c3305ae69d714d43014cd918d75bf101854e76fd420a5a507850e679dcb5",
         "version": null
       },
       "public/writing-lab-report.js": {
@@ -213,7 +213,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "f6c6edeef25b69e8d7680f61baaf1f3daad3cd571f312e1b2da6b5438d66fa98",
+        "sha256": "3c308cd7798f260db14058bd3cfbbba0891e50d318ae7690f0060914104c93ef",
         "version": null
       },
       "situation-content-policy.js": {
@@ -261,7 +261,7 @@
         "version": null
       },
       "swt-reference.js": {
-        "sha256": "65a0b5acbdc049a31d85fe7545997387afae9e5c7e93439d8ee549bf14214089",
+        "sha256": "4068efa1382e7daf9e5981c49e67dc0041340ee4c204d4fe6e7f1958615c7011",
         "version": null
       },
       "swt-scoring-policy.js": {
