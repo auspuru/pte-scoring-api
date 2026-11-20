@@ -23,7 +23,8 @@ test('Question selection preserves native graders, models, weights and timing; f
   const before = require('../content/full-mock/question-content-compatible-sources.json');
   const after = require('../full-mock/audit').scoringSnapshot(root);
   assert.equal(digest(before), '97cebe2ecb2d51a2da15d0aea1004dbd33d7ab1c79ded0174afbc38893fbb458');
-  const swtAdditions = ['content/swt-passage-guides.json', 'content/swt-publication-references.json', 'swt-legacy-policy.js'];
+  const swtAdditions = ['content/swt-passage-guides.json', 'content/swt-publication-references.json', 'swt-legacy-policy.js',
+    'swt-plain-samples.js', 'content/swt-plain-samples.json'];
   const swtRevisions = ['swt-judge-format.js', 'swt-judgment-service.js', 'swt-reference.js', 'swt-scoring-policy.js', 'mock-content-assessment.js'];
   const lock = require('../content/full-mock/scoring-lock.json').snapshot;
   // Instructor publication adds an explicitly pinned support controller;

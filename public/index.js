@@ -12578,7 +12578,7 @@ function ensureSpeakingMockRuntimeLoaded() {
 let fullMockRuntimeLoadPromise = null;
 function ensureFullMockRuntimeLoaded() {
   if (window.FullMock) return Promise.resolve(window.FullMock);
-  if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-597bb5fc00e6', 'full mock report')
+  if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-c93ffe6fce4f', 'full mock report')
     .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-3b3c82c47dd9', 'full mock'))
     .then(() => { if (!window.FullMock) throw Error('Full mock did not load.'); return window.FullMock; })
     .catch(error => { fullMockRuntimeLoadPromise = null; throw error; });
@@ -12588,7 +12588,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-ebf4a3a9f67e', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-579e50508a9f', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -16003,6 +16003,10 @@ function formatAttemptTime(iso){
 }
 
 function showResults(data, passage, spellData, submittedText){
+  const savedHash = data.source_identity?.passage_sha256;
+  if (savedHash && passage.passageHash && savedHash !== passage.passageHash) {
+    passage = { ...passage, teachingSample:null, sampleResponse:'', sampleVersionMismatch:true };
+  }
   swtResultPassage = passage;
   swtResultSubmission = { passageId: passage.id, text: submittedText || '',
     ownerId: canonicalClientUserId(currentUserId), token: sessionToken };
@@ -16100,18 +16104,17 @@ function showResults(data, passage, spellData, submittedText){
   const sampleEl = document.getElementById('sampleAnswerText');
   const sampleNotes = document.getElementById('sampleAnswerNotes');
   if(sampleEl){
-    const sample = (passage && passage.sampleResponse) || '';
+    const sample = passage.teachingSample || passage.sampleResponse || '';
     sampleEl.textContent = sample || '(No sample answer authored for this passage yet.)';
   }
   if(sampleNotes){
-    sampleNotes.textContent = 'Open this tab to check the sample with the same rubric used for your summary.';
+    sampleNotes.textContent = 'Simple words work when the main ideas connect clearly.';
     sampleNotes.dataset.status = 'unchecked';
     sampleNotes.style.display = '';
   }
   switchSbsView('summary');
 
   renderAboutPassage(passage);
-  renderVocabCoach(data);
   updateResultsNav();
 }
 
@@ -16268,11 +16271,14 @@ function renderSwtKeyPhrases(passage){
 }
 
 async function fetchSwtSampleText(passage){
-  const local = String(passage?.sampleResponse || '').trim();
+  if (passage.sampleVersionMismatch) return '';
+  const local = String(passage.teachingSample || passage.sampleResponse || '').trim();
+  if (passage.teachingSample) return local;
   try {
     const response = await fetch(API_URL + '/api/swt/sample/' + encodeURIComponent(passage.id), { cache: 'no-store' });
     const result = await response.json();
-    if (response.ok && String(result.sample || '').trim()) return String(result.sample).trim();
+    if (response.ok && (!passage.passageHash || passage.passageHash === result.passageHash)
+      && String(result.sample || '').trim()) return String(result.sample).trim();
   } catch (error) { /* fall back to the passage copy below */ }
   return local;
 }
@@ -16286,17 +16292,18 @@ async function checkSwtSample(passage){
     const timer = setTimeout(() => controller.abort(), 70000);
     try {
       const response = await fetch(API_URL + '/api/swt/sample/' + encodeURIComponent(passage.id),
-        { method: 'POST', signal: controller.signal });
+        { method: 'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({passage:passage.text}),
+          signal: controller.signal });
       const result = await response.json();
       if (!response.ok || !['verified', 'needs_revision'].includes(result.status)) {
         swtSampleChecks.delete(key);
         return { status: 'unavailable', sample: result.sample || passage.sampleResponse || '',
-          note: result.note || 'Sample checking is temporarily unavailable. This example is not verified as full-mark.' };
+          note: result.note || 'The score check is unavailable. You can still study how the example connects the ideas.' };
       }
       return { ...result, sample: result.sample || passage.sampleResponse || '' };
     } catch (error) {
       swtSampleChecks.delete(key);
-      return { status: 'unavailable', sample: passage.sampleResponse || '', note: 'Sample checking is temporarily unavailable. This example is not verified as full-mark.' };
+      return { status: 'unavailable', sample: passage.sampleResponse || '', note: 'The score check is unavailable. You can still study how the example connects the ideas.' };
     } finally {
       clearTimeout(timer);
     }
@@ -16308,6 +16315,12 @@ async function checkSwtSample(passage){
 async function refreshSwtSample(passage){
   const note = document.getElementById('sampleAnswerNotes');
   if (!note) return;
+  if (passage.sampleVersionMismatch) {
+    note.textContent = 'This result belongs to an earlier version of the passage.';
+    note.dataset.status = 'unavailable';
+    note.setAttribute('aria-busy', 'false');
+    return;
+  }
   note.textContent = 'Loading sample…';
   note.dataset.status = 'checking';
   note.setAttribute('aria-busy', 'true');
@@ -16688,86 +16701,6 @@ function generateElementsFallback(passage){
   if(keys.how)    out.how    = 'Describes the mechanism or process.';
   if(keys.result) out.result = 'Captures the consequence or implication.';
   return out;
-}
-
-function renderVocabCoach(data){
-  const card = document.getElementById('vocabCoachCard');
-  const body = document.getElementById('vocabCoachBody');
-  if(!card || !body) return;
-
-  // Gather raw suggestions, prioritizing Claude's context-aware suggestions if present
-  let rawSuggestions = [];
-  if (data) {
-    if (Array.isArray(data.vocabulary_swap_suggestions) && data.vocabulary_swap_suggestions.length > 0) {
-      rawSuggestions = data.vocabulary_swap_suggestions;
-    } else if (Array.isArray(data.vocabulary_suggestions) && data.vocabulary_suggestions.length > 0) {
-      rawSuggestions = data.vocabulary_suggestions;
-    }
-  }
-
-  // Normalize suggestions to { word, context, synonyms, rationale }
-  const suggestions = rawSuggestions.map(s => {
-    if (s.original && s.upgrades) {
-      return {
-        word: s.original,
-        context: '',
-        synonyms: s.upgrades,
-        rationale: 'Local thesaurus upgrade recommendation.'
-      };
-    }
-    return s;
-  }).filter(s => s && s.word && Array.isArray(s.synonyms) && s.synonyms.filter(Boolean).length > 0);
-
-  if(!suggestions.length){
-    card.style.display = 'none';
-    body.innerHTML = '';
-    return;
-  }
-
-  body.innerHTML = suggestions.map(s => {
-    const word = s.word || '';
-    const context = s.context || '';
-    const syns = s.synonyms.filter(Boolean);
-    const rationale = s.rationale || '';
-    let highlightedContext = context;
-    if(context && word){
-      const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
-      highlightedContext = escapeHtml(context).replace(re, m => '<b>' + m + '</b>');
-    }
-    return `
-      <div class="vocab-row">
-        <div class="vocab-original">
-          <div class="vocab-word">${escapeHtml(word)}</div>
-          ${context ? '<div class="vocab-context">in: "' + highlightedContext + '"</div>' : ''}
-        </div>
-        <div class="vocab-arrow">→</div>
-        <div class="vocab-syns">
-          ${syns.map(syn => '<button type="button" class="vocab-chip" data-swt-word="' + escapeHtml(word) + '" data-swt-replacement="' + escapeHtml(syn) + '">' + escapeHtml(syn) + '</button>').join('')}
-        </div>
-        ${rationale ? '<div class="vocab-rationale"><b>Why:</b> ' + escapeHtml(rationale) + '</div>' : ''}
-      </div>`;
-  }).join('');
-  card.style.display = 'block';
-}
-
-function applyVocabSwap(original, replacement){
-  const ta = document.getElementById('summaryInput');
-  if(!ta){ toast('Summary not available.'); return; }
-  const re = new RegExp('\\b' + original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
-  const match = ta.value.match(re);
-  if(!match){ toast('"' + original + '" is no longer in your summary.'); return; }
-  let repl = replacement;
-  if(match[0][0] === match[0][0].toUpperCase()){
-    repl = replacement.charAt(0).toUpperCase() + replacement.slice(1);
-  }
-  ta.value = ta.value.replace(re, () => repl);
-  onSummaryInput();
-  const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
-  const storageId = swtPassageStorageId();
-  if(storageId == null)return;
-  summaries[storageId] = { text: ta.value, timestamp: new Date().toISOString(), score: (summaries[storageId]||{}).score || 0 };
-  LocalStore.set(getPteStorageKey('summaries'), summaries);
-  toast('"' + original + '" → "' + repl + '" — re-score to see the new score.');
 }
 
 async function showSample(){
@@ -18428,13 +18361,3 @@ function updateEmailLabels() {
 }
 
 window.updateUserEmail = updateUserEmail;
-
-
-
-document.addEventListener('click', function(event){
-  const button = event.target && event.target.closest ? event.target.closest('#swtPane button[data-swt-word]') : null;
-  if (!button) return;
-  loadPassage(currentPassageId);
-  applyVocabSwap(button.dataset.swtWord, button.dataset.swtReplacement);
-  backToPractice();
-});

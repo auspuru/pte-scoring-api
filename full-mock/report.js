@@ -1,5 +1,6 @@
 'use strict';
 const swtFeedback = require('../public/swt-mock-feedback');
+const { plainSwtSample } = require('../swt-plain-samples');
 const { POLICY_VERSION: SWT_POLICY_VERSION } = require('../swt-scoring-policy');
 const { swtQuestionSourceIdentity } = require('../writing-lab-scoring');
 const { TASKS } = require('./blueprint');
@@ -140,8 +141,9 @@ function buildReport(paper, state, at = Date.now()) {
     const task = TASKS.find(value => value.type === q.type), question = questionForPlayer(candidate);
     const reviewed = marks.status === 'assessed' ? swtReportReference(q, job.result, swtSnapshotVersion) : null;
     const facts = reviewed?.ideas ? q.keyPoints.map((point, index) => reviewed.ideas[index] ?? point) : q.facts || q.keyPoints;
+    const teachingSample = q.type === 'swt' ? plainSwtSample(q.text) : null;
     // WFD and listening reference transcripts are deliberately submitted-only.
-    const reference = { text:clean(q.text, 20000), sample:clean(reviewed?.sample ?? q.sample, 12000), explanation:clean(q.explanation), facts:texts(facts), acceptedAnswers:texts(q.acceptedAnswers),
+    const reference = { text:clean(q.text, 20000), sample:clean(reviewed?.sample ?? q.sample, 12000), ...(teachingSample ? {teachingSample} : {}), explanation:clean(q.explanation), facts:texts(facts), acceptedAnswers:texts(q.acceptedAnswers),
       answers:Array.isArray(q.answers) ? structuredClone(q.answers) : Number.isInteger(q.answer) ? [q.answer] : [],
       turns:Array.isArray(q.turns) ? q.turns.slice(0, 20).map(row => [clean(row[0], 100), clean(row[1], 5000)]) : [] };
     const recordings = response.segments.filter(segment => !segment.cancelled).map((segment, position) => ({ id:segment.id, number:position + 1,

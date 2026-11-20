@@ -25,8 +25,11 @@ test('Saved deletions remain actionable while missing replacements are excluded'
  const html=swt.render(v,response,'deletion');assert.match(html,/, actually → Delete this text/);assert.match(html,/Remove the unnecessary aside/);assert.match(html,/data-swt-mock-fix="0"/);assert(!html.includes('No exact language correction'));assert.equal(JSON.stringify(input),before);
 });
 test('Read-only report renderer escapes content and exposes no edit or submission controls',()=>{
- const input=raw();input.summary_assessment.repair='<script>bad()</script>';const html=swt.render(swt.project(input,{confirmed:true,answer,source}),answer,'fixture');
+ const input=raw();input.summary_assessment.missing_dependencies[0].explanation='<script>bad()</script>';
+ input.summary_assessment.repair='…supply the entire legacy repair…';
+ const html=swt.render(swt.project(input,{confirmed:true,answer,source}),answer,'fixture');
  assert(html.includes('&lt;script&gt;'));assert(!html.includes('<script>'));assert(!/<(?:input|textarea|select|form)\b/.test(html));assert(!/data-review-save|data-review-use|data-reattempt/.test(html));assert(html.includes('data-swt-mock-fix'));assert(html.includes('Grammar & spelling'));assert(html.includes('Form'));
+ assert.doesNotMatch(html,/A possible repair|entire legacy repair/);
 });
 test('A content gate preserves diagnostic form; a flattened old gate does not invent form failure',()=>{
  const input={...raw(),gated:true,scores:{content:0,form:0},diagnosticScores:{content:0,form:1}};
@@ -57,4 +60,19 @@ test('The mock Form panel gives word-budget guidance for full-length and over-li
  const answer=n=>'Trees '+Array(n-2).fill('cool').join(' ')+' cities.';
  assert.match(swt.render(saved,answer(75)),/75 is the maximum\. A shorter summary can earn full marks\./);
  assert.match(swt.render({...saved,form:{valid:false}},answer(76)),/Cut at least 1 word\. Start with repeated points or optional examples\./);
+});
+
+test('Full Content leaves optional in-budget wording and its effect inside the mock language panel',()=>{
+ const response='Trees cool cities and improve air quality, '+Array(67).fill('sometimes').join(' ')+'.';
+ const input=raw();input.scores.content=4;
+ input.errors=[
+  {phrase:'cities',correction:'the cities',explanation:'Specifies which cities.',affectsScore:false},
+  {phrase:'air quality,',correction:'the local air quality,',explanation:'Specifies where air improves.',affectsScore:false}
+ ];
+ const before=JSON.stringify(input),value=swt.project(input,{confirmed:true,answer:response,source});
+ assert.equal(value.content.full,true);assert.equal(value.content.repair,'');assert.equal(value.content.action,'');
+ const html=swt.render(value,response);
+ assert.match(html,/Full Content marks/);assert.doesNotMatch(html,/planting caution|the local air quality|A possible repair/);
+ assert.match(html,/Optional refinement · no marks lost.*Specifies which cities.*75 of 75 words after this change alone/);
+ assert.equal(JSON.stringify(input),before);
 });

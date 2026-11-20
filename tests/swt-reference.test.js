@@ -149,7 +149,7 @@ test('Generic guide labels do not depend on database object key order', () => {
   assert.equal(phraseFromIdea('supporting cultural preservation', p.text), 'supporting cultural preservation');
 });
 
-async function checkReference(stored, judge) {
+async function checkReference(stored, judge, body) {
   let route, result, status = 200;
   const ctx = { studentPassage, POLICY_VERSION, applyScoringPolicy, validateForm,
     PassageAPI: { getById: async () => stored }, judgeContentWithClaude: judge,
@@ -158,13 +158,13 @@ async function checkReference(stored, judge) {
   const start = server.indexOf("app.post('/api/swt/sample/:id'");
   assert(start >= 0);
   vm.runInContext(server.slice(start, server.indexOf('\n});', start) + 4), ctx);
-  await route({ params: { id: '8' } }, {
+  await route({ params: { id: '8' }, body }, {
     status(value) { status = value; return this; }, json(value) { result = value; return this; }
   });
   return { status, result };
 }
 function semantic(text) {
-  return { content_score: 4, grammar_score: 2, vocabulary_score: 2, cohesion: 'strong',
+  return { content_score: 4, grammar_score: 2, vocabulary_score: 2, cohesion: 'strong', consistency_reviewed: true,
     grammar_annotations: [], vocabulary_annotations: [], summary_assessment: {
       synthesis: { quality: 'effective', evidence: '', explanation: 'The reference combines the essential ideas.' }, main_idea_accurate: true, main_idea_evidence: text.slice(0, 45), supporting_evidence: [text.slice(50, 110)],
       relationships_clear: true, material_meaning_change: false, conclusion_status: 'captured',
@@ -179,18 +179,26 @@ test('Reference label is earned by the same form gate and semantic policy', asyn
     input = { text, source, ideas }; return semantic(text);
   });
   assert.equal(response.result.status, 'verified');
-  assert.equal(input.text, studentPassage(p).sampleResponse);
+  assert.equal(input.text, studentPassage(p).teachingSample);
+  assert.equal(response.result.sample, input.text);
   assert.equal(input.source, p.text);
   assert.deepEqual(input.ideas, studentPassage(p).keyElements);
-  for (const mode of ['false meaning', 'unavailable']) {
+  for (const mode of ['false meaning', 'unavailable', 'unreviewed']) {
     const check = await checkReference(p, async text => {
       if (mode === 'unavailable') return null;
-      const j = semantic(text); j.summary_assessment.material_meaning_change = true; return j;
+      const j = semantic(text);
+      if (mode === 'unreviewed') j.consistency_reviewed = false;
+      else j.summary_assessment.material_meaning_change = true;
+      return j;
     });
     assert.notEqual(check.result.status, 'verified');
   }
-  const invalid = await checkReference({ ...p, sampleResponse: 'Too short.' }, () => { throw new Error('Should not judge invalid form'); });
+  const invalid = await checkReference({ ...p, text:p.text + ' An edited version.', sampleResponse: 'Too short.' },
+    () => { throw new Error('Should not judge invalid form'); });
   assert.equal(invalid.result.status, 'needs_revision');
+  const differentSource = await checkReference(p, () => { throw new Error('Should not judge a different source'); }, { passage:'An earlier text.' });
+  assert.equal(differentSource.status,409);
+  assert.equal(differentSource.result.sample,undefined);
 });
 
 test('The sample assessment uses the corrected IPCC offset and Human Remains policy scope', async () => {

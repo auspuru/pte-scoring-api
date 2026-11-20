@@ -20,7 +20,7 @@ test('Approved practice navigation preserves the original Speaking grading, uplo
  }
 });
 
-test('Writing workspace preserves the audited functions through the SWT item display update',()=>{
+test('Writing workspace preserves audited functions through the SWT display and sample updates',()=>{
  const source=fs.readFileSync(path.join(__dirname,'../public/index.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceWritingUpdates.nativeFunctions;
  for(const [name,expected] of Object.entries(pins)){
   const match=new RegExp('^(?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^(?:async )?function /m.exec(source.slice(offset));
@@ -44,6 +44,17 @@ test('Writing workspace preserves the audited functions through the SWT item dis
    body=body.replace(itemDisplay,`    const writing = confirmed && Number.isFinite(rawScore) && Number.isFinite(rawMax) && rawMax > 0
       ? Math.round(10 + 80 * Math.max(0, Math.min(1, rawScore / rawMax))) : null;
     readingEstimateEl.innerHTML = window.PteEstimateDisplay.render(reading, writing);`);
+   const sampleChanges = [
+    [`  const savedHash = data.source_identity?.passage_sha256;
+  if (savedHash && passage.passageHash && savedHash !== passage.passageHash) {
+    passage = { ...passage, teachingSample:null, sampleResponse:'', sampleVersionMismatch:true };
+  }
+`, ''],
+    ["    const sample = passage.teachingSample || passage.sampleResponse || '';", "    const sample = (passage && passage.sampleResponse) || '';"],
+    ["    sampleNotes.textContent = 'Simple words work when the main ideas connect clearly.';", "    sampleNotes.textContent = 'Open this tab to check the sample with the same rubric used for your summary.';"],
+    ['  renderAboutPassage(passage);\n  updateResultsNav();', '  renderAboutPassage(passage);\n  renderVocabCoach(data);\n  updateResultsNav();']
+   ];
+   for(const [current,previous] of sampleChanges){assert(body.includes(current),current);body=body.replace(current,previous);}
   }
   assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);
  }
@@ -72,6 +83,9 @@ test('Listening workspace preserves native saving, grading, feedback, mock timer
    assert(body.includes(itemEstimate));
    body=body.replace(itemEstimate,'')
     .replace("+'</h2></div>'+swtEstimate+'</header>'+traits","+'</h2></div></header>'+traits");
+   const teachingSample = "(q.type==='wfd'?'Correct sentence':q.teachingSample?'Plain-English sample':'Sample response')+'</summary><div class=\"response\">'+esc(q.teachingSample||q.sample||q.text||'')";
+   assert(body.includes(teachingSample));
+   body=body.replace(teachingSample,"(q.type==='wfd'?'Correct sentence':'Sample response')+'</summary><div class=\"response\">'+esc(q.sample||q.text||'')");
   }
   assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);
  }

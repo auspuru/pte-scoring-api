@@ -13,6 +13,7 @@ const { review } = require('../public/full-mock-report');
 const { POLICY_VERSION, legacyPolicy } = require('../swt-scoring-policy');
 const { swtQuestionSourceIdentity } = require('../writing-lab-scoring');
 const { formFor } = require('../swt-form-policy');
+const { plainSwtSample } = require('../swt-plain-samples');
 
 function submitted(paper, { snapshotVersion = POLICY_VERSION, itemVersion = POLICY_VERSION, recordIdentity = true } = {}) {
   const snapshot = structuredClone(assessment.snapshot(undefined, undefined, paper));
@@ -46,9 +47,11 @@ test('Current SWT Full Mock reports correct exact active and retained references
     assert.match(independent.reference.sample, /by choice or necessity/);
     assert.match(independent.reference.facts[1], /poorly measure independent work/);
     assert.match(independent.reference.facts[3], /up to 162 million/);
-    assert.match(review(independent), /as their main source of income or to earn extra money/);
+    assert.match(review(independent), /Plain-English sample/);
     for (const item of [darwin, independent]) {
       assert.equal(formFor(item.reference.sample).score, 1);
+      assert.equal(item.reference.teachingSample, plainSwtSample(item.reference.text));
+      assert.equal(formFor(item.reference.teachingSample).score, 1);
       assert.deepEqual(item.scores, { content:3, form:1, grammar:2, vocabulary:2 });
       assert.equal(item.total, 8);
     }
@@ -69,7 +72,9 @@ test('Prior snapshots, prior results, pending items and items without the exact 
   const paper = loadPaper('full-mock-2'), candidate = paper.questions.find(row => row.question.type === 'swt');
   const original = candidate.question.sample, legacy = legacyPolicy.POLICY_VERSION;
   for (const options of [{ snapshotVersion:legacy }, { itemVersion:legacy }, { recordIdentity:false }]) {
-    assert.equal(references(paper, submitted(paper, options))[0].reference.sample, original);
+    const [item] = references(paper, submitted(paper, options));
+    assert.equal(item.reference.sample, original);
+    assert.equal(item.reference.teachingSample, plainSwtSample(candidate.question.text));
   }
   const state = submitted(paper), job = state.assessment.items[candidate.id];
   const identity = job.result.native.source_identity;
@@ -91,5 +96,6 @@ test('Changing either the passage or the frozen reference prevents applying an o
     const [projected] = references(paper, submitted(paper));
     assert.equal(projected.reference.sample, question.sample, field);
     assert.deepEqual(projected.reference.facts, question.keyPoints, field);
+    assert.equal(projected.reference.teachingSample, field === 'text' ? undefined : plainSwtSample(question.text), field);
   }
 });

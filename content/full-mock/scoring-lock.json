@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "baseCommit": "93cc716",
   "checkedAt": "2026-11-20",
-  "scope": "SWT 20.3.17 synthesis, version-bound references and source-aware review of distinct word-budget edits. Historical assessment snapshots retain their native policy.",
+  "scope": "SWT 20.3.17 synthesis, exact-passage plain-English teaching samples and confirmed word-budget feedback. Historical snapshots retain their native scores and references.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -13,6 +13,10 @@
       },
       "content/swt-passage-guides.json": {
         "sha256": "984e5fb44da94ee8186acd4b541cc350d6a1d28379244780f5e19a229564c89e",
+        "version": null
+      },
+      "content/swt-plain-samples.json": {
+        "sha256": "e151f147880626999a6b92f6ddd4535bd07c26e6ea23c7bb9ee8da4a1235268d",
         "version": null
       },
       "content/swt-publication-references.json": {
@@ -148,11 +152,11 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "fdd123f68d77474962e058df6e7ea847f31532de05fe3d3ca1156d4681365d34",
+        "sha256": "0d6e9267ae7d0be9a4a7fad1c7dece97517bc9dd7798ec4a60f52070947ac9d2",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
-        "sha256": "1bc945659efce364a45087c95f17320aa43c7741aaffcf8ae5188b66a8f5f928",
+        "sha256": "e88a2c0b178d9713fe6b75002fb4db0c55d4e915e3d20a68ed51c519b7d4d142",
         "version": null
       },
       "full-mock/session.js": {
@@ -209,7 +213,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "8e9dccdcfbb9c2afe6d5bf78134f5d110360051b1eec71abab44b036fbe18734",
+        "sha256": "f6c6edeef25b69e8d7680f61baaf1f3daad3cd571f312e1b2da6b5438d66fa98",
         "version": null
       },
       "situation-content-policy.js": {
@@ -252,12 +256,16 @@
         "sha256": "d369ae53a42633f4b6acfa49480b563229bac19fad28d6a6a41df59fbb16d81b",
         "version": null
       },
+      "swt-plain-samples.js": {
+        "sha256": "abfb6d409103d40966accd9f2289e816b8ce34a6f16780bea7c924888cd90155",
+        "version": null
+      },
       "swt-reference.js": {
-        "sha256": "9062e68e3ab123daeac34348769d0b669678fc3db4480f4d54e836118ba011bd",
+        "sha256": "65a0b5acbdc049a31d85fe7545997387afae9e5c7e93439d8ee549bf14214089",
         "version": null
       },
       "swt-scoring-policy.js": {
-        "sha256": "3ddf520ef42bf19cb57ae33c926548d4e8645b47bd2c08683a8783ace2d351e2",
+        "sha256": "e40b2500ad71a201f8f648c18512fdcf4451e28a30ed05fa928809d1f898a06a",
         "version": "20.3.17"
       },
       "writing-lab-scoring.js": {

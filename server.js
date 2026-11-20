@@ -4433,7 +4433,9 @@ app.get('/api/swt/sample/:id', async (req, res) => {
     const stored = await PassageAPI.getById(req.params.id);
     if (!stored) return res.status(404).json({ error: 'Passage not found', sample: '' });
     const p = studentPassage(stored);
-    res.json({ sample: p.sampleResponse || '', sampleNotes: p.sampleNotes || '', scoring_version: POLICY_VERSION });
+    res.json({ sample: p.teachingSample || p.sampleResponse || '',
+      sampleNotes: p.teachingSample ? 'This example uses plain English to connect the main ideas.' : p.sampleNotes || '',
+      passageHash: p.passageHash, scoring_version: POLICY_VERSION });
   } catch (e) {
     res.status(503).json({ error: 'Reference unavailable', sample: '' });
   }
@@ -4446,23 +4448,27 @@ app.post('/api/swt/sample/:id', async (req, res) => {
     const stored = await PassageAPI.getById(req.params.id);
     if (!stored) return res.status(404).json({ error: 'Passage not found' });
     const p = studentPassage(stored);
-    const sample = p.sampleResponse || '';
+    if (req.body?.passage !== undefined && p.text !== req.body.passage) {
+      return res.status(409).json({status:'unavailable',note:'This passage version has its own example.'});
+    }
+    const sample = p.teachingSample || p.sampleResponse || '';
     const form = validateForm(sample);
     if (!sample || !form.valid) return res.json({ status: 'needs_revision', sample,
       note: 'This reference needs a form correction before it can be a full-score example.', scoring_version: POLICY_VERSION });
     const raw = await judgeContentWithClaude(sample, p.text, p.keyElements);
     if (!raw) return res.json({ status: 'unavailable', sample,
-      note: 'The reference could not be checked right now. It is not a verified full-score example.', scoring_version: POLICY_VERSION });
+      note: 'The score check is unavailable. You can still use this example to study how the ideas connect.', scoring_version: POLICY_VERSION });
     const judged = applyScoringPolicy(raw, sample, p.text);
+    const complete = raw.consistency_reviewed === true && !raw.review_unavailable && !judged.needs_semantic_review;
     const verified = judged.full_content_eligible && judged.grammar_score === 2 && judged.vocabulary_score === 2;
     const repair = judged.summary_assessment?.next_step
       || [...judged.grammar_annotations, ...judged.vocabulary_annotations].find(a => a.affects_score)?.meaning_effect
       || judged.content_reason;
-    res.json({ status: judged.needs_semantic_review ? 'unavailable' : verified ? 'verified' : 'needs_revision',
+    res.json({ status: !complete ? 'unavailable' : verified ? 'verified' : 'needs_revision',
       sample, scoring_version: POLICY_VERSION,
-      note: judged.needs_semantic_review ? 'The reference could not be fully checked. It is not a verified full-score example.'
-        : verified ? 'Checked against the same rubric used for your summary. Full-score practice example.'
-        : 'This reference still needs revision: ' + String(repair || 'Check the content and language.').slice(0, 240) });
+      note: !complete ? 'The score check is unavailable. You can still use this example to study how the ideas connect.'
+        : verified ? 'Full-score practice example. Clear wording and accurate links earn the marks.'
+        : 'The score check found room to improve. ' + String(repair || 'Check how the main ideas connect.').slice(0, 240) });
   } catch (e) {
     res.status(503).json({ status: 'unavailable', error: 'Reference check unavailable. Please try again.' });
   }

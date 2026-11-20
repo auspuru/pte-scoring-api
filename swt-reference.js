@@ -6,6 +6,7 @@ const legacySampleRevisions = require('./content/swt-sample-revisions.json');
 const publicationReferences = require('./content/swt-publication-references.json');
 const { hash } = require('./scoring-jobs');
 const { POLICY_VERSION } = require('./swt-scoring-policy');
+const { plainSwtSample } = require('./swt-plain-samples');
 const normalize = value => String(value || '').replace(/\s+/g, ' ').trim();
 const expandedGuides = {
   8: {
@@ -146,6 +147,8 @@ function buildStudyGuide(passage) {
 function studentPassage(passage) {
   const fallback = fallbackSample(passage);
   const projected = applyPublicationReference({ ...passage, ...fallback }, publicationReference(passage));
-  return { ...projected, studyGuide: buildStudyGuide(projected) };
+  const teachingSample = plainSwtSample(projected.text);
+  return { ...projected, passageHash: hash(String(projected.text ?? '')),
+    ...(teachingSample ? {teachingSample} : {}), studyGuide: buildStudyGuide(projected) };
 }
 module.exports = { studentPassage, buildStudyGuide, phraseFromIdea, fallbackSample };

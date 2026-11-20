@@ -94,6 +94,26 @@ test('Sample display is independent of verification availability', () => {
   assert.match(refresh, /sample\.textContent = sampleText/);
 });
 
+test('The plain sample loads immediately and a saved attempt with a different passage version stays separate', async () => {
+  const note = { textContent:'', dataset:{}, setAttribute() {} };
+  const sample = { textContent:'' };
+  const current = { id:38, teachingSample:'Useful results can come as a surprise.' };
+  const context = { swtResultPassage:current, document:{getElementById:id => id === 'sampleAnswerNotes' ? note : sample},
+    fetch() { assert.fail('The plain sample is available with the passage.'); },
+    checkSwtSample:async passage => ({ sample:passage.sampleResponse, note:'Checked', status:'verified' }) };
+  vm.createContext(context);
+  vm.runInContext(functionSource('fetchSwtSampleText',true) + '\n' + functionSource('refreshSwtSample',true),context);
+  await context.refreshSwtSample(current);
+  assert.equal(sample.textContent,current.teachingSample);
+  assert.equal(note.dataset.status,'verified');
+  const earlier = { ...current, sampleVersionMismatch:true };
+  context.swtResultPassage = earlier;
+  sample.textContent = '';
+  await context.refreshSwtSample(earlier);
+  assert.equal(sample.textContent,'');
+  assert.match(note.textContent,/earlier version/);
+});
+
 test('Score cards size independently and phrase cards stack on narrow screens', () => {
   assert.match(css, /\.trait-breakdown[^}]*align-items: start/);
   assert.match(css, /\.trait-note[^}]*font-style: normal/);

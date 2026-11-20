@@ -149,7 +149,7 @@ function quietRecording(recording) {
  assert.equal(sha(read('server.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['server.js'].sha256);
  // The same legacy transport projection includes only the separately
  // audited SWT routes and service wiring added by this release.
- assert.equal(sha(source),'8cc2c14101b1b50ae83ebe7e399317ae700b8081f964918dd16d80938ea70eb0');
+ assert.equal(sha(source),'84f994039f2d876ab7d526c7377966871c7d2afcc1aaf91495509846362951af');
  source=read('public/writing-lab-report.js');
  project(`  function itemEstimate(question, result) {
     if (question?.type === 'swt' && Number.isFinite(result?.itemScore90)) return result.itemScore90;

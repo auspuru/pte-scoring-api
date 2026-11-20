@@ -172,7 +172,7 @@ test('Semantic evidence keeps coverage rows consistent with the written explanat
   assert(!/^.*Not selected.*Not selected.*Not selected.*Not selected/s.test(target.innerHTML));
 });
 
-test('The Olympics result, next step and suggested revision retain their complete endings', () => {
+test('A legacy Olympics result keeps the full diagnosis without offering an unverified rewrite', () => {
   const data = full();
   data.trait_scores.content = 3;
   data.content_details.full_content_eligible = false;
@@ -185,10 +185,9 @@ test('The Olympics result, next step and suggested revision retain their complet
   const result = build(data);
   assert(overview.length > 300 && nextStep.length > 280 && repair.length > 220);
   assert.equal(result.summary,overview);
-  assert.equal(result.priorities[0].detail,nextStep);
-  assert.equal(result.priorities[0].repair,repair);
+  assert.equal(result.priorities[0].detail,'Select the environmental investment purpose instead of the setting.');
+  assert.equal(result.priorities[0].repair,undefined);
   assert(result.summary.endsWith('urban green belts.'));
-  assert(result.priorities[0].repair.endsWith('greenhouse gas emissions.'));
   assert.equal(require('../public/swt-feedback').presentation(data).estimate,79);
 });
 
