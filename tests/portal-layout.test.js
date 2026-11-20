@@ -20,10 +20,32 @@ test('Approved practice navigation preserves the original Speaking grading, uplo
  }
 });
 
-test('Writing workspace keeps the native submitters, graders and feedback renderers byte-identical',()=>{
+test('Writing workspace preserves the audited functions through the SWT item display update',()=>{
  const source=fs.readFileSync(path.join(__dirname,'../public/index.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceWritingUpdates.nativeFunctions;
  for(const [name,expected] of Object.entries(pins)){
-  const match=new RegExp('^(?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^(?:async )?function /m.exec(source.slice(offset));const body=source.slice(match.index,next?offset+next.index:source.length).trim();assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);
+  const match=new RegExp('^(?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^(?:async )?function /m.exec(source.slice(offset));
+  let body=source.slice(match.index,next?offset+next.index:source.length).trim();
+  if (name==='scoreSummary') {
+   const wordLimit = `  if(words > 75){
+    const excess = words - 75;
+    toast('Cut at least ' + excess + (excess === 1 ? ' word' : ' words') + ' to reach 75. Start with repeated points or optional examples.');
+    return;
+  }`;
+   assert(body.includes(wordLimit));
+   body=body.replace(wordLimit,"  if(words > 75){ toast('Too long — maximum 75 words.'); return; }");
+  }
+  if (name==='showResults') {
+   const itemDisplay = `    const swtItem = Number.isFinite(data.item_score_90);
+    const writing = confirmed ? (swtItem ? display.score
+      : Number.isFinite(rawScore) && Number.isFinite(rawMax) && rawMax > 0
+        ? Math.round(10 + 80 * Math.max(0, Math.min(1, rawScore / rawMax))) : null) : null;
+    readingEstimateEl.innerHTML = window.PteEstimateDisplay.render(reading, writing, {swtItem});`;
+   assert(body.includes(itemDisplay));
+   body=body.replace(itemDisplay,`    const writing = confirmed && Number.isFinite(rawScore) && Number.isFinite(rawMax) && rawMax > 0
+      ? Math.round(10 + 80 * Math.max(0, Math.min(1, rawScore / rawMax))) : null;
+    readingEstimateEl.innerHTML = window.PteEstimateDisplay.render(reading, writing);`);
+  }
+  assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);
  }
 });
 
@@ -34,5 +56,23 @@ test('Reading workspace keeps the native answer scoring, explanations, completio
 
 test('Listening workspace preserves native saving, grading, feedback, mock timer and integrity functions',()=>{
  const source=fs.readFileSync(path.join(__dirname,'../public/writing-lab-client.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceListeningUpdates.nativeFunctions;
- for(const [name,expected] of Object.entries(pins)){const match=new RegExp('^  (?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^  (?:async )?function /m.exec(source.slice(offset));const body=source.slice(match.index,next?offset+next.index:source.length).trim();assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);}
+ for(const [name,expected] of Object.entries(pins)){
+  const match=new RegExp('^  (?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^  (?:async )?function /m.exec(source.slice(offset));
+  let body=source.slice(match.index,next?offset+next.index:source.length).trim();
+  if (name==='reviewCard') {
+   assert(body.includes('report.itemEstimate(q,r)'));
+   assert(body.includes(',{swtItem:Number.isFinite(r.itemScore90)}'));
+   body=body.replaceAll('report.itemEstimate(q,r)','report.score90(r.total,r.maximum)')
+    .replace(',{swtItem:Number.isFinite(r.itemScore90)}','');
+  }
+  if (name==='mockReviewCard') {
+   const itemEstimate = `    const swtEstimate=q.type==='swt'&&Number.isFinite(r?.itemScore90)&&!report.needsReview(r,q)
+      ? '<strong>SWT item estimate '+esc(report.itemEstimate(q,r))+'/90</strong>' : '';
+`;
+   assert(body.includes(itemEstimate));
+   body=body.replace(itemEstimate,'')
+    .replace("+'</h2></div>'+swtEstimate+'</header>'+traits","+'</h2></div></header>'+traits");
+  }
+  assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);
+ }
 });

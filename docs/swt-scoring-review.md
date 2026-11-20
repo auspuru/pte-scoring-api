@@ -66,4 +66,10 @@ The first preview used the candidate at `4a9548c` with four public fixtures. The
 
 The edit validator now rejects doubled separators introduced by a proposed edit, while leaving unrelated punctuation in the submitted answer under the usual language rules. The retry identifies which check failed. The prompt directs the reviewer to check the complete repaired sentence and to put a cause next to the claim it explains. The scoring bands and native totals are the same.
 
-Reference replacements remain proposals for review.
+## Publication candidate
+
+The second audit pass led to source-bound updates for 15 grading guides, 43 standalone text versions, 18 Writing Lab prediction references, and three Full Mock report reference variants. Standalone overlays match the exact passage, ID, title and existing reference field before changing it. Full Mock report corrections require the new saved policy and exact frozen passage and reference identity. Frozen papers and previously confirmed results retain their stored data. Further archival editorial suggestions remain listed in the passage audit.
+
+The shared judgment service settles the score on the original answer first. A separate review can use a remaining call within the existing four-call budget to check the full reconstructed coaching example. The example appears only after passing both Form and a contextual review of scope, cause, qualification and sentence completeness. If the edit is rejected, unavailable or structurally invalid, the student keeps the confirmed marks and the supported explanation of the deduction.
+
+Injected-provider tests reproduce the previous 70-word Forecasting edit that misattached the cause. They withhold that wording, accept the faithful 71-word control, and confirm the Web assembly score at 79 even when its proposed edit cannot be used. These tests verify the score and display workflow. A fresh, bounded provider preview with the exact currently served Web and Forecasting passages is still needed for publication review.

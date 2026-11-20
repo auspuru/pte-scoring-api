@@ -73,6 +73,23 @@ const makeJudgment = (c, legacy = false) => {
     ...(legacy ? {} : {scoring_protocol: policy.POLICY_VERSION}) };
 };
 
+function fixtureWithApprovedEdit(raw, answer, passage) {
+  const prepared = policy.prepareContentEdit(raw.summary_assessment,answer,passage);
+  return prepared.edit ? {...raw,verified_content_edit:policy.contentEditIdentity(prepared.edit,answer,passage)} : raw;
+}
+
+function candidateService(call, options = {}) {
+  return createJudgmentService({
+    policyVersion:policy.POLICY_VERSION,
+    requireEditEvidence:true,
+    buildPrompt:policy.buildJudgingPrompt,
+    call,
+    isComplete:(r,a,p)=>!policy.applyScoringPolicy(r,a,p).needs_semantic_review,
+    validationIssues:(r,a,p)=>policy.applyScoringPolicy(r,a,p).assessment_issues,
+    ...options
+  });
+}
+
 test('Paired SWT answers keep native traits and align item scores across portal paths', async () => {
   const results = [];
   for (const c of cases) {
@@ -80,7 +97,7 @@ test('Paired SWT answers keep native traits and align item scores across portal 
     const q = {...c.source, type:'swt'};
     const valid = form.formFor(c.answer).score;
     if(c.words) assert.equal(form.wordCount(c.answer),c.words,c.name);
-    const candidate = valid && materialiseEvidence(makeJudgment(c),c.answer,q.text);
+    const candidate = valid && fixtureWithApprovedEdit(materialiseEvidence(makeJudgment(c),c.answer,q.text),c.answer,q.text);
     const previous = valid && materialiseEvidence(makeJudgment(c,true),c.answer,q.text);
     const old = valid ? policy.legacyPolicy.applyScoringPolicy(previous,c.answer,q.text) : null;
     const checked = valid ? policy.applyScoringPolicy(candidate,c.answer,q.text) : null;
@@ -107,13 +124,11 @@ test('Paired SWT answers keep native traits and align item scores across portal 
   if (process.env.SWT_AUDIT_RESULTS === '1') console.log(JSON.stringify(results));
 });
 
-test('The independent assessment caps assembly and invalid correction quotes cannot become confirmed feedback', async () => {
+test('Assembly marks stay confirmed when the proposed edit cites invented source wording', async () => {
   const c = cases[0];
   const make = () => makeJudgment(c);
-  const grade = call => createJudgmentService({policyVersion:policy.POLICY_VERSION,requireEditEvidence:true,
-    buildPrompt:policy.buildJudgingPrompt,call,
-    isComplete:(r,a,p)=>!policy.applyScoringPolicy(r,a,p).needs_semantic_review});
-  const result = await grade(async prompt => {
+  const result = await candidateService(async (prompt,timeout,{stage}) => {
+    if (stage === 'repair-review') return {approved:true,reason:'The revision integrates the invention and its impact.'};
     assert.match(prompt,/passage_guide/);
     assert.match(prompt,/a meaningful change/);
     return make();
@@ -121,13 +136,19 @@ test('The independent assessment caps assembly and invalid correction quotes can
   assert.equal(policy.applyScoringPolicy(result,c.answer,c.source.text).content_score,3);
   assert.equal(result.consistency_reviewed,true);
 
-  const invalid = await grade(async () => {
+  const stages = [];
+  const invalid = await candidateService(async (prompt,timeout,{stage}) => {
+    stages.push(stage);
     const raw = make();
     raw.summary_assessment.content_source_quote = 'A quotation that does not appear in the passage.';
     return raw;
   }).judge(c.answer,c.source.text,{});
-  assert.equal(invalid.review_unavailable,true);
-  assert.equal(policy.applyScoringPolicy(invalid,c.answer,c.source.text).summary_assessment.content_edit,null);
+  assert.deepEqual(stages,['assessment','review']);
+  assert.equal(invalid.consistency_reviewed,true);
+  const checked = policy.applyScoringPolicy(invalid,c.answer,c.source.text);
+  assert.equal(checked.content_score,3);
+  assert.equal(checked.needs_semantic_review,false);
+  assert.equal(checked.summary_assessment.content_edit,null);
 });
 
 function forecastEditJudgment(fields) {
@@ -143,7 +164,7 @@ function forecastEditJudgment(fields) {
 
 function checkForecastEdit(fields) {
   const materialised = materialiseEvidence(forecastEditJudgment(fields),forecastAtLimit,forecast.text);
-  return policy.applyScoringPolicy(materialised,forecastAtLimit,forecast.text);
+  return policy.applyScoringPolicy(fixtureWithApprovedEdit(materialised,forecastAtLimit,forecast.text),forecastAtLimit,forecast.text);
 }
 
 test('A response at 75 words gets a targeted, shorter paraphrase with the source phrase to keep', () => {
@@ -166,7 +187,8 @@ test('An addition over the word limit is withheld and a cut can make room for th
     content_edit_span:[37,37],
     repair:'for forecasting'
   });
-  assert.equal(overBudget.needs_semantic_review,true);
+  assert.equal(overBudget.needs_semantic_review,false);
+  assert.match(overBudget.feedback_issues[0],/5–75 words/);
   assert.equal(overBudget.summary_assessment.content_edit,null);
   assert.equal(overBudget.summary_assessment.repair,'');
   assert.equal(overBudget.summary_assessment.next_step,'');
@@ -198,8 +220,8 @@ test('A word-count-safe edit cannot duplicate a neighbouring comma or semicolon'
   ];
   for (const fields of doubled) {
     const checked = checkForecastEdit(fields);
-    assert.equal(checked.needs_semantic_review,true);
-    assert(checked.assessment_issues.includes('content_edit'));
+    assert.equal(checked.needs_semantic_review,false);
+    assert.match(checked.feedback_issues[0],/duplicate punctuation/);
     assert.equal(checked.summary_assessment.content_edit,null);
     assert.equal(checked.summary_assessment.repair,'');
     assert.equal(checked.summary_assessment.next_step,'');
@@ -212,27 +234,115 @@ test('A word-count-safe edit cannot duplicate a neighbouring comma or semicolon'
   assert.equal(form.formFor(edit.revised).score,1);
 });
 
-test('Independent review can recover from an edit that duplicates the retained comma', async () => {
+test('The independent scoring pass stays blind and a sound alternative edit receives contextual review', async () => {
   const stages = [];
   const checked = (raw,answer,passage) => policy.applyScoringPolicy(raw,answer,passage);
-  const service = createJudgmentService({
-    policyVersion:policy.POLICY_VERSION,
-    requireEditEvidence:true,
-    buildPrompt:policy.buildJudgingPrompt,
-    isComplete:(...args)=>!checked(...args).needs_semantic_review,
-    validationIssues:(...args)=>checked(...args).assessment_issues,
-    call:async (prompt,timeout,{stage})=>{
-      stages.push(stage);
-      if (stage==='assessment') return forecastEditJudgment(duplicatedComma);
-      assert.match(prompt,/Correct these invalid fields: content_edit/);
-      assert.match(prompt,/(?:duplicate|double|repeat)[^\n]{0,60}(?:punctuation|comma|semicolon)/i);
-      return forecastEditJudgment(punctuationRepair);
+  const service = candidateService(async (prompt,timeout,{stage})=>{
+    stages.push(stage);
+    if (stage==='assessment') return forecastEditJudgment(duplicatedComma);
+    if (stage==='repair-review') {
+      assert.match(prompt,/different assumptions about the economy, however, make forecasts less precise/);
+      return {approved:true,reason:'The new clause explains imprecision.'};
     }
+    assert.doesNotMatch(prompt,/Correct these invalid fields|duplicate punctuation/);
+    return forecastEditJudgment(punctuationRepair);
   });
   const reviewed = await service.judge(forecastAtLimit,forecast.text,{});
-  assert.deepEqual(stages,['assessment','review']);
+  assert.deepEqual(stages,['assessment','review','repair-review']);
   assert.equal(reviewed.consistency_reviewed,true);
   assert.equal(checked(reviewed,forecastAtLimit,forecast.text).summary_assessment.content_edit.text,punctuationRepair.repair);
+});
+
+test('Contextual review blocks the captured 70-word Forecasting edit and accepts the 71-word control', async () => {
+  const repairs = [
+    { fields:{content_edit_span:[61,75],repair:"because forecasters' assumptions about how an economy works vary widely."},
+      words:70, approved:false, reason:'The new because clause attaches to better results for stable measures.' },
+    { fields:{repair:'however, differing assumptions limit its precision,'},
+      words:71, approved:true, reason:'The new clause connects varying assumptions directly to forecasting precision.' }
+  ];
+  for (const fixture of repairs) {
+    const proposed = forecastEditJudgment(fixture.fields);
+    const candidate = materialiseEvidence(proposed,forecastAtLimit,forecast.text);
+    const { edit } = policy.prepareContentEdit(candidate.summary_assessment,forecastAtLimit,forecast.text);
+    assert.equal(edit.revised_word_count,fixture.words);
+    assert.equal(policy.applyScoringPolicy(candidate,forecastAtLimit,forecast.text).summary_assessment.content_edit,null);
+    const stages = [];
+    const service = candidateService(async (prompt,timeout,{stage})=>{
+      stages.push(stage);
+      if (stage !== 'repair-review') return proposed;
+      const payload = JSON.parse(prompt.split('\nDATA:\n').at(-1));
+      assert.equal(payload.passage,forecast.text);
+      assert.equal(payload.original,forecastAtLimit);
+      assert.equal(payload.revised,edit.revised);
+      assert.match(prompt,/identify the claim it now explains/);
+      return {approved:fixture.approved,reason:fixture.reason};
+    });
+    const reviewed = await service.judge(forecastAtLimit,forecast.text,{});
+    const applied = policy.applyScoringPolicy(reviewed,forecastAtLimit,forecast.text);
+    assert.deepEqual(stages,['assessment','review','repair-review']);
+    assert.equal(reviewed.consistency_reviewed,true);
+    assert.equal(applied.needs_semantic_review,false);
+    assert.equal(applied.content_score,3);
+    assert.equal(applied.summary_assessment.repair,fixture.approved?edit.revised:'');
+    const native = await gradeUnifiedSwt({...forecast,type:'swt'},forecastAtLimit,async()=>reviewed);
+    assert.deepEqual(native.scores,{content:3,form:1,grammar:2,vocabulary:2});
+    assert.equal(native.itemScore90,79);
+    assert.equal(native.summary_assessment.content_edit?.revised_word_count,fixture.approved?71:undefined);
+    if(fixture.approved){
+      const swapped = structuredClone(reviewed);
+      swapped.summary_assessment.content_edit.text = 'however, assumptions vary,';
+      assert.equal(policy.applyScoringPolicy(swapped,forecastAtLimit,forecast.text).summary_assessment.content_edit,null);
+    }
+  }
+});
+
+test('The captured Web edit failures do not withhold the agreed assembly grade', async () => {
+  const answer = comparative.attempts[2].responses.web;
+  const passage = comparative.passages.find(p=>p.id==='web').text;
+  const stages = [];
+  const service = candidateService(async (prompt,timeout,{stage})=>{
+    stages.push(stage);
+    const raw = makeJudgment({answer,quality:'assembly',mark:3});
+    Object.assign(raw.summary_assessment, {
+      content_edit_operation:'replace',
+      content_edit_span:stage==='assessment'?[9,72]:[23,72],
+      content_source_quote:stage==='assessment'?'he is also a revolutionary':'an individual can now have the same access to information as the elite',
+      repair:stage==='assessment'
+        ? 'who changed the world by making information equally accessible to individuals and elites alike — driven by his own frustration at not finding everything in one place'
+        : 'whose invention of the World Wide Web transformed how people access information and communicate, making knowledge available to individuals as never before'
+    });
+    return raw;
+  });
+  const reviewed = await service.judge(answer,passage,{});
+  const applied = policy.applyScoringPolicy(reviewed,answer,passage);
+  assert.deepEqual(stages,['assessment','review']);
+  assert.equal(reviewed.consistency_reviewed,true);
+  assert.equal(applied.needs_semantic_review,false);
+  assert.equal(applied.content_score,3);
+  assert.equal(applied.summary_assessment.content_edit,null);
+  assert.equal(applied.summary_assessment.repair,'');
+});
+
+test('Scoring adjudication can spend the four-call budget without a fifth repair review', async () => {
+  const stages = [];
+  const proposed = forecastEditJudgment({repair:'however, differing assumptions limit its precision,'});
+  const service = candidateService(async (prompt,timeout,{stage})=>{
+    stages.push(stage);
+    if (stage==='assessment') return null;
+    if (stage==='review') {
+      const differing = structuredClone(proposed);
+      differing.summary_assessment.synthesis_quality = 'effective';
+      return differing;
+    }
+    return proposed;
+  });
+  const reviewed = await service.judge(forecastAtLimit,forecast.text,{});
+  const applied = policy.applyScoringPolicy(reviewed,forecastAtLimit,forecast.text);
+  assert.deepEqual(stages,['assessment','retry','review','adjudication']);
+  assert.equal(reviewed.interpretation_review.status,'resolved');
+  assert.equal(applied.needs_semantic_review,false);
+  assert.equal(applied.content_score,3);
+  assert.equal(applied.summary_assessment.content_edit,null);
 });
 
 test('Disconnected phrases get very low Content and contradictory evidence requires review', () => {

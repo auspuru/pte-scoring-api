@@ -1,5 +1,7 @@
 'use strict';
 const swtFeedback = require('../public/swt-mock-feedback');
+const { POLICY_VERSION: SWT_POLICY_VERSION } = require('../swt-scoring-policy');
+const { swtQuestionSourceIdentity } = require('../writing-lab-scoring');
 const { TASKS } = require('./blueprint');
 const { aggregate, inputHash } = require('./aggregation');
 const { questionForPlayer } = require('./paper');
@@ -34,6 +36,36 @@ const LABELS = { content:'Content', form:'Form', grammar:'Grammar', vocabulary:'
 const clean = (value, maximum = 3000) => typeof value === 'string' ? value.trim().slice(0, maximum) : '';
 const texts = value => Array.isArray(value) ? value.filter(x => typeof x === 'string').slice(0, 6).map(x => clean(x)).filter(Boolean) : [];
 const pendingMedia = state => state.responses.reduce((n, response) => n + response.segments.filter(segment => !segment.cancelled && !segment.finished).length, 0);
+
+// Submitted-report teaching references, keyed by the exact frozen text, ideas,
+// and sample together. The frozen question still supplies the scoring inputs.
+const SWT_REPORT_REFERENCES = {
+  // Origin of Species
+  '52c64ea807c88c3375d4bac5ae39f72cf91001c109427c16dfdd539550700d09': {
+    sample:'Darwin developed his evolutionary theory after observing evidence of species change during his voyage, but delayed publication while gathering evidence for his controversial ideas; when On the Origin of Species appeared in 1859, it provoked scientific praise and religious criticism and became an enduring contribution to human knowledge.'
+  },
+  // Working Nine to Five (Independent Work)
+  '59946accfd55f2af005fe7992a1943f569af1108638d0a8a974d051027820699': {
+    sample:'Official statistics poorly measure independent work, but a survey found it widespread and showed that people do it by choice or necessity, either as their main source of income or to earn extra money.',
+    ideas:{
+      1:'Official statistics poorly measure independent work, obscuring a large share of labour-market activity.',
+      2:'A McKinsey survey identified four groups based on whether people worked independently by choice or necessity and for primary or additional income.',
+      3:'The study estimated that up to 162 million people in Europe and the United States participate in independent work.'
+    }
+  },
+  // Education Technology
+  'de3938a1d16279236284b674e603ca276b6d03ec88f38447239e20f01c04cb3b': {
+    ideas:{1:'Past promises disappointed because benefits remained unproven and teachers and their unions were cautious.'}
+  }
+};
+
+function swtReportReference(q, scored, snapshotVersion) {
+  if (q.type !== 'swt' || snapshotVersion !== SWT_POLICY_VERSION || scored?.nativeVersion !== SWT_POLICY_VERSION) return null;
+  const recorded = scored.native?.source_identity, expected = swtQuestionSourceIdentity(q);
+  if (recorded?.passage_sha256 !== expected.passage_sha256 || recorded.reference_sha256 !== expected.reference_sha256) return null;
+  return SWT_REPORT_REFERENCES[hash(JSON.stringify([q.text, q.keyPoints, q.sample]))] || null;
+}
+
 function reasonFor(job, trusted, recovering = false) {
   if (!trusted) return { code:'not-assessed', label:'Assessment pending', action:'Your saved response has not received a verified assessment.' };
   const code = job.result?.reason || job.reason || 'not-assessed';
@@ -101,12 +133,15 @@ function scoreChanges(paper,state) {
 }
 function buildReport(paper, state, at = Date.now()) {
   const result = aggregate(paper, state); // Enforces submission, paper and snapshot integrity.
+  const swtSnapshotVersion = state.assessment?.snapshot?.scoringSources?.files?.['swt-scoring-policy.js']?.version;
   const items = result.items.map((marks, index) => {
     const candidate = paper.questions[index], q = candidate.question, response = state.responses[index + 1], job = state.assessment?.items?.[candidate.id];
     const trusted = !!job && job.inputHash === inputHash(response) && job.snapshotHash === state.assessment?.snapshotHash;
     const task = TASKS.find(value => value.type === q.type), question = questionForPlayer(candidate);
+    const reviewed = marks.status === 'assessed' ? swtReportReference(q, job.result, swtSnapshotVersion) : null;
+    const facts = reviewed?.ideas ? q.keyPoints.map((point, index) => reviewed.ideas[index] ?? point) : q.facts || q.keyPoints;
     // WFD and listening reference transcripts are deliberately submitted-only.
-    const reference = { text:clean(q.text, 20000), sample:clean(q.sample, 12000), explanation:clean(q.explanation), facts:texts(q.facts || q.keyPoints), acceptedAnswers:texts(q.acceptedAnswers),
+    const reference = { text:clean(q.text, 20000), sample:clean(reviewed?.sample ?? q.sample, 12000), explanation:clean(q.explanation), facts:texts(facts), acceptedAnswers:texts(q.acceptedAnswers),
       answers:Array.isArray(q.answers) ? structuredClone(q.answers) : Number.isInteger(q.answer) ? [q.answer] : [],
       turns:Array.isArray(q.turns) ? q.turns.slice(0, 20).map(row => [clean(row[0], 100), clean(row[1], 5000)]) : [] };
     const recordings = response.segments.filter(segment => !segment.cancelled).map((segment, position) => ({ id:segment.id, number:position + 1,

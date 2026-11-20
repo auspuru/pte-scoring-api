@@ -12,8 +12,12 @@ function createMockContentAssessment(options={}) {
     applyPolicy:policy.applyScoringPolicy,
     requireEditEvidence:!legacy,
     totalTimeoutMs:180000,
-    call:async (prompt,timeoutMs,{signal,semanticReassessment}={}) => ({...swtFormat.response(await transport.call(
-      swtFormat.request(prompt,provider.MODEL,{semanticReassessment,legacy}), {timeoutMs,signal,task:'swt'})),source:'openai'}),
+    call:async (prompt,timeoutMs,{signal,semanticReassessment,stage}={}) => {
+      const repairReview = stage === 'repair-review';
+      const response = await transport.call(swtFormat.request(prompt,provider.MODEL,{semanticReassessment,legacy,repairReview}),
+        {timeoutMs,signal,task:'swt'});
+      return {...swtFormat.response(response,{repairReview}),source:'openai'};
+    },
     isComplete:(result,summary,passage) => !policy.applyScoringPolicy(result,summary,passage).needs_semantic_review,
     validationIssues:(result,summary,passage) => policy.applyScoringPolicy(result,summary,passage).assessment_issues,
     onAttemptError:options.onAttemptError

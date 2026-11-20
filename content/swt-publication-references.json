@@ -1,0 +1,971 @@
+{
+  "c103a2f64de9a04a7d4dbe65487e9a72bda123cc9f58ea1126916df8e65a3ac1": {
+    "id": 910498,
+    "title": "Origin of Species",
+    "fields": {
+      "sampleResponse": {
+        "before": [
+          "660fcc07f44708f6a5665174c74cfa195b2a775bd364371b457b28b57f596ea7"
+        ],
+        "after": "Darwin’s voyage observations led him to question whether species were fixed, but he gathered evidence before publishing his controversial theory, and the book provoked both praise and criticism while retaining lasting scientific value."
+      }
+    }
+  },
+  "478b172c1094c07fc1e58665b17a54f73104e0106d299f5e6eb580f03f91dc76": {
+    "id": 910108,
+    "title": "Working Nine to Five (Independent Work)",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "8b19f6f9917b1c9fca113e36c83967352e66f7e16c8060ea952b03dae2f8ca28"
+        ],
+        "after": {
+          "what": "Independent work is widespread, but official statistics capture it poorly.",
+          "why": "The survey distinguishes pursuing independent work by choice and out of necessity.",
+          "how": "Independent work may provide a main income or supplement other earnings.",
+          "result": "Combining motivation and role in household income reveals different groups of independent workers."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "6397f3459f1121671ffa5b7c7e638053a5c2fe933109a48a9627d305c3703245"
+        ],
+        "after": "Official statistics poorly measure independent work, but a survey found it widespread and showed that people do it by choice or necessity, either as their main source of income or to earn extra money."
+      }
+    }
+  },
+  "55fa46c8c51398ddbed663a146c998a767aa50818c7323d9141197cc9398f443": {
+    "id": 910030,
+    "title": "Geothermal Energy",
+    "fields": {
+      "sampleResponse": {
+        "before": [
+          "78a9c16db605fb674f3525374facf3821b4a07e0d4276805cca5dcfbf34604b4"
+        ],
+        "after": "Kenya is expanding geothermal power as demand rises and irregular rainfall makes hydropower less reliable, using heat from the East African Rift to make steam that drives electricity turbines."
+      }
+    }
+  },
+  "b7732e949e3604b1966c81a26096fde2cce272aea9315b9478a8ee1c24978ba9": {
+    "id": 910518,
+    "title": "Design",
+    "fields": {
+      "sampleResponse": {
+        "before": [
+          "17961b469b4d9c00d23c2e8af593ae88f6e16cc08da6bb121db24bf678018750"
+        ],
+        "after": "Design shapes our daily lives because poorly designed objects and information add practical difficulties, while choosing methods that fit their purpose can improve everyday experience and may even reduce costs."
+      }
+    }
+  },
+  "e93422556f47958e5fdaafcdcf94dad95e062daab08c87a744d03efca291955e": {
+    "id": 910517,
+    "title": "Economy and Material",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "ed87149fe9e9012cc9ca6a9c97ea38759d6547cdc318504d229b515a7dfd47c0"
+        ],
+        "after": {
+          "what": "Economic growth depends on energy and raw materials as well as investment.",
+          "why": "Although these resources are physically finite, amounts available for use have sometimes grown despite increasing demand.",
+          "how": "Past shortages stimulated research that improved efficiency and made new sources or materials available.",
+          "result": "Historical examples show how innovation can expand usable supplies without making the underlying resources unlimited."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "47634685974a49e85392340cbc6bb831eca9de16ca981c070522ab5161a93cd0"
+        ],
+        "after": "Economic growth depends on finite energy and materials, yet shortages have historically encouraged research that expanded usable supplies by making existing resources easier to exploit and developing new ones."
+      }
+    }
+  },
+  "07f0b8cb86ab4b506a7d9e10da3d14cf9261f221d0c151375377a75a7e127ad3": {
+    "id": 910127,
+    "title": "Public Speaking",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "280713fe39357848a1ee86b7da9ed07e7d1785dfe5baac69fe0405852ea73fce"
+        ],
+        "after": {
+          "what": "Learning about a feared activity can help people become confident enough to try it.",
+          "why": "Research reduces uncertainty and supplies practical strategies.",
+          "how": "Repeated practice builds confidence once someone has begun.",
+          "result": "People can apply the same preparation and practice to activities other than public speaking."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "8fc7be914e5f0c934a8291d19a426848d8590ce82c24f3ac96d5d450c7a0d2b8"
+        ],
+        "after": "Learning what makes public speaking difficult and how to handle those difficulties can make it easier to begin, while repeated practice builds confidence, an approach people can also apply to other activities they fear."
+      }
+    }
+  },
+  "0c3c84a53b0d6554f7680ff08583528830bbf79d07472a967a49f9709435c7fc": {
+    "id": 910169,
+    "title": "Education Technology",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "b84d35ae5d6995780826a3a4cc6c8c6d3427e5089e7be4bed1115ff5367abf00"
+        ],
+        "after": {
+          "what": "Education technology has repeatedly promised personalised learning.",
+          "why": "Previous promises disappointed because benefits remained unproven and teachers and their unions were cautious.",
+          "how": "New software can adapt instruction to individual students’ pace.",
+          "result": "The technology may improve education if it serves sound teaching."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "51a0cc7a2716e2a117e588967d063e047bf3d40c51fe682440749db0ca0285da"
+        ],
+        "after": "New software could help personalise education after earlier technology fell short amid teacher caution and uncertain benefits, provided schools use it to support effective teaching."
+      }
+    }
+  },
+  "18d07589a107dbb185ad8544a9206ae17af02c69ce21bf07c36c6e679fd042f0": {
+    "id": 910505,
+    "title": "Microloan",
+    "fields": {
+      "sampleResponse": {
+        "before": [
+          "b1367395b642c5215ff680736e33c2417db42d7df81a2e1c2551dc1c1480e748"
+        ],
+        "after": "Microloans can help underserved borrowers start or expand businesses, but repayment pressure can strain their finances, so training and business support can help them manage the loans and improve their livelihoods."
+      }
+    }
+  },
+  "a0fc8c9e66a215174e7eac0cecdfe136661aa62bbc5830705e2a5b1531673d17": {
+    "id": 2,
+    "title": "Artificial Intelligence in Healthcare",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "3afdb81a6d09c3dd56866f8262af7f852e7cec222d5c291d616badb556bd6212"
+        ],
+        "after": {
+          "what": "AI tools may improve early diagnosis, and some studies report better detection accuracy.",
+          "why": "Diagnostic errors and patient privacy are concerns even as adoption and trust grow.",
+          "how": "AI can handle routine cases while human specialists focus on complex ones.",
+          "result": "Lower costs may be possible, but it is unclear who would benefit from those savings."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "f47bcfe628791ec639fb0839d88863420c5411e3b3ba66b845dcb8b003490e58"
+        ],
+        "after": "AI may improve early diagnosis and handle routine cases while specialists focus on complex ones, but wider use raises concerns about diagnostic errors, patient privacy and who benefits from any savings."
+      },
+      "keyElementsRationale": {
+        "before": [
+          "5752be63f10bc26aae14e916dfc529f7ec82f18b8c5a9321af39bf99c2ab4640"
+        ],
+        "after": {
+          "topic": "AI offers potential gains in diagnosis and a role alongside human specialists, while raising questions about errors, privacy and who benefits.",
+          "importance": "Summarise the balance using representative ideas. Adoption figures, exact accuracy rates and cost estimates are examples, and savings are a separate possibility."
+        }
+      }
+    }
+  },
+  "ea56f486454b97e8fd17ea9084de723be3e57ef04e13fa72db83ed6b0de4976e": {
+    "id": 3,
+    "title": "Sustainable Urban Development Strategies",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "e031618ecd4924f6261a9f52eb7f023a7216b3d6247378f3b0ec299c80757b27"
+        ],
+        "after": {
+          "what": "Sustainable planning balances urban growth with environmental protection and social equity.",
+          "why": "Compact development can reduce sprawl and transport emissions.",
+          "how": "Green buildings and renewable grids reduce environmental impact, with net-zero energy benchmarks applying to new construction.",
+          "result": "Involving residents keeps priorities tied to local needs, helping cities adapt to changing conditions."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "a540c3d03bcd0d2fb2c14413b4e0d55c21e257c231b3b4b9b6cd514567dc2791"
+        ],
+        "after": "Compact development and greener infrastructure can cut cities’ environmental impact, while involving residents keeps decisions tied to local needs and helps cities balance growth, equity and environmental protection as conditions change."
+      },
+      "sampleNotes": {
+        "before": [
+          "a8f85ddc333b569f737db8942807c420dbc95dfe8f1361205e1ba480ba3e19f5"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      },
+      "keyElementsRationale": {
+        "before": [
+          "3c7ed6958d8049b5b167aaf12603c3fb5ea707c730b580d87b76c87b61cc3b08"
+        ],
+        "after": {
+          "topic": "Cities can support growth by combining cleaner infrastructure, compact development and public participation.",
+          "importance": "Explain how the approaches reduce environmental impact and respond to residents. Individual building standards and consultation formats can be omitted."
+        }
+      }
+    }
+  },
+  "4aa36ad5375722bf561f8c3a1f85b916c4d3ca69264edb92f56f6e8aa4aed8b8": {
+    "id": 4,
+    "title": "Scientific Research Protocol",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "4edbcee160e68eca7f40974a5bc67eeb619fa1e5f63f4d4d6c0902aadf87668d"
+        ],
+        "after": {
+          "what": "Rigorous empirical research aims for valid, reliable and reproducible findings.",
+          "why": "Testable questions and appropriate controls help prevent biased conclusions.",
+          "how": "Standardised instruments make measurements more consistent.",
+          "result": "Transparent peer review can detect errors and make it easier to check and replicate the findings."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "d379007bf97e6d6dd1a6f471395f12eaf415c48f6f2ad1e9c77c190cd8b62a89"
+        ],
+        "after": "Well-designed studies limit bias with appropriate controls, collect comparable data with standard tools and use transparent peer review to catch analytical errors, making findings more credible and easier to reproduce."
+      },
+      "sampleNotes": {
+        "before": [
+          "6874615ff0159298abcd0677005081f30ca904df4170188e6ec48317edafe29b"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      },
+      "keyElementsRationale": {
+        "before": [
+          "5414eed8ca7c996f75ea8cc385c20bf6b6ecca7340b264a71926663d1b71218a"
+        ],
+        "after": {
+          "topic": "Research design, dependable measurement and scrutiny work together to produce credible evidence.",
+          "importance": "Connect each stage to its purpose. Controls reduce design bias, standard tools improve consistency, and transparent reviews let others check findings."
+        }
+      }
+    }
+  },
+  "7c73d4a33966765bcdf1cb91281a31b4bb3fabba8e99293e1238e248d4a46e8e": {
+    "id": 5,
+    "title": "Farm Cottage",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "99c39b058a8527fd3f1f0879458854bc85edc9c21ee940e25b865271d0a45792"
+        ],
+        "after": {
+          "topic": "The narrator had left farming for city work but later chose to return to life in a farm cottage.",
+          "pivot": "His knowledge of country life helped him see benefits despite practical disadvantages.",
+          "conclusion": "He tried to persuade his city-raised wife that those benefits justified lower income and less comfort."
+        }
+      }
+    }
+  },
+  "86a6ebdf32e1fd534158336a95685969712c4fcd65d00e3fa92d2e7d01439ccf": {
+    "id": 7,
+    "title": "Nobel Prize and Climate Science",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "ef5d37c8fd61e29632edc700ceffc702b5958707519a63d8f4fafd7187016cba",
+          "060faf4c4fc5f5ece8c9e920eb70c0501026302d62c44a30799b8f3c6dc61310"
+        ],
+        "after": {
+          "topic": "The writer contrasts the IPCC’s carefully researched climate projections with Al Gore’s more alarming claims.",
+          "pivot": "The writer gives sea-level rise and Greenland melting as examples of that contrast.",
+          "conclusion": "The passage argues that fewer cold-related deaths could outweigh additional heat-related deaths, producing a net fall in mortality."
+        }
+      },
+      "keyElementsRationale": {
+        "before": [
+          "e31988c0e8074ba8bb485f379515f3f9a9e55ea3f18f97b9d0f5e695c2077fac"
+        ],
+        "after": {
+          "topic": "The writer compares the IPCC’s projections with Al Gore’s warnings and discusses an estimated net effect on deaths.",
+          "importance": "The figures may be omitted. If reporting the net fall in deaths, explain that the decrease in cold-related deaths outweighs the increase in heat-related deaths."
+        }
+      }
+    }
+  },
+  "9866bdf9d3434717825605601492800066c509e57baa79b094dda3b657d1f224": {
+    "id": 8,
+    "title": "Travel and Tourism Economic Impact",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "06b5afb2e6c130dc9ef774d00f8e6134cb54bf99b17cb4ba1d93681fae2ad288"
+        ],
+        "after": {
+          "what": "Travel and tourism contributes substantially to world GDP and employment.",
+          "why": "Tourism jobs reach different groups and can provide training and transferable skills.",
+          "how": "Tourism can support conservation and help maintain local diversity and culture.",
+          "result": "Possibly low start-up and running costs give tourism a separate advantage over some industries."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "cc81d32fef92bc3e669613c5ec9dcc211448c286bfb69913bddf89b024086ab4"
+        ],
+        "after": "Travel and tourism supports global GDP and employment while helping conserve the environment and local culture, and its potentially low start-up and running costs give it an additional advantage over many other industries."
+      },
+      "sampleNotes": {
+        "before": [
+          "e66f8192f4fb49634e1ebd660c035346060e468588389feb78bab2bd73383f48"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      }
+    }
+  },
+  "ee06411ec9bd6be6fc77e3ce2463715e9667649abaed2c4fd1670b6f3c041b1a": {
+    "id": 9,
+    "title": "Sir Tim Berners-Lee and the World Wide Web",
+    "fields": {
+      "sampleResponse": {
+        "before": [
+          "53510c4153c1583b9582b376f37c796ab9497e1d051f915020df01fdddca3eb1"
+        ],
+        "after": "Tim Berners-Lee invented the World Wide Web because he struggled to find all the information he wanted in one place, and its global spread changed daily life and gave ordinary people access to information previously available to the elite."
+      },
+      "sampleNotes": {
+        "before": [
+          "227dad9eceb5d6ac1258baf5434ed0026e267842b86585f69248916cda773bca"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      }
+    }
+  },
+  "cb15b8b3603c8c0b92051b306eeb0d198e58e9f106e487362a124c5f34824371": {
+    "id": 10,
+    "title": "Economic Forecasting Limitations",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "94dcc6b0f5e4af7ce36f40332672712cfad488a61af5f837b9065190ca40021f"
+        ],
+        "after": {
+          "topic": "Corporate economists draw on statistical data to forecast the economy.",
+          "pivot": "Different assumptions about how the economy works make forecasts imprecise.",
+          "conclusion": "Forecasts are especially weak for volatile measures such as interest rates, although they perform better for some stable measures such as government spending."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "213982be6cb6d9f0b8fb95e0f521e2def3506726fe07fb7fc95d361c1477b0e0"
+        ],
+        "after": "Different assumptions about the economy limit forecasting precision despite the use of statistical data, and forecasts have a particularly poor record for volatile measures such as interest rates, although they perform better for some stable measures such as government spending."
+      },
+      "keyElementsRationale": {
+        "before": [
+          "80fe35ecaa1578a2505c6f521cddf43d2a3bdf443919b5db4defa07b10cf0ca1"
+        ],
+        "after": {
+          "topic": "Economic forecasting relies on data but remains imprecise because forecasters make different assumptions.",
+          "importance": "Keep weak performance scoped to volatile measures. The stable-measures concession is optional, but government spending is the example of better forecasts if you include it."
+        }
+      }
+    }
+  },
+  "24167138e11c00c3c9c4b1be559e1b5b5941c22176b8d6069bdf0278e07a5c5b": {
+    "id": 11,
+    "title": "Wright Brothers — From Bicycles to Flight",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "740abea2c8acb3e64619cf69a082efb9f9681b9ae0b8b1a2e1e7b05afa783fbe",
+          "a426618898a47c5f4c4a45f7c1a2ad2e290ee28adb528ceabc5568853f38111d"
+        ],
+        "after": {
+          "what": "The Wright brothers’ work in printing and building and repairing bicycles helped prepare them for aviation.",
+          "why": "Profits financed experiments, and building light, precise machinery gave them relevant engineering experience.",
+          "how": "News of Lilienthal’s fatal crash prompted serious study and correspondence.",
+          "result": "Reading and support from institutions and other specialists helped them pursue experiments."
+        }
+      }
+    }
+  },
+  "72873dd60e635ebb23bace3d707477ad39fa23bfdfec099468ae22c560c109a5": {
+    "id": 13,
+    "title": "Volcanic Eruption Prediction",
+    "fields": {
+      "sampleResponse": {
+        "before": [
+          "f601df78daff694c806cf57c5c138e9ed0fa0204bf361994f0d96e10fd1491cc",
+          "37bb6accdc6e368c4b84e0620bb684f0f2c324d3b4dce4379624bfb544a23873"
+        ],
+        "after": "Eruption forecasts improve when scientists track several warning signs continuously and learn a volcano’s patterns, though some eruptions lack warnings and the cost of monitoring makes reports of unusual activity from residents useful for prompting scientific observation."
+      },
+      "sampleNotes": {
+        "before": [
+          "c16fb537f379301c88c2e854618a623b353e1bc07adc48c5958358f0a4a62d23",
+          "8d8b1b7afd1df553d9f2f95a1d667bf622914ced685384c43816177ecc960cd6"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      }
+    }
+  },
+  "6ad97e233b7cd879db729decb691f908c97e2c443c331e89953bf2ad73ed09e5": {
+    "id": 14,
+    "title": "Product Life Cycle",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "cd4ce8f95ae0cc61f88ed8675993d4699f1a707009e81804c19454ba700a7258"
+        ],
+        "after": {
+          "what": "A product’s life cycle changes what businesses have to manage at each stage.",
+          "why": "Introduction can be costly with low sales, while sales rise in growth and economies of scale can improve margins.",
+          "how": "During competitive maturity, businesses try to defend market share through careful marketing or product and process improvements.",
+          "result": "Falling demand marks decline, when cheaper production or markets can preserve some profit."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "f38033e2fc56f6a78f60a545cd5e32a4826ff3c5b2220a14695a8d474ad1ac85"
+        ],
+        "after": "Businesses adapt to a product’s life cycle by managing costly launches, benefiting from scale as sales grow, defending market share at maturity and looking for ways to stay profitable when demand declines."
+      }
+    }
+  },
+  "5193672b6db72e21bea6015b357df2e8b755de0214289a231c623745aacb53a3": {
+    "id": 16,
+    "title": "Expensive Textbooks",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "ebb362c593803145a2e6ee20f7532c85df50a25db20a8128443badeb6660305a",
+          "731298b50faa54b6e72b4b212acf152cbf4d9c61507644edf1eb84c2518f491e"
+        ],
+        "after": {
+          "what": "High textbook prices place a financial burden on students and their families.",
+          "why": "Publisher consolidation and frequent new editions contribute to high prices.",
+          "how": "Some students face trade-offs with basic needs or do without books, which can hurt their learning.",
+          "result": "Used books, rentals and free educational materials can make textbooks more affordable."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "42ee26fa7081bb82d9260bfa38a061167ac5b3c9bb77221a2b0a65c713d57888",
+          "3a2eeda3d3c6e648c7bf4c54d709416fb211cd64eb4d8b83fa5af1978e4718e4"
+        ],
+        "after": "Concentrated publishing and frequent new editions raise textbook prices, which can force students to cut other spending or go without books and struggle academically, while used books, rentals and free resources can improve access."
+      },
+      "sampleNotes": {
+        "before": [
+          "c16fb537f379301c88c2e854618a623b353e1bc07adc48c5958358f0a4a62d23",
+          "9d36db30855f40716acdd61e02f0cc8529af1981bb4fe9311c4adcb593f6d77f"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      }
+    }
+  },
+  "ced232bdf995ee0b9c53d9d938b4042c20a42de986e9b5b83edd880cc39a9a34": {
+    "id": 17,
+    "title": "Self-Defense Classes",
+    "fields": {
+      "sampleResponse": {
+        "before": [
+          "4e3df6d07b7f55bec7dcd8b2e1b93448e0c4aee8e44fcf19523eea8a71376951"
+        ],
+        "after": "Self-defence classes can make students safer and more confident by teaching them to handle threats and resolve conflicts, while physical activity improves fitness and the wider benefits can include stronger relationships and academic performance."
+      }
+    }
+  },
+  "f9954b59a8b4c4f55176bc42d512b375aaa87f8347ae18e9df7c95d173ad9686": {
+    "id": 18,
+    "title": "Living Off-Grid",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "2c674a72540829fb2be4e85a87f0a9f9438b3a890cb54768350b7f50203b577c",
+          "e3a6f27e6853905579fc956b1f33fbfe292ca117ff53edf40cd05faae752ca68"
+        ],
+        "after": {
+          "what": "Living off-grid means meeting basic needs with less reliance on public utilities.",
+          "why": "Generating energy and collecting water can reduce resource use and utility bills.",
+          "how": "Meeting one’s own needs builds skills and independence.",
+          "result": "Off-grid living offers potential benefits, but it takes careful planning and preparation."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "d39be429aa4fcc93ee3a4f672c687be85599e2a0a18011ae40c9a9b7988605f4"
+        ],
+        "after": "Although living off-grid takes planning and preparation, meeting basic needs independently can build useful skills, reduce reliance on public utilities and lower living costs and environmental impact."
+      }
+    }
+  },
+  "986352822a8bc67b9353f5ad35105a385eb641375d7710992de5d760e17026eb": {
+    "id": 20,
+    "title": "Darwin and the Origin of Species",
+    "fields": {
+      "sampleResponse": {
+        "before": [
+          "a05aba48c652a8bb324e1d9628f0ccf1df5425c5cbc04516c1093383f35d8c42",
+          "eea7eab46274bef2551151513f6535749c246f6727ba1111851074e2025bd060"
+        ],
+        "after": "Darwin’s voyage led him to question whether species were fixed, but the theory’s radical implications and his limited evidence delayed publication while he gathered data, and On the Origin of Species eventually prompted debate and became an enduring scientific work."
+      },
+      "sampleNotes": {
+        "before": [
+          "c16fb537f379301c88c2e854618a623b353e1bc07adc48c5958358f0a4a62d23",
+          "17b0504ac545a42893a4bf1debaafd1e97cd68b9cc14b4c7ac95695cadf82f80"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      }
+    }
+  },
+  "2346ea502971dae5b9e5971b4288579370751060ece02cf97776b73d7c6dacd3": {
+    "id": 21,
+    "title": "Academic Research",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "405a9d4ce3719ca1cce7f72a72d6f9a2a8ec357b84c29a86359f545e785f192b"
+        ],
+        "after": {
+          "topic": "Critics argue that university research with no obvious practical use should be cut.",
+          "pivot": "The author explains how open-ended inquiry can lead to unexpected and useful findings.",
+          "conclusion": "Accountability can coexist with allowing research whose usefulness cannot be known in advance."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "c5ac59649707cebe472b62b33f59ad44769e9a35e4c0e4ffdec8de072edbd71c"
+        ],
+        "after": "Critics want universities to cut research with no obvious practical use, but the author accepts accountability while arguing that giving researchers room to explore can produce valuable results they could not have predicted."
+      },
+      "keyElementsRationale": {
+        "before": [
+          "767b58591d92cd0008762b55b8860202f0f86ede84faa87131343d28c9a07939"
+        ],
+        "after": {
+          "topic": "The writer responds to critics who measure research by its immediately foreseeable benefits.",
+          "importance": "Explain why accountability can leave room for discovery. The police ride-along illustrates how an inquiry can become useful even when it starts without a defined application."
+        }
+      }
+    }
+  },
+  "8f73429234ea7ca83b71c23d47268a550c4e1ebed6d329e750aa773e1c670763": {
+    "id": 23,
+    "title": "Electric Cars",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "2d03d827dc1572c38481273e411c14b05c5649d322c84a3c43d02114fb48cf6a"
+        ],
+        "after": {
+          "topic": "Electric cars lost favour as cheap petrol supported internal-combustion cars.",
+          "pivot": "Climate concerns renewed interest, but limited range, slow charging and battery costs persisted, and fossil-fuel electricity limited emissions reductions in the United States.",
+          "conclusion": "Hybrids offer a possible compromise between electric-car benefits and consumers’ driving and refuelling needs."
+        }
+      }
+    }
+  },
+  "c96d9264454ea4c77188ab2f93e8d7db2c0f5752762a3d8c08b33fc65d93a81c": {
+    "id": 25,
+    "title": "Ageing Population",
+    "fields": {
+      "sampleResponse": {
+        "before": [
+          "19bf08b777ccb8d90c9320686bbdd8ba6fa12b5356226316bb23ecc3344f3eaf"
+        ],
+        "after": "As older people make up more of the population and younger groups shrink, societies may need to adapt their services and economies while making use of older people’s contributions, so the likely changes call for new policy thinking."
+      }
+    }
+  },
+  "a43ddf14eb02d911a8d89b27d00dec3b70249bd67082f13e3e1f0d382d76a71d": {
+    "id": 26,
+    "title": "Art",
+    "fields": {
+      "sampleResponse": {
+        "before": [
+          "82b26003b8012235c8aecbf513bc99e4547b02f0838b2d8498d889f362af8086"
+        ],
+        "after": "Decorative work may hide defects without costing more, while skilful craft and appropriate design can make objects both useful and pleasing, as shown by medieval makers who carried their own designs into practice."
+      }
+    }
+  },
+  "cdf07782cc22047c449ceb59496f0523ee2c8cc33f4ad24b9300b3a945ab777a": {
+    "id": 27,
+    "title": "Pascolena Florry",
+    "fields": {
+      "sampleResponse": {
+        "before": [
+          "d1659a202e85c2527f60d1799c5b48254b7eefc625774f119d0732565a9922a0"
+        ],
+        "after": "Giving indigenous conservancies control of wildlife management and tourism helped Namibian communities gain jobs and opportunities, as Pascolena Florry’s career shows, and helped change her view of wildlife from a threat to an economic and environmental asset."
+      }
+    }
+  },
+  "49d54e7204746177a88e4b2b775e54759199e88ba6c71486156e8afe6234a080": {
+    "id": 29,
+    "title": "Supply and Demand",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "f8f2e827bb3404f8a6a325fba6f133355bf6933ff95c066289dd96cc255220a9"
+        ],
+        "after": {
+          "what": "Prices coordinate supply and demand and help determine production and distribution.",
+          "why": "When buyers want more than is available, prices rise and producers can respond by supplying more.",
+          "how": "Weak demand can lower prices and encourage producers to supply less.",
+          "result": "These adjustments tend to move a free market toward equilibrium."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "5cbb5a114fd5247e708104b8531514e3ab0c9f87873fbc47a643839b91a389f3"
+        ],
+        "after": "In a free market, excess demand drives prices up and encourages producers to supply more, while weaker demand has the reverse effect, so price changes guide the production and distribution of goods and move the market towards equilibrium."
+      }
+    }
+  },
+  "7cb26881756bd7c25e6cdf47abb624c18ad0d637ed7f97857a936559adec63ef": {
+    "id": 30,
+    "title": "Human Remains",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "46f7a96543b68991a6d08b37db528a41ca13850f74c5d7473b4ac3288eeca4c6"
+        ],
+        "after": {
+          "topic": "Human remains provide archaeological evidence about people’s lives in the past.",
+          "pivot": "The announced rule would require human remains excavated in England and Wales to be reburied after two years, removing them from curation and preventing further study with new methods.",
+          "conclusion": "Scientists were concerned that the approach might also be extended to human remains already held in museum collections."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "51147c4653825da7c7ad333611954d89268ba51827f0bfaf802abbb274e3d61b"
+        ],
+        "after": "A British policy announcement requiring excavated human remains in England and Wales to be reburied after two years threatened research using future methods and raised concern that human remains already held in museum collections might also be reburied."
+      }
+    }
+  },
+  "49898e3e2c50aada549a5b3a16be61654a86a2c2eb76af3015bbb32ec9b0b250": {
+    "id": 31,
+    "title": "Carbon Neutrality",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "00a27cb44469bea5b581c7eeb099f4affeaae02e660465b26ef49bf4671940f4"
+        ],
+        "after": {
+          "what": "Carbon neutrality means net-zero carbon dioxide emissions through large reductions in emissions and removal of carbon dioxide.",
+          "why": "Business motives help shape the reduction plan and its measures of progress.",
+          "how": "Companies can measure their footprint and involve staff in cutting travel and energy use.",
+          "result": "Targets and continued staff participation make reductions an ongoing effort."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "ddfbc0d3b0f5a159aa830c78ae55571843b4541527fe2cbf52523887a3130b58"
+        ],
+        "after": "To move towards net-zero carbon dioxide emissions through substantial cuts and removal of residual carbon dioxide, businesses can measure their carbon footprint, involve staff in reducing emissions and set targets that keep the work going over time."
+      }
+    }
+  },
+  "9d18831a22ad167ad81181688af212b2f18c2ca28c708150b43b344b5c67d912": {
+    "id": 33,
+    "title": "Twins",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "0034aeb3326d2f92216a49e8795fc2c5fe3c975f9131f59b7693522593b4467d"
+        ],
+        "after": {
+          "what": "The twin study found genetic influences on myelin integrity in brain regions associated with intelligence.",
+          "why": "Identical twins share more genes than fraternal twins, giving researchers a way to estimate genetic influences.",
+          "how": "The scan tracks water movement in white matter to assess myelin quality.",
+          "result": "Fast diffusion in a particular direction indicates faster connections, whereas wider diffusion is associated with slower signalling."
+        }
+      }
+    }
+  },
+  "3bba02b34ce8156b36fcc919793371951e8c5c634497c073182ef260e0e9587e": {
+    "id": 3,
+    "title": "Sustainable Urban Development Strategies",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "e031618ecd4924f6261a9f52eb7f023a7216b3d6247378f3b0ec299c80757b27"
+        ],
+        "after": {
+          "what": "Urban planning must balance growth, environmental protection and fairness.",
+          "why": "Compact development and greener infrastructure can curb emissions and resource use.",
+          "how": "Public participation helps make priorities reflect what communities need.",
+          "result": "Tracking local results helps cities detect unequal impacts and adjust investments as needs and climate risks change."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "a540c3d03bcd0d2fb2c14413b4e0d55c21e257c231b3b4b9b6cd514567dc2791"
+        ],
+        "after": "Compact planning and greener infrastructure can cut emissions while public input keeps decisions tied to local needs, but sustainable growth also requires monitoring who bears the costs and adjusting investments when particular neighbourhoods lose out."
+      },
+      "sampleNotes": {
+        "before": [
+          "a8f85ddc333b569f737db8942807c420dbc95dfe8f1361205e1ba480ba3e19f5"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      },
+      "keyElementsRationale": {
+        "before": [
+          "3c7ed6958d8049b5b167aaf12603c3fb5ea707c730b580d87b76c87b61cc3b08"
+        ],
+        "after": {
+          "topic": "The expanded source links sustainable planning to ongoing monitoring and adjustment.",
+          "importance": "Explain how cleaner development and public participation can support growth, and how tracking local results helps cities identify unequal impacts and adapt."
+        }
+      }
+    }
+  },
+  "278b7555b84b288f1eb6d808dcf4f0bfc1953c68f6b187212792cad07d5017f0": {
+    "id": 4,
+    "title": "Scientific Research Protocol",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "98c81078a0dc7b3414ef47928480046dff451dfadc45beda08b332e6724ee00d"
+        ],
+        "after": {
+          "what": "Empirical studies need credible designs, consistent measurement and transparent scrutiny.",
+          "why": "Testable questions and suitable controls reduce bias and improve validity.",
+          "how": "Standardised data collection and documentation of decisions help others understand how results were reached.",
+          "result": "Peer review and independent replication can detect errors and test whether findings hold beyond the original study."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "d379007bf97e6d6dd1a6f471395f12eaf415c48f6f2ad1e9c77c190cd8b62a89"
+        ],
+        "after": "Credible research combines testable questions, controlled designs and consistent measurement with clear records of decisions and shared methods, so that peer reviewers can detect errors and independent teams can test whether findings hold beyond the original study."
+      },
+      "sampleNotes": {
+        "before": [
+          "6874615ff0159298abcd0677005081f30ca904df4170188e6ec48317edafe29b"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      }
+    }
+  },
+  "094204abe6992b783e6a69285d7f0105021b2c982e1b7b18ce645a5211daea32": {
+    "id": 5,
+    "title": "Farm Cottage",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "1de7062a9ea092f979809184c198cdbaa06fc95d7afb14bbb162b9fc4a5709f7"
+        ],
+        "after": {
+          "what": "The narrator chose to trade city comfort for farm life he understood and valued.",
+          "why": "Growing up on a farm made the inconveniences familiar and their risks manageable to him.",
+          "how": "He told his city-raised wife about the benefits to persuade her to move.",
+          "result": "The decision required greater trust from his wife because those risks and inconveniences were new to her."
+        }
+      }
+    }
+  },
+  "be6eae1d4490ba881c9635ec6b6580f52ca6ceaeea9e2965a521b84c259394e3": {
+    "id": 6,
+    "title": "London Financial Hub",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "c608e2935636ff5f0554e0b2057c3a15fb80a6d358bee10c39cddcd62414f4d0"
+        ],
+        "after": {
+          "what": "London grew from a small coffee-house exchange into a major financial centre.",
+          "why": "It grew despite historical setbacks and has advantages such as different regulation and currency arrangements.",
+          "how": "Large shares in several international markets illustrate its prominence.",
+          "result": "Its continued strength depends on whether workers, firms and infrastructure can manage high costs and congestion."
+        }
+      }
+    }
+  },
+  "54816a61c44a0a03be1984374e2c8c9e3fac103480355c1f7ce1f66231809c48": {
+    "id": 8,
+    "title": "Travel and Tourism Economic Impact",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "b5140d6de84a18a3e1c059eed37386f997e25f944b3aa155b00dbe75f64d94a0"
+        ],
+        "after": {
+          "what": "Tourism creates jobs and spending across businesses and can help protect the environment and local culture.",
+          "why": "Jobs and visitor demand spread benefits beyond the businesses that deal directly with tourists.",
+          "how": "Possible low start-up and operating costs give tourism a separate advantage over some industries.",
+          "result": "Lasting benefits depend on communities keeping part of the income and managing pressure on local services and natural areas."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "cc81d32fef92bc3e669613c5ec9dcc211448c286bfb69913bddf89b024086ab4",
+          "88aa209e59c5f7e470f6f129fbd54813ac7e57f922d50c3a57570aca66b21908"
+        ],
+        "after": "Tourism spreads jobs and spending across local businesses and can support conservation and culture, but lasting benefits depend on communities keeping a share of the income and managing growth to protect local services and natural areas."
+      },
+      "sampleNotes": {
+        "before": [
+          "d1fd70afe9c58c51d9f129742aa580f170af4818afa43b1cded125fa67a61b2a",
+          "2de85c16e5f4917ffaef5d9468135d4b2aea5f96d58e3f995313f3cb76d36b90"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      }
+    }
+  },
+  "cbe0596579b28bd8e20bfbf418fd4eb8dbe41ffda78a05ec81a4da23b7cf62af": {
+    "id": 9,
+    "title": "Sir Tim Berners-Lee and the World Wide Web",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "1aa30d9fd33b33f47199fc5ff3dc4f7ec384807b8c526b1144b82886a23c653b"
+        ],
+        "after": {
+          "what": "Tim Berners-Lee invented the Web to make scattered information easier to reach.",
+          "why": "Common standards let users link and find material created in different places.",
+          "how": "People could create sites without permission from one central publisher, helping the Web expand.",
+          "result": "Its spread changed daily life and widened access to information and the ability to publish and participate."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "53510c4153c1583b9582b376f37c796ab9497e1d051f915020df01fdddca3eb1",
+          "5643976f751f53a4132d090d43875708f086b98459af94705df8df8411416add"
+        ],
+        "after": "Tim Berners-Lee invented the Web to make scattered information easier to find, and its open standards let people link and publish material without a central publisher’s permission, spreading the Web and widening who could access information and take part."
+      },
+      "sampleNotes": {
+        "before": [
+          "227dad9eceb5d6ac1258baf5434ed0026e267842b86585f69248916cda773bca",
+          "2de85c16e5f4917ffaef5d9468135d4b2aea5f96d58e3f995313f3cb76d36b90"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      }
+    }
+  },
+  "c4a6ad02c84972dac6d103b3c47277e31f331a77a751a2ab5690265a7b407b28": {
+    "id": 10,
+    "title": "Economic Forecasting Limitations",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "d15a0b45abbfa87f253097365d015631b2165595a3f2073a395aa78f2e27f398"
+        ],
+        "after": {
+          "what": "Economic forecasting supports decisions but cannot eliminate uncertainty.",
+          "why": "Widely varying assumptions and unexpected changes limit the precision of models.",
+          "how": "Forecasts have a particularly poor record for volatile measures, with better results for some stable measures such as government spending.",
+          "result": "Forecasts can report ranges or scenarios and their assumptions so people can use them without treating one figure as certain."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "213982be6cb6d9f0b8fb95e0f521e2def3506726fe07fb7fc95d361c1477b0e0"
+        ],
+        "after": "Because differing assumptions and unexpected events limit economic forecasting, especially for volatile measures, presenting ranges and explaining their assumptions can help people make decisions without treating a single projection as certain."
+      }
+    }
+  },
+  "1393fdb230e915624c294fa8450d86fa9ed797b4acc64dc269e07f8f302d8479": {
+    "id": 14,
+    "title": "Product Life Cycle",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "11131568b488df3ba6f767c0013128d1ce28f4479576d10059ba73c12f7a5603"
+        ],
+        "after": {
+          "what": "A product’s life cycle changes what businesses have to manage at each stage.",
+          "why": "Introduction can be costly with low sales, while sales rise in growth and economies of scale can improve margins.",
+          "how": "During competitive maturity, businesses try to defend market share through careful marketing or product and process improvements.",
+          "result": "Falling demand marks decline, when cheaper production or markets can preserve some profit."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "b637921da1f6029e9792a96eabebe549185ed355e32a192acb2ba4fcf5f35ea4"
+        ],
+        "after": "Businesses adapt to a product’s life cycle by managing costly launches, benefiting from scale as sales grow, defending market share at maturity and looking for ways to stay profitable when demand declines."
+      },
+      "sampleNotes": {
+        "before": [
+          "35bf1d5136f822ddc3f696c0a3f0a3b02180c78e8b58e37297c9df39563aec78"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      }
+    }
+  },
+  "016e4e02a41f998b5b177e975291f3751208ef4f7d488f730d97a91bbd8f9029": {
+    "id": 15,
+    "title": "Handwriting Skills",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "6b6f8820e9bb564f360fbcaeddec540c0101aefd0bde61dec12b6aba93ad13fe"
+        ],
+        "after": {
+          "what": "Greater use of technology has reduced handwriting instruction even though handwriting remains valuable.",
+          "why": "Handwriting supports coordination, memory and learning.",
+          "how": "Occasional handwriting does less to develop fluency than regular practice.",
+          "result": "Schools can balance sustained handwriting teaching with digital tools when they suit the task."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "0608acc0f5f57a1083faf595478bf4e09d4bd3a8ea53da1302b477be72271fa7"
+        ],
+        "after": "Although growing use of technology has displaced handwriting instruction, handwriting still supports coordination and learning, so schools can retain digital tools where useful while providing regular practice for students to write fluently by hand."
+      },
+      "sampleNotes": {
+        "before": [
+          "6c8d028519855fe0e863b6bbb6b85d0e8a702a68a8056c723a7c565dc4b9f3d2"
+        ],
+        "after": "This example combines the passage’s main ideas and keeps their important relationships."
+      }
+    }
+  },
+  "aa53aa8ee755cba183497d12541c719e9c29ed32d27d83e123687464d67266c1": {
+    "id": 17,
+    "title": "Self-Defense Classes",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "6e943fad8e0e334039a344984b4d5132cd1ec3cbf33714a90a7ceb2904588c97"
+        ],
+        "after": {
+          "what": "Self-defence instruction can improve students’ safety, confidence and fitness.",
+          "why": "Awareness, avoidance and de-escalation should come before physical confrontation.",
+          "how": "Qualified teaching helps students seek help and respond proportionately.",
+          "result": "Safeguarding and prevention policies help this training complement wider efforts to prevent bullying."
+        }
+      },
+      "sampleResponse": {
+        "before": [
+          "2f164336aa033431db5ee5bab736bda17ac1bece40d23801b54a68b9154ef55d"
+        ],
+        "after": "Self-defence training can help students stay safer and feel more confident, especially when qualified teachers prioritise avoiding danger and defusing conflicts, while school safeguards ensure the training supports broader work to prevent bullying."
+      }
+    }
+  },
+  "05eec5b8e59d76ef56c83e334af2b4ddd70e385d1b085ae240f0e9873fb7d55b": {
+    "id": 19,
+    "title": "Fake News",
+    "fields": {
+      "keyElements": {
+        "before": [
+          "a7b2eed10cab3ff58a57d4c04f8a7f9b3ccf878ec949cda5114ecd0ad16b7879"
+        ],
+        "after": {
+          "what": "Fake news is false or misleading information presented as news.",
+          "why": "Social media lets users forward information quickly without verification.",
+          "how": "False claims can distort decisions, manipulate opinions and harm people or businesses.",
+          "result": "Routine checks before sharing help reduce these harms, supported by clearer corrections, provenance information and media education."
+        }
+      }
+    }
+  }
+}

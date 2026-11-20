@@ -25,7 +25,7 @@
   },
   "55fa46c8c51398ddbed663a146c998a767aa50818c7323d9141197cc9398f443": {
     "title": "Geothermal Energy",
-    "main": "Geothermal power could meet East Africa's energy needs as existing supplies become unreliable.",
+    "main": "Geothermal power could help meet East Africa's energy needs as existing supplies become unreliable.",
     "essential": "Link Kenya's need for alternatives to vulnerable hydropower and the potential of Rift heat. If describing generation, heat turns water into steam, which drives turbines.",
     "optional": "Percentages, deadlines, named agencies and volcanoes, depth, temperature, greenhouse and bathing examples."
   },
@@ -92,13 +92,13 @@
   "086ff3512bbaa43c4a4c35acfa0a8ee54933f8e8557f9b6c5239094de4f01f64": {
     "title": "Prior Knowledge",
     "main": "Teachers can improve new learning by activating and connecting what students already know.",
-    "essential": "Explain prior knowledge as skills or understanding available beforehand, from formal or informal experience. Activation connects it to new material.",
-    "optional": "Schema term, point in lesson and individual recall strategies."
+    "essential": "Show how activating what students already know or can do helps them connect it to new material.",
+    "optional": "Formal and informal routes for acquiring knowledge, schema term, point in lesson and individual recall strategies."
   },
   "18d07589a107dbb185ad8544a9206ae17af02c69ce21bf07c36c6e679fd042f0": {
     "title": "Microloan",
-    "main": "Microloans can widen access and support small businesses, but borrowers need help managing repayment risks.",
-    "essential": "Link accessible capital to enterprise and financial inclusion. Keep the contrast between repayment pressures and the benefit of complementary support.",
+    "main": "Microloans can widen access and support small businesses, but repayment pressure can strain borrowers and complementary support can help.",
+    "essential": "Link accessible capital to enterprise and financial inclusion. Preserve repayment risk and the role complementary support can play in helping borrowers manage loans and use them productively.",
     "optional": "Interest rates, equipment, hiring, individual target groups, program sponsors."
   },
   "bf239fbe80900d692218bed9710a8d478b261e13e7b62df9998d21016e80933f": {
@@ -110,8 +110,8 @@
   "a0fc8c9e66a215174e7eac0cecdfe136661aa62bbc5830705e2a5b1531673d17": {
     "title": "Artificial Intelligence in Healthcare",
     "main": "AI can improve healthcare alongside humans, but its rollout raises risks and questions about who benefits.",
-    "essential": "Connect potential diagnostic gains and savings to specialist collaboration and balance these with material risks such as errors or privacy.",
-    "optional": "Exact figures, names, radiology rate, robot count and exact patient trust percentages."
+    "essential": "Show how AI can improve diagnosis and complement human judgement, while wider use raises concerns such as errors, privacy or who benefits. If mentioning savings, present them as a separate potential benefit without attributing them to the division of work between AI and specialists.",
+    "optional": "Potential cost savings, exact figures, names, radiology uptake, robot count and patient trust figures."
   },
   "ea56f486454b97e8fd17ea9084de723be3e57ef04e13fa72db83ed6b0de4976e": {
     "title": "Sustainable Urban Development Strategies",
@@ -145,9 +145,9 @@
   },
   "9866bdf9d3434717825605601492800066c509e57baa79b094dda3b657d1f224": {
     "title": "Travel and Tourism Economic Impact",
-    "main": "Travel and tourism provides economic, employment and conservation or cultural benefits and can have lower operating costs than other industries.",
-    "essential": "Preserve the breadth of benefits and the separate conditional cost advantage. The text lists related contributions without claiming one causes another.",
-    "optional": "Exact job demographics, training and transferability, detailed conservation cases and expected growth."
+    "main": "Travel and tourism contributes to the economy and employment and can support conservation and local culture.",
+    "essential": "Integrate economic and employment benefits with environmental or cultural benefits. If mentioning lower start-up and running costs, describe them as a possible separate advantage rather than as an effect of the other benefits.",
+    "optional": "Possible cost advantage when the broader benefits are clear, exact job demographics, training and transferability, detailed conservation cases and expected growth."
   },
   "ee06411ec9bd6be6fc77e3ce2463715e9667649abaed2c4fd1670b6f3c041b1a": {
     "title": "Sir Tim Berners-Lee and the World Wide Web",
@@ -164,8 +164,8 @@
   "24167138e11c00c3c9c4b1be559e1b5b5941c22176b8d6069bdf0278e07a5c5b": {
     "title": "Wright Brothers — From Bicycles to Flight",
     "main": "The Wright brothers' businesses gave them money and engineering experience for flight experiments, which they pursued with study and outside advice.",
-    "essential": "Connect workshop profits to funding and lightweight precision construction to preparation. Their interest became serious after news of Lilienthal's crash if that chronology is included.",
-    "optional": "Toy, exact dates, materials, machine design, names of every person or institution."
+    "essential": "Connect business profits and skills to the resources and preparation for flight experiments. Their interest became serious after news of Lilienthal's crash if that chronology is included.",
+    "optional": "Lightweight precision construction as an example of workshop experience, toy, exact dates, materials, machine design and individual names."
   },
   "1198c1228338e522cdc2d441f78a6f7f23cc94239f4d0d72f157e44e51321d45": {
     "title": "The New Woman",
@@ -200,7 +200,7 @@
   "ced232bdf995ee0b9c53d9d938b4042c20a42de986e9b5b83edd880cc39a9a34": {
     "title": "Self-Defense Classes",
     "main": "Self-defence classes can build safety, confidence, health and life skills for students of varied backgrounds.",
-    "essential": "Group protective skills and conflict resolution with wider physical and social benefits. Preserve potential rather than guarantee academic gains or eliminating bullying.",
+    "essential": "Show how classes can help students protect themselves and develop confidence or social skills. If explaining a fitness benefit, link it to physical activity. Avoid treating academic or anti-bullying benefits as guaranteed.",
     "optional": "Individual student scenarios and particular skills."
   },
   "f9954b59a8b4c4f55176bc42d512b375aaa87f8347ae18e9df7c95d173ad9686": {
@@ -308,8 +308,8 @@
   "9eb7002ebd0030bbbc37a65c86046b258fd50fde16ef7ec8fecec53928ea3333": {
     "title": "Ecological Restoration and Historical Baselines",
     "main": "Restoration requires accountable choices about what ecological relationships to preserve under changing conditions.",
-    "essential": "History informs but does not dictate baselines. Climate change can make literal restoration fragile, and simple function metrics can hide loss. Justify choices, including a novel landscape that retains important capacities.",
-    "optional": "Burning, plantation and carbon examples, technical modelling details."
+    "essential": "History informs but does not dictate baselines. Climate change can make literal restoration fragile, and simple function metrics can hide loss. Justify what relationships and capacities to preserve under changed conditions.",
+    "optional": "The example of a novel landscape retaining important capacities, burning, plantation and carbon examples, and technical modelling details."
   },
   "a8482e1b7b8cd0a9f2513c6fb8a0335fa8c43a170d384fb8241152647a58bf08": {
     "title": "Expertise and Democratic Legitimacy",
@@ -387,7 +387,7 @@
     "title": "Travel and Tourism Economic Impact",
     "main": "Tourism can drive broad local development, provided communities keep benefits and manage pressures on destinations.",
     "essential": "Explain how economic and employment benefits spread and why local retention, planning and environmental protection make them durable. Preserve a qualified cost advantage when selected and avoid implying conservation causes lower costs.",
-    "optional": "Individual sectors or demographics, training details, exact cost comparison when broader argument is complete."
+    "optional": "Possible cost advantage when the central argument is complete, individual sectors or demographics, and training details."
   },
   "cbe0596579b28bd8e20bfbf418fd4eb8dbe41ffda78a05ec81a4da23b7cf62af": {
     "title": "Sir Tim Berners-Lee and the World Wide Web",
@@ -398,8 +398,8 @@
   "c4a6ad02c84972dac6d103b3c47277e31f331a77a751a2ab5690265a7b407b28": {
     "title": "Economic Forecasting Limitations",
     "main": "Forecasting remains valuable for decisions under uncertainty when its assumptions and limits are made explicit.",
-    "essential": "Connect disparate assumptions and unexpected shifts to weak precision, especially for volatile measures. The added practical response uses ranges or scenarios. Government spending illustrates some better results, unlike the asserted GNP/inflation grouping.",
-    "optional": "Nobel joke, named book, specific numerical measures when scope is preserved."
+    "essential": "Connect differing assumptions and unexpected shifts to limited precision, with a particularly weak record for volatile measures. Show how ranges or scenarios make uncertainty explicit and help people make decisions. If discussing better results, some stable measures such as government spending exemplify them. The passage describes the results for real GNP growth and inflation separately as about the same.",
+    "optional": "The stable-measures concession when poor performance remains scoped to volatile measures, specific examples of measures, Nobel joke and named book."
   },
   "1393fdb230e915624c294fa8450d86fa9ed797b4acc64dc269e07f8f302d8479": {
     "title": "Product Life Cycle",
@@ -423,7 +423,7 @@
     "title": "Fake News",
     "main": "Fast unverified sharing spreads harmful misinformation, so routine evidence checks and institutional support are needed.",
     "essential": "Relate unchecked sharing to errors, manipulation or harm, and connect verification habits and platform or education support to reducing them.",
-    "optional": "Specific cases, intentions, caller-by-caller checking checklist."
+    "optional": "Specific cases, intentions and individual verification steps."
   },
   "7784e1e160469880c4d176f4c8c74150efb6d115e2d55e3159c085b470128a9d": {
     "title": "Public libraries",
@@ -440,8 +440,8 @@
   "21eb6bc8a3a4f171d64dbee56187c034a11d4057bea9ee325cce59dc8a90deef": {
     "title": "Citizen science",
     "main": "Well-designed citizen science broadens observation and public participation while protecting data reliability.",
-    "essential": "Volunteer reach is useful only with instructions and verification or bias controls. Continued communication supports participation and later improvement.",
-    "optional": "Species or classification examples, exact sampling locations and recognition method."
+    "essential": "Link the broader observations volunteers provide to careful methods that keep the evidence reliable. Checking records for errors and checking for uneven volunteer coverage address different risks, which can be expressed together in a summary. Continued communication supports participation and later improvement.",
+    "optional": "Individual safeguards, species or classification examples, exact sampling locations and recognition methods."
   },
   "dc94ca5125274510f084697a9bef3a43910aec9bafabe917b5f95b47058b8c38": {
     "title": "Reliable public transport",
@@ -451,14 +451,14 @@
   },
   "deb1e5cef6130ffc8ebd94819e8ce266eab16b024392c48bd5f0657145c9b1fb": {
     "title": "Compulsory Reburial",
-    "main": "Remain-by-remain policy should balance community ethics against the long-term scientific value of curated remains.",
-    "essential": "Reburial may meet ethical aims but prevents future analysis as methods improve. Consultation, documented reasons and review help manage the trade-off rather than imposing either automatic outcome.",
+    "main": "Case-by-case decisions on reburial should balance community and ethical concerns with the value of preserving remains for future study.",
+    "essential": "Rules requiring reburial can respect cultural and ethical interests but also limit what improved methods could discover. Consultation, clear reasons and periodic review support case-by-case decisions. If describing the rules for research access, do not rule out exceptions.",
     "optional": "Diet, disease, migration and individual policy or exception mechanisms."
   },
   "fd67359402865d7cdad310a416b909e1a2950182360668377259231501d7193b": {
     "title": "Anti-inflammatory Food",
     "main": "A sustainable overall eating pattern matters more than any individual anti-inflammatory ingredient.",
-    "essential": "Connect repeated, varied whole-food choices and gradual replacement of heavily processed foods with a pattern people can maintain. Seasonality alone is insufficient.",
+    "essential": "Connect varied whole-food choices and gradual replacement of heavily processed foods with a pattern people can maintain. If mentioning seasonal foods, preserve that being seasonal alone does not make a food anti-inflammatory.",
     "optional": "Ingredient lists, seasonal examples and medical or affordability examples where compressed."
   },
   "a4f6062c7fa43a2b8bf8cb625cb96978a4ecc447b20cb4a3aec70158c54a3161": {
@@ -494,8 +494,8 @@
   "c52456b5c49fa764b7716a30137396fb51efd8670bcc94df4615e25827dbd955": {
     "title": "Wright Brothers",
     "main": "The Wright brothers advanced flight by combining workshop skills and existing ideas with repeated tests and revisions.",
-    "essential": "Link precise lightweight construction to testing balance and control, and use measured failures to challenge assumptions and improve designs.",
-    "optional": "Individual wing features, glider specifics and exhaustive hypotheses about sources of measurement error."
+    "essential": "Link workshop skills to a cycle of testing and adapting designs. Show how evidence from trials helped the brothers challenge assumptions and improve the aircraft.",
+    "optional": "Lightweight structures and precise adjustments as examples of workshop skills, individual wing features, glider specifics and possible sources of measurement error."
   },
   "18c6a1e93ba16baf9ac8b45aea23fdb1f68328be78603e6e9504a1c0323be75f": {
     "title": "Natural Resources",

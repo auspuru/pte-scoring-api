@@ -4401,12 +4401,13 @@ async function judgeContentWithClaude(studentText, passageText, keyElements, tim
   return (legacy ? legacySwtJudgmentService : swtJudgmentService).judge(studentText, passageText, kpHint, timeoutMs);
 }
 
-async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = false, legacy = false } = {}) {
+async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = false, legacy = false, stage } = {}) {
   if (!anthropic) return null;
   const format = require('./swt-judge-format');
-  const response = await anthropic.messages.create(format.request(prompt, format.scoringModel(), {semanticReassessment,legacy}),
+  const repairReview = stage === 'repair-review';
+  const response = await anthropic.messages.create(format.request(prompt, format.scoringModel(), {semanticReassessment,legacy,repairReview}),
     { timeout: timeoutMs, maxRetries: 0, signal });
-  return format.response(response);
+  return format.response(response, { repairReview });
 }
 
 const swtJudgmentService = createJudgmentService({

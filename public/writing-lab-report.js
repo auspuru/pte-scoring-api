@@ -25,6 +25,7 @@
   }
   function summarize(questions, results = [], attempt = {}) {
     const weighted = isWritingMock(attempt);
+    const singleSwtItem = attempt.kind !== 'mock' && questions.length === 1 && questions[0].type === 'swt';
     const groups = {};
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i], r = results[i], maximum = maximumFor(q);
@@ -32,7 +33,9 @@
       group.count++; group.maximum += maximum;
       if (r && r.maximum === maximum && score90(r.total, maximum) !== null && (attempt.kind!=='mock' || !needsReview(r,q))) { group.marked++; group.total += r.total; }
     }
-    const byType = Object.values(groups).map(g => ({ ...g, score90: g.marked === g.count ? score90(g.total, g.maximum) : null }));
+    const byType = Object.values(groups).map(g => ({ ...g,
+      score90: g.marked !== g.count ? null : singleSwtItem ? itemEstimate(questions[0], results[0]) : score90(g.total, g.maximum)
+    }));
     const total = byType.reduce((sum, g) => sum + g.total, 0), maximum = byType.reduce((sum, g) => sum + g.maximum, 0);
     let complete = questions.length > 0 && byType.every(g => g.marked === g.count);
     if (weighted) {
@@ -54,7 +57,7 @@
           weightTotal, fullProfile:supported && missingTypes.length === 0, missingTypes,
           performancePercent:complete ? ratio * 100 : null, calibration:'uncalibrated', conversion:'round(10 + 80 × weighted ratio)' } };
     }
-    const estimate = questions.length === 1 ? itemEstimate(questions[0], results[0]) : score90(total, maximum);
+    const estimate = singleSwtItem ? byType[0].score90 : score90(total, maximum);
     return { complete, total, maximum, score90: complete ? estimate : null, byType };
   }
   return { labels, tokens, maximumFor, score90, itemEstimate, minutesFor, summarize, WRITING_WEIGHTS, WEIGHTING_VERSION, isWritingMock, needsReview };

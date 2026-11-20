@@ -5,6 +5,10 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const seeds = require('../passages.json');
+const legacy = require('../content/swt-legacy.json');
+const predictions = require('../content/user-swt-predictions').passages;
+const publicationReferences = require('../content/swt-publication-references.json');
+const { hash } = require('../scoring-jobs');
 const { studentPassage, buildStudyGuide, phraseFromIdea, fallbackSample } = require('../swt-reference');
 const { POLICY_VERSION, applyScoringPolicy } = require('../swt-scoring-policy');
 const server = fs.readFileSync(path.join(__dirname, '../server.js'), 'utf8');
@@ -34,6 +38,61 @@ test('Admin changes to either the source or the sample are preserved', () => {
   const newSource = { ...p, text: 'A revised source passage that no longer matches the original.' };
   assert.equal(studentPassage(newSource).sampleResponse, p.sampleResponse);
   assert.equal(studentPassage(newSource).sampleRevision, undefined);
+});
+
+test('Publication revisions match audited sources and old references in the bundled standalone banks', () => {
+  const bank = [...seeds, ...legacy, ...predictions];
+  for (const [sourceHash, revision] of Object.entries(publicationReferences)) {
+    const sources = bank.filter(p => Number(p.id) === revision.id
+      && p.title === revision.title && hash(p.text) === sourceHash);
+    assert(sources.length, revision.title);
+    let matched = false;
+    for (const source of sources) {
+      const projected = studentPassage(source);
+      for (const [field, { before, after }] of Object.entries(revision.fields)) {
+        if (field === 'sampleNotes' || source[field] === undefined || !before.includes(hash(source[field]))) continue;
+        assert.deepEqual(projected[field], after, revision.title + ' ' + field);
+        matched = true;
+      }
+      if (projected.sampleResponse !== source.sampleResponse) {
+        assert(validateForm(projected.sampleResponse).valid, revision.title);
+      }
+    }
+    assert(matched, revision.title);
+  }
+});
+
+test('Standalone coaching uses the correct version of Tourism, Forecasting, and the Web', () => {
+  const result = (bank, id) => studentPassage(bank.find(p => p.id === id));
+  assert.doesNotMatch(result(legacy, 8).sampleResponse, /depend on communities|therefore/);
+  assert.match(result(legacy, 8).sampleResponse, /potentially low.*additional advantage/);
+  assert.match(result(seeds, 8).sampleResponse, /lasting benefits depend on communities/);
+  assert.match(result(legacy, 10).sampleResponse, /assumptions.*limit forecasting precision.*although.*government spending/);
+  assert.doesNotMatch(result(legacy, 10).sampleResponse, /scenarios|range|GNP/);
+  assert.match(result(seeds, 10).sampleResponse, /unexpected events.*ranges.*decisions/);
+  assert.doesNotMatch(result(legacy, 9).sampleResponse, /open standards|central publisher/);
+  assert.match(result(seeds, 9).sampleResponse, /open standards.*central publisher/);
+});
+
+test('Publication revisions preserve teacher-authored fields and exact source identity', () => {
+  const original = structuredClone(legacy.find(p => p.id === 10));
+  const sameFields = { keyElements: original.keyElements, sampleResponse: original.sampleResponse };
+  for (const version of [{ id: 666 }, { title: original.title + ' (class version)' }, { text: original.text + '\n' }]) {
+    const projected = studentPassage({ ...original, ...version });
+    assert.deepEqual(projected.keyElements, sameFields.keyElements);
+    assert.equal(projected.sampleResponse, sameFields.sampleResponse);
+  }
+  const keyElements = { topic: 'Teacher-authored key explanation' };
+  const sampleResponse = 'This is the teacher’s own model answer.';
+  const sampleNotes = 'This sample shows how the teacher would approach the passage.';
+  const customKey = studentPassage({ ...original, keyElements });
+  assert.deepEqual(customKey.keyElements, keyElements);
+  assert.equal(customKey.studyGuide.items[0].idea, keyElements.topic);
+  assert.notEqual(customKey.sampleResponse, original.sampleResponse);
+  const customSample = studentPassage({ ...original, sampleResponse, sampleNotes });
+  assert.equal(customSample.sampleResponse, sampleResponse);
+  assert.equal(customSample.sampleNotes, sampleNotes);
+  assert.notDeepEqual(customSample.keyElements, original.keyElements);
 });
 
 test('Blank SWT samples are restored from reviewed bundled references', () => {
@@ -122,7 +181,7 @@ test('Reference label is earned by the same form gate and semantic policy', asyn
   assert.equal(response.result.status, 'verified');
   assert.equal(input.text, studentPassage(p).sampleResponse);
   assert.equal(input.source, p.text);
-  assert.deepEqual(input.ideas, p.keyElements);
+  assert.deepEqual(input.ideas, studentPassage(p).keyElements);
   for (const mode of ['false meaning', 'unavailable']) {
     const check = await checkReference(p, async text => {
       if (mode === 'unavailable') return null;
@@ -132,4 +191,19 @@ test('Reference label is earned by the same form gate and semantic policy', asyn
   }
   const invalid = await checkReference({ ...p, sampleResponse: 'Too short.' }, () => { throw new Error('Should not judge invalid form'); });
   assert.equal(invalid.result.status, 'needs_revision');
+});
+
+test('The sample assessment uses the corrected IPCC offset and Human Remains policy scope', async () => {
+  const cases = [
+    [seeds.find(p => p.id === 7), /fewer cold-related deaths could outweigh additional heat-related deaths/],
+    [legacy.find(p => p.id === 30), /removing them from curation and preventing further study/]
+  ];
+  for (const [p, expected] of cases) {
+    let input;
+    await checkReference(p, async (text, passage, ideas) => {
+      input = { text, passage, ideas }; return semantic(text);
+    });
+    assert.equal(input.passage, p.text);
+    assert.match(Object.values(input.ideas).join(' '), expected);
+  }
 });

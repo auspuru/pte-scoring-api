@@ -58,14 +58,26 @@ Object.assign(summarySchema.properties, {
   content_source_quote: { ...text, description: 'The smallest useful exact contiguous phrase or clause to keep from the passage, otherwise empty.' }
 });
 summarySchema.required.push('content_edit_operation', 'content_edit_span', 'content_cut_span', 'content_source_quote');
+const repairReviewTool = {
+  name: 'submit_swt_repair_review',
+  strict: true,
+  description: 'Decide whether the exact reconstructed SWT coaching edit is suitable for the student. Return a verdict without changing the grade or writing a new edit.',
+  input_schema: { type: 'object', additionalProperties: false, properties: {
+    approved: { type: 'boolean', description: 'True only if the whole reconstructed sentence is grammatical and the edit faithfully addresses the diagnosed weakness.' },
+    reason: { type: 'string', description: 'State briefly what the revised wording says in context and why it is supported or unsupported by the source.' }
+  }, required: ['approved', 'reason'] }
+};
 const DEFAULT_SCORING_MODEL = 'claude-sonnet-4-6';
 // SWT scoring and its feedback share one dedicated model selection. A global
 // low-cost model used by other tasks must not silently select the SWT scorer.
 function scoringModel() { return process.env.SWT_CLAUDE_MODEL || DEFAULT_SCORING_MODEL; }
-function request(prompt, model = scoringModel(), {semanticReassessment=false, legacy=false} = {}) {
-  return { model:semanticReassessment ? (process.env.SWT_REVIEW_MODEL || scoringModel()) : model, max_tokens: 4000, temperature: 0, tools: [legacy ? legacyTool : tool],
-    tool_choice: { type: 'tool', name: tool.name }, messages: [{ role: 'user', content: prompt
-      + '\n\nOUTPUT CHECK: grammar_annotations and vocabulary_annotations must be separate top-level arrays, including [] when no corrections are needed. Return these arrays before feedback_note. Keep relationship_explanation under 60 words, next_step to one achievable action, and recommended_swaps to at most three useful optional suggestions. Write feedback_note last as short plain feedback, never as escaped JSON containing other fields.' }] };
+function request(prompt, model = scoringModel(), {semanticReassessment=false, legacy=false, repairReview=false} = {}) {
+  const selectedTool = repairReview ? repairReviewTool : legacy ? legacyTool : tool;
+  const content = repairReview ? prompt : prompt
+    + '\n\nOUTPUT CHECK: grammar_annotations and vocabulary_annotations must be separate top-level arrays, including [] when no corrections are needed. Return these arrays before feedback_note. Keep relationship_explanation under 60 words, next_step to one achievable action, and recommended_swaps to at most three useful optional suggestions. Write feedback_note last as short plain feedback, never as escaped JSON containing other fields.';
+  return { model:semanticReassessment ? (process.env.SWT_REVIEW_MODEL || scoringModel()) : model,
+    max_tokens:repairReview ? 512 : 4000, temperature:0, tools:[selectedTool],
+    tool_choice:{ type:'tool', name:selectedTool.name }, messages:[{role:'user',content}] };
 }
 
 const feedbackFields = ['grammar_annotations', 'vocabulary_annotations', 'recommended_swaps'];
@@ -101,12 +113,15 @@ function recoverFeedbackFields(result) {
   return result;
 }
 
-function response(value) {
+function response(value, {repairReview=false} = {}) {
   if (value?.stop_reason === 'max_tokens') {
     const error = new Error('Incomplete SWT assessment'); error.code = 'SWT_TRUNCATED'; throw error;
   }
-  const result = value?.content?.find(part => part.type === 'tool_use' && part.name === tool.name)?.input;
+  const expectedTool = repairReview ? repairReviewTool : tool;
+  const result = value?.content?.find(part => part.type === 'tool_use' && part.name === expectedTool.name)?.input;
   if (!result || typeof result !== 'object' || Array.isArray(result)) return null;
+  if (repairReview) return typeof result.approved === 'boolean' && typeof result.reason === 'string' && result.reason.trim()
+    ? {approved:result.approved,reason:result.reason} : null;
   const recovered = recoverFeedbackFields(result);
   const labels = ['what', 'why', 'how', 'result', 'topic', 'pivot', 'conclusion'];
   return { ...recovered, ...(typeof value.model === 'string' ? { assessment_model: value.model } : {}), ...(Array.isArray(recovered.captured_ideas)

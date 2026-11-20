@@ -50,7 +50,7 @@ function editRange(words, span) {
   return { start: words[first - 1].index, end: words[last - 1].index + words[last - 1][0].length };
 }
 
-function contentEdit(assessment, summary, passage) {
+function prepareContentEdit(assessment, summary, passage) {
   const edit = assessment.content_edit;
   if (!edit || !['add', 'remove', 'replace'].includes(edit.operation)
     || typeof edit.target !== 'string' || !edit.target.trim()
@@ -114,6 +114,11 @@ function contentEdit(assessment, summary, passage) {
   return { edit: { ...edit, text: wording, advice, cut, revised, original_word_count: words.length, revised_word_count: revisedForm.count } };
 }
 
+function contentEditIdentity(edit, summary, passage) {
+  return hash(JSON.stringify([summary, passage, edit.operation, edit.target_span, edit.cut_span ?? [],
+    edit.source_evidence, edit.text, edit.revised]));
+}
+
 function applyScoringPolicy(judgment, summary, passage = '') {
   const assessment = judgment.summary_assessment;
   const synth = synthesisForLegacy(assessment?.synthesis);
@@ -133,19 +138,18 @@ function applyScoringPolicy(judgment, summary, passage = '') {
   if (judgment.scoring_protocol !== POLICY_VERSION) return result;
 
   const contentDeduction = result.content_score < 4;
-  const { edit = null, retry } = contentDeduction ? contentEdit(checked, summary, passage) : {};
+  const { edit = null, retry } = contentDeduction ? prepareContentEdit(checked, summary, passage) : {};
   if (contentDeduction && !edit) {
-    result.assessment_issues.push('content_edit', `content_edit: ${retry}`);
-    result.needs_semantic_review = true;
+    result.feedback_issues = [retry];
   }
-  // Do not publish unchecked model-written directions or unattributed quotes.
-  checked.content_edit = edit;
-  checked.next_step = edit?.advice || '';
-  checked.repair = edit?.revised || '';
-  if (edit) {
-    result.content_reason = checked.relationship_explanation;
-    result.feedback_note = checked.relationship_explanation;
-  }
+  // Agreement on the original answer says nothing about the proposed
+  // rewrite. Publish only the exact edit that passed the separate check.
+  const approved = edit && judgment.verified_content_edit === contentEditIdentity(edit, summary, passage)
+    && !result.needs_semantic_review ? edit : null;
+  checked.content_edit = approved;
+  checked.next_step = approved?.advice || '';
+  checked.repair = approved?.revised || '';
+  if (contentDeduction) result.feedback_note = checked.relationship_explanation;
   return result;
 }
 
@@ -173,7 +177,7 @@ Give 2 for language that keeps the intended meaning clear, even with slips in ar
 FEEDBACK:
 The answer uses ${wordsUsed} words. SWT requires one complete sentence of 5–75 words. 75 is a maximum. Do not ask the student to include optional detail to fill the limit. At or near the limit, give a short replacement that keeps the meaning, or cut unnecessary detail to make room for an essential relationship. Check the whole revised sentence after applying the edit. It must fit within 75 words and use at least 5 words.
 
-For Content below 4, tell the student what to keep and what to change. Use the smallest exact contiguous content_source_quote from the passage that captures the useful part, such as the crucial phrase or clause instead of its whole sentence. Use a numbered student content_edit_span to identify the wording to change. Prefer replacing just that part. In repair give only the new words, written in simple English, showing a faithful paraphrase, how the ideas can connect, or both. Preserve the source's cause, contrast, scope or qualification. Attach a missing cause to the claim it explains, even when a separate optional cut is needed later. Explain the change using the student's words in relationship_explanation. Put word numbers only in the span fields. When an optional detail is the issue, remove it while retaining the essential proposition. For fragments, show how to turn the relevant pieces into a complete main statement that connects them. Replace the whole response only when a local change cannot repair it, such as a list of fragments.
+For Content below 4, tell the student what to keep and what to change. Use the smallest exact contiguous content_source_quote from the passage that captures the useful part, such as the crucial phrase or clause instead of its whole sentence. Use a numbered student content_edit_span to identify the wording to change. Prefer replacing just that part. In repair give only the new words, written in simple English, showing a faithful paraphrase, how the ideas can connect, or both. Preserve the source's cause, contrast, scope or qualification. Attach a missing cause to the claim it explains, even when a separate optional cut is needed later. Use relationship_explanation to diagnose the original answer only. Keep proposed wording within the repair fields so it can be checked separately. Put word numbers only in the span fields. When an optional detail is the issue, remove it while retaining the essential proposition. For fragments, show how to turn the relevant pieces into a complete main statement that connects them. Replace the whole response only when a local change cannot repair it, such as a list of fragments.
 
 Set content_edit_operation to add, remove or replace. For add, cite the exact last words after which to insert the new wording. At the end of the sentence use replace so you can replace its punctuation too. For remove, leave repair empty. For add or replace, use content_cut_span for one separate optional part of the student answer to remove if needed to fit, including any now redundant connector or punctuation. The cut and edit spans must not overlap. Use [] for no separate cut. Re-read the full sentence after inserting the exact repair. Check the joins for doubled punctuation, and avoid leaving a dependent phrase after a semicolon. Include an adjoining word in the span if its punctuation needs to change. Use exact quotes and avoid academic synonyms or score promises. For full Content use none, two empty spans, an empty source quote and an empty repair. Language annotations must identify the actual language error in the response. Keep optional refinements separate from deductions.
 
@@ -184,4 +188,4 @@ ${JSON.stringify({ passage, summary, passage_guide: guide, diagnostic_ideas: dia
 }
 
 module.exports = { POLICY_VERSION, SCORING_CRITERIA, SYNTHESIS_GUIDANCE, SYNTHESIS_CONTENT_CAP, legacyPolicy,
-  validSynthesis, applyScoringPolicy, buildJudgingPrompt, itemScore90, sourceIdentity };
+  validSynthesis, applyScoringPolicy, buildJudgingPrompt, itemScore90, sourceIdentity, prepareContentEdit, contentEditIdentity };

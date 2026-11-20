@@ -117,7 +117,7 @@ function normalize(q, text, raw) {
     feedback.content += ' ' + synthesis.explanation;
   }
   return { version: q.type === 'swt' ? SWT_POLICY_VERSION : VERSION, assessmentType: 'AI practice assessment', scores, maxima, total, maximum, wordCount: form.count, gated, reasons,
-    ...(q.type === 'swt' ? {itemScore90:itemScore90(scores.content,total), source_identity:sourceIdentity(q.text,q.keyPoints)} : {}),
+    ...(q.type === 'swt' ? {itemScore90:itemScore90(scores.content,total), source_identity:swtQuestionSourceIdentity(q)} : {}),
     ...(synthesis ? { summary_assessment: { synthesis }, full_content_eligible: !gated && scores.content === 4 && synthesis.quality === 'effective' } : {}),
     feedback,
     strengths: raw.strengths.filter(x => typeof x === 'string').slice(0,3), improvements: [...reasons, ...improvements], errors };
@@ -166,10 +166,14 @@ async function gradeUnifiedEssay(q, text, call) {
   };
 }
 
+function swtQuestionSourceIdentity(q) {
+  return sourceIdentity(q.text, { key: q.keyPoints ?? null, sample: q.sample ?? null });
+}
+
 async function gradeUnifiedSwt(q, text, judge, {legacy=false} = {}) {
   const form = formFor('swt', text);
   const version = legacy ? legacyPolicy.POLICY_VERSION : SWT_POLICY_VERSION;
-  const identity = legacy ? {} : {source_identity:sourceIdentity(q.text,q.keyPoints)};
+  const identity = legacy ? {} : {source_identity:swtQuestionSourceIdentity(q)};
   if (!form.score) return {...zeroResult('swt',text,form.reasons),version,score_provisional:false,
     ...identity,...(legacy?{}:{itemScore90:10})};
   let assessment;
@@ -240,4 +244,4 @@ function gradeDictation(q, text) {
     strengths: total === maximum ? ['All words were reproduced correctly in sequence.'] : [], improvements, errors: [],
     wordFeedback: expected.map((word, index) => ({ word, correct: matched.has(index) })), extraWords: extra };
 }
-module.exports = { VERSION, MAXIMA, wordCount, sentenceCount, formFor, buildPrompt, normalize, grade, gradeUnifiedSwt, gradeUnifiedEssay, gradeDictation, localGrade, localContentScore };
+module.exports = { VERSION, MAXIMA, wordCount, sentenceCount, formFor, buildPrompt, normalize, grade, gradeUnifiedSwt, gradeUnifiedEssay, gradeDictation, localGrade, localContentScore, swtQuestionSourceIdentity };

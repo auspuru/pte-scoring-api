@@ -25,16 +25,16 @@ const sentence = value => clean(value).replace(/[.?!]+$/, '');
 
 function makeSwt(item, index) {
   const text = [...item.notes, swtExtensions[item.sourceId] || ''].map(clean).filter(Boolean).join(' ');
-  const sample = swtSamples[item.sourceId];
-  if (!sample) throw new Error('Missing teacher-editable SWT sample for source ' + item.sourceId);
+  const reference = swtReferences[item.sourceId];
+  if (!reference) throw new Error('Missing SWT reference for source ' + item.sourceId);
   return {
     id: 'pred26-swt-' + String(index + 1).padStart(2, '0'),
     type: 'swt',
     title: item.title,
     minutes: 10,
     text,
-    keyPoints: item.notes.slice(0, 4).map(clean),
-    sample: clean(sample),
+    keyPoints: reference.keyPoints.map(clean),
+    sample: clean(reference.sample),
     sampleReview: {
       authoring: 'manual-synthesis',
       automatedValidation: 'required',
@@ -74,25 +74,152 @@ function makeSst(item, index) {
   };
 }
 
-const swtSamples = Object.freeze({
-  '6000322': 'Archaeological human remains provide rare evidence about diet, disease, migration and living conditions, yet reburial rules protecting cultural and ethical interests can restrict later scientific study, so museums and researchers must balance community respect, preservation and education because improving research methods and future techniques may reveal answers unavailable to current technology.',
-  '6000281': 'Rather than relying on one anti-inflammatory food, nutrition research supports balanced eating patterns rich in vegetables, fruit, whole grains, legumes, nuts and unsaturated oils, because repeated choices across meals matter more than seasonality alone and can replace heavily processed foods, refined sugar, salt and saturated fat.',
-  '6000195': 'Modern security problems increasingly involve smaller conflicts with armed groups, weak state authority and irregular tactics rather than conventional national armies, and because violence can grow without a clear declaration or front line, creating wider instability while international rules are difficult to enforce where institutions cannot reliably investigate or punish violations, prevention must accompany limited military responses.',
-  '6000478': 'Microloans can widen financial participation by giving small enterprises that lack conventional bank access modest capital for equipment, stock or transport, but high repayment pressure, weak planning and unstable income can create stress, so useful programs combine credit with realistic repayment terms and practical cash-flow support.',
-  '6000475': 'Darwin developed his ideas about species gradually through observation, travel and comparison of natural evidence, with the Beagle revealing geographical and biological patterns that challenged fixed species, while the controversial argument delayed publication until he had gathered stronger supporting evidence, refined natural selection and discussed his thinking with other scientists.',
-  '6000470': 'Future teachers need more than digital-tool skills, so teacher education should connect technology with subject methods and real lesson design, using modelling, worked examples and supervised practice to show how tools can support questioning, collaboration and feedback while keeping pedagogy, rather than software itself, in control.',
-  '6000469': 'Electric vehicles reduce local exhaust pollution and offer quiet operation, but their environmental value depends on electricity and battery production, while range, charging time, price and charging stations remain practical concerns; moreover, battery manufacturing requires energy and materials with environmental and supply-chain impacts, so climate benefits grow most when direct emissions fall alongside low-carbon electricity.',
-  '6000467': 'The Wright brothers treated flight as a practical engineering problem, combining bicycle repair and mechanical skills with study of balance, control, wing shape and moving air, then using earlier research, gliders and repeated tests to challenge assumptions, while workshop experience helped them create lightweight structures and adjust components as new evidence emerged from each experiment.',
-  '6000466': 'Industrial growth and consumption increase pressure on finite resources, while poorly managed extraction causes environmental damage and scarcity raises costs, so sustainable management requires efficient design, recycling, renewable energy and shared responsibility across production, consumption and recovery, supported by monitoring that includes environmental costs in decisions.',
-  '6000465': 'Cities concentrate employment, education, health services and cultural activities, creating opportunities while high population density can support public transport and efficient services, but rapid urbanisation without enough housing and infrastructure increases congestion, pollution, expensive housing and inequality, so green space, walkable neighbourhoods, reliable transport and mixed housing are essential for improving daily life and reducing road and energy pressure.',
-  '6000327': 'Because aircraft need large amounts of energy without heavy fuel systems, aviation is difficult to decarbonise; hydrogen may reduce direct carbon dioxide emissions, but it requires new tanks, airport infrastructure and safety procedures, and engine testing is still needed to evaluate performance and other emissions under real conditions.',
-  '6000272': 'Learning is easier when new information connects with existing ideas, experiences and skills, but prior knowledge can also contain incorrect assumptions, so teachers should activate it through questions, review and examples, then identify gaps and make useful links explicit before introducing more difficult material.',
-  '6000237': 'A bank overdraft lets a business spend beyond a positive current-account balance within an agreed limit, helping firms manage seasonal cash flow when expenses arrive before customer payments; farms may finance seed, feed and labour before crops or livestock generate income, but because the overdraft can be repayable on demand, delayed sales or unexpected losses can expose the business to serious risk.',
-  '6000235': 'The New Woman reflected changing expectations about women’s education, employment, marriage and public life, as writers questioned middle-class women’s economic dependence and argued for careers and property control, while supporters linked independence to education and legal rights and critics feared challenges to family roles; literature and journalism then spread these tensions through fictional characters and new choices.',
-  '6000222': 'Complaining can create social connection when people feel understood after sharing a difficult experience, but it becomes unhelpful when groups compete over the worst problems and constant negativity becomes a way to belong; in workplaces and families, repeated negative conversations can shape expectations and make positive comments socially risky, although discussing real frustration can still expose unfair conditions and encourage practical support.',
-  '6000213': 'Because house mice have travelled with people for centuries and often settle in new places through food stores, cargo and transport, researchers can compare ancient and modern mouse DNA to trace relationships between regions, using these genetic patterns alongside archaeology when written records or human artefacts are limited.',
-  '6000199': 'Solar power converts sunlight into usable energy without exhaust emissions at generation, offering renewable, relatively quiet systems that scale from homes to large plants, but output varies with weather, season and location and therefore needs storage, flexible demand or other generation, while significant upfront installation costs must be weighed against generally lower routine maintenance.',
-  '6000183': 'Early modern English coffee houses became social spaces for exchanging news, ideas and business information, helped by low entry costs and shared newspapers, and they evolved into club-like meeting places for professions and interests before changing trade made imported drinks more affordable at home and altered their urban role.'
+// Each reference covers the full source, including the extension that learners see.
+const swtReferences = Object.freeze({
+  '6000322': {
+    keyPoints: [
+      'Human remains can answer new research questions as methods improve.',
+      'Reburial can respect cultural and ethical concerns but limit later study.',
+      'Consult communities and review each case when deciding on access and reburial.'
+    ],
+    sample: 'Reburial can respect cultural and ethical concerns but limit what improved research methods could reveal about human remains, so museums should consult communities and review each case when deciding on research access and reburial.'
+  },
+  '6000281': {
+    keyPoints: [
+      'The overall diet matters more for inflammation than any single food.',
+      'Replacing heavily processed foods with varied whole foods improves the balance of meals.',
+      'Gradual changes are more useful when people can maintain them.'
+    ],
+    sample: 'The overall diet matters more for inflammation than any single food, so people should gradually replace heavily processed foods with varied whole foods and build a balanced way of eating that they can maintain.'
+  },
+  '6000195': {
+    keyPoints: [
+      'Unclear front lines and weak institutions can let irregular conflicts spread.',
+      'Weak enforcement can make it harder to protect civilians.',
+      'Prevention, cooperation and stronger institutions should accompany limited military force.'
+    ],
+    sample: 'Irregular conflicts can spread before governments respond because front lines are unclear and weak institutions struggle to enforce rules, so prevention, cooperation and stronger institutions should help protect civilians alongside limited military force.'
+  },
+  '6000478': {
+    keyPoints: [
+      'Microloans can give people without conventional bank access money for productive activities.',
+      'Repayment pressure and unstable income can deepen financial strain.',
+      'Realistic terms and support should help borrowers build lasting livelihoods.'
+    ],
+    sample: 'Microloans can give borrowers without conventional bank access the money to build productive businesses, but repayment pressure and unstable income can deepen financial strain, so lenders should offer realistic terms and support that help borrowers build lasting livelihoods.'
+  },
+  '6000475': {
+    keyPoints: [
+      'Darwin’s observations challenged the idea that species were fixed.',
+      'He gathered stronger evidence before publishing a controversial theory.',
+      'Publication let other scientists challenge and test the theory, which continued to guide research.'
+    ],
+    sample: 'Darwin’s observations challenged the idea that species were fixed, but he gathered stronger evidence before publishing his controversial theory, allowing other scientists to challenge and test it and making evolution a continuing subject of research.'
+  },
+  '6000470': {
+    keyPoints: [
+      'Teachers should choose technology to support learning goals.',
+      'Lesson practice and feedback help trainees judge what supports learning.',
+      'Trainees should see when a digital tool distracts and a simpler method would work better.'
+    ],
+    sample: 'Teacher training should combine technology with lesson practice and feedback so trainees can judge which digital tools support learning goals, adapt them for different classes and recognise when a simpler method would work better.'
+  },
+  '6000469': {
+    keyPoints: [
+      'Electric cars can cut local exhaust pollution, while lifetime gains depend on electricity and battery production.',
+      'Access to charging and other practical costs affect whether drivers can switch.',
+      'Cleaner transport needs policies that address the wider system, including alternatives to driving.'
+    ],
+    sample: 'Electric cars can cut local exhaust pollution, but lifetime gains depend on electricity and battery production, so cleaner transport requires a wider plan that considers access to charging as well as alternatives to driving.'
+  },
+  '6000467': {
+    keyPoints: [
+      'The Wright brothers used workshop skills to tackle flight as an engineering problem.',
+      'They tested balance and control and measured what happened.',
+      'Repeated trials helped them challenge earlier assumptions and improve the design after failures.'
+    ],
+    sample: 'The Wright brothers combined workshop skills with repeated tests of balance and control, using measurements from their own trials to challenge earlier assumptions and turning each failure into evidence for improving the design.'
+  },
+  '6000466': {
+    keyPoints: [
+      'Industrial growth and consumption increase pressure on finite resources.',
+      'Poorly managed extraction can damage the environment, and scarcity can raise costs.',
+      'Efficient design and material recovery can reduce pressure as producers and consumers share responsibility.'
+    ],
+    sample: 'As industrial growth and consumption put pressure on finite resources, scarcity can raise costs and poorly managed extraction can harm the environment, so producers and consumers need to share responsibility for using materials efficiently from design to recovery.'
+  },
+  '6000465': {
+    keyPoints: [
+      'Cities bring jobs and services together and create opportunities.',
+      'Rapid growth can cause congestion and exclusion when housing and infrastructure fall behind.',
+      'Planning should improve access to housing, transport and services for existing residents.'
+    ],
+    sample: 'Cities concentrate jobs and services, but rapid growth can cause congestion and exclude residents when housing and infrastructure fall behind, so planning needs to improve access to affordable housing, transport and essential services for existing residents.'
+  },
+  '6000327': {
+    keyPoints: [
+      'Aircraft need a lot of energy without heavy fuel systems.',
+      'Hydrogen may cut direct carbon dioxide emissions in some aircraft, but it needs new infrastructure and safe handling.',
+      'Its value depends on clean production and reliable performance at realistic scale alongside other low-carbon options.'
+    ],
+    sample: 'Hydrogen could cut direct carbon dioxide emissions in some aircraft, but its wider climate benefit depends on clean production, and safe use at realistic scale requires compatible airport infrastructure and testing that shows it can meet aircraft energy needs without heavy fuel systems.'
+  },
+  '6000272': {
+    keyPoints: [
+      'Accurate prior knowledge helps students understand new ideas.',
+      'Misconceptions can cause students to misread new material.',
+      'Teachers should draw out students’ reasoning so they can make useful connections and revise mistaken assumptions.'
+    ],
+    sample: 'Accurate prior knowledge helps students connect with new material, but misconceptions can lead them to misunderstand it, so teachers should ask students to explain their reasoning and help them revise mistaken assumptions.'
+  },
+  '6000237': {
+    keyPoints: [
+      'An overdraft helps bridge temporary gaps between expenses and income.',
+      'Repayment on demand can leave a business exposed if income is delayed.',
+      'Repeated use can hide a deeper shortage that needs longer-term planning.'
+    ],
+    sample: 'An overdraft can bridge a temporary gap between expenses and income, but repayment on demand leaves a business exposed if income is delayed, and repeated use can hide a deeper shortage that calls for longer-term planning.'
+  },
+  '6000235': {
+    keyPoints: [
+      'Supporters linked women’s independence with education and rights, while critics feared changes to family roles.',
+      'Literature and journalism helped spread the debate over the New Woman.',
+      'The debate shows how public images and legal and economic changes reshaped gender roles unevenly.'
+    ],
+    sample: 'The New Woman debate, spread through literature and journalism, brought supporters of women’s education, legal rights and economic independence into conflict with defenders of established family roles, showing how public images and reforms reshaped expectations unevenly.'
+  },
+  '6000222': {
+    keyPoints: [
+      'Complaining can build connection by helping people feel heard.',
+      'Repeated complaints without action can make negativity a way to belong.',
+      'Constructive discussion acknowledges feelings, clarifies the problem and leads to action.'
+    ],
+    sample: 'Complaining can build connection by helping people feel heard, but repeated complaints without action can make negativity a way to belong, so constructive discussion recognises feelings while clarifying the problem and deciding what can change.'
+  },
+  '6000213': {
+    keyPoints: [
+      'House mice moved with humans, so their DNA can help trace contact and settlement.',
+      'Trade and later introductions can make mouse movements differ from human migration.',
+      'Mouse DNA is most useful when checked against independent archaeological or historical evidence.'
+    ],
+    sample: 'Because house mice travelled with people, their DNA can help trace human contact and settlement, but later trade can mix mouse populations, so researchers should check these clues against independent archaeological or historical evidence.'
+  },
+  '6000199': {
+    keyPoints: [
+      'Solar generation provides renewable electricity, with no exhaust emissions at generation.',
+      'Solar output varies with sunlight, while electricity demand changes separately.',
+      'Storage, flexible demand and grid planning can help maintain a reliable supply.'
+    ],
+    sample: 'Solar power provides renewable electricity without exhaust emissions at generation, but because output varies with sunlight, storage, flexible demand and grid planning help make that electricity useful when people need it and keep supply reliable.'
+  },
+  '6000183': {
+    keyPoints: [
+      'Coffee houses became places to exchange news and business information.',
+      'Trade made imported drinks more affordable at home and changed the role of public meeting places.',
+      'Tea and coffee habits show how prices, trade and social life shape one another.'
+    ],
+    sample: 'English coffee houses helped people exchange news and make useful contacts, but trade made imported drinks more affordable at home and changed the role of these meeting places, showing how commerce and social habits shaped each other.'
+  }
 });
 
 const swtExtensions = Object.freeze({
