@@ -339,7 +339,13 @@ for(const width of [1363,390,320])test('SWT review: exact corrections, drafts, s
  await page.locator('[data-review-continue]').click();await page.waitForFunction(()=>document.getElementById('swtPracticeScreen').classList.contains('active'));assert.equal(await page.$eval('#summaryInput',e=>e.value),revised);
  await show({score_provisional:true});assert.equal(await page.$eval('#heroScore',e=>e.textContent),'—');assert.equal(await page.$('[data-review-save]'),null);assert.equal(await page.$('[data-review-fix]'),null);
  await show({trait_scores:{content:0,form:0,grammar:0,vocabulary:0},form_details:{reason:'Use one complete sentence.'}});assert.match(await page.$eval('#swtReviewForm',e=>e.textContent),/one complete sentence/);assert.equal(await page.$('[data-review-fix]'),null);
- await show({trait_scores:{content:4,content_max:4,form:1,grammar:2,vocabulary:2},grammar_details:{grammar_annotations:[]}});assert.match(await page.$eval('#swtReviewContent',e=>e.textContent),/Keep this approach/);assert.equal(await page.$('[data-review-use]'),null);
+ await show({trait_scores:{content:4,content_max:4,form:1,grammar:2,vocabulary:2},grammar_details:{grammar_annotations:[]},
+  content_details:{full_content_eligible:true,summary_assessment:{relationships_clear:true,missing_dependencies:[],
+   conclusion_status:'captured',repair:'Unverified saved rewrite.',next_step:'Replace clear terms with formal alternatives.'}}});
+ const fullContentText=await page.$eval('#swtReviewContent',e=>e.textContent);
+ assert.match(fullContentText,/Full Content marks.*Clear, simple words/s);
+ assert.doesNotMatch(fullContentText,/Unverified saved rewrite|formal alternatives/);
+ assert.equal(await page.$('[data-review-use]'),null);
  await show();await page.locator('[data-review-edit]').click();
  assert.equal(await page.$eval('#swtGuidanceBody',e=>e.scrollWidth<=e.clientWidth+1),true);
  if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.$eval('#swtReviewLanguage',e=>e.scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:path.join(root,'.cache','swt-review-'+width+'.png')});}
