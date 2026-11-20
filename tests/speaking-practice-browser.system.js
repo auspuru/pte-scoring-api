@@ -54,3 +54,34 @@ test('Local RTS narration produces playable audio without an external speech ser
  const {createPromptNarrator}=require('../speaking-practice-prompts'),file=await createPromptNarrator(directory)({type:'rts',text:'Please ask your tutor for help with your assignment.'});
  const {stdout}=await run('ffprobe',['-v','error','-show_entries','format=duration','-of','default=noprint_wrappers=1:nokey=1',file]);assert(Number(stdout)>1);await run('ffmpeg',['-v','error','-i',file,'-f','null','-']);
 });
+
+for(const width of [1365,390])test('Speaking practice DI content retry preserves audio and reports invalid reviews honestly at '+width+'px',{timeout:45000},async t=>{
+ const crypto=require('node:crypto'),academy=require('../describe-image-academy'),delivery=require('../speaking-delivery');
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'di-retry-browser-')),app=express();app.use(express.json());
+ const q=require('../content/speaking-bank').questions.find(q=>q.type==='di'),text=q.facts[0],id=crypto.randomUUID();let valid=false,calls=0;
+ const service=installSpeakingLab(app,{directory,verifyToken:token=>token==='fixture'?'fixture':null,getAccount:async()=>({}),deliveryAssessmentAvailable:true,azureComparisonAvailable:false,
+  transcribe:async()=>{throw Error('Saved transcript must be reused.');},assessDelivery:async()=>{throw Error('Confirmed Azure must be reused.');},callModel:async()=>{
+   calls++;return {score:3,relevance:'image-specific',accuracy:valid?'accurate':'minor-errors',reason:'One feature is described without developing the main comparison.',nextStep:'Connect the important image features.',
+    scoreImpact:{kind:'relationship',quote:text,factIndices:[0],observation:'The response presents one feature without connecting it to the main comparison.',impact:'The relationship between the main features remains unclear.'},evidence:[{quote:text,factIndices:[0],kind:'feature'}]};
+  }});
+ const recording={hash:'synthetic-preserved-audio',mime:'audio/wav',data:require('../full-mock/recording').wav(Buffer.alloc(32000)).toString('base64')};
+ await service.store.update('fixture',id,()=>({id,questionId:q.id,questionSnapshot:structuredClone(q),practiceMode:'timed',status:'submitted',revision:1,startedAt:Date.now(),transcript:text,transcription:text,recording,
+  result:{total:null,maximum:6,contentPolicyVersion:academy.VERSION,contentStatus:'unavailable',scoringMode:'unavailable',score_provisional:true,
+   pronunciation:{score:4,maximum:5,raw:88},fluency:{score:4,maximum:5,raw:90},deliveryVersion:delivery.VERSION}}));
+ app.get('/',(_,res)=>res.type('html').send(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/practice-studio.css"><link rel="stylesheet" href="/speaking-practice.css"></head><body><main id="speakingPane"></main><script>window.currentUserId='fixture';sessionStorage.setItem('pte_session_token','fixture');</script><script src="/practice-catalogue.js"></script><script src="/practice-studio.js"></script><script src="/speaking-start-cue.js"></script><script src="/speaking-images.js"></script><script src="/speaking-practice.js"></script><script>SpeakingPractice.open('di');</script></body></html>`));
+ app.use(express.static(path.join(root,'public'),{index:false}));const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));let browser;
+ t.after(async()=>{await browser?.close();await service.waitForAssessments();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
+ browser=await puppeteer.launch({headless:true,executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH||'/usr/bin/chromium'});
+ const page=await browser.newPage();await page.setViewport({width,height:950});page.setDefaultTimeout(12000);let uploads=0;const errors=[];
+ page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.method()==='POST'&&r.url().endsWith('/recording'))uploads++;});
+ await page.goto('http://127.0.0.1:'+server.address().port);await page.waitForSelector('#speaking-history [data-speaking-attempt]');
+ await page.$eval('#speaking-history',el=>{el.closest('details').open=true;});await page.locator('[data-speaking-attempt="'+id+'"]').click();
+ await page.waitForSelector('.speaking-content-fallback');await page.locator('.speaking-content-fallback [data-speaking-action="submit"]').click();
+ await page.waitForFunction(()=>document.getElementById('speakingPane').textContent.includes('still unavailable'));
+ assert.equal(calls,2);assert.equal(await page.$eval('#speakingPane',el=>el.textContent.includes('Content review completed')),false);
+ await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','practice-speaking-di-retry-'+width+'.png')});
+ valid=true;await page.locator('.speaking-content-fallback [data-speaking-action="submit"]').click();
+ await page.waitForFunction(()=>document.getElementById('speakingPane').textContent.includes('Content review completed'));
+ assert.equal(calls,3);assert.equal(uploads,0);assert.deepEqual(errors,[]);
+ const saved=await service.store.get('fixture',id);assert.equal(saved.result.total,3);assert.equal(saved.result.pronunciation.score,4);assert.equal(saved.result.fluency.score,4);assert.equal(saved.transcript,text);assert.deepEqual(saved.recording,recording);
+});

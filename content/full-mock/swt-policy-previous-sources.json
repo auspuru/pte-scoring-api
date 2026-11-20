@@ -11,7 +11,7 @@
       "version": "intelligibility-delivery-v5"
     },
     "describe-image-academy.js": {
-      "sha256": "2c80d3c9048141891140195f67c7359f7e8ee0ddc2af67193ec703de9a1040d3",
+      "sha256": "ac9537c57445cb054187c822c3aadfa6ea1bf43da89b55d439f668520267506a",
       "version": null
     },
     "describe-image-academy/chart-readings.js": {
@@ -103,7 +103,7 @@
       "version": "full-mock-asq-2026-10-28.1"
     },
     "full-mock/assessment.js": {
-      "sha256": "66b81be1336c4e2db4c6fd27e6c82fa69bf0ce267bb41b1120042a7e43070470",
+      "sha256": "3f4ed4dd708ebfa112b0bda69458753be1885fdcfe8cb3914a8eb1c5aeeae54e",
       "version": "full-mock-assessment-2026-10-29.1"
     },
     "full-mock/audit.js": {
@@ -212,7 +212,7 @@
       "version": null
     },
     "speaking-lab.js": {
-      "sha256": "4c94f66a4693c05c655d33f5bdbc5d99de9414f6667d0f820ef1e9460c3bcc7c",
+      "sha256": "8ef399519308331a42163ed0a57a74ab39f1f8be6a89e34bbdecb8482dc58828",
       "version": null
     },
     "speaking-scoring.js": {

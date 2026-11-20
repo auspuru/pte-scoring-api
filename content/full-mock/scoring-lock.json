@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "bc29298",
+  "baseCommit": "93cc716",
   "checkedAt": "2026-11-20",
   "scope": "SWT 20.3.17 synthesis, version-bound passage references and independently reviewed word-budget feedback. Historical assessment snapshots retain their native policy.",
   "snapshot": {
@@ -24,7 +24,7 @@
         "version": "intelligibility-delivery-v5"
       },
       "describe-image-academy.js": {
-        "sha256": "2c80d3c9048141891140195f67c7359f7e8ee0ddc2af67193ec703de9a1040d3",
+        "sha256": "ac9537c57445cb054187c822c3aadfa6ea1bf43da89b55d439f668520267506a",
         "version": null
       },
       "describe-image-academy/chart-readings.js": {
@@ -116,7 +116,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "123c5f5180c1d235257b8891624dc6713dd90f4ae3ec715a9e1f1fab91d8df17",
+        "sha256": "ca007833de908ae2336d30d8e3645235da42c20fa65f77ad28b0664daf36f368",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -225,7 +225,7 @@
         "version": null
       },
       "speaking-lab.js": {
-        "sha256": "4c94f66a4693c05c655d33f5bdbc5d99de9414f6667d0f820ef1e9460c3bcc7c",
+        "sha256": "8ef399519308331a42163ed0a57a74ab39f1f8be6a89e34bbdecb8482dc58828",
         "version": null
       },
       "speaking-scoring.js": {
