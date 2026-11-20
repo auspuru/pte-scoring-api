@@ -8,20 +8,42 @@ const passage={text:'Trees cool cities. They improve air quality.'};
 test('Review quotes only real student/source evidence and escapes saved feedback',()=>{
  const d=data();d.trait_scores.content=3;d.content_details.summary_assessment={missing_dependencies:[{effect:'invented words',missing_context:'Invented source',explanation:'<img src=x onerror=bad()>'}],next_step:'<script>bad()</script>',repair:'Fix a selected relationship.'};
  const m=review.model(d,passage,text);assert.equal(m.quote,'');assert.equal(m.sourceQuote,'');
- const html=review.render(m);assert(!html.includes('<script>'));assert(!html.includes('<img'));assert(html.includes('&lt;script&gt;'));assert(!html.includes('<q>invented'));
+ const html=review.render(m);assert(!html.includes('<script>'));assert(!html.includes('<img'));assert(html.includes('&lt;img'));assert(!html.includes('&lt;script&gt;'));assert(!html.includes('<q>invented'));
 });
 test('Exact language annotations stay separate from optional style and stale quotes are ignored',()=>{
- const d=data();d.grammar_details.grammar_annotations=[{phrase:'improves',fix:'improve',affects_score:true,rationale:'Plural subject.'},{phrase:'Trees',fix:'Urban trees',affects_score:false},{phrase:'cities and',fix:'elsewhere',affects_score:true},{phrase:'not in answer',fix:'anything',affects_score:true}];
+ const d=data();d.grammar_details.grammar_annotations=[{phrase:'improves',fix:'improve',affects_score:true,rationale:'Plural subject.'},{phrase:'Trees',fix:'Urban trees',affects_score:false,rationale:'Specifies which trees.'},{phrase:'cities and',fix:'elsewhere',affects_score:true},{phrase:'not in answer',fix:'anything',affects_score:true}];
  const m=review.model(d,passage,text);assert.equal(m.annotations.length,3);assert.equal(m.annotations[1].optional,true);
  assert.equal(review.model({...d,score_provisional:true},passage,text).annotations.length,0);
  assert.equal(review.model({...d,ai_feedback_degraded:true},passage,text).repair,'');
 });
-test('Only complete saved repairs can be loaded; form failures and strong answers get no invented repair',()=>{
+test('Only checked Content edits and complete sets of required language corrections can be loaded',()=>{
  const d=data();assert.equal(review.model(d,passage,text).repair,'');
  d.content_details.summary_assessment.repair='connect this cause';assert.equal(review.model(d,passage,text).usable,false);
  d.trait_scores.form=0;assert.equal(review.model(d,passage,text).repair,'');
  d.trait_scores.form=1;d.grammar_details.grammar_annotations=[{phrase:'improves',fix:'improve',affects_score:true,rationale:'Plural subject.'}];delete d.content_details.summary_assessment.repair;
- const m=review.model(d,passage,text);assert.equal(m.repair,'Trees cool cities and improve air quality.');assert.equal(m.usable,true);
+ const m=review.model(d,passage,text);assert.equal(m.repair,'');assert.equal(m.usable,false);
+ assert.equal(m.languageDraft,'Trees cool cities and improve air quality.');
+});
+
+test('A 74-word full Content result keeps optional language edits out of Content and accounts for the word limit',()=>{
+ const {document,window}=parseHTML('<div id="review"></div>'),target=document.getElementById('review');
+ const d=data(),answer='Parks shade streets and improve air quality, '+Array(67).fill('especially').join(' ')+'.';
+ const a=d.content_details.summary_assessment;
+ a.repair='…the streets… and …the air quality…';
+ a.synthesis={quality:'partial',explanation:'Old synthesis note.'};
+ d.grammar_details.grammar_annotations=[
+  {phrase:'streets',fix:'the streets',affects_score:false,rationale:'Specifies the streets discussed.'},
+  {phrase:'air quality,',fix:'the local air quality,',affects_score:false,rationale:'Limits the scope to one area.'}
+ ];
+ const before=JSON.stringify(d),m=review.mount(target,d,passage,answer);
+ assert.equal(m.wordCount,74);assert.equal(m.annotations.length,1);assert.equal(m.languageDraft,'');
+ assert.match(target.querySelector('#swtReviewContent').textContent,/Full Content marks/);
+ assert.doesNotMatch(target.querySelector('#swtReviewContent').textContent,/the streets|air quality|Old synthesis note/);
+ assert.equal(target.querySelector('[data-review-use]'),null);
+ target.querySelector('[data-review-fix]').dispatchEvent(new window.Event('click',{bubbles:true}));
+ assert.match(target.querySelector('#swtReviewCorrection').textContent,/the streets.*Specifies the streets discussed.*75 of 75 words after this change alone/);
+ assert.doesNotMatch(target.querySelector('#swtReviewLanguage').textContent,/the local air quality/);
+ assert.equal(JSON.stringify(d),before);
 });
 test('Inline correction, draft undo and stale-account guards preserve the submitted answer',()=>{
  const {document,window}=parseHTML('<div id="annotatedSubmission"></div><div id="review"></div>');
@@ -47,4 +69,35 @@ test('Repeated words use their validated word span and ambiguous historical quot
  assert.equal(review.model(d,passage,text).annotations[0].start,text.lastIndexOf('cool'));
  delete d.grammar_details.grammar_annotations[0].phrase_span;
  assert.equal(review.model(d,passage,text).annotations.length,0);
+});
+
+test('A checked SWT edit leads with the source fragment, shows the new word count and keeps the full example optional',()=>{
+ const d=data(),answer='Trees cool heavily developed cities and improve air quality.',revised='Trees cool cities and improve air quality.';
+ d.trait_scores.content=3;
+ const a=d.content_details.summary_assessment;
+ a.content_edit={operation:'replace',target:'heavily developed cities',text:'cities',source_evidence:'cool cities',
+  advice:'Replace “heavily developed cities” with “cities”.',original_word_count:9,revised_word_count:7,revised};
+ a.repair=revised;
+ const m=review.model(d,passage,answer),html=review.render(m);
+ assert.equal(m.action,a.content_edit.advice);
+ assert.match(html,/Keep this part of the passage<\/strong><q>cool cities<\/q>/);
+ assert.match(html,/7 of 75 words after the edit · 2 words saved/);
+ assert.match(html,/<details class="swt-review-suggestion"><summary>See an example with this edit/);
+ assert.equal(m.usable,true);
+
+ const overflow='Trees '+Array(74).fill('cool').join(' ')+' cities.';
+ a.content_edit.revised=overflow;
+ a.content_edit.revised_word_count=76;
+ a.repair=overflow;
+ const invalid=review.model(d,passage,answer),invalidHtml=review.render(invalid);
+ assert.equal(invalid.repair,'');
+ assert.equal(invalid.usable,false);
+ assert.doesNotMatch(invalidHtml,/data-review-use|words after the edit|Replace “heavily/);
+});
+
+test('The Form panel explains the maximum and how many words an over-limit response needs to cut',()=>{
+ const answer=n=>'Trees '+Array(n-2).fill('cool').join(' ')+' cities.';
+ assert.match(review.render(review.model(data(),passage,answer(75))),/75 is the maximum\. A shorter summary can earn full marks\./);
+ const d=data();d.trait_scores.form=0;
+ assert.match(review.render(review.model(d,passage,answer(77))),/Cut at least 2 words\. Start with repeated points or optional examples\./);
 });

@@ -12,6 +12,7 @@ const bank = require('./content/writing-lab.json');
 const approvedAudio = require('./approved-audio');
 const randomPractice = require('./random-practice');
 const predictions = require('./content/writing-predictions-sep-2026');
+const { plainSwtSample } = require('./swt-plain-samples');
 const AUDIO_VERSION = '20261008-sst-native-minute3';
 const MAX_ASSESSMENT_QUEUE = 500;
 const clone = value => structuredClone(value);
@@ -104,7 +105,8 @@ function present(a) {
     ...(q.predictionSource ? { predictionSource:q.predictionSource } : {}),
     ...(a.status === 'submitted' || i <= a.index ? { text:(['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && a.status !== 'submitted' ? '' : q.text } : {}),
     ...((['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && (i <= a.index || a.status === 'submitted') ? { audioUrl:approvedAudio.publicAudio(q)?.audioUrl || q.audioUrl || '/writing-audio/' + (q.audioId || q.id) + '.mp3?v=' + AUDIO_VERSION } : {}),
-    ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation } : {}) }));
+    ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation,
+      ...(q.type === 'swt' ? {teachingSample:plainSwtSample(q.text)} : {}) } : {}) }));
   return result;
 }
 function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, mockGraders = null, overallGrader = null, onMockError = async()=>{}, speakingAllowed = require('./speaking-access').allowed, now = Date.now }) {

@@ -1,7 +1,8 @@
 'use strict';
 const VERSION = 'exam-practice-2026-10-09.1';
 const SwtForm = require('./swt-form-policy');
-const { POLICY_VERSION: SWT_POLICY_VERSION, SYNTHESIS_GUIDANCE, SYNTHESIS_CONTENT_CAP, validSynthesis, applyScoringPolicy } = require('./swt-scoring-policy');
+const { POLICY_VERSION: SWT_POLICY_VERSION, SYNTHESIS_GUIDANCE, SYNTHESIS_CONTENT_CAP, validSynthesis,
+  applyScoringPolicy, legacyPolicy, itemScore90, sourceIdentity } = require('./swt-scoring-policy');
 const report = require('./public/writing-lab-report');
 const localEngine = require('./local-scoring-engine');
 const essayPolicy = require('./public/essay-scoring');
@@ -70,8 +71,8 @@ Content: assess accurate meaning, main ideas, synthesis and relevance; credit va
 Grammar 2 accurate structure, 1 errors without obstructing meaning, 0 obstructed meaning. Vocabulary 2 appropriate range, 1 limited or imprecise, 0 seriously defective. Spelling: 2 no errors, 1 one error, 0 multiple errors; accept established English spelling variants. Essay linguistic range and coherence each 0–6, from inaccessible/disconnected to varied, precise and smoothly organised.
 Set formInvalid=false and formReason="" when the supplied form passes. Only override it for an incomplete sentence (SWT) or a response entirely composed of very short disconnected fragments (SST/essay). If you set formInvalid=true, scores.form MUST be 0 and formReason MUST identify the precise structural defect. Brevity within the allowed range, missing supporting detail, stylistic preferences and ordinary grammar slips are NEVER form failures. Missing content belongs under Content.
 Give specific concise feedback for every trait, up to 3 strengths and up to 3 actionable improvements. Do not invent errors, citations, plagiarism findings, or compulsory details. Errors must quote exact substrings of the response. Include minor errors as light corrections, separately from optional stylistic advice. Do not penalise valid template scaffolding itself; judge the actual substance. Your score and feedback must agree.
-For SWT only, also return synthesis: {"quality":"effective|partial|limited","evidence":"exact response substring","explanation":"specific explanation of relevant selection, connections and useful phrase changes"}. Small useful phrase changes can be sufficient. Do not require complete paraphrasing, a transformation-operation label or a paired source quotation. Retaining source wording is not an automatic deduction. Partial/limited synthesis must quote an actual weakness and identify an achievable improvement; do not invent a factual error to justify this judgment. Keep this separate from language errors.
-Schema: {"scores":{each required trait:integer},"formInvalid":false,"formReason":"","feedback":{each trait:"specific short explanation"},"strengths":["..."],"improvements":["..."],"errors":[{"phrase":"exact response substring","correction":"...","explanation":"..."}]${q.type === 'swt' ? ',"synthesis":{"quality":"effective|partial|limited","evidence":"...","explanation":"..."}' : ''}}
+For SWT only, also return synthesis: {"quality":"effective|assembly|partial|limited|fragments","evidence":"exact response substring","explanation":"specific explanation of relevant selection, connections and useful phrase changes"}. Small useful changes can be sufficient. Quote the actual weakness and identify an achievable improvement. Show the useful part of the passage and how to shorten or connect it in simple English. Prefer a local cut or replacement near 75 words, and check that the result remains one sentence of 5–75 words. Keep synthesis separate from language errors.
+Schema: {"scores":{each required trait:integer},"formInvalid":false,"formReason":"","feedback":{each trait:"specific short explanation"},"strengths":["..."],"improvements":["..."],"errors":[{"phrase":"exact response substring","correction":"...","explanation":"..."}]${q.type === 'swt' ? ',"synthesis":{"quality":"effective|assembly|partial|limited|fragments","evidence":"...","explanation":"..."}' : ''}}
 DATA: ${JSON.stringify({ prompt: q.text, mainIdeas: q.keyPoints, response: text })}`;
 }
 function normalize(q, text, raw) {
@@ -116,6 +117,7 @@ function normalize(q, text, raw) {
     feedback.content += ' ' + synthesis.explanation;
   }
   return { version: q.type === 'swt' ? SWT_POLICY_VERSION : VERSION, assessmentType: 'AI practice assessment', scores, maxima, total, maximum, wordCount: form.count, gated, reasons,
+    ...(q.type === 'swt' ? {itemScore90:itemScore90(scores.content,total), source_identity:swtQuestionSourceIdentity(q)} : {}),
     ...(synthesis ? { summary_assessment: { synthesis }, full_content_eligible: !gated && scores.content === 4 && synthesis.quality === 'effective' } : {}),
     feedback,
     strengths: raw.strengths.filter(x => typeof x === 'string').slice(0,3), improvements: [...reasons, ...improvements], errors };
@@ -164,27 +166,36 @@ async function gradeUnifiedEssay(q, text, call) {
   };
 }
 
-async function gradeUnifiedSwt(q, text, judge) {
+function swtQuestionSourceIdentity(q) {
+  return sourceIdentity(q.text, { key: q.keyPoints ?? null, sample: q.sample ?? null });
+}
+
+async function gradeUnifiedSwt(q, text, judge, {legacy=false} = {}) {
   const form = formFor('swt', text);
-  if (!form.score) return {...zeroResult('swt',text,form.reasons),version:SWT_POLICY_VERSION,score_provisional:false};
+  const version = legacy ? legacyPolicy.POLICY_VERSION : SWT_POLICY_VERSION;
+  const identity = legacy ? {} : {source_identity:swtQuestionSourceIdentity(q)};
+  if (!form.score) return {...zeroResult('swt',text,form.reasons),version,score_provisional:false,
+    ...identity,...(legacy?{}:{itemScore90:10})};
   let assessment;
   try {
-    const raw = await judge(q,text);
+    const raw = await judge(q,text,{legacy});
     if (!raw) throw Error('The shared SWT assessment is unavailable.');
-    assessment = applyScoringPolicy(raw,text,q.text);
+    assessment = (legacy ? legacyPolicy.applyScoringPolicy : applyScoringPolicy)(raw,text,q.text);
     if (assessment.needs_semantic_review || !raw.consistency_reviewed) throw Error('The shared SWT review is incomplete.');
   } catch (error) { return localGrade(q,text,{reason:error.message}); }
   const diagnosticScores={content:assessment.content_score,form:form.score,grammar:assessment.grammar_score,vocabulary:assessment.vocabulary_score};
   const gated=assessment.content_score===0;
   const scores=gated ? Object.fromEntries(Object.keys(diagnosticScores).map(k=>[k,0])) : diagnosticScores;
   const a=assessment.summary_assessment;
+  const total=Object.values(scores).reduce((n,v)=>n+v,0);
   const corrections=[...assessment.grammar_annotations,...assessment.vocabulary_annotations];
   const language = key => {
     const items=assessment[key+'_annotations'].filter(item=>item.affects_score);
     return items.map(item=>item.meaning_effect).filter(Boolean).join(' ') || 'Meaning is clear and preserved.';
   };
-  return {version:SWT_POLICY_VERSION,assessmentType:'Unified SWT practice assessment',scoringMode:'claude',score_provisional:false,
-    scores,maxima:MAXIMA.swt,total:Object.values(scores).reduce((n,v)=>n+v,0),maximum:Object.values(MAXIMA.swt).reduce((n,v)=>n+v,0),wordCount:form.count,gated,
+  return {version,assessmentType:'Unified SWT practice assessment',scoringMode:'claude',score_provisional:false,
+    scores,maxima:MAXIMA.swt,total,maximum:9,wordCount:form.count,gated,
+    ...identity,...(legacy?{}:{itemScore90:itemScore90(scores.content,total)}),
     reasons:gated?['The response does not convey the passage’s central message.']:[],...(gated?{diagnosticScores}:{}),
     summary_assessment:a,full_content_eligible:!gated&&assessment.full_content_eligible,needs_semantic_review:false,
     consistency_reviewed:true,scoring_model:assessment.assessment_model||null,
@@ -233,4 +244,4 @@ function gradeDictation(q, text) {
     strengths: total === maximum ? ['All words were reproduced correctly in sequence.'] : [], improvements, errors: [],
     wordFeedback: expected.map((word, index) => ({ word, correct: matched.has(index) })), extraWords: extra };
 }
-module.exports = { VERSION, MAXIMA, wordCount, sentenceCount, formFor, buildPrompt, normalize, grade, gradeUnifiedSwt, gradeUnifiedEssay, gradeDictation, localGrade, localContentScore };
+module.exports = { VERSION, MAXIMA, wordCount, sentenceCount, formFor, buildPrompt, normalize, grade, gradeUnifiedSwt, gradeUnifiedEssay, gradeDictation, localGrade, localContentScore, swtQuestionSourceIdentity };

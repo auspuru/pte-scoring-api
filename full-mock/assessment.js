@@ -8,6 +8,8 @@ const { fail } = require('./store');
 const media = require('./recording');
 const weighting = require('./profiles');
 const VERSION = 'full-mock-assessment-2026-10-29.1';
+const SWT_COMPATIBILITY = require('../content/full-mock/swt-policy-upgrade-pins.json');
+const PREVIOUS_SWT_SOURCES = require('../content/full-mock/swt-policy-previous-sources.json');
 function legacyConfiguration(env = process.env) {
   const content = env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
   const essay = require('../essay-provider').configuration(env);
@@ -103,6 +105,14 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // The exact audited release also runs the previous SWT policy for saved
+  // snapshots. This projection does not migrate their grades or providers.
+  if (digest(current.scoringSources) === SWT_COMPATIBILITY.currentDigest
+    && digest(PREVIOUS_SWT_SOURCES) === SWT_COMPATIBILITY.previousDigest) {
+    const previous = { ...current, scoringSources: PREVIOUS_SWT_SOURCES };
+    if (digest(saved) === digest(previous) || compatibleTransportUpgrade(saved, previous)) return true;
+  }
+
   // Only standalone practice repairs malformed completed DI reviews. Default
   // mock requests/graders and the exported transcription function are unchanged.
   const practiceReview=require('../content/full-mock/di-practice-review-compatible-sources.json');
@@ -857,7 +867,8 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
           const value = await activeAdapters.assess(q, response, { recording, previous: stages, run: state.assessment.run,
             describeImagePolicy:state.assessment.snapshot.configuration.speakingContent.describeImagePolicy,
             deliveryPolicy:state.assessment.snapshot.configuration.delivery.version, ...(availableMarks(state)?{completionPolicy:COMPLETION_POLICY}:{}),
-            legacyDelivery:![currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256, require('../content/full-mock/di-number-context-previous-sources.json').files['full-mock/adapters.js'].sha256].includes(state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256),
+            legacyDelivery:![currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256, PREVIOUS_SWT_SOURCES.files['full-mock/adapters.js'].sha256, require('../content/full-mock/di-number-context-previous-sources.json').files['full-mock/adapters.js'].sha256].includes(state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256),
+            legacySwt:state.assessment.snapshot.scoringSources.files['swt-scoring-policy.js']?.version !== currentSnapshot.scoringSources.files['swt-scoring-policy.js']?.version,
             checkpoint: value => persist({ status: 'processing', stages: value }) });
           const { stages: evidence = stages, ...result } = value;
           if (!['assessed','pending','failed'].includes(result.status) || result.status === 'assessed' && (result.version !== adapterVersion || !(nativeValid(result, maxima(q)) || availableMarks(state) && partialValid(result,maxima(q),evidence,q.type)))) throw Error('Invalid native assessment result.');

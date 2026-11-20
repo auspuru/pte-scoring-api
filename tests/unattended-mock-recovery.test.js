@@ -49,6 +49,19 @@ test('Available-mark policy is exactly pinned and its legacy adapter projects to
  // that the historical adapter is exactly the previously deployed revision.
  assert.equal(sha(source),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/adapters.js'].sha256);
  const project=(from,to='')=>{assert(source.includes(from),'Expected available-marks projection');source=source.replace(from,to);};
+ const beforeSwt=require('../content/full-mock/swt-policy-previous-sources.json').files;
+ // The new SWT-only paths must leave the exact prior native adapter recoverable.
+ project(`  if (q.type === 'swt' && raw.itemScore90 === 10 && raw.gated && value.total === 0 && raw.maximum === value.maximum) {
+    return { ...value, gated: true, reason: raw.reasons?.[0] || 'Native Content/Form gate' };
+  }
+`);
+ project(', legacySwt = false');
+ project(`    if (q.type === 'swt' && !legacySwt && !writing.formFor('swt', text).score) {
+      return { ...normalise(q, await writing.gradeUnifiedSwt(q, text, swtGrader)), stages };
+    }
+`);
+ project(', swtGrader, {legacy:legacySwt}', ', swtGrader');
+ assert.equal(sha(source),beforeSwt['full-mock/adapters.js'].sha256);
  // Strip only the reviewed DI policy-routing additions before checking the
  // exact deployed adapter and the older delivery/completion projections below.
  project("gradeSpeaking = (q, text, call, contentPolicy) => q.type==='di' ? require('../describe-image-academy').grade(q,text,call,{contentPolicy}) : speech.grade(q, text, call, { academyDescribeImage: true })",
@@ -134,8 +147,24 @@ function quietRecording(recording) {
  // revisions pinned; do not exempt arbitrary account or provider source drift.
  assert.equal(require('../content/full-mock/portal-access-compatible-sources.json').files['server.js'].sha256,'f7a1a04a570e13bcac8e158ca6744fb71e14b7986080e1229038c69b6530b742');
  assert.equal(sha(read('server.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['server.js'].sha256);
- assert.equal(sha(source),"d34d0eb20185e21a6b25605f4e6f7ab0b91f259d58245cda8eb6c6b77c0dc5be");
- source=read('public/writing-lab-report.js').replace("(attempt.kind!=='mock' || !needsReview(r,q))",'(!weighted || !needsReview(r,q))');
+ // Pin the audited server projection with standalone SWT feedback bound to
+ // the passage version used at submission. Full Mock provider wiring is unchanged.
+ assert.equal(sha(source),'994dcfa0c79db44c2de3a695e60b654b48d8af48138ca8dc27c332cf542c2c88');
+ source=read('public/writing-lab-report.js');
+ project(`  function itemEstimate(question, result) {
+    if (question?.type === 'swt' && Number.isFinite(result?.itemScore90)) return result.itemScore90;
+    return score90(result?.total, result?.maximum);
+  }
+`);
+ project("    const singleSwtItem = attempt.kind !== 'mock' && questions.length === 1 && questions[0].type === 'swt';\n");
+ project(`    const byType = Object.values(groups).map(g => ({ ...g,
+      score90: g.marked !== g.count ? null : singleSwtItem ? itemEstimate(questions[0], results[0]) : score90(g.total, g.maximum)
+    }));`, '    const byType = Object.values(groups).map(g => ({ ...g, score90: g.marked === g.count ? score90(g.total, g.maximum) : null }));');
+ project('    const estimate = singleSwtItem ? byType[0].score90 : score90(total, maximum);\n');
+ project('score90: complete ? estimate : null', 'score90: complete ? score90(total, maximum) : null');
+ project(', score90, itemEstimate, minutesFor', ', score90, minutesFor');
+ assert.equal(sha(source),beforeSwt['public/writing-lab-report.js'].sha256);
+ project("(attempt.kind!=='mock' || !needsReview(r,q))",'(!weighted || !needsReview(r,q))');
  assert.equal(sha(source),baseline.files['public/writing-lab-report.js'].sha256);
  for(const name of ['full-mock/profiles.js','speaking-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
  source=read('writing-lab-scoring.js').replace(`  // SST permits several sentences. An answer containing a substantial
@@ -144,7 +173,7 @@ function quietRecording(recording) {
     && text.split(/[.!?;]+/u).some(sentence => wordCount(sentence) >= 8))
     throw Error('Unsupported SST form gate: a substantial sentence is present; assess grammar and content separately');
 `, '');
- assert.equal(sha(source),baseline.files['writing-lab-scoring.js'].sha256);
+ assert.equal(sha(source),'e5e716589a9388f431420c9676aa3c93f78cceea20a664c339ad1f0e3f5a339f');
  assert.equal(sha(read('speaking-delivery.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['speaking-delivery.js'].sha256);
  assert.equal(baseline.files['speaking-delivery.js'].sha256,require('../content/full-mock/delivery-bands-compatible-sources.json').files['speaking-delivery.js'].sha256);
  assert.equal(sha(read('full-mock/session.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/session.js'].sha256); // Reviewed integrated Listening transport; historical clocks remain pinned below.

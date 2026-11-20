@@ -179,15 +179,21 @@ test('Audio completion requires playback to start; cancellation ignores late cal
  h.timeouts.forEach(fn=>fn());assert.equal(h.events.at(-1)[1],'complete');
  const events=[];createSpeaker({},(...event)=>events.push(event)).play('unsupported','test');assert.equal(events[0][1],'error');
 });
-test('Full mock preserves submitted SWT through a failed grade and retries without duplicating history',async()=>{
+test('Full mixed mock retries its sealed SWT after the catalogue changes without duplicating history',async()=>{
  const h=client();h.ctx.passages=swtPassages;let calls=0;
- h.ctx.requestSwtGrade=async payload=>{calls++;assert(swtPassages.some(p=>p.id===payload.passageId));assert.equal(payload.userId,'first');if(calls===1)throw Error('Temporarily unavailable');return confirmedGrade;};
  await h.ctx.ReadingPractice.open();await h.click({start:'full'});
  assert.match(h.host.innerHTML,/readingSwtResponse/);
+ const question=JSON.parse(h.values.get(storageKey('first'))).session.questions[0];
+ h.ctx.requestSwtGrade=async (payload,_timeout,canRetry)=>{
+  calls++;assert.equal(payload.prompt,question.passage);assert.equal(JSON.stringify(payload.keyPoints),JSON.stringify(question.keyPoints));
+  assert.equal(payload.passageId,undefined);assert.equal(payload.userId,undefined);assert.equal(canRetry(),true);
+  if(calls===1)throw Error('Temporarily unavailable');return confirmedGrade;
+ };
  h.host.oninput({target:{dataset:{swtResponse:''},value:'Clear responsibilities and fair access help communities sustain shared resources.'}});
  h.click({action:'submit'});await flush();
  let saved=JSON.parse(h.values.get(storageKey('first')));const uid=saved.session.questions[0].uid;
  assert.equal(saved.session.assessments[uid].status,'error');assert.equal(saved.history.length,1);assert.equal(saved.history[0].pending,1);assert.match(h.host.innerHTML,/Temporarily unavailable/);
+ h.ctx.passages=swtPassages.map(p=>p.id===question.passageId?{...p,text:p.text+' The expanded version adds another requirement.',keyElements:{what:'A new requirement applies.'}}:p);
  await h.click({action:'retry-swt'});saved=JSON.parse(h.values.get(storageKey('first')));
  assert.equal(calls,2);assert.equal(saved.session.assessments[uid].status,'complete');assert.equal(saved.history.length,1);assert.equal(saved.history[0].pending,0);assert.match(h.host.innerHTML,/8\/9 SWT points/);
 });
@@ -435,7 +441,7 @@ test('Both saved SWT responses use the existing grader independently and merge i
  const {h}=await mixedClient();const payloads=[];h.ctx.requestSwtGrade=async payload=>{payloads.push(payload);return confirmedGrade;};
  h.host.oninput({target:{dataset:{swtResponse:''},value:'First response uses my original ideas.'}});nextQuestion(h);
  h.host.oninput({target:{dataset:{swtResponse:''},value:'Second response uses different original ideas.'}});h.click({action:'submit'});await flush();
- const saved=snapshot(h);assert.equal(payloads.length,2);assert.equal(new Set(payloads.map(p=>p.passageId)).size,2);
+ const saved=snapshot(h);assert.equal(payloads.length,2);assert.equal(new Set(payloads.map(p=>p.prompt)).size,2);
  assert.equal(saved.history.length,1);assert.equal(saved.history[0].pending,0);
  assert(saved.session.questions.filter(q=>q.type==='swt').every(q=>saved.session.assessments[q.uid].result.raw_score===8));
 });
@@ -603,7 +609,7 @@ test('Next saves a partial answer immediately, advances stage clocks and finishe
 
 test('One-page review retries the correct SWT response even when another question was last visited',async()=>{
  const {h}=await mixedClient(true);let calls=[],complete=false;
- h.ctx.requestSwtGrade=async payload=>{calls.push(payload.passageId);if(!complete)throw Error('Temporary failure');return {...confirmedGrade,content_details:{notes:'Your main idea is accurate.'}};};
+ h.ctx.requestSwtGrade=async payload=>{calls.push(payload.prompt);if(!complete)throw Error('Temporary failure');return {...confirmedGrade,content_details:{notes:'Your main idea is accurate.'}};};
  h.host.oninput({target:{dataset:{swtResponse:''},value:'First saved response.'}});nextQuestion(h);
  h.host.oninput({target:{dataset:{swtResponse:''},value:'Second saved response.'}});
  while(!snapshot(h).session.done)h.click({action:'exam-next'});await flush();
@@ -611,7 +617,7 @@ test('One-page review retries the correct SWT response even when another questio
  assert.equal((h.host.innerHTML.match(/data-review-question=/g)||[]).length,s.questions.length);
  assert.match(h.host.innerHTML,/First saved response/);assert.match(h.host.innerHTML,/Second saved response/);assert.match(h.host.innerHTML,/Correct answer/);assert.match(h.host.innerHTML,/Correct highlights/);assert.match(h.host.innerHTML,/Correct order/);
  complete=true;await h.click({action:'retry-swt',reviewUid:s.questions[0].uid});
- assert.equal(calls.at(-1),s.questions[0].passageId);assert.equal(snapshot(h).session.assessments[s.questions[0].uid].status,'complete');
+ assert.equal(calls.at(-1),s.questions[0].passage);assert.equal(snapshot(h).session.assessments[s.questions[0].uid].status,'complete');
  await h.click({action:'retry-all-swt'});assert.equal(snapshot(h).history[0].pending,0);assert.equal(calls.length,4);assert.match(h.host.innerHTML,/Your main idea is accurate/);
 });
 

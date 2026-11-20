@@ -90,16 +90,30 @@ test('Full Mock Pause retains a typed answer and resumes the same question after
   assert.equal(resumed.current.endsAt,endsAt+3600000);
   assert.equal(h.document.getElementById('fm-text').value,'A saved summary of the passage.');
 });
-test('Full Mock Pause keeps the first recorded segment and permits the same question to record after Continue',async t=>{
-  const h=await fixture(t);await h.resume();await h.step(26000);
-  await until(async()=>{await h.step(100);return h.recorders.some(r=>r.state==='recording');});
-  const token=(await h.state()).current.token;await h.click('[data-fm="pause"]');
+test('Full Mock Pause finishes a recording with an upload in flight and permits recording after Continue',async t=>{
+  const h=await fixture(t);await h.resume();
+  await until(async()=> (await h.state()).responses[0].segments.length===1);
+  const {token,responseAt}=(await h.state()).current;
+  await h.step(responseAt-h.now());
+  const recording=h.recorders.find(r=>r.state==='recording');assert(recording);
+  let releaseUpload;
+  h.intercept(async (_route,init,send)=>{
+    if(init.method==='PUT'&&!releaseUpload)await new Promise(resolve=>{releaseUpload=resolve;});
+    return send();
+  });
+  recording.emit();
+  try {
+    await until(()=>{if(!releaseUpload)void h.client.flush();return !!releaseUpload;});
+    await h.click('[data-fm="pause"]');
+    await until(async()=> (await h.pending.list('alice:')).some(row=>row.value.kind==='finish'&&row.value.chunks===2));
+  } finally { releaseUpload?.(); }
+  // Pause stops the polling timer. The player must drain the final chunk on its own.
   await until(async()=>{const state=await h.state();return !!state.responses[0].segments[0]?.finished;});
-  const paused=await h.state();assert(paused.pause);assert.equal(paused.responses[0].segments[0].chunkCount,1);
+  const paused=await h.state();assert(paused.pause);assert.equal(paused.responses[0].segments[0].chunkCount,2);
   await h.step(3600000);await h.click('[data-fm="unpause"]');
   assert.equal((await h.state()).current.token,token);
   await until(async()=>{await h.step(100);return h.recorders.some(r=>r.state==='recording');});
-  assert.equal((await h.state()).responses[0].segments[0].chunkCount,1);
+  assert.equal((await h.state()).responses[0].segments[0].chunkCount,2);
 });
 
 test('All 22 task forms render usable controls from the redacted player projection', () => {

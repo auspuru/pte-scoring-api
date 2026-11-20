@@ -21,7 +21,7 @@
     return text.indexOf(phrase,start+1)<0?{start,end:start+phrase.length}:null;
   }
   function model(data,passage,text){
-    text=String(text||'');const state=feedback.build(data),a=data.content_details?.summary_assessment||{};
+    text=String(text||'');const state=feedback.build(data),a=data.content_details?.summary_assessment||{},wordCount=words(text);
     const pending=state.provisional||data.ai_feedback_degraded===true;
     const valid=Number((data.diagnostic_trait_scores||data.trait_scores||{}).form)>=1;
     const annotations=[];const claimed=[];
@@ -30,28 +30,47 @@
       const phrase=exact(text,raw.phrase),range=location(text,phrase,raw.phrase_span);if(!range)continue;const {start,end}=range;
       if(claimed.some(r=>r.start<end&&r.end>start))continue;
       const optional=raw.affects_score!==true;
-      const kind=optional?'Optional style':/spell/i.test(raw.type||'')?'Spelling':list(data.vocabulary_details?.vocabulary_annotations).includes(raw)?'Word choice':'Grammar';
-      annotations.push({phrase,fix:clean(raw.fix),start,end,optional,kind,
-        reason:clean(raw.meaning_effect)||clean(raw.rationale).replace(/^Optional refinement\s*[—–-]\s*no score deduction\.\s*/i,'')});
+      const kind=/spell/i.test(raw.type||'')?'Spelling':list(data.vocabulary_details?.vocabulary_annotations).includes(raw)?'Word choice':'Grammar';
+      const fix=clean(raw.fix),reason=clean(raw.meaning_effect)||clean(raw.rationale).replace(/^Optional refinement\s*[—–-]\s*no score deduction\.\s*/i,'');
+      const after=words(text.slice(0,start)+fix+text.slice(end));
+      if(optional&&(!reason||after<5||after>75))continue;
+      annotations.push({phrase,fix,start,end,optional,kind,reason,after});
       claimed.push({start,end});
     }
     const dependency=list(a.missing_dependencies).find(d=>d&&clean(d.missing_context));
-    const weakSynthesis=['partial','limited'].includes(a.synthesis?.quality);
-    const quote=!pending&&valid?(exact(text,dependency?.effect)||(weakSynthesis?exact(text,a.synthesis?.evidence):'')):'';
-    const sourceQuote=!pending&&valid?(exact(String(passage?.text||''),dependency?.missing_context)||(weakSynthesis?exact(String(passage?.text||''),a.synthesis?.sourceQuote):'')):'';
-    const contentIssue=!pending&&valid&&(!state.full&&(state.contentGated||Number(data.trait_scores?.content)<Number(data.trait_scores?.content_max||4)||weakSynthesis));
-    const action=contentIssue?(clean(a.next_step)||state.priorities[0]?.detail||'Review the main message against the original passage.'):'';
-    const why=contentIssue?(clean(dependency?.explanation)||clean(a.synthesis?.explanation)||clean(a.relationship_explanation)):'';
-    let repair=!pending&&valid?clean(a.repair):'';
-    let changes=[];
-    if(repair)changes=[action||clean(a.next_step)].filter(Boolean);
-    // A complete saved repair may be used as a draft; shorter repairs stay coaching text.
+    const weakSynthesis=['partial','limited','assembly','fragments'].includes(a.synthesis?.quality);
+    const contentIssue=!pending&&valid&&!state.contentFull&&(state.contentGated||Number(data.trait_scores?.content)<Number(data.trait_scores?.content_max||4)||weakSynthesis);
+    const source=String(passage?.text||'');
+    const edit=a.content_edit;
+    const budgeted=edit&&Object.hasOwn(edit,'revised_word_count');
+    const editTarget=exact(text,edit?.target), editSource=exact(source,edit?.source_evidence);
+    const revised=clean(edit?.revised);
+    const revisedCount=words(revised);
+    const wordBudget=contentIssue&&budgeted&&editTarget&&editSource&&(!edit.cut||exact(text,edit.cut))
+      && wordCount===edit.original_word_count&&revisedCount===edit.revised_word_count
+      && revisedCount>=5&&revisedCount<=75&&revised===clean(a.repair)
+      ? { revisedCount, wordsSaved:wordCount-revisedCount } : null;
+    const quote=contentIssue?(wordBudget?editTarget:exact(text,dependency?.effect)||exact(text,a.synthesis?.evidence)):'';
+    const sourceQuote=contentIssue?(wordBudget?editSource:exact(source,dependency?.missing_context)||exact(source,a.synthesis?.sourceQuote)):'';
+    const action=contentIssue?(wordBudget
+      ? (edit.operation==='replace'&&editTarget===text.trim()
+        ? 'Use the short wording in the example below to connect the main ideas.'
+        : clean(edit.advice)||clean(a.next_step))
+      : dependency ? 'Use a short phrase to include the context this idea depends on.'
+        : a.synthesis?.quality==='fragments' ? 'Choose the main idea and connect it to essential support in one sentence.'
+          : 'Keep a short phrase for the main idea and connect it to essential support.') : '';
+    const why=contentIssue?(clean(dependency?.explanation)||clean(a.relationship_explanation)||clean(a.synthesis?.explanation)
+      ||clean(data.content_details?.feedback_note)||clean(data.content_details?.notes)):'';
     const complete=t=>words(t)>=5&&words(t)<=75&&/[.!?]$/.test(t)&&t.split(/[.!?]+(?:\s+|$)/).filter(v=>v.trim()).length===1;
-    if(!repair&&!contentIssue&&annotations.some(x=>!x.optional)){
-      repair=text;for(const item of annotations.filter(x=>!x.optional).sort((a,b)=>b.start-a.start))repair=repair.slice(0,item.start)+item.fix+repair.slice(item.end);
-      changes=annotations.filter(x=>!x.optional).map(x=>'Changed “'+x.phrase+'” to “'+x.fix+'”. '+x.reason);
+    let languageDraft='';
+    const required=annotations.filter(x=>!x.optional).sort((a,b)=>b.start-a.start);
+    if(!contentIssue&&required.length){
+      languageDraft=text;
+      for(const item of required)languageDraft=languageDraft.slice(0,item.start)+item.fix+languageDraft.slice(item.end);
+      if(!complete(languageDraft))languageDraft='';
     }
-    return {state,pending,valid,annotations,quote,sourceQuote,contentIssue,action,why,repair,changes,usable:complete(repair),text,wordCount:words(text),languageAdvice:state.priorities.filter(p=>/grammar|wording/i.test(p.title))};
+    return {state,pending,valid,annotations,quote,sourceQuote,contentIssue,action,why,repair:wordBudget?revised:'',languageDraft,wordBudget,
+      usable:!!wordBudget,text,wordCount,languageAdvice:state.priorities.filter(p=>/grammar|wording/i.test(p.title))};
   }
   function heading(n,title,status){return '<div class="swt-review-heading"><h2><span>'+n+'</span>'+title+'</h2><span class="swt-review-status">'+esc(status)+'</span></div>';}
   function section(n,title,status,body,id){return '<section class="swt-review-section" id="'+id+'">'+heading(n,title,status)+'<div class="swt-review-body">'+body+'</div></section>';}
@@ -61,21 +80,29 @@
   function render(m){
     let content=m.pending?'<p class="swt-review-note">Your response is saved. A complete assessment is not available yet. There is no confirmed learning judgement to act on.</p>':!m.valid?'<p class="swt-review-note">Repair the form first. The awarded zero does not establish a separate content or language weakness.</p>':m.contentIssue?
       '<h3>Your priority</h3><p>'+esc(m.action)+'</p>'+(m.quote?'<div class="swt-review-evidence"><strong>You wrote</strong><q>'+esc(m.quote)+'</q><button type="button" class="btn btn-ghost" data-review-locate>Locate in saved answer</button></div>':'')+
-      (m.sourceQuote?'<div class="swt-review-evidence"><strong>The passage says</strong><q>'+esc(m.sourceQuote)+'</q></div>':'')+
+      (m.sourceQuote?'<div class="swt-review-evidence"><strong>'+(m.wordBudget?'Keep this part of the passage':'The passage says')+'</strong><q>'+esc(m.sourceQuote)+'</q></div>':'')+
       (m.why?'<p><strong>Why this needs attention</strong><br>'+esc(m.why)+'</p>':'')+
       '<button type="button" class="btn btn-ghost" data-review-source>Review the original passage</button>':
-      '<p class="swt-review-good">'+(m.state.full?'Keep this approach. Your selected ideas connect clearly.':'No separate content repair identified in the saved feedback.')+'</p>';
-    const evidence=exact(m.text,m.state.full?m.text:'');
-    if(evidence&&m.state.full)content+='<p class="swt-help">Further revision is optional. Accurate source wording can be retained.</p>';
-    if(m.repair)content+='<article class="swt-review-suggestion"><h3>'+(m.usable?'One possible revised summary':'A possible repair')+'</h3><div><p class="swt-review-revision">'+esc(m.repair)+'</p>'+(m.changes.length?'<h4>'+(m.usable?'What this revision addresses':'What to change')+'</h4><ul>'+m.changes.map(v=>'<li>'+esc(v)+'</li>').join('')+'</ul>':'')+(m.usable?'<button type="button" class="btn" data-review-use>Use in my revision draft</button>':'')+'<p class="swt-help">A learning example from this feedback, not the only correct answer or a promise of a higher score.</p></div></article>';
+      '<p class="swt-review-good">'+(m.state.contentFull?'Full Content marks. Your summary connects the essential ideas. Clear, simple words work well when they keep the meaning.':'Review the saved feedback alongside the passage.')+'</p>';
+    if(m.repair&&m.wordBudget){
+      const {revisedCount,wordsSaved}=m.wordBudget;
+      content+='<details class="swt-review-suggestion"><summary>See an example with this edit</summary><div><p class="swt-review-revision">'+esc(m.repair)+'</p><button type="button" class="btn" data-review-use>Use in my revision draft</button></div></details>';
+      content+='<p class="swt-help">'+revisedCount+' of 75 words after the edit'+(wordsSaved>0?' · '+wordsSaved+' '+(wordsSaved===1?'word':'words')+' saved':'')+'</p>';
+    }
     let grammar=m.pending?'<p>Language feedback is not ready yet.</p>':!m.valid?'<p>Repair the sentence form first. No complete language assessment is claimed here.</p>':
-      '<div class="swt-review-legend"><span>Grammar / word choice</span><span>Spelling</span><span>Optional style</span></div><p class="swt-help">'+(m.annotations.length?'Select an underlined phrase to see the correction and reason.':'No exact language correction is available in this saved feedback.')+'</p><p class="swt-review-annotated">'+annotationHtml(m)+'</p><div id="swtReviewCorrection" class="swt-review-correction" role="region" aria-live="polite" aria-label="Selected language correction" hidden></div>';
+      '<div class="swt-review-legend"><span>Grammar / word choice</span><span>Spelling</span><span>Optional</span></div><p class="swt-help">'+(m.annotations.length?'Select an underlined phrase to see the change and why it helps.':'No exact language correction is available in this saved feedback.')+'</p><p class="swt-review-annotated">'+annotationHtml(m)+'</p><div id="swtReviewCorrection" class="swt-review-correction" role="region" aria-live="polite" aria-label="Selected language correction" hidden></div>';
     if(!m.pending&&m.valid&&m.languageAdvice.length)grammar+='<div class="swt-review-note">'+m.languageAdvice.map(p=>'<p>'+esc(p.detail)+'</p>').join('')+'</div>';
-    if(!m.pending&&m.valid&&m.annotations.some(x=>x.optional))grammar+='<p class="swt-help">Optional style suggestions are separate from required corrections.</p>';
+    if(m.annotations.some(x=>x.optional))grammar+='<p class="swt-help">Optional suggestions did not cost marks. Keep your total within 75 words.</p>';
+    if(m.languageDraft)grammar+='<button type="button" class="btn" data-review-use="language">Use these language corrections in my draft</button>';
     let form=m.pending?'<p>Assessment is incomplete. Your saved answer remains available.</p>':'<ul class="swt-review-form"><li class="'+(m.wordCount>=5&&m.wordCount<=75?'good':'warn')+'">'+m.wordCount+' words · '+(m.wordCount>=5&&m.wordCount<=75?'Within 5–75 words':'Use 5–75 words')+'</li><li class="'+(m.valid?'good':'warn')+'">'+(m.valid?'One complete sentence within the form requirements.':esc(m.state.priorities[0]?.detail||'Join your ideas into one complete sentence and check the word limit.'))+'</li></ul>';
+    if(!m.pending&&m.wordCount===75)form+='<p class="swt-help">75 is the maximum. A shorter summary can earn full marks.</p>';
+    if(!m.pending&&m.wordCount>75){
+      const extra=m.wordCount-75;
+      form+='<p class="swt-help">Cut at least '+extra+' '+(extra===1?'word':'words')+'. Start with repeated points or optional examples.</p>';
+    }
     const revision=m.pending?'':section(4,'Revise & practise','Original preserved','<p>'+(m.action?esc(m.action):'Use the feedback above while improving your sentence. Further revision is optional when no repair is needed.')+'</p><button type="button" class="btn btn-primary" data-review-edit>Open revision draft</button><div id="swtReviewEditor" hidden><label for="swtReviewDraft">Your revision</label><textarea id="swtReviewDraft" rows="5" spellcheck="false">'+esc(m.text)+'</textarea><p class="swt-help"><span id="swtReviewWords">'+m.wordCount+'</span> words · One complete sentence · 5–75 words</p><div class="swt-review-actions"><button type="button" class="btn btn-primary" data-review-save>Save revision draft</button><button type="button" class="btn" data-review-continue>Continue to writing</button><button type="button" class="btn btn-ghost" data-review-undo hidden>Undo suggestion</button></div><p id="swtReviewSaveStatus" role="status" aria-live="polite"></p><p class="swt-help">Saving a draft does not assess it or replace your submitted answer. Submit deliberately from the writing screen for new feedback.</p></div>','swtReviewRevision');
     return section(1,'Content & meaning',m.pending?'Assessment incomplete':!m.valid?'Repair form first':m.contentIssue?'Priority repair':'Review saved feedback',content,'swtReviewContent')+
-      section(2,'Grammar & spelling',m.pending?'Assessment incomplete':!m.valid?'Repair form first':m.annotations.some(x=>!x.optional)?m.annotations.filter(x=>!x.optional).length+' required corrections':m.annotations.length?'Optional refinements':'Review saved feedback',grammar,'swtReviewLanguage')+
+      section(2,'Grammar & spelling',m.pending?'Assessment incomplete':!m.valid?'Repair form first':m.annotations.some(x=>!x.optional)?'Corrections to review':m.annotations.length?'Optional refinements':'Review saved feedback',grammar,'swtReviewLanguage')+
       section(3,'Form',m.pending?'Assessment incomplete':m.valid?'Meets form checks':'Needs attention',form,'swtReviewForm')+revision;
   }
   function mount(target,data,passage,text,options={}){
@@ -90,12 +117,15 @@
         const item=m.annotations[Number(button.dataset.reviewFix)];if(!item)return;
         target.querySelectorAll('[data-review-fix]').forEach(el=>el.setAttribute('aria-expanded',String(el===button)));
         const panel=q('#swtReviewCorrection');panel.hidden=false;
-        panel.innerHTML='<strong>'+esc(item.kind)+'</strong><h3><s>'+esc(item.phrase)+'</s> → '+esc(item.fix)+'</h3><p>'+esc(item.reason||'Review this suggested correction in context before revising.')+'</p>'+(item.optional?'<p class="swt-help">Optional refinement; no required repair is claimed.</p>':'');
+        panel.innerHTML='<strong>'+esc(item.optional?'Optional '+item.kind.toLowerCase():item.kind)+'</strong><h3><s>'+esc(item.phrase)+'</s> → '+esc(item.fix)+'</h3><p>'+esc(item.reason||'Review this suggested correction in context before revising.')+'</p>'+(item.optional&&item.after>m.wordCount?'<p class="swt-help">'+item.after+' of 75 words after this change alone.</p>':'');
       }
       if(button.hasAttribute('data-review-source')){const source=target.ownerDocument.getElementById('annotatedPassage');source?.closest('details')?.setAttribute('open','');source?.scrollIntoView({block:'center'});source?.focus();}
       if(button.hasAttribute('data-review-locate')&&original()&&m.quote){target.ownerDocument.getElementById('sbsTabSummary')?.click();const el=original(),start=m.text.indexOf(m.quote);el.innerHTML=esc(m.text.slice(0,start))+'<mark>'+esc(m.quote)+'</mark>'+esc(m.text.slice(start+m.quote.length));el.scrollIntoView({block:'center'});el.focus();}
       if(button.hasAttribute('data-review-edit'))open();
-      if(button.hasAttribute('data-review-use')&&m.usable){undo=q('#swtReviewDraft').value;q('#swtReviewDraft').value=m.repair;q('#swtReviewWords').textContent=words(m.repair);q('[data-review-undo]').hidden=false;open();}
+      if(button.hasAttribute('data-review-use')){
+        const draft=button.dataset.reviewUse==='language'?m.languageDraft:m.repair;
+        if(draft){undo=q('#swtReviewDraft').value;q('#swtReviewDraft').value=draft;q('#swtReviewWords').textContent=words(draft);q('[data-review-undo]').hidden=false;open();}
+      }
       if(button.hasAttribute('data-review-undo')&&undo!==null){q('#swtReviewDraft').value=undo;undo=null;q('#swtReviewWords').textContent=words(q('#swtReviewDraft').value);button.hidden=true;}
       if(button.hasAttribute('data-review-save')||button.hasAttribute('data-review-continue')){
         const saved=options.saveDraft?.(q('#swtReviewDraft').value);

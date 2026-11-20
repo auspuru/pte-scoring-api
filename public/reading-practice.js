@@ -679,17 +679,21 @@
     const submitted=s&&(s.done||exam.isExam(s)&&index>=0&&index<s.index);
     if (!submitted || pendingGrades.has(jobKey) || !String(s.answers[q.uid]?.[0]||'').trim() || !mock.scoreExtra(q,s.answers[q.uid],s.assessments[q.uid]).pending) return;
     const ticket=generation, gradingOwner=owner, token=authToken();
+    const sameOwner=()=>ticket===generation&&gradingOwner===identity()&&token===authToken();
     const job={}; pendingGrades.set(jobKey,job);
     s.assessments[q.uid]={status:'working',message:'Checking your response…'};
     syncHistory(s); persist(); if(s.done&&viewingQuestion)renderSession();
     try {
       if (typeof requestSwtGrade !== 'function') throw Error('SWT grading is unavailable. Your response is saved; please retry.');
-      const result=await requestSwtGrade({type:'swt',passageId:q.passageId,prompt:q.passage,keyPoints:q.keyPoints,text:s.answers[q.uid][0],userId:gradingOwner});
-      if (ticket!==generation || gradingOwner!==identity() || token!==authToken()) return;
+      if (typeof q.passage !== 'string' || !q.passage.trim()) throw Error('This attempt’s passage is unavailable. Your response is saved with the attempt.');
+      // This mock stores its own passage, answer and result. A live passage ID
+      // would send the grading request through standalone practice instead.
+      const result=await requestSwtGrade({type:'swt',prompt:q.passage,keyPoints:q.keyPoints,text:s.answers[q.uid][0]},0,sameOwner);
+      if (!sameOwner()) return;
       const pending=mock.scoreExtra(q,s.answers[q.uid],{result}).pending;
       s.assessments[q.uid]={status:pending?'error':'complete',result,message:pending?'Your summary is saved. A complete assessment is not available yet; the other answers are ready to review.':'Feedback ready.'};
     } catch (error) {
-      if (ticket!==generation || gradingOwner!==identity() || token!==authToken()) return;
+      if (!sameOwner()) return;
       s.assessments[q.uid]={status:'error',message:error.message||'SWT grading could not finish. Your response is saved; please retry.'};
     } finally {
       if (pendingGrades.get(jobKey)===job) pendingGrades.delete(jobKey);

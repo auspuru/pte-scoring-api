@@ -230,9 +230,24 @@ test('My Progress forces a fresh cloud pull instead of relying on the background
 });
 
 test('writing lab presents estimate scores without native mark totals', () => {
+  const report = require('../public/writing-lab-report');
+  const swt = { type: 'swt' };
+  const current = { total: 8, maximum: 9, itemScore90: 79 };
+  const legacy = { total: 8, maximum: 9 };
+  assert.equal(report.itemEstimate(swt, current), 79);
+  const practice = report.summarize([swt], [current], { kind: 'swt' });
+  assert.equal(practice.score90, 79);
+  assert.equal(practice.byType[0].score90, 79);
+  const saved = report.summarize([swt], [legacy], { kind: 'swt' });
+  assert.equal(saved.score90, 81);
+  assert.equal(saved.byType[0].score90, 81);
+  const mock = report.summarize([swt], [current], { kind: 'mock' });
+  assert.equal(mock.score90, 81);
+  assert.equal(mock.byType[0].score90, 81);
+  assert.equal(report.itemEstimate({ type: 'essay' }, { total: 21, maximum: 26, itemScore90: 79 }), 75);
   assert.match(writingClient, /<h2>Practice estimate<\/h2>/);
   assert.match(writingClient, /summary\.score90/);
-  assert.match(writingClient, /Estimate '\+report\.score90\(r\.total,r\.maximum\)\+'\/90/);
+  assert.match(writingClient, /Estimate '\+report\.itemEstimate\(q,r\)\+'\/90/);
   assert.doesNotMatch(writingClient, /Native practice result/);
   assert.doesNotMatch(writingClient, /Task marks are shown first/);
   assert.doesNotMatch(writingClient, /<th>Marks<\/th>/);

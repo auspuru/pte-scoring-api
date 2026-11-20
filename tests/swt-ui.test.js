@@ -94,6 +94,87 @@ test('Sample display is independent of verification availability', () => {
   assert.match(refresh, /sample\.textContent = sampleText/);
 });
 
+test('The plain sample loads immediately and a saved attempt with a different passage version stays separate', async () => {
+  const note = { textContent:'', dataset:{}, setAttribute() {} };
+  const sample = { textContent:'' };
+  const current = { id:38, teachingSample:'Useful results can come as a surprise.' };
+  const context = { swtResultPassage:current, document:{getElementById:id => id === 'sampleAnswerNotes' ? note : sample},
+    fetch() { assert.fail('The plain sample is available with the passage.'); },
+    checkSwtSample:async passage => ({ sample:passage.sampleResponse, note:'Checked', status:'verified' }) };
+  vm.createContext(context);
+  vm.runInContext(functionSource('fetchSwtSampleText',true) + '\n' + functionSource('refreshSwtSample',true),context);
+  await context.refreshSwtSample(current);
+  assert.equal(sample.textContent,current.teachingSample);
+  assert.equal(note.dataset.status,'verified');
+  const earlier = { ...current, sampleVersionMismatch:true };
+  context.swtResultPassage = earlier;
+  sample.textContent = '';
+  await context.refreshSwtSample(earlier);
+  assert.equal(sample.textContent,'');
+  assert.match(note.textContent,/earlier version/);
+});
+
+test('A saved result hides mismatched passage evidence and restores it for a matching attempt', () => {
+  const { document } = require('linkedom').parseHTML(html);
+  const get = id => document.getElementById(id);
+  const answer = 'Trees shade streets and cool nearby homes.';
+  const passage = { id: 21, title: 'Tree shade', text: 'Trees reduce temperatures by shading streets.', passageHash: 'new',
+    sampleResponse: answer, keyElements: { what: 'Trees reduce temperatures.' } };
+  const context = { document, escapeHtml, currentPassageId: 1, currentUserId: 'student', sessionToken: 'token',
+    canonicalClientUserId: String, countWords: text => text.split(/\s+/).length,
+    SwtStudentFeedback: require('../public/swt-feedback'), SwtFeedbackReview: require('../public/swt-feedback-review'),
+    window: { PteEstimateDisplay: { render: () => '' } }, renderTraitBreakdown() {}, renderAboutPassage() {}, updateResultsNav() {},
+    refreshSwtSample() { assert.fail('A result without matching source evidence cannot check a sample.'); } };
+  vm.createContext(context);
+  vm.runInContext(['showResults','showSwtRetryStatus','renderSwtSourceEvidence','renderAnnotatedPassage','renderSwtKeyPhrases',
+    'renderAnnotatedSubmission','renderSwtFeedbackReview','renderOriginality','computeCopyMetrics','switchSbsView','fmtNum','buildResultSummary']
+    .map(name => functionSource(name)).join('\n'), context);
+  const data = { trait_scores: { content: 3, form: 1, grammar: 2, vocabulary: 2 }, item_score_90: 79 };
+
+  context.showResults({ ...data, source_identity: { passage_sha256: 'new' } }, passage, null, answer);
+  assert.equal(get('annotatedPassage').textContent, passage.text);
+  assert.ok(get('swtGuidanceBody').querySelector('[data-review-source]'));
+
+  context.showResults({ ...data, source_identity: { passage_sha256: 'old' } }, passage, null, answer);
+  assert.equal(get('annotatedSubmission').textContent, answer);
+  assert.equal(get('heroScore').textContent, '79');
+  assert.equal(get('annotatedPassage').textContent, '');
+  assert.equal(get('annotatedPassage').closest('.sbs-col').hidden, true);
+  assert.equal(get('swtKeyPhrases').closest('details').hidden, true);
+  assert.equal(get('originalityChecks').closest('details').hidden, true);
+  assert.equal(get('sbsTabSample').hidden, true);
+  assert.equal(get('swtGuidanceBody').querySelector('[data-review-source]'), null);
+  assert.equal(get('swtReviewRevision'), null);
+  assert.match(get('swtRubricNotice').textContent, /Your saved summary/);
+  context.switchSbsView('sample');
+  assert.equal(get('sbsViewSummary').hidden, false);
+
+  context.showResults({ ...data, score_provisional: true, source_identity: { passage_sha256: 'old' } }, passage, null, answer);
+  assert.equal(get('swtRetryAssessmentBtn').hidden, true);
+  context.showResults({ ...data, score_provisional: true, source_identity: { passage_sha256: 'new' } }, passage, null, answer);
+  assert.equal(get('swtRetryAssessmentBtn').hidden, false);
+  assert.equal(get('swtKeyPhrases').closest('details').hidden, false);
+  assert.equal(get('sbsTabSample').hidden, false);
+  assert.equal(get('swtRubricNotice').hidden, true);
+});
+
+test('Retry rejects a passage that changed after the saved result was opened', async () => {
+  const button = { style: {} }, notice = { style: {} };
+  const submission = { passageId: 21, text: 'Trees shade streets and cool nearby homes.',
+    passageText: 'The earlier source.', passageHash: 'old', retryAllowed: true, ownerId: 'student', token: 'token' };
+  const context = { swtResultSubmission: submission, currentUserId: 'student', sessionToken: 'token', swtGradingPending: false,
+    passages: [{ id: 21, text: 'The changed source.', passageHash: 'new' }], swtPassageStorageId: () => 21, canonicalClientUserId: String,
+    document: { getElementById: id => ({ swtRetryAssessmentBtn: button, aiDegradedNotice: notice })[id] || null },
+    requestSwtGrade() { assert.fail('The saved summary must stay linked to the earlier source.'); } };
+  vm.createContext(context);
+  vm.runInContext(functionSource('retrySwtAssessment') + '\n' + functionSource('scoreSummary', true)
+    + '\n' + functionSource('showSwtRetryStatus'), context);
+  await context.retrySwtAssessment();
+  assert.equal(submission.retryAllowed, false);
+  assert.equal(button.hidden, true);
+  assert.match(notice.textContent, /saved summary is still here/);
+});
+
 test('Score cards size independently and phrase cards stack on narrow screens', () => {
   assert.match(css, /\.trait-breakdown[^}]*align-items: start/);
   assert.match(css, /\.trait-note[^}]*font-style: normal/);

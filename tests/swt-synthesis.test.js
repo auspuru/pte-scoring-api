@@ -80,14 +80,16 @@ test('Simple effective reformulation and retained technical terms can earn full 
   assert.equal(result.full_content_eligible, true);
 });
 
-test('Synthesis feedback gives a small actionable revision without alleging missing content', () => {
+test('Synthesis feedback explains the weakness and leaves an unverified rewrite out', () => {
   const data = resultData(applyScoringPolicy(judgment('partial'), summary));
   const feedback = build(data);
   assert.equal(feedback.full, false);
   assert.equal(feedback.priorities.length, 1);
   assert.equal(feedback.priorities[0].title, 'Combine and briefly rephrase the main ideas');
-  assert.match(feedback.priorities[0].detail, /one short clause/);
-  assert.equal(feedback.priorities[0].repair, judgment().summary_assessment.repair);
+  assert.equal(feedback.priorities[0].detail, data.content_details.summary_assessment.synthesis.explanation);
+  assert.deepEqual(data.content_details.summary_assessment.missing_dependencies, []);
+  assert.equal(Object.hasOwn(feedback.priorities[0], 'repair'), false);
+  assert.doesNotMatch(feedback.priorities[0].detail, /one short clause/);
   assert.match(presentation(data).headline, /combine and rephrase/);
   assert.equal(presentation(data).estimate, 79);
 });

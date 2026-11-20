@@ -2,43 +2,54 @@
 const seeds = require('./passages.json');
 const advanced = require('./content/swt-advanced.json');
 const advancedRevisions = require('./content/swt-advanced-revisions.json');
-const legacySampleRevisions = require('./content/swt-sample-revisions.json');
+const publicationReferences = require('./content/swt-publication-references.json');
+const { hash } = require('./scoring-jobs');
 const { POLICY_VERSION } = require('./swt-scoring-policy');
+const { plainSwtSample } = require('./swt-plain-samples');
 const normalize = value => String(value || '').replace(/\s+/g, ' ').trim();
-const references = {
+const expandedGuides = {
   8: {
-    previous: 'Travel and tourism generates a significant percentage of GDP and a substantial number of jobs in the worldwide economy; moreover, the sector employs many women, minority groups and young people while offering good training and transferability; furthermore, tourism acts as a catalyst for conservation and the maintenance of local diversity and culture; therefore, it has a comparative advantage with low start-up and running costs.',
-    sample: 'Travel and tourism contributes substantially to global GDP and employment, with further growth expected, while providing jobs and training for women, minorities and young people and supporting environmental conservation and local cultures; additionally, its potentially low start-up and running costs give it a comparative advantage over other industries.',
-    guide: {
-      overview: 'Tourism brings economic, employment, environmental and cultural benefits, with low costs as a further advantage.',
-      connection: 'These are related benefits, not a chain in which one benefit causes all the others; low costs explain the comparative advantage.',
-      items: [
-        { label: 'Main idea', phrases: ['a large percentage of GDP', 'a huge number of jobs'], idea: 'Tourism makes a major contribution to the world economy and employment.' },
-        { label: 'Employment', phrases: ['women, minority groups and young people', 'good training and transferability'], idea: 'Its jobs reach diverse groups and provide useful, transferable training.' },
-        { label: 'Environment and culture', phrases: ['conservation and improvement of the environment', 'maintenance of local diversity and culture'], idea: 'Tourism can support conservation and help preserve local cultures.' },
-        { label: 'Further advantage', phrases: ['start-up and running costs can be low'], idea: 'Potentially low costs give tourism an advantage over other industries.' }
-      ]
-    }
+    overview: 'Tourism can bring jobs, spending and conservation benefits that last when local communities share the returns and manage growth.',
+    connection: 'These are related benefits. Local income retention and careful growth management help them last. Potentially low costs are a separate advantage.',
+    items: [
+      { label: 'Main idea', phrases: ['a large percentage of GDP', 'a huge number of jobs'], idea: 'Tourism makes a major contribution to the world economy and employment.' },
+      { label: 'Employment and spending', phrases: ['visitor spending to circulate through many local businesses'], idea: 'Tourism jobs and spending extend across many local businesses.' },
+      { label: 'Environment and culture', phrases: ['conservation and improvement of the environment', 'maintenance of local diversity and culture'], idea: 'Tourism can support conservation and help preserve local cultures.' },
+      { label: 'Lasting benefits', phrases: ['communities retain a meaningful share of the income', 'growth is managed'], idea: 'The benefits are strongest when communities keep part of the income and growth is managed to protect local services and natural areas.' }
+    ]
   },
   9: {
-    previous: 'Sir Tim Berners-Lee, the inventor of the World Wide Web, has changed the world more than anyone in the past century; however, this mild-mannered Oxford computer scientist built his own computer from spare parts; moreover, he invented the Web because he was frustrated by being unable to find information in one place; therefore, it has transformed shopping, music, and communication, giving individuals the same access as the elite.',
-    sample: 'Sir Tim Berners-Lee invented the World Wide Web because he was frustrated by scattered information, and its global spread has transformed shopping, music and communication while giving individuals access to information previously associated with the elite, fundamentally changing how people think and live.',
-    guide: {
-      overview: 'Berners-Lee invented the Web to make information easier to access, and its global use changed society.',
-      connection: 'Difficulty finding information motivated the invention; the Web’s global spread then transformed daily life and access to information.',
-      items: [
-        { label: 'Main idea', phrases: ['Sir Tim Berners-Lee', 'inventor of the World Wide Web'], idea: 'Berners-Lee is the Web’s inventor and a world-changing scientist.' },
-        { label: 'Motivation', phrases: ["couldn't find all the information he wanted in one place"], idea: 'Difficulty finding information in one place motivated him to invent the Web.' },
-        { label: 'Impact', phrases: ['Since the Web went global', 'shop, listen to music and communicate'], idea: 'The Web’s global spread changed everyday activities and communication.' },
-        { label: 'Wider significance', phrases: ['the same access to information as the elite', 'Society will never be the same'], idea: 'Broader access to information changed society; this meaning can be combined with the Web’s impact.' }
-      ]
-    }
+    overview: 'Berners-Lee invented the Web to make information easier to access, and its open design widened access and participation.',
+    connection: 'Difficulty finding information motivated the invention. Open standards made it easier to link information and publish independently, helping the Web spread.',
+    items: [
+      { label: 'Main idea', phrases: ['Sir Tim Berners-Lee', 'inventor of the World Wide Web'], idea: 'Berners-Lee is the Web’s inventor and a world-changing scientist.' },
+      { label: 'Motivation', phrases: ["couldn't find all the information he wanted in one place"], idea: 'Difficulty finding information in one place motivated him to invent the Web.' },
+      { label: 'How it spread', phrases: ['reached through common standards', 'permission from one central publisher'], idea: 'Using shared standards and allowing users to publish without central permission helped the Web expand.' },
+      { label: 'Impact', phrases: ['who could publish, participate and build new services'], idea: 'The Web changed daily life, broadened access to information and widened participation.' }
+    ]
   }
 };
 
-function matchedReference(passage) {
+function matchingExpandedGuide(passage) {
   const seed = seeds.find(p => p.id === Number(passage.id));
-  return seed && normalize(seed.text) === normalize(passage.text) ? references[seed.id] : null;
+  return seed && seed.text === passage.text && seed.title === passage.title ? expandedGuides[seed.id] : null;
+}
+
+function publicationReference(passage) {
+  const revision = publicationReferences[hash(String(passage.text ?? ''))];
+  return revision?.id === Number(passage.id) && revision.title === passage.title ? revision : null;
+}
+
+function applyPublicationReference(passage, reference) {
+  if (!reference) return passage;
+  // Check each stored field independently. JSONB can reorder keys without changing an authored value.
+  const changes = {};
+  for (const [field, { before, after }] of Object.entries(reference.fields)) {
+    if (passage[field] !== undefined && before.includes(hash(passage[field]))) changes[field] = after;
+  }
+  if (changes.sampleResponse) changes.sampleRevision = POLICY_VERSION;
+  else delete changes.sampleNotes;
+  return { ...passage, ...changes };
 }
 
 function fallbackSample(passage) {
@@ -67,27 +78,6 @@ function fallbackSample(passage) {
     return { sampleResponse: normalize(advancedSeed.sampleResponse), sampleNotes: normalize(advancedSeed.sampleNotes) };
   }
 
-  // Production still contains legacy SWT rows that pre-date passages.json.
-  // If this id/title belongs to the current standalone bank but the source text
-  // no longer matches, stop here rather than attaching an older legacy answer
-  // to a teacher-edited passage.
-  const currentIdentity = seeds.find(p => p.id === Number(passage?.id)
-    && normalize(p.title) === normalize(passage?.title));
-  if (currentIdentity) return null;
-
-  // Legacy revision entries are explicitly keyed by the original passage id +
-  // title. Only use them for rows that are not represented by the current
-  // canonical bank; an authored database sample always wins.
-  const legacy = legacySampleRevisions.find(p => Number(p.id) === Number(passage?.id)
-    && normalize(p.title) === normalize(passage?.title));
-  if (legacy && normalize(legacy.sampleResponse)) {
-    return {
-      sampleResponse: normalize(legacy.sampleResponse),
-      sampleNotes: 'Model answer restored from the reviewed SWT sample bank.',
-      sampleRevision: POLICY_VERSION
-    };
-  }
-
   return null;
 }
 
@@ -107,10 +97,12 @@ function phraseFromIdea(idea, source) {
 }
 
 function buildStudyGuide(passage) {
-  const reference = matchedReference(passage);
+  const guide = matchingExpandedGuide(passage);
   const source = normalize(passage.text);
-  if (reference) {
-    return { ...reference.guide, items: reference.guide.items.map(item => ({ ...item,
+  const reviewedKey = guide && publicationReference(passage)?.fields.keyElements;
+  const keyHash = reviewedKey && passage.keyElements && hash(passage.keyElements);
+  if (keyHash && (reviewedKey.before.includes(keyHash) || keyHash === hash(reviewedKey.after))) {
+    return { ...guide, items: guide.items.map(item => ({ ...item,
       phrases: item.phrases.filter(phrase => source.includes(phrase) && phrase.split(/\s+/).length <= 12)
     })) };
   }
@@ -131,15 +123,10 @@ function buildStudyGuide(passage) {
 }
 
 function studentPassage(passage) {
-  const reference = matchedReference(passage);
-  const useRevision = reference && normalize(passage.sampleResponse) === normalize(reference.previous);
   const fallback = fallbackSample(passage);
-  return { ...passage,
-    ...(fallback || {}),
-    ...(useRevision ? { sampleResponse: reference.sample,
-      sampleNotes: 'The sample keeps the main message and important relationships without requiring every detail.',
-      sampleRevision: POLICY_VERSION } : {}),
-    studyGuide: buildStudyGuide(passage)
-  };
+  const projected = applyPublicationReference({ ...passage, ...fallback }, publicationReference(passage));
+  const teachingSample = plainSwtSample(projected.text);
+  return { ...projected, passageHash: hash(String(projected.text ?? '')),
+    ...(teachingSample ? {teachingSample} : {}), studyGuide: buildStudyGuide(projected) };
 }
 module.exports = { studentPassage, buildStudyGuide, phraseFromIdea, fallbackSample };

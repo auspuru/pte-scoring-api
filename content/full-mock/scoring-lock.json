@@ -1,14 +1,26 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "bc29298",
+  "baseCommit": "93cc716",
   "checkedAt": "2026-11-20",
-  "scope": "Standalone DI repairs one definitively rejected completed content review; mock graders, native rules, providers, transcripts, recordings and confirmed marks are preserved.",
+  "scope": "SWT 20.3.17 synthesis, exact-passage plain-English teaching samples and confirmed word-budget feedback. Historical snapshots retain their native scores and references.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
     "files": {
       "azure-continuous-delivery.js": {
         "sha256": "63533d41e2a176c765ff82e4b9c301fe6e9ad4d431d699afa3917cdc7701aa65",
+        "version": null
+      },
+      "content/swt-passage-guides.json": {
+        "sha256": "258715109f914a1ea637f25ffe1da9c41ef851736eaf908adc30331c6501f860",
+        "version": null
+      },
+      "content/swt-plain-samples.json": {
+        "sha256": "5c5f84e3cfb830821032b145c08f090885900c69184a23a1915bb7114598abed",
+        "version": null
+      },
+      "content/swt-publication-references.json": {
+        "sha256": "4990dd898a7015d039c180b903ed42797a2f2b4fab5640e782f285af10439295",
         "version": null
       },
       "delivery-rubric.js": {
@@ -92,7 +104,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "aaecbbeb87455d9dd14ecfb99dcebe08c13818fdc853fb4953d94fb3b64c1852",
+        "sha256": "b08379517a343298f7aecc7ef89f7ff06d50a7871a8126ee6efab71d1edf908b",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -108,7 +120,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "3f4ed4dd708ebfa112b0bda69458753be1885fdcfe8cb3914a8eb1c5aeeae54e",
+        "sha256": "ca007833de908ae2336d30d8e3645235da42c20fa65f77ad28b0664daf36f368",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -140,11 +152,11 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "ac24552ccc718109c77481bd5682a42613d42af3cf3e35cffaab342656b33aea",
+        "sha256": "0d6e9267ae7d0be9a4a7fad1c7dece97517bc9dd7798ec4a60f52070947ac9d2",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
-        "sha256": "83af9ccb19b201c6f069643efec89dc4862f6be5348ddf304fb7e2888de63e48",
+        "sha256": "e88a2c0b178d9713fe6b75002fb4db0c55d4e915e3d20a68ed51c519b7d4d142",
         "version": null
       },
       "full-mock/session.js": {
@@ -173,7 +185,7 @@
         "version": null
       },
       "mock-content-assessment.js": {
-        "sha256": "f418438dd65ac47a81ee93faf62dbae5e5c7d7aa92c0ee4e30cb0d8eaa984253",
+        "sha256": "fd62e92be6612ebb670515489836ad0d62ed9ed501ed839b603ca654bb524a2a",
         "version": null
       },
       "mock-content-provider.js": {
@@ -189,19 +201,19 @@
         "version": "essay-unified-2.6"
       },
       "public/reading-mock-tools.js": {
-        "sha256": "6766b45368eb780a587dcac94cb2520fdd28520ce7a7b76dade61a93ad5dfee1",
+        "sha256": "3d835f090b38872d8a0c2cf6c9f46d20b70e80ec7ba3abc17fd19f993a415160",
         "version": null
       },
       "public/reading-practice.js": {
-        "sha256": "599581dd69ca81bdd1520512e007c8889376af9e5bcf273a163ee106e8b66f7a",
+        "sha256": "2818c3305ae69d714d43014cd918d75bf101854e76fd420a5a507850e679dcb5",
         "version": null
       },
       "public/writing-lab-report.js": {
-        "sha256": "a7af66b3c6a2ea981ad765989d1515ca6253d701de70a880d7be6967405a7236",
+        "sha256": "1aea3df348c26c8c9f8fc7448d7040d68e5b96be3e93b1d8bf4915ab0bbbc3ab",
         "version": null
       },
       "server.js": {
-        "sha256": "78940169dd76568c0d6b403dbea0888313f089f7bc952aeb23c1e478bd6f19e2",
+        "sha256": "3c308cd7798f260db14058bd3cfbbba0891e50d318ae7690f0060914104c93ef",
         "version": null
       },
       "situation-content-policy.js": {
@@ -233,23 +245,31 @@
         "version": null
       },
       "swt-judge-format.js": {
-        "sha256": "ef669a5e3fc732d4df51923959ee8b93d272fbb7510c85d717bf6bf6a21cf520",
+        "sha256": "c6575a498039c12dafa3f8dce52c4b697eaa3f0c8d91c161f6b5a2bed94326d8",
         "version": null
       },
       "swt-judgment-service.js": {
-        "sha256": "345c834b13ce1c94313270442852d71c20598d4e22de8c2fed13639b5d95015b",
+        "sha256": "d1a1d56026388d92ae93aac4f73f8fa7721d7be630e97d56e048781f6e97c037",
+        "version": null
+      },
+      "swt-legacy-policy.js": {
+        "sha256": "d369ae53a42633f4b6acfa49480b563229bac19fad28d6a6a41df59fbb16d81b",
+        "version": null
+      },
+      "swt-plain-samples.js": {
+        "sha256": "abfb6d409103d40966accd9f2289e816b8ce34a6f16780bea7c924888cd90155",
         "version": null
       },
       "swt-reference.js": {
-        "sha256": "252823dcc952fa561195591c79e79855d388a8c4f2e39a7b7534d1c74dd36a3a",
+        "sha256": "4068efa1382e7daf9e5981c49e67dc0041340ee4c204d4fe6e7f1958615c7011",
         "version": null
       },
       "swt-scoring-policy.js": {
-        "sha256": "d369ae53a42633f4b6acfa49480b563229bac19fad28d6a6a41df59fbb16d81b",
-        "version": "20.3.16"
+        "sha256": "d8aa3656629cd44e54782774ab5ec0de7afd0d44980573448e6b4d636140c47f",
+        "version": "20.3.17"
       },
       "writing-lab-scoring.js": {
-        "sha256": "c28a7def1c8eda1961b57ea342c6e8ce3501c24eb92e905005a6cbee250ff312",
+        "sha256": "ad672134e57bca252447bdef6cf4336fd23ff54c8f88b4e439cc72fb55226198",
         "version": "exam-practice-2026-10-09.1"
       }
     }

@@ -14,7 +14,8 @@ const serialAccountMutation = AccountSecurity.createSerialQueue();
 const puppeteer = require('puppeteer');
 const { installGracefulShutdown } = require('./graceful-shutdown');
 const { createReadiness } = require('./service-readiness');
-const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt } = require('./swt-scoring-policy');
+const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt,
+  legacyPolicy: legacySwtPolicy, itemScore90: swtItemScore90, sourceIdentity: swtSourceIdentity } = require('./swt-scoring-policy');
 const SwtForm = require('./swt-form-policy');
 const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
 const AccountProgress = require('./public/account-progress');
@@ -856,7 +857,8 @@ const PgStorage = {
         trait_scores: scoreData?.trait_scores || {}, word_count: scoreData?.word_count || 0,
         feedback: scoreData?.feedback || '', content_details: scoreData?.content_details || {},
         skill_contributions: scoreData?.skill_contributions || null,
-        scoring_version: scoreData?.scoring_version || 'unknown'
+        scoring_version: scoreData?.scoring_version || 'unknown',
+        ...(scoreData?.source_identity ? { source_identity: scoreData.source_identity, item_score_90: scoreData.item_score_90, scoring_model: scoreData.scoring_model } : {})
       });
       if (u.history[passageId].length > 10) u.history[passageId] = u.history[passageId].slice(0, 10);
       let total = 0, count = 0;
@@ -1052,7 +1054,8 @@ const JsonStorage = {
       trait_scores: scoreData?.trait_scores || {}, word_count: scoreData?.word_count || 0,
       feedback: scoreData?.feedback || '', content_details: scoreData?.content_details || {},
       skill_contributions: scoreData?.skill_contributions || null,
-      scoring_version: scoreData?.scoring_version || 'unknown'
+      scoring_version: scoreData?.scoring_version || 'unknown',
+      ...(scoreData?.source_identity ? { source_identity: scoreData.source_identity, item_score_90: scoreData.item_score_90, scoring_model: scoreData.scoring_model } : {})
     });
     if (u.history[passageId].length > 10) u.history[passageId] = u.history[passageId].slice(0, 10);
     
@@ -4392,25 +4395,34 @@ function formatKeyElementsHint(keyElements) {
   return parts.join('\n');
 }
 
-async function judgeContentWithClaude(studentText, passageText, keyElements, timeoutMs = 30000) {
+async function judgeContentWithClaude(studentText, passageText, keyElements, timeoutMs = 30000, {legacy=false} = {}) {
   if (!anthropic) return null;
   const kpHint = formatKeyElementsHint(keyElements);
-  return swtJudgmentService.judge(studentText, passageText, kpHint, timeoutMs);
+  return (legacy ? legacySwtJudgmentService : swtJudgmentService).judge(studentText, passageText, kpHint, timeoutMs);
 }
 
-async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = false } = {}) {
+async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = false, legacy = false, stage } = {}) {
   if (!anthropic) return null;
   const format = require('./swt-judge-format');
-  const response = await anthropic.messages.create(format.request(prompt, format.scoringModel(), {semanticReassessment}),
+  const repairReview = stage === 'repair-review';
+  const response = await anthropic.messages.create(format.request(prompt, format.scoringModel(), {semanticReassessment,legacy,repairReview}),
     { timeout: timeoutMs, maxRetries: 0, signal });
-  return format.response(response);
+  return format.response(response, { repairReview });
 }
 
 const swtJudgmentService = createJudgmentService({
   call: callSwtJudge, buildPrompt: buildJudgingPrompt, policyVersion: POLICY_VERSION,
+  requireEditEvidence: true,
   isComplete: (result, summary, passage) => !applyScoringPolicy(result, summary, passage).needs_semantic_review,
   validationIssues: (result, summary, passage) => applyScoringPolicy(result, summary, passage).assessment_issues,
   onAttemptError: details => console.warn('[swt-grade] attempt failed:', JSON.stringify(details))
+});
+const legacySwtJudgmentService = createJudgmentService({
+  call: (prompt, timeoutMs, options) => callSwtJudge(prompt, timeoutMs, { ...options, legacy:true }),
+  buildPrompt: legacySwtPolicy.buildJudgingPrompt, policyVersion: legacySwtPolicy.POLICY_VERSION,
+  applyPolicy: legacySwtPolicy.applyScoringPolicy,
+  isComplete: (result, summary, passage) => !legacySwtPolicy.applyScoringPolicy(result, summary, passage).needs_semantic_review,
+  validationIssues: (result, summary, passage) => legacySwtPolicy.applyScoringPolicy(result, summary, passage).assessment_issues
 });
 
 // Reference text must be readable independently of AI verification. The UI uses
@@ -4421,7 +4433,9 @@ app.get('/api/swt/sample/:id', async (req, res) => {
     const stored = await PassageAPI.getById(req.params.id);
     if (!stored) return res.status(404).json({ error: 'Passage not found', sample: '' });
     const p = studentPassage(stored);
-    res.json({ sample: p.sampleResponse || '', sampleNotes: p.sampleNotes || '', scoring_version: POLICY_VERSION });
+    res.json({ sample: p.teachingSample || p.sampleResponse || '',
+      sampleNotes: p.teachingSample ? 'This example uses plain English to connect the main ideas.' : p.sampleNotes || '',
+      passageHash: p.passageHash, scoring_version: POLICY_VERSION });
   } catch (e) {
     res.status(503).json({ error: 'Reference unavailable', sample: '' });
   }
@@ -4434,23 +4448,27 @@ app.post('/api/swt/sample/:id', async (req, res) => {
     const stored = await PassageAPI.getById(req.params.id);
     if (!stored) return res.status(404).json({ error: 'Passage not found' });
     const p = studentPassage(stored);
-    const sample = p.sampleResponse || '';
+    if (req.body?.passage !== undefined && p.text !== req.body.passage) {
+      return res.status(409).json({status:'unavailable',note:'This passage version has its own example.'});
+    }
+    const sample = p.teachingSample || p.sampleResponse || '';
     const form = validateForm(sample);
     if (!sample || !form.valid) return res.json({ status: 'needs_revision', sample,
       note: 'This reference needs a form correction before it can be a full-score example.', scoring_version: POLICY_VERSION });
     const raw = await judgeContentWithClaude(sample, p.text, p.keyElements);
     if (!raw) return res.json({ status: 'unavailable', sample,
-      note: 'The reference could not be checked right now. It is not a verified full-score example.', scoring_version: POLICY_VERSION });
-    const judged = applyScoringPolicy(raw, sample);
+      note: 'The score check is unavailable. You can still use this example to study how the ideas connect.', scoring_version: POLICY_VERSION });
+    const judged = applyScoringPolicy(raw, sample, p.text);
+    const complete = raw.consistency_reviewed === true && !raw.review_unavailable && !judged.needs_semantic_review;
     const verified = judged.full_content_eligible && judged.grammar_score === 2 && judged.vocabulary_score === 2;
     const repair = judged.summary_assessment?.next_step
       || [...judged.grammar_annotations, ...judged.vocabulary_annotations].find(a => a.affects_score)?.meaning_effect
       || judged.content_reason;
-    res.json({ status: judged.needs_semantic_review ? 'unavailable' : verified ? 'verified' : 'needs_revision',
+    res.json({ status: !complete ? 'unavailable' : verified ? 'verified' : 'needs_revision',
       sample, scoring_version: POLICY_VERSION,
-      note: judged.needs_semantic_review ? 'The reference could not be fully checked. It is not a verified full-score example.'
-        : verified ? 'Checked against the same rubric used for your summary. Full-score practice example.'
-        : 'This reference still needs revision: ' + String(repair || 'Check the content and language.').slice(0, 240) });
+      note: !complete ? 'The score check is unavailable. You can still use this example to study how the ideas connect.'
+        : verified ? 'Full-score practice example. Clear wording and accurate links earn the marks.'
+        : 'The score check found room to improve. ' + String(repair || 'Check how the main ideas connect.').slice(0, 240) });
   } catch (e) {
     res.status(503).json({ status: 'unavailable', error: 'Reference check unavailable. Please try again.' });
   }
@@ -4803,7 +4821,7 @@ app.post('/api/grade', async (req, res) => {
   try {
     let { text, type, prompt, keyPoints, userId } = req.body;
     const passageId = req.body.passageId;
-    if (!text || !type || !prompt) return res.status(400).json({ error: 'Missing fields' });
+    if (!text || !type || typeof prompt !== 'string' || !prompt.trim()) return res.status(400).json({ error: 'Missing fields' });
     // H1 (v19.17): hard length cap BEFORE any Claude call. The form gate rejects
     // >75 words for scoring, but the raw text would still be sent to the paid
     // API. Cap at 4000 chars (~600 words) to prevent token-burning abuse.
@@ -4814,28 +4832,21 @@ app.post('/api/grade', async (req, res) => {
       return res.status(400).json({ error: 'Passage too long.' });
     }
 
-    // ── SOURCE-OF-TRUTH OVERRIDE (v19.11) ──────────────────────────────────
-    // The client sends `prompt` and `keyPoints` from its in-memory passage copy,
-    // which goes STALE the moment an admin edits a passage while a student has
-    // the page open. If the request names a passageId, ignore the client's copy
-    // and score against the passage's CURRENT stored version. This guarantees a
-    // fresh attempt is always graded against the latest key elements, even if
-    // the student never refreshed.
+    // Keep the same passage and reference through assessment and feedback.
+    let livePassage = null;
     if (passageId != null) {
       try {
         const stored = await PassageAPI.getById(passageId);
-        const live = stored && studentPassage(stored);
-        if (live) {
-          if (live.text) prompt = live.text;
-          if (live.keyElements && Object.keys(live.keyElements).length) {
-            keyPoints = live.keyElements;
-          }
-        }
+        if (!stored) return res.status(404).json({ error: 'This passage is no longer available. Keep a copy of your summary.' });
+        livePassage = studentPassage(stored);
       } catch (e) {
         console.warn('grade: could not load live passage', passageId, '-', e.message);
-        // fall through with the client-supplied values
+        return res.status(503).json({ error: 'This passage could not be loaded. Keep your summary and try again.' });
       }
+      if (livePassage.text !== prompt) return res.status(409).json({ error: 'This passage has changed. Keep your summary and reopen the passage before submitting.' });
+      keyPoints = livePassage.keyElements || {};
     }
+    const sourceIdentity = swtSourceIdentity(prompt, { key: keyPoints, sample: livePassage?.sampleResponse || null });
 
     // ── FORM GATE ──
     const form = validateForm(text);
@@ -4865,7 +4876,7 @@ app.post('/api/grade', async (req, res) => {
         improvement_tips: formFailCard.improvements.map(i => `${i.icon} ${i.action}`).join(' • '),
         first_person_detected: false, first_person_problematic: false,
         method_detected: 'invalid', llm_used: false, penalties_applied: [{ type: 'form_fail', impact: 'all_zero', detail: form.reason }],
-        scoring_version: POLICY_VERSION, mode: 'local'
+        scoring_version: POLICY_VERSION, source_identity: sourceIdentity, item_score_90: 10, mode: 'local'
       });
     }
 
@@ -4906,7 +4917,7 @@ app.post('/api/grade', async (req, res) => {
       llmJudgment.ideas_partial = [];
       llmJudgment.ideas_missing = missing;
 
-      llmJudgment = applyScoringPolicy(llmJudgment, text);
+      llmJudgment = applyScoringPolicy(llmJudgment, text, prompt);
     }
 
     const fallback = judgeContentLocal(text, prompt, keyPoints, grammar);
@@ -4944,21 +4955,8 @@ app.post('/api/grade', async (req, res) => {
     let rawScore = awardedForm + contentScore + awardedGrammar + awardedVocabulary;
     if (form.overflow_penalty) rawScore -= form.overflow_penalty;
 
-    // Holistic content gates: full content is required for Band 9, but a single
-    // omitted secondary checklist item can still receive Content 4.
-    let contentCapPTE = null;
-    if (contentScore === 0) contentCapPTE = 10;
-    else if (contentScore === 1) contentCapPTE = 38;
-    else if (contentScore === 2) contentCapPTE = 65;
-    else if (contentScore === 3) contentCapPTE = 79;
-
-    // Truly weak cohesion prevents a top score, but it no longer triggers an
-    // excessive PTE-62 cap for an otherwise understandable sentence.
-
     rawScore = Math.max(0, Math.min(maxRaw, rawScore));
-    let overallScore = rawToPTEDynamic(rawScore, maxRaw);
-    // PTE estimates may be capped; the raw score must remain the trait sum.
-    if (contentCapPTE !== null) overallScore = Math.min(overallScore, contentCapPTE);
+    let overallScore = swtItemScore90(contentScore, rawScore);
     if (cohesionPenaltyApplied) overallScore = Math.min(overallScore, 79);
     // Derive every proficiency label from the same capped estimate.
     let band = rawToBandDynamic(pteToRaw(overallScore, maxRaw), maxRaw);
@@ -5112,6 +5110,8 @@ app.post('/api/grade', async (req, res) => {
       first_person_details: firstPerson,
       skill_contributions: skillContributions,
       overall_score: overallScore,
+      item_score_90: overallScore,
+      source_identity: sourceIdentity,
       raw_score: rawScore,
       max_raw_score: maxRaw,                // fixed 9-point SWT ceiling
       total_ideas: totalIdeas,               // diagnostic checklist size
@@ -5157,29 +5157,18 @@ app.post('/api/grade', async (req, res) => {
       if (DEBUG) console.error('[grade] NOT saving at grade-time — userId:', userId || '(MISSING)', 'passageId:', req.body.passageId || '(MISSING)', '— note: the sync endpoint is the primary save path, so this alone does not mean data is lost.');
     }
 
-    // v19.11: attach the LIVE passage's key elements + rationale to the response.
-    // The results screen uses this to render "About this passage" and "Key
-    // Element Coverage" from current server data — not the student's stale
-    // in-memory copy. Without this, a student who had the page open before an
-    // admin edit would see the old feedback on a brand-new attempt.
-    if (passageId != null) {
-      try {
-        const stored = await PassageAPI.getById(passageId);
-        const live = stored && studentPassage(stored);
-        if (live) {
-          result.passage_current = {
-            id: live.id,
-            title: live.title,
-            category: live.category,
-            keyElements: live.keyElements || {},
-            keyElementsRationale: live.keyElementsRationale || null,
-            extractionMeta: live.extractionMeta || null,
-            sampleResponse: live.sampleResponse || '',
-            sampleNotes: live.sampleNotes || '',
-            studyGuide: live.studyGuide
-          };
-        }
-      } catch (e) { /* non-fatal — frontend falls back to its own copy */ }
+    if (livePassage) {
+      result.passage_current = {
+        id: livePassage.id,
+        title: livePassage.title,
+        category: livePassage.category,
+        keyElements: keyPoints,
+        keyElementsRationale: livePassage.keyElementsRationale || null,
+        extractionMeta: livePassage.extractionMeta || null,
+        sampleResponse: livePassage.sampleResponse || '',
+        sampleNotes: livePassage.sampleNotes || '',
+        studyGuide: livePassage.studyGuide
+      };
     }
 
     // ── Vocabulary swap suggestions ──
@@ -6514,7 +6503,7 @@ const fullMock = require('./full-mock/api').installFullMock(app, {
     // Attempts frozen before the model change keep their concrete providers.
     // Their successful stages are never repeated or relabelled as GPT grades.
     legacyAdapters: require('./full-mock/adapters').createAdapters({ speakingContentModel, writingContentModel,
-      swtGrader:(question,text)=>judgeContentWithClaude(text,question.text,{}),essayGrader }),
+      swtGrader:(question,text,options)=>judgeContentWithClaude(text,question.text,{},30000,options),essayGrader }),
     legacyProviderConfiguration:require('./full-mock/assessment').legacyConfiguration(),
     providerConfiguration: require('./full-mock/assessment').claudeConfiguration()
   }

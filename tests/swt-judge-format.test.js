@@ -40,6 +40,23 @@ test('The strict schema has no unsupported constraints or optional property perm
   check(format.tool.input_schema);
 });
 
+test('Contextual repair review has a separate strict verdict and cannot return a grade', () => {
+  const request = format.request('Check the reconstructed sentence.',undefined,{repairReview:true});
+  const repairTool = request.tools[0];
+  assert.notEqual(repairTool.name,format.tool.name);
+  assert.equal(repairTool.strict,true);
+  assert.deepEqual(request.tool_choice,{type:'tool',name:repairTool.name});
+  assert.deepEqual(repairTool.input_schema.required,['approved','reason']);
+  assert.equal(repairTool.input_schema.additionalProperties,false);
+  assert.doesNotMatch(request.messages[0].content,/grammar_annotations|vocabulary_annotations/);
+  const envelopeFor=input=>({stop_reason:'tool_use',content:[{type:'tool_use',name:repairTool.name,input}]});
+  const verdict={approved:false,reason:'The cause is attached to the wrong outcome.'};
+  assert.deepEqual(format.response(envelopeFor(verdict),{repairReview:true}),verdict);
+  assert.equal(format.response(envelopeFor({...verdict,approved:'false'}),{repairReview:true}),null);
+  assert.equal(format.response(envelopeFor(verdict)),null);
+  assert.equal(format.response(envelope(complete()),{repairReview:true}),null);
+});
+
 test('The exact live failure recovers already-provided arrays from escaped feedback JSON', () => {
   // Reproduced from the live Web-passage calibration: the non-strict provider
   // put escaped JSON inside feedback_note instead of returning the two arrays.

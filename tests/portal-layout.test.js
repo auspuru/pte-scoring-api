@@ -20,19 +20,44 @@ test('Approved practice navigation preserves the original Speaking grading, uplo
  }
 });
 
-test('Writing workspace keeps the native submitters, graders and feedback renderers byte-identical',()=>{
- const source=fs.readFileSync(path.join(__dirname,'../public/index.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceWritingUpdates.nativeFunctions;
+test('Writing workspace preserves audited functions through the SWT display and sample updates',()=>{
+ const source=fs.readFileSync(path.join(__dirname,'../public/index.js'),'utf8'),lock=require('../docs/portal-layout-preservation.json');
+ const pins={...lock.practiceWritingUpdates.nativeFunctions,...lock.swtPassageVersionUpdates.writingFunctions};
  for(const [name,expected] of Object.entries(pins)){
-  const match=new RegExp('^(?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^(?:async )?function /m.exec(source.slice(offset));const body=source.slice(match.index,next?offset+next.index:source.length).trim();assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);
+  const match=new RegExp('^(?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^(?:async )?function /m.exec(source.slice(offset));
+  const body=source.slice(match.index,next?offset+next.index:source.length).trim();
+  assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);
  }
 });
 
-test('Reading workspace keeps the native answer scoring, explanations, completion and persistence byte-identical',()=>{
- const source=fs.readFileSync(path.join(__dirname,'../public/reading-practice.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceReadingUpdates.nativeFunctions;
+test('Reading workspace pins native scoring, saved results and the reviewed SWT submission path',()=>{
+ const source=fs.readFileSync(path.join(__dirname,'../public/reading-practice.js'),'utf8'),lock=require('../docs/portal-layout-preservation.json');
+ const pins={...lock.practiceReadingUpdates.nativeFunctions,...lock.swtPassageVersionUpdates.readingFunctions};
  for(const [name,expected] of Object.entries(pins)){const match=new RegExp('^  (?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^  (?:async )?function /m.exec(source.slice(offset));const body=source.slice(match.index,next?offset+next.index:source.length).trim();assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);}
 });
 
 test('Listening workspace preserves native saving, grading, feedback, mock timer and integrity functions',()=>{
  const source=fs.readFileSync(path.join(__dirname,'../public/writing-lab-client.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceListeningUpdates.nativeFunctions;
- for(const [name,expected] of Object.entries(pins)){const match=new RegExp('^  (?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^  (?:async )?function /m.exec(source.slice(offset));const body=source.slice(match.index,next?offset+next.index:source.length).trim();assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);}
+ for(const [name,expected] of Object.entries(pins)){
+  const match=new RegExp('^  (?:async )?function '+name+'\\(','m').exec(source);assert(match,name);const offset=match.index+match[0].length,next=/^  (?:async )?function /m.exec(source.slice(offset));
+  let body=source.slice(match.index,next?offset+next.index:source.length).trim();
+  if (name==='reviewCard') {
+   assert(body.includes('report.itemEstimate(q,r)'));
+   assert(body.includes(',{swtItem:Number.isFinite(r.itemScore90)}'));
+   body=body.replaceAll('report.itemEstimate(q,r)','report.score90(r.total,r.maximum)')
+    .replace(',{swtItem:Number.isFinite(r.itemScore90)}','');
+  }
+  if (name==='mockReviewCard') {
+   const itemEstimate = `    const swtEstimate=q.type==='swt'&&Number.isFinite(r?.itemScore90)&&!report.needsReview(r,q)
+      ? '<strong>SWT item estimate '+esc(report.itemEstimate(q,r))+'/90</strong>' : '';
+`;
+   assert(body.includes(itemEstimate));
+   body=body.replace(itemEstimate,'')
+    .replace("+'</h2></div>'+swtEstimate+'</header>'+traits","+'</h2></div></header>'+traits");
+   const teachingSample = "(q.type==='wfd'?'Correct sentence':q.teachingSample?'Plain-English sample':'Sample response')+'</summary><div class=\"response\">'+esc(q.teachingSample||q.sample||q.text||'')";
+   assert(body.includes(teachingSample));
+   body=body.replace(teachingSample,"(q.type==='wfd'?'Correct sentence':'Sample response')+'</summary><div class=\"response\">'+esc(q.sample||q.text||'')");
+  }
+  assert.equal(crypto.createHash('sha256').update(body).digest('hex'),expected,name);
+ }
 });

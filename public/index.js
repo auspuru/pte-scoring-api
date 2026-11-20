@@ -12514,11 +12514,11 @@ function ensureReadingRuntimeLoaded() {
   readingRuntimeLoadPromise = (async () => {
     const modules = [
       ['reading-predictions-sep-2026.js?v=1', 'reading predictions'],
-      ['reading-mock-tools.js?v=sha256-6766b45368eb', 'reading mock tools'],
+      ['reading-mock-tools.js?v=sha256-3d835f090b38', 'reading mock tools'],
       ['reading-exam-player.js?v=sha256-855619510b75', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=sha256-98e9c23a186f', 'reading review'],
-      ['reading-practice.js?v=sha256-599581dd69ca', 'reading practice']
+      ['reading-practice.js?v=sha256-2818c3305ae6', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
     // downloads overlap. Initialise the practice client only after all succeed.
@@ -12578,8 +12578,8 @@ function ensureSpeakingMockRuntimeLoaded() {
 let fullMockRuntimeLoadPromise = null;
 function ensureFullMockRuntimeLoaded() {
   if (window.FullMock) return Promise.resolve(window.FullMock);
-  if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-597bb5fc00e6', 'full mock report')
-    .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-3b3c82c47dd9', 'full mock'))
+  if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-c93ffe6fce4f', 'full mock report')
+    .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-45059d2f5806', 'full mock'))
     .then(() => { if (!window.FullMock) throw Error('Full mock did not load.'); return window.FullMock; })
     .catch(error => { fullMockRuntimeLoadPromise = null; throw error; });
   return fullMockRuntimeLoadPromise;
@@ -12588,7 +12588,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-ccc3f6ea6490', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-579e50508a9f', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -15860,11 +15860,21 @@ async function scoreSummary(submission = null){
   if (!summaryInputEl && !submission) return;
   const text = (submission ? submission.text : summaryInputEl.value).trim();
   const p = submission ? passages.find(x => x.id === submission.passageId) : swtPassageAt(currentPassageId);
+  if (submission && (!p || (submission.passageText !== undefined && submission.passageText !== p.text)
+    || (submission.passageHash && submission.passageHash !== p.passageHash))) {
+    submission.retryAllowed = false;
+    showSwtRetryStatus(false, 'This passage has changed or is unavailable. Your saved summary is still here. Reopen the passage to start a new attempt.');
+    return;
+  }
   const passageId = p?.id;
   if(!text){ toast('Write a summary first.'); return; }
   const words = countWords(text);
   if(words < 5){ toast('Too short — minimum 5 words.'); return; }
-  if(words > 75){ toast('Too long — maximum 75 words.'); return; }
+  if(words > 75){
+    const excess = words - 75;
+    toast('Cut at least ' + excess + (excess === 1 ? ' word' : ' words') + ' to reach 75. Start with repeated points or optional examples.');
+    return;
+  }
 
   if(!p){ toast('Passage not loaded.'); return; }
 
@@ -15925,8 +15935,12 @@ async function scoreSummary(submission = null){
 }
 
 function retrySwtAssessment(){
-  if (swtResultSubmission && swtResultSubmission.ownerId === canonicalClientUserId(currentUserId)
-    && swtResultSubmission.token === sessionToken) return scoreSummary(swtResultSubmission);
+  const submission = swtResultSubmission;
+  if (!submission || submission.retryAllowed === false || submission.ownerId !== canonicalClientUserId(currentUserId)
+    || submission.token !== sessionToken || swtPassageStorageId() !== submission.passageId) return;
+  if (document.getElementById('swtPane')?.classList.contains('active') === false
+    || document.getElementById('swtResultsScreen')?.classList.contains('active') === false) return;
+  return scoreSummary(submission);
 }
 
 async function saveAttempt(pid, text, data, spellData){
@@ -15999,8 +16013,16 @@ function formatAttemptTime(iso){
 }
 
 function showResults(data, passage, spellData, submittedText){
+  const savedHash = data.source_identity?.passage_sha256;
+  const sourceUnavailable = !!(savedHash && savedHash !== passage.passageHash);
+  if (sourceUnavailable) {
+    passage = { id:passage.id, title:passage.title, text:'', sampleVersionMismatch:true };
+  }
+  const assessmentIncomplete = data.ai_feedback_degraded || data.score_provisional;
+  const retryAllowed = !!(assessmentIncomplete && !sourceUnavailable);
   swtResultPassage = passage;
   swtResultSubmission = { passageId: passage.id, text: submittedText || '',
+    passageText: passage.text, passageHash: savedHash || passage.passageHash, retryAllowed,
     ownerId: canonicalClientUserId(currentUserId), token: sessionToken };
   const display = SwtStudentFeedback.presentation(data);
   const traits = data.trait_scores || {};
@@ -16037,28 +16059,14 @@ function showResults(data, passage, spellData, submittedText){
   const heroSummaryEl = document.getElementById('heroSummary');
   if (heroSummaryEl) heroSummaryEl.textContent = buildResultSummary(data, traits);
 
-  const previousRubric = data.scoring_version && data.scoring_version !== '20.3.6';
   const rubricNotice = document.getElementById('swtRubricNotice');
   if (rubricNotice) {
-    rubricNotice.hidden = !previousRubric;
-    rubricNotice.textContent = previousRubric ? '' : '';
+    rubricNotice.hidden = !sourceUnavailable;
+    rubricNotice.textContent = sourceUnavailable ? 'The passage used for this result is unavailable. Your saved summary and feedback are still here.' : '';
   }
   document.querySelectorAll('#swtResultsScreen details').forEach(detail => { detail.open = false; });
-
-  const degradedEl = document.getElementById('aiDegradedNotice');
-  if(degradedEl){
-    if(data.ai_feedback_degraded || data.score_provisional){
-      degradedEl.style.display = '';
-      degradedEl.textContent = 'The full assessment could not be completed. Your summary is still available. Retry the assessment to receive a confirmed score.';
-    } else {
-      degradedEl.style.display = 'none';
-    }
-  }
-  const retryBtn = document.getElementById('swtRetryAssessmentBtn');
-  if (retryBtn) {
-    retryBtn.hidden = !(data.ai_feedback_degraded || data.score_provisional);
-    retryBtn.style.display = retryBtn.hidden ? 'none' : '';
-  }
+  showSwtRetryStatus(retryAllowed, retryAllowed
+    ? 'The full assessment could not be completed. Your summary is still available. Retry the assessment to receive a confirmed score.' : '');
 
   const heroTraitChipsEl = document.getElementById('heroTraitChips');
   if (heroTraitChipsEl) {
@@ -16079,34 +16087,70 @@ function showResults(data, passage, spellData, submittedText){
     const confirmed = !data.ai_feedback_degraded && !data.score_provisional;
     const reading = confirmed && Number.isFinite(traits.content) && traits.content >= 0 && traits.content <= cMax
       ? Math.round(10 + 80 * traits.content / cMax) : null;
-    const writing = confirmed && Number.isFinite(rawScore) && Number.isFinite(rawMax) && rawMax > 0
-      ? Math.round(10 + 80 * Math.max(0, Math.min(1, rawScore / rawMax))) : null;
-    readingEstimateEl.innerHTML = window.PteEstimateDisplay.render(reading, writing);
+    const swtItem = Number.isFinite(data.item_score_90);
+    const writing = confirmed ? (swtItem ? display.score
+      : Number.isFinite(rawScore) && Number.isFinite(rawMax) && rawMax > 0
+        ? Math.round(10 + 80 * Math.max(0, Math.min(1, rawScore / rawMax))) : null) : null;
+    readingEstimateEl.innerHTML = window.PteEstimateDisplay.render(reading, writing, {swtItem});
   }
 
-  renderOriginality(data, passage, submittedText);
+  renderSwtSourceEvidence(data, passage, submittedText);
   renderAnnotatedSubmission(data, passage, spellData, submittedText);
-  renderAnnotatedPassage(passage);
-  renderSwtKeyPhrases(passage);
   renderTraitBreakdown(data, traits);
   renderSwtFeedbackReview(data, passage, submittedText);
 
   const sampleEl = document.getElementById('sampleAnswerText');
   const sampleNotes = document.getElementById('sampleAnswerNotes');
   if(sampleEl){
-    const sample = (passage && passage.sampleResponse) || '';
+    const sample = passage.teachingSample || passage.sampleResponse || '';
     sampleEl.textContent = sample || '(No sample answer authored for this passage yet.)';
   }
   if(sampleNotes){
-    sampleNotes.textContent = 'Open this tab to check the sample with the same rubric used for your summary.';
+    sampleNotes.textContent = 'Simple words work when the main ideas connect clearly.';
     sampleNotes.dataset.status = 'unchecked';
     sampleNotes.style.display = '';
   }
   switchSbsView('summary');
 
-  renderAboutPassage(passage);
-  renderVocabCoach(data);
   updateResultsNav();
+}
+
+function showSwtRetryStatus(available, message){
+  const notice = document.getElementById('aiDegradedNotice');
+  if (notice) {
+    notice.style.display = message ? '' : 'none';
+    notice.textContent = message;
+  }
+  const button = document.getElementById('swtRetryAssessmentBtn');
+  if (button) {
+    button.hidden = !available;
+    button.style.display = available ? '' : 'none';
+  }
+}
+
+function renderSwtSourceEvidence(data, passage, submittedText){
+  const unavailable = passage.sampleVersionMismatch === true;
+  const source = document.getElementById('annotatedPassage');
+  const phrases = document.getElementById('swtKeyPhrases');
+  const overlap = document.getElementById('originalityChecks');
+  const about = document.getElementById('aboutPassageCard');
+  const comparison = document.getElementById('swtComparison');
+  const guide = comparison?.querySelector('.swt-help');
+  for (const element of [source?.closest('.sbs-col'), phrases?.closest('details'), overlap?.closest('details'),
+    about, document.getElementById('sbsTabSample'), document.querySelector('#swtResultsScreen button[onclick="compareSwtSample()"]')]) {
+    if (element) element.hidden = unavailable;
+  }
+  if (guide) guide.hidden = unavailable;
+  if (unavailable) {
+    if (source) source.textContent = '';
+    if (phrases) phrases.replaceChildren();
+    if (overlap) overlap.replaceChildren();
+    return;
+  }
+  renderAnnotatedPassage(passage);
+  renderSwtKeyPhrases(passage);
+  renderOriginality(data, passage, submittedText);
+  renderAboutPassage(passage);
 }
 
 function fmtNum(n){
@@ -16150,7 +16194,7 @@ function renderSwtFeedbackReview(data, passage, submittedText){
     && document.getElementById('swtResultsScreen')?.classList.contains('active');
   SwtFeedbackReview.mount(target, data, passage, submittedText, { isCurrent,
     saveDraft(text){
-      if (!isCurrent()) return false;
+      if (!isCurrent() || passage.sampleVersionMismatch) return false;
       const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
       summaries[passage.id] = { text, timestamp: new Date().toISOString(), score: summaries[passage.id]?.score || 0 };
       const saved = LocalStore.set(getPteStorageKey('summaries'), summaries);
@@ -16159,8 +16203,12 @@ function renderSwtFeedbackReview(data, passage, submittedText){
     },
     continueWriting(){ if (isCurrent()) backToPractice(); }
   });
+  if (passage.sampleVersionMismatch) {
+    target.querySelectorAll('[data-review-source], [data-review-use], #swtReviewRevision').forEach(element => element.remove());
+  }
 }
 function compareSwtSample(){
+  if (swtResultPassage?.sampleVersionMismatch) return;
   switchSbsView('sample');
   const tab = document.getElementById('sbsTabSample');
   if (tab) { tab.scrollIntoView({ block: 'center' }); tab.focus({ preventScroll: true }); }
@@ -16168,7 +16216,7 @@ function compareSwtSample(){
 document.addEventListener('keydown', function(event){
   if (!event.target || !event.target.closest || !event.target.closest('#swtPane [role="tablist"]')) return;
   const list = event.target.closest('[role="tablist"]');
-  const tabs = Array.from(list.querySelectorAll('[role="tab"]'));
+  const tabs = Array.from(list.querySelectorAll('[role="tab"]')).filter(tab => !tab.hidden);
   const index = tabs.indexOf(event.target);
   if (index < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
   event.preventDefault();
@@ -16262,11 +16310,14 @@ function renderSwtKeyPhrases(passage){
 }
 
 async function fetchSwtSampleText(passage){
-  const local = String(passage?.sampleResponse || '').trim();
+  if (passage.sampleVersionMismatch) return '';
+  const local = String(passage.teachingSample || passage.sampleResponse || '').trim();
+  if (passage.teachingSample) return local;
   try {
     const response = await fetch(API_URL + '/api/swt/sample/' + encodeURIComponent(passage.id), { cache: 'no-store' });
     const result = await response.json();
-    if (response.ok && String(result.sample || '').trim()) return String(result.sample).trim();
+    if (response.ok && (!passage.passageHash || passage.passageHash === result.passageHash)
+      && String(result.sample || '').trim()) return String(result.sample).trim();
   } catch (error) { /* fall back to the passage copy below */ }
   return local;
 }
@@ -16280,17 +16331,18 @@ async function checkSwtSample(passage){
     const timer = setTimeout(() => controller.abort(), 70000);
     try {
       const response = await fetch(API_URL + '/api/swt/sample/' + encodeURIComponent(passage.id),
-        { method: 'POST', signal: controller.signal });
+        { method: 'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({passage:passage.text}),
+          signal: controller.signal });
       const result = await response.json();
       if (!response.ok || !['verified', 'needs_revision'].includes(result.status)) {
         swtSampleChecks.delete(key);
         return { status: 'unavailable', sample: result.sample || passage.sampleResponse || '',
-          note: result.note || 'Sample checking is temporarily unavailable. This example is not verified as full-mark.' };
+          note: result.note || 'The score check is unavailable. You can still study how the example connects the ideas.' };
       }
       return { ...result, sample: result.sample || passage.sampleResponse || '' };
     } catch (error) {
       swtSampleChecks.delete(key);
-      return { status: 'unavailable', sample: passage.sampleResponse || '', note: 'Sample checking is temporarily unavailable. This example is not verified as full-mark.' };
+      return { status: 'unavailable', sample: passage.sampleResponse || '', note: 'The score check is unavailable. You can still study how the example connects the ideas.' };
     } finally {
       clearTimeout(timer);
     }
@@ -16302,6 +16354,12 @@ async function checkSwtSample(passage){
 async function refreshSwtSample(passage){
   const note = document.getElementById('sampleAnswerNotes');
   if (!note) return;
+  if (passage.sampleVersionMismatch) {
+    note.textContent = 'This result belongs to an earlier version of the passage.';
+    note.dataset.status = 'unavailable';
+    note.setAttribute('aria-busy', 'false');
+    return;
+  }
   note.textContent = 'Loading sample…';
   note.dataset.status = 'checking';
   note.setAttribute('aria-busy', 'true');
@@ -16508,7 +16566,7 @@ function annotateSpelling(clauseOrHtml, spellWords, alreadyHtml){
 }
 
 function switchSbsView(view){
-  const isSample = (view === 'sample');
+  const isSample = view === 'sample' && !swtResultPassage?.sampleVersionMismatch;
   const vSum = document.getElementById('sbsViewSummary');
   const vSam = document.getElementById('sbsViewSample');
   const tSum = document.getElementById('sbsTabSummary');
@@ -16682,86 +16740,6 @@ function generateElementsFallback(passage){
   if(keys.how)    out.how    = 'Describes the mechanism or process.';
   if(keys.result) out.result = 'Captures the consequence or implication.';
   return out;
-}
-
-function renderVocabCoach(data){
-  const card = document.getElementById('vocabCoachCard');
-  const body = document.getElementById('vocabCoachBody');
-  if(!card || !body) return;
-
-  // Gather raw suggestions, prioritizing Claude's context-aware suggestions if present
-  let rawSuggestions = [];
-  if (data) {
-    if (Array.isArray(data.vocabulary_swap_suggestions) && data.vocabulary_swap_suggestions.length > 0) {
-      rawSuggestions = data.vocabulary_swap_suggestions;
-    } else if (Array.isArray(data.vocabulary_suggestions) && data.vocabulary_suggestions.length > 0) {
-      rawSuggestions = data.vocabulary_suggestions;
-    }
-  }
-
-  // Normalize suggestions to { word, context, synonyms, rationale }
-  const suggestions = rawSuggestions.map(s => {
-    if (s.original && s.upgrades) {
-      return {
-        word: s.original,
-        context: '',
-        synonyms: s.upgrades,
-        rationale: 'Local thesaurus upgrade recommendation.'
-      };
-    }
-    return s;
-  }).filter(s => s && s.word && Array.isArray(s.synonyms) && s.synonyms.filter(Boolean).length > 0);
-
-  if(!suggestions.length){
-    card.style.display = 'none';
-    body.innerHTML = '';
-    return;
-  }
-
-  body.innerHTML = suggestions.map(s => {
-    const word = s.word || '';
-    const context = s.context || '';
-    const syns = s.synonyms.filter(Boolean);
-    const rationale = s.rationale || '';
-    let highlightedContext = context;
-    if(context && word){
-      const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
-      highlightedContext = escapeHtml(context).replace(re, m => '<b>' + m + '</b>');
-    }
-    return `
-      <div class="vocab-row">
-        <div class="vocab-original">
-          <div class="vocab-word">${escapeHtml(word)}</div>
-          ${context ? '<div class="vocab-context">in: "' + highlightedContext + '"</div>' : ''}
-        </div>
-        <div class="vocab-arrow">→</div>
-        <div class="vocab-syns">
-          ${syns.map(syn => '<button type="button" class="vocab-chip" data-swt-word="' + escapeHtml(word) + '" data-swt-replacement="' + escapeHtml(syn) + '">' + escapeHtml(syn) + '</button>').join('')}
-        </div>
-        ${rationale ? '<div class="vocab-rationale"><b>Why:</b> ' + escapeHtml(rationale) + '</div>' : ''}
-      </div>`;
-  }).join('');
-  card.style.display = 'block';
-}
-
-function applyVocabSwap(original, replacement){
-  const ta = document.getElementById('summaryInput');
-  if(!ta){ toast('Summary not available.'); return; }
-  const re = new RegExp('\\b' + original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'i');
-  const match = ta.value.match(re);
-  if(!match){ toast('"' + original + '" is no longer in your summary.'); return; }
-  let repl = replacement;
-  if(match[0][0] === match[0][0].toUpperCase()){
-    repl = replacement.charAt(0).toUpperCase() + replacement.slice(1);
-  }
-  ta.value = ta.value.replace(re, () => repl);
-  onSummaryInput();
-  const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
-  const storageId = swtPassageStorageId();
-  if(storageId == null)return;
-  summaries[storageId] = { text: ta.value, timestamp: new Date().toISOString(), score: (summaries[storageId]||{}).score || 0 };
-  LocalStore.set(getPteStorageKey('summaries'), summaries);
-  toast('"' + original + '" → "' + repl + '" — re-score to see the new score.');
 }
 
 async function showSample(){
@@ -18422,13 +18400,3 @@ function updateEmailLabels() {
 }
 
 window.updateUserEmail = updateUserEmail;
-
-
-
-document.addEventListener('click', function(event){
-  const button = event.target && event.target.closest ? event.target.closest('#swtPane button[data-swt-word]') : null;
-  if (!button) return;
-  loadPassage(currentPassageId);
-  applyVocabSwap(button.dataset.swtWord, button.dataset.swtReplacement);
-  backToPractice();
-});

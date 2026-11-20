@@ -506,10 +506,17 @@ for(const changed of ['model','native-source'])test('DI reference compatibility 
 });
 
 test('SWT report projection upgrade completes the exact previous snapshot and retains all confirmed grades',async t=>{
- let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
+ let calls=0;
+ const swtPolicies=[];
+ const f=await fixture(t,{adapters:{assess:async (q,response,{legacySwt})=>{
+  calls++;
+  if(q.type==='swt') swtPolicies.push(legacySwt);
+  return full(q);
+ }}});
  const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/swt-report-compatible-sources.json')};
  await f.store.update('alice',f.id,state=>{state.assessment=require('../full-mock/assessment').stateFor(original);return state;});
  await f.engine.request('alice',f.id);await f.engine.drain();assert.equal((await f.engine.results('alice',f.id)).ready,true);
+ assert.deepEqual(swtPolicies,[true,true]);
  const marked=structuredClone((await f.state()).assessment.items);
  await f.engine.request('alice',f.id,{retry:true});await f.engine.drain();assert.equal(calls,65);assert.deepEqual((await f.state()).assessment.items,marked);assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
