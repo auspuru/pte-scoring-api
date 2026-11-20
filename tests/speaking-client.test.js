@@ -34,7 +34,7 @@ function harness({includePredictions=false,audioCue=false}={}) {
     if(parts[2]==='submit'){
       if(!a.transcript&&env.rejectTranscription)return reply({error:'Automatic transcription is temporarily unavailable.'},false);
       if(!a.transcript){a.transcript=bank.questions.find(q=>q.id===a.questionId).text;a.transcription=a.transcript;a.revision++;}
-      a.status='submitted';a.result={total:3,maximum:3,overview:'Content checked.',scoringMode:env.contentFallback?'local':'ai',strengths:[],improvements:['Review with your teacher.'],deliveryVersion:'test-delivery'};
+      a.status='submitted';a.result={total:3,maximum:3,overview:'Content checked.',scoringMode:env.contentFallback?'local':'ai',strengths:[],improvements:['Review with your teacher.'],deliveryVersion:'test-delivery'};if(env.contentUnavailable)a.result={...a.result,total:null,scoringMode:'unavailable',score_provisional:true,contentStatus:'unavailable'};
     }
     return reply(present(a));
   };
@@ -581,3 +581,17 @@ for(const mode of ['session-over-stale-local','session-with-blocked-local','loca
  assert(h.nodes.get('speaking-library-list')?.innerHTML.includes('data-speaking-question="'+question.id+'"'),'A valid portal session must open Speaking practice.');
  await h.click({speakingQuestion:question.id});assert.equal(h.attempts.size,1);assert(seen.length>=2);assert(seen.every(token=>token===expected));h.controller.reset();
 });
+
+ test('Unavailable semantic review never announces completion and retries reuse the original recording',async()=>{
+  const h=harness();h.env.contentUnavailable=true;
+  await h.controller.open('di');await h.click({speakingQuestion:'di-1'});
+  await h.click({speakingAction:'skip'});h.tick(40001);await flush();
+  assert.match(h.host.innerHTML,/Retry content review/);
+  const uploads=h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length;
+  await h.click({speakingAction:'submit'});
+  assert.match(h.host.innerHTML,/still unavailable/);assert.doesNotMatch(h.host.innerHTML,/Content review completed/);
+  h.env.contentUnavailable=false;await h.click({speakingAction:'submit'});
+  assert.match(h.host.innerHTML,/Content review completed/);
+  assert.equal(h.requests.filter(r=>r.url.endsWith('/recording')&&r.body).length,uploads);
+  h.controller.reset();
+ });

@@ -103,6 +103,14 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Only standalone practice repairs malformed completed DI reviews. Default
+  // mock requests/graders and the exported transcription function are unchanged.
+  const practiceReview=require('../content/full-mock/di-practice-review-compatible-sources.json');
+  if(digest(current.scoringSources)===practiceReview.currentDigest&&digest(practiceReview.previous)===practiceReview.previousDigest){
+    const prior={...current,scoringSources:practiceReview.previous};
+    if(digest(saved)===digest(prior)||compatibleTransportUpgrade(saved,prior))return true;
+  }
+
   const diUpgrade=require('../content/full-mock/di-number-context-upgrade-pins.json');
   const diBefore=require('../content/full-mock/di-number-context-previous-sources.json');
   if([require('../describe-image-academy').VERSION,require('../describe-image-academy').LEGACY_VERSION].includes(saved.configuration.speakingContent.describeImagePolicy)
