@@ -42,7 +42,8 @@ Write a compact paper manifest before implementation: engine, stable ID/title/ve
 | Full | `content/full-mock/papers/<paper-id>.vN.json`, `catalogue.json`; authoring/audit in `full-mock/` | `full-mock/api.js`, `session.js`, `store.js`, `assessment.js`, `report.js`; `public/full-mock-client.js` / report |
 | Speaking | `content/speaking-mocks.js` exports `papers`, `catalogue`, `publicQuestion` | `speaking-mock.js`, store/jobs/report/Azure modules; exposed through Speaking and Writing-lab catalogues |
 | Writing | Explicit `content/writing-lab.json.mocks` or generated `.predictionEssays` through `writing-lab.js.predictionMocks` | `writing-lab.js` merges `allMocks`; `public/writing-lab-client.js`; common mock report UI |
-| Listening | `content/listening-mocks.js` exports `mocks`, `missing`, `listeningFormat` | Merged into `writing-lab.js.allMocks`, `/api/writing-lab/catalog.listeningMocks` |
+| Listening, 34 questions | Frozen papers in `content/listening-skill/papers/`, registered in `content/listening-skill/catalogue.json` | `listening-mock/papers.js`, `/api/listening-mocks/catalog` and `/api/listening-mocks/attempts`, and `listeningMocks` in `/api/writing-lab/catalog` |
+| Listening, legacy 15 questions | `content/listening-mocks.js` exports `mocks`, `missing`, `listeningFormat` | `writing-lab.js`, `/api/writing-lab/attempts`, and `/api/listening-mocks/legacy-attempts` for history |
 | Reading | `public/reading-bank.json`, `public/reading-mock-tools.js` composers | `public/practice-catalogue.js.readingMocks`, `public/reading-practice.js`, exam player/session timing |
 
 ### Speaking: add a selectable paper
@@ -88,19 +89,11 @@ Alternatively append a new `.predictionEssays` row with unused `predictionNumber
 
 The new mock enters `allMocks` and the catalogue automatically through `.mocks`; verify that the rendered card's existing title mapping and `testId` open the intended paper. Snapshot cloned question rows in attempts. Reuse existing graders and narration resolver; do not write an alternate essay/SWT scoring implementation.
 
-### Listening: append all eight task types
+### Listening sectional mocks and legacy attempts
 
-Standard existing order: **1 SST, 2 LMCMA, 2 LFI, 2 HCS, 2 LMCSA, 1 SMW, 2 HIW, 3 WFD** = 15 questions. Published configuration ranges in `listeningFormat` allow 2–3 for several types, 1–2 SMW and 3–4 WFD; use the existing standard unless the user requests otherwise.
+Current student starts use the frozen 34-question Listening skill papers registered in `content/listening-skill/catalogue.json` and validated by `listening-mock/papers.js`. Follow the implementation and `docs/listening-skill-mocks-manifest.json` when preparing a paper. The current format has 19 scored oral tasks (10 RS, 2 RL, 5 ASQ, 2 SGD), followed by the 15 Listening tasks (1 SST, 2 LMCMA, 2 LFI, 2 HCS, 2 LMCSA, 1 SMW, 2 HIW, 3 WFD). SST has 10 minutes and the post-SST tasks share 25 minutes. Verify the oral contribution block, unique immutable audio, paper digest, current catalogue and start path, and Listening-only reporting. Use `tests/listening-skill-mock.test.js` for compatibility and reporting. Check the loader's supported versions before registering a new paper or version.
 
-Append a new `listening-mock-N` object to the exported mocks in `content/listening-mocks.js`; the current generator creates exactly three papers, so adding unused source rows alone does not create paper four. Do not change the original three selections. Use an explicit new paper or safely extend its definition list with stable IDs.
-
-```js
-{id:'listening-mock-4',title:'Listening Sectional Mock 4',module:'listening',
- questions:[{...sst,minutes:10},...remainingQuestions.map(q=>({
-   ...q,minutes:25,timeGroup:'listening'}))]}
-```
-
-This engine gives SST 10 minutes and the remaining items one shared 25-minute clock: 35 minutes total. Reuse source `audioId` for objective tasks only when its complete text matches. New SST/WFD/SMW narration-owning IDs must be included in `writing-lab-audio.js` lookup; new SMW should enter the exported `missing` collection used by lookup/prewarm. Objective items with an existing audioId reuse that source's recording. Catalogue and attempt exposure are through Writing-lab; a `module:'listening'` paper must not be mislabeled Writing. Add matching keys/explanations and confirm report/alert handling for the new ID.
+The legacy 15-question definitions in `content/listening-mocks.js` and Writing Lab attempt routes remain relevant for existing attempts. Preserve their frozen questions, answer keys and audio. For an impact review, search both engines and identify affected paper IDs, versions and saved snapshots. A shared `listening-mock-N` ID alone does not identify the engine or version. Pass affected snapshots to Mock Scoring and Results for inventory across active, paused, submitted-pending and scored attempts. Keep findings and an approved correction distinct from changes to historical attempts.
 
 ### Reading: pure section versus integrated paper
 
