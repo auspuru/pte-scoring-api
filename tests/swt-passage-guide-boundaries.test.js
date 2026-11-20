@@ -63,3 +63,14 @@ test('Compulsory Reburial uses a qualified limit on study and preserves possible
   assert.match(guide.essential, /can respect cultural and ethical interests but also limit what improved methods could discover/);
   assert.match(guide.essential, /If describing the rules for research access, do not rule out exceptions/);
 });
+
+test('Academic Research allows unexpected usefulness to be implied and keeps accountability optional', () => {
+  const passage = legacyPassages.find(({ id }) => id === 21);
+  const guide = guideFor(passage);
+  assert.match(passage.text,/I have no problem with accountability/);
+  assert.match(passage.text,/I have no idea/);
+  assert.match(guide.essential,/An accurate contrast and example can make this link clear without a separate conclusion/);
+  assert.match(guide.essential,/eliminate chance discoveries as an unsupported overstatement/);
+  assert.match(guide.optional,/writer's acceptance of accountability/);
+  assert.equal(guideFor({...passage,text:passage.text + '\n'}),null);
+});

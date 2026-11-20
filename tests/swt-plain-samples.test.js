@@ -40,7 +40,8 @@ test('Academic Research offers a plain example alongside the teacher reference f
   const teacherSample = 'A teacher’s own reference sentence.';
   const projected = studentPassage({ ...question, sampleResponse:teacherSample });
   assert.equal(projected.sampleResponse, teacherSample);
-  assert.match(projected.teachingSample, /useful results can come as a surprise/);
+  assert.match(projected.teachingSample, /accepts accountability/);
+  assert.match(projected.teachingSample, /prove useful even when its value is unclear at first/);
   assert.ok(plainSwtSample(question.text));
   assert.equal(plainSwtSample(question.text + ' Another version.'), null);
 });

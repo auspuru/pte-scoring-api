@@ -527,7 +527,7 @@
         "after": {
           "topic": "Critics argue that university research with no obvious practical use should be cut.",
           "pivot": "The author explains how open-ended inquiry can lead to unexpected and useful findings.",
-          "conclusion": "Accountability can coexist with allowing research whose usefulness cannot be known in advance."
+          "conclusion": "The writer accepts accountability and shows that some research can be useful in ways people cannot predict at the start."
         }
       },
       "sampleResponse": {
@@ -542,7 +542,7 @@
         ],
         "after": {
           "topic": "The writer responds to critics who measure research by its immediately foreseeable benefits.",
-          "importance": "Explain why accountability can leave room for discovery. The police ride-along illustrates how an inquiry can become useful even when it starts without a defined application."
+          "importance": "The police ride is one example of research turning out to be useful. Its value was unclear when the writer started. The writer's acceptance of accountability is optional in a summary."
         }
       }
     }

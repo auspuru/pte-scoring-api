@@ -639,15 +639,15 @@ The guide describes the meaning each passage supports. Students can express it i
 
 ### 38. Academic Research
 
-**Main point.** University research can have unforeseen practical value, so accountability should allow room for open inquiry.
+**Main point.** University research can turn out to be useful even when its value is unclear at the start.
 
-**Essential meaning.** Attribute objections to critics and connect the writer's ride-along example or general mechanism to unexpected usefulness.
+**Essential meaning.** Attribute the call to cut research to critics. Contrast their demand for visible benefits with the writer's point that useful results can emerge by chance. The contrast and example can make the connection clear within a single clause or sentence.
 
-**Optional.** Examples of apparently useless studies, named institutions and routine faculty or student benefits.
+**Optional.** The author's acceptance of accountability, the police ride and book if the writer's general point is clear, named institutions, apparently useless studies, and routine benefits for staff and students.
 
-**Source evidence.** “the power of chance”
+**Source evidence.** “the power of chance”, “I have no problem with accountability”, and “I have no idea”.
 
-**Reference review.** The sample is faithful. Add “critics argue” to the key that opens with lack of value and avoid claiming that prior screening would categorically eliminate every breakthrough.
+**Reference review.** The first teaching sample captured the contrast and the police example. Its wording about explaining one's work added specificity. The revised sample uses “accepts accountability” and states that usefulness can be unclear at first. A required claim that advance screening would eliminate chance discoveries goes beyond the passage.
 
 **Exact text SHA-256.** `2346ea502971dae5b9e5971b4288579370751060ece02cf97776b73d7c6dacd3`
 

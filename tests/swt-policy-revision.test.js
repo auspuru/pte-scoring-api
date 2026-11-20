@@ -4,6 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const policy = require('../swt-scoring-policy');
 const form = require('../swt-form-policy');
+const { plainSwtSample } = require('../swt-plain-samples');
 const { materialiseEvidence, createJudgmentService } = require('../swt-judgment-service');
 const standalone = require('../public/swt-feedback');
 const report = require('../public/writing-lab-report');
@@ -16,6 +17,7 @@ const legacyBank = require('../content/swt-legacy.json');
 const bundled = require('../passages.json');
 const web = legacyBank.find(q => q.id === 9);
 const forecast = legacyBank.find(q => q.id === 10);
+const academic = legacyBank.find(q => q.id === 21);
 const ipcc = bundled.find(q => q.id === 7);
 const tourism = legacyBank.find(q => q.id === 8);
 const expanded = bundled.find(q => q.id === 8);
@@ -27,6 +29,7 @@ const assumptionsEvidence = 'their assumptions about how an economy works can va
 const tourismRewrite = 'By generating a large share of GDP and many jobs, travel and tourism supports the global economy and can also help protect the environment and local culture, while low start-up and running costs can give it an advantage over other industries.';
 const ipccRewrite = 'The passage contrasts Gore’s alarming climate claims with the IPCC’s more modest estimates and argues that fewer cold-related deaths could outweigh additional deaths from heat.';
 const exactAssembly = 'Sir Tim Berners-Lee may be a mild-mannered academic, but as the inventor of the World Wide Web he is also a revolutionary; moreover, the way we shop, listen to music and communicate has been transformed, and he invented the Web because he was frustrated that he could not find all the information he wanted in one place.';
+const academicSample = plainSwtSample(academic.text);
 const cases = [
   {name:'Web clause assembly', source:web, answer:exactAssembly, quality:'assembly', mark:3, before:4, repair:webRewrite, quote:'he was frustrated'},
   {name:'Web synonym substitutions', source:web, answer:exactAssembly.replace('revolutionary','pioneer').replace('transformed','changed').replace('frustrated','dissatisfied'), quality:'assembly', mark:3, before:4, repair:webRewrite, quote:'he was frustrated'},
@@ -37,6 +40,9 @@ const cases = [
   {name:'Forecasting accurately synthesised at 75 words', source:forecast, answer:'Economists in the corporate sector draw on a wide range of statistical data, but forecasts remain imprecise because different economists make different assumptions about how the economy works, and that disagreement is so substantial that William Sherden jokes that economists can win prizes for opposing views; Sherden also notes that forecasting performs poorly overall, especially for volatile measures such as interest rates, even though some stable measures such as government spending are easier to predict.', quality:'effective', mark:4, before:4, words:75},
   {name:'Forecasting unsupported grouping', source:forecast, answer:forecastRewrite.replace(/\.$/, ', while forecasts are more accurate for stable measures such as real GNP growth and inflation.'), quality:'effective', mark:2, before:2, change:true, repair:forecastRewrite, quote:'such as government spending'},
   {name:'Forecasting supported connector', source:forecast, answer:'Economic forecasting is a long way from a precise science because forecasters’ assumptions about how an economy works can vary widely, and the record is rather poor especially for volatile statistics such as interest rates.', quality:'effective', mark:4, before:4},
+  {name:'Academic Research unexpected value shown through the contrast and example', source:academic, answer:'Critics say universities should cut research with no clear benefit, but the author agrees that researchers should explain their work and argues that useful results can come as a surprise, as when a ride with a police officer led to a recommended book.', quality:'effective', mark:4, before:4},
+  {name:'Academic Research exact accountability and uncertain usefulness', source:academic, answer:academicSample, quality:'effective', mark:4, before:4},
+  {name:'Academic Research unsupported certainty', source:academic, answer:'The writer accepts accountability but argues that asking researchers to prove the value of their work in advance would eliminate every chance discovery.', quality:'effective', mark:2, before:2, change:true, explanation:'The writer shows that research can have unexpected value and does not say that requiring proof would eliminate every chance discovery.', repair:academicSample, quote:'the power of chance'},
   {name:'IPCC offset comparison', source:ipcc, answer:ipccRewrite, quality:'effective', mark:4, before:4},
   {name:'IPCC essential offset omitted', source:ipcc, answer:ipccRewrite.replace('fewer cold-related deaths could outweigh additional deaths from heat','warming could save lives overall'), quality:'partial', mark:3, before:3, dependency:true, repair:ipccRewrite, quote:'1.8 million fewer will die because of cold'},
   {name:'Tourism correct clauses assembled', source:tourism, answer:'Travel and tourism generates, directly and indirectly, a large percentage of GDP and a huge number of jobs in the world-wide economy; moreover, there are numerous good examples of tourism acting as a catalyst for conservation and maintenance of local diversity and culture; furthermore, its start-up and running costs can be low compared to many other forms of industry development.', quality:'assembly', mark:3, before:4, repair:tourismRewrite, quote:'maintenance of local diversity and culture'},
@@ -57,11 +63,11 @@ const makeJudgment = (c, legacy = false) => {
     conclusion_status: c.conclusion || 'captured',
     relationships_clear: !c.dependency && !c.weak, material_meaning_change: !!c.change,
     missing_dependencies: c.dependency ? [{effect:'warming could save lives overall',missing_context:'Fewer cold deaths outweigh additional heat deaths.',explanation:'The claim needs the comparison behind the overall drop.'}] : [],
-    relationship_explanation: c.dependency ? 'The net mortality claim needs both parts of the comparison.'
+    relationship_explanation: c.explanation || (c.dependency ? 'The net mortality claim needs both parts of the comparison.'
       : c.quality === 'assembly' ? 'The clauses give the right ideas but are joined without a useful change.'
         : c.change ? 'The passage identifies government spending as a stable measure with better forecasts.'
           : c.weak ? 'The answer gives the topic and leaves out why precision is limited.'
-            : 'The response combines the ideas in a way supported by the passage.',
+            : 'The response combines the ideas in a way supported by the passage.'),
     content_edit_operation: c.repair ? 'replace' : 'none',
     content_edit_span: c.repair ? [1,words] : [],
     content_source_quote: c.quote || '',

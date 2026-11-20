@@ -12,15 +12,15 @@
         "version": null
       },
       "content/swt-passage-guides.json": {
-        "sha256": "984e5fb44da94ee8186acd4b541cc350d6a1d28379244780f5e19a229564c89e",
+        "sha256": "258715109f914a1ea637f25ffe1da9c41ef851736eaf908adc30331c6501f860",
         "version": null
       },
       "content/swt-plain-samples.json": {
-        "sha256": "e151f147880626999a6b92f6ddd4535bd07c26e6ea23c7bb9ee8da4a1235268d",
+        "sha256": "5c5f84e3cfb830821032b145c08f090885900c69184a23a1915bb7114598abed",
         "version": null
       },
       "content/swt-publication-references.json": {
-        "sha256": "93de315c734b494478a4b258dd12e7b863c3ea0a1328d397f27f362611fc97cd",
+        "sha256": "4990dd898a7015d039c180b903ed42797a2f2b4fab5640e782f285af10439295",
         "version": null
       },
       "delivery-rubric.js": {
@@ -249,7 +249,7 @@
         "version": null
       },
       "swt-judgment-service.js": {
-        "sha256": "23bd18cebdd73cbd96db0c3df0554f66925b00d4e4da1e6cfba4988e2ec31816",
+        "sha256": "d1a1d56026388d92ae93aac4f73f8fa7721d7be630e97d56e048781f6e97c037",
         "version": null
       },
       "swt-legacy-policy.js": {
@@ -265,7 +265,7 @@
         "version": null
       },
       "swt-scoring-policy.js": {
-        "sha256": "e40b2500ad71a201f8f648c18512fdcf4451e28a30ed05fa928809d1f898a06a",
+        "sha256": "d8aa3656629cd44e54782774ab5ec0de7afd0d44980573448e6b4d636140c47f",
         "version": "20.3.17"
       },
       "writing-lab-scoring.js": {
