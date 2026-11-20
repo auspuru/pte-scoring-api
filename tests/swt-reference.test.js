@@ -195,7 +195,7 @@ test('Reference label is earned by the same form gate and semantic policy', asyn
 
 test('The sample assessment uses the corrected IPCC offset and Human Remains policy scope', async () => {
   const cases = [
-    [seeds.find(p => p.id === 7), /fewer cold-related deaths could outweigh additional heat-related deaths/],
+    [seeds.find(p => p.id === 7), /rising temperatures reduce cold spells.*decrease in cold-related deaths could outweigh the increase in heat-related deaths/],
     [legacy.find(p => p.id === 30), /removing them from curation and preventing further study/]
   ];
   for (const [p, expected] of cases) {

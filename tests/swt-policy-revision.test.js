@@ -296,6 +296,64 @@ test('Contextual review blocks the captured 70-word Forecasting edit and accepts
   }
 });
 
+test('A rejected Forecasting edit can fall back to a distinct verified edit without changing the final score', async () => {
+  const faithful = forecastEditJudgment({repair:'however, differing assumptions limit its precision,'});
+  const misplaced = forecastEditJudgment({content_edit_span:[61,75],
+    repair:"because forecasters' assumptions about how an economy works vary widely."});
+  misplaced.summary_assessment.relationship_explanation = 'The precision claim needs its reason. The attribution repeats Sherden’s name.';
+  const stages = [], rewrites = [];
+  const service = candidateService(async (prompt, timeout, {stage}) => {
+    stages.push(stage);
+    if (stage === 'assessment') return faithful;
+    if (stage === 'review') return misplaced;
+    const payload = JSON.parse(prompt.split('\nDATA:\n').at(-1));
+    assert.equal(payload.diagnosis, misplaced.summary_assessment.relationship_explanation);
+    assert.match(prompt,/additive "and" as coordination/);
+    assert.match(prompt,/can leave unchanged optional repetition/);
+    rewrites.push(payload.revised);
+    const approved = rewrites.length === 2;
+    return {approved,reason:approved ? 'Differing assumptions explain limited precision.' : 'The because clause explains the wrong claim.'};
+  });
+  const result = await service.judge(forecastAtLimit,forecast.text,{});
+  const applied = policy.applyScoringPolicy(result,forecastAtLimit,forecast.text);
+  assert.deepEqual(stages,['assessment','review','repair-review','repair-review']);
+  assert.match(rewrites[0],/government spending, because forecasters/);
+  assert.match(rewrites[1],/differing assumptions limit its precision, and William Sherden notes/);
+  assert.equal(applied.content_reason,misplaced.summary_assessment.relationship_explanation);
+  assert.equal(applied.content_score,3);
+  assert.equal(result.summary_assessment.repair,faithful.summary_assessment.repair);
+  assert.deepEqual(result.summary_assessment.content_edit_span,faithful.summary_assessment.content_edit_span);
+  assert.equal(applied.summary_assessment.repair,rewrites[1]);
+  assert.equal(applied.summary_assessment.content_edit.revised_word_count,71);
+});
+
+test('After adjudication the last call can verify an earlier Web edit that preserves global spread', async () => {
+  const answer = "Sir Tim Berners-Lee may be a mild-mannered academic who lives modestly in Boston, but as the inventor of the World Wide Web he is also a revolutionary; moreover, since the Web went global 20 years ago, the way we shop, listen to music and communicate has been transformed; furthermore, he invented the Web, he says, because he was frustrated that he couldn't find all the information he wanted in one place.";
+  const repair = 'Frustrated by scattered information, Sir Tim Berners-Lee invented the World Wide Web, whose global spread changed how people shop, listen to music and communicate.';
+  const judgment = makeJudgment({answer,quality:'assembly',mark:3,repair,quote:'Since the Web went global 20 years ago'});
+  const adjudicated = structuredClone(judgment);
+  adjudicated.summary_assessment.repair = repair.slice(0,-1);
+  adjudicated.summary_assessment.relationship_explanation = 'The clauses state the motive and the impact but do not link them in the student’s own structure.';
+  const stages = [];
+  const service = candidateService(async (prompt, timeout, {stage}) => {
+    stages.push(stage);
+    if (stage === 'assessment') return judgment;
+    if (stage === 'review') return makeJudgment({answer,quality:'effective',mark:4});
+    if (stage === 'adjudication') return adjudicated;
+    const payload = JSON.parse(prompt.split('\nDATA:\n').at(-1));
+    assert.equal(payload.diagnosis,adjudicated.summary_assessment.relationship_explanation);
+    assert.match(prompt,/later uptake that accounts for the effect/);
+    assert.equal(payload.revised,repair);
+    return {approved:true,reason:'The response preserves the motive, invention and effects of global spread.'};
+  });
+  const result = await service.judge(answer,web.text,{});
+  const applied = policy.applyScoringPolicy(result,answer,web.text);
+  assert.deepEqual(stages,['assessment','review','adjudication','repair-review']);
+  assert.equal(result.interpretation_review.status,'resolved');
+  assert.equal(applied.content_score,3);
+  assert.equal(applied.summary_assessment.repair,repair);
+});
+
 test('The captured Web edit failures do not withhold the agreed assembly grade', async () => {
   const answer = comparative.attempts[2].responses.web;
   const passage = comparative.passages.find(p=>p.id==='web').text;

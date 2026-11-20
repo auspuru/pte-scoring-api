@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "baseCommit": "93cc716",
   "checkedAt": "2026-11-20",
-  "scope": "SWT 20.3.17 synthesis, version-bound passage references and independently reviewed word-budget feedback. Historical assessment snapshots retain their native policy.",
+  "scope": "SWT 20.3.17 synthesis, version-bound references and source-aware review of distinct word-budget edits. Historical assessment snapshots retain their native policy.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -16,7 +16,7 @@
         "version": null
       },
       "content/swt-publication-references.json": {
-        "sha256": "a85f5085c9f67caa30e8d1e4180899bb7925f39a7dfab03e5376fb9ca23eaaba",
+        "sha256": "93de315c734b494478a4b258dd12e7b863c3ea0a1328d397f27f362611fc97cd",
         "version": null
       },
       "delivery-rubric.js": {
@@ -245,7 +245,7 @@
         "version": null
       },
       "swt-judgment-service.js": {
-        "sha256": "461a6039b2f1d49f6e3f3cb98cb343d43ddd60d123618f6eaddb58023188701c",
+        "sha256": "23bd18cebdd73cbd96db0c3df0554f66925b00d4e4da1e6cfba4988e2ec31816",
         "version": null
       },
       "swt-legacy-policy.js": {
@@ -257,7 +257,7 @@
         "version": null
       },
       "swt-scoring-policy.js": {
-        "sha256": "a9796571c66b8a10961e55a35f4fbc553bee6e78f7f0195a787769f4b7d8d30b",
+        "sha256": "3ddf520ef42bf19cb57ae33c926548d4e8645b47bd2c08683a8783ace2d351e2",
         "version": "20.3.17"
       },
       "writing-lab-scoring.js": {
