@@ -155,3 +155,48 @@ test('Interruption reports escape text and retain neutral language without chang
   const html=reportHTML({protected:true,events:[{reason:'<script>',at:1000}]});
   assert.match(html,/1 recorded interruption/);assert.match(html,/&lt;script&gt;/);assert.doesNotMatch(html,/<script>/);assert.match(html,/do not change the score/);
 });
+
+test('Writing mock SWT copies exclusively from its own answer and clears the buffer when the editor changes', () => {
+  const h = harness();
+  const passage = h.node('passage', h.writing);
+  const answer = h.node('answer', h.writing, 'TEXTAREA');
+  const nextAnswer = h.node('next-answer', h.writing, 'TEXTAREA');
+  const records = [];
+  let selectionReads = 0;
+  h.doc.getSelection = () => { selectionReads++; return 'Source passage'; };
+  h.doc.fullscreenElement = h.doc.documentElement;
+  const useEditor = clipboardEditor => h.mode.set('writing', true, h.writing, { clipboardEditor, onEvent: event => records.push(event) });
+  useEditor(answer);
+
+  answer.value = 'My response';
+  answer.selectionEnd = 2;
+  assert(h.fire('copy', { target: answer }).prevented);
+  assert(h.fire('copy', { target: passage }).prevented);
+  assert(h.fire('cut', { target: passage }).prevented);
+  assert.equal(selectionReads, 0);
+  answer.selectionStart = answer.selectionEnd = answer.value.length;
+  assert(h.mode.edit('paste', answer));
+  assert.equal(answer.value, 'My responseMy');
+
+  useEditor(nextAnswer);
+  assert(h.fire('paste', { target: nextAnswer }).prevented);
+  assert.equal(nextAnswer.value, '');
+  assert.equal(records.at(-1).reason, 'external-paste-blocked');
+});
+
+test('Writing mock SWT blocks clipboard and drag input paths while leaving typing and history available', () => {
+  const h = harness();
+  const passage = h.node('passage', h.writing);
+  const answer = h.node('answer', h.writing, 'TEXTAREA');
+  h.doc.fullscreenElement = h.doc.documentElement;
+  h.mode.set('writing', true, h.writing, { clipboardEditor: answer });
+
+  for (const inputType of ['insertText', 'historyUndo', 'historyRedo']) {
+    assert(!h.fire('beforeinput', { target: answer, inputType }).prevented);
+  }
+  assert(h.fire('dragstart', { target: passage }).prevented);
+  assert(h.fire('drop', { target: answer }).prevented);
+  for (const inputType of ['insertFromPaste', 'insertFromPasteAsQuotation', 'insertFromYank', 'insertFromDrop']) {
+    assert(h.fire('beforeinput', { target: answer, inputType }).prevented);
+  }
+});

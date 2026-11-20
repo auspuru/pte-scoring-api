@@ -169,11 +169,25 @@ test('Writing interruption records retry after offline recovery and survive stal
   h.hooks.recordInterruption({id:'practice',reason:'tab-hidden',at:100000});await flush();assert.equal(h.requests.length,count);
 });
 
-test('Protected Writing clipboard controls delegate to the internal clipboard and do not access the system clipboard',async()=>{
-  const h=harness(),calls=[];open(h,attempt(0));
-  h.context.window.PortalExamMode={edit:(command,editor)=>{calls.push({command,id:editor.id});return true;}};
+test('Writing mock SWT confines editing controls to the current answer',async()=>{
+  const h=harness(),calls=[];
+  let protection;
+  h.context.window.PortalExamMode={
+    set(owner,enabled,pane,options){protection=options;},
+    edit(command,editor){calls.push({command,id:editor.id});return true;}
+  };
+  open(h,attempt(0));
+  assert.equal(protection.clipboardEditor,h.nodes.get('answer'));
+  const commands=['undo','redo','cut','copy','paste'];
   h.context.navigator.clipboard={readText(){throw Error('System clipboard must not be read');},writeText(){throw Error('System clipboard must not be written');}};
-  await h.hooks.edit('paste');assert.deepEqual(calls,[{command:'paste',id:'answer'}]);
+  for(const command of commands){
+    assert(h.nodes.get('lab').innerHTML.includes('data-edit="'+command+'"'));
+    await h.hooks.edit(command);
+  }
+  assert.deepEqual(calls,commands.map(command=>({command,id:'answer'})));
+  open(h,attempt(2));
+  assert.equal(protection.clipboardEditor,undefined);
+  assert(!h.nodes.get('lab').innerHTML.includes('data-edit="undo"'));
 });
 
 test('Writing mocks show only forward navigation and release exam mode after submission or suspension', async () => {
