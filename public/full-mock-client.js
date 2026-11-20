@@ -73,7 +73,7 @@
     pending ||= createPendingStore(env,kind);
     const doc = env.document, OWNER = kind==='listening'?'listening-mock':'full-mock',apiBase=kind==='listening'?'/api/listening-mocks':'/api/full-mocks',mockLabel=kind==='listening'?'Listening Mock':'Full Mock';
     let host, owner = '', generation = 0, attempt = null, claim = null, stream = null, context = null, analyser = null,
-      timer = null, poller = null, flushing = false, loadingState = false, advancing = false, capture = null,
+      timer = null, poller = null, flushing = false, flushRequested = false, loadingState = false, advancing = false, capture = null,
       output = null, outputUrl = null, imageUrl = null, played = '', rendering = '', draft = [], sequence = -1,
       sample = null, sampleUrl = null, sampleRecorder = null, samplePlayback = null, sampleTimer = null, samplePlayed = false, sampleBusy = false, equipmentStarting = false, micDetected = false, equipmentReady = false, setupPaper = '',
       anchor = 0, anchorAt = 0, lastClock = 0, saveTimer = null, readingLevel = 0, preparingSegment = false, cued = '',
@@ -526,7 +526,10 @@
       return value;
     }
     async function flush() {
-      if (flushing || !owner || uid() !== owner) return; flushing = true;
+      if (!owner || uid() !== owner) return;
+      if (flushing) { flushRequested = true; return; }
+      flushing = true;
+      flushRequested = false;
       const expectedOwner = owner; let saved = false;
       try {
         const records = await queueList(prefix());
@@ -551,7 +554,12 @@
         }
         const label = doc.getElementById('fm-save-status'); if (label) label.textContent = failed ? 'Some responses are still pending. Keep this tab open to retry.' : (await queueList(prefix())).length ? 'Responses are uploading…' : 'All pending responses saved.';
       } catch (error) { notice(error.message, true); }
-      finally { flushing = false; if (saved && owner === expectedOwner && attempt?.status === 'submitted') syncReport(true); }
+      finally {
+        flushing = false;
+        if (saved && owner === expectedOwner && attempt?.status === 'submitted') syncReport(true);
+        // A final recorder event can queue work after Pause stops the upload timer.
+        if (flushRequested) void flush();
+      }
     }
     async function commitDraft(acceptDisplayedOrder = false) {
       if (!attempt?.current || speech(attempt.question.type)) return;
