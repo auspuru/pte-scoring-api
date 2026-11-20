@@ -12,7 +12,7 @@ test('Layout reuses existing controls, isolates native reports and routes saved 
 });
 
 test('Approved practice navigation preserves the original Speaking grading, upload and feedback functions',()=>{
- const source=fs.readFileSync(path.join(__dirname,'../public/speaking-practice.js'),'utf8'),pins=require('../docs/portal-layout-preservation.json').practiceWorkspaceUpdates.preservedFunctions;
+ const source=require('./helpers/di-content-ui-projection')(fs.readFileSync(path.join(__dirname,'../public/speaking-practice.js'),'utf8')),pins=require('../docs/portal-layout-preservation.json').practiceWorkspaceUpdates.preservedFunctions;
  for(const [name,expected] of Object.entries(pins)){
   const match=new RegExp('^    (?:async )?function '+name+'\\(','m').exec(source);assert(match,name);
   const offset=match.index+match[0].length,next=/^    (?:async )?function /m.exec(source.slice(offset));

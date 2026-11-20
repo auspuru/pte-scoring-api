@@ -5,6 +5,7 @@
 })(typeof globalThis==='undefined'?this:globalThis,function(studio,cues,images){
   'use strict';
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const contentNeedsReview=r=>!!r&&(r.scoringMode==='local'||r.score_provisional===true||r.needs_semantic_review===true||r.contentStatus==='unavailable'||r.total==null);
   const time=n=>{const seconds=Math.ceil(Math.max(0,n));return Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');};
   const imageCategories=Object.freeze({bar:'Bar chart',line:'Line graph',pie:'Pie chart',process:'Process chart',table:'Table',map:'Map',mixed:'Mixed charts',photo:'Random image / photograph',other:'Other diagram',unclassified:'Unclassified'});
   function imageCategory(q) {
@@ -322,7 +323,7 @@
         +'<details class="speaking-inner-details"><summary>Your improved response</summary><p>'+esc(c.revisedResponse)+'</p><p class="speaking-footnote">A suggested revision of your words. Content coaching uses the transcript; pronunciation and fluency use your saved audio assessment.</p></details></section>';
     }
     function feedback(r) {
-      const contentPending=r.scoringMode==='local'||r.score_provisional===true;
+      const contentPending=contentNeedsReview(r);
       if(contentPending) r={...r,total:null,overview:'Your transcript is saved. A reliable content assessment is still needed.',
         strengths:[],improvements:[],coverage:(r.coverage||[]).map(c=>({...c,status:'unverified',feedback:'Content accuracy has not been verified.'}))};
       const list=items=>'<ul>'+items.map(s=>'<li>'+esc(s)+'</li>').join('')+'</ul>';
@@ -569,7 +570,7 @@
     function assessmentFinished(a){
       let text=a.assessment?.error||'';
       if(imageRetries.delete(a.id))text=a.result?.coachingStatus==='assessed'?'Your image feedback has been updated.':'Image coaching could not be completed. Your existing scores, words and recording are retained. Try updating the feedback again later.';
-      else if(contentRetries.delete(a.id))text=a.result?.scoringMode==='local'?'Content review is still unavailable. Your audio feedback is saved; retry later.':'Content review completed. Your saved recording was reused.';
+      else if(contentRetries.delete(a.id))text=(!a.result||contentNeedsReview(a.result))?'Content review is still unavailable. Your audio feedback is saved; retry later.':'Content review completed. Your saved recording was reused.';
       if(a.status==='submitted'&&typeof env.CustomEvent==='function')env.dispatchEvent?.(new env.CustomEvent('pte:attempt-completed',{detail:{engine:'speaking',questionId:a.questionId}}));
       return text;
     }
@@ -593,7 +594,7 @@
       const key=user+':'+saved.id,existing=assessmentRequests.get(key);if(existing)return existing;
       if(owner!==user||identity()!==user)return Promise.resolve();
       if(refreshDescribeFeedback)imageRetries.add(saved.id);
-      else if(saved.result?.scoringMode==='local')contentRetries.add(saved.id);
+      else if(contentNeedsReview(saved.result))contentRetries.add(saved.id);
       saved.assessment={status:'pending'};
       if(attempt?.id===saved.id){attempt=saved;phase='idle';message('Response saved. Feedback is being prepared; you can move to another question.');render();}
       const task=api('/attempts/'+saved.id+'/submit',{background:true,...(refreshDescribeFeedback?{refreshDescribeFeedback:true}:{})}).then(a=>{

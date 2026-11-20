@@ -9,6 +9,20 @@ const diReferences=require('./di-practice-references');
 const {createPromptNarrator}=require('./speaking-practice-prompts');
 const approvedAudio=require('./approved-audio');
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
+// Practice-only format/evidence repair. Full Mock keeps its frozen one-call
+// grader. Never retry an uncertain/failed provider request or a valid abstention.
+async function gradePracticeContent(q,text,callModel){
+  let completed=false,previousReview;
+  const first=await scoring.grade(q,text,async(prompt,context)=>{
+    const raw=await callModel(prompt,context);completed=true;previousReview=raw;return raw;
+  },{academyDescribeImage:true});
+  const repairable=new Set(['shape','inconsistent-score','evidence','source-contradiction','optional-polish-deduction','unverified-source-deduction','unrealistic-detail-requirement','accuracy-evidence','score-evidence','unsupported-deduction']);
+  if(q.type!=='di'||!completed||first.contentStatus!=='unavailable'||!repairable.has(first.contentReviewIssue))return first;
+  const validationRepair={issue:first.contentReviewIssue,previousReview};
+  const repaired=await scoring.grade(q,text,(prompt,context)=>callModel(prompt+describeAcademy.repairNote(validationRepair),{...context,validationRepair}),{academyDescribeImage:true});
+  return {...repaired,contentRepair:{version:'practice-content-repair-v1',attempts:2,initialIssue:first.contentReviewIssue,status:repaired.contentStatus==='assessed'?'recovered':repaired.contentStatus}};
+}
+
 const hasPrompt=q=>['rs','rl','sgd','rts'].includes(q.type)&&!(q.type==='rts'&&q.audioPrompt===false);
 function question(q,reveal=false) {
   return {id:q.id,type:q.type,name:q.name,title:q.title,instruction:q.instruction,preparation:q.preparation,seconds:q.seconds,
@@ -118,7 +132,7 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
     const a=await store.update(req.speakingUser,req.params.id,a=>{if(!a)throw fail('Attempt not found.',404);if(a.status==='submitted'||a.assessment?.status==='pending')throw fail('This response is already submitted or being assessed.',409);if(revision!==a.revision)throw fail('A newer transcript is saved. Reopen this attempt before editing.',409);a.transcript=text;a.revision++;return a;});res.json(present(a));
   }));
   async function assessAttempt(uid,id,{refreshDescribeFeedback=false}={}) {
-    let describeReview;
+    let describeReview,contentReview;
     let a=await store.update(uid,id,async a=>{if(!a)throw fail('Attempt not found.',404);if(refreshDescribeFeedback&&bank.questions.find(q=>q.id===a.questionId)?.type!=='di')throw fail('Image feedback is only available for Describe Image.');if(!a.transcript?.trim()){
       if(a.recording&&!a.transcription){a.transcription=await transcribe(a.recording);a.transcript=a.transcription;a.revision++;}
       if(!a.transcript?.trim())throw fail('No spoken words were recognised. Review your recording and enter what you said, or record a new attempt.');
@@ -126,7 +140,7 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
     a=await store.update(uid,id,async a=>{
       const q=attemptQuestion(a);
       if(!a.result || a.result.scoringMode==='local' || (q.type==='di'&&a.result.contentPolicyVersion===describeAcademy.VERSION&&describeAcademy.needsReview(a.result))) {
-        const previous=a.result,next=await scoring.grade(q,a.transcript,callModel,{academyDescribeImage:true});
+        const previous=a.result,next=await (contentReview ||= gradePracticeContent(q,a.transcript,callModel));
         if(!previous || next.scoringMode!=='local'||next.version!==previous.version) {
           // Content retries must retain the independent assessment of the same audio.
           const savedDelivery={};
@@ -181,4 +195,4 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
   }));
   return {store,waitForAssessments:practiceAssessments.wait};
 }
-module.exports={installSpeakingLab,transcribeRecording,question,present};
+module.exports={installSpeakingLab,transcribeRecording,question,present,gradePracticeContent};

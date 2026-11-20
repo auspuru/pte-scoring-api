@@ -36,7 +36,7 @@ test('Practice controllers retain the reviewed standalone navigation and exact n
       try{const current=env.sessionStorage?.getItem('pte_impersonate_token')||env.sessionStorage?.getItem('pte_session_token');if(current)return current;}catch{}
       try{return env.localStorage?.getItem('pte_session_token')||'';}catch{return '';}
     };`;
- const source=fs.readFileSync(path.join(root,'public/speaking-practice.js'),'utf8');assert(source.includes(reader),'The reviewed token reader must match exactly.');
+ const source=require('./helpers/di-content-ui-projection')(fs.readFileSync(path.join(root,'public/speaking-practice.js'),'utf8'));assert(source.includes(reader),'The reviewed token reader must match exactly.');
  const speaking=source.replace(reader,"    const token=()=>{try{return env.sessionStorage.getItem('pte_impersonate_token')||env.localStorage.getItem('pte_session_token')||'';}catch{return '';}};").split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')&&!line.includes('env.PortalUx?.recording(node);')).join('\n');
  const reading=fs.readFileSync(path.join(root,'public/reading-practice.js'),'utf8').split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')).join('\n');
  assert.equal(sha(speaking),'b51151b59a4709287febee3d8c79ed2a4471cc190181a9128bb29509acbfa92c');
