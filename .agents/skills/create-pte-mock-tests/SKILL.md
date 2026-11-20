@@ -42,7 +42,8 @@ Write a compact paper manifest before implementation: engine, stable ID/title/ve
 | Full | `content/full-mock/papers/<paper-id>.vN.json`, `catalogue.json`; authoring/audit in `full-mock/` | `full-mock/api.js`, `session.js`, `store.js`, `assessment.js`, `report.js`; `public/full-mock-client.js` / report |
 | Speaking | `content/speaking-mocks.js` exports `papers`, `catalogue`, `publicQuestion` | `speaking-mock.js`, store/jobs/report/Azure modules; exposed through Speaking and Writing-lab catalogues |
 | Writing | Explicit `content/writing-lab.json.mocks` or generated `.predictionEssays` through `writing-lab.js.predictionMocks` | `writing-lab.js` merges `allMocks`; `public/writing-lab-client.js`; common mock report UI |
-| Listening | `content/listening-mocks.js` exports `mocks`, `missing`, `listeningFormat` | Merged into `writing-lab.js.allMocks`, `/api/writing-lab/catalog.listeningMocks` |
+| Listening, 34 questions | Frozen papers in `content/listening-skill/papers/`, registered in `content/listening-skill/catalogue.json` | `listening-mock/papers.js`, `/api/listening-mocks/catalog` and `/api/listening-mocks/attempts`, and `listeningMocks` in `/api/writing-lab/catalog` |
+| Listening, legacy 15 questions | `content/listening-mocks.js` exports `mocks`, `missing`, `listeningFormat` | `writing-lab.js`, `/api/writing-lab/attempts`, and `/api/listening-mocks/legacy-attempts` for history |
 | Reading | `public/reading-bank.json`, `public/reading-mock-tools.js` composers | `public/practice-catalogue.js.readingMocks`, `public/reading-practice.js`, exam player/session timing |
 
 ### Speaking: add a selectable paper
