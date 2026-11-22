@@ -1,4 +1,11 @@
 {
   "previousDigest": "66e77ae588a2fea2debbaa4faad7e2dff4720535f9732bef4ceea505e11b48a8",
-  "currentDigest": "3d6ad2ce9af90d85cf6839992e6477014ae312fc114b8c0a49fb772626922b7e"
+  "currentDigest": "3d6ad2ce9af90d85cf6839992e6477014ae312fc114b8c0a49fb772626922b7e",
+  "teachingSamples": {
+    "currentDigest": "a1233fc40ddc692718d1da2138dff9e1605d4682975f0aa6e96fba10f3c8003e",
+    "previousFiles": {
+      "content/swt-plain-samples.json": "5c5f84e3cfb830821032b145c08f090885900c69184a23a1915bb7114598abed",
+      "full-mock/assessment.js": "ca007833de908ae2336d30d8e3645235da42c20fa65f77ad28b0664daf36f368"
+    }
+  }
 }

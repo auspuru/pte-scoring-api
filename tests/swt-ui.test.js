@@ -17,6 +17,7 @@ function functionSource(name, async = false) {
 test('The headline shows an estimate; raw traits live in a collapsed breakdown', () => {
   const hero = html.slice(html.indexOf('id="heroScore"'), html.indexOf('id="swtGuidanceBody"'));
   assert.match(hero, /PTE estimate/);
+  assert.match(hero, /Your submitted summary/);
   assert(!hero.includes('Content score'));
   assert(!hero.includes('Trait total'));
   assert.match(html, /<details[^>]*aria-labelledby="swtTraitsHeading"/);
@@ -60,7 +61,7 @@ test('Async sample checks cannot replace the next passage’s sample after navig
   const note = { textContent: '', dataset: {}, setAttribute() {} };
   const sample = { textContent: 'Current passage sample' };
   let finishSample;
-  const context = { swtResultPassage: old,
+  const context = { swtResultPassage: old, swtResultSubmission: null,
     document: { getElementById: id => id === 'sampleAnswerNotes' ? note : sample },
     fetchSwtSampleText: () => new Promise(resolve => { finishSample = resolve; }),
     checkSwtSample: async () => ({ status: 'verified', sample: 'Old checked sample', note: 'Old note' }) };
@@ -98,7 +99,7 @@ test('The plain sample loads immediately and a saved attempt with a different pa
   const note = { textContent:'', dataset:{}, setAttribute() {} };
   const sample = { textContent:'' };
   const current = { id:38, teachingSample:'Useful results can come as a surprise.' };
-  const context = { swtResultPassage:current, document:{getElementById:id => id === 'sampleAnswerNotes' ? note : sample},
+  const context = { swtResultPassage:current, swtResultSubmission:{text:'A separate learner response.'}, document:{getElementById:id => id === 'sampleAnswerNotes' ? note : sample},
     fetch() { assert.fail('The plain sample is available with the passage.'); },
     checkSwtSample:async passage => ({ sample:passage.sampleResponse, note:'Checked', status:'verified' }) };
   vm.createContext(context);
@@ -106,12 +107,31 @@ test('The plain sample loads immediately and a saved attempt with a different pa
   await context.refreshSwtSample(current);
   assert.equal(sample.textContent,current.teachingSample);
   assert.equal(note.dataset.status,'verified');
+  assert.equal(note.textContent,'The portal check gave this sample full marks.');
   const earlier = { ...current, sampleVersionMismatch:true };
   context.swtResultPassage = earlier;
   sample.textContent = '';
   await context.refreshSwtSample(earlier);
   assert.equal(sample.textContent,'');
   assert.match(note.textContent,/earlier version/);
+});
+
+test('An exact sample match uses the existing submission result without rechecking the sample', async () => {
+  const text = 'Useful results can come as a surprise.';
+  const passage = { id:38, teachingSample:text };
+  const note = { textContent:'', dataset:{}, setAttribute(name,value) { this[name] = value; } };
+  const sample = { textContent:'' };
+  const context = { swtResultPassage:passage, swtResultSubmission:{text},
+    document:{getElementById:id => id === 'sampleAnswerNotes' ? note : sample},
+    fetchSwtSampleText:async () => text,
+    checkSwtSample() { assert.fail('The existing submission is the result for this exact text.'); } };
+  vm.createContext(context);
+  vm.runInContext(functionSource('refreshSwtSample',true),context);
+  await context.refreshSwtSample(passage);
+  assert.equal(sample.textContent,text);
+  assert.equal(note.textContent,'This sample matches your submitted summary. See your result below.');
+  assert.equal(note.dataset.status,'submitted');
+  assert.equal(note['aria-busy'],'false');
 });
 
 test('A saved result hides mismatched passage evidence and restores it for a matching attempt', () => {

@@ -16360,20 +16360,32 @@ async function refreshSwtSample(passage){
     note.setAttribute('aria-busy', 'false');
     return;
   }
+  const submission = swtResultSubmission;
   note.textContent = 'Loading sample…';
   note.dataset.status = 'checking';
   note.setAttribute('aria-busy', 'true');
   const sampleText = await fetchSwtSampleText(passage);
-  if (swtResultPassage !== passage) return;
+  if (swtResultPassage !== passage || swtResultSubmission !== submission) return;
   const sample = document.getElementById('sampleAnswerText');
   if (sample) sample.textContent = sampleText || '(No sample answer authored for this passage yet.)';
-  note.textContent = sampleText ? 'Checking this sample against the current rubric…' : 'No sample answer is authored for this passage yet.';
-  if (!sampleText) { note.dataset.status = 'unavailable'; note.setAttribute('aria-busy', 'false'); return; }
-  const result = await checkSwtSample({ ...passage, sampleResponse: sampleText });
-  if (swtResultPassage !== passage) return;
-  if (sample && result.sample) sample.textContent = result.sample;
-  note.textContent = result.note;
-  note.dataset.status = result.status;
+  if (!sampleText) {
+    note.textContent = 'No sample answer is authored for this passage yet.';
+    note.dataset.status = 'unavailable';
+    note.setAttribute('aria-busy', 'false');
+    return;
+  }
+  let result = { sample: sampleText };
+  if (sampleText !== submission?.text) {
+    note.textContent = 'Checking this sample against the current rubric…';
+    result = await checkSwtSample({ ...passage, sampleResponse: sampleText });
+  }
+  if (swtResultPassage !== passage || swtResultSubmission !== submission) return;
+  const displayedSample = result.sample || sampleText;
+  const matchesSubmission = displayedSample === submission?.text;
+  if (sample) sample.textContent = displayedSample;
+  note.textContent = matchesSubmission ? 'This sample matches your submitted summary. See your result below.'
+    : result.status === 'verified' ? 'The portal check gave this sample full marks.' : result.note;
+  note.dataset.status = matchesSubmission ? 'submitted' : result.status;
   note.setAttribute('aria-busy', 'false');
 }
 

@@ -527,6 +527,54 @@ for(const changed of ['model','native-source','report-source'])test('SWT report 
  await assert.rejects(f.engine.request('alice',f.id),error=>error.status===409);assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
 
+test('SWT teaching samples preserve confirmed marks when the exact policy 20.3.17 snapshot resumes', async t => {
+  const { stateFor } = require('../full-mock/assessment');
+  const { inputHash } = require('../full-mock/aggregation');
+  const pins = require('../content/full-mock/swt-policy-upgrade-pins.json');
+  const swtCalls = [];
+  const f = await fixture(t, { adapters: { assess: async (q, response, { legacySwt }) => {
+    if (q.type !== 'swt') return full(q);
+    swtCalls.push({ id: q.id, legacySwt });
+    return adapters.result(q, adapters.maxima(q), { nativeVersion: '20.3.17' });
+  } } });
+  const original = structuredClone(f.engine.snapshot);
+  assert.equal(original.scoringSources.files['swt-scoring-policy.js'].version, '20.3.17');
+  assert.equal(digest(original.scoringSources), pins.teachingSamples.currentDigest);
+  for (const [name, sha256] of Object.entries(pins.teachingSamples.previousFiles)) original.scoringSources.files[name].sha256 = sha256;
+  assert.equal(digest(original.scoringSources), pins.currentDigest);
+  const [confirmed, pending] = paper.questions.map((candidate, index) => ({ ...candidate, responseIndex: index + 1 }))
+    .filter(candidate => candidate.question.type === 'swt');
+  const originalHash = digest(original);
+  let savedMark;
+  await f.store.update('alice', f.id, state => {
+    state.assessment = { ...stateFor(original), status: 'needs-attention', run: 1 };
+    for (const item of [confirmed, pending]) state.responses[item.responseIndex].answer = [item.question.sample];
+    savedMark = {
+      status: 'assessed', inputHash: inputHash(state.responses[confirmed.responseIndex]), snapshotHash: originalHash,
+      result: adapters.result(confirmed.question, { ...adapters.maxima(confirmed.question), content: 3 }, { nativeVersion: '20.3.17' }),
+      assessedAt: 1000
+    };
+    state.assessment.items[confirmed.id] = savedMark;
+    state.assessment.items[pending.id] = { status: 'pending', inputHash: inputHash(state.responses[pending.responseIndex]), snapshotHash: originalHash };
+    return state;
+  });
+
+  await f.engine.request('alice', f.id, { retry: true });
+  await f.engine.drain();
+  assert.equal((await f.engine.results('alice', f.id)).ready, true);
+  const { assessment } = await f.state();
+  assert.deepEqual(swtCalls, [{ id: pending.question.id, legacySwt: false }]);
+  assert.deepEqual(assessment.items[confirmed.id], savedMark);
+  assert.equal(assessment.items[pending.id].result.nativeVersion, '20.3.17');
+  assert.equal(assessment.items[pending.id].snapshotHash, originalHash);
+  assert.deepEqual(assessment.snapshot, original);
+
+  const unknown = await f.state();
+  unknown.assessment.snapshot.scoringSources.files['content/swt-plain-samples.json'].sha256 = '0'.repeat(64);
+  unknown.assessment.snapshotHash = digest(unknown.assessment.snapshot);
+  assert.throws(() => f.engine.validate(unknown), { status: 409 });
+});
+
 test('Exam-flow upgrade finishes the exact prior snapshot without repeating confirmed marks',async t=>{
  let calls=0;const f=await fixture(t,{adapters:{assess:async q=>{calls++;return full(q);}}});
  const original={...structuredClone(f.engine.snapshot),scoringSources:require('../content/full-mock/exam-flow-compatible-sources.json')};

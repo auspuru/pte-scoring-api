@@ -105,6 +105,18 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // The teaching examples changed without changing the SWT scorer. Project
+  // the exact release back to the source pins used by saved policy 20.3.17 attempts.
+  const teachingSamples = SWT_COMPATIBILITY.teachingSamples;
+  if (digest(current.scoringSources) === teachingSamples.currentDigest) {
+    const sources = structuredClone(current.scoringSources);
+    for (const [name, sha256] of Object.entries(teachingSamples.previousFiles)) sources.files[name].sha256 = sha256;
+    if (digest(sources) === SWT_COMPATIBILITY.currentDigest) {
+      const previous = { ...current, scoringSources: sources };
+      if (digest(saved) === digest(previous) || compatibleTransportUpgrade(saved, previous)) return true;
+    }
+  }
+
   // The exact audited release also runs the previous SWT policy for saved
   // snapshots. This projection does not migrate their grades or providers.
   if (digest(current.scoringSources) === SWT_COMPATIBILITY.currentDigest

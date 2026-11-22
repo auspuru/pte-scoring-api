@@ -3,7 +3,7 @@
   "scope": "Reviewed SWT scoring, feedback and report references, plus Describe Image numerical context, frozen-policy routing, standalone content-format repair and retry feedback. Saved marks and historical scoring sources remain preserved.",
   "files": {
     "server.js": "3c308cd7798f260db14058bd3cfbbba0891e50d318ae7690f0060914104c93ef",
-    "full-mock/assessment.js": "ca007833de908ae2336d30d8e3645235da42c20fa65f77ad28b0664daf36f368",
+    "full-mock/assessment.js": "a154722623dd0c01ded648009b1420376a7f144efb9298cf1c5db5568818c3c6",
     "full-mock/adapters.js": "b08379517a343298f7aecc7ef89f7ff06d50a7871a8126ee6efab71d1edf908b",
     "full-mock/aggregation.js": "6fcd85d0317145d0b0686882f998659c1c8326bf5165a95ae14f5c28894b488d",
     "full-mock/profiles.js": "8e9659f3d82839a445ec6cb0212d3e7456bb3c4442146a56a0ba721b1994df18",
@@ -43,7 +43,7 @@
     "public/swt-feedback.js": "af409d40b42b51ce3ced681d9b4ece76695cabe9598a2eea0494718aa99747a6",
     "public/swt-feedback-review.js": "30005bf13739732a11871f6577e8e73033e6993b29335be8850db74e7859569f",
     "public/swt-mock-feedback.js": "77277ab08608528497f39c6a62f6cb49baa1d1f071d713f56bbd9bbe2d910b34",
-    "content/full-mock/scoring-lock.json": "636692f2874f100ab3cc757d1bf917950d642ebcff0944e4ade35a401fe8dd2c",
+    "content/full-mock/scoring-lock.json": "7fe0ce783fbd452a609fcd82c646c5c276a3299db5abbe7283a8da8d69acf424",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
     "public/reading-mock-tools.js": "3d835f090b38872d8a0c2cf6c9f46d20b70e80ec7ba3abc17fd19f993a415160",
     "speaking-mock.js": "53f4d961abcc6ada8b30080fb31ab766280323be3c74961dc55f486ab6990d6f",
