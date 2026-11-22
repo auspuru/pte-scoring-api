@@ -46,6 +46,17 @@ test('Academic Research offers a plain example alongside the teacher reference f
   assert.equal(plainSwtSample(question.text + ' Another version.'), null);
 });
 
+test('The Reading example teaches strong endings and appropriate tone for its exact source', () => {
+  const question = books.flat().find(q => String(q.id) === '910088');
+  assert.ok(question);
+  assert.match(question.text, /the key stress comes at the end of your sentence/);
+  const projected = studentPassage(question);
+  assert.equal(projected.passageHash, 'a1df7160ad3d7d8e111d873ce0a4872ec3f304de992a85eb12b0c28ff934fd5e');
+  assert.match(projected.teachingSample, /short, strong word/);
+  assert.match(projected.teachingSample, /a tone that fits the task/);
+  assert.equal(plainSwtSample(question.text + ' This is a different source.'), null);
+});
+
 test('Writing Lab reveals the example after submission alongside the stored sample and marks', () => {
   const question = structuredClone(writingMocks[0].questions.find(q => q.type === 'swt'));
   const result = { total:8, maximum:9, itemScore90:79, scores:{content:3,form:1,grammar:2,vocabulary:2} };

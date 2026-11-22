@@ -16209,35 +16209,27 @@ function renderSwtFeedbackReview(data, passage, submittedText){
   if (passage.sampleVersionMismatch) {
     target.querySelectorAll('[data-review-source], [data-review-use], #swtReviewRevision').forEach(element => element.remove());
   }
-  const examples = document.getElementById('swtResponseExamples');
-  if (examples) {
-    SwtFeedbackReview.mountExamples(examples, review, {
+  const correction = document.getElementById('swtResponseExamples');
+  if (correction) {
+    SwtFeedbackReview.mountCorrection(correction, review, {
       available: !passage.sampleVersionMismatch && !!passage.text && !!submission?.token,
-      isCurrent: () => submission && swtResultSubmission === submission && submission.ownerId === canonicalClientUserId(currentUserId)
-        && submission.token === sessionToken,
-      load: () => requestSwtResponseExamples(submission)
+      isCurrent,
+      load: () => requestSwtResponseCorrection(submission)
     });
   }
 }
-async function requestSwtResponseExamples(submission){
+async function requestSwtResponseCorrection(submission){
   const response = await fetch(API_URL + '/api/swt/response-examples/' + encodeURIComponent(submission.passageId), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-session-token': submission.token },
     body: JSON.stringify({ text: submission.text, passage: submission.passageText }),
     signal: AbortSignal.timeout(70000)
   });
-  if (!response.ok) throw Object.assign(new Error('Response examples unavailable'), { status: response.status });
+  if (!response.ok) throw Object.assign(new Error('Response correction unavailable'), { status: response.status });
   return response.json();
 }
 function compareSwtSample(){
   if (swtResultPassage?.sampleVersionMismatch) return;
-  const personal = document.querySelector('#swtResponseExamples [data-example-sample]');
-  if (personal) {
-    switchSbsView('summary');
-    personal.scrollIntoView({ block: 'center' });
-    personal.focus({ preventScroll: true });
-    return;
-  }
   switchSbsView('sample');
   const tab = document.getElementById('sbsTabSample');
   if (tab) { tab.scrollIntoView({ block: 'center' }); tab.focus({ preventScroll: true }); }
@@ -16389,20 +16381,32 @@ async function refreshSwtSample(passage){
     note.setAttribute('aria-busy', 'false');
     return;
   }
+  const submission = swtResultSubmission;
   note.textContent = 'Loading sample…';
   note.dataset.status = 'checking';
   note.setAttribute('aria-busy', 'true');
   const sampleText = await fetchSwtSampleText(passage);
-  if (swtResultPassage !== passage) return;
+  if (swtResultPassage !== passage || swtResultSubmission !== submission) return;
   const sample = document.getElementById('sampleAnswerText');
   if (sample) sample.textContent = sampleText || '(No sample answer authored for this passage yet.)';
-  note.textContent = sampleText ? 'Checking this sample against the current rubric…' : 'No sample answer is authored for this passage yet.';
-  if (!sampleText) { note.dataset.status = 'unavailable'; note.setAttribute('aria-busy', 'false'); return; }
-  const result = await checkSwtSample({ ...passage, sampleResponse: sampleText });
-  if (swtResultPassage !== passage) return;
-  if (sample && result.sample) sample.textContent = result.sample;
-  note.textContent = result.note;
-  note.dataset.status = result.status;
+  if (!sampleText) {
+    note.textContent = 'No sample answer is authored for this passage yet.';
+    note.dataset.status = 'unavailable';
+    note.setAttribute('aria-busy', 'false');
+    return;
+  }
+  let result = { sample: sampleText };
+  if (sampleText !== submission?.text) {
+    note.textContent = 'Checking this sample against the current rubric…';
+    result = await checkSwtSample({ ...passage, sampleResponse: sampleText });
+  }
+  if (swtResultPassage !== passage || swtResultSubmission !== submission) return;
+  const displayedSample = result.sample || sampleText;
+  const matchesSubmission = displayedSample === submission?.text;
+  if (sample) sample.textContent = displayedSample;
+  note.textContent = matchesSubmission ? 'This sample matches your submitted summary. See your result below.'
+    : result.status === 'verified' ? 'The portal check gave this sample full marks.' : result.note;
+  note.dataset.status = matchesSubmission ? 'submitted' : result.status;
   note.setAttribute('aria-busy', 'false');
 }
 

@@ -65,7 +65,7 @@
 <script src="/auth-boot.js?v=source-sha256-740d0d28ebc6" defer></script>
 <script src="/portal-accessibility.js?v=20260930-typing-latency" defer></script>
 <script src="swt-feedback.js?v=sha256-af409d40b42b" defer></script>
-<script src="swt-feedback-review.js?v=sha256-a172c3315f81" defer></script>
+<script src="swt-feedback-review.js?v=sha256-a95f17199079" defer></script>
 <script src="essay-attempt-sync.js?v=sha256-e3503593cd90" defer></script>
 <script src="practice-storage.js?v=sha256-07dea047acde" defer></script>
 <script src="account-progress.js?v=sha256-837d1fb681b4" defer></script>
@@ -98,7 +98,7 @@
 <link rel="stylesheet" href="/essay-guidance.css?v=sha256-d59d30c8ba4a">
 <script src="/essay-guidance-data.js?v=sha256-95750f33bfcc" defer></script>
 <script src="/essay-guidance.js?v=sha256-d5e99fac567d" defer></script>
-<script src="index.min.js?v=source-sha256-3cbcd6f24ed2" defer></script>
+<script src="index.min.js?v=source-sha256-65e8b8a322e1" defer></script>
 <script src="/practice-writing-workspace.js?v=sha256-aae67a0a0d6f" defer></script>
 
 <link rel="stylesheet" href="portal-polish.css?v=1">
@@ -645,10 +645,10 @@
           </div>
           <section class="card" id="swtComparison" aria-labelledby="swtComparisonHeading">
             <div class="swt-section-heading"><h2 id="swtComparisonHeading">Passage and saved response</h2></div>
-            <p class="swt-help">Compare your wording with the passage and review examples based on your summary.</p>
+            <p class="swt-help">Read your summary against the passage, or compare it with the pre-written sample.</p>
             <div class="swt-review-source-stack">
               <div class="sbs-col"><h3 class="sbs-head">Original passage</h3><div class="annotated-text" id="annotatedPassage" tabindex="-1"></div></div>
-              <div class="sbs-col"><div class="sbs-toggle" role="tablist" aria-label="Compare responses"><button type="button" class="sbs-tab active" id="sbsTabSummary" role="tab" aria-selected="true" aria-controls="sbsViewSummary" onclick="switchSbsView('summary')">Your summary</button><button type="button" class="sbs-tab" id="sbsTabSample" role="tab" aria-selected="false" aria-controls="sbsViewSample" tabindex="-1" onclick="switchSbsView('sample')">Passage sample</button></div><div id="sbsViewSummary" role="tabpanel" aria-labelledby="sbsTabSummary"><div class="annotated-text" id="annotatedSubmission" tabindex="-1"></div><div class="annotated-feedback" id="annotatedFeedback"></div><div id="swtResponseExamples" tabindex="-1" hidden></div></div><div id="sbsViewSample" role="tabpanel" aria-labelledby="sbsTabSample" hidden><div class="annotated-text" id="sampleAnswerText"></div><div class="sample-note" id="sampleAnswerNotes" role="status" aria-live="polite"></div></div></div>
+              <div class="sbs-col"><div class="sbs-toggle" role="tablist" aria-label="Compare responses"><button type="button" class="sbs-tab active" id="sbsTabSummary" role="tab" aria-selected="true" aria-controls="sbsViewSummary" onclick="switchSbsView('summary')">Your summary</button><button type="button" class="sbs-tab" id="sbsTabSample" role="tab" aria-selected="false" aria-controls="sbsViewSample" tabindex="-1" onclick="switchSbsView('sample')">Sample answer</button></div><div id="sbsViewSummary" role="tabpanel" aria-labelledby="sbsTabSummary"><div class="annotated-text" id="annotatedSubmission" tabindex="-1"></div><div class="annotated-feedback" id="annotatedFeedback"></div><div id="swtResponseExamples" tabindex="-1" hidden></div></div><div id="sbsViewSample" role="tabpanel" aria-labelledby="sbsTabSample" hidden><div class="annotated-text" id="sampleAnswerText"></div><div class="sample-note" id="sampleAnswerNotes" role="status" aria-live="polite"></div></div></div>
             </div>
           </section>
           <section class="card results-hero" aria-label="Score overview">
@@ -656,7 +656,7 @@
               <div class="score-ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-track" cx="60" cy="60" r="54"></circle><circle class="ring-fill" id="heroRing" cx="60" cy="60" r="54" stroke-dasharray="339.29" stroke-dashoffset="339.29"></circle></svg><div class="ring-value"><strong id="heroScore">—</strong><span id="swtRawMax">/ 90</span></div></div>
               <div id="swtScoreLabel" class="score-ring-label">PTE estimate</div><div id="swtEstimate" class="swt-help"></div>
             </div>
-            <div class="results-hero-body"><div class="eyebrow">Your result</div><h2 class="display" id="heroVerdict">—</h2><p class="result-summary" id="heroSummary"></p><p class="swt-help" id="swtRubricNotice" role="status" hidden></p><div class="trait-chips" id="heroTraitChips"></div><div class="ai-degraded-notice u-inline-005" id="aiDegradedNotice" role="status"></div><button class="btn ghost u-inline-005" id="swtRetryAssessmentBtn" onclick="retrySwtAssessment()" hidden>Retry assessment</button></div>
+            <div class="results-hero-body"><div class="eyebrow">Your submitted summary</div><h2 class="display" id="heroVerdict">—</h2><p class="result-summary" id="heroSummary"></p><p class="swt-help" id="swtRubricNotice" role="status" hidden></p><div class="trait-chips" id="heroTraitChips"></div><div class="ai-degraded-notice u-inline-005" id="aiDegradedNotice" role="status"></div><button class="btn ghost u-inline-005" id="swtRetryAssessmentBtn" onclick="retrySwtAssessment()" hidden>Retry assessment</button></div>
             <div class="results-hero-actions"><button type="button" class="btn" onclick="goToNextPassage()" id="nextPassageBtn">Next passage →</button><button type="button" class="btn btn-ghost" onclick="compareSwtSample()">Compare with sample</button></div>
           </section>
           <div id="swtGuidanceBody" class="swt-review-flow" aria-label="Detailed SWT feedback"></div>

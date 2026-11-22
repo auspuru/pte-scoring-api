@@ -3,7 +3,7 @@
   "scope": "Reviewed SWT scoring, feedback and report references, plus Describe Image numerical context, frozen-policy routing, standalone content-format repair and retry feedback. Saved marks and historical scoring sources remain preserved.",
   "files": {
     "server.js": "c14522d44e7210b8398a91aaf3833b1f834d8912cbaf100a028e2321938d8421",
-    "full-mock/assessment.js": "549bcfd25bc958b1b0007e80aaac56fc1b24c03894d1cc154398a018b4c5f4d0",
+    "full-mock/assessment.js": "fc51fad06d1cc060b04e3b7bd48deff6f409a719af06de32edd826f4eb61c230",
     "full-mock/adapters.js": "b08379517a343298f7aecc7ef89f7ff06d50a7871a8126ee6efab71d1edf908b",
     "full-mock/aggregation.js": "6fcd85d0317145d0b0686882f998659c1c8326bf5165a95ae14f5c28894b488d",
     "full-mock/profiles.js": "8e9659f3d82839a445ec6cb0212d3e7456bb3c4442146a56a0ba721b1994df18",
@@ -41,9 +41,9 @@
     "public/essay-scoring.js": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
     "public/essay-feedback.js": "215ad91cc24acbdb5637cc50f18e0af5e8ed8135aeb27439560bb125f36170f3",
     "public/swt-feedback.js": "af409d40b42b51ce3ced681d9b4ece76695cabe9598a2eea0494718aa99747a6",
-    "public/swt-feedback-review.js": "a172c3315f81e332090a52d2775586802d91b456e14a0bb669cca26de9ed1a81",
+    "public/swt-feedback-review.js": "a95f17199079b46daf4d517d8d85badb1f98dd4269a56076f8f4576ae9893648",
     "public/swt-mock-feedback.js": "77277ab08608528497f39c6a62f6cb49baa1d1f071d713f56bbd9bbe2d910b34",
-    "content/full-mock/scoring-lock.json": "05d40667fa63938f083575831b4b56a0257f9fca6cb468fe3420c6e3fdf1312b",
+    "content/full-mock/scoring-lock.json": "76c6c21a7d985947192effb5da6aaa98ab4b6bd4ca82f50a43e7341934be712e",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
     "public/reading-mock-tools.js": "3d835f090b38872d8a0c2cf6c9f46d20b70e80ec7ba3abc17fd19f993a415160",
     "speaking-mock.js": "53f4d961abcc6ada8b30080fb31ab766280323be3c74961dc55f486ab6990d6f",
@@ -218,11 +218,11 @@
   },
   "swtPassageVersionUpdates": {
     "baselineCommit": "ed0d9b551d2f76ee3150d4bb0d878f0361bf4e1b",
-    "scope": "Standalone SWT displays feedback, revision examples and retries with the matching passage version. Mixed mock submissions use their stored text and key through the shared grader.",
+    "scope": "Standalone SWT keeps passage versions, compared teaching examples and checked learner corrections bound to the submission in view. Mixed mocks use their stored text and key through the shared grader.",
     "writingFunctions": {
       "scoreSummary": "992e9d53626abb63b301e79f2c68b9df5843c8ce5ca714512179a0fdac429fdd",
       "showResults": "df6bd24837ba87e9c2855c8dc8d925dce463ede4aef271e08458e79ee9913c1d",
-      "renderSwtFeedbackReview": "25808399a95721a145fb670ced2bc6f4a23928af128f6af375e1bdc64a91834f"
+      "renderSwtFeedbackReview": "5f941af6fbf620367fd6e56143a7e86cf6b5d5d1b309c73f5b5335c16ac587e9"
     },
     "readingFunctions": {
       "gradeSwt": "281e6380ca4128617b30b504a44c82e333ed1a1708975508baca725c30c7f270"

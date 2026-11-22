@@ -137,7 +137,7 @@
     target.oninput=e=>{if(e.target.id==='swtReviewDraft'&&valid()){q('#swtReviewWords').textContent=words(e.target.value);q('#swtReviewSaveStatus').textContent='Draft edited. Save when ready.';}};
     return m;
   }
-  async function mountExamples(target, review, {available, isCurrent, load}){
+  async function mountCorrection(target, review, {available, isCurrent, load}){
     target.replaceChildren();
     target.hidden = !available || !review.text.trim();
     if(target.hidden)return;
@@ -147,40 +147,40 @@
       target.appendChild(el);
       return el;
     };
-    const status = add('p', 'Preparing examples from your response…');
+    const status = add('p', 'Checking your wording…');
     status.setAttribute('role', 'status');
     try {
       const result = await load();
       if(!isCurrent())return;
-      const corrected = clean(result?.corrected), sample = clean(result?.sample), change = clean(result?.change);
-      if(!corrected || !sample || !change || !exact(review.text, result?.anchor))throw Error('Incomplete examples');
+      const anchor = exact(review.text, result?.anchor), corrected = clean(result?.corrected), change = clean(result?.change);
+      if(!anchor || !change || words(corrected)<5 || words(corrected)>75)throw Error('Incomplete correction');
       status.className = 'swt-example-ready';
-      status.textContent = 'Your response examples are ready.';
-      add('h3', 'Your corrected response');
-      add('p', corrected).setAttribute('data-example-corrected', '');
-      add('h4', 'What changed');
+      status.textContent = 'Your wording feedback is ready.';
+      if(corrected === review.text.trim()) {
+        add('h3', 'What works in your response');
+      } else {
+        add('h3', 'Your corrected response');
+        add('p', corrected).setAttribute('data-example-corrected', '');
+        add('h4', 'What changed');
+      }
+      add('q', anchor);
       add('p', change).setAttribute('data-example-change', '');
-      add('h3', 'Sample based on your response').id = 'swtPersonalSampleHeading';
-      const sampleText = add('p', sample);
-      sampleText.tabIndex = -1;
-      sampleText.setAttribute('aria-labelledby', 'swtPersonalSampleHeading');
-      sampleText.setAttribute('data-example-sample', '');
     } catch(error) {
       if(!isCurrent())return;
-      status.textContent = error?.status === 422 ? 'A sample could not be verified from this response.' : 'Examples for this response are unavailable.';
+      status.textContent = error?.status === 422 ? 'A correction could not be verified for this response.' : 'The wording check is unavailable.';
       const edit = review.repair || review.languageDraft;
       if(edit){
         add('h3', 'Suggested edit from your saved feedback');
         add('p', edit);
       }
       if(!error?.status || error.status === 429 || error.status >= 500){
-        const retry = add('button', 'Try loading examples again');
+        const retry = add('button', 'Try the wording check again');
         retry.type = 'button';
         retry.className = 'btn btn-ghost';
         retry.setAttribute('data-example-retry', '');
-        retry.onclick = () => { if(isCurrent())mountExamples(target, review, {available, isCurrent, load}); };
+        retry.onclick = () => { if(isCurrent())mountCorrection(target, review, {available, isCurrent, load}); };
       }
     }
   }
-  return {model,render,mount,mountExamples};
+  return {model,render,mount,mountCorrection};
 });

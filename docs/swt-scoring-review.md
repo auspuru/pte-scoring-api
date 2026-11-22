@@ -82,8 +82,30 @@ The follow-up instructions distinguish coordination from causation and keep an e
 
 ## Plain-English teaching samples
 
-Standalone practice, Writing Lab and Full Mock use the same plain-English example for the same exact passage. The library contains 95 audited portal passages and 12 extra archived texts. All 107 examples use a single sentence of 26–43 words. They keep the source's main point and its key relationships, using everyday words where possible and preserving useful terms like IPCC. The Writing Lab and Full Mock examples appear after submission. The scored references and saved marks remain in their original versions.
+Standalone practice, Writing Lab and Full Mock use the same plain-English example for the same exact passage. The library contains 95 audited portal passages and 12 extra archived texts. All 107 examples use a single sentence of 26–48 words. They use everyday words where possible and preserve useful terms like IPCC. The Writing Lab and Full Mock examples appear after submission. The scored references and saved marks remain in their original versions.
 
 Standalone assessment uses the same passage version for scoring and feedback, including when the bank changes during a request. If a saved result cannot be matched to the current passage, its answer, score and feedback stay visible. The portal withholds the passage, sample and revision controls for that result. A mixed practice mock can retry a pending SWT using the passage and key from its saved questions. An edited passage with an empty sample field receives a bundled sample only if the text matches that sample's source.
 
 For Academic Research, the model explains why critics want to cut research, why the writer thinks unplanned work can still be useful, and how the police ride led to a recommended book. It uses 43 words. On a full Content result, the review screen explains what worked. Exact optional language changes appear in that section only when they fit within 75 words. A suggestion to add words shows the projected count. The agreed rubric continues to award full language marks for clear, accurate word choice.
+
+## Teaching example follow-up
+
+The Reading example now connects reading aloud and keeping the main point prominent at the end of a sentence. It retains the passage’s advice about clear words and a tone suited to the task. The wider review compared all 107 examples with their exact source versions and revised 15 for the following relationships.
+
+| Passage | Meaning covered in the revised example |
+| --- | --- |
+| Reading | The key stress comes at the end of a sentence, so a short, strong final word can make its point stand out. |
+| Image of Africa | Natural resources and cultural diversity help create opportunities for business and tourism. |
+| Education Technology | Unproven benefits help explain earlier disappointment, and tailored software must support sound teaching. |
+| Product Life Cycle, two versions | The examples retain each version’s account of high launch costs and low sales, economies of scale, competition at maturity and the reasons for decline where stated. |
+| Fake News | False or misleading information is presented as news and spreads when people share it without checking. |
+| Pascolena Florry | Giving communities control helped Florry build a career in tourism and change how she viewed wildlife. |
+| Carbon Neutrality | A business’s reasons for cutting emissions shape its plan, alongside measurements, staff involvement and targets. |
+| London Financial Hub | The example connects early trading to global leadership and explains the pressures on sustaining it. |
+| Handwriting Skills | Growth in computer use helps explain reduced handwriting instruction and the need to keep both skills. |
+| Hydrogen-powered Flight | Aircraft energy and weight limit feasibility, and hydrogen is one option alongside other ways to cut emissions. |
+| New Women | The idea emerged during an existing debate, which literature and journalism helped spread. |
+| Reliable public transport | Delay updates help travellers adjust, but dependable service makes trips predictable. |
+| The Distribution of Attention, two versions | The examples preserve the feedback between attention and ranking and why choosing one quality standard still leaves someone controlling what gets seen. |
+
+The standalone result is labelled **Your submitted summary**. **Compare with sample** opens the pre-written example for that exact passage. The sample check describes the portal assessment of a distinct example. If the example and submitted text match exactly, the sample tab points to the existing result. Personalized feedback can suggest a checked correction to the learner’s summary and explain the change. The grading guides and numerical rules stay under policy 20.3.17. The checks exercise Form, exact-version matching, and display and saved-attempt behaviour with isolated fixtures.

@@ -17,6 +17,7 @@ function functionSource(name, async = false) {
 test('The headline shows an estimate; raw traits live in a collapsed breakdown', () => {
   const hero = html.slice(html.indexOf('id="heroScore"'), html.indexOf('id="swtGuidanceBody"'));
   assert.match(hero, /PTE estimate/);
+  assert.match(hero, /Your submitted summary/);
   assert(!hero.includes('Content score'));
   assert(!hero.includes('Trait total'));
   assert.match(html, /<details[^>]*aria-labelledby="swtTraitsHeading"/);
@@ -60,7 +61,7 @@ test('Async sample checks cannot replace the next passage’s sample after navig
   const note = { textContent: '', dataset: {}, setAttribute() {} };
   const sample = { textContent: 'Current passage sample' };
   let finishSample;
-  const context = { swtResultPassage: old,
+  const context = { swtResultPassage: old, swtResultSubmission: null,
     document: { getElementById: id => id === 'sampleAnswerNotes' ? note : sample },
     fetchSwtSampleText: () => new Promise(resolve => { finishSample = resolve; }),
     checkSwtSample: async () => ({ status: 'verified', sample: 'Old checked sample', note: 'Old note' }) };
@@ -85,6 +86,22 @@ test('Sample tab actually reveals its panel instead of leaving the static displa
   assert.doesNotMatch(panel, /u-inline-005/);
 });
 
+test('Compare with sample always opens the pre-written Sample answer tab when the passage matches', () => {
+  const activated = [], calls = [];
+  const tab = { scrollIntoView:() => calls.push('scroll'), focus:() => calls.push('focus') };
+  const context = { swtResultPassage:{id:38}, switchSbsView:view => activated.push(view),
+    document:{getElementById:id => id === 'sbsTabSample' ? tab : null,
+      querySelector() { assert.fail('Compare uses the Sample answer tab directly.'); } } };
+  vm.createContext(context);
+  vm.runInContext(functionSource('compareSwtSample'),context);
+  context.compareSwtSample();
+  assert.deepEqual(activated,['sample']);
+  assert.deepEqual(calls,['scroll','focus']);
+  context.swtResultPassage = { sampleVersionMismatch:true };
+  context.compareSwtSample();
+  assert.deepEqual(activated,['sample']);
+});
+
 test('Sample display is independent of verification availability', () => {
   const check = functionSource('checkSwtSample', true);
   const refresh = functionSource('refreshSwtSample', true);
@@ -98,7 +115,7 @@ test('The plain sample loads immediately and a saved attempt with a different pa
   const note = { textContent:'', dataset:{}, setAttribute() {} };
   const sample = { textContent:'' };
   const current = { id:38, teachingSample:'Useful results can come as a surprise.' };
-  const context = { swtResultPassage:current, document:{getElementById:id => id === 'sampleAnswerNotes' ? note : sample},
+  const context = { swtResultPassage:current, swtResultSubmission:{text:'A separate learner response.'}, document:{getElementById:id => id === 'sampleAnswerNotes' ? note : sample},
     fetch() { assert.fail('The plain sample is available with the passage.'); },
     checkSwtSample:async passage => ({ sample:passage.sampleResponse, note:'Checked', status:'verified' }) };
   vm.createContext(context);
@@ -106,12 +123,31 @@ test('The plain sample loads immediately and a saved attempt with a different pa
   await context.refreshSwtSample(current);
   assert.equal(sample.textContent,current.teachingSample);
   assert.equal(note.dataset.status,'verified');
+  assert.equal(note.textContent,'The portal check gave this sample full marks.');
   const earlier = { ...current, sampleVersionMismatch:true };
   context.swtResultPassage = earlier;
   sample.textContent = '';
   await context.refreshSwtSample(earlier);
   assert.equal(sample.textContent,'');
   assert.match(note.textContent,/earlier version/);
+});
+
+test('An exact sample match uses the existing submission result without rechecking the sample', async () => {
+  const text = 'Useful results can come as a surprise.';
+  const passage = { id:38, teachingSample:text };
+  const note = { textContent:'', dataset:{}, setAttribute(name,value) { this[name] = value; } };
+  const sample = { textContent:'' };
+  const context = { swtResultPassage:passage, swtResultSubmission:{text},
+    document:{getElementById:id => id === 'sampleAnswerNotes' ? note : sample},
+    fetchSwtSampleText:async () => text,
+    checkSwtSample() { assert.fail('The existing submission is the result for this exact text.'); } };
+  vm.createContext(context);
+  vm.runInContext(functionSource('refreshSwtSample',true),context);
+  await context.refreshSwtSample(passage);
+  assert.equal(sample.textContent,text);
+  assert.equal(note.textContent,'This sample matches your submitted summary. See your result below.');
+  assert.equal(note.dataset.status,'submitted');
+  assert.equal(note['aria-busy'],'false');
 });
 
 test('A saved result hides mismatched passage evidence and restores it for a matching attempt', () => {
@@ -121,7 +157,8 @@ test('A saved result hides mismatched passage evidence and restores it for a mat
   const passage = { id: 21, title: 'Tree shade', text: 'Trees reduce temperatures by shading streets.', passageHash: 'new',
     sampleResponse: answer, keyElements: { what: 'Trees reduce temperatures.' } };
   const context = { document, escapeHtml, currentPassageId: 1, currentUserId: 'student', sessionToken: 'token',
-    canonicalClientUserId: String, countWords: text => text.split(/\s+/).length,
+    canonicalClientUserId: String, countWords: text => text.split(/\s+/).length, swtPassageStorageId: () => passage.id,
+    requestSwtResponseCorrection: async () => ({ corrected:answer, anchor:'Trees shade streets', change:'This phrase identifies the main benefit.' }),
     SwtStudentFeedback: require('../public/swt-feedback'), SwtFeedbackReview: require('../public/swt-feedback-review'),
     window: { PteEstimateDisplay: { render: () => '' } }, renderTraitBreakdown() {}, renderAboutPassage() {}, updateResultsNav() {},
     refreshSwtSample() { assert.fail('A result without matching source evidence cannot check a sample.'); } };

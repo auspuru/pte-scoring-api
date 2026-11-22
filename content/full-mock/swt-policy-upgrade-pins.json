@@ -1,6 +1,13 @@
 {
   "previousDigest": "66e77ae588a2fea2debbaa4faad7e2dff4720535f9732bef4ceea505e11b48a8",
   "currentDigest": "3d6ad2ce9af90d85cf6839992e6477014ae312fc114b8c0a49fb772626922b7e",
+  "teachingSamples": {
+    "currentDigest": "4d34e669fda9dbc5417b7c8ab8cfd7298a3eba3a20a090ccca54283672dfc78a",
+    "previousFiles": {
+      "content/swt-plain-samples.json": "5c5f84e3cfb830821032b145c08f090885900c69184a23a1915bb7114598abed",
+      "full-mock/assessment.js": "549bcfd25bc958b1b0007e80aaac56fc1b24c03894d1cc154398a018b4c5f4d0"
+    }
+  },
   "practiceRewrites": {
     "currentDigest": "c0b3e75ec64ce87e6d73a6eb688a03ca0056b17c3607ac76ed62484f8319242e",
     "previousHashes": {

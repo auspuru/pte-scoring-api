@@ -16,7 +16,7 @@
         "version": null
       },
       "content/swt-plain-samples.json": {
-        "sha256": "5c5f84e3cfb830821032b145c08f090885900c69184a23a1915bb7114598abed",
+        "sha256": "77c27bacc0bb630d4e92b805ccdc9a63a59f4d440dca9bd2d6fc8755d919d462",
         "version": null
       },
       "content/swt-publication-references.json": {
@@ -120,7 +120,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "549bcfd25bc958b1b0007e80aaac56fc1b24c03894d1cc154398a018b4c5f4d0",
+        "sha256": "fc51fad06d1cc060b04e3b7bd48deff6f409a719af06de32edd826f4eb61c230",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {

@@ -105,6 +105,18 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // The teaching examples changed without changing the SWT scorer. Project
+  // the exact release back through the standalone practice rewrite release.
+  const teachingSamples = SWT_COMPATIBILITY.teachingSamples;
+  if (digest(current.scoringSources) === teachingSamples.currentDigest) {
+    const sources = structuredClone(current.scoringSources);
+    for (const [name, sha256] of Object.entries(teachingSamples.previousFiles)) sources.files[name].sha256 = sha256;
+    if (digest(sources) === SWT_COMPATIBILITY.practiceRewrites.currentDigest) {
+      const previous = { ...current, scoringSources: sources };
+      if (digest(saved) === digest(previous) || compatibleTransportUpgrade(saved, previous)) return true;
+    }
+  }
+
   // The practice rewrite endpoint shares server.js with Full Mock. Only this
   // exact source revision can project back to the previous release.
   const rewrites = SWT_COMPATIBILITY.practiceRewrites;

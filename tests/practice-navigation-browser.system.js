@@ -320,30 +320,37 @@ for(const width of [1363,390,320])test('SWT review: exact corrections, drafts, s
  const page=await browser.newPage();await page.setViewport({width,height:900});let calls=0;const errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.method()==='POST'&&/\/(?:grade|score)(?:\/|$)/.test(new URL(r.url()).pathname))calls++;});
  const original='Trees cool cities and improves air quality.';
- const examples={
+ const correction={
   corrected:'Trees cool cities and improve air quality.',
-  sample:'Trees make cities cooler and improve the quality of the air.',
   change:'Use “improve” with the plural subject “Trees”.',
   anchor:'improves'
  };
+ const prewrittenSample='The expedition led Darwin to question whether species change over time.';
  await page.setRequestInterception(true);
  page.on('request',request=>{
-  if(!new URL(request.url()).pathname.startsWith('/api/swt/response-examples/'))return request.continue();
+  const path=new URL(request.url()).pathname;
+  if(path.startsWith('/api/swt/sample/')&&request.method()==='POST')return request.respond({status:200,contentType:'application/json',body:JSON.stringify({status:'verified',sample:prewrittenSample})});
+  if(!path.startsWith('/api/swt/response-examples/'))return request.continue();
   const body=JSON.parse(request.postData());
-  return request.respond({status:body.text===original&&body.passage?200:400,contentType:'application/json',body:JSON.stringify(examples)});
+  return request.respond({status:body.text===original&&body.passage?200:400,contentType:'application/json',body:JSON.stringify(correction)});
  });
  await page.goto(f.base);await page.type('#loginUsername',name);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&swtPassageAt(1)!==null&&currentUserId==='swt-review-browser');
- async function show(extra={}){await page.evaluate((text,extra)=>{
-  switchSection('swt');currentPassageId=1;const p=swtPassageAt(1);
+ async function show(extra={}){await page.evaluate((text,extra,prewritten)=>{
+  switchSection('swt');currentPassageId=1;const p={...swtPassageAt(1),teachingSample:prewritten};
   const d={overall_score:90,trait_scores:{content:4,content_max:4,form:1,grammar:1,vocabulary:2},content_details:{full_content_eligible:true,summary_assessment:{relationships_clear:true,missing_dependencies:[],conclusion_status:'captured'}},grammar_details:{grammar_annotations:[{phrase:'improves',fix:'improve',type:'agreement',affects_score:true,meaning_effect:'Use the plural verb with trees.'}]},...extra};
   showResults(d,p,null,text);showSwtScreen('swtResultsScreen');
- },original,extra);}
+ },original,extra,prewrittenSample);}
  await show();
- await page.waitForFunction(expected=>document.querySelector('[data-example-sample]')?.textContent===expected,{},examples.sample);
- assert.equal(await page.$eval('[data-example-corrected]',e=>e.textContent),examples.corrected);
+ await page.waitForFunction(expected=>document.querySelector('[data-example-corrected]')?.textContent===expected,{},correction.corrected);
+ assert.equal(await page.$('[data-example-sample]'),null);
  assert.match(await page.$eval('#swtResponseExamples',e=>e.textContent),/plural subject/);
  assert.equal(await page.$eval('#annotatedSubmission',e=>e.textContent),original);
  assert.equal(await page.$eval('#swtResponseExamples',e=>e.scrollWidth<=e.clientWidth+1),true);
+ await page.locator('#swtResultsScreen button[onclick="compareSwtSample()"]').click();
+ await page.waitForFunction(()=>!document.getElementById('sbsViewSample').hidden&&document.getElementById('sampleAnswerNotes').dataset.status==='verified');
+ assert.equal(await page.$eval('#sampleAnswerText',e=>e.textContent),prewrittenSample);
+ assert.equal(await page.$eval('#sampleAnswerNotes',e=>e.textContent),'The portal check gave this sample full marks.');
+ await page.locator('#sbsTabSummary').click();
  assert.deepEqual(await page.$$eval('.swt-review-heading h2',els=>els.map(e=>e.textContent.replace(/^\d/,''))),['Content & meaning','Grammar & spelling','Form','Revise & practise']);
  await page.locator('[data-review-fix]').click();await page.waitForFunction(()=>!document.getElementById('swtReviewCorrection').hidden);assert.match(await page.$eval('#swtReviewCorrection',e=>e.textContent),/improves.*improve/);
  await page.focus('[data-review-fix]');await page.keyboard.press('Enter');assert.equal(await page.$eval('[data-review-fix]',e=>e.getAttribute('aria-expanded')),'true');
