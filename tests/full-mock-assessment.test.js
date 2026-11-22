@@ -505,6 +505,26 @@ for(const changed of ['model','native-source'])test('DI reference compatibility 
  await assert.rejects(f.engine.request('alice',f.id),error=>error.status===409);assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
 
+test('SWT practice rewrite endpoint preserves the exact preceding Full Mock snapshot', async t => {
+  const f = await fixture(t);
+  const pins = require('../content/full-mock/swt-policy-upgrade-pins.json');
+  const original = structuredClone(f.engine.snapshot);
+  for (const [file, hash] of Object.entries(pins.practiceRewrites.previousHashes)) {
+    original.scoringSources.files[file].sha256 = hash;
+  }
+  assert.equal(digest(original.scoringSources), pins.currentDigest);
+  const state = await f.state();
+  state.assessment = require('../full-mock/assessment').stateFor(original);
+  assert.doesNotThrow(() => f.engine.validate(state));
+  assert.deepEqual(state.assessment.snapshot, original);
+  for (const file of ['server.js', 'swt-scoring-policy.js']) {
+    const changed = structuredClone(state);
+    changed.assessment.snapshot.scoringSources.files[file].sha256 = '0'.repeat(64);
+    changed.assessment.snapshotHash = digest(changed.assessment.snapshot);
+    assert.throws(() => f.engine.validate(changed), {status:409});
+  }
+});
+
 test('SWT report projection upgrade completes the exact previous snapshot and retains all confirmed grades',async t=>{
  let calls=0;
  const swtPolicies=[];

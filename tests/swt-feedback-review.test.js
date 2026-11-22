@@ -101,3 +101,46 @@ test('The Form panel explains the maximum and how many words an over-limit respo
  const d=data();d.trait_scores.form=0;
  assert.match(review.render(review.model(d,passage,answer(77))),/Cut at least 2 words\. Start with repeated points or optional examples\./);
 });
+
+test('The response review shows both checked examples and the explanation using plain text', async () => {
+  const {document} = parseHTML('<div id="review"></div>');
+  const target = document.getElementById('review');
+  const result = {corrected:'Trees cool cities and improve air quality.', sample:'Urban trees improve air quality while cooling cities.',
+    change:'Keep “Trees” and use the plural verb “improve” <img src=x>.', anchor:'Trees cool cities'};
+  const pending = review.model({...data(), score_provisional:true}, passage, text);
+  await review.mountExamples(target, pending, {available:true, isCurrent:()=>true, load:async()=>result});
+  assert.equal(target.hidden,false);
+  assert.equal(target.querySelector('[data-example-corrected]').textContent,result.corrected);
+  assert.equal(target.querySelector('[data-example-sample]').textContent,result.sample);
+  assert.equal(target.querySelector('[data-example-change]').textContent,result.change);
+  assert.equal(target.querySelector('img'),null);
+  assert.equal(target.querySelector('[data-review-save]'),null);
+});
+
+test('Examples cannot overwrite a later answer or reveal coaching from a different passage', async () => {
+  const {document} = parseHTML('<div id="review"></div>');
+  const target = document.getElementById('review'), m = review.model(data(), passage, text);
+  let current = true, finish;
+  const request = review.mountExamples(target, m, {available:true, isCurrent:()=>current, load:()=>new Promise(resolve=>{finish=resolve;})});
+  current = false;
+  await review.mountExamples(target, m, {available:false, isCurrent:()=>true, load:()=>assert.fail('Source mismatch')});
+  finish({corrected:'An earlier result.', sample:'An earlier example.', change:'Earlier feedback.', anchor:'Trees'});
+  await request;
+  assert.equal(target.hidden,true);
+  assert.equal(target.textContent,'');
+});
+
+test('A temporary failure offers retry and the saved edit without relabelling a passage sample', async () => {
+  const {document} = parseHTML('<div id="review"></div>');
+  const target = document.getElementById('review'), d = data();
+  d.grammar_details.grammar_annotations = [{phrase:'improves',fix:'improve',affects_score:true}];
+  const m = review.model(d, passage, text);
+  const options = {available:true, isCurrent:()=>true, load:async()=>{throw Object.assign(Error(),{status:503});}};
+  await review.mountExamples(target, m, options);
+  assert.ok(target.querySelector('[data-example-retry]'));
+  assert.ok(target.textContent.includes(m.languageDraft));
+  assert.equal(target.querySelector('[data-example-sample]'),null);
+  await review.mountExamples(target, m, {...options, load:async()=>{throw Object.assign(Error(),{status:422});}});
+  assert.equal(target.querySelector('[data-example-retry]'),null);
+  assert.match(target.textContent,/could not be verified/);
+});

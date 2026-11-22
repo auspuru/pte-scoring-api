@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "93cc716",
-  "checkedAt": "2026-11-20",
-  "scope": "SWT 20.3.17 synthesis, exact-passage plain-English teaching samples and confirmed word-budget feedback. Historical snapshots retain their native scores and references.",
+  "baseCommit": "cebb5b7",
+  "checkedAt": "2026-11-22",
+  "scope": "Standalone SWT response coaching route and exact compatibility with previously started Full Mocks.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -120,7 +120,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "ca007833de908ae2336d30d8e3645235da42c20fa65f77ad28b0664daf36f368",
+        "sha256": "549bcfd25bc958b1b0007e80aaac56fc1b24c03894d1cc154398a018b4c5f4d0",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -213,7 +213,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "3c308cd7798f260db14058bd3cfbbba0891e50d318ae7690f0060914104c93ef",
+        "sha256": "c14522d44e7210b8398a91aaf3833b1f834d8912cbaf100a028e2321938d8421",
         "version": null
       },
       "situation-content-policy.js": {

@@ -89,8 +89,9 @@
       content+='<details class="swt-review-suggestion"><summary>See an example with this edit</summary><div><p class="swt-review-revision">'+esc(m.repair)+'</p><button type="button" class="btn" data-review-use>Use in my revision draft</button></div></details>';
       content+='<p class="swt-help">'+revisedCount+' of 75 words after the edit'+(wordsSaved>0?' · '+wordsSaved+' '+(wordsSaved===1?'word':'words')+' saved':'')+'</p>';
     }
-    let grammar=m.pending?'<p>Language feedback is not ready yet.</p>':!m.valid?'<p>Repair the sentence form first. No complete language assessment is claimed here.</p>':
-      '<div class="swt-review-legend"><span>Grammar / word choice</span><span>Spelling</span><span>Optional</span></div><p class="swt-help">'+(m.annotations.length?'Select an underlined phrase to see the change and why it helps.':'No exact language correction is available in this saved feedback.')+'</p><p class="swt-review-annotated">'+annotationHtml(m)+'</p><div id="swtReviewCorrection" class="swt-review-correction" role="region" aria-live="polite" aria-label="Selected language correction" hidden></div>';
+    let grammar=m.pending?'<p>Language feedback is not ready yet.</p>':!m.valid?'<p>Repair the sentence form first. No complete language assessment is claimed here.</p>':!m.annotations.length?
+      '<p>Your saved assessment gives no phrase-level grammar or spelling edits.</p>':
+      '<div class="swt-review-legend"><span>Grammar / word choice</span><span>Spelling</span><span>Optional</span></div><p class="swt-help">Select an underlined phrase to see the change and why it helps.</p><p class="swt-review-annotated">'+annotationHtml(m)+'</p><div id="swtReviewCorrection" class="swt-review-correction" role="region" aria-live="polite" aria-label="Selected language correction" hidden></div>';
     if(!m.pending&&m.valid&&m.languageAdvice.length)grammar+='<div class="swt-review-note">'+m.languageAdvice.map(p=>'<p>'+esc(p.detail)+'</p>').join('')+'</div>';
     if(m.annotations.some(x=>x.optional))grammar+='<p class="swt-help">Optional suggestions did not cost marks. Keep your total within 75 words.</p>';
     if(m.languageDraft)grammar+='<button type="button" class="btn" data-review-use="language">Use these language corrections in my draft</button>';
@@ -136,5 +137,50 @@
     target.oninput=e=>{if(e.target.id==='swtReviewDraft'&&valid()){q('#swtReviewWords').textContent=words(e.target.value);q('#swtReviewSaveStatus').textContent='Draft edited. Save when ready.';}};
     return m;
   }
-  return {model,render,mount};
+  async function mountExamples(target, review, {available, isCurrent, load}){
+    target.replaceChildren();
+    target.hidden = !available || !review.text.trim();
+    if(target.hidden)return;
+    const add = (tag, label) => {
+      const el = target.ownerDocument.createElement(tag);
+      el.textContent = label;
+      target.appendChild(el);
+      return el;
+    };
+    const status = add('p', 'Preparing examples from your response…');
+    status.setAttribute('role', 'status');
+    try {
+      const result = await load();
+      if(!isCurrent())return;
+      const corrected = clean(result?.corrected), sample = clean(result?.sample), change = clean(result?.change);
+      if(!corrected || !sample || !change || !exact(review.text, result?.anchor))throw Error('Incomplete examples');
+      status.className = 'swt-example-ready';
+      status.textContent = 'Your response examples are ready.';
+      add('h3', 'Your corrected response');
+      add('p', corrected).setAttribute('data-example-corrected', '');
+      add('h4', 'What changed');
+      add('p', change).setAttribute('data-example-change', '');
+      add('h3', 'Sample based on your response').id = 'swtPersonalSampleHeading';
+      const sampleText = add('p', sample);
+      sampleText.tabIndex = -1;
+      sampleText.setAttribute('aria-labelledby', 'swtPersonalSampleHeading');
+      sampleText.setAttribute('data-example-sample', '');
+    } catch(error) {
+      if(!isCurrent())return;
+      status.textContent = error?.status === 422 ? 'A sample could not be verified from this response.' : 'Examples for this response are unavailable.';
+      const edit = review.repair || review.languageDraft;
+      if(edit){
+        add('h3', 'Suggested edit from your saved feedback');
+        add('p', edit);
+      }
+      if(!error?.status || error.status === 429 || error.status >= 500){
+        const retry = add('button', 'Try loading examples again');
+        retry.type = 'button';
+        retry.className = 'btn btn-ghost';
+        retry.setAttribute('data-example-retry', '');
+        retry.onclick = () => { if(isCurrent())mountExamples(target, review, {available, isCurrent, load}); };
+      }
+    }
+  }
+  return {model,render,mount,mountExamples};
 });

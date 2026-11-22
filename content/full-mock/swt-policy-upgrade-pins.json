@@ -1,4 +1,11 @@
 {
   "previousDigest": "66e77ae588a2fea2debbaa4faad7e2dff4720535f9732bef4ceea505e11b48a8",
-  "currentDigest": "3d6ad2ce9af90d85cf6839992e6477014ae312fc114b8c0a49fb772626922b7e"
+  "currentDigest": "3d6ad2ce9af90d85cf6839992e6477014ae312fc114b8c0a49fb772626922b7e",
+  "practiceRewrites": {
+    "currentDigest": "c0b3e75ec64ce87e6d73a6eb688a03ca0056b17c3607ac76ed62484f8319242e",
+    "previousHashes": {
+      "full-mock/assessment.js": "ca007833de908ae2336d30d8e3645235da42c20fa65f77ad28b0664daf36f368",
+      "server.js": "3c308cd7798f260db14058bd3cfbbba0891e50d318ae7690f0060914104c93ef"
+    }
+  }
 }

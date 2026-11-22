@@ -20,6 +20,7 @@ const SwtForm = require('./swt-form-policy');
 const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
 const AccountProgress = require('./public/account-progress');
 const { createJudgmentService } = require('./swt-judgment-service');
+const { createResponseExamplesProvider, createResponseExamplesService, createResponseExamplesHandler } = require('./swt-response-examples');
 const { studentPassage, fallbackSample } = require('./swt-reference');
 const { repairMissingSwtSamples } = require('./swt-sample-backfill');
 const { createEssayGrader, essayResultForClient } = require('./essay-grading');
@@ -235,6 +236,7 @@ if (rateLimit) {
   });
   app.use('/api/grade', gradeLimiter);
   app.use('/api/swt/sample', gradeLimiter);
+  app.use('/api/swt/response-examples', gradeLimiter);
   app.use('/api/essay/grade', gradeLimiter);
   app.use('/api/spellcheck', gradeLimiter);
   app.use('/api/interventions/help', gradeLimiter);
@@ -250,7 +252,7 @@ if (rateLimit) {
 app.use('/api',async(req,res,next)=>{
   const token=req.headers['x-session-token']||req.query.token||'';
   const sessionUser=verifySessionToken(token),uid=sessionUser||verifyImpersonationToken(token);
-  const grading=['/grade','/essay/grade'].includes(req.path);
+  const grading=['/grade','/essay/grade'].includes(req.path) || req.path.toLowerCase().startsWith('/swt/response-examples/');
   if(!uid)return grading?res.status(401).json({error:'Please sign in to your practice account.'}):next();
   try{
     const account=await getPracticeAccount(uid,{fresh:true}),parts=AccountSecurity.signedParts(token);
@@ -4424,6 +4426,14 @@ const legacySwtJudgmentService = createJudgmentService({
   isComplete: (result, summary, passage) => !legacySwtPolicy.applyScoringPolicy(result, summary, passage).needs_semantic_review,
   validationIssues: (result, summary, passage) => legacySwtPolicy.applyScoringPolicy(result, summary, passage).assessment_issues
 });
+
+app.post('/api/swt/response-examples/:id', createResponseExamplesHandler({
+  getPassage: async id => {
+    const stored = await PassageAPI.getById(id);
+    return stored && studentPassage(stored);
+  },
+  service: createResponseExamplesService(createResponseExamplesProvider(anthropic))
+}));
 
 // Reference text must be readable independently of AI verification. The UI uses
 // this endpoint to display the authored model answer immediately, then runs the
