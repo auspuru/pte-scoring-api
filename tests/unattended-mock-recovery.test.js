@@ -147,9 +147,9 @@ function quietRecording(recording) {
  // revisions pinned; do not exempt arbitrary account or provider source drift.
  assert.equal(require('../content/full-mock/portal-access-compatible-sources.json').files['server.js'].sha256,'f7a1a04a570e13bcac8e158ca6744fb71e14b7986080e1229038c69b6530b742');
  assert.equal(sha(read('server.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['server.js'].sha256);
- // Pin the audited server projection with standalone SWT feedback bound to
- // the passage version used at submission. Full Mock provider wiring is unchanged.
- assert.equal(sha(source),'994dcfa0c79db44c2de3a695e60b654b48d8af48138ca8dc27c332cf542c2c88');
+ // Pin the audited projection after registering authenticated standalone SWT
+ // coaching. Full Mock provider wiring is unchanged.
+ assert.equal(sha(source),'d0b5587d4265b5c66e3025d016ce07308d26b20fcfa3eab194d8a083b5dce84e');
  source=read('public/writing-lab-report.js');
  project(`  function itemEstimate(question, result) {
     if (question?.type === 'swt' && Number.isFinite(result?.itemScore90)) return result.itemScore90;

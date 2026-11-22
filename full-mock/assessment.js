@@ -106,11 +106,23 @@ function transportSources(current) {
 }
 function compatibleTransportUpgrade(saved, current) {
   // The teaching examples changed without changing the SWT scorer. Project
-  // the exact release back to the source pins used by saved policy 20.3.17 attempts.
+  // the exact release back through the standalone practice rewrite release.
   const teachingSamples = SWT_COMPATIBILITY.teachingSamples;
   if (digest(current.scoringSources) === teachingSamples.currentDigest) {
     const sources = structuredClone(current.scoringSources);
     for (const [name, sha256] of Object.entries(teachingSamples.previousFiles)) sources.files[name].sha256 = sha256;
+    if (digest(sources) === SWT_COMPATIBILITY.practiceRewrites.currentDigest) {
+      const previous = { ...current, scoringSources: sources };
+      if (digest(saved) === digest(previous) || compatibleTransportUpgrade(saved, previous)) return true;
+    }
+  }
+
+  // The practice rewrite endpoint shares server.js with Full Mock. Only this
+  // exact source revision can project back to the previous release.
+  const rewrites = SWT_COMPATIBILITY.practiceRewrites;
+  if (digest(current.scoringSources) === rewrites.currentDigest) {
+    const sources = structuredClone(current.scoringSources);
+    for (const [file, hash] of Object.entries(rewrites.previousHashes)) sources.files[file].sha256 = hash;
     if (digest(sources) === SWT_COMPATIBILITY.currentDigest) {
       const previous = { ...current, scoringSources: sources };
       if (digest(saved) === digest(previous) || compatibleTransportUpgrade(saved, previous)) return true;

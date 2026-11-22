@@ -101,3 +101,59 @@ test('The Form panel explains the maximum and how many words an over-limit respo
  const d=data();d.trait_scores.form=0;
  assert.match(review.render(review.model(d,passage,answer(77))),/Cut at least 2 words\. Start with repeated points or optional examples\./);
 });
+
+test('The response review shows the checked correction, exact anchor and reason as plain text', async () => {
+  const {document} = parseHTML('<div id="review"></div>');
+  const target = document.getElementById('review');
+  const result = {corrected:'Trees cool cities and improve air quality.',
+    change:'Keep “Trees” and use the plural verb “improve” <img src=x>.', anchor:'Trees cool cities'};
+  const pending = review.model({...data(), score_provisional:true}, passage, text);
+  await review.mountCorrection(target, pending, {available:true, isCurrent:()=>true, load:async()=>result});
+  assert.equal(target.hidden,false);
+  assert.equal(target.querySelector('[data-example-corrected]').textContent,result.corrected);
+  assert.equal(target.querySelector('q').textContent,result.anchor);
+  assert.equal(target.querySelector('[data-example-change]').textContent,result.change);
+  assert.equal(target.querySelector('img'),null);
+  assert.equal(target.querySelector('[data-review-save]'),null);
+});
+
+test('Wording feedback for an unchanged response explains its strength and ignores any extra generated sample', async () => {
+  const {document} = parseHTML('<div id="review"></div>');
+  const target = document.getElementById('review'), answer = 'Trees cool cities and improve air quality.';
+  const m = review.model(data(), passage, answer), extraSample = 'This alternative sentence should never appear.';
+  await review.mountCorrection(target, m, {available:true, isCurrent:()=>true, load:async()=>({
+    corrected:answer, anchor:'improve air quality', change:'This phrase states the second benefit clearly.', sample:extraSample })});
+  assert.match(target.textContent,/What works in your response/);
+  assert.match(target.textContent,/improve air quality/);
+  assert.match(target.textContent,/second benefit clearly/);
+  assert.equal(target.querySelector('[data-example-corrected]'),null);
+  assert.equal(target.textContent.includes(extraSample),false);
+});
+
+test('A correction cannot overwrite a later answer or reveal coaching from a different passage', async () => {
+  const {document} = parseHTML('<div id="review"></div>');
+  const target = document.getElementById('review'), m = review.model(data(), passage, text);
+  let current = true, finish;
+  const request = review.mountCorrection(target, m, {available:true, isCurrent:()=>current, load:()=>new Promise(resolve=>{finish=resolve;})});
+  current = false;
+  await review.mountCorrection(target, m, {available:false, isCurrent:()=>true, load:()=>assert.fail('Source mismatch')});
+  finish({corrected:'Trees cool cities and improve air quality.', change:'Earlier feedback.', anchor:'Trees'});
+  await request;
+  assert.equal(target.hidden,true);
+  assert.equal(target.textContent,'');
+});
+
+test('A temporary failure offers retry and the saved edit without relabelling a passage sample', async () => {
+  const {document} = parseHTML('<div id="review"></div>');
+  const target = document.getElementById('review'), d = data();
+  d.grammar_details.grammar_annotations = [{phrase:'improves',fix:'improve',affects_score:true}];
+  const m = review.model(d, passage, text);
+  const options = {available:true, isCurrent:()=>true, load:async()=>{throw Object.assign(Error(),{status:503});}};
+  await review.mountCorrection(target, m, options);
+  assert.ok(target.querySelector('[data-example-retry]'));
+  assert.ok(target.textContent.includes(m.languageDraft));
+  assert.equal(target.querySelector('[data-example-sample]'),null);
+  await review.mountCorrection(target, m, {...options, load:async()=>{throw Object.assign(Error(),{status:422});}});
+  assert.equal(target.querySelector('[data-example-retry]'),null);
+  assert.match(target.textContent,/could not be verified/);
+});

@@ -86,6 +86,22 @@ test('Sample tab actually reveals its panel instead of leaving the static displa
   assert.doesNotMatch(panel, /u-inline-005/);
 });
 
+test('Compare with sample always opens the pre-written Sample answer tab when the passage matches', () => {
+  const activated = [], calls = [];
+  const tab = { scrollIntoView:() => calls.push('scroll'), focus:() => calls.push('focus') };
+  const context = { swtResultPassage:{id:38}, switchSbsView:view => activated.push(view),
+    document:{getElementById:id => id === 'sbsTabSample' ? tab : null,
+      querySelector() { assert.fail('Compare uses the Sample answer tab directly.'); } } };
+  vm.createContext(context);
+  vm.runInContext(functionSource('compareSwtSample'),context);
+  context.compareSwtSample();
+  assert.deepEqual(activated,['sample']);
+  assert.deepEqual(calls,['scroll','focus']);
+  context.swtResultPassage = { sampleVersionMismatch:true };
+  context.compareSwtSample();
+  assert.deepEqual(activated,['sample']);
+});
+
 test('Sample display is independent of verification availability', () => {
   const check = functionSource('checkSwtSample', true);
   const refresh = functionSource('refreshSwtSample', true);
@@ -141,7 +157,8 @@ test('A saved result hides mismatched passage evidence and restores it for a mat
   const passage = { id: 21, title: 'Tree shade', text: 'Trees reduce temperatures by shading streets.', passageHash: 'new',
     sampleResponse: answer, keyElements: { what: 'Trees reduce temperatures.' } };
   const context = { document, escapeHtml, currentPassageId: 1, currentUserId: 'student', sessionToken: 'token',
-    canonicalClientUserId: String, countWords: text => text.split(/\s+/).length,
+    canonicalClientUserId: String, countWords: text => text.split(/\s+/).length, swtPassageStorageId: () => passage.id,
+    requestSwtResponseCorrection: async () => ({ corrected:answer, anchor:'Trees shade streets', change:'This phrase identifies the main benefit.' }),
     SwtStudentFeedback: require('../public/swt-feedback'), SwtFeedbackReview: require('../public/swt-feedback-review'),
     window: { PteEstimateDisplay: { render: () => '' } }, renderTraitBreakdown() {}, renderAboutPassage() {}, updateResultsNav() {},
     refreshSwtSample() { assert.fail('A result without matching source evidence cannot check a sample.'); } };

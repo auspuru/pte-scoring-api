@@ -505,6 +505,30 @@ for(const changed of ['model','native-source'])test('DI reference compatibility 
  await assert.rejects(f.engine.request('alice',f.id),error=>error.status===409);assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
 
+test('SWT practice rewrite endpoint preserves the exact preceding Full Mock snapshot', async t => {
+  const f = await fixture(t);
+  const pins = require('../content/full-mock/swt-policy-upgrade-pins.json');
+  const original = structuredClone(f.engine.snapshot);
+  for (const [file, hash] of Object.entries(pins.teachingSamples.previousFiles)) {
+    original.scoringSources.files[file].sha256 = hash;
+  }
+  assert.equal(digest(original.scoringSources), pins.practiceRewrites.currentDigest);
+  for (const [file, hash] of Object.entries(pins.practiceRewrites.previousHashes)) {
+    original.scoringSources.files[file].sha256 = hash;
+  }
+  assert.equal(digest(original.scoringSources), pins.currentDigest);
+  const state = await f.state();
+  state.assessment = require('../full-mock/assessment').stateFor(original);
+  assert.doesNotThrow(() => f.engine.validate(state));
+  assert.deepEqual(state.assessment.snapshot, original);
+  for (const file of ['server.js', 'swt-scoring-policy.js']) {
+    const changed = structuredClone(state);
+    changed.assessment.snapshot.scoringSources.files[file].sha256 = '0'.repeat(64);
+    changed.assessment.snapshotHash = digest(changed.assessment.snapshot);
+    assert.throws(() => f.engine.validate(changed), {status:409});
+  }
+});
+
 test('SWT report projection upgrade completes the exact previous snapshot and retains all confirmed grades',async t=>{
  let calls=0;
  const swtPolicies=[];
@@ -527,7 +551,7 @@ for(const changed of ['model','native-source','report-source'])test('SWT report 
  await assert.rejects(f.engine.request('alice',f.id),error=>error.status===409);assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
 
-test('SWT teaching samples preserve confirmed marks when the exact policy 20.3.17 snapshot resumes', async t => {
+for (const release of ['practice rewrites', 'original 20.3.17']) test(`SWT teaching samples preserve confirmed marks from ${release}`, async t => {
   const { stateFor } = require('../full-mock/assessment');
   const { inputHash } = require('../full-mock/aggregation');
   const pins = require('../content/full-mock/swt-policy-upgrade-pins.json');
@@ -541,7 +565,11 @@ test('SWT teaching samples preserve confirmed marks when the exact policy 20.3.1
   assert.equal(original.scoringSources.files['swt-scoring-policy.js'].version, '20.3.17');
   assert.equal(digest(original.scoringSources), pins.teachingSamples.currentDigest);
   for (const [name, sha256] of Object.entries(pins.teachingSamples.previousFiles)) original.scoringSources.files[name].sha256 = sha256;
-  assert.equal(digest(original.scoringSources), pins.currentDigest);
+  assert.equal(digest(original.scoringSources), pins.practiceRewrites.currentDigest);
+  if (release === 'original 20.3.17') {
+    for (const [name, sha256] of Object.entries(pins.practiceRewrites.previousHashes)) original.scoringSources.files[name].sha256 = sha256;
+    assert.equal(digest(original.scoringSources), pins.currentDigest);
+  }
   const [confirmed, pending] = paper.questions.map((candidate, index) => ({ ...candidate, responseIndex: index + 1 }))
     .filter(candidate => candidate.question.type === 'swt');
   const originalHash = digest(original);

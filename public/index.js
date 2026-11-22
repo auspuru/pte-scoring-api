@@ -867,6 +867,9 @@ function signOut() {
   practiceState = emptyPracticeState();
   currentUserId = '';
   sessionToken = '';
+  swtResultSubmission = null;
+  swtResultPassage = null;
+  document.getElementById('swtResponseExamples')?.replaceChildren();
   removeAuthStorageValue('pte_session_token');
   sessionStorage.removeItem('pte_impersonate_token');
   LocalStore.setUserId('');
@@ -16192,7 +16195,7 @@ function renderSwtFeedbackReview(data, passage, submittedText){
     && swtPassageStorageId() === passage.id
     && document.getElementById('swtPane')?.classList.contains('active')
     && document.getElementById('swtResultsScreen')?.classList.contains('active');
-  SwtFeedbackReview.mount(target, data, passage, submittedText, { isCurrent,
+  const review = SwtFeedbackReview.mount(target, data, passage, submittedText, { isCurrent,
     saveDraft(text){
       if (!isCurrent() || passage.sampleVersionMismatch) return false;
       const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
@@ -16206,6 +16209,24 @@ function renderSwtFeedbackReview(data, passage, submittedText){
   if (passage.sampleVersionMismatch) {
     target.querySelectorAll('[data-review-source], [data-review-use], #swtReviewRevision').forEach(element => element.remove());
   }
+  const correction = document.getElementById('swtResponseExamples');
+  if (correction) {
+    SwtFeedbackReview.mountCorrection(correction, review, {
+      available: !passage.sampleVersionMismatch && !!passage.text && !!submission?.token,
+      isCurrent,
+      load: () => requestSwtResponseCorrection(submission)
+    });
+  }
+}
+async function requestSwtResponseCorrection(submission){
+  const response = await fetch(API_URL + '/api/swt/response-examples/' + encodeURIComponent(submission.passageId), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-session-token': submission.token },
+    body: JSON.stringify({ text: submission.text, passage: submission.passageText }),
+    signal: AbortSignal.timeout(70000)
+  });
+  if (!response.ok) throw Object.assign(new Error('Response correction unavailable'), { status: response.status });
+  return response.json();
 }
 function compareSwtSample(){
   if (swtResultPassage?.sampleVersionMismatch) return;
