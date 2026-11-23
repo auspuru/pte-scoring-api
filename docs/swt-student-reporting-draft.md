@@ -1,6 +1,6 @@
-# One-click student SWT exam reports — draft feature
+# One-click student SWT exam reports
 
-**Scope:** Any Summarise Written Text question in AiryEmbrace, including the 43 November 2026 screenshots when those passages have been checked and imported. Nothing in this PR is deployed to Railway or merged to main.
+Reporting and the per-student NEW indicator shipped in PR #369. The November screenshot batch is tracked in the [import audit](swt-nov23-practice-audit.md).
 
 ## Student experience
 
@@ -33,5 +33,5 @@
 
 - Unit test coverage: duplicate report prevention, session authentication, per-student reporting, aggregation privacy, source-count ordering, reported question priority, stable IDs.
 - Before any production launch: run full Node tests and release checks, verify PostgreSQL schema migration and browser interaction in a staging environment, and confirm the order in the student portal under multiple student accounts.
-- The 43 missing passages are **not yet imported**: verify their transcriptions and reference answers first, and resolve incomplete screenshot tails.
+- The November audit stages 31 of 43 candidates for review, with 12 withheld. The staged data has no runtime import hook.
 - Do **not** merge to `main`, deploy Railway production, or modify existing student records without approval.
