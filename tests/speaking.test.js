@@ -25,13 +25,15 @@ test('Repeat Sentence uses ordered content and ignores filler and peripheral mat
   assert.equal(scoring.exact(q,'library').total,0);
   assert(scoring.exact(q,words.reverse().join(' ')).total<3);
 });
-function modelResult(q,text) {return {total:6,overview:'The response develops the main ideas accurately and connects them well.',strengths:['The main topic is clear.'],improvements:['Keep the important ideas connected.'],coverage:q.facts.map((point,i)=>({point:i,status:'covered',evidence:text.slice(0,20),feedback:'This relevant idea is represented in the response.'})),
-  ...(['rl','sgd'].includes(q.type)?{summaryAssessment:{responseForm:'connected',mainMessageAccurate:true,relationshipsClear:true,sufficientSubstance:true,mostlyAccurate:true,materialMeaningChange:false,speakerAttributionClear:true,evidence:text.split('. ')[0],reason:'The main ideas are connected with useful support.'}}:{}),
-  ...(q.type==='rts'?{communicationAssessment:{level:'effective',materialProblem:false,evidence:text.split('. ')[0],reason:'The recipient can understand the situation and the requested action.'}}:{})};}
+const {developedReview}=require('./helpers/rts-review');
+function modelResult(q,text) {
+  if(q.type==='rts')return developedReview(text);
+  return {total:6,overview:'The response develops the main ideas accurately and connects them well.',strengths:['The main topic is clear.'],improvements:['Keep the important ideas connected.'],coverage:q.facts.map((point,i)=>({point:i,status:'covered',evidence:text.slice(0,20),feedback:'This relevant idea is represented in the response.'})),
+  ...(['rl','sgd'].includes(q.type)?{summaryAssessment:{responseForm:'connected',mainMessageAccurate:true,relationshipsClear:true,sufficientSubstance:true,mostlyAccurate:true,materialMeaningChange:false,speakerAttributionClear:true,evidence:text.split('. ')[0],reason:'The main ideas are connected with useful support.'}}:{})};}
 test('Meaning feedback validates every coverage item and rejects invented student quotations',async()=>{
   for(const q of bank.questions.filter(q=>q.facts)) {
     const r=await scoring.grade(q,q.sample,async prompt=>{assert(prompt.includes('CONTENT ONLY'));assert(prompt.includes('Never score or comment on pronunciation'));return modelResult(q,q.sample);});
-    assert.equal(r.total,6);assert.equal(r.maximum,6);if(q.type==='rts'){assert.equal(r.coverage,undefined);assert.equal(r.communicationAssessment.level,'effective');}else assert.equal(r.coverage.length,q.facts.length);assert.equal(r.fluency,null);
+    assert.equal(r.total,6);assert.equal(r.maximum,6);if(q.type==='rts'){assert.equal(r.coverage,undefined);assert.equal(r.communicationAssessment.level,'developed');}else assert.equal(r.coverage.length,q.facts.length);assert.equal(r.fluency,null);
   }
   const q=bank.questions.find(q=>q.type==='di'),raw=modelResult(q,q.sample);raw.coverage[0].evidence='invented student quotation';
   assert.throws(()=>scoring.normalize(q,q.sample,raw),/Unsupported/);

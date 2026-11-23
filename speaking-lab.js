@@ -5,6 +5,7 @@ const {createStore}=require('./writing-lab-store');
 const describeFeedback=require('./describe-image-feedback');
 const describeAcademy=require('./describe-image-academy');
 const rtsPrompts=require('./rts-prompts');
+const rtsContent=require('./situation-content-policy-developed');
 const diReferences=require('./di-practice-references');
 const {createPromptNarrator}=require('./speaking-practice-prompts');
 const approvedAudio=require('./approved-audio');
@@ -40,7 +41,11 @@ function present(a) {
     assessment:a.assessment||null,
     transcribed:!!a.transcription,result:azureResult(a),question:shown};
 }
-function attemptQuestion(a){return diReferences.forAttempt(a,rtsPrompts.forAttempt(a,bank.questions.find(q=>q.id===a.questionId)));}
+function attemptQuestion(a){
+  const q=diReferences.forAttempt(a,rtsPrompts.forAttempt(a,bank.questions.find(q=>q.id===a.questionId)));
+  // Attempts started before the policy was versioned must finish under the original rules.
+  return rtsContent.forSavedQuestion(q,q?.rtsContentPolicyVersion??a.result?.contentPolicyVersion);
+}
 function azureResult(a){
   const source=scoring.resultForClient(a.result,a.transcript||'');if(!source)return null;
   const cached=source.deliveryComparisons?.azure;
@@ -111,7 +116,8 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
   router.get('/attempts',wrap(async(req,res)=>{const entries=await store.list(req.speakingUser);res.json(entries.map(a=>({id:a.id,questionId:a.questionId,title:bank.questions.find(q=>q.id===a.questionId)?.title,type:bank.questions.find(q=>q.id===a.questionId)?.type,status:a.status,practiceMode:a.practiceMode||'timed',assessment:a.assessment||null,startedAt:a.startedAt,result:a.result?{total:a.result.scoringMode==='local'?null:a.result.total,maximum:a.result.maximum,scoringMode:a.result.scoringMode,score_provisional:a.result.scoringMode==='local'||a.result.score_provisional===true}:null})));}));
   router.post('/attempts',limiter,wrap(async(req,res)=>{
     const source=bank.questions.find(q=>q.id===req.body?.questionId);if(!source)throw fail('Question not found.',404);
-    const q=approvedAudio.current(source);
+    const current=approvedAudio.current(source);
+    const q=current.type==='rts'?{...current,rtsContentPolicyVersion:rtsContent.VERSION}:current;
     const practiceMode=req.body.practiceMode??'timed';if(!['timed','untimed'].includes(practiceMode))throw fail('Choose timed or untimed practice.');
     const a=await store.update(req.speakingUser,req.body.id,old=>{if(old&&(old.questionId!==q.id||(req.body.practiceMode!==undefined&&(old.practiceMode||'timed')!==practiceMode)))throw fail('This attempt belongs to another question or practice mode.',409);if(!old&&!diReferences.available(q))throw fail('This image is awaiting a clearer source. Please choose another question.',422);return old||{id:req.body.id,questionId:q.id,practiceMode,...(['rts','di','sgd'].includes(q.type)?{questionSnapshot:structuredClone(q)}:{}),status:'draft',startedAt:Date.now(),transcript:'',revision:0};});res.json(present(a));
   }));
@@ -195,4 +201,4 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
   }));
   return {store,waitForAssessments:practiceAssessments.wait};
 }
-module.exports={installSpeakingLab,transcribeRecording,question,present,gradePracticeContent};
+module.exports={installSpeakingLab,transcribeRecording,question,present,attemptQuestion,gradePracticeContent};

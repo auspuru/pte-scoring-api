@@ -121,6 +121,7 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   const id=crypto.randomUUID();let a=(await request('/attempts',{id,paperId:'speaking-mock-1',results:[{overallScore:90}]})).body;
   assert.equal(a.overall,null);assert.equal(a.responses,undefined);assert.equal(a.question.type,'intro');assert.equal(a.deadline-a.startedAt,40*60000);
   assert.equal((await store.get('alice',id)).assessmentProfile.deliveryPolicy,require('../speaking-delivery').VERSION);
+  assert.equal((await store.get('alice',id)).assessmentProfile.rtsContentPolicyVersion,require('../situation-content-policy-developed').VERSION);
   await store.update('alice',id,value=>{value.deadline=value.startedAt+36*60000;return value;});
   assert.equal((await request('/attempts',{id,paperId:'speaking-mock-1'})).body.deadline-a.startedAt,36*60000,'An existing attempt retains its original clock.');
   assert.equal((await request('/attempts/'+id,undefined,'bob')).status,404);assert.equal((await request('/attempts/'+id,undefined,'')).status,401);
@@ -141,6 +142,7 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   await request('/attempts/'+id+'/retry',{});await waitForJobs();assert.equal(overallCalls,0,'Task-weighted totals never request a separate whole-audio judgment.');assert.equal(itemCalls,27,'Successful individual assessments are reused.');
   assert.equal((await request('/attempts/'+id+'/recordings/2',Buffer.alloc(200,99),'alice',true)).status,409);
   const saved=await store.update('alice',id,value=>{value.questions[1].title='The exact saved question';
+    delete value.assessmentProfile.rtsContentPolicyVersion;
     const old=require('../content/di-user-predictions.json').find(q=>q.id==='di-pred-3000186'),image=value.questions.find(q=>q.id===old.id);
     image.facts=structuredClone(old.facts);image.visual=structuredClone(old.visual);image.sample=old.sample;delete image.imageReference;delete image.optionalFactIndices;return value;});assert(saved.responses.every(r=>r.recording.hash));
   const before=JSON.stringify(saved),newId=crypto.randomUUID();now+=10000;
@@ -151,6 +153,7 @@ test('Full speaking mock persists recordings, isolates accounts, locks responses
   assert.equal(fresh.id,newId);assert.equal(fresh.reattemptOf,id);assert.equal(fresh.status,'active');assert.equal(fresh.index,0);assert.equal(fresh.overall,null);
   assert.equal(fresh.deadline-fresh.startedAt,40*60000);assert.equal(saved.deadline-saved.startedAt,36*60000);assert(fresh.startedAt>saved.startedAt);
   const copy=await store.update('alice',newId,value=>value);assert.deepEqual(copy.questions,bank.reattemptQuestions(saved));assert.deepEqual(copy.responses,[]);assert.equal(copy.grading,undefined);
+  assert.equal(copy.assessmentProfile.rtsContentPolicyVersion,require('../situation-content-policy-developed').VERSION);
   assert(copy.questions.find(q=>q.id==='di-pred-3000186').imageReference);assert.equal(saved.questions.find(q=>q.id==='di-pred-3000186').imageReference,undefined);
   assert.equal((await request('/attempts/'+id+'/reattempt',{id:newId})).body.id,newId,'Network retries reuse the same new attempt.');
   assert.equal(JSON.stringify(await store.update('alice',id,value=>value)),before,'Reattempting preserves the prior recordings and result.');

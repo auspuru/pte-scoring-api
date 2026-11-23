@@ -184,6 +184,53 @@ async function fixture(t, options = {}) {
   return { id, store, engine, engines, directory, state:async () => (await store.get('alice', id)).state };
 }
 
+function snapshotBeforeRts(current) {
+  const snapshot = structuredClone(current);
+  const pins = require('../content/full-mock/rts-content-upgrade-pins.json');
+  for (const [name, entry] of Object.entries(pins.previousFiles)) {
+    if (entry) snapshot.scoringSources.files[name] = structuredClone(entry);
+    else delete snapshot.scoringSources.files[name];
+  }
+  assert.equal(digest(snapshot.scoringSources), require('../content/full-mock/swt-policy-upgrade-pins.json').teachingSamples.currentDigest);
+  return snapshot;
+}
+
+for (const variant of ['current', 'previous', 'pre-snapshot']) test('RTS assessment and content recovery use the ' + variant + ' Full Mock policy', async t => {
+  const { stateFor } = require('../full-mock/assessment');
+  const policy = require('../situation-content-policy-developed');
+  const expected = variant === 'current' ? policy.VERSION : policy.LEGACY_VERSION;
+  const versions = [];
+  const f = await fixture(t, { adapters: { assess: async q => {
+    if (q.type === 'rts') versions.push(q.rtsContentPolicyVersion);
+    return full(q);
+  } } });
+  const original = variant === 'current' ? f.engine.snapshot : snapshotBeforeRts(f.engine.snapshot);
+  if (variant !== 'pre-snapshot') {
+    await f.store.update('alice', f.id, state => { state.assessment = stateFor(original); return state; });
+  }
+  await f.engine.request('alice', f.id);
+  await f.engine.drain();
+  const state = await f.state();
+  assert.deepEqual(state.assessment.snapshot, original);
+  const situations = paper.questions.filter(candidate => candidate.question.type === 'rts');
+  assert.ok(situations.length);
+  assert.deepEqual(versions, situations.map(() => expected));
+  for (const {id} of situations) assert.equal(state.assessment.items[id].result.contentPolicyVersion, expected);
+
+  const before = structuredClone(state.assessment.items);
+  await f.engine.request('alice', f.id, { retry:true });
+  await f.engine.drain();
+  assert.deepEqual((await f.state()).assessment.items, before);
+  const prepared = await f.engine.prepareContent(state, situations[0].question, {}, {});
+  assert.equal(prepared.contentPolicyVersion, expected);
+  assert.deepEqual(versions, [...situations.map(() => expected), expected]);
+
+  const pin = variant === 'current' ? 'situation-content-policy-developed.js' : 'situation-content-policy.js';
+  state.assessment.snapshot.scoringSources.files[pin].sha256 = '0'.repeat(64);
+  state.assessment.snapshotHash = digest(state.assessment.snapshot);
+  assert.throws(() => f.engine.validate(state), {status:409});
+});
+
 test('Two independent workers claim one durable assessment and process 65 questions, excluding the introduction', async t => {
   const counts = new Map();
   const implementation = { assess:async q => { const key = q.type + q.id; counts.set(key, (counts.get(key) || 0) + 1); await new Promise(resolve => setImmediate(resolve)); return full(q); } };
@@ -508,7 +555,7 @@ for(const changed of ['model','native-source'])test('DI reference compatibility 
 test('SWT practice rewrite endpoint preserves the exact preceding Full Mock snapshot', async t => {
   const f = await fixture(t);
   const pins = require('../content/full-mock/swt-policy-upgrade-pins.json');
-  const original = structuredClone(f.engine.snapshot);
+  const original = snapshotBeforeRts(f.engine.snapshot);
   for (const [file, hash] of Object.entries(pins.teachingSamples.previousFiles)) {
     original.scoringSources.files[file].sha256 = hash;
   }
@@ -561,7 +608,7 @@ for (const release of ['practice rewrites', 'original 20.3.17']) test(`SWT teach
     swtCalls.push({ id: q.id, legacySwt });
     return adapters.result(q, adapters.maxima(q), { nativeVersion: '20.3.17' });
   } } });
-  const original = structuredClone(f.engine.snapshot);
+  const original = snapshotBeforeRts(f.engine.snapshot);
   assert.equal(original.scoringSources.files['swt-scoring-policy.js'].version, '20.3.17');
   assert.equal(digest(original.scoringSources), pins.teachingSamples.currentDigest);
   for (const [name, sha256] of Object.entries(pins.teachingSamples.previousFiles)) original.scoringSources.files[name].sha256 = sha256;

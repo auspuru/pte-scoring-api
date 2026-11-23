@@ -1,5 +1,6 @@
 'use strict';
 const crypto=require('node:crypto'),bank=require('./content/speaking-bank'),scoring=require('./speaking-scoring');
+const rtsContent=require('./situation-content-policy-developed');
 const confirmed=r=>Number.isFinite(r?.total)&&r.scoringMode!=='local'&&r.contentStatus!=='unavailable'&&!r.score_provisional&&!r.needs_semantic_review;
 const deliveryKeys=['pronunciation','fluency','deliveryVersion','deliveryEvidence','deliveryStatus','deliveryAssessment','deliveryProvider','deliveryModel','deliveryObservation','deliveryComparisons','deliveryRubricVersion','deliveryCalibration','deliveryFailureTraits','deliveryComparisonHistory','deliveryRequestedModel'];
 async function recoverLatest(options){
@@ -23,7 +24,13 @@ async function recoverLatest(options){
  const report={operation,attemptId:chosen.id,kind:chosen.kind===0?'practice':'mock',startedAt:chosen.startedAt,reviewed:0,recovered:0,unavailable:0,scores:[],existing:[],issues:[]};
  logger.info('[speaking-content-recovery]',JSON.stringify({...report,status:'started'}));
  try{
-  const entries=chosen.kind===0?[{index:null,q:bank.questions.find(q=>q.id===saved.questionId),r:saved,result:saved.result}]:saved.questions.flatMap((q,index)=>q.type!=='intro'?[{index,q,r:saved.responses[index]||{},result:saved.responses[index]?.content}]:[]);
+  const practiceQuestion=chosen.kind===0?bank.questions.find(q=>q.id===saved.questionId):null;
+  const entries=chosen.kind===0
+    ? [{index:null,q:(saved.questionSnapshot||practiceQuestion)?.type==='rts'?require('./speaking-lab').attemptQuestion(saved):practiceQuestion,r:saved,result:saved.result}]
+    : saved.questions.flatMap((q,index)=>q.type==='intro'?[]:[{
+        index,q:rtsContent.forSavedQuestion(q,saved.assessmentProfile?.rtsContentPolicyVersion),
+        r:saved.responses[index]||{},result:saved.responses[index]?.content
+      }]);
   for(const {index,q,r,result} of entries){
    if(questionTypes&&!questionTypes.includes(q?.type))continue;
    if(chosen.kind===1&&!r.recording){
@@ -34,6 +41,7 @@ async function recoverLatest(options){
      await store.update(username,chosen.id,a=>{written=false;const target=a.responses[index];
       if(a.contentRecovery?.claim!==claim||!target||target.recording||target.skipped!==true||confirmed(target.content))return a;
       target.content={total:0,maximum,scoringMode:'unanswered',contentStatus:'assessed',assessment:'Saved unanswered question',
+       ...(q.type==='rts'?{contentPolicyVersion:q.rtsContentPolicyVersion}:{}),
        overview:'No response was recorded for this question. It is included as unanswered with zero content credit.',strengths:[],improvements:['Record a response when reattempting this mock.'],zeroEvidence:'saved-skipped-response'};
       written=true;return a;});
      if(written){report.recovered++;report.scores.push({index,questionId:q.id,total:0,maximum,unanswered:true});}else report.unavailable++;

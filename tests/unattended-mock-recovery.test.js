@@ -166,7 +166,12 @@ function quietRecording(recording) {
  assert.equal(sha(source),beforeSwt['public/writing-lab-report.js'].sha256);
  project("(attempt.kind!=='mock' || !needsReview(r,q))",'(!weighted || !needsReview(r,q))');
  assert.equal(sha(source),baseline.files['public/writing-lab-report.js'].sha256);
- for(const name of ['full-mock/profiles.js','speaking-scoring.js'])assert.equal(sha(read(name)),baseline.files[name].sha256,name);
+ assert.equal(sha(read('full-mock/profiles.js')),baseline.files['full-mock/profiles.js'].sha256);
+ const rtsUpgrade=require('../content/full-mock/rts-content-upgrade-pins.json');
+ const scoringLock=require('../content/full-mock/scoring-lock.json').snapshot;
+ assert.deepEqual(rtsUpgrade.previousFiles['speaking-scoring.js'],baseline.files['speaking-scoring.js']);
+ assert.equal(sha(read('speaking-scoring.js')),scoringLock.files['speaking-scoring.js'].sha256);
+ assert.equal(sha(read('situation-content-policy.js')),baseline.files['situation-content-policy.js'].sha256);
  source=read('writing-lab-scoring.js').replace(`  // SST permits several sentences. An answer containing a substantial
   // punctuated sentence cannot be entirely short, disconnected fragments.
   if (q.type === 'sst' && form.score > 0 && raw.formInvalid

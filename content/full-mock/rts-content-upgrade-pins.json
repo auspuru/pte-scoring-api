@@ -1,0 +1,26 @@
+{
+  "currentDigest": "6403ef38edc3b142657de579e522af12761fa101eb214eebbda344eb3a4f00b1",
+  "previousFiles": {
+    "full-mock/assessment.js": {
+      "sha256": "fc51fad06d1cc060b04e3b7bd48deff6f409a719af06de32edd826f4eb61c230",
+      "version": "full-mock-assessment-2026-10-29.1"
+    },
+    "full-mock/rubrics.js": {
+      "sha256": "e88a2c0b178d9713fe6b75002fb4db0c55d4e915e3d20a68ed51c519b7d4d142",
+      "version": null
+    },
+    "situation-content-policy-developed.js": null,
+    "speaking-judge-format.js": {
+      "sha256": "09d30d083c0171ad3aa3a571ea15bc9b16176253733fe1ca8c895e0685fd252c",
+      "version": null
+    },
+    "speaking-lab.js": {
+      "sha256": "8ef399519308331a42163ed0a57a74ab39f1f8be6a89e34bbdecb8482dc58828",
+      "version": null
+    },
+    "speaking-scoring.js": {
+      "sha256": "0c673372149fe2732f7aa6b950862ea01ce4c6473e5df4a55daf49d2740ca3a2",
+      "version": "speaking-content-2026-10-25.2"
+    }
+  }
+}

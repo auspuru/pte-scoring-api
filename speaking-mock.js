@@ -4,6 +4,7 @@ const submission=require('./speaking-mock-submission');
 const randomPractice=require('./random-practice');
 const bank=require('./content/speaking-mocks'),scoring=require('./speaking-scoring'),azure=require('./speaking-delivery');
 const academy=require('./describe-image-academy');
+const rtsContent=require('./situation-content-policy-developed');
 const manualDelivery=require('./speaking-manual-delivery');
 const azureWhole=require('./speaking-mock-azure');
 const combined=require('./speaking-mock-combined');
@@ -72,6 +73,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
   const useProgressive=a=>backgroundEnabled||a?.assessmentProfile?.mode==='progressive-v1';
   const view=a=>({...present(a,now(),{completeOnly:useProgressive(a)}),...(a.practiceSet?{practiceSet:a.practiceSet}:{})});
   const profile=(uid,questions)=>({assessmentProfile:{deliveryPolicy:azure.VERSION,
+    ...(questions.some(q=>q.type==='rts')?{rtsContentPolicyVersion:rtsContent.VERSION}:{}),
     ...(backgroundEnabled?{mode:'progressive-v1',owner:uid,completionPolicy:require('./speaking-mock-completion').policy(questions),
       diBackend:contentModel?'portal-gpt':'academy',...(contentModel?{contentProvider:'openai',contentModel}:{}),requiredProviders:['azure']}: {})}});
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved mock is safe; please retry.'}));
@@ -104,8 +106,9 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
     async function grade(i){
       if(overallOnly||azureOverallOnly)return;
       const q=a.questions[i],r=a.responses[i];if(!r?.recording||q.type==='intro')return;
+      const contentQuestion=rtsContent.forSavedQuestion(q,a.assessmentProfile?.rtsContentPolicyVersion);
       const patch=async value=>{a=await save(current=>{Object.assign(current.responses[i],value);});};
-      if(gradeResponse){if(r.content&&r.content.scoringMode!=='local'&&(!azureAvailable||r.azure?.status==='assessed'))return;await patch(await gradeResponse(q,r.recording,r));return;}
+      if(gradeResponse){if(r.content&&r.content.scoringMode!=='local'&&(!azureAvailable||r.azure?.status==='assessed'))return;await patch(await gradeResponse(contentQuestion,r.recording,r));return;}
       if(!r.transcript){
         try{await patch({transcript:await transcribe(r.recording),transcriptionStatus:'assessed'});}
         catch{await patch({transcriptionStatus:'unavailable'});return;}
@@ -121,7 +124,7 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
         return value;
       };
       const providerFailure=provider=>current[provider]?.status==='assessed'?{...current[provider],retryStatus:'unavailable'}:unavailable();
-      if(!speakingReport.validContent(q,current.content)||(q.type==='di'&&academy.needsReview(current.content)))tasks.push(scoring.grade(q,current.transcript,callModel,{academyDescribeImage:true}).then(content=>patch({content})));
+      if(!speakingReport.validContent(q,current.content)||(q.type==='di'&&academy.needsReview(current.content)))tasks.push(scoring.grade(contentQuestion,current.transcript,callModel,{academyDescribeImage:true}).then(content=>patch({content})));
       if(!contentGated&&azureAvailable&&speakingReport.deliveryTraits(current,'azure').missing.length)tasks.push(assessAzure(r.recording,{question:q,transcript:current.transcript,transcribe,
         bandPolicy:a.assessmentProfile?.deliveryPolicy||azure.PREVIOUS_VERSION}).then(result=>patch({azure:result?retainDelivery('azure',result):providerFailure('azure')}),()=>patch({azure:providerFailure('azure')})));
       await Promise.allSettled(tasks);
