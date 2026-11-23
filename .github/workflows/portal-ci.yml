@@ -9,9 +9,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    # Complete media, PostgreSQL and browser coverage exceeded the previous
-    # 30-minute budget. Retain every check and allow evidence upload/cleanup.
-    timeout-minutes: 45
+    # The browser preflight and full release suite exceeded 45 minutes on a
+    # hosted runner. Leave time for the remaining checks and evidence upload.
+    timeout-minutes: 60
     services:
       postgres:
         image: postgres:16

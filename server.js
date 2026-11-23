@@ -22,6 +22,8 @@ const AccountProgress = require('./public/account-progress');
 const { createJudgmentService } = require('./swt-judgment-service');
 const { createResponseExamplesProvider, createResponseExamplesService, createResponseExamplesHandler } = require('./swt-response-examples');
 const { studentPassage, fallbackSample } = require('./swt-reference');
+const { sortSwtPassages, IMPORT_BATCH } = require('./swt-repeat-ranking');
+const { installSwtExamReports, readSwtReportCounts } = require('./swt-exam-reports');
 const { repairMissingSwtSamples } = require('./swt-sample-backfill');
 const { createEssayGrader, essayResultForClient } = require('./essay-grading');
 const EssayGenerationPolicy = require('./public/essay-generation-policy');
@@ -460,6 +462,12 @@ async function pgInitSchema() {
       id             INTEGER PRIMARY KEY,
       payload        JSONB NOT NULL,
       updated_at     TIMESTAMPTZ DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS swt_exam_question_reports (
+      username       TEXT NOT NULL REFERENCES accounts(username) ON DELETE CASCADE,
+      passage_id     INTEGER NOT NULL REFERENCES passages(id) ON DELETE CASCADE,
+      reported_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY (username, passage_id)
     );
     CREATE TABLE IF NOT EXISTS global_stats (
       id             INTEGER PRIMARY KEY DEFAULT 1,
@@ -1324,13 +1332,7 @@ const PassageAPI = USE_POSTGRES ? PgPassageAPI : JsonPassageAPI;
 // remain authoritative, and a new deploy must not bulk-replace the live bank.
 const userSwtPassages = require('./content/user-swt-predictions').passages;
 const userSwtRank = new Map(userSwtPassages.map((p, index) => [p.id, index]));
-const predictionFirst = rows => [...rows].sort((a, b) => {
-  const aRank = userSwtRank.get(Number(a.id)), bRank = userSwtRank.get(Number(b.id));
-  if (aRank === undefined && bRank === undefined) return 0; // preserve old question order
-  if (aRank === undefined) return 1;
-  if (bRank === undefined) return -1;
-  return aRank - bRank;
-});
+const predictionFirst = (rows, studentReports = new Map()) => sortSwtPassages(rows, userSwtRank, studentReports);
 
 async function seedUserSwtPredictions() {
   // Never overwrite a pre-existing question, even on deployments with a volume
@@ -1661,6 +1663,15 @@ function sanitizePassage(p) {
     if (typeof em.framework_reason === 'string') emOut.framework_reason = em.framework_reason.trim().slice(0, 500);
     if (typeof em.extractedAt === 'string') emOut.extractedAt = em.extractedAt.slice(0, 40);
     if (Object.keys(emOut).length) out.extractionMeta = emOut;
+  }
+  // Optional, verified November SWT import metadata. Absence means unranked.
+  if (p.questionSet === IMPORT_BATCH) {
+    out.questionSet = IMPORT_BATCH;
+    if (Number.isSafeInteger(p.sourceOrder) && p.sourceOrder > 0) out.sourceOrder = p.sourceOrder;
+    if (Number.isSafeInteger(p.sourceQuestionNumber) && p.sourceQuestionNumber > 0) out.sourceQuestionNumber = p.sourceQuestionNumber;
+    if (typeof p.sourceScreenshot === 'string') out.sourceScreenshot = p.sourceScreenshot.trim().slice(0, 200);
+    if (Number.isSafeInteger(p.repeatCount) && p.repeatCount >= 0) out.repeatCount = p.repeatCount;
+    if (typeof p.repeatEvidence === 'string') out.repeatEvidence = p.repeatEvidence.trim().slice(0, 1000);
   }
   return out;
 }
@@ -3845,7 +3856,14 @@ app.post('/api/admin/vocab/extras', requireAdmin, async (req, res) => {
 app.get('/api/passages', async (req, res) => {
   try {
     const all = await PassageAPI.readAll();
-    res.json({ passages: predictionFirst(all).map(studentPassage), count: all.length });
+    // The SWT index order is global and consistent for all users. Reported
+    // questions take precedence; community counts are distinct students.
+    let reports = new Map();
+    if (USE_POSTGRES) {
+      try { reports = await readSwtReportCounts(pgPool); }
+      catch (error) { console.warn('[swt-report] Ranking fallback', error.message); }
+    }
+    res.json({ passages: predictionFirst(all, reports).map(studentPassage), count: all.length });
   } catch (e) {
     console.error('Read passages failed:', e.message);
     res.status(500).json({ error: 'Failed to load passages', details: e.message });
@@ -3860,6 +3878,16 @@ app.get('/api/passages/:id', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Read failed', details: e.message }); }
 });
 
+// One-click reports from students who encountered a question in a real PTE
+// exam. Available for all SWT passages; never modifies practice history.
+installSwtExamReports(app, {
+  pool: pgPool,
+  verifyToken: verifySessionToken,
+  getAccount: uid => getPracticeAccount(uid, {fresh:true}),
+  getPassage: id => PassageAPI.getById(id),
+  rateLimiter: rateLimit ? rateLimit({windowMs:60*1000,max:12,standardHeaders:true,legacyHeaders:false,message:{error:'Too many updates. Please try again shortly.'}}) : null
+});
+
 app.get('/api/admin/passages', requireAdmin, async (req, res) => {
   try {
     const all = await PassageAPI.readAll();
@@ -3870,6 +3898,16 @@ app.get('/api/admin/passages', requireAdmin, async (req, res) => {
 app.post('/api/admin/passages', requireAdmin, async (req, res) => {
   try {
     const body = req.body || {};
+    // Preserve rank and screenshot provenance when the older admin UI saves
+    // a passage without knowing about these new optional fields.
+    if (Number.isSafeInteger(Number(body.id)) && Number(body.id) > 0) {
+      const existing = await PassageAPI.getById(body.id);
+      if (existing?.questionSet === IMPORT_BATCH) {
+        for (const field of ['questionSet','sourceOrder','sourceQuestionNumber','sourceScreenshot','repeatCount','repeatEvidence']) {
+          if (!Object.prototype.hasOwnProperty.call(body, field) && Object.prototype.hasOwnProperty.call(existing, field)) body[field] = existing[field];
+        }
+      }
+    }
     if (!body.title || !body.text) return res.status(400).json({ error: 'title and text are required' });
     if (!body.keyElements || typeof body.keyElements !== 'object') {
       return res.status(400).json({ error: 'keyElements object is required' });
