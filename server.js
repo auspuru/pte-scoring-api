@@ -23,6 +23,7 @@ const { createJudgmentService } = require('./swt-judgment-service');
 const { createResponseExamplesProvider, createResponseExamplesService, createResponseExamplesHandler } = require('./swt-response-examples');
 const { studentPassage, fallbackSample } = require('./swt-reference');
 const { sortSwtPassages, IMPORT_BATCH } = require('./swt-repeat-ranking');
+const { installSwtExamReports } = require('./swt-exam-reports');
 const { repairMissingSwtSamples } = require('./swt-sample-backfill');
 const { createEssayGrader, essayResultForClient } = require('./essay-grading');
 const EssayGenerationPolicy = require('./public/essay-generation-policy');
@@ -461,6 +462,13 @@ async function pgInitSchema() {
       id             INTEGER PRIMARY KEY,
       payload        JSONB NOT NULL,
       updated_at     TIMESTAMPTZ DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS swt_exam_occurrence_reports (
+      username       TEXT NOT NULL REFERENCES accounts(username) ON DELETE CASCADE,
+      passage_id     INTEGER NOT NULL REFERENCES passages(id) ON DELETE CASCADE,
+      times_seen     INTEGER NOT NULL CHECK (times_seen BETWEEN 1 AND 50),
+      updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY (username, passage_id)
     );
     CREATE TABLE IF NOT EXISTS global_stats (
       id             INTEGER PRIMARY KEY DEFAULT 1,
@@ -3862,6 +3870,16 @@ app.get('/api/passages/:id', async (req, res) => {
     if (!p) return res.status(404).json({ error: 'Passage not found' });
     res.json(studentPassage(p));
   } catch (e) { res.status(500).json({ error: 'Read failed', details: e.message }); }
+});
+
+// Independent, user-editable exam encounter reports. Only the November SWT import
+// batch can be reported; reporting never changes practice attempt history.
+installSwtExamReports(app, {
+  pool: pgPool,
+  verifyToken: verifySessionToken,
+  getAccount: uid => getPracticeAccount(uid, {fresh:true}),
+  getPassage: id => PassageAPI.getById(id),
+  rateLimiter: rateLimit ? rateLimit({windowMs:60*1000,max:12,standardHeaders:true,legacyHeaders:false,message:{error:'Too many updates. Please try again shortly.'}}) : null
 });
 
 app.get('/api/admin/passages', requireAdmin, async (req, res) => {
