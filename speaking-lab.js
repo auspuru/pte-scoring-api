@@ -25,16 +25,8 @@ async function gradePracticeContent(q,text,callModel){
 }
 
 const hasPrompt=q=>['rs','rl','sgd','rts'].includes(q.type)&&!(q.type==='rts'&&q.audioPrompt===false);
-const newSgdQuestions = new Set([
-  ...require('./content/user-sgd-20261123.json').map(q => q.id),
-  // These three discussions from the November batch already have practice entries.
-  'sgd-user-20261030-06',
-  'sgd-user-20261030-08',
-  'sgd-user-20261030-09',
-]);
-const practiceTitle = q => newSgdQuestions.has(q.id) ? 'New Questions · ' + q.title : q.title;
 function question(q,reveal=false) {
-  return {id:q.id,type:q.type,name:q.name,title:practiceTitle(q),instruction:q.instruction,preparation:q.preparation,seconds:q.seconds,
+  return {id:q.id,type:q.type,name:q.name,title:q.title,instruction:q.instruction,preparation:q.preparation,seconds:q.seconds,
     ...(['ra','rts'].includes(q.type)?{text:q.text}:{}),
     ...(hasPrompt(q)?(approvedAudio.publicAudio(q)||rtsPrompts.publicAudio(q,'/speaking-audio')||{audioUrl:'/speaking-audio/'+q.id+'.mp3?v='+bank.version}):{}),
     ...(q.imageUrl?{imageUrl:q.imageUrl,...require('./di-image-display').forQuestion(q)}:q.visual?{imageUrl:'/speaking-image/'+q.id+'.svg'}:{}),
@@ -118,7 +110,7 @@ function installSpeakingLab(app,{pool,directory,verifyToken,getAccount,callModel
   if(assessDelivery===delivery.assessRecording)console.info('[speaking-delivery-config]',JSON.stringify(delivery.configurationSummary()));
   const wrap=fn=>(req,res)=>Promise.resolve(fn(req,res)).catch(e=>{res.set('Cache-Control','no-store');res.status(e.status||503).json({error:e.status?e.message:'This action could not finish. Your saved work is safe; please retry.'});});
   const get=(uid,id)=>practiceAssessments.get(uid,id);
-  router.get('/catalog',(_,res)=>res.json({version:bank.version,contentVersion:scoring.VERSION,describeFeedbackVersion:describeFeedback.VERSION,source:bank.source,transcriptionAvailable,deliveryAssessment:deliveryAssessmentAvailable?'audio':'teacher',deliveryAssessmentAvailable,deliveryVersion:delivery.VERSION,deliveryVersions:Object.fromEntries([...new Set(bank.questions.map(q=>q.type))].map(type=>[type,delivery.VERSION])),deliveryProvider:'azure',types:bank.types,questions:bank.questions.filter(diReferences.available).map(q=>({id:q.id,type:q.type,title:practiceTitle(q),seconds:q.seconds,preparation:q.preparation,...(q.topic?{topic:q.topic}:{}),...(q.predictionSource?.sourceId?{predictionSource:{sourceId:q.predictionSource.sourceId,provider:q.predictionSource.provider,week:q.predictionSource.week,weekly:q.predictionSource.weekly,monthly:q.predictionSource.monthly,priority:q.predictionSource.priority}}:{}),...(q.type==='di'?{imageCategory:q.imageCategory||q.visual?.kind||'unclassified'}:{})}))}));
+  router.get('/catalog',(_,res)=>res.json({version:bank.version,contentVersion:scoring.VERSION,describeFeedbackVersion:describeFeedback.VERSION,source:bank.source,transcriptionAvailable,deliveryAssessment:deliveryAssessmentAvailable?'audio':'teacher',deliveryAssessmentAvailable,deliveryVersion:delivery.VERSION,deliveryVersions:Object.fromEntries([...new Set(bank.questions.map(q=>q.type))].map(type=>[type,delivery.VERSION])),deliveryProvider:'azure',types:bank.types,questions:bank.questions.filter(diReferences.available).map(q=>({id:q.id,type:q.type,title:q.title,seconds:q.seconds,preparation:q.preparation,...(q.topic?{topic:q.topic}:{}),...(q.predictionSource?.sourceId?{predictionSource:{sourceId:q.predictionSource.sourceId,provider:q.predictionSource.provider,week:q.predictionSource.week,weekly:q.predictionSource.weekly,monthly:q.predictionSource.monthly,priority:q.predictionSource.priority}}:{}),...(q.type==='di'?{imageCategory:q.imageCategory||q.visual?.kind||'unclassified'}:{})}))}));
   router.use(async(req,res,next)=>{try{const uid=verifyToken(req.headers['x-session-token']||'');const account=uid&&await getAccount(uid);if(!account||account.blocked)return res.status(401).json({error:'Please sign in to your practice account.'});req.speakingUser=uid;res.set('Cache-Control','no-store');next();}catch{res.status(503).json({error:'Your account could not be checked. Please retry.'});}});
   const limiter=require('express-rate-limit')({windowMs:600000,max:40,keyGenerator:req=>req.speakingUser,standardHeaders:true,legacyHeaders:false,message:{error:'Please wait before starting another speaking action.'}});
   router.get('/attempts',wrap(async(req,res)=>{const entries=await store.list(req.speakingUser);res.json(entries.map(a=>({id:a.id,questionId:a.questionId,title:bank.questions.find(q=>q.id===a.questionId)?.title,type:bank.questions.find(q=>q.id===a.questionId)?.type,status:a.status,practiceMode:a.practiceMode||'timed',assessment:a.assessment||null,startedAt:a.startedAt,result:a.result?{total:a.result.scoringMode==='local'?null:a.result.total,maximum:a.result.maximum,scoringMode:a.result.scoringMode,score_provisional:a.result.scoringMode==='local'||a.result.score_provisional===true}:null})));}));

@@ -125,8 +125,23 @@ add('rts', [
 ]);
 questions.push(...require('./rts-original-practice.json').map(q => ({type:'rts', ...types.rts, ...q})));
 questions.push(...require('./user-speaking-oct24.json').map(q=>({...types[q.type],...q})));
-questions.push(...require('./user-sgd-oct30.json').map(q=>({...types.sgd,...q})));
-questions.push(...require('./user-sgd-20261123.json').map(q=>({...types.sgd,...q})));
+// Three supplied November transcripts already have entries in the October batch.
+const sharedNovemberDiscussions = new Set([
+  'sgd-user-20261030-06',
+  'sgd-user-20261030-08',
+  'sgd-user-20261030-09',
+]);
+const novemberPracticeTitle = title => 'New Questions · ' + title;
+questions.push(...require('./user-sgd-oct30.json').map(q => ({
+  ...types.sgd,
+  ...q,
+  title: sharedNovemberDiscussions.has(q.id) ? novemberPracticeTitle(q.title) : q.title,
+})));
+questions.push(...require('./user-sgd-20261123.json').map(q => ({
+  ...types.sgd,
+  ...q,
+  title: novemberPracticeTitle(q.title),
+})));
 for (const q of questions) {
   if (q.turns) q.text = [...(q.narration ? ['Narration: ' + q.narration] : []), ...q.turns.map(([speaker, text]) => speaker + ': ' + text)].join('\n');
   if (['ra', 'rs'].includes(q.type)) q.sample = q.text;
