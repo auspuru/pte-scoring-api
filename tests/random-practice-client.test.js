@@ -5,7 +5,7 @@ function harness(fetch){const {document}=parseHTML('<section id="randomPracticeP
 test('the selector offers only a single type and count and hands the random choice to the server',async()=>{
  const h=harness();await h.controller.open();assert.equal(h.host.querySelectorAll('select').length,2);assert.equal(h.host.querySelectorAll('input[type="checkbox"]').length,0);assert(!h.host.querySelector('[multiple]'));
  h.host.onchange({target:{id:'practice-set-type',value:'rs'}});h.host.onchange({target:{id:'practice-set-count',value:'20'}});await h.click('[data-rp="start"]');assert.deepEqual(h.launched[0],{engine:'speaking',request:{practiceSet:{type:'rs',count:20}}});
- h.host.onchange({target:{id:'practice-set-type',value:'sgd'}});assert.deepEqual([...h.host.querySelectorAll('#practice-set-count option')].map(q=>q.value),['5','10','15']);
+ h.host.onchange({target:{id:'practice-set-type',value:'sgd'}});assert.deepEqual([...h.host.querySelectorAll('#practice-set-count option')].map(q=>q.value),['5','10','15','20']);
  h.host.onchange({target:{id:'practice-set-type',value:'wfd'}});await h.click('[data-rp="start"]');assert.equal(h.launched[1].engine,'writing');assert.equal(h.launched[1].request.practiceSet.type,'wfd');
 });
 test('saved sets show overall results and reopen the existing attempt instead of choosing new questions',async()=>{
