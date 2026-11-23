@@ -23,7 +23,7 @@ const { createJudgmentService } = require('./swt-judgment-service');
 const { createResponseExamplesProvider, createResponseExamplesService, createResponseExamplesHandler } = require('./swt-response-examples');
 const { studentPassage, fallbackSample } = require('./swt-reference');
 const { sortSwtPassages, IMPORT_BATCH } = require('./swt-repeat-ranking');
-const { installSwtExamReports } = require('./swt-exam-reports');
+const { installSwtExamReports, readSwtReportCounts } = require('./swt-exam-reports');
 const { repairMissingSwtSamples } = require('./swt-sample-backfill');
 const { createEssayGrader, essayResultForClient } = require('./essay-grading');
 const EssayGenerationPolicy = require('./public/essay-generation-policy');
@@ -463,11 +463,10 @@ async function pgInitSchema() {
       payload        JSONB NOT NULL,
       updated_at     TIMESTAMPTZ DEFAULT NOW()
     );
-    CREATE TABLE IF NOT EXISTS swt_exam_occurrence_reports (
+    CREATE TABLE IF NOT EXISTS swt_exam_question_reports (
       username       TEXT NOT NULL REFERENCES accounts(username) ON DELETE CASCADE,
       passage_id     INTEGER NOT NULL REFERENCES passages(id) ON DELETE CASCADE,
-      times_seen     INTEGER NOT NULL CHECK (times_seen BETWEEN 1 AND 50),
-      updated_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      reported_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       PRIMARY KEY (username, passage_id)
     );
     CREATE TABLE IF NOT EXISTS global_stats (
@@ -1333,7 +1332,7 @@ const PassageAPI = USE_POSTGRES ? PgPassageAPI : JsonPassageAPI;
 // remain authoritative, and a new deploy must not bulk-replace the live bank.
 const userSwtPassages = require('./content/user-swt-predictions').passages;
 const userSwtRank = new Map(userSwtPassages.map((p, index) => [p.id, index]));
-const predictionFirst = rows => sortSwtPassages(rows, userSwtRank);
+const predictionFirst = (rows, studentReports = new Map()) => sortSwtPassages(rows, userSwtRank, studentReports);
 
 async function seedUserSwtPredictions() {
   // Never overwrite a pre-existing question, even on deployments with a volume
@@ -3857,7 +3856,14 @@ app.post('/api/admin/vocab/extras', requireAdmin, async (req, res) => {
 app.get('/api/passages', async (req, res) => {
   try {
     const all = await PassageAPI.readAll();
-    res.json({ passages: predictionFirst(all).map(studentPassage), count: all.length });
+    // The SWT index order is global and consistent for all users. Reported
+    // questions take precedence; community counts are distinct students.
+    let reports = new Map();
+    if (USE_POSTGRES) {
+      try { reports = await readSwtReportCounts(pgPool); }
+      catch (error) { console.warn('[swt-report] Ranking fallback', error.message); }
+    }
+    res.json({ passages: predictionFirst(all, reports).map(studentPassage), count: all.length });
   } catch (e) {
     console.error('Read passages failed:', e.message);
     res.status(500).json({ error: 'Failed to load passages', details: e.message });
@@ -3872,8 +3878,8 @@ app.get('/api/passages/:id', async (req, res) => {
   } catch (e) { res.status(500).json({ error: 'Read failed', details: e.message }); }
 });
 
-// Independent, user-editable exam encounter reports. Only the November SWT import
-// batch can be reported; reporting never changes practice attempt history.
+// One-click reports from students who encountered a question in a real PTE
+// exam. Available for all SWT passages; never modifies practice history.
 installSwtExamReports(app, {
   pool: pgPool,
   verifyToken: verifySessionToken,
