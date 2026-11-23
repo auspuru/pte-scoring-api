@@ -1,89 +1,84 @@
 'use strict';
 
-// Independent student-reported *real-exam encounters*, distinct from source-report counts.
-// A student can revise or withdraw their report; repeat submissions never accumulate.
-// Session token identity, not a client-supplied username, owns the row.
-const IMPORT_BATCH='nov23-2026-swt';
-const MAX_EXAM_ENCOUNTERS=50;
-function validateTimesSeen(value) {
-  if (typeof value!=='number' || !Number.isSafeInteger(value) || value<0 || value>MAX_EXAM_ENCOUNTERS) return null;
-  return value;
+// One click = one student reporting that this SWT passage appeared in an
+// official PTE exam. Multiple clicks never increase the count for a student.
+function validPassageId(value) {
+  const s=String(value ?? '');
+  const id=Number(s);
+  return /^\d+$/.test(s) && Number.isSafeInteger(id) && id>0 ? id : null;
 }
-function validPassageId(id) {
-  const s=String(id ?? '');
-  const n=Number(s);
-  return /^\d+$/.test(s) && Number.isSafeInteger(n) && n>0 ? n : null;
+const REPORT_COUNTS_SQL=`
+  SELECT passage_id, COUNT(*)::integer AS reporter_count
+  FROM swt_exam_question_reports GROUP BY passage_id
+`;
+async function readSwtReportCounts(pool) {
+  if (!pool) return new Map();
+  const result=await pool.query(REPORT_COUNTS_SQL);
+  return new Map((result.rows||[]).map(row=>[Number(row.passage_id),Number(row.reporter_count)||0]));
 }
 function normalizeReportRows(communityRows=[], userRows=[]) {
-  const byId=Object.create(null);
-  for(const row of communityRows){
-    const id=validPassageId(row.passage_id);
-    if(id===null) continue;
-    byId[id]={studentReportedTimes:Number(row.total_encounters)||0,reporterCount:Number(row.reporter_count)||0,myTimes:0};
-  }
-  for(const row of userRows){
+  const reports=Object.create(null);
+  for(const row of communityRows) {
     const id=validPassageId(row.passage_id);
     if(id===null)continue;
-    if(!byId[id])byId[id]={studentReportedTimes:0,reporterCount:0,myTimes:0};
-    byId[id].myTimes=Number(row.times_seen)||0;
+    reports[id]={reporterCount:Number(row.reporter_count)||0,myReported:false};
   }
-  return byId;
+  for(const row of userRows) {
+    const id=validPassageId(row.passage_id);
+    if(id===null)continue;
+    if(!reports[id])reports[id]={reporterCount:0,myReported:false};
+    reports[id].myReported=true;
+  }
+  return reports;
 }
-const publicSummarySql=`
-  SELECT passage_id, COALESCE(SUM(times_seen),0)::integer AS total_encounters,
-         COUNT(*)::integer AS reporter_count
-  FROM swt_exam_occurrence_reports GROUP BY passage_id
-`;
-function installSwtExamReports(app,{pool,verifyToken,getAccount,getPassage,rateLimiter=null}){
-  const auth=async(req,res,next)=>{
+function installSwtExamReports(app,{pool,verifyToken,getAccount,getPassage,rateLimiter=null}) {
+  const authenticate=async(req,res,next)=>{
     res.set('Cache-Control','no-store');
-    const username=verifyToken(req.get('x-session-token')||''); // no impersonation tokens
-    if(!username)return res.status(401).json({error:'Please sign in to report questions.'});
-    try{
+    const username=verifyToken(req.get('x-session-token')||''); // never trust body user IDs or impersonation sessions
+    if(!username)return res.status(401).json({error:'Please sign in to report a question.'});
+    try {
       const account=await getAccount(username);
-      if(!account||account.blocked)return res.status(403).json({error:'Account unavailable.'});
-      req.swtReportUsername=username;
-      return next();
+      if(!account||account.blocked)return res.status(403).json({error:'Your account is unavailable.'});
+      req.swtReportUsername=username;next();
     }catch(e){return res.status(503).json({error:'Account verification unavailable.'});}
   };
-  app.get('/api/swt/exam-reports',auth,async(req,res)=>{
-    if(!pool)return res.status(503).json({error:'Exam reporting requires the database.'});
-    try{
+  app.get('/api/swt/exam-reports',authenticate,async(req,res)=>{
+    if(!pool)return res.status(503).json({error:'Reporting requires database access.'});
+    try {
       const [community,mine]=await Promise.all([
-        pool.query(publicSummarySql),
-        pool.query('SELECT passage_id,times_seen FROM swt_exam_occurrence_reports WHERE username=$1',[req.swtReportUsername])
+        pool.query(REPORT_COUNTS_SQL),
+        pool.query('SELECT passage_id FROM swt_exam_question_reports WHERE username=$1',[req.swtReportUsername])
       ]);
       return res.json({reports:normalizeReportRows(community.rows,mine.rows)});
-    }catch(e){console.error('[swt-exam-reports] read failed',e.message);return res.status(500).json({error:'Could not load report counts.'});}
+    }catch(e){
+      console.error('[swt-report] Could not fetch student reports',e.message);
+      return res.status(500).json({error:'Could not load question reports.'});
+    }
   });
-  const middleware=rateLimiter?[auth,rateLimiter]:[auth];
+  const middleware=rateLimiter?[authenticate,rateLimiter]:[authenticate];
   app.post('/api/swt/exam-reports/:passageId',...middleware,async(req,res)=>{
-    if(!pool)return res.status(503).json({error:'Exam reporting requires the database.'});
+    if(!pool)return res.status(503).json({error:'Reporting requires database access.'});
     const passageId=validPassageId(req.params.passageId);
-    const timesSeen=validateTimesSeen(req.body?.timesSeen);
     if(passageId===null)return res.status(400).json({error:'Invalid question ID.'});
-    if(timesSeen===null)return res.status(400).json({error:'Enter a whole number of real exam encounters from 0 to '+MAX_EXAM_ENCOUNTERS+'.'});
-    try{
+    try {
       const passage=await getPassage(passageId);
-      if(!passage || passage.questionSet!==IMPORT_BATCH)return res.status(404).json({error:'This question is not available for exam reporting.'});
-      if(timesSeen===0){
-        await pool.query('DELETE FROM swt_exam_occurrence_reports WHERE username=$1 AND passage_id=$2',[req.swtReportUsername,passageId]);
-      }else{
-        await pool.query(`
-          INSERT INTO swt_exam_occurrence_reports(username,passage_id,times_seen,updated_at)
-          VALUES($1,$2,$3,NOW())
-          ON CONFLICT(username,passage_id)
-          DO UPDATE SET times_seen=EXCLUDED.times_seen,updated_at=NOW()
-        `,[req.swtReportUsername,passageId,timesSeen]);
-      }
-      const aggregate=await pool.query(`
-        SELECT COALESCE(SUM(times_seen),0)::integer AS total_encounters,
-               COUNT(*)::integer AS reporter_count
-        FROM swt_exam_occurrence_reports WHERE passage_id=$1
+      if(!passage)return res.status(404).json({error:'Question not found.'});
+      // UNIQUE(username,passage_id) guarantees one report per student.
+      const inserted=await pool.query(`
+        INSERT INTO swt_exam_question_reports (username,passage_id)
+        VALUES ($1,$2) ON CONFLICT (username,passage_id) DO NOTHING
+        RETURNING passage_id
+      `,[req.swtReportUsername,passageId]);
+      const counts=await pool.query(`
+        SELECT COUNT(*)::integer AS reporter_count
+        FROM swt_exam_question_reports WHERE passage_id=$1
       `,[passageId]);
-      const row=aggregate.rows[0]||{};
-      return res.json({success:true,passageId,report:{myTimes:timesSeen,studentReportedTimes:Number(row.total_encounters)||0,reporterCount:Number(row.reporter_count)||0}});
-    }catch(e){console.error('[swt-exam-reports] save failed',e.message);return res.status(500).json({error:'Your report could not be saved.'});}
+      return res.json({success:true,passageId,alreadyReported:!(inserted.rowCount>0),
+        report:{myReported:true,reporterCount:Number(counts.rows[0]?.reporter_count)||0}});
+    }catch(e){
+      console.error('[swt-report] Could not save student report',e.message);
+      return res.status(500).json({error:'Could not save your report.'});
+    }
   });
 }
-module.exports={IMPORT_BATCH,MAX_EXAM_ENCOUNTERS,validateTimesSeen,validPassageId,normalizeReportRows,installSwtExamReports};
+module.exports={validPassageId,normalizeReportRows,readSwtReportCounts,installSwtExamReports,REPORT_COUNTS_SQL};
