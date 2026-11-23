@@ -1,0 +1,1095 @@
+{
+  "batch": "2026-11-23-retell-lecture",
+  "sourceArchive": "Screenshot 2026-11-23 153504.zip",
+  "publicationStatus": "REVIEW_ONLY_NOT_IMPORTED",
+  "sourceType": "user-supplied screenshots",
+  "imageCaptureCount": 61,
+  "uniqueQuestionCount": 58,
+  "countsByStatus": {
+    "new_candidate_unverified": 36,
+    "possible_existing_question": 21,
+    "manual_semantic_duplicate_review": 1
+  },
+  "notes": [
+    "Source question numbers (#587, #429, etc.) are IDs, not occurrence counts. Screenshots have a separate Report(N) indicator.",
+    "Original lecture audio cannot be extracted from screenshots; screenshot-only import must not create playable practice questions.",
+    "The local import review package contains OCR draft transcripts and source screenshots. Do not treat transcripts as proofread or official exam audio.",
+    "Potential existing matches were checked against main branch content/user-speaking-oct24.json, not against live PostgreSQL; verify by transcript comparison before import.",
+    "A future import to the Speaking bank requires proofread transcripts, resolved duplicate matches, and verified playable audio."
+  ],
+  "questions": [
+    {
+      "sourceQuestionNumber": 587,
+      "title": "Cosmic Civilization",
+      "filename": "Screenshot 2026-11-23 153504.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 429,
+      "title": "Joseph Lister",
+      "filename": "Screenshot 2026-11-23 153453.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-joseph-lister",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 344,
+      "title": "Child Language Acquisition",
+      "filename": "Screenshot 2026-11-23 153443.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 311,
+      "title": "Bilingual Parents",
+      "filename": "Screenshot 2026-11-23 153436.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 304,
+      "title": "A Book of Learning",
+      "filename": "Screenshot 2026-11-23 153429.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 294,
+      "title": "Library Introduction",
+      "filename": "Screenshot 2026-11-23 153419.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 292,
+      "title": "Psychology",
+      "filename": "Screenshot 2026-11-23 153412.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-psychology-subfields",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 142,
+      "title": "Edmund Wilson",
+      "filename": "Screenshot 2026-11-23 153401.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 287,
+      "title": "Children Obesity",
+      "filename": "Screenshot 2026-11-23 153351.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-childhood-obesity",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 249,
+      "title": "Cloud Formation",
+      "filename": "Screenshot 2026-11-23 153341.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 282,
+      "title": "Fatherhood",
+      "filename": "Screenshot 2026-11-23 153332.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-fatherhood",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 241,
+      "title": "Oracle",
+      "filename": "Screenshot 2026-11-23 153322.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 272,
+      "title": "Knee Cracking",
+      "filename": "Screenshot 2026-11-23 153311.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 260,
+      "title": "Language Disorder",
+      "filename": "Screenshot 2026-11-23 153302.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-language-disorders",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 259,
+      "title": "Happiness and Social Relations",
+      "filename": "Screenshot 2026-11-23 153254.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 257,
+      "title": "Ageing Population",
+      "filename": "Screenshot 2026-11-23 153245.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 254,
+      "title": "Robot and Human",
+      "filename": "Screenshot 2026-11-23 153236.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 248,
+      "title": "Survey",
+      "filename": "Screenshot 2026-11-23 153226.png",
+      "additionalScreenshots": [],
+      "status": "manual_semantic_duplicate_review",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 247,
+      "title": "Linguistic Training",
+      "filename": "Screenshot 2026-11-23 153209.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 245,
+      "title": "Governmental Blogging",
+      "filename": "Screenshot 2026-11-23 153202.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-government-blogging",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 244,
+      "title": "European Economic Structure",
+      "filename": "Screenshot 2026-11-23 153152.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 242,
+      "title": "Advanced Machine",
+      "filename": "Screenshot 2026-11-23 153144.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-advanced-machine",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 238,
+      "title": "Wage, Consumption and Debt",
+      "filename": "Screenshot 2026-11-23 153136.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-wages-debt",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 223,
+      "title": "Soot Emission",
+      "filename": "Screenshot 2026-11-23 153127.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-black-carbon",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 205,
+      "title": "America's Economic Size",
+      "filename": "Screenshot 2026-11-23 153117.png",
+      "additionalScreenshots": [
+        "Screenshot 2026-11-23 153102.png"
+      ],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-us-economic-strength",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 174,
+      "title": "Salary Types",
+      "filename": "Screenshot 2026-11-23 153052.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 173,
+      "title": "Human Behavior",
+      "filename": "Screenshot 2026-11-23 153038.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 165,
+      "title": "Pavlov Experiment",
+      "filename": "Screenshot 2026-11-23 153026.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 124,
+      "title": "Early Robot",
+      "filename": "Screenshot 2026-11-23 153017.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 64,
+      "title": "Wind Turbine",
+      "filename": "Screenshot 2026-11-23 152959.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 672,
+      "title": "Four Dimensions",
+      "filename": "Screenshot 2026-11-23 152950.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-four-dimensions",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 661,
+      "title": "Neurons",
+      "filename": "Screenshot 2026-11-23 152940.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-neuron-intensity",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 580,
+      "title": "Facial Recognition",
+      "filename": "Screenshot 2026-11-23 152930.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 334,
+      "title": "Chemical's Label",
+      "filename": "Screenshot 2026-11-23 152919.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-chemical-labels",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 309,
+      "title": "Glass Ceiling",
+      "filename": "Screenshot 2026-11-23 152859.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 308,
+      "title": "DNA",
+      "filename": "Screenshot 2026-11-23 152849.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-dna-proteins",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 190,
+      "title": "Leadership and Management",
+      "filename": "Screenshot 2026-11-23 152841.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-management-leadership",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 285,
+      "title": "Procedure",
+      "filename": "Screenshot 2026-11-23 152800.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 271,
+      "title": "Animal Behavior (B)",
+      "filename": "Screenshot 2026-11-23 152750.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 270,
+      "title": "Housing Affordability",
+      "filename": "Screenshot 2026-11-23 152741.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 261,
+      "title": "Science and Scientist",
+      "filename": "Screenshot 2026-11-23 152732.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-science-scientist",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 250,
+      "title": "Underwater Detectors",
+      "filename": "Screenshot 2026-11-23 152720.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-underwater-remote-detector",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 246,
+      "title": "Earth vs. Mars",
+      "filename": "Screenshot 2026-11-23 152710.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-earth-mars",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 237,
+      "title": "Practice",
+      "filename": "Screenshot 2026-11-23 152641.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-deliberate-practice",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 235,
+      "title": "Ship",
+      "filename": "Screenshot 2026-11-23 152633.png",
+      "additionalScreenshots": [],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-civilisation-ship",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 233,
+      "title": "Loggerhead Turtle",
+      "filename": "Screenshot 2026-11-23 152624.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 188,
+      "title": "Melatonin",
+      "filename": "Screenshot 2026-11-23 152615.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 181,
+      "title": "Animal Behavior",
+      "filename": "Screenshot 2026-11-23 152553.png",
+      "additionalScreenshots": [
+        "Screenshot 2026-11-23 152437.png"
+      ],
+      "status": "possible_existing_question",
+      "matchingPortalQuestionId": "rl-user-20261104-animal-behaviour",
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 163,
+      "title": "Invention",
+      "filename": "Screenshot 2026-11-23 152426.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 161,
+      "title": "Springtime",
+      "filename": "Screenshot 2026-11-23 152416.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 154,
+      "title": "London Taxi Drivers",
+      "filename": "Screenshot 2026-11-23 152355.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 152,
+      "title": "Music and Wellbeing",
+      "filename": "Screenshot 2026-11-23 152342.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 147,
+      "title": "London Fog",
+      "filename": "Screenshot 2026-11-23 152331.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 139,
+      "title": "Night Sky Darkness",
+      "filename": "Screenshot 2026-11-23 152321.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 123,
+      "title": "Marshmallow Test",
+      "filename": "Screenshot 2026-11-23 152309.png",
+      "additionalScreenshots": [
+        "Screenshot 2026-11-23 152230.png"
+      ],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 72,
+      "title": "Bomb Calorimeter",
+      "filename": "Screenshot 2026-11-23 152218.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 62,
+      "title": "Infinite Monkey Theorem",
+      "filename": "Screenshot 2026-11-23 152204.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    },
+    {
+      "sourceQuestionNumber": 60,
+      "title": "Trade-off Triangle",
+      "filename": "Screenshot 2026-11-23 152152.png",
+      "additionalScreenshots": [],
+      "status": "new_candidate_unverified",
+      "matchingPortalQuestionId": null,
+      "transcriptStatus": "OCR draft in local review package; not yet proofread",
+      "originalAudio": "missing_from_screenshot_archive",
+      "historicalReportCount": null
+    }
+  ],
+  "captures": [
+    {
+      "screenshotIndex": 1,
+      "filename": "Screenshot 2026-11-23 153504.png",
+      "sourceQuestionNumber": 587,
+      "title": "Cosmic Civilization",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 2,
+      "filename": "Screenshot 2026-11-23 153453.png",
+      "sourceQuestionNumber": 429,
+      "title": "Joseph Lister",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 3,
+      "filename": "Screenshot 2026-11-23 153443.png",
+      "sourceQuestionNumber": 344,
+      "title": "Child Language Acquisition",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 4,
+      "filename": "Screenshot 2026-11-23 153436.png",
+      "sourceQuestionNumber": 311,
+      "title": "Bilingual Parents",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 5,
+      "filename": "Screenshot 2026-11-23 153429.png",
+      "sourceQuestionNumber": 304,
+      "title": "A Book of Learning",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 6,
+      "filename": "Screenshot 2026-11-23 153419.png",
+      "sourceQuestionNumber": 294,
+      "title": "Library Introduction",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 7,
+      "filename": "Screenshot 2026-11-23 153412.png",
+      "sourceQuestionNumber": 292,
+      "title": "Psychology",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 8,
+      "filename": "Screenshot 2026-11-23 153401.png",
+      "sourceQuestionNumber": 142,
+      "title": "Edmund Wilson",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 9,
+      "filename": "Screenshot 2026-11-23 153351.png",
+      "sourceQuestionNumber": 287,
+      "title": "Children Obesity",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 10,
+      "filename": "Screenshot 2026-11-23 153341.png",
+      "sourceQuestionNumber": 249,
+      "title": "Cloud Formation",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 11,
+      "filename": "Screenshot 2026-11-23 153332.png",
+      "sourceQuestionNumber": 282,
+      "title": "Fatherhood",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 12,
+      "filename": "Screenshot 2026-11-23 153322.png",
+      "sourceQuestionNumber": 241,
+      "title": "Oracle",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 13,
+      "filename": "Screenshot 2026-11-23 153311.png",
+      "sourceQuestionNumber": 272,
+      "title": "Knee Cracking",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 14,
+      "filename": "Screenshot 2026-11-23 153302.png",
+      "sourceQuestionNumber": 260,
+      "title": "Language Disorder",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 15,
+      "filename": "Screenshot 2026-11-23 153254.png",
+      "sourceQuestionNumber": 259,
+      "title": "Happiness and Social Relations",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 16,
+      "filename": "Screenshot 2026-11-23 153245.png",
+      "sourceQuestionNumber": 257,
+      "title": "Ageing Population",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 17,
+      "filename": "Screenshot 2026-11-23 153236.png",
+      "sourceQuestionNumber": 254,
+      "title": "Robot and Human",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 18,
+      "filename": "Screenshot 2026-11-23 153226.png",
+      "sourceQuestionNumber": 248,
+      "title": "Survey",
+      "disposition": "manual_semantic_duplicate_review"
+    },
+    {
+      "screenshotIndex": 19,
+      "filename": "Screenshot 2026-11-23 153209.png",
+      "sourceQuestionNumber": 247,
+      "title": "Linguistic Training",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 20,
+      "filename": "Screenshot 2026-11-23 153202.png",
+      "sourceQuestionNumber": 245,
+      "title": "Governmental Blogging",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 21,
+      "filename": "Screenshot 2026-11-23 153152.png",
+      "sourceQuestionNumber": 244,
+      "title": "European Economic Structure",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 22,
+      "filename": "Screenshot 2026-11-23 153144.png",
+      "sourceQuestionNumber": 242,
+      "title": "Advanced Machine",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 23,
+      "filename": "Screenshot 2026-11-23 153136.png",
+      "sourceQuestionNumber": 238,
+      "title": "Wage, Consumption and Debt",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 24,
+      "filename": "Screenshot 2026-11-23 153127.png",
+      "sourceQuestionNumber": 223,
+      "title": "Soot Emission",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 25,
+      "filename": "Screenshot 2026-11-23 153117.png",
+      "sourceQuestionNumber": 205,
+      "title": "America's Economic Size",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 26,
+      "filename": "Screenshot 2026-11-23 153102.png",
+      "sourceQuestionNumber": 205,
+      "title": "America's Economic Size",
+      "disposition": "duplicate_capture"
+    },
+    {
+      "screenshotIndex": 27,
+      "filename": "Screenshot 2026-11-23 153052.png",
+      "sourceQuestionNumber": 174,
+      "title": "Salary Types",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 28,
+      "filename": "Screenshot 2026-11-23 153038.png",
+      "sourceQuestionNumber": 173,
+      "title": "Human Behavior",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 29,
+      "filename": "Screenshot 2026-11-23 153026.png",
+      "sourceQuestionNumber": 165,
+      "title": "Pavlov Experiment",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 30,
+      "filename": "Screenshot 2026-11-23 153017.png",
+      "sourceQuestionNumber": 124,
+      "title": "Early Robot",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 31,
+      "filename": "Screenshot 2026-11-23 152959.png",
+      "sourceQuestionNumber": 64,
+      "title": "Wind Turbine",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 32,
+      "filename": "Screenshot 2026-11-23 152950.png",
+      "sourceQuestionNumber": 672,
+      "title": "Four Dimensions",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 33,
+      "filename": "Screenshot 2026-11-23 152940.png",
+      "sourceQuestionNumber": 661,
+      "title": "Neurons",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 34,
+      "filename": "Screenshot 2026-11-23 152930.png",
+      "sourceQuestionNumber": 580,
+      "title": "Facial Recognition",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 35,
+      "filename": "Screenshot 2026-11-23 152919.png",
+      "sourceQuestionNumber": 334,
+      "title": "Chemical's Label",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 36,
+      "filename": "Screenshot 2026-11-23 152859.png",
+      "sourceQuestionNumber": 309,
+      "title": "Glass Ceiling",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 37,
+      "filename": "Screenshot 2026-11-23 152849.png",
+      "sourceQuestionNumber": 308,
+      "title": "DNA",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 38,
+      "filename": "Screenshot 2026-11-23 152841.png",
+      "sourceQuestionNumber": 190,
+      "title": "Leadership and Management",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 39,
+      "filename": "Screenshot 2026-11-23 152800.png",
+      "sourceQuestionNumber": 285,
+      "title": "Procedure",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 40,
+      "filename": "Screenshot 2026-11-23 152750.png",
+      "sourceQuestionNumber": 271,
+      "title": "Animal Behavior (B)",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 41,
+      "filename": "Screenshot 2026-11-23 152741.png",
+      "sourceQuestionNumber": 270,
+      "title": "Housing Affordability",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 42,
+      "filename": "Screenshot 2026-11-23 152732.png",
+      "sourceQuestionNumber": 261,
+      "title": "Science and Scientist",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 43,
+      "filename": "Screenshot 2026-11-23 152720.png",
+      "sourceQuestionNumber": 250,
+      "title": "Underwater Detectors",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 44,
+      "filename": "Screenshot 2026-11-23 152710.png",
+      "sourceQuestionNumber": 246,
+      "title": "Earth vs. Mars",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 45,
+      "filename": "Screenshot 2026-11-23 152641.png",
+      "sourceQuestionNumber": 237,
+      "title": "Practice",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 46,
+      "filename": "Screenshot 2026-11-23 152633.png",
+      "sourceQuestionNumber": 235,
+      "title": "Ship",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 47,
+      "filename": "Screenshot 2026-11-23 152624.png",
+      "sourceQuestionNumber": 233,
+      "title": "Loggerhead Turtle",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 48,
+      "filename": "Screenshot 2026-11-23 152615.png",
+      "sourceQuestionNumber": 188,
+      "title": "Melatonin",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 49,
+      "filename": "Screenshot 2026-11-23 152553.png",
+      "sourceQuestionNumber": 181,
+      "title": "Animal Behavior",
+      "disposition": "possible_existing_question"
+    },
+    {
+      "screenshotIndex": 50,
+      "filename": "Screenshot 2026-11-23 152437.png",
+      "sourceQuestionNumber": 181,
+      "title": "Animal Behavior",
+      "disposition": "duplicate_capture"
+    },
+    {
+      "screenshotIndex": 51,
+      "filename": "Screenshot 2026-11-23 152426.png",
+      "sourceQuestionNumber": 163,
+      "title": "Invention",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 52,
+      "filename": "Screenshot 2026-11-23 152416.png",
+      "sourceQuestionNumber": 161,
+      "title": "Springtime",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 53,
+      "filename": "Screenshot 2026-11-23 152355.png",
+      "sourceQuestionNumber": 154,
+      "title": "London Taxi Drivers",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 54,
+      "filename": "Screenshot 2026-11-23 152342.png",
+      "sourceQuestionNumber": 152,
+      "title": "Music and Wellbeing",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 55,
+      "filename": "Screenshot 2026-11-23 152331.png",
+      "sourceQuestionNumber": 147,
+      "title": "London Fog",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 56,
+      "filename": "Screenshot 2026-11-23 152321.png",
+      "sourceQuestionNumber": 139,
+      "title": "Night Sky Darkness",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 57,
+      "filename": "Screenshot 2026-11-23 152309.png",
+      "sourceQuestionNumber": 123,
+      "title": "Marshmallow Test",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 58,
+      "filename": "Screenshot 2026-11-23 152230.png",
+      "sourceQuestionNumber": 123,
+      "title": "Marshmallow Test",
+      "disposition": "duplicate_capture"
+    },
+    {
+      "screenshotIndex": 59,
+      "filename": "Screenshot 2026-11-23 152218.png",
+      "sourceQuestionNumber": 72,
+      "title": "Bomb Calorimeter",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 60,
+      "filename": "Screenshot 2026-11-23 152204.png",
+      "sourceQuestionNumber": 62,
+      "title": "Infinite Monkey Theorem",
+      "disposition": "new_candidate_unverified"
+    },
+    {
+      "screenshotIndex": 61,
+      "filename": "Screenshot 2026-11-23 152152.png",
+      "sourceQuestionNumber": 60,
+      "title": "Trade-off Triangle",
+      "disposition": "new_candidate_unverified"
+    }
+  ]
+}
