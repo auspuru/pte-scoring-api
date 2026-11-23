@@ -78,6 +78,8 @@
   const p=passages.find(row=>Number(row.id)===questionId);
   if(!p||!sessionToken||examReports[questionId]?.myReported)return;
   const uid=currentUserId,token=sessionToken;
+  // Cancel any earlier aggregate fetch that could overwrite a successful click.
+  examReportFetch++;
   button.disabled=true;button.textContent='Reporting…';
   try {
    const response=await fetch(API_URL+'/api/swt/exam-reports/'+encodeURIComponent(questionId),{
