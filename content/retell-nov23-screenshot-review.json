@@ -15,7 +15,7 @@
     "Original lecture audio cannot be extracted from screenshots; screenshot-only import must not create playable practice questions.",
     "The local import review package contains OCR draft transcripts and source screenshots. Do not treat transcripts as proofread or official exam audio.",
     "Potential existing matches were checked against main branch content/user-speaking-oct24.json, not against live PostgreSQL; verify by transcript comparison before import.",
-    "No content is imported by this review manifest. Do not change main, Railway production, saved student answers or question IDs."
+    "A future import to the Speaking bank requires proofread transcripts, resolved duplicate matches, and verified playable audio."
   ],
   "questions": [
     {

@@ -1,6 +1,6 @@
 # Retell Lecture: 23 November 2026 screenshot import review
 
-## Status — review only, not live
+## Review status
 
 The uploaded ZIP contains **61 PNG screenshots** showing Retell Lecture question headings, on-screen source transcripts and, in some cases, visuals. It does **not** contain the actual lecture audio streams.
 
@@ -31,14 +31,6 @@ Existing portal candidates are matched conservatively, by name and obvious subje
 6. Generate or copy verified playable media, update the speaking audio manifest, and run duration, transcript, scoring and browser checks. Handle the wide lecture durations seen in these screenshots (some longer than 90 seconds) rather than bypassing validation.
 7. Apply NEW and one-click exam-reporting behavior to newly added RL questions **only after confirming that those features are designed for Speaking**; existing SWT-specific code must not be blindly reused as-is.
 8. Verify all questions appear correctly in the RL library with stable IDs, no duplicate records and accessible replay controls. Preserve user histories and question positions.
-9. Run GitHub Actions CI, full speaking/media tests and a staging integration test with an actual signed-in student. Publish only after separate explicit approval.
+9. Before releasing playable questions, run GitHub Actions CI, full speaking/media tests and an authenticated staging integration test with a synthetic account.
 
-## Safety restrictions
-
-- Do **not** merge or push to `main`.
-- Do **not** deploy Railway production.
-- Do **not** auto-import provisional OCR passages, fabricate audio, or overwrite pre-existing questions.
-- Do **not** modify student attempt histories or scores.
-- Keep this work separate from the SWT feature PR #369.
-
-The draft PR containing this inventory is a preparation stage for a later verified Retell Lecture import; it is **not a complete playable question import**.
+This inventory records the candidate matches and the inputs needed for a future playable Retell Lecture import.
