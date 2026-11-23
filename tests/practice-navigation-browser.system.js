@@ -382,7 +382,7 @@ for(const width of [1363,390,320])test('SWT review: exact corrections, drafts, s
 
 test('SWT review: NEW and one-click reporting keep student history, focus and question identity',{timeout:90000},async t=>{
  const {randomUUID}=require('node:crypto'),{Pool}=require('pg');
- const {testDatabaseUrl}=require('./helpers/full-mock-systems');
+ const {testDatabaseUrl,until}=require('./helpers/full-mock-systems');
  const base=testDatabaseUrl(process.env.FULL_MOCK_TEST_DATABASE_URL);
  const schema='swt_reports_'+randomUUID().replaceAll('-','');
  const pool=new Pool({connectionString:base,connectionTimeoutMillis:5000});
@@ -403,6 +403,9 @@ test('SWT review: NEW and one-click reporting keep student history, focus and qu
   assert.equal(registration.body.success,true);
   sessions.push(registration.body.token);
  }
+ // Service readiness precedes the additive SWT bootstrap. The boot snapshot
+ // is captured after its seeds, revisions and sample backfill have completed.
+ await until(async()=>Boolean((await f.request('/api/health')).body.boot_snapshot),'SWT bootstrap did not finish.');
  const existing=(await f.request('/api/passages')).body.passages;
  assert.equal(staged.some(passage=>existing.some(saved=>saved.id===passage.id)),false);
  for(const passage of staged){
@@ -413,6 +416,7 @@ test('SWT review: NEW and one-click reporting keep student history, focus and qu
  const baseline=(await f.request('/api/passages')).body.passages;
  assert.equal(baseline.length,existing.length+staged.length);
  const indexed=new Map(baseline.map(passage=>[passage.id,passage]));
+ for(const passage of existing)assert.deepEqual(indexed.get(passage.id),passage,'Existing SWT '+passage.id+' changed');
  for(const passage of staged){
   const published=indexed.get(passage.id);
   assert.deepEqual(published&&[published.id,published.title,published.text,published.questionSet],
