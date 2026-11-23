@@ -1,4 +1,5 @@
 'use strict';
+const rtsContent=require('./situation-content-policy-developed');
 const {hash}=require('./scoring-jobs'),report=require('./speaking-mock-report'),completion=require('./speaking-mock-completion');
 const continuous=require('./azure-continuous-delivery');
 const delivery=require('./speaking-delivery');
@@ -89,7 +90,8 @@ function create({store,jobStore,transcribe,callModel,gradeContent=(q,text)=>requ
    let text=proposed.transcript||r.transcript||'';let content=proposed.content||r.content;
    if(!report.validContent(q,content)){
     if(!text.trim()){if(await quietRecording(recording))throw fail('The recording is too quiet to assess.');text=await paid('transcription',()=>transcribe(recording),v=>typeof v==='string'&&!!v.trim());proposed.transcript=text;proposed.transcriptionStatus='assessed';}
-    content=await paid('content',()=>gradeContent(q,text),v=>report.validContent(q,v));proposed.content=content;
+    const contentQuestion=rtsContent.forSavedQuestion(q,saved.profile?.rtsContentPolicyVersion);
+    content=await paid('content',()=>gradeContent(contentQuestion,text),v=>report.validContent(q,v));proposed.content=content;
    }
    if(content.total===0){result={version:'native-content-gate',pronunciation:{score:0},fluency:{score:0}};}
    else try{const a=await store.get(owner,id,{omitMockAudio:true}),savedRaw=originalAzureRaw(a,claimed.index);

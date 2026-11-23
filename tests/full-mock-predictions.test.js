@@ -23,14 +23,16 @@ test('Question selection preserves native graders, models, weights and timing; f
   const before = require('../content/full-mock/question-content-compatible-sources.json');
   const after = require('../full-mock/audit').scoringSnapshot(root);
   assert.equal(digest(before), '97cebe2ecb2d51a2da15d0aea1004dbd33d7ab1c79ded0174afbc38893fbb458');
+  const rtsAdditions = ['situation-content-policy-developed.js'];
+  const rtsRevisions = ['speaking-scoring.js', 'speaking-judge-format.js'];
   const swtAdditions = ['content/swt-passage-guides.json', 'content/swt-publication-references.json', 'swt-legacy-policy.js',
     'swt-plain-samples.js', 'content/swt-plain-samples.json'];
   const swtRevisions = ['swt-judge-format.js', 'swt-judgment-service.js', 'swt-reference.js', 'swt-scoring-policy.js', 'mock-content-assessment.js'];
   const lock = require('../content/full-mock/scoring-lock.json').snapshot;
   // Instructor publication adds an explicitly pinned support controller;
   // every native grader below must still match its retained baseline.
-  assert.deepEqual([...Object.keys(before.files),'full-mock/exclusions.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','listening-mock/aggregation.js','describe-image-academy/number-context.js','describe-image-academy/legacy-scoring-policy.js',...swtAdditions].sort(), Object.keys(after.files).sort());
-  for (const file of [...swtAdditions, ...swtRevisions, 'full-mock/adapters.js', 'full-mock/assessment.js', 'public/writing-lab-report.js', 'server.js']) {
+  assert.deepEqual([...Object.keys(before.files),'full-mock/exclusions.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','listening-mock/aggregation.js','describe-image-academy/number-context.js','describe-image-academy/legacy-scoring-policy.js',...swtAdditions,...rtsAdditions].sort(), Object.keys(after.files).sort());
+  for (const file of [...rtsAdditions, ...rtsRevisions, ...swtAdditions, ...swtRevisions, 'full-mock/adapters.js', 'full-mock/assessment.js', 'public/writing-lab-report.js', 'server.js']) {
     assert.deepEqual(after.files[file], lock.files[file], file);
   }
   for(const file of ['full-mock/exclusions.js','full-mock/aggregation.js','full-mock/api.js','full-mock/audit.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','listening-mock/aggregation.js','speaking-delivery.js','writing-lab-scoring.js','full-mock/rubrics.js','describe-image-academy/scoring-policy.js','describe-image-feedback/scoring-policy.js','describe-image-academy/number-context.js','describe-image-academy/legacy-scoring-policy.js','describe-image-academy.js'])
@@ -45,7 +47,7 @@ test('Question selection preserves native graders, models, weights and timing; f
   // Report-only feedback has its own exact lock and behavioral regressions.
   assert.deepEqual(after.files['full-mock/report.js'],require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/report.js']);
   for (const file of Object.keys(before.files)) {
-    if (![...swtRevisions, 'full-mock/session.js', 'public/reading-mock-tools.js', 'full-mock/paper.js', 'full-mock/assessment.js', 'full-mock/report.js', 'full-mock/adapters.js', 'full-mock/store.js', 'full-mock/aggregation.js', 'full-mock/api.js', 'full-mock/audit.js', 'server.js', 'public/writing-lab-report.js', 'speaking-lab.js', 'public/reading-practice.js', 'speaking-delivery.js', 'writing-lab-scoring.js', 'full-mock/rubrics.js', 'describe-image-academy/scoring-policy.js', 'describe-image-feedback/scoring-policy.js','describe-image-academy.js'].includes(file)) assert.deepEqual(after.files[file], before.files[file], file);
+    if (![...rtsRevisions, ...swtRevisions, 'full-mock/session.js', 'public/reading-mock-tools.js', 'full-mock/paper.js', 'full-mock/assessment.js', 'full-mock/report.js', 'full-mock/adapters.js', 'full-mock/store.js', 'full-mock/aggregation.js', 'full-mock/api.js', 'full-mock/audit.js', 'server.js', 'public/writing-lab-report.js', 'speaking-lab.js', 'public/reading-practice.js', 'speaking-delivery.js', 'writing-lab-scoring.js', 'full-mock/rubrics.js', 'describe-image-academy/scoring-policy.js', 'describe-image-feedback/scoring-policy.js','describe-image-academy.js'].includes(file)) assert.deepEqual(after.files[file], before.files[file], file);
   }
 });
 
@@ -165,7 +167,11 @@ test('A pending original-paper attempt finishes with its saved questions and mar
   assert.deepEqual(record.paper, previous);
   assert.deepEqual(record.state.assessment.snapshot, original);
   assert.deepEqual(record.state.assessment.items[first.id], savedMark);
-  for (const q of calls) assert.deepEqual(q, previous.questions.find(c => c.question.id === q.id).question);
+  const rts = require('../situation-content-policy-developed');
+  for (const q of calls) {
+    const frozen = previous.questions.find(c => c.question.id === q.id).question;
+    assert.deepEqual(q, q.type === 'rts' ? {...frozen, rtsContentPolicyVersion:rts.LEGACY_VERSION} : frozen);
+  }
   await engine.request('alice', id, { retry: true }); await engine.drain();
   assert.equal(calls.length, 64);
   const nextId = randomUUID();
@@ -173,7 +179,10 @@ test('A pending original-paper attempt finishes with its saved questions and mar
   await store.update('alice', nextId, state => { session.end(state, paper, 2000); return state; });
   await engine.request('alice', nextId); await engine.drain();
   assert.equal((await engine.results('alice', nextId)).ready, true);
-  for (const q of calls.slice(64)) assert.deepEqual(q, paper.questions.find(c => c.question.id === q.id).question);
+  for (const q of calls.slice(64)) {
+    const frozen = paper.questions.find(c => c.question.id === q.id).question;
+    assert.deepEqual(q, q.type === 'rts' ? {...frozen, rtsContentPolicyVersion:rts.VERSION} : frozen);
+  }
   assert.deepEqual(engine.snapshot.configuration, original.configuration);
   assert.deepEqual(engine.snapshot.weighting, original.weighting);
 });

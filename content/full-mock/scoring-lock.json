@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "cebb5b7",
-  "checkedAt": "2026-11-22",
-  "scope": "Standalone SWT response coaching route and exact compatibility with previously started Full Mocks.",
+  "baseCommit": "59858c236c57ba8dbf4f089b98854e964ab71f10",
+  "checkedAt": "2026-11-23",
+  "scope": "Versioned RTS Content rubric for new attempts and retained rubric for existing Full Mocks.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -120,7 +120,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "fc51fad06d1cc060b04e3b7bd48deff6f409a719af06de32edd826f4eb61c230",
+        "sha256": "74346219ef250c66ec2f7230b9369b98fe74e65a2777f1b41e8ba1aceeac5337",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -156,7 +156,7 @@
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
-        "sha256": "e88a2c0b178d9713fe6b75002fb4db0c55d4e915e3d20a68ed51c519b7d4d142",
+        "sha256": "d1e3b112fd1e8e5e833654406f986d3db0cd1ed56f24889296fa571833fe67e9",
         "version": null
       },
       "full-mock/session.js": {
@@ -216,6 +216,10 @@
         "sha256": "c14522d44e7210b8398a91aaf3833b1f834d8912cbaf100a028e2321938d8421",
         "version": null
       },
+      "situation-content-policy-developed.js": {
+        "sha256": "62afca8d2284a9bfab0e1de180d6a73101179a9cd44038fb5ae2a56678451c4a",
+        "version": "developed-situation-content-2026-11-23.1"
+      },
       "situation-content-policy.js": {
         "sha256": "a38eea55cc0dbec6e6011d59a50b91068bd61e866b6a3103337eb5085e2036fd",
         "version": "functional-situation-content-2026-10-24.1"
@@ -225,15 +229,15 @@
         "version": null
       },
       "speaking-judge-format.js": {
-        "sha256": "09d30d083c0171ad3aa3a571ea15bc9b16176253733fe1ca8c895e0685fd252c",
+        "sha256": "e782f2af39f3dd00f0a0d215068753df39849b977ed8332ca523075aff8b5e43",
         "version": null
       },
       "speaking-lab.js": {
-        "sha256": "8ef399519308331a42163ed0a57a74ab39f1f8be6a89e34bbdecb8482dc58828",
+        "sha256": "d6725c1cb2b4e33b35425a62ba9106c1d7808fe51660816ea648e701c733ab36",
         "version": null
       },
       "speaking-scoring.js": {
-        "sha256": "0c673372149fe2732f7aa6b950862ea01ce4c6473e5df4a55daf49d2740ca3a2",
+        "sha256": "8b991e93e95a3831d97226d654e9cc12a1018a41c71746fe206ace17a3fb08c2",
         "version": "speaking-content-2026-10-25.2"
       },
       "spoken-summary-policy.js": {
