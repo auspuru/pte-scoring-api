@@ -41,11 +41,11 @@ test('A GPT situation assessment still restores exact evidence and passes the ex
     calls++;assert.equal(url,'https://api.openai.com/v1/responses');assert.equal(options.headers.Authorization,'Bearer test-secret');
     const body=JSON.parse(options.body);assert.equal(body.model,'gpt-6.1-sol');assert(!options.body.includes('test-secret'));
     return {ok:true,json:async()=>completed(body.tool_choice.name,{total:6,overview:'The problem and requested action are clear.',strengths:['A clear request.'],improvements:[],
-      communicationAssessment:{level:'effective',materialProblem:false,evidence_span:[1,10],reason:'The request is understandable and relevant.'}})};
+      communicationAssessment:{level:'developed',form:'substantive',goalEvidence_span:[5,10],contextEvidence_span:[1,4],developmentEvidence_span:[5,10],ownWordingEvidence_span:[5,10],deductionEvidence_span:[],reason:'The request is understandable and relevant.'}})};
   }});
   const result=await require('../speaking-scoring').grade(q,text,service.speaking);
   assert.equal(result.total,6);assert.equal(result.contentStatus,'assessed');assert.equal(calls,1);
-  assert.equal(result.communicationAssessment.evidence,text);assert.equal(result.pronunciation,null);assert.equal(result.fluency,null);
+  assert.equal(result.communicationAssessment.ownWordingEvidence,'Could I have a refund please?');assert.equal(result.pronunciation,null);assert.equal(result.fluency,null);
   assert.equal(logs[0].model,'gpt-6.1-sol');assert.equal(logs[0].task,'rts');assert(!JSON.stringify(logs).includes(text));
 });
 

@@ -62,7 +62,7 @@ test('Spans cannot invent, correct, overrun or quote excessive student evidence'
 test('A situation communicates successfully without requiring any sample ideas',()=>{
   const q={type:'rts',text:'A book you purchased has missing pages. What would you say?'},text='Some pages are missing. Could I have a refund please?';
   const raw={total:6,overview:'Your problem and request are clear.',strengths:['A useful request.'],improvements:[],
-    communicationAssessment:{level:'effective',materialProblem:false,evidence_span:[1,10],reason:'The listener understands the problem and requested action.'}};
+    communicationAssessment:{level:'developed',form:'substantive',goalEvidence_span:[5,10],contextEvidence_span:[1,4],developmentEvidence_span:[5,10],ownWordingEvidence_span:[5,10],deductionEvidence_span:[],reason:'The listener understands the problem and requested action.'}};
   const result=scoring.normalize(q,text,format.response(envelope(raw),{question:q,transcript:text}));
   assert.equal(result.total,6);assert.equal(result.coverage,undefined);
 });
@@ -129,4 +129,24 @@ test('Describe Image accepts no strength when a supported coaching edit is suppl
   raw.coaching.changes=[{quote_span:[6,13],rewrite:'Solar accounts for 30%, compared with 20% for wind.',why:'A shorter comparison.',factIndices:[1,2]}];
   const result=scoring.normalize(imageQuestion,imageText,format.response(envelope(raw),context));
   assert.equal(result.coachingStatus,'assessed');assert.equal(result.coaching.strength,null);assert.equal(result.coaching.changes.length,1);
+});
+
+test('RTS first assessment and retry use the wire contract of the pinned policy',()=>{
+  const current=require('../situation-content-policy-developed');
+  const q={type:'rts',text:'Your tutor offers Tuesday or Thursday. Say which slot you can attend.'};
+  const transcript='Thursday, please.';
+  const legacy={...q,rtsContentPolicyVersion:current.LEGACY_VERSION};
+  const schema=question=>format.tool(question).input_schema.properties.communicationAssessment.properties;
+  assert.deepEqual(Object.keys(schema(legacy)).sort(),['evidence_span','level','materialProblem','reason']);
+  for(const field of current.fields)assert.ok(schema(q)[field+'_span']);
+  const raw={total:4,overview:'You made a clear choice.',strengths:['You chose Thursday.'],improvements:['Confirm your availability and request the booking.'],
+    communicationAssessment:{level:'partial',form:'minimal',goalEvidence_span:[1,2],contextEvidence_span:[],
+      ownWordingEvidence_span:[],developmentEvidence_span:[],deductionEvidence_span:[1,2],reason:'You give a minimal choice.'}};
+  const parse=()=>format.response(envelope(raw),{question:q,transcript});
+  const restored=parse();
+  assert.equal(restored.communicationAssessment.contextEvidence,'');
+  assert.equal(restored.communicationAssessment.deductionEvidence,transcript);
+  assert.equal(scoring.normalize(q,transcript,restored).total,4);
+  raw.communicationAssessment.deductionEvidence_span=[2,4];
+  assert.throws(parse,/Unsupported assessment evidence/);
 });

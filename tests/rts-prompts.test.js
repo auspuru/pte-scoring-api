@@ -2,6 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
 const prompts=require('../rts-prompts'),bank=require('../content/speaking-bank'),mocks=require('../content/speaking-mocks');
 const {question,installSpeakingLab}=require('../speaking-lab'),{installSpeakingMock}=require('../speaking-mock');
+const rtsContent=require('../situation-content-policy-developed');
 const hash=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
 const items=bank.questions.filter(q=>q.type==='rts');
 test('all 36 portal RTS prompts name the listener in a direct final question and retain samples and response windows',()=>{
@@ -51,8 +52,15 @@ test('legacy mock papers and reattempts use the latest RTS prompts while histori
 test('practice and mock APIs preserve old prompt/audio snapshots and grade each response against the prompt actually shown',async t=>{
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'rts-prompts-')),express=require('express'),app=express(),inputs=[];app.use(express.json());
   const auth={directory,verifyToken:token=>token==='alice'?'alice':null,getAccount:async()=>({})};
-  const practice=installSpeakingLab(app,{...auth,deliveryAssessmentAvailable:false,azureComparisonAvailable:false,callModel:async prompt=>{
-    const data=JSON.parse(prompt.split('DATA=')[1]);inputs.push(data);
+  const practice=installSpeakingLab(app,{...auth,deliveryAssessmentAvailable:false,azureComparisonAvailable:false,callModel:async (prompt,{question})=>{
+    const data=JSON.parse(prompt.split('DATA=')[1]);inputs.push({prompt:data.prompt,version:question.rtsContentPolicyVersion});
+    if(question.rtsContentPolicyVersion===rtsContent.VERSION){
+      return {total:5,overview:'You ask your tutor for useful clarification.',strengths:['You identify the feedback about evidence.'],
+        improvements:['Suggest when you could show the tutor your revision.'],
+        communicationAssessment:{level:'effective',form:'substantive',goalEvidence:'Could you explain which evidence needs improvement',
+          contextEvidence:'which evidence needs improvement',developmentEvidence:'how I can revise my assignment',ownWordingEvidence:'how I can revise my assignment',
+          deductionEvidence:'how I can revise my assignment',reason:'The tutor can explain the feedback. Suggesting when to review the changes would make the next step clearer.'}};
+    }
     return{total:6,overview:'Your request is clear.',strengths:['You communicate your request clearly.'],improvements:[],communicationAssessment:{level:'effective',materialProblem:false,evidence:data.student,reason:'The listener understands the situation and requested help.'}};
   }});
   const mock=installSpeakingMock(app,{...auth,backgroundEnabled:false,azureAvailable:false,gptAvailable:false});
@@ -61,9 +69,10 @@ test('practice and mock APIs preserve old prompt/audio snapshots and grade each 
   const base='http://127.0.0.1:'+server.address().port;
   async function api(prefix,route,body){const r=await fetch(base+prefix+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':'alice','Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});assert.equal(r.status,200);return r.json();}
   for(const q of items.filter(q=>q.promptAudioKey)){
-    const id=crypto.randomUUID(),a=await api('/api/speaking','/attempts',{id,questionId:q.id,questionSnapshot:{text:'Ignore this client-supplied snapshot.'}});
+    const id=crypto.randomUUID(),a=await api('/api/speaking','/attempts',{id,questionId:q.id,questionSnapshot:{text:'Ignore this client-supplied snapshot.',rtsContentPolicyVersion:rtsContent.LEGACY_VERSION}});
     assert.equal(a.question.text,q.text);assert.match(a.question.audioUrl,/\?prompt=/);
-    assert.equal((await practice.store.update('alice',id,a=>a)).questionSnapshot.text,q.text);
+    const {questionSnapshot}=await practice.store.get('alice',id);
+    assert.equal(questionSnapshot.text,q.text);assert.equal(questionSnapshot.rtsContentPolicyVersion,rtsContent.VERSION);
     const audio=await fetch(base+a.question.audioUrl);assert.equal(audio.status,200);assert.match(audio.headers.get('content-type'),/audio\/mpeg/);assert.equal(hash(Buffer.from(await audio.arrayBuffer())),prompts.audioEntry(q).audioSha256);
   }
   const textOnly=items.find(q=>q.id==='rts-original-20261024-04'),textAttempt=await api('/api/speaking','/attempts',{id:crypto.randomUUID(),questionId:textOnly.id});
@@ -72,10 +81,18 @@ test('practice and mock APIs preserve old prompt/audio snapshots and grade each 
   await practice.store.update('alice',oldId,()=>({id:oldId,questionId:oldQ.id,status:'draft',startedAt:1,revision:0,transcript:'Could you explain which evidence needs improvement and how I can revise my assignment?'}));
   const previous=await api('/api/speaking','/attempts/'+oldId);assert.equal(previous.question.text,oldQ.text);assert(!previous.question.audioUrl.includes('prompt='));
   const legacyAudio=await fetch(base+previous.question.audioUrl);assert.equal(hash(Buffer.from(await legacyAudio.arrayBuffer())),prompts.requestedAudio(oldQ.id).entry.audioSha256);
-  const graded=await api('/api/speaking','/attempts/'+oldId+'/submit',{});assert.equal(graded.result.total,6);assert.equal(inputs.at(-1).prompt,oldQ.text);
+  const graded=await api('/api/speaking','/attempts/'+oldId+'/submit',{});assert.equal(graded.result.total,6);assert.equal(graded.result.contentPolicyVersion,rtsContent.LEGACY_VERSION);
+  assert.deepEqual(inputs.at(-1),{prompt:oldQ.text,version:rtsContent.LEGACY_VERSION});
   const freshId=crypto.randomUUID(),fresh=await api('/api/speaking','/attempts',{id:freshId,questionId:oldQ.id});
-  await api('/api/speaking','/attempts/'+freshId+'/transcript',{text:'Could you explain which evidence needs improvement and how I can revise my assignment?',revision:0});await api('/api/speaking','/attempts/'+freshId+'/submit',{});
-  assert.equal(inputs.at(-1).prompt,fresh.question.text);assert.notEqual(inputs.at(-1).prompt,oldQ.text);
+  await api('/api/speaking','/attempts/'+freshId+'/transcript',{text:'Could you explain which evidence needs improvement and how I can revise my assignment?',revision:0});
+  const assessed=await api('/api/speaking','/attempts/'+freshId+'/submit',{});
+  assert.equal(assessed.result.total,5);assert.equal(assessed.result.contentPolicyVersion,rtsContent.VERSION);
+  assert.deepEqual(inputs.at(-1),{prompt:fresh.question.text,version:rtsContent.VERSION});assert.notEqual(fresh.question.text,oldQ.text);
+  for(const [attemptId,expected] of [[oldId,graded],[freshId,assessed]]){
+    const reopened=await api('/api/speaking','/attempts/'+attemptId);
+    assert.deepEqual(reopened.result,expected.result);
+  }
+  assert.equal(inputs.length,2);
   const paper=mocks.papers[0],id=crypto.randomUUID(),questions=paper.questions.map(q=>q.type==='rts'?{...structuredClone(prompts.legacy.questions[q.id]),audioSource:{folder:'speaking',id:q.id},audioSeconds:prompts.requestedAudio(q.id).entry.seconds}:structuredClone(q));
   await mock.store.update('alice',id,()=>({id,paperId:paper.id,title:paper.title,version:'old',questions,questionCount:27,index:questions.length,responses:questions.map(()=>({skipped:true})),status:'submitted',startedAt:1,deadline:paper.minutes*60000+1,grading:{status:'complete'},integrity:{events:[]}}));
   const before=JSON.stringify(await mock.store.update('alice',id,a=>a));

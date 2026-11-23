@@ -5,6 +5,7 @@ const academy=require('./visual-academy-client');
 const submission=require('./speaking-mock-submission');
 const completion=require('./speaking-mock-completion');
 const delivery=require('./speaking-delivery');
+const rtsContent=require('./situation-content-policy-developed');
 const VERSION='progressive-speaking-v1';
 const complete=a=>!require('./mock-result-review').held(a)&&!submission.blocked(a)&&report.summarize({...a,status:'submitted'}).azure.status==='assessed';
 const identity=(a,index)=>hash({version:VERSION,id:a.id,index,recording:a.responses[index].recording.hash,question:a.questions[index],profile:a.assessmentProfile?.diBackend||'academy'});
@@ -23,12 +24,14 @@ function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,c
     const d=ctx.data,saved=await store.getResponse(ctx.row.owner,ctx.row.group_id,d.index);
     if(!saved?.response?.recording||saved.response.recording.hash!==d.recordingHash||hash(saved.question)!==d.questionHash)return{status:'needs_attention'};
     const q=saved.question,original=saved.response,recording=original.recording;
+    const contentQuestion=rtsContent.forSavedQuestion(q,saved.profile?.rtsContentPolicyVersion);
+    if(q.type==='rts'&&contentQuestion.rtsContentPolicyVersion!==(d.rtsContentPolicyVersion??rtsContent.LEGACY_VERSION))return {status:'needs_attention'};
     const available=!!d.completionPolicy&&saved.profile?.completionPolicy?.version===completion.VERSION&&hash(saved.profile.completionPolicy)===hash(d.completionPolicy);
     if(report.validExclusion(d.assessmentExclusion,q,original,d.index,ctx.row.group_id))return{status:'ready'};
     const response=()=>({...original,...ctx.data.patch,recording});
     const finish=async reason=>{await ctx.save(data=>{data.patch.assessmentOutcome=completion.receipt(q,response(),reason||(report.validContent(q,response().content)?'available':'assessment-unavailable'),now());});return {status:'ready'};};
     await ctx.save(data=>{for(const name of ['gpt',...(report.validContent(q,response().content)?['academy']:[])])if(data.stages[name])data.stages[name]={...data.stages[name],status:'retired',retirement:'azure-only-v1'};});
-    if(gradeResponse){await stage(ctx,'fixture',()=>gradeResponse(q,recording,response()),{now,accept:(data,value)=>Object.assign(data.patch,value),valid:()=>available?report.validContent(q,response().content):report.questionResult({status:'submitted'},q,response(),d.index,'azure').total!==null});return available?finish():disposition(ctx.data,report.questionResult({status:'submitted'},q,response(),d.index,'azure').total!==null,now);}
+    if(gradeResponse){await stage(ctx,'fixture',()=>gradeResponse(contentQuestion,recording,response()),{now,accept:(data,value)=>Object.assign(data.patch,value),valid:()=>available?report.validContent(q,response().content):report.questionResult({status:'submitted'},q,response(),d.index,'azure').total!==null});return available?finish():disposition(ctx.data,report.questionResult({status:'submitted'},q,response(),d.index,'azure').total!==null,now);}
     if(available&&!response().transcript&&response().transcriptionStatus!=='assessed'&&!ctx.data.audioChecked){
       try{if(await quietRecording(recording))return finish('quiet-audio');await ctx.save(data=>{data.audioChecked=true;});}
       catch{return finish('recording-unavailable');}
@@ -53,7 +56,7 @@ function createMockJobs({pool,directory,store,transcribe,assessGpt,assessAzure,c
       })());
     }else{
       if(!report.validContent(q,response().content))tasks.push(stage(ctx,'content',async()=>{
-        const review=require('./speaking-mock-reference-repair').prepare(q);
+        const review=require('./speaking-mock-reference-repair').prepare(contentQuestion);
         const value=await scoring.grade(review.question,text,callModel,{academyDescribeImage:true});
         return review.reference?{...value,reviewReference:review.reference}:value;
       },{now,valid:v=>report.validContent(q,v),accept:(data,v)=>{if(report.validContent(q,v)){data.patch.content=v;delete data.contentRejection;}else data.contentRejection=contentRejection(v);}}));
@@ -83,6 +86,7 @@ async function repair(uid,id,body={}){if(body.mode==='score-deadline')return sco
   async function ensure(uid,a){if(!a||a.lease?.expiresAt>now())return;for(let i=0;i<a.questions.length;i++){const r=a.responses[i];if(a.questions[i].type==='intro'||!r?.recording||!missing(a,i))continue;
     const patch={};for(const name of ['transcript','transcriptionStatus','content','gpt','azure'])if(r[name]!=null)patch[name]=r[name];
     const row=await jobs.enqueue({id:identity(a,i),owner:uid,groupId:a.id,inputHash:hash({recording:r.recording.hash,question:a.questions[i]}),data:{index:i,recordingHash:r.recording.hash,questionHash:hash(a.questions[i]),diBackend:a.assessmentProfile?.diBackend||'academy',
+      ...(a.questions[i].type==='rts'?{rtsContentPolicyVersion:rtsContent.forSavedQuestion(a.questions[i],a.assessmentProfile?.rtsContentPolicyVersion).rtsContentPolicyVersion}:{}),
       deliveryPolicy:a.assessmentProfile?.deliveryPolicy||delivery.PREVIOUS_VERSION,
       ...(completion.active(a)?{completionPolicy:a.assessmentProfile.completionPolicy}:{}),patch,stages:{},version:VERSION}});
     await jobs.retire(uid,row.id,['gpt',...(report.validContent(a.questions[i],{...a.responses[i],...row.data.patch}.content)?['academy']:[])]);

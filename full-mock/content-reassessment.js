@@ -2,6 +2,7 @@
 const {digest}=require('./paper');
 const {aggregate,inputHash,nativeValid}=require('./aggregation');
 const adapters=require('./adapters');
+const {questionForRtsPolicy}=require('./rubrics');
 const TYPES=new Set(['di','rl','sgd','rts']);
 const fail=()=>Error('Full mock content reassessment could not finish.');
 
@@ -31,7 +32,8 @@ async function reassess({store,username,operation,startedBefore,callModel,logger
   try{
    const text=old.stages?.transcription?.value;
    if(old.status!=='assessed'||old.snapshotHash!==snapshotHash||!nativeValid(old.result,adapters.maxima(q))||typeof text!=='string'||!text.trim()||old.inputHash!==inputHash(response))throw fail();
-   const content=await grade(q,text,callModel);
+   const question=questionForRtsPolicy(q,record.state.assessment.snapshot);
+   const content=await grade(question,text,callModel);
    if(!Number.isInteger(content?.total)||content.total<0||content.total>6||content.maximum!==6||content.scoringMode!=='ai'||content.contentStatus!=='assessed'||content.score_provisional||content.needs_semantic_review)throw fail();
    const delivery=old.stages?.delivery;
    let scores;
@@ -39,7 +41,7 @@ async function reassess({store,username,operation,startedBefore,callModel,logger
    else if(delivery?.status==='complete')scores={content:content.total,pronunciation:delivery.traits.pronunciation.score,fluency:delivery.traits.fluency.score};
    else if(nativeValid(old.result,adapters.maxima(q))&&!old.result.gated)scores={...old.result.scores,content:content.total};
    else throw fail();
-   const result=adapters.result(q,scores,{nativeVersion:content.version,scoringProvider:'openai',scoringModel:'gpt-6.1-sol',...(content.total===0?{gated:true,reason:'Native Content gate'}:{})});
+   const result=adapters.result(q,scores,{nativeVersion:content.version,...(q.type==='rts'?{contentPolicyVersion:question.rtsContentPolicyVersion}:{}),scoringProvider:'openai',scoringModel:'gpt-6.1-sol',...(content.total===0?{gated:true,reason:'Native Content gate'}:{})});
    await store.update(username,chosen.id,s=>{
     const current=s.assessment.items[candidate.id];
     if(s.contentReassessment?.operation!==operation||s.assessment.snapshotHash!==snapshotHash||digest(current)!==digest(old)||inputHash(s.responses[i+1])!==old.inputHash)throw fail();

@@ -104,7 +104,12 @@ test('Missing content is genuinely recovered with the stronger reviewer before t
   const s=await setup(t),a=attempt();a.responses[5].content={total:null,scoringMode:'local'};await s.mockStore.update('mahdis',a.id,()=>a);
   let repairs=0,reviews=0;
   const report=await combined.recover({...s,callModel:async(prompt,context)=>{
-    if(context.wholeMockEntries){reviews++;assert.equal((await s.mockStore.get('mahdis',a.id)).responses[5].content.total,6);return judgment(context.wholeMockEntries);}
+    if(context.wholeMockEntries){
+      reviews++;
+      const saved=(await s.mockStore.get('mahdis',a.id)).responses[5].content;
+      assert.equal(saved.total,6);assert.equal(saved.contentPolicyVersion,require('../situation-content-policy').VERSION);
+      return judgment(context.wholeMockEntries);
+    }
     repairs++;assert.equal(context.recoveryReview,true);return {total:6,overview:'The request is understandable.',strengths:['Clear relevant request.'],improvements:[],
       communicationAssessment:{level:'effective',materialProblem:false,evidence:a.responses[5].transcript,reason:'The relevant request is clear.'}};
   }});

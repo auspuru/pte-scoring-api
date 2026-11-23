@@ -38,6 +38,46 @@ test('New mock DI jobs use the selected GPT reviewer with the Academy rubric and
  await jobs.ensure('student',saved);await jobs.wait();assert.equal(contentCalls,1);assert.equal(azureCalls,1);
 });
 const recording=()=>({hash:crypto.randomBytes(32).toString('hex'),data:Buffer.alloc(200,7).toString('base64'),mime:'audio/webm'});
+test('RTS jobs preserve an unversioned pending attempt and grade new attempts under their saved rubric',async t=>{
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-rts-content-'));
+ const store=createStore(null,directory,{table:'speaking_mock_attempts'});
+ const {VERSION,LEGACY_VERSION}=require('../situation-content-policy-developed');
+ const {hash}=require('../scoring-jobs'),{identity}=require('../speaking-mock-jobs');
+ const words='I have been ill. Could I get an extension on the assignment due Friday?';
+ const received=[];
+ const jobs=createMockJobs({directory,store,
+  transcribe:()=>assert.fail('The transcript is already saved.'),assessAzure:()=>assert.fail('Delivery is already assessed.'),
+  callModel:async(prompt,{question})=>{
+   received.push(question.rtsContentPolicyVersion);
+   const old=question.rtsContentPolicyVersion===LEGACY_VERSION;
+   return {total:old?6:5,overview:'You clearly explained why you need an extension.',strengths:['You identified the deadline.'],
+    improvements:old?[]:['Suggest a workable date for submission.'],communicationAssessment:old
+     ? {level:'effective',materialProblem:false,evidence:'Could I get an extension',reason:'The request is clear.'}
+     : {level:'effective',form:'substantive',goalEvidence:'Could I get an extension',contextEvidence:'I have been ill.',
+        developmentEvidence:'',ownWordingEvidence:'',deductionEvidence:'Could I get an extension',reason:'The lecturer needs to ask how much extra time you need.'}};
+  }});
+ t.after(async()=>{await jobs.stop();await fs.rm(directory,{recursive:true,force:true});});
+ for(const version of [LEGACY_VERSION,VERSION]){
+  const a=fixture(),i=a.questions.findIndex(q=>q.type==='rts');
+  const q={id:'extension',type:'rts',text:'You have been ill. Ask your lecturer for an extension on your assignment due Friday.'};
+  a.questions[i]=q;
+  a.responses[i]={recording:recording(),transcript:words,transcriptionStatus:'assessed',azure:delivery()};
+  if(version===VERSION)a.assessmentProfile.rtsContentPolicyVersion=version;
+  await store.update('student',a.id,()=>a);
+  if(version===LEGACY_VERSION){
+   const audioHash=a.responses[i].recording.hash;
+   await jobs.jobs.enqueue({id:identity(a,i),owner:'student',groupId:a.id,inputHash:hash({recording:audioHash,question:q}),
+    data:{index:i,recordingHash:audioHash,questionHash:hash(q),patch:{},stages:{},version:'progressive-speaking-v1'}});
+  }
+  await jobs.ensure('student',a);await jobs.wait();
+  const saved=await store.get('student',a.id);
+  assert.equal(saved.responses[i].content?.contentPolicyVersion,version);
+  assert.equal(saved.responses[i].content.total,version===VERSION?5:6);
+  assert.deepEqual(saved.responses[i].azure,a.responses[i].azure);
+  await jobs.ensure('student',saved);await jobs.wait();
+ }
+ assert.deepEqual(received,[LEGACY_VERSION,VERSION]);
+});
 test('Rejected DI content keeps a safe diagnostic across restart without changing saved audio, transcript or Azure',async t=>{
  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-content-diagnostic-'));t.after(()=>fs.rm(directory,{recursive:true,force:true}));
  const store=createStore(null,directory,{table:'speaking_mock_attempts'}),a=fixture(),i=a.questions.findIndex(q=>q.type==='di');
