@@ -285,11 +285,6 @@ body #lab:has(.practice-question-library){overflow:auto!important}
 /* November SWT imports: first-attempt New label, scoped to student history. */
 #swtPane .practice-library-label{display:inline-flex;align-items:center;margin:0 0 8px;padding:3px 8px;border-radius:999px;border:1px solid #bd273b;color:#a61d31;background:#fff0f2;font-size:10px;font-weight:800;line-height:1.35;letter-spacing:.055em;text-transform:uppercase}
 
-/* SWT optional, student-only real-exam encounter reporting. */
-#swtPane .swt-exam-report-editor{display:block;margin:8px 4px 16px;padding:16px 18px;border:1px solid var(--line,#dce4e8);border-radius:10px;background:var(--bg-card,#fff)}
-#swtPane .swt-exam-report-editor>label{display:block;font:600 13px/1.5 var(--sans,Arial,sans-serif);margin:0 0 10px;color:var(--ink,#24404a)}
-#swtPane .swt-exam-report-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-#swtPane .swt-exam-report-actions input{width:100px;min-height:40px;padding:8px 10px;border:1px solid var(--line,#dce4e8);border-radius:7px}
-#swtPane .swt-exam-report-actions button{min-height:40px;padding:8px 12px}
-#swtPane .swt-exam-report-editor>p{font-size:12px;line-height:1.5;color:var(--ink-soft,#60767c);margin:10px 0 0}
-#swtPane .swt-exam-report-editor>.swt-exam-report-error{color:#a32135}
+/* Student-reported SWT exam questions: one-click reported state. */
+#swtPane .swt-report-button[disabled]{opacity:1;color:#326b4f;border-color:#a4ceba;background:#eef7f2;cursor:default}
+#swtPane .swt-report-button:focus-visible{outline:2px solid var(--accent,#326b4f);outline-offset:3px}
