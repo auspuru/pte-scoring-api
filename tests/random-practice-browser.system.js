@@ -14,7 +14,7 @@ for(const width of [1366,390])test('Random single-task sets select on the server
   await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword',password);await click('#loginSubmitBtn');await page.waitForFunction(name=>typeof currentUserId!=='undefined'&&currentUserId===name&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&typeof passages!=='undefined'&&passages.length>1,{},username);
   await page.evaluate(()=>switchSection('practice-hub'));await click('[data-practice-set-mode]');await page.waitForSelector('#practice-set-type');
   assert.equal(await page.$$eval('#practice-set-type option',rows=>rows.length),7);assert.equal(await page.$eval('#practice-set-type',e=>e.multiple),false);assert.equal((await page.$$('#randomPracticePane input[type="checkbox"]')).length,0);
-  await page.select('#practice-set-type','sgd');assert.deepEqual(await page.$$eval('#practice-set-count option',rows=>rows.map(r=>r.value)),['5','10','15']);
+  await page.select('#practice-set-type','sgd');assert.deepEqual(await page.$$eval('#practice-set-count option',rows=>rows.map(r=>r.value)),['5','10','15','20']);
   await page.select('#practice-set-type','ra');await page.select('#practice-set-count','20');await click('#practice-set-start');await page.waitForSelector('#sm-check-record',{visible:true});assert.match(await page.$eval('#sm-check-begin',e=>e.textContent),/practice set/);
   await click('[data-sm="practice-sets"]');await page.waitForSelector('#practice-set-type');await page.select('#practice-set-type','wfd');await page.select('#practice-set-count','5');
   const creation=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/writing-lab/attempts'&&r.request().method()==='POST');

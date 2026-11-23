@@ -8,14 +8,36 @@ test('all 55 approved recordings resolve exact source and byte hashes, with six 
  for(const alias of require('../review/audio-refresh-remaining-20261104/shared-listening-hiw.json')){const source=predictions.sst.find(q=>q.id===alias.replacementCandidateId),q=audio.current({id:alias.consumerId,type:'hiw',audioId:source.id,text:source.text});assert.equal(q.audioKey,audio.current(source).audioKey);}
  assert.equal(audio.fileFor('../server.js'),null);assert.equal(audio.fileFor('__proto__'),null);
 });
-test('new SGD and Writing attempts save keyed media while old snapshots and results retain legacy URLs',async t=>{
+test('SGD and Writing attempts preserve keyed media and imported practice uses verified recordings',async t=>{
  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'approved-audio-')),app=express();app.use(express.json());
  const auth={directory,verifyToken:token=>token==='fixture'?'fixture':null,getAccount:async()=>({}),transcriptionAvailable:false,deliveryAssessmentAvailable:false,azureComparisonAvailable:false};
  const speaking=require('../speaking-lab').installSpeakingLab(app,auth),writing=require('../writing-lab').installWritingLab(app,{...auth,directory:path.join(directory,'writing'),speakingAllowed:async()=>true});
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(async()=>{await speaking.waitForAssessments();await writing.stop();server.closeAllConnections();await new Promise(r=>server.close(r));await fs.rm(directory,{recursive:true,force:true});});
  const base='http://127.0.0.1:'+server.address().port;
  async function request(route,body){const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','x-session-token':'fixture'},body:body===undefined?undefined:JSON.stringify(body)});assert.equal(r.status,200,await r.clone().text());return r.json();}
- for(const source of bank.questions.filter(q=>q.type==='sgd')){const id=crypto.randomUUID(),created=await request('/api/speaking/attempts',{id,questionId:source.id});assert.match(created.question.audioUrl,/^\/practice-audio\//);const stored=await speaking.store.update('fixture',id,a=>a);assert.equal(stored.questionSnapshot.audioKey,audio.current(source).audioKey);const r=await fetch(base+created.question.audioUrl,{headers:{Range:'bytes=0-255'}});assert.equal(r.status,206);assert.equal((await r.arrayBuffer()).byteLength,256);}
+ const catalogSpeaking=await request('/api/speaking/catalog');
+ const imported=require('../content/user-sgd-20261123.json');
+ const labeled=catalogSpeaking.questions.filter(q=>q.type==='sgd'&&q.title.startsWith('New Questions · '));
+ assert.deepEqual(labeled.map(q=>q.id),['sgd-user-20261030-06','sgd-user-20261030-08','sgd-user-20261030-09',...imported.map(q=>q.id)]);
+ for(const source of bank.questions.filter(q=>q.type==='sgd')){
+   const id=crypto.randomUUID(),created=await request('/api/speaking/attempts',{id,questionId:source.id});
+   const updated=audio.current(source),stored=await speaking.store.update('fixture',id,a=>a);
+   assert.equal(created.question.title,catalogSpeaking.questions.find(q=>q.id===source.id).title);
+   assert.match(created.question.audioUrl,imported.some(q=>q.id===source.id)?/^\/speaking-audio\//:/^\/practice-audio\//);
+   assert.equal(stored.questionSnapshot.audioKey,updated.audioKey);
+   assert.equal(stored.questionSnapshot.text,source.text);
+   const r=await fetch(base+created.question.audioUrl,{headers:{Range:'bytes=0-255'}});
+   assert.equal(r.status,206);
+   assert.equal((await r.arrayBuffer()).byteLength,256);
+   if(source.id===imported[0].id){
+     assert.equal(created.question.preparation,10);
+     assert.equal(created.question.seconds,120);
+     const saved=await request('/api/speaking/attempts/'+id+'/transcript',{text:source.sample,revision:created.revision});
+     assert.equal(saved.transcript,source.sample);
+     const reopened=await request('/api/speaking/attempts/'+id);
+     assert.equal(reopened.transcript,source.sample);
+   }
+ }
  const source=bank.questions.find(q=>q.id==='sgd-1'),oldId=crypto.randomUUID();await speaking.store.update('fixture',oldId,()=>({id:oldId,questionId:source.id,status:'submitted',startedAt:1,revision:0,transcript:'Saved answer.',result:{total:6,maximum:6,scoringMode:'ai'}}));
  const before=JSON.stringify(await speaking.store.update('fixture',oldId,a=>a)),old=await request('/api/speaking/attempts/'+oldId);assert.match(old.question.audioUrl,/^\/speaking-audio\/sgd-1/);assert.equal(old.result.total,6);assert.equal(JSON.stringify(await speaking.store.update('fixture',oldId,a=>a)),before);
  const catalog=await request('/api/writing-lab/catalog');assert.equal(catalog.spoken.filter(q=>q.audioUrl.startsWith('/practice-audio/')).length,17);assert.equal(catalog.dictation.filter(q=>q.audioUrl.startsWith('/practice-audio/')).length,3);

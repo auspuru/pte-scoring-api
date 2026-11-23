@@ -126,6 +126,7 @@ add('rts', [
 questions.push(...require('./rts-original-practice.json').map(q => ({type:'rts', ...types.rts, ...q})));
 questions.push(...require('./user-speaking-oct24.json').map(q=>({...types[q.type],...q})));
 questions.push(...require('./user-sgd-oct30.json').map(q=>({...types.sgd,...q})));
+questions.push(...require('./user-sgd-20261123.json').map(q=>({...types.sgd,...q})));
 for (const q of questions) {
   if (q.turns) q.text = [...(q.narration ? ['Narration: ' + q.narration] : []), ...q.turns.map(([speaker, text]) => speaker + ': ' + text)].join('\n');
   if (['ra', 'rs'].includes(q.type)) q.sample = q.text;

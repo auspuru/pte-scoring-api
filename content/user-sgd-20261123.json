@@ -1,0 +1,1391 @@
+[
+  {
+    "id": "sgd-user-20261123-01",
+    "type": "sgd",
+    "title": "New Lecturer",
+    "narration": "three students are talking about a new lecturer.",
+    "turns": [
+      [
+        "Speaker 1",
+        "What do you guys think about the new lecturer? We've had around four classes with him already, and honestly, I really enjoy his teaching style. Now I know why this lecturer is so popular. In the last class I was afraid to speak on class because I might embarrass myself. However, surprisingly, the new lecturer was very nice and gentle, and he did not criticize me at all."
+      ],
+      [
+        "Speaker 2",
+        "Yeah, I feel the same way. The lecturer is very professional and genuine. Many students asked very difficult questions to challenge him. Even when facing these challenging questions, the lecturer never got annoyed or impatient. Instead, he listened carefully and patiently provided clear, detailed and logical answers to every single question from students."
+      ],
+      [
+        "Speaker 1",
+        "I have noticed that he even praises students who raise creative or challenging questions. He never feels offended or defensive even when students push back on his original ideas or hold different opinions. His teaching atmosphere is very inclusive and supportive. No one will judge you whether you perform well or make mistakes in his class."
+      ],
+      [
+        "Speaker 2",
+        "Exactly, I couldn't agree more. Besides, his academic background is absolutely outstanding and impressive. Whenever students raise questions in class, he always responds quickly and gives accurate and clear answers. Even when students continuously push back or challenge his viewpoints, he always replies in a very calm, patient and professional manner, which is really admirable."
+      ],
+      [
+        "Speaker 3",
+        "I really like attending his lectures very much, through which I can constantly grow and improve myself both academically and mentally. To be honest, I used to feel really intimidated and stressed in academic lectures. I could hardly fully understand the professional knowledge he explained in class. Therefore, I always preferred to just listen quietly rather than speak up or ask questions actively. I was really afraid of making mistakes and losing face in front of other classmates. Do you guys think I should try my best to become more confident in his future classes?"
+      ],
+      [
+        "Speaker 1",
+        "Honestly, his class is the perfect place to do that. You can both succeed and fail without anyone judging you. We should all try to keep a growth mindset—that’s the only way to really benefit."
+      ],
+      [
+        "Speaker 2",
+        "True. In fact, in his classes I feel like I'm learning not only academically, but also gaining a lot in terms of personal growth and attitude."
+      ],
+      [
+        "Speaker 3",
+        "I totally believe that and I'm deeply encouraged. From now on, I will try my best to participate more in classroom interaction. I plan to step out of my comfort zone gradually, speak up bravely and actively improve myself in his future classes."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164559.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 37
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students discuss their new lecturer's teaching style.",
+      "The first student likes how he welcomes challenging questions and makes it safe to get things wrong.",
+      "The second values his professionalism, expertise and the way his classes encourage personal growth.",
+      "The third finds his approach encouraging and plans to speak up more in class."
+    ],
+    "sample": "The students discuss their new lecturer's teaching style. The first student likes how he welcomes challenging questions and makes it safe to get things wrong. The second values his professionalism, expertise and the way his classes encourage personal growth. The third finds his approach encouraging and plans to speak up more in class."
+  },
+  {
+    "id": "sgd-user-20261123-03",
+    "type": "sgd",
+    "title": "Presentation Skills",
+    "narration": "One student is asking suggestions about how to improve presentation skills from his friends.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hey guys, I really feel overwhelmed about the ten-minute presentation next week. I've already give the presentation this week, but I feel that I didn’t do a very good job and I wanna improve. My tutor says I rely too much on reading from my script during presentations, but if I don't read from it, can't remember what to say. Do you have any suggestions?"
+      ],
+      [
+        "Speaker 2",
+        "Your tutor has a point. You're supposed to be giving a presentation, not reading from a script. If you read from the script word by word, you sound like a robot and your audience will get bored. You'd better just write down a few keywords as prompts for your presentation, and practice in front of a mirror."
+      ],
+      [
+        "Speaker 3",
+        "I agree that you shouldn't read the full transcript. Besides, you should also write down your personal points in your notes. Like, you can highlight the script with pens of different colors for different sections. I believe you can make it easier to understand and memorize your notes. It's much easier to speak naturally when you're genuinely interested in your topic. I used to be nervous, too. One thing that helps me now is I try to avoid looking people in the eyes; instead, I look at their cheeks or chins so it still seems like I'm engaged, which sounds very strange but really works."
+      ],
+      [
+        "Speaker 1",
+        "Those are really helpful suggestions—thanks, both of you. I've always thought I had to memorize everything perfectly, but focusing on keywords and structure sounds a lot more manageable."
+      ],
+      [
+        "Speaker 2",
+        "In fact, presentation skills are useful after graduation, for example, for an interview—you'll need to present yourself confidently under pressure."
+      ],
+      [
+        "Speaker 3",
+        "Agreed! This skill can be applied in all parts of our lives. Maybe we can set up a small practice session together this week? We could take turns giving feedback and trying out different methods."
+      ],
+      [
+        "Speaker 2",
+        "Great idea! We could even record each other on our phones—sometimes seeing yourself present helps you notice little things you want to improve. Plus, if we make it a regular thing, we could all become much better speakers by the end of the semester."
+      ],
+      [
+        "Speaker 1",
+        "I'd really appreciate that. Let's meet tomorrow after school and run through it a few times."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164632.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 39
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students discuss how to improve a ten-minute presentation.",
+      "The first student struggles to speak without a script and agrees to rehearse with friends.",
+      "The second recommends keyword prompts and practising in a mirror, and suggests recording their rehearsals.",
+      "The third recommends colour-coded notes and offers to arrange a practice session so they can give each other feedback."
+    ],
+    "sample": "The students discuss how to improve a ten-minute presentation. The first student struggles to speak without a script and agrees to rehearse with friends. The second recommends keyword prompts and practising in a mirror, and suggests recording their rehearsals. The third recommends colour-coded notes and offers to arrange a practice session so they can give each other feedback."
+  },
+  {
+    "id": "sgd-user-20261123-04",
+    "type": "sgd",
+    "title": "Phone in Class",
+    "narration": "Three teachers are discussing whether students are allowed to use cell smartphones in class.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Honestly, I think it should be prohibited, Students are disturbed by texts sent from their friends. This phenomenon really bothers me. We should stipulate that they must switch off their phones during class. I don't like seeing my child playing on the phone during meals."
+      ],
+      [
+        "Speaker 2",
+        "But I think it’s OK, if only students use them for educational purposes. Smart phones can help those who are not good at English better understand what we teach. I would like my class to be lively, so I tell students to look up information on the phone during group discussions. But they must put it away after that."
+      ],
+      [
+        "Speaker 3",
+        "I don't like students using phones in class, either. Obviously, they are very easy to get distracted. We should organize a free technology tutorial Tuesday to discourage them from the use of phones. The tutorial could teach them how to use educational apps responsibly, but more importantly, it would highlight the negative effects of constant multitasking on their concentration and grades."
+      ],
+      [
+        "Speaker 2",
+        "You can't ask them not to use it if teachers can't. Many teachers are glued to their own devices during lectures or breaks. This hypocrisy sends a mixed message. If we implement a policy, it must be across the board. Perhaps we could have a designated phone storage area for everyone at the start of each class to ensure compliance."
+      ],
+      [
+        "Speaker 1",
+        "That's a fair point. If we expect students to follow the rules, we should also adhere to them. Maybe a school-wide policy for both teachers and students would be more effective. I've seen classrooms where everyone deposits their phones in a caddy at the door—it creates an immediate shift in focus and engagement. It shows we are all part of the same learning community with the same rules."
+      ],
+      [
+        "Speaker 3",
+        "I agree. Consistency is key. Let's propose a clear policy—phones off and out of sight during class unless specifically instructed for educational use. And teachers should commit to the same standard."
+      ],
+      [
+        "Speaker 2",
+        "That sounds reasonable. As long as we allow some flexibility for learning activities, I can support that. Education should evolve with technology, but not at the cost of focus and discipline. We could pilot this in a few classes first, gather feedback from students and teachers, and then refine the policy before rolling it out school-wide."
+      ],
+      [
+        "Speaker 1",
+        "Exactly. Balance is important. We want to embrace useful tools without letting them become a distraction. A pilot program is a great idea. It allows us to demonstrate the academic and social benefits of phone-free periods while addressing any practical concerns beforehand."
+      ],
+      [
+        "Speaker 3",
+        "Then it's settled. We need a clear, fair policy. Let's draft a proposal together for the next faculty meeting. I'll gather some research on improved student performance in phone-free schools to strengthen our argument. We need to show data to get everyone on board."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164645.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 41
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The teachers discuss whether to allow phones in class.",
+      "The first teacher worries about distracting messages and suggests rules that apply to teachers as well as students.",
+      "The second argues that phones can support learning, especially for students who need help with English.",
+      "The third proposes keeping phones out of sight unless needed for teaching. They agree to draft a policy and support it with research."
+    ],
+    "sample": "The teachers discuss whether to allow phones in class. The first teacher worries about distracting messages and suggests rules that apply to teachers as well as students. The second argues that phones can support learning, especially for students who need help with English. The third proposes keeping phones out of sight unless needed for teaching. They agree to draft a policy and support it with research."
+  },
+  {
+    "id": "sgd-user-20261123-05",
+    "type": "sgd",
+    "title": "Different Ways to University",
+    "narration": "Three students are discussing the best ways to get to university, each sharing their own experiences, worries and suggestions.",
+    "turns": [
+      [
+        "Speaker 1",
+        "I really hate taking the train to university. Even when I took the first train, I still ended up being late three times. I've been thinking about buying a car lately, but to buy a car, I'd have to work part-time and save money, which would leave me no time to study."
+      ],
+      [
+        "Speaker 2",
+        "Oh, I've never had that trouble with buses! I love commuting by bus—every morning I take the first bus, which gets me to campus with plenty of time. On the ride, I can prepare for my lectures, go over class materials, read academic articles, or even watch short study videos. Plus, I really enjoy the quietness of the early morning; it helps me calm down before a busy day. Though I have to admit, a bus may be stuck in the traffic sometimes."
+      ],
+      [
+        "Speaker 3",
+        "That traffic issue is real, but cars aren't the solution either—parking on campus is a nightmare, and gas costs add up fast! And honestly, I think buses are better than cars. I live super close to campus, so I just run to school every day. It saves me money and keeps me in shape."
+      ],
+      [
+        "Speaker 1",
+        "I've heard so many people complain about buses getting stuck in traffic, but since my train is even less reliable, I'm actually willing to try taking the bus. Though I'm still worried—what if the first bus is full and I have to wait for the next one? That might make me late too."
+      ],
+      [
+        "Speaker 2",
+        "Oh, I've never had that problem! The first bus at 6 a.m. is usually pretty empty—most students don’t want to get up that early. If you leave 10 minutes earlier than me, you can definitely get a seat. And even if the bus is a little slow, you'll still have time to grab a coffee before class, which is way better than rushing because the train's late."
+      ],
+      [
+        "Speaker 3",
+        "Why not try a bicycle? It's fast enough to get to university on time, and it's great exercise too. Besides, the school has built new cycle lanes. Honestly, I think cycling is the better way for you. And if the bus doesn’t work out, the bicycle is still a backup! I used to cycle to school when I lived a little farther away, and I didn't have to worry about traffic jams."
+      ],
+      [
+        "Speaker 1",
+        "That makes sense—having a backup plan would ease my worry. I think I'll start with the first bus next week, and if it doesn’t work, I'll look into buying a second-hand bicycle. It's way cheaper than a car, and I could use the extra exercise too. But what do I do if I ride a bike when it rains?"
+      ],
+      [
+        "Speaker 3",
+        "Yes, the only downside of cycling is that it's inconvenient on rainy days. But it will be alright if you just wear a rain jacket."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164701.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 42
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students compare ways of getting to university.",
+      "The first student has been late despite taking the earliest train and plans to try the first bus.",
+      "The second explains that the early bus is less crowded and gets to campus before traffic builds up.",
+      "The third argues that driving is costly and parking is difficult, and suggests cycling with a rain jacket as an alternative."
+    ],
+    "sample": "The students compare ways of getting to university. The first student has been late despite taking the earliest train and plans to try the first bus. The second explains that the early bus is less crowded and gets to campus before traffic builds up. The third argues that driving is costly and parking is difficult, and suggests cycling with a rain jacket as an alternative."
+  },
+  {
+    "id": "sgd-user-20261123-06",
+    "type": "sgd",
+    "title": "Field Trip",
+    "narration": "Three students are discussing whether they should take part in a field trip organized by the university.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Honestly, my part-time shifts conflict with the field trip, and it will cost me a lot of money. But even if I take the day off, the lost wages would set me back more than I can afford right now. So I think I'll have to sit this one out. After all, the trip is just an optional one."
+      ],
+      [
+        "Speaker 2",
+        "You are right, optional. But I will definitely go. The trip will be so great for all people. Business majors can visit a hotel by sea to see how it is run. Those who major in geography will be glad to see a beach and I believe the beach cleanup activity will attract them. I am a history major and the field trip includes a history museum, which ties perfectly into my research on maritime trade. So, why miss out on a free trip with friends?"
+      ],
+      [
+        "Speaker 1",
+        "Let me think twice. A free trip with a lot of friends? I have to admit it will definitely a great chance to socialize. You know, I've been wanting to meet more people outside my major. Maybe I'll see if I can swap my work shift—my coworker owes me a favor, so fingers crossed!"
+      ],
+      [
+        "Speaker 3",
+        "I won't go, either. Although I am from the business department, I see no point for business students to go so far just to visit a seashore hotel. Hotels are almost everywhere in the city, aren't they? A seashore one won't make any difference. Isn't it just a glorified ad for the resort sponsor?"
+      ],
+      [
+        "Speaker 2",
+        "All the same as hotels in the city? I am afraid not. In fact a hotel by sea involves very different management than the urban counterparts, and you can imagine guests on the beach will raise many different requests to the hotel. So you can learn a new style of hotel management."
+      ],
+      [
+        "Speaker 3",
+        "You are so persuasive and now I'd love to, but I will have a very, very important football match that weekend to take part in. I am one of the ‘team’s starters, so my absence would drive the coach and my teammates mad. You don't know how long and how hard all of us have been preparing for the match."
+      ],
+      [
+        "Speaker 2",
+        "I see your point. However, I really hope you can reconsider the field trip and join us. Besides the hotel will help you a lot on your major, don't forget the history museum I just mentioned. I hear the museum has a wonderful sports history section. Didn't you say your team’s researching athlete nutrition trends? You could totally find relevant archives or old studies there, and that could even give your team an edge!"
+      ],
+      [
+        "Speaker 3",
+        "Well, the sports history section does sound interesting—our coach has been pushing us to study past training methods lately. But the football tournament is a big deal for our team; we've been practicing for months. I'll think about it, but don’t get your hopes up!"
+      ],
+      [
+        "Speaker 1",
+        "Hmm. Okay, now you guys have got me tempted. Everyone keeps saying the beach cleanup activity is a good icebreaker among people from different departments. Plus, I've never been to that history museum, and it might be a nice change from my usual routine. But no promises!"
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164712.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 43
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students weigh the benefits of an optional field trip against other commitments.",
+      "The first student is concerned about losing wages but is tempted by the chance to meet people and visit a museum.",
+      "The second argues that a seaside hotel offers business students something different and encourages both friends to go.",
+      "The third has a football tournament but is interested in the sports history section. Both hesitant students agree to consider the trip."
+    ],
+    "sample": "The students weigh the benefits of an optional field trip against other commitments. The first student is concerned about losing wages but is tempted by the chance to meet people and visit a museum. The second argues that a seaside hotel offers business students something different and encourages both friends to go. The third has a football tournament but is interested in the sports history section. Both hesitant students agree to consider the trip."
+  },
+  {
+    "id": "sgd-user-20261123-07",
+    "type": "sgd",
+    "title": "Campus Accommodation",
+    "narration": "Three students are discussing the accommodation options next academic year.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hey guys, I was wondering if you've made any decisions about where you're planning to live next academic year? I know the housing application deadlines are coming up soon, and I'm still trying to weigh my options between staying in university accommodation or finding a private flat. Honestly, I like living in the dormitory because I can learn cooking from other students, share food and make friends."
+      ],
+      [
+        "Speaker 2",
+        "I have to agree with staying in university housing, though for slightly different reasons. The convenience factor is unbeatable - my dorm is literally a three-minute walk from all my lecture halls and the library. When I have 9am classes, I can wake up at eight forty-five and still make it on time!"
+      ],
+      [
+        "Speaker 3",
+        "Actually, I just signed a contract yesterday for a studio apartment in the city center. After a full year in the noisy dormitory, I'm really looking forward to having my own quiet space. What I hated about dorm life was the constant disturbance - people coming and going at all hours, loud music in the evenings. And the worst part was definitely sharing kitchen facilities, because they often touched and moved my food and milk."
+      ],
+      [
+        "Speaker 1",
+        "That's interesting because my experience has been completely the opposite! I've actually grown to love dormitory living, especially because of the shared kitchen. Cooking has always been my passion, and I've found it's such a wonderful way to connect with people from different cultures. Just last week, my French roommate taught me how to make authen crépes, and in return I showed her some traditional dishes from my country."
+      ],
+      [
+        "Speaker 3",
+        "I'm quite particular about my food, and it drove me crazy when people would help themselves to things from my shelf in the fridge. This new place is slightly more expensive, but for me, having that privacy and peace is absolutely worth the extra cost. Also in the dormitory I have little personal privacy, where I have to share the kitchen and someone else steals my food, like drinking my milk, eating my food."
+      ],
+      [
+        "Speaker 2",
+        "And it's not just about convenience for me. During exam periods last semester, we organized nightly study groups in the common room where we could quiz each other and explain difficult concepts. That collaborative environment really helped boost my grades in ways I don’t think would have happened if I was living alone off-campus."
+      ],
+      [
+        "Speaker 1",
+        "That's exactly why the shared kitchen feels so special to me. Those spontaneous cooking sessions often turn into great conversations where we learn so much about each other's backgrounds. For me, that cultural exchange is one of the most valuable parts of university life that I'd miss in private accommodation."
+      ],
+      [
+        "Speaker 3",
+        "Speaking of dorm downsides, noise is a huge one for me. It makes me hard to focus on study. So, I have rented an off-campus flat and have signed the contract. But the place I've found is just a little far from the university."
+      ],
+      [
+        "Speaker 2",
+        "You two have covered culture and quiet - let me loop back to academics for a second. But more importantly, I've found the academic support system invaluable. The dorm has a study lounge on each floor, and there's always someone around to bounce ideas off."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164734.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 46
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students compare accommodation for the next academic year.",
+      "The first student enjoys dorm life because shared kitchens bring people from different backgrounds together.",
+      "The second values living close to class and having study groups and academic support nearby.",
+      "The third has rented a studio for quiet and privacy, accepting a longer trip to university."
+    ],
+    "sample": "The students compare accommodation for the next academic year. The first student enjoys dorm life because shared kitchens bring people from different backgrounds together. The second values living close to class and having study groups and academic support nearby. The third has rented a studio for quiet and privacy, accepting a longer trip to university."
+  },
+  {
+    "id": "sgd-user-20261123-08",
+    "type": "sgd",
+    "title": "Essay Writing",
+    "narration": "Three students are discussing how to write essays.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hi, everybody. Our first essays in the university are going to be handed in next week. Are you ready?"
+      ],
+      [
+        "Speaker 2",
+        "Not yet. But I will write it at this weekend. I am very sure it will be no problem."
+      ],
+      [
+        "Speaker 3",
+        "To be honest, this task really drives me mad! I feel like this essay is just way too hard. I have absolutely no idea how to even start, not a single idea in my head, and I've been staring at this blank page all day. My hands are cold, my stomach's in knots, and my head feels like it’s going to explode. I'm terrified I'm going to get a terrible score."
+      ],
+      [
+        "Speaker 1",
+        "Don't worry about it! Just start by jotting down any ideas that pop into your head, no matter how random or messy they seem. You don't have to worry about organizing them perfectly at first — you can always sort them out and make sense of everything afterward. The important thing is just to get your thoughts down on paper."
+      ],
+      [
+        "Speaker 2",
+        "I have a more chill way of doing things. I usually go to a café to write, and I don't put too much pressure on myself in such a relaxing environment Laptops are often used there, but I just use paper and a pen to jot down some notes. Sitting in the café, sipping a drink, I feel completely relaxed — no deadlines in my head, just letting ideas flow naturally."
+      ],
+      [
+        "Speaker 3",
+        "Okay, fine. But now I've got a new problem — even when I do have ideas, I have zero clue how to start the intro. Like, seriously, introductions are my arch-nemesis."
+      ],
+      [
+        "Speaker 2",
+        "My advice is, you can just start by writing the main body of the article first. Once you get going, you'll naturally figure out what to keep and what to cut, and then you'll have a much clearer idea of what you want to say in the introduction. You'll notice it's actually the same approach you use when you're writing a summary."
+      ],
+      [
+        "Speaker 3",
+        "Oh, so you can actually do it this way! I thought I had to start with the introduction and just write step by step. Your suggestion is really eye-opening! I'm feeling way less stressed now, and I'm actually starting to feel like I can handle writing this essay. It'd be awesome to get some more specific, detailed tips though — like how to organize my ideas or structure my points — that would really help me move forward."
+      ],
+      [
+        "Speaker 1",
+        "How about this Thursday we have a little group session just for you? Bring along your plans and ideas, and we'll sit down together, look through everything, and help you polish and brainstorm. We'll throw ideas around, help you shape your points, and get you unstuck. Just remember — we're here to give you a boost and get you rolling, not to write the whole thing for you. You've got this!"
+      ],
+      [
+        "Speaker 3",
+        "Really? I hope it won't take up too much of your time! I'd really appreciate it. Once I finish this essay, I'll take you both out for a proper meal to say thanks — something nice and relaxing, maybe even your favorite place!"
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164746.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 47
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students discuss how to get started on an essay due next week.",
+      "The first recommends writing down ideas freely and proposes a Thursday group session to help shape them.",
+      "The second writes in a café and suggests drafting the main body before the introduction.",
+      "The third is struggling to start, welcomes the advice and offers to take the others out for a meal after finishing."
+    ],
+    "sample": "The students discuss how to get started on an essay due next week. The first recommends writing down ideas freely and proposes a Thursday group session to help shape them. The second writes in a café and suggests drafting the main body before the introduction. The third is struggling to start, welcomes the advice and offers to take the others out for a meal after finishing."
+  },
+  {
+    "id": "sgd-user-20261123-09",
+    "type": "sgd",
+    "title": "Future Job",
+    "narration": "Three students are discussing finding a job after graduation.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hey guys, have you thought about what you want to do after graduation? I've been researching job opportunities, and I'm leaning toward joining a big company. The structured training programs they offer seem really valuable for professional development, not to mention the clear promotion paths. I think starting in a well-established organization could really set the foundation for a successful career."
+      ],
+      [
+        "Speaker 2",
+        "That's interesting! I've actually been volunteering at a small charity organization, and I've really enjoyed the experience. For me, success isn't about climbing the corporate ladder or earning a high salary. I find the work meaningful, and the environment is so supportive. I might even consider staying in the non-profit sector after graduation. After I start working, I plan to live with my parents, and they're happy to live with me as well."
+      ],
+      [
+        "Speaker 3",
+        "Wow, you both already have such clear plans! I'm still figuring things out. To be honest, I'm thinking about staying here to pursue a postgraduate degree in psychology. I feel like I have time to explore my options, and further study might help me narrow down what I really want to do."
+      ],
+      [
+        "Speaker 1",
+        "That's fair, but it's still good to start planning early. Maybe you could try out different jobs or internships while you're studying? That way, you can get a sense of what you enjoy or what you're good at before committing to a specific path."
+      ],
+      [
+        "Speaker 2",
+        "I agree! Keeping an open mind and gaining diverse experiences can be really helpful. What you do now doesn’t have to define your future career —it's more about exploring and learning about yourself. Plus, you might discover unexpected passions along the way."
+      ],
+      [
+        "Speaker 3",
+        "You've both given me a lot to think about. I think I'll start doing some research tonight and maybe look into part-time work or internships. It’s nice to know I don't have to figure this all out alone."
+      ],
+      [
+        "Speaker 1",
+        "No problem at all! If you need help sifting through internship postings, just let me know. I've got a folder full of resources for different industries —tech, finance, even some creative fields. And hey, if you find something that sparks your interest, we can brainstorm how to tailor your application to stand out."
+      ],
+      [
+        "Speaker 2",
+        "That's a great offer! I can chime in too—nonprofits have unique application quirks, like emphasizing passion over past experience. I've learned a lot about writing cover letters that connect personal stories to an organization's mission. Plus, if you want to dip a toe into the nonprofit world, I can introduce you to the team at my charity—they're always looking for extra help on weekends."
+      ],
+      [
+        "Speaker 3",
+        "You guys are the best. Having a starting point and people to bounce ideas off of makes this feel way less overwhelming, Let me start with research for part-time jobs tonight. Thanks for the advice!"
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164757.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 48
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students discuss their plans after graduation.",
+      "The first favours a large company and offers help finding internships.",
+      "The second enjoys charity work, values making a difference and offers advice and an introduction to a nonprofit.",
+      "The third is considering postgraduate study and decides to explore part-time work and internships to find out what suits them."
+    ],
+    "sample": "The students discuss their plans after graduation. The first favours a large company and offers help finding internships. The second enjoys charity work, values making a difference and offers advice and an introduction to a nonprofit. The third is considering postgraduate study and decides to explore part-time work and internships to find out what suits them."
+  },
+  {
+    "id": "sgd-user-20261123-10",
+    "type": "sgd",
+    "title": "Anniversary Party",
+    "narration": "Three teachers are discussing how to celebrate the mathematics department's ten-year anniversary.",
+    "turns": [
+      [
+        "Speaker 1",
+        "For our mathematics department's 10th anniversary, I think the Greek restaurant downtown near the railway station is a good option. It has been most recommended by customers around the city, and people always say the atmosphere there is really enjoyable. I believe it will be memorable for all of us to spend such an important anniversary there! They even have a private dinner room that could accommodate our entire department perfectly."
+      ],
+      [
+        "Speaker 2",
+        "I have also heard about the Greek restaurant's popularity, but it may be quite expensive for us. And it's so far from campus that colleagues might find it inconvenient to get there after work. Maybe we should celebrate the anniversary on campus instead? It would be more budget-friendly and accessible for everyone here, especially for those who have evening classes or other commitments."
+      ],
+      [
+        "Speaker 1",
+        "Okay, but never in the mathematics building restaurant, though—the space is too cramped, and its outdated decor is so dull. I can’t imagine our cheerful celebration would happen in that place. Anywhere else is fine, as long as it provides a proper celebratory atmosphere for this special milestone."
+      ],
+      [
+        "Speaker 3",
+        "What about the Business Building's dining room? It's spacious enough for us to arrange the catering, and it's recently renovated in a modern style, offering intoxicating vibes. The natural lighting and city view from there would create a wonderful backdrop for our celebration."
+      ],
+      [
+        "Speaker 2",
+        "Great. That's a wonderful place. And celebrating the anniversary on campus will give everyone the opportunity and time to socialize. Now, how many people should we invite? I previously thought about faculty members only, but it might be too small an occasion. We should consider making this a proper celebration that reflects our department's growth and achievements over the past decade."
+      ],
+      [
+        "Speaker 1",
+        "So, why not invite alumni who graduated from our department to come? They also witnessed our early years, and the ten-year anniversary is meaningful to them as well. If the space is too limited for too many people, we can only invite the first graduating students, as they would appreciate this milestone the most."
+      ],
+      [
+        "Speaker 3",
+        "But what if they want to bring a partner? We need to establish a clear policy about plus-ones to ensure we don't exceed the room's capacity and maintain the intimate atmosphere we're hoping to create."
+      ],
+      [
+        "Speaker 1",
+        "I bet they'll definitely have a lot to talk about with each other, so they may not come with a partner, and besides, their partners might easily get bored in such an event. Keeping it to just our mathematics community will help everyone feel more comfortable sharing memories and stories."
+      ],
+      [
+        "Speaker 3",
+        "Well, I agree with you. So, a mix of current faculty and selected alumni. I will book the dining room as soon as possible, and you two can prepare the guest list together. Let's aim to have the preliminary list ready by next week so we can start sending out invitations."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164811.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 50
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The teachers plan the mathematics department's tenth anniversary.",
+      "The first suggests a Greek restaurant, then proposes including selected alumni.",
+      "The second argues that a campus venue would be cheaper and easier for colleagues to reach.",
+      "The third suggests the Business Building dining room and raises the question of capacity and guests. They settle on faculty and selected alumni."
+    ],
+    "sample": "The teachers plan the mathematics department's tenth anniversary. The first suggests a Greek restaurant, then proposes including selected alumni. The second argues that a campus venue would be cheaper and easier for colleagues to reach. The third suggests the Business Building dining room and raises the question of capacity and guests. They settle on faculty and selected alumni."
+  },
+  {
+    "id": "sgd-user-20261123-11",
+    "type": "sgd",
+    "title": "Pros and Cons of Online Classes",
+    "narration": "Three students are discussing the pros and cons of online classes, sitting around a small table in the campus cafeteria, their voices mixing with the background chatter of other students.",
+    "turns": [
+      [
+        "Speaker 1",
+        "I really can't stand online classes. The Wi-Fi would also cut out randomly during that economics lecture last week, making the slides freeze constantly. Last week, without teachers' attention, I could hardly concentrate on the class because messages on the phone kept distracting me and I ended up missing half the content."
+      ],
+      [
+        "Speaker 2",
+        "Actually, I prefer online learning. Think about it - no more rushing to catch the 8 am bus, no spending money on cafeteria food, and I can attend class in my pajamas. I just open my notebook and focus on taking notes. The lack of physical distractions in my own space helps me concentrate better too. The recorded lectures are great too - I can rewatch difficult parts anytime."
+      ],
+      [
+        "Speaker 3",
+        "But that's exactly the problem! I chose this university for the campus experience. How am I supposed to make friends or network if we're all just little boxes on a screen? And I can't raise my hand to ask questions, so I have to wait until after class. Or, when I'm typing, I get distracted and can't follow the lesson. Even after I type it out, it's basically luck whether the teacher notices it. Sometimes by the time the professor responds, we've already moved on to another topic."
+      ],
+      [
+        "Speaker 1",
+        "Exactly! It usually takes a few days for me to receive replies from my professor, because he has to respond to so many students’ questions by email. In physical classes, I can just raise my hand and get immediate answers. Plus, group discussions are so much more engaging in person. There's no substitute for the energy of debating ideas face-to face, with everyone's gestures and tones adding to the discussion. Online breakout rooms always feel awkward and unproductive."
+      ],
+      [
+        "Speaker 2",
+        "I get your point about socializing, but consider the flexibility. I can review lecture recordings while eating dinner, or study in my comfortable room instead of those hard library chairs. And I don't have to worry about looking presentable for class, which takes off a lot of social pressure. And honestly, I find I actually participate more online - I'm too shy to speak up in big lecture halls."
+      ],
+      [
+        "Speaker 3",
+        "That might work for you, but I think face-to-face interaction is an important element. Body language and classroom energy help me understand the material. Last semester I failed a course because the online format just didn't work for my learning style."
+      ],
+      [
+        "Speaker 1",
+        "Same here! At least in physical classes, the professor can see when students look confused. Online, they just keep lecturing to blank screens. Maybe a hybrid system would be better - some online, some in-person classes? It would balance the need for interaction and flexibility, don’t you think?"
+      ],
+      [
+        "Speaker 2",
+        "That could be a good compromise. We'd get the benefits of both formats. Though I'd still prefer fully online - it saves me nearly two hours of commuting every day. Those two hours add up to extra sleep or more time for self - study, which is a huge plus for me."
+      ],
+      [
+        "Speaker 3",
+        "Well, I'd take hybrid over fully online any day. At least that way I could still get some of the campus experience. But honestly, I think education should be primarily in-person - that's what university is all about."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164843.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students debate the merits of online and face-to-face classes.",
+      "The first dislikes unreliable technology and slow feedback and suggests combining formats.",
+      "The second prefers online study because it saves commuting time and provides flexible access to recordings.",
+      "The third values campus friendships and live interaction, and prefers a hybrid format to fully online study."
+    ],
+    "sample": "The students debate the merits of online and face-to-face classes. The first dislikes unreliable technology and slow feedback and suggests combining formats. The second prefers online study because it saves commuting time and provides flexible access to recordings. The third values campus friendships and live interaction, and prefers a hybrid format to fully online study."
+  },
+  {
+    "id": "sgd-user-20261123-12",
+    "type": "sgd",
+    "title": "Sports",
+    "narration": "three students are discussing how to keep active at university.",
+    "turns": [
+      [
+        "Speaker 1",
+        "I've spent so much time studying that I barely have energy for exercise. Besides, I want to stay active on campus, but club membership fees and parking costs are really high. I'm looking for low-cost ways to keep fit and social. Do you two have any practical ideas?"
+      ],
+      [
+        "Speaker 2",
+        "That's a great question. I really enjoy sports. I run and work out with fitness equipment daily, and I prefer swimming pools over open water. Our university actually provides lots of free student-only facilities, such as the campus swimming pool. And sometimes, the simplest choice is just going for a walk around campus. I think these activities are relaxing and budget-friendly choices that don't put pressure on your finances."
+      ],
+      [
+        "Speaker 3",
+        "I get it. My schoolwork is also really heavy this semester. I like watching Olympic games, yet swimming does not suit me. I find gym workouts too repetitive, so I would recommend walking as a cheap and easy way to relax. Sometimes I also read in libraries or cafes to unwind."
+      ],
+      [
+        "Speaker 1",
+        "I'm not keen on intense outdoor sports either, but I love walking in the park or around the playground. Breathing fresh grass and enjoying sunshine calms me down, and it is much cheaper than going to the gym. I also like doing simple stretches. After your suggestions, I'm thinking about trying our Olympic-standard campus swimming pool."
+      ],
+      [
+        "Speaker 2",
+        "That is a fantastic choice. Exercising right after classes can be really relaxing. If you go swimming, you can bring your own snacks or use student discounts at the campus café for a coffee afterwards. It makes the whole experience nicer without spending much money."
+      ],
+      [
+        "Speaker 3",
+        "Walking is still my favourite option. It needs no special equipment and fits any busy study schedule. Short walks in green areas clear my mind. Apart from walking, cooking simple meals at home also helps me recover energy from heavy assignments."
+      ],
+      [
+        "Speaker 1",
+        "That makes sense. Walking can be my backup plan when I don't feel like swimming. It is important for me to balance my study pressure with physical activity, and I'm glad there are so many free campus choices available."
+      ],
+      [
+        "Speaker 2",
+        "Exactly. Expensive club memberships are not necessary for us to stay active. We can take good advantage of campus resources. Maybe we can try some of these activities together sometime."
+      ],
+      [
+        "Speaker 3",
+        "I'd like that. Whether we take a walk in green spaces or get an affordable drink later, these low-cost activities can keep us physically and mentally refreshed through the whole semester. Additionally, I also enjoy cooking in the kitchen, as preparing simple meals helps me take a break from academic work and restore energy for the next day's study. These activities help me manage the workload without adding financial stress."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164859.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 55
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students look for affordable ways to stay active around their studies.",
+      "The first is short of time and energy and enjoys walking as an alternative to swimming.",
+      "The second runs, works out and swims, and encourages using inexpensive campus facilities.",
+      "The third prefers short walks that fit a busy schedule. They agree they can stay active without an expensive club membership."
+    ],
+    "sample": "The students look for affordable ways to stay active around their studies. The first is short of time and energy and enjoys walking as an alternative to swimming. The second runs, works out and swims, and encourages using inexpensive campus facilities. The third prefers short walks that fit a busy schedule. They agree they can stay active without an expensive club membership."
+  },
+  {
+    "id": "sgd-user-20261123-13",
+    "type": "sgd",
+    "title": "Joining Student Clubs",
+    "narration": "Three students are discussing whether to join student clubs next semester.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hey, have you guys thought about which clubs to join next term? I'm considering signing up for a couple—maybe the debate team and the photography society. I really want to meet people outside my major. Last year, joining the hiking club was amazing. I made so many friends during weekend trips!"
+      ],
+      [
+        "Speaker 2",
+        "Actually, I've decided not to join any clubs this year. I was part of the dance club last semester, and it took up way too much time. Rehearsals were twice a week, often until late, and it started affecting my grades. I'd rather focus on my studies and maybe pick up a part-time job instead."
+      ],
+      [
+        "Speaker 3",
+        "I'm definitely joining at least one club! For me, it’s not just about socializing—it’s about building skills. I was in the robotics club last year, and I learned so much about project management and teamwork. Plus, it looks great on my CV."
+      ],
+      [
+        "Speaker 1",
+        "That's a good point. I also think clubs help you develop soft skills—like how to communicate better and work in a group. And it’s not all serious; sometimes it's just fun. Like in the hiking club, we ended up telling stories around campfires. Those were my best memories from last year."
+      ],
+      [
+        "Speaker 2",
+        "I get that, but I often find club activities repetitive and poorly organized. A lot of time was wasted in meetings that could've been emails. I'd rather use that time to relax alone or hang out with a few close friends."
+      ],
+      [
+        "Speaker 3",
+        "I see what you mean, but I've had the opposite experience. The robotics club was super well-run, and we even got to compete nationally. It gave me a real sense of achievement. I don't think I would've had that opportunity if I hadn't joined."
+      ],
+      [
+        "Speaker 1",
+        "Exactly! It’s all about finding the right club. I guess it depends on your interests and how the club is managed. But for me, the social and personal growth aspects are totally worth the time. It's really helped me become more confident and outgoing in general. Plus, being part of a community makes campus feel smaller and more like home."
+      ],
+      [
+        "Speaker 2",
+        "Well, I'm happy with my decision to sit this one out. I prefer having control over my schedule. Last year, I always felt rushed trying to balance club events with assignments. Sometimes saying \"no\" is the best way to protect your mental health and academic goals. Knowing your limits is just as important as pushing your boundaries."
+      ],
+      [
+        "Speaker 3",
+        "That's fair. But for anyone looking to gain more than just academic knowledge, I'd really recommend giving clubs a try. You might be surprised what you can learn outside the classroom. Even just attending a few meetings can open doors to new interests and connections you never expected. It's not just about padding your resume—it's about discovering what you're truly passionate about."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164911.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students discuss whether to join clubs next term.",
+      "The first is considering debate and photography and values making friends and developing teamwork skills.",
+      "The second found dance club rehearsals and meetings too time-consuming and chooses to keep control of their schedule.",
+      "The third describes how a well-run robotics club built practical skills and led to a national competition. They see that the benefits depend on the club and the student's priorities."
+    ],
+    "sample": "The students discuss whether to join clubs next term. The first is considering debate and photography and values making friends and developing teamwork skills. The second found dance club rehearsals and meetings too time-consuming and chooses to keep control of their schedule. The third describes how a well-run robotics club built practical skills and led to a national competition. They see that the benefits depend on the club and the student's priorities."
+  },
+  {
+    "id": "sgd-user-20261123-14",
+    "type": "sgd",
+    "title": "Managing Written Assignments",
+    "narration": "Three students are discussing managing written assignments.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Lately, when I've been working on my assignments, I find it really hard to organize everything. I feel a lot of pressure, and even when I try to write a goal, I just cannot stick to it. Do you guys ever deal with this situation? How do you usually cope?"
+      ],
+      [
+        "Speaker 2",
+        "Oh, I totally get you. I've been there. What helped me before was breaking those lengthy assignments into smaller ones. For example, if the due date is still pretty long, I'll first make a plan, then create an outline, and finally schedule everything step by step."
+      ],
+      [
+        "Speaker 3",
+        "Yeah, I do something similar, pretty much the same approach. And if I have different assignments at the same time, I try to allocate different amounts of time to each one, depending on how urgent or difficult they are."
+      ],
+      [
+        "Speaker 1",
+        "I've actually tried to do that too, but the problem is I never do it consistently. I always end up losing momentum halfway or getting sidetracked by other things, and then the whole plan falls apart. Maybe what I'm really missing is some kind of external structure or immediate accountability."
+      ],
+      [
+        "Speaker 2",
+        "That's the tricky part. If you let yourself get distracted, the whole thing will take longer. You really need to avoid things like mobile phones, TV, emails, and just try to focus. By the way, do you two have a specific time for study? Like a fixed routine, maybe in the morning or evening?"
+      ],
+      [
+        "Speaker 3",
+        "For me, I work best at night. Of course, everyone is different, but I think the most important thing is to study when you feel the most productive. Personally, I usually write essays in the evening after dinner, so that's when I focus."
+      ],
+      [
+        "Speaker 1",
+        "Hmm, I'm still not sure what works best for me. But I think the most important thing is to have a work buddy. It really helps when someone else knows your goals and checks in on you—it adds a sense of responsibility and support that I often miss when working alone."
+      ],
+      [
+        "Speaker 2",
+        "Exactly! Why don't we just do the next assignment together? That way, we can plan together, keep each other motivated, and also practice as a group. We could even set up weekly check-ins to share progress and adjust our plans if something isn't working. Having a structured yet flexible approach might help us all stay on track."
+      ],
+      [
+        "Speaker 3",
+        "That sounds like a great idea. Having a study group not only keeps us accountable but also allows us to share ideas and feedback in real time. We could even set mini-deadlines for each stage of the assignment and review each other's progress. It's easier to stay consistent when you're not doing it alone. Plus, collaborating early helps avoid last-minute stress and improves the overall quality of our work—everyone brings something different to the table."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164926.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students compare ways to manage written assignments.",
+      "The first struggles to stay organised and thinks a work partner would help with consistency.",
+      "The second breaks long assignments into smaller steps and recommends removing distractions.",
+      "The third sets aside different times for different assignments and works when most productive. They agree to work together on the next assignment."
+    ],
+    "sample": "The students compare ways to manage written assignments. The first struggles to stay organised and thinks a work partner would help with consistency. The second breaks long assignments into smaller steps and recommends removing distractions. The third sets aside different times for different assignments and works when most productive. They agree to work together on the next assignment."
+  },
+  {
+    "id": "sgd-user-20261123-15",
+    "type": "sgd",
+    "title": "Free Online Courses",
+    "narration": "Three teachers are discussing free online courses.",
+    "turns": [
+      [
+        "Speaker 1",
+        "I've been looking into the growth of free online courses lately. The fact that there are now so many available is really promising. Don’t get me wrong—online teaching requires a lot of effort to design and deliver well—but overall, I think it’s a very good idea, especially when you consider accessibility. Many people simply cannot attend traditional school because of their financial situation, so these courses can be a lifeline. Nowadays, it's impressive how many well-known universities offer free online courses... but I've noticed a real gap between offering and uptake. I can hardly believe so few people who enroll see it through to the end."
+      ],
+      [
+        "Speaker 2",
+        "I think you've hit on a key point about completion. But even before that, there’s an issue with initial trust. From talking to some learners, a common reaction is that some people think it is too good to be true, and they doubt whether it is a scam. That initial skepticism can prevent them from even clicking ‘enroll’. Some others simply think it is completely useless."
+      ],
+      [
+        "Speaker 3",
+        "Trust is one thing, but in my experience, the bigger hurdle is practical. Many students—or rather, potential learners—simply do not have the time to commit to these online courses. They're often juggling jobs and family. Universities could definitely do more to attract them by offering flexibility. For example, they could reschedule these courses to other times, or better yet, make them entirely self-paced to attract more outsiders to join. If you really want to learn, those who have a clear personal or professional goal—the real desire to study—are often the most likely to complete the courses."
+      ],
+      [
+        "Speaker 1",
+        "Exactly, and without that external structure, even motivated learners can hit a wall. Some people start with enthusiasm but quickly get discouraged by the tedious coursework. They discover that a large amount of independent work is required, and it's easy to fall behind when you're alone. And because these courses are free, you don’t face any financial punishment for dropping out."
+      ],
+      [
+        "Speaker 2",
+        "That's a crucial insight about commitment. The absence of financial consequence really does remove a key layer of accountability. In a traditional course, the sunk cost makes you think twice before giving up. Here, the only penalty is to yourself—your own goals and time invested. Perhaps we need to find other ways to build in accountability, like peer study groups or non-financial rewards for milestones."
+      ],
+      [
+        "Speaker 3",
+        "Lack of promotion is also an issue. Right now, the school has just posted the online courses on its website, and the promotion effort is obviously not strong enough. Additionally, some students prefer practical courses to theoretical ones, and we choose a course not because it is easy to pass, but because we are interested in it."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164937.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The teachers discuss why free online courses can struggle to attract learners and keep them enrolled.",
+      "The first points to low completion and the lack of external structure or guidance.",
+      "The second raises doubts about course credibility and says paying can create a sense of accountability.",
+      "The third identifies practical barriers to access and says simply listing the courses on the school website is insufficient promotion."
+    ],
+    "sample": "The teachers discuss why free online courses can struggle to attract learners and keep them enrolled. The first points to low completion and the lack of external structure or guidance. The second raises doubts about course credibility and says paying can create a sense of accountability. The third identifies practical barriers to access and says simply listing the courses on the school website is insufficient promotion."
+  },
+  {
+    "id": "sgd-user-20261123-16",
+    "type": "sgd",
+    "title": "Choice of Subjects",
+    "narration": "three students are discussing which course to take next semester.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Have you guys checked out the course list for next semester? I skimmed through it yesterday and chose the design-survey course that involves advanced research skills. To be honest, I don't really like it, but I think it is useful for my studies. For me, high grades are not everything. Sometimes, we need to think beyond academic performance. As long as a course brings personal benefits and supports our future careers, that is good enough."
+      ],
+      [
+        "Speaker 2",
+        "I think it is right to choose a useful course. I'm also okay with doing research, and I would like to choose business. However, it requires statistics, and I'm quite poor at data processing. I'm a little worried that I might find it difficult to keep up with the coursework. But I suppose improving my skills in this area would be beneficial in the long run."
+      ],
+      [
+        "Speaker 3",
+        "Well, you both choose useful courses, but I have a different opinion. I prefer courses that I am genuinely interested in, without considering whether they would be useful for future career development. After all, we spend a lot of time studying, so I think we should enjoy the learning process rather than just focus on our future jobs."
+      ],
+      [
+        "Speaker 1",
+        "I see your point, but courses you like are not necessarily easy to pass. Sometimes, even interesting subjects involve difficult assignments and exams. Passing is the top priority, especially because we need enough credits to graduate."
+      ],
+      [
+        "Speaker 3",
+        "That's true, but I don’t think courses are difficult only if you like them. I believe that as long as I am interested in a subject, I can focus on it and pass it. That's why I have chosen Spanish, although it does not help me much, as my major is business and finance. I just want to learn something different."
+      ],
+      [
+        "Speaker 2",
+        "Actually, Spanish is useful for you, since your major involves foreign trade and you may work with Spaniards in the future. It could give you more job opportunities. In fact, I think languages are useful for any major because communication skills are important in almost every industry."
+      ],
+      [
+        "Speaker 1",
+        "Yes, I agree. Learning a language would also be beneficial for me. It could help us communicate with people from different countries and understand other cultures. To sum up, although our methods are different, everyone's goal is to graduate and obtain a degree. Everyone has their own choice. Just enjoy what you choose!"
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 164949.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 52
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students compare reasons for choosing subjects for next semester.",
+      "The first chooses a design-survey course for its usefulness and warns that an interesting course can still be difficult.",
+      "The second wants to study business despite the statistics requirement and argues that Spanish can improve career prospects.",
+      "The third prioritises personal interest because it helps with focus. They recognise that languages can help with work and communication, and students can take different paths to graduation."
+    ],
+    "sample": "The students compare reasons for choosing subjects for next semester. The first chooses a design-survey course for its usefulness and warns that an interesting course can still be difficult. The second wants to study business despite the statistics requirement and argues that Spanish can improve career prospects. The third prioritises personal interest because it helps with focus. They recognise that languages can help with work and communication, and students can take different paths to graduation."
+  },
+  {
+    "id": "sgd-user-20261123-17",
+    "type": "sgd",
+    "title": "Time Management",
+    "narration": "Three students are discussing time management at university.",
+    "turns": [
+      [
+        "Speaker 1",
+        "There are a lot of challenges for us at university. It’s not just doing well in the courses; we have to be able to balance the academic work with a personal life and also find time to join some extracurricular activities. I mean I don't want my years at university to be only studying and writing papers."
+      ],
+      [
+        "Speaker 2",
+        "I know. There's just so much to do. I have to get to the lectures, do all the readings and assignments, complete several projects, and get ready for exams. I hardly have time to breathe."
+      ],
+      [
+        "Speaker 3",
+        "You know, it's true. My biggest challenge since I started university is managing my time. I can’t seem to get myself organized and I always feel stressed and exhausted. And the worst thing is that I just seem to get organized and the term ends and I have to get used to a whole new schedule."
+      ],
+      [
+        "Speaker 1",
+        "I agree. That is really difficult. Each course has its own schedule, deadlines, and requirements. It's so difficult to create a consistent routine so I can allocate my time effectively. And everything seems to take longer than I thought."
+      ],
+      [
+        "Speaker 2",
+        "The worst part is that I often procrastinate and put off tasks until the last minute. I think to myself, oh I have lots of time for that, I have a whole week before it’s due. Then all of a sudden, the due date is in two days and I'm rushed and don't do a very good job."
+      ],
+      [
+        "Speaker 3",
+        "That's happened to me so many times. The deadlines are weeks or months away and I have trouble with long-term planning. It's hard to plan so far ahead but you have to or you end up rushed. The problem is that you have to learn to multi-task and I was never very good at that. I like to finish one project and start on another. But that’s impossible when all the projects and essays are due at the same time at the end of the term. You really have to be able to multi-task at university, you have to be able to jump from one topic to another and one type of assignment to another."
+      ],
+      [
+        "Speaker 1",
+        "All these tight deadlines, diverse course requirements and multi-tasking pressures make university time management far more difficult than I expected. It's really hard to stay stable and efficient when so many different tasks pile up at the same time."
+      ],
+      [
+        "Speaker 2",
+        "If I could manage my time better, I probably wouldn't be so stressed and exhausted. I've never had to discipline myself like this before. In high school, the teachers told you what to do and when to do it. If you just did what they said, you were fine. But in university, it's up to you to prioritize what tasks are the most important and should be done first. It seems I spend too much time on less important tasks because I like them or they are easier, then I don't have time for the more important ones."
+      ],
+      [
+        "Speaker 3",
+        "I guess not managing your time effectively means that you end up working more than you really need to and you feel so tired and sort of burnt out. I think the university offers a seminar on time management. Maybe we should all go."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 165001.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 98
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students discuss why managing time at university feels difficult.",
+      "The first describes balancing academic work with life outside class and managing competing deadlines.",
+      "The second admits procrastinating and struggles to prioritise important tasks over easier or more enjoyable ones.",
+      "The third finds it difficult to plan far ahead and suggests attending the university's time management seminar to help avoid exhaustion."
+    ],
+    "sample": "The students discuss why managing time at university feels difficult. The first describes balancing academic work with life outside class and managing competing deadlines. The second admits procrastinating and struggles to prioritise important tasks over easier or more enjoyable ones. The third finds it difficult to plan far ahead and suggests attending the university's time management seminar to help avoid exhaustion."
+  },
+  {
+    "id": "sgd-user-20261123-18",
+    "type": "sgd",
+    "title": "Joining or Starting a Club",
+    "narration": "three students are discussing which student club to join next semester.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hey, I've been thinking about joining a club next semester, but I’m not really sure which one to choose. My coursework is fairly heavy, so I don't want to waste my spare time on something meaningless. Do you guys have any suggestions on what I should join? I want something interesting, but also something that's actually worth my time."
+      ],
+      [
+        "Speaker 2",
+        "Honestly, I think it really depends on your interests. You should choose something you genuinely enjoy, otherwise it’s hard to stay committed especially when schoolwork gets busy. And you know, if you can't find a club that fits you, you could even start your own club. That way, you can shape it exactly the way you want."
+      ],
+      [
+        "Speaker 3",
+        "Actually, I joined the debate club last year, and it's been a great experience. But I have to say, running a club—or even being actively involved— does require quite a lot of organization. There are usually different roles, like a president, a vice president, event coordinators, and people responsible for promotion and logistics. Everyone has their own responsibilities to keep things running smoothly."
+      ],
+      [
+        "Speaker 1",
+        "Start my own club? That sounds a bit challenging. I've never really thought about that before. I already have plenty of school assignments to deal with, so taking charge of a whole new club would probably burn me out."
+      ],
+      [
+        "Speaker 2",
+        "Exactly. That's why starting your own club can be rewarding, but it also comes with a lot of responsibility. You need people to manage different aspects, and it takes time to build everything from scratch. Recruiting members and preparing activities can take up lots of your free hours."
+      ],
+      [
+        "Speaker 3",
+        "Yeah, in the debate club, we also have regular training sessions, internal competitions, and even external tournaments. Some people focus on preparing arguments, while others help organize events or manage the team. It's quite structured, and that’s why it works so well. I can tell how much effort goes into keeping all these activities going."
+      ],
+      [
+        "Speaker 1",
+        "Hmm, hearing all that, I think starting my own club might be too much for me. I’m not really prepared to take on that kind of responsibility. I guess I'd rather just join an existing club instead of creating one from scratch. I hope I can find one that balances fun and personal growth."
+      ],
+      [
+        "Speaker 2",
+        "That's totally fine. Joining an established club is definitely easier, and you can still gain a lot from it without the pressure of managing everything. You can make new friends and pick up practical skills at the same time."
+      ],
+      [
+        "Speaker 3",
+        "Yeah, and you can always try a few different clubs at the beginning of the semester. Most clubs have trial sessions, so you can see what suits you best before committing. That gives you a chance to feel the atmosphere without making long-term promises."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 165013.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 99
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students discuss whether to join an existing club or start one.",
+      "The first is interested in joining but decides their workload leaves little room to run a club.",
+      "The second recommends choosing an activity they genuinely enjoy and explains the responsibilities of running a club.",
+      "The third describes training and competitions in the debate club and suggests trying different clubs at trial sessions before committing."
+    ],
+    "sample": "The students discuss whether to join an existing club or start one. The first is interested in joining but decides their workload leaves little room to run a club. The second recommends choosing an activity they genuinely enjoy and explains the responsibilities of running a club. The third describes training and competitions in the debate club and suggests trying different clubs at trial sessions before committing."
+  },
+  {
+    "id": "sgd-user-20261123-19",
+    "type": "sgd",
+    "title": "University Bookshop",
+    "narration": "Three students are discussing the university bookshop.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hey guys, have you heard the university bookstore has closed down? I was totally heartbroken when I found out this morning. I used to stop by it regularly after my morning classes. It's such a shame to lose such a friendly little spot on campus."
+      ],
+      [
+        "Speaker 2",
+        "Oh no, that's really sad news! But you can find whatever materials you want on the internet, including e-books. They are super convenient, and you can carry hundreds of them on your phone which can be read anywhere. So we don't have to be too sad."
+      ],
+      [
+        "Speaker 3",
+        "I just found out yesterday too. Nowadays many students dislike reading, but I still find reading books enjoyable. Reading e-books lacks the same sense that comes from holding a physical book. So, I feel sad. By the way, the bookstore staff were always so approachable."
+      ],
+      [
+        "Speaker 1",
+        "E-books are better than physical books in so many ways, I have to admit. But your eyes easily get tired after long reading sessions, that's the biggest downside. I really miss the feel of holding a physical book in my hands now. I like to highlight key points on pages and jot down notes in the margins, which gives me the sense of focus."
+      ],
+      [
+        "Speaker 2",
+        "Anyway, physical bookstores are steadily losing ground, even if you hate to see them go. If you want to prevent bookstores from closing down, you could buy more books."
+      ],
+      [
+        "Speaker 3",
+        "In the bookstore, the staff were so kind, who could quickly help find textbooks and recommend reference books. It made studying so much easier. Once, I forgot my wallet there, and they kept it safe until I went back for it hours later. That's how lovely the staff were, they really cared about students. The bookstore could have avoided closing if they would have adapted earlier to what students actually need. They were too focused on just selling books alone."
+      ],
+      [
+        "Speaker 1",
+        "If I had known this bookstore would go out of business, I would have bought far more books here. Really, for the bookstore selling only books is such a narrow focus. Most students go there to borrow books or read them, rather than buy them, so it doesn't really help the bookstore's business. So, they have to diversify, like adding practical items and school supplies, including stationery, tech accessories and daily necessities."
+      ],
+      [
+        "Speaker 2",
+        "You're totally right, that's such a wasted opportunity for them. If they'd sold more student essentials, it would have brought in way more regular customers."
+      ],
+      [
+        "Speaker 3",
+        "Exactly, they could have sold phone chargers, notebooks, pens, or other stationery like you said. Thus they could have created a one-stop spot to support students’ everyday academic life and brought in more customers. It's such a pity they didn't adapt in time, the bookstore was such a big part of campus life."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 165024.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students discuss the closure of the campus bookshop.",
+      "The first misses the shop and says selling books alone was a missed opportunity.",
+      "The second points out that online material and e-books are convenient but agrees that student essentials could have brought in more customers.",
+      "The third values physical books and the staff's recommendations, and suggests stationery and chargers could have made the shop a one-stop option."
+    ],
+    "sample": "The students discuss the closure of the campus bookshop. The first misses the shop and says selling books alone was a missed opportunity. The second points out that online material and e-books are convenient but agrees that student essentials could have brought in more customers. The third values physical books and the staff's recommendations, and suggests stationery and chargers could have made the shop a one-stop option."
+  },
+  {
+    "id": "sgd-user-20261123-20",
+    "type": "sgd",
+    "title": "New Timetable",
+    "narration": "Three students are discussing the new timetable for this semester.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hey, guys! Have you checked out the timetable for the new semester yet? The department just sent it to me by email this morning, and I found my schedule is really full this term. I've got two courses scheduled in the morning, which means I have to get up really early, leaving me little spare time in the morning."
+      ],
+      [
+        "Speaker 2",
+        "Yeah, that's really a bad time. I've also switched to a new timetable this semester, even worse than you. Most of my classes start at 9 a.m., and I have to get up early four days a week. I always feel so tired and sleepy in the morning, so I definitely need at least two cups of coffee before class to wake myself up, otherwise I can't focus at all."
+      ],
+      [
+        "Speaker 3",
+        "Oh, well. I've checked my timetable, and it's quite different from both of yours. I don't have any courses scheduled in the morning, and I only have one course in the afternoon, which I really prefer."
+      ],
+      [
+        "Speaker 2",
+        "You are so lucky. You don't need to rush out of bed in a hurry and you will have plenty of time to really enjoy your college life."
+      ],
+      [
+        "Speaker 3",
+        "Yes, I'm really lucky in comparison, but you don't have to envy me. Although I don't have too many courses this semester, I still have a lot of seminars and lectures during the day."
+      ],
+      [
+        "Speaker 1",
+        "Honestly, these early morning classes have completely messed up my daily routine. I'm not used to getting up so early, and I often feel distracted during the first lesson. It's tough to stay energetic and efficient when I haven't had enough rest in the morning."
+      ],
+      [
+        "Speaker 2",
+        "I totally agree with you. Morning classes are such a struggle for me. Even though my classes start at nine o'clock, I still need to get up very early to wash up, have breakfast and walk to the teaching building."
+      ],
+      [
+        "Speaker 3",
+        "Having all my classes in the afternoon allows me to sleep longer in the morning and prepare well for my study. I can finish my revision, preview my courses and organize my notes calmly before heading to class. But I guess I can't use being too busy as an excuse for not doing my assignments properly anymore."
+      ],
+      [
+        "Speaker 1",
+        "Speaking of assignments, you really need to choose courses you're interested in if you want to do them well. I wish I could adjust my schedule a little. Not only is the timing not ideal, but some of the courses aren't really my cup of tea either. But I'm just saying. After all, it's hard to change things once the schedule has been finalized."
+      ],
+      [
+        "Speaker 2",
+        "Exactly. I guess this is just how our course schedule is going to be this semester. No matter how much we complain about it, we'll just have to get used to it. I have to get up early four days a week, but at least there's still one day when I don't have to get up early, right?"
+      ],
+      [
+        "Speaker 3",
+        "Staying positive is also important if we want to do our assignments well. Let's all do our best!"
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 165036.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 107
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students compare their timetables for the new semester.",
+      "The first has two morning courses and struggles with the effect on their routine and concentration.",
+      "The second starts early four days a week and relies on coffee, while appreciating the one later start.",
+      "The third prefers afternoon classes because there is time to prepare, although seminars and assignments still need attention. They agree they must adapt to the final timetable."
+    ],
+    "sample": "The students compare their timetables for the new semester. The first has two morning courses and struggles with the effect on their routine and concentration. The second starts early four days a week and relies on coffee, while appreciating the one later start. The third prefers afternoon classes because there is time to prepare, although seminars and assignments still need attention. They agree they must adapt to the final timetable."
+  },
+  {
+    "id": "sgd-user-20261123-21",
+    "type": "sgd",
+    "title": "Absence from Lecture",
+    "narration": "three students are having a group discussion about large group lectures.",
+    "turns": [
+      [
+        "Speaker 1",
+        "You didn't attend the large group lecture this morning, right? The professor was really unhappy about that. You were supposed to sign the attendance sheet, since attendance is a very important part of our course assessment. The teacher will probably email you soon and ask you to clarify your absence."
+      ],
+      [
+        "Speaker 2",
+        "Yeah, I know I missed the class, but honestly, I just can’t stand those large group lectures at all. They are extremely boring because the professor just keeps reading from the notes the whole time. If it’s only reading notes, I can totally do that at home. Personally, I find group discussions and seminars far more interesting and useful."
+      ],
+      [
+        "Speaker 3",
+        "I totally understand your feeling, but there are still many benefits of attending offline large lectures. In this digital age, we already have very little face-to-face interaction. Most of our communication happens online through messages and virtual meetings. Large group lectures are precious opportunities for us to meet our classmates and professors in person and build better relationships with them."
+      ],
+      [
+        "Speaker 1",
+        "Exactly. Even though lectures can sometimes be tedious, you still need to attend them regularly. When all students attend the lecture together, we learn the same content at the same time. After class, we can discuss the same questions, clarify our doubts together, and make sure we all grasp the key knowledge correctly, which is really hard to achieve if everyone studies separately at home."
+      ],
+      [
+        "Speaker 2",
+        "That makes sense. I have never really thought about the value of face-to-face learning before. Even so, I still think large lectures could be much more engaging. If the professor could add more interactive discussions instead of simply reading notes monotonously, more students would be willing to attend every lecture actively."
+      ],
+      [
+        "Speaker 3",
+        "I totally get your point. I also prefer small interactive seminars to traditional lectures. However, from the university's perspective, large group lectures are extremely cost-effective. It is much cheaper for one professor to teach over a hundred students in a big lecture hall than teaching a small class of only ten students."
+      ],
+      [
+        "Speaker 1",
+        "Apart from academic consistency, offline lectures also help us keep a regular study routine. Studying alone at home often leads to procrastination ,_ while attending fixed lectures can push us to follow the course progress steadily and avoid falling behind in our studies."
+      ],
+      [
+        "Speaker 2",
+        "You're right. I admit that skipping lectures is not a good habit. Although online resources are convenient, they cannot completely replace the offline learning atmosphere. I will try to attend every lecture in the future and actively participate in in-class interaction."
+      ],
+      [
+        "Speaker 3",
+        "That's great. Nowadays, even group study in the library lacks interaction, as everywhere is filled with students staring at computer screens. Therefore, offline large lectures are actually one of the few chances for us to experience real classroom communication and improve our learning efficiency."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 165050.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 109
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students discuss why attending large lectures still matters.",
+      "The first points to attendance expectations, consistent teaching and a regular study routine.",
+      "The second skipped a lecture because large classes feel tedious and online materials are convenient, but agrees to attend and participate in future.",
+      "The third prefers small seminars but points out that large lectures can still offer face-to-face interaction and teach many students at once."
+    ],
+    "sample": "The students discuss why attending large lectures still matters. The first points to attendance expectations, consistent teaching and a regular study routine. The second skipped a lecture because large classes feel tedious and online materials are convenient, but agrees to attend and participate in future. The third prefers small seminars but points out that large lectures can still offer face-to-face interaction and teach many students at once."
+  },
+  {
+    "id": "sgd-user-20261123-23",
+    "type": "sgd",
+    "title": "On-campus vs Off-campus Accommodation",
+    "narration": "Three students are talking about their living experiences in on-campus dorms and off-campus housing.",
+    "turns": [
+      [
+        "Speaker 1",
+        "I live in a house off campus with my friends. It's quite far from the school, but I am lucky because I live close to bus stops and it is very convenient. Also, our landlord is nice and takes care of things like cleaning and other problems around the house."
+      ],
+      [
+        "Speaker 2",
+        "I live in the school dormitory, which is very convenient, and there are places where I can study. Also, I don't want to get up early, and the dormitory is very close to the teaching buildings. Actually, I'd be quite happy to share a house with friends off campus, but the rent is too expensive."
+      ],
+      [
+        "Speaker 3",
+        "I also live in the school dormitory. If anything in the dorm breaks, it gets repaired soon, so students don't have to bother with it. Some friends living outside have problems with water and have to wait for a long time to have it fixed."
+      ],
+      [
+        "Speaker 1",
+        "That's honestly a huge advantage of living on campus. Even though our landlord is responsible and helpful, off-campus maintenance is really slow in general. We once had a water leakage issue and waited nearly a week for someone to fix it, which was really troublesome."
+      ],
+      [
+        "Speaker 2",
+        "While dorm life has plenty of benefits, it definitely comes with some annoying downsides as well. My roommate often gets up as early as 5 a.m., and the noise she makes when getting up seriously disrupts my sleep."
+      ],
+      [
+        "Speaker 3",
+        "Yes, living in the dorm really has downsides. The fire alarm in our dormitory building often goes off in the middle of the night. Whenever the alarm goes off, we have to leave the building and wait until it has been checked. I'm fed up with being forced to get out of bed and evacuate outside because of fire alarms on cold winter nights because I've experienced twice. Both times they were caused by illegal use of a toaster in the building. Can't they find the people who are cooking illegally and deal with them more quickly? Still, I think the system is quite safe, so I accept this accommodation plan."
+      ],
+      [
+        "Speaker 1",
+        "I had no idea dorm life had such annoying safety issues. Living off-campus definitely gives us more private space and flexible schedules. We can cook freely in our own kitchen without violating any campus rules, and we never suffer from sudden fire alarms at night."
+      ],
+      [
+        "Speaker 2",
+        "That sounds really relaxing, but off-campus accommodation still has obvious drawbacks. Apart from the high rent and slow maintenance, you also have to spend plenty of time on daily housework and commuting every single day."
+      ],
+      [
+        "Speaker 3",
+        "Exactly. Every living option has its own pros and cons. On-campus dorms are affordable, safe and time-saving, while off-campus houses provide more freedom and privacy. It all depends on personal study habits and lifestyle choices."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 165143.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 114
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students compare on-campus dorms and off-campus housing.",
+      "The first appreciates the privacy and flexibility of sharing an off-campus house, although maintenance can take longer.",
+      "The second likes the convenience of the dorm but mentions an early-rising roommate and notes the costs and chores of living off campus.",
+      "The third values quick dorm repairs but dislikes overnight fire alarms. They conclude that the choice depends on study habits and lifestyle."
+    ],
+    "sample": "The students compare on-campus dorms and off-campus housing. The first appreciates the privacy and flexibility of sharing an off-campus house, although maintenance can take longer. The second likes the convenience of the dorm but mentions an early-rising roommate and notes the costs and chores of living off campus. The third values quick dorm repairs but dislikes overnight fire alarms. They conclude that the choice depends on study habits and lifestyle."
+  },
+  {
+    "id": "sgd-user-20261123-25",
+    "type": "sgd",
+    "title": "Library Rules",
+    "narration": "Two students and one librarian are having a discussion in the library, focusing on the noise problem, rule enforcement and suggestions for improving the learning environment.",
+    "turns": [
+      [
+        "Speaker 1",
+        "The library is supposed to be a quiet, peaceful place for people to focus on their studies, finish assignments, or prepare for exams. But recently, many students in the library have been talking loudly, laughing, and even chatting freely with their friends, making it feel more like a busy social club than a place for academic work."
+      ],
+      [
+        "Speaker 2",
+        "I am well aware of this situation, and I completely understand your frustration. However, their noisy behavior is quite difficult for us to manage effectively. As you can see, our library is quite large, with multiple floors, reading areas, and public spaces, and we simply do not have enough staff to monitor every corner and every student's behavior at all times. Perhaps you could consider moving to the first floor or the computer area, where the atmosphere is a bit more relaxed."
+      ],
+      [
+        "Speaker 3",
+        "Unfortunately, the computer area isn't any better. Many students there watch sports games, entertainment videos, or even live streams on their computers, and they often play the audio very loudly without using headphones. On top of that, their conversations are also quite noisy. All this noise makes it just as hard for us to concentrate on our work as the main reading area, if not harder."
+      ],
+      [
+        "Speaker 1",
+        "I see what you mean. Maybe a clearer division of areas would help. Perhaps it would be more effective to clearly state the rules. For example, small talking should be allowed in the computer area. Meanwhile, in the main reading area and silent study rooms, people should try not to talk at all, not even in a low voice. This way, students will know exactly where it is acceptable to talk."
+      ],
+      [
+        "Speaker 2",
+        "Actually, talking is already allowed in our computer area. As for the silent area, if you ever feel distracted by noise there, you can call the security desk directly for help."
+      ],
+      [
+        "Speaker 1",
+        "I think the library should strengthen its promotion of these rules."
+      ],
+      [
+        "Speaker 2",
+        "That's a very good suggestion. You'd better write down your complaints and suggestions in detail. The university attaches great importance to students’ opinions."
+      ],
+      [
+        "Speaker 3",
+        "That's good to know, but why do some people bring drinks into the library? Is that permitted? I've seen students spill their drinks on the tables and chairs several times, leaving stains that are hard to clean."
+      ],
+      [
+        "Speaker 2",
+        "Bringing drinks into the library is actually not allowed. Drinks can easily be spilled, making the library environment messy and untidy, and they can also cause damage to books, tables, and other public facilities."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 165211.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "Two students and a librarian discuss noise and other rules in the library.",
+      "The first student proposes clearer divisions between quiet and shared spaces and better publicity for the rules.",
+      "The librarian explains that talking is allowed in the computer area, says students can report noise in the silent area, and invites written feedback.",
+      "The other student mentions computer noise and spilled drinks. The librarian explains that drinks are prohibited because spills can damage facilities and books."
+    ],
+    "sample": "Two students and a librarian discuss noise and other rules in the library. The first student proposes clearer divisions between quiet and shared spaces and better publicity for the rules. The librarian explains that talking is allowed in the computer area, says students can report noise in the silent area, and invites written feedback. The other student mentions computer noise and spilled drinks. The librarian explains that drinks are prohibited because spills can damage facilities and books."
+  },
+  {
+    "id": "sgd-user-20261123-26",
+    "type": "sgd",
+    "title": "Lectures and Tutorials",
+    "narration": "Three students are discussing different types of classes at university.",
+    "turns": [
+      [
+        "Speaker 1",
+        "There are no lectures in high school, so coming to university and adapting to new class forms has been quite a big change for me. Most of the classes at university are large lectures, and honestly, I find the effectiveness of a lecture depends on who gives it. Some teachers speak extremely fast during the lecture, and a few of them have strong accents, which makes it even harder for me to understand every knowledge point and detailed content they explain in class."
+      ],
+      [
+        "Speaker 2",
+        "Personally, I have a different opinion and I quite like university lectures. One obvious advantage is that teachers will timely upload their PowerPoint slides and course materials online after class. So even if you miss a lecture or fail to catch every single detail during class, you can always review the complete slides and supplement your knowledge later. However, I still think small-group tutorials have their unique advantages that lectures cannot replace."
+      ],
+      [
+        "Speaker 3",
+        "I totally agree with you that tutorials are much better in many ways, and I don't really like long lectures either. University lectures are simply too long and tiring for students. Sometimes a single lecture lasts for a full hour, and some even extend to ninety minutes straight. It is really challenging to stay focused and concentrate on only one person speaking for such a long period of time without any interaction."
+      ],
+      [
+        "Speaker 1",
+        "That's exactly how I feel. Long lectures always make me feel distracted and exhausted. I strongly prefer tutorial classes, just like you mentioned. Tutorials are usually small-sized and highly interactive, so it's much easier for us to get targeted help whenever we encounter confusing knowledge points."
+      ],
+      [
+        "Speaker 2",
+        "That's the biggest highlight of tutorials. The small class atmosphere allows students to communicate freely with tutors and classmates. Unlike large lectures where hundreds of students sit in one hall and hardly have a chance to interact, tutorials enable us to have in-depth discussions and share different learning ideas."
+      ],
+      [
+        "Speaker 3",
+        "I've had really positive learning experiences in all my tutorial classes so far. Most of the tutors I've met are very patient and responsible. They will carefully explain confusing knowledge points repeatedly and provide extra learning guidance for students who fall behind."
+      ],
+      [
+        "Speaker 1",
+        "Absolutely. I feel that lectures are more suitable for us to systematically learn basic theoretical knowledge in a short time. But when it comes to digesting difficult content and solving personal learning problems, tutorials are absolutely irreplaceable for university students."
+      ],
+      [
+        "Speaker 2",
+        "That makes perfect sense. These two class forms have their own strengths. Lectures ensure the overall learning progress of all students, while tutorials make up for the lack of interaction and personalized teaching in large public classes."
+      ],
+      [
+        "Speaker 3",
+        "I totally agree with this view. Combining lectures and tutorials perfectly is the best way for us to adapt to university study and improve our academic performance steadily."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 165222.png",
+      "contentStatus": "transcribed-user-provided"
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students compare university lectures and tutorials.",
+      "The first finds fast speech and accents hard to follow and prefers tutorials for discussion, while valuing lectures for foundational theory.",
+      "The second appreciates that lecture materials are uploaded and says small tutorials make it easier to ask questions and interact.",
+      "The third finds long lectures tiring and values the individual help tutors provide. They agree that lectures and tutorials complement each other."
+    ],
+    "sample": "The students compare university lectures and tutorials. The first finds fast speech and accents hard to follow and prefers tutorials for discussion, while valuing lectures for foundational theory. The second appreciates that lecture materials are uploaded and says small tutorials make it easier to ask questions and interact. The third finds long lectures tiring and values the individual help tutors provide. They agree that lectures and tutorials complement each other."
+  },
+  {
+    "id": "sgd-user-20261123-27",
+    "type": "sgd",
+    "title": "Study Places",
+    "narration": "three students are discussing where they should study.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Let's go to the library to study. I think it helps me get into the study mood quickly. Home is full of little things that pull my attention away. I really need a quiet space for my homework."
+      ],
+      [
+        "Speaker 2",
+        "I prefer studying at home because I can eat snacks whenever I want and stay in my pajamas. I do not like following strict rules in public areas. I can also take short breaks whenever I feel tired. It is the most comfortable choice for me."
+      ],
+      [
+        "Speaker 3",
+        "When at home, I always want to do housework. I have no motivation during the day, but I feel really motivated at night. However, by then, it's too late to go to the library, because seats are hard to get. Some people leave their belongings on chairs to reserve seats."
+      ],
+      [
+        "Speaker 1",
+        "I often get distracted by my phone at home, and sometimes my younger sister plays music really loudly, so I can't concentrate on studying. I would still take my laptop to the library, even though I can also waste time browsing distracting social media on it. Seeing everyone else studying there might make me feel some pressure. Since I've come all the way here, I might as well focus on studying."
+      ],
+      [
+        "Speaker 2",
+        "You're assuming that everyone goes to the library to study, but whenever I go there, people are chatting, such as holding group discussions. The lower floors of the library tend to be quite noisy. The upper floors, especially the third floor, have separate study rooms that you can book in advance. Those rooms are much better for quiet work."
+      ],
+      [
+        "Speaker 3",
+        "By the way, we can also lock our phones in the lockers near the library entrance. This simple trick can stop most phone distractions. It works well for people who easily scroll online. Maybe we can try this method together later."
+      ],
+      [
+        "Speaker 1",
+        "That locker idea sounds really useful to me. I often pick up my phone without thinking. A locked phone will force me to stay on task. I am willing to give it a try today."
+      ],
+      [
+        "Speaker 2",
+        "There are classrooms in our department where we can study, but that's a secret, so don't tell anyone. We can study there. It is usually empty and much quieter. No one will come to disturb us inside."
+      ],
+      [
+        "Speaker 3",
+        "I'll go with you. This secret spot sounds better than fighting for library seats. I don't want to race others to grab seats late at night. Let's keep this place to ourselves."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 165232.png",
+      "contentStatus": "transcribed-user-provided",
+      "sourceId": 144
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The students discuss where they can concentrate on studying.",
+      "The first prefers the library because of distractions at home and is willing to lock away their phone.",
+      "The second finds studying at home more comfortable, points out that the library can be noisy and suggests a quiet departmental classroom.",
+      "The third struggles to work at home, recommends library phone lockers and agrees to try the classroom rather than compete for a library seat."
+    ],
+    "sample": "The students discuss where they can concentrate on studying. The first prefers the library because of distractions at home and is willing to lock away their phone. The second finds studying at home more comfortable, points out that the library can be noisy and suggests a quiet departmental classroom. The third struggles to work at home, recommends library phone lockers and agrees to try the classroom rather than compete for a library seat."
+  }
+]
