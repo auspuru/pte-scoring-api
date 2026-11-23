@@ -1,0 +1,403 @@
+{
+  "batch": "nov23-2026-swt",
+  "status": "review_only_not_imported",
+  "questionCount": 43,
+  "interpretation": "The user clarified that the screenshot report shows how many times questions were reported. Counts below correspond to header labels #N on screenshots, and are recorded as user-provided reported occurrences rather than independently verified PTE exam frequencies.",
+  "source": "Screenshot 2026-11-23 135917.zip (23 Nov 2026) and user's clarification",
+  "importRules": {
+    "reviewPassageAndReferences": true,
+    "validateCountsAgainstOriginalReport": true,
+    "checkLiveDuplicates": true,
+    "doNotDeployBeforeApproval": true,
+    "newUntilAttemptedPerStudent": true
+  },
+  "rows": [
+    {
+      "stableProposedId": 950002,
+      "title": "Learning and Growing in Relationships",
+      "sourceLabelNumber": 519,
+      "reportedCount": 519,
+      "sourceOrder": 2,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 1
+    },
+    {
+      "stableProposedId": 950003,
+      "title": "Over-training",
+      "sourceLabelNumber": 511,
+      "reportedCount": 511,
+      "sourceOrder": 3,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 2
+    },
+    {
+      "stableProposedId": 950004,
+      "title": "High-fat Diet",
+      "sourceLabelNumber": 501,
+      "reportedCount": 501,
+      "sourceOrder": 4,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 3
+    },
+    {
+      "stableProposedId": 950005,
+      "title": "Academic Libraries",
+      "sourceLabelNumber": 481,
+      "reportedCount": 481,
+      "sourceOrder": 5,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 4
+    },
+    {
+      "stableProposedId": 950006,
+      "title": "Immune System",
+      "sourceLabelNumber": 416,
+      "reportedCount": 416,
+      "sourceOrder": 6,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 5
+    },
+    {
+      "stableProposedId": 950007,
+      "title": "Difference in Intelligence",
+      "sourceLabelNumber": 336,
+      "reportedCount": 336,
+      "sourceOrder": 7,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 6
+    },
+    {
+      "stableProposedId": 950008,
+      "title": "Fallacy",
+      "sourceLabelNumber": 301,
+      "reportedCount": 301,
+      "sourceOrder": 8,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 7
+    },
+    {
+      "stableProposedId": 950001,
+      "title": "Making Suggestions",
+      "sourceLabelNumber": 246,
+      "reportedCount": 246,
+      "sourceOrder": 1,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 8
+    },
+    {
+      "stableProposedId": 950009,
+      "title": "Natural Language",
+      "sourceLabelNumber": 230,
+      "reportedCount": 230,
+      "sourceOrder": 9,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 9
+    },
+    {
+      "stableProposedId": 950010,
+      "title": "Environmental Technologies",
+      "sourceLabelNumber": 225,
+      "reportedCount": 225,
+      "sourceOrder": 10,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 10
+    },
+    {
+      "stableProposedId": 950011,
+      "title": "South Africa",
+      "sourceLabelNumber": 215,
+      "reportedCount": 215,
+      "sourceOrder": 11,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 11
+    },
+    {
+      "stableProposedId": 950012,
+      "title": "Summer Vacation",
+      "sourceLabelNumber": 206,
+      "reportedCount": 206,
+      "sourceOrder": 12,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 12
+    },
+    {
+      "stableProposedId": 950013,
+      "title": "Bertrand Russell",
+      "sourceLabelNumber": 197,
+      "reportedCount": 197,
+      "sourceOrder": 13,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 13
+    },
+    {
+      "stableProposedId": 950014,
+      "title": "Bank Overdraft",
+      "sourceLabelNumber": 189,
+      "reportedCount": 189,
+      "sourceOrder": 14,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 14
+    },
+    {
+      "stableProposedId": 950015,
+      "title": "Seattle Commuters",
+      "sourceLabelNumber": 188,
+      "reportedCount": 188,
+      "sourceOrder": 15,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 15
+    },
+    {
+      "stableProposedId": 950016,
+      "title": "New Women",
+      "sourceLabelNumber": 180,
+      "reportedCount": 180,
+      "sourceOrder": 16,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 16
+    },
+    {
+      "stableProposedId": 950017,
+      "title": "Legume",
+      "sourceLabelNumber": 178,
+      "reportedCount": 178,
+      "sourceOrder": 17,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 17
+    },
+    {
+      "stableProposedId": 950023,
+      "title": "Greenland Sharks",
+      "sourceLabelNumber": 168,
+      "reportedCount": 168,
+      "sourceOrder": 23,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 18
+    },
+    {
+      "stableProposedId": 950024,
+      "title": "Negotiation",
+      "sourceLabelNumber": 162,
+      "reportedCount": 162,
+      "sourceOrder": 24,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 19
+    },
+    {
+      "stableProposedId": 950018,
+      "title": "Importance of Soil",
+      "sourceLabelNumber": 153,
+      "reportedCount": 153,
+      "sourceOrder": 18,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 20
+    },
+    {
+      "stableProposedId": 950019,
+      "title": "Solar Energy",
+      "sourceLabelNumber": 129,
+      "reportedCount": 129,
+      "sourceOrder": 19,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 21
+    },
+    {
+      "stableProposedId": 950025,
+      "title": "Pre-service Teachers",
+      "sourceLabelNumber": 113,
+      "reportedCount": 113,
+      "sourceOrder": 25,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 22
+    },
+    {
+      "stableProposedId": 950020,
+      "title": "Positive Mindset",
+      "sourceLabelNumber": 110,
+      "reportedCount": 110,
+      "sourceOrder": 20,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 23
+    },
+    {
+      "stableProposedId": 950021,
+      "title": "Ethics",
+      "sourceLabelNumber": 109,
+      "reportedCount": 109,
+      "sourceOrder": 21,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 24
+    },
+    {
+      "stableProposedId": 950026,
+      "title": "Silent Movies",
+      "sourceLabelNumber": 103,
+      "reportedCount": 103,
+      "sourceOrder": 26,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 25
+    },
+    {
+      "stableProposedId": 950022,
+      "title": "Ecology and Climatology",
+      "sourceLabelNumber": 99,
+      "reportedCount": 99,
+      "sourceOrder": 22,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 26
+    },
+    {
+      "stableProposedId": 950028,
+      "title": "Written Language",
+      "sourceLabelNumber": 84,
+      "reportedCount": 84,
+      "sourceOrder": 28,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 27
+    },
+    {
+      "stableProposedId": 950027,
+      "title": "Wright Brothers",
+      "sourceLabelNumber": 81,
+      "reportedCount": 81,
+      "sourceOrder": 27,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 28
+    },
+    {
+      "stableProposedId": 950029,
+      "title": "Tree Rings",
+      "sourceLabelNumber": 72,
+      "reportedCount": 72,
+      "sourceOrder": 29,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 29
+    },
+    {
+      "stableProposedId": 950030,
+      "title": "The History of the Khoikhoi",
+      "sourceLabelNumber": 68,
+      "reportedCount": 68,
+      "sourceOrder": 30,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 30
+    },
+    {
+      "stableProposedId": 950040,
+      "title": "Plug-in Vehicle",
+      "sourceLabelNumber": 56,
+      "reportedCount": 56,
+      "sourceOrder": 40,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 31
+    },
+    {
+      "stableProposedId": 950036,
+      "title": "Plants Research",
+      "sourceLabelNumber": 55,
+      "reportedCount": 55,
+      "sourceOrder": 36,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 32
+    },
+    {
+      "stableProposedId": 950043,
+      "title": "Paleolithic People",
+      "sourceLabelNumber": 51,
+      "reportedCount": 51,
+      "sourceOrder": 43,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 33
+    },
+    {
+      "stableProposedId": 950038,
+      "title": "Online Teaching & Learning",
+      "sourceLabelNumber": 48,
+      "reportedCount": 48,
+      "sourceOrder": 38,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 34
+    },
+    {
+      "stableProposedId": 950033,
+      "title": "Office Environment",
+      "sourceLabelNumber": 46,
+      "reportedCount": 46,
+      "sourceOrder": 33,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 35
+    },
+    {
+      "stableProposedId": 950037,
+      "title": "Museology",
+      "sourceLabelNumber": 42,
+      "reportedCount": 42,
+      "sourceOrder": 37,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 36
+    },
+    {
+      "stableProposedId": 950039,
+      "title": "Small Wars",
+      "sourceLabelNumber": 40,
+      "reportedCount": 40,
+      "sourceOrder": 39,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 37
+    },
+    {
+      "stableProposedId": 950042,
+      "title": "Malaysia Tourism",
+      "sourceLabelNumber": 39,
+      "reportedCount": 39,
+      "sourceOrder": 42,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 38
+    },
+    {
+      "stableProposedId": 950034,
+      "title": "House Mice",
+      "sourceLabelNumber": 35,
+      "reportedCount": 35,
+      "sourceOrder": 34,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 39
+    },
+    {
+      "stableProposedId": 950041,
+      "title": "Hookham",
+      "sourceLabelNumber": 34,
+      "reportedCount": 34,
+      "sourceOrder": 41,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 40
+    },
+    {
+      "stableProposedId": 950032,
+      "title": "Compulsory Reburial",
+      "sourceLabelNumber": 19,
+      "reportedCount": 19,
+      "sourceOrder": 32,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 41
+    },
+    {
+      "stableProposedId": 950031,
+      "title": "Children Allowance",
+      "sourceLabelNumber": 15,
+      "reportedCount": 15,
+      "sourceOrder": 31,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 42
+    },
+    {
+      "stableProposedId": 950035,
+      "title": "Australian Indigenous Food",
+      "sourceLabelNumber": 10,
+      "reportedCount": 10,
+      "sourceOrder": 35,
+      "evidence": "User-described 23 Nov 2026 screenshot report header; interpretation awaiting cross-check",
+      "rank": 43
+    }
+  ]
+}

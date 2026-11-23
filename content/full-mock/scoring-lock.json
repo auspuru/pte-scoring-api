@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "59858c236c57ba8dbf4f089b98854e964ab71f10",
+  "baseCommit": "f3d5215509cba7a96f3be6995d0a73850345bc28",
   "checkedAt": "2026-11-23",
-  "scope": "Versioned RTS Content rubric for new attempts and retained rubric for existing Full Mocks.",
+  "scope": "Versioned RTS Content rubric and standalone SWT exam reporting with exact compatibility for saved Full Mock assessments.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -120,7 +120,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "74346219ef250c66ec2f7230b9369b98fe74e65a2777f1b41e8ba1aceeac5337",
+        "sha256": "f4c9173d7abceb774cd42f2fefb882e5d3e9652a83d55d25c02f617191a42a16",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -213,7 +213,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "c14522d44e7210b8398a91aaf3833b1f834d8912cbaf100a028e2321938d8421",
+        "sha256": "13ebfa36fc9a78dcbc58fbe24785f6c1a2a865e03ea3ef494505677c54d917e9",
         "version": null
       },
       "situation-content-policy-developed.js": {

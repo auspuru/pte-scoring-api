@@ -184,8 +184,16 @@ async function fixture(t, options = {}) {
   return { id, store, engine, engines, directory, state:async () => (await store.get('alice', id)).state };
 }
 
-function snapshotBeforeRts(current) {
+function snapshotBeforeExamReports(current) {
   const snapshot = structuredClone(current);
+  const pins = require('../content/full-mock/swt-exam-report-compatible-pins.json');
+  for (const [name, sha] of Object.entries(pins.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
+  assert.equal(digest(snapshot.scoringSources), require('../content/full-mock/rts-content-upgrade-pins.json').currentDigest);
+  return snapshot;
+}
+
+function snapshotBeforeRts(current) {
+  const snapshot = snapshotBeforeExamReports(current);
   const pins = require('../content/full-mock/rts-content-upgrade-pins.json');
   for (const [name, entry] of Object.entries(pins.previousFiles)) {
     if (entry) snapshot.scoringSources.files[name] = structuredClone(entry);
@@ -195,16 +203,17 @@ function snapshotBeforeRts(current) {
   return snapshot;
 }
 
-for (const variant of ['current', 'previous', 'pre-snapshot']) test('RTS assessment and content recovery use the ' + variant + ' Full Mock policy', async t => {
+for (const variant of ['current', 'before exam reports', 'previous', 'pre-snapshot']) test('RTS assessment and content recovery use the ' + variant + ' Full Mock policy', async t => {
   const { stateFor } = require('../full-mock/assessment');
   const policy = require('../situation-content-policy-developed');
-  const expected = variant === 'current' ? policy.VERSION : policy.LEGACY_VERSION;
+  const expected = ['current', 'before exam reports'].includes(variant) ? policy.VERSION : policy.LEGACY_VERSION;
   const versions = [];
   const f = await fixture(t, { adapters: { assess: async q => {
     if (q.type === 'rts') versions.push(q.rtsContentPolicyVersion);
     return full(q);
   } } });
-  const original = variant === 'current' ? f.engine.snapshot : snapshotBeforeRts(f.engine.snapshot);
+  const original = variant === 'current' ? f.engine.snapshot
+    : variant === 'before exam reports' ? snapshotBeforeExamReports(f.engine.snapshot) : snapshotBeforeRts(f.engine.snapshot);
   if (variant !== 'pre-snapshot') {
     await f.store.update('alice', f.id, state => { state.assessment = stateFor(original); return state; });
   }
@@ -598,7 +607,7 @@ for(const changed of ['model','native-source','report-source'])test('SWT report 
  await assert.rejects(f.engine.request('alice',f.id),error=>error.status===409);assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
 
-for (const release of ['practice rewrites', 'original 20.3.17']) test(`SWT teaching samples preserve confirmed marks from ${release}`, async t => {
+for (const release of ['teaching samples', 'practice rewrites', 'original 20.3.17']) test(`SWT exam reporting preserves confirmed marks from ${release}`, async t => {
   const { stateFor } = require('../full-mock/assessment');
   const { inputHash } = require('../full-mock/aggregation');
   const pins = require('../content/full-mock/swt-policy-upgrade-pins.json');
@@ -611,8 +620,10 @@ for (const release of ['practice rewrites', 'original 20.3.17']) test(`SWT teach
   const original = snapshotBeforeRts(f.engine.snapshot);
   assert.equal(original.scoringSources.files['swt-scoring-policy.js'].version, '20.3.17');
   assert.equal(digest(original.scoringSources), pins.teachingSamples.currentDigest);
-  for (const [name, sha256] of Object.entries(pins.teachingSamples.previousFiles)) original.scoringSources.files[name].sha256 = sha256;
-  assert.equal(digest(original.scoringSources), pins.practiceRewrites.currentDigest);
+  if (release !== 'teaching samples') {
+    for (const [name, sha256] of Object.entries(pins.teachingSamples.previousFiles)) original.scoringSources.files[name].sha256 = sha256;
+    assert.equal(digest(original.scoringSources), pins.practiceRewrites.currentDigest);
+  }
   if (release === 'original 20.3.17') {
     for (const [name, sha256] of Object.entries(pins.practiceRewrites.previousHashes)) original.scoringSources.files[name].sha256 = sha256;
     assert.equal(digest(original.scoringSources), pins.currentDigest);

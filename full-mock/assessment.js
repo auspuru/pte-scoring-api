@@ -106,7 +106,18 @@ function transportSources(current) {
   return projected;
 }
 // Match the exact pre-RTS release before following its historical compatibility chain.
+// Standalone SWT exam reporting changes practice transport only. Map the
+// exact reviewed source pair to the deployed RTS release.
+function previousExamReportsSnapshot(current) {
+  const pins = require('../content/full-mock/swt-exam-report-compatible-pins.json');
+  if (!Object.entries(pins.currentFiles).every(([name, sha]) => current.scoringSources.files[name]?.sha256 === sha)) return null;
+  const sources = structuredClone(current.scoringSources);
+  for (const [name, sha] of Object.entries(pins.previousFiles)) sources.files[name].sha256 = sha;
+  if (digest(sources) !== require('../content/full-mock/rts-content-upgrade-pins.json').currentDigest) return null;
+  return { ...current, scoringSources: sources };
+}
 function previousRtsSnapshot(current) {
+  current = previousExamReportsSnapshot(current) ?? current;
   const pins = require('../content/full-mock/rts-content-upgrade-pins.json');
   if (digest(current.scoringSources) !== pins.currentDigest) return null;
   const sources = structuredClone(current.scoringSources);
@@ -118,6 +129,8 @@ function previousRtsSnapshot(current) {
   return { ...current, scoringSources: sources };
 }
 function compatibleTransportUpgrade(saved, current) {
+  const beforeReports = previousExamReportsSnapshot(current);
+  if (beforeReports && (digest(saved) === digest(beforeReports) || compatibleTransportUpgrade(saved, beforeReports))) return true;
   const beforeRts = previousRtsSnapshot(current);
   if (beforeRts && (digest(saved) === digest(beforeRts) || compatibleTransportUpgrade(saved, beforeRts))) return true;
 
