@@ -15,7 +15,7 @@ const RUBRICS = {
   rl: { rule: 'rubric', traits: { content: 6, pronunciation: 5, fluency: 5 }, gates: ['content'], files: [...speechFiles, 'spoken-summary-policy.js'] },
   asq: { rule: 'accepted-short-answer', traits: { content: 1 }, gates: [], files: ['full-mock/asq-scoring.js', 'speaking-lab.js'], implementation: 'full-mock-asq' },
   sgd: { rule: 'rubric', traits: { content: 6, pronunciation: 5, fluency: 5 }, gates: ['content'], files: [...speechFiles, 'spoken-summary-policy.js'] },
-  rts: { rule: 'rubric', traits: { content: 6, pronunciation: 5, fluency: 5 }, gates: ['content'], files: [...speechFiles, 'situation-content-policy.js'] },
+  rts: { rule: 'rubric', traits: { content: 6, pronunciation: 5, fluency: 5 }, gates: ['content'], files: [...speechFiles, 'situation-content-policy.js', 'situation-content-policy-developed.js'] },
   swt: { rule: 'rubric', traits: { content: 4, form: 1, grammar: 2, vocabulary: 2 }, gates: ['content', 'form'],
     files: [...writingFiles, 'swt-scoring-policy.js', 'swt-legacy-policy.js', 'content/swt-passage-guides.json', 'content/swt-publication-references.json',
       'swt-form-policy.js', 'swt-judgment-service.js', 'swt-judge-format.js', 'swt-reference.js', 'swt-plain-samples.js', 'content/swt-plain-samples.json'] },
@@ -38,9 +38,16 @@ const RUBRICS = {
 const VERSION_EXPORTS = {
   'speaking-scoring.js': 'VERSION', 'delivery-rubric.js': 'RUBRIC_VERSION',
   'gpt-speaking-delivery.js': 'VERSION', 'spoken-summary-policy.js': 'VERSION',
-  'situation-content-policy.js': 'VERSION', 'writing-lab-scoring.js': 'VERSION',
+  'situation-content-policy.js': 'VERSION', 'situation-content-policy-developed.js': 'VERSION', 'writing-lab-scoring.js': 'VERSION',
   'swt-scoring-policy.js': 'POLICY_VERSION', 'public/essay-scoring.js': 'VERSION',
   'full-mock/asq-scoring.js': 'VERSION', 'full-mock/adapters.js': 'VERSION', 'full-mock/aggregation.js': 'VERSION',
   'full-mock/assessment.js': 'VERSION', 'full-mock/profiles.js': 'VERSION', 'full-mock/recording.js': 'VERSION', 'full-mock/session.js': 'VERSION', 'full-mock/report.js': 'VERSION'
 };
-module.exports = { RUBRICS, VERSION_EXPORTS };
+function questionForRtsPolicy(question, snapshot) {
+  if (question.type !== 'rts') return question;
+  const files = snapshot.scoringSources.files;
+  const pin = files['situation-content-policy-developed.js'] || files['situation-content-policy.js'];
+  if (!pin?.version) throw Error('Missing frozen RTS policy version.');
+  return { ...question, rtsContentPolicyVersion: pin.version };
+}
+module.exports = { RUBRICS, VERSION_EXPORTS, questionForRtsPolicy };

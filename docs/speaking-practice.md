@@ -123,31 +123,44 @@ saved assessments are unchanged; new RL/SGD assessments record their policy vers
 Regression fixtures simulate provider output and verify these contracts; they do
 not claim live model calibration or Pearson score equivalence.
 
-### Respond to a Situation: functional communication
+### Respond to a Situation
 
-RTS rewards relevant, understandable communication rather than matching sample ideas.
-A basic response that communicates the intended purpose effectively can earn 6/6;
-a mostly effective response with a small actual communication gap earns 5/6.
-Simple language, concise requests, suitable informal wording, minor slips and valid
-alternative solutions are accepted. Persuasive development, every contextual detail,
-an apology, a particular greeting or a fixed number of supporting ideas are not
-required. Clear conventional indirect requests can work as well as direct requests.
+RTS Content is scored out of 6. Pronunciation and Oral Fluency are each scored
+out of 5 using the separate audio assessment. The following bands describe IPT
+practice scoring.
 
-The reviewer receives only the original situation and the student's transcript.
-Teaching samples and the bank's fact list are excluded from the RTS scoring request.
-The same content request returns an evidence-backed communication judgment instead
-of an idea-coverage checklist. Its communicative level must agree with the /6 mark;
-a material problem blocking the basic purpose prevents 5–6. Relevant fragments,
-generic requests without a situational message, mere scenario retelling and off-topic
-responses remain below the good-score range. Minor inaccuracies and optional
-refinements must not be presented as barriers to full marks.
+| Content | What the listener receives |
+|---|---|
+| 6 | A precise, appropriate response that achieves the goal, uses the important context and develops the message as the situation calls for. The student expresses part of the substantive message in their own words. |
+| 5 | A strong practical answer that gives the listener enough context to act. A small gap in development or precision may remain. A complete, actionable response copied from the supplied wording can earn up to 5. |
+| 4 | A useful response that leaves an important point for the listener to clarify, or a minimal answer that fully settles a simple choice. |
+| 3 | A basic attempt to carry out the communicative goal. |
+| 2 | Relevant details with too little connection to make the intended message usable. |
+| 1 | An isolated relevant fragment or a bare generic response with virtually no situational support. |
+| 0 | No usable relevant response. |
 
-RTS results show communication strengths and useful next steps without a missing
-sample-ideas checklist. The policy version and judgment are saved with each new
-assessment. This is the institute's practice calibration, not a verified Pearson
-score conversion. Existing saved marks and the independent audio-delivery policy
-are retained. Regression checks use simulated providers, including all five original
-situations, alternative solutions, evidence validation and saved-score reuse.
+Judge how much the student actually communicates. A bare choice such as
+“Thursday, please” can earn up to 4 when the listener simply offered two slots.
+Adding greetings, thanks or repetition supplies no further development. There is
+no minimum word count. A concise answer can earn 6. Clear indirect requests,
+suitable informal language, minor slips and practical alternative solutions are
+acceptable. Students may reuse names, dates, room numbers and ordinary task
+vocabulary. Recasting the situation as a request to the listener or proposing a
+useful next step can demonstrate independent wording.
+
+For a student who has been ill and needs an extension on Friday’s assignment,
+“Can I have an extension?” earns 1. Explaining the illness and identifying the
+Friday assignment in an open extension request earns 5. “I’ve been ill and
+can’t finish Friday’s assignment in time. Could I submit it on Monday?” earns
+6. The proposed date helps this lecturer decide. Other situations may call for
+a reason, a consequence or another practical arrangement.
+
+First assessment and retry use the attempt’s policy. The assessor compares the
+transcript with the original situation, records evidence from the student’s
+words and explains any deduction in terms of what the listener still needs.
+Feedback below full marks gives one specific improvement. New attempts carry
+the revised policy version. Previously saved work retains its historical policy
+and marks.
 
 ## Recording, privacy and transcription
 

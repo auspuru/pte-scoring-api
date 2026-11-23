@@ -1,6 +1,7 @@
 'use strict';
 const { randomUUID } = require('node:crypto');
 const { scoringSnapshot } = require('./audit');
+const { questionForRtsPolicy } = require('./rubrics');
 const { digest, deepFreeze, loadPaper, registeredPapers } = require('./paper');
 const { aggregate, inputHash, nativeValid, partialValid, availableMarks, COMPLETION_POLICY } = require('./aggregation');
 const { SPOKEN, createAdapters, maxima, VERSION: adapterVersion } = require('./adapters');
@@ -104,18 +105,34 @@ function transportSources(current) {
   }
   return projected;
 }
-function compatibleTransportUpgrade(saved, current) {
-  // SWT exam reporting changes standalone practice routes only. Project the
-  // exact source pair back to the teaching-samples release before older pins.
-  const examReports = require('../content/full-mock/swt-exam-report-compatible-pins.json');
-  if (Object.entries(examReports.currentFiles).every(([name, sha]) => current.scoringSources.files[name]?.sha256 === sha)) {
-    const sources = structuredClone(current.scoringSources);
-    for (const [name, sha] of Object.entries(examReports.previousFiles)) sources.files[name].sha256 = sha;
-    if (digest(sources) === SWT_COMPATIBILITY.teachingSamples.currentDigest) {
-      const previous = { ...current, scoringSources: sources };
-      if (digest(saved) === digest(previous) || compatibleTransportUpgrade(saved, previous)) return true;
-    }
+// Match the exact pre-RTS release before following its historical compatibility chain.
+// Standalone SWT exam reporting changes practice transport only. Map the
+// exact reviewed source pair to the deployed RTS release.
+function previousExamReportsSnapshot(current) {
+  const pins = require('../content/full-mock/swt-exam-report-compatible-pins.json');
+  if (!Object.entries(pins.currentFiles).every(([name, sha]) => current.scoringSources.files[name]?.sha256 === sha)) return null;
+  const sources = structuredClone(current.scoringSources);
+  for (const [name, sha] of Object.entries(pins.previousFiles)) sources.files[name].sha256 = sha;
+  if (digest(sources) !== require('../content/full-mock/rts-content-upgrade-pins.json').currentDigest) return null;
+  return { ...current, scoringSources: sources };
+}
+function previousRtsSnapshot(current) {
+  current = previousExamReportsSnapshot(current) ?? current;
+  const pins = require('../content/full-mock/rts-content-upgrade-pins.json');
+  if (digest(current.scoringSources) !== pins.currentDigest) return null;
+  const sources = structuredClone(current.scoringSources);
+  for (const [file, entry] of Object.entries(pins.previousFiles)) {
+    if (entry) sources.files[file] = entry;
+    else delete sources.files[file];
   }
+  if (digest(sources) !== SWT_COMPATIBILITY.teachingSamples.currentDigest) return null;
+  return { ...current, scoringSources: sources };
+}
+function compatibleTransportUpgrade(saved, current) {
+  const beforeReports = previousExamReportsSnapshot(current);
+  if (beforeReports && (digest(saved) === digest(beforeReports) || compatibleTransportUpgrade(saved, beforeReports))) return true;
+  const beforeRts = previousRtsSnapshot(current);
+  if (beforeRts && (digest(saved) === digest(beforeRts) || compatibleTransportUpgrade(saved, beforeRts))) return true;
 
   // The teaching examples changed without changing the SWT scorer. Project
   // the exact release back through the standalone practice rewrite release.
@@ -771,14 +788,15 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
   const trustedPapers = new Map([...papers, paper].map(value => [digest(value), value]));
   const trustedSnapshots = new Map([...trustedPapers].map(([paperHash, value]) => {
     const current = paperHash === currentSnapshot.paperHash ? currentSnapshot : snapshot(providerConfiguration, undefined, value);
-    return [paperHash, { current, hash: digest(current),
+    const preRts = previousRtsSnapshot(current);
+    return [paperHash, { current, hash: digest(current), preRts, preRtsHash: preRts && digest(preRts),
       previous: previousAdapters && previousProviderConfiguration ? snapshot(previousProviderConfiguration, undefined, value) : null,
       legacy: legacyAdapters && legacyProviderConfiguration ? snapshot(legacyProviderConfiguration, undefined, value) : null }];
   }));
   function validate(state) {
     const saved = state.assessment, trusted = trustedSnapshots.get(state.paperHash);
     if (trusted && saved && digest(saved.snapshot) === saved.snapshotHash && saved.version === VERSION && saved.snapshot.paperHash === state.paperHash) {
-      if (saved.snapshotHash === trusted.hash || compatibleTransportUpgrade(saved.snapshot,trusted.current)) return adapters;
+      if (saved.snapshotHash === trusted.hash || saved.snapshotHash === trusted.preRtsHash || compatibleTransportUpgrade(saved.snapshot,trusted.current)) return adapters;
       if (trusted.previous && compatibleTransportUpgrade(saved.snapshot,trusted.previous)) return previousAdapters;
       if (trusted.legacy && compatibleTransportUpgrade(saved.snapshot,trusted.legacy)) return legacyAdapters;
     }
@@ -789,7 +807,12 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     const state = await store.update(uid, id, state => {
       if (state.status !== 'submitted') throw fail('Submit the test before requesting assessment.');
       const trusted = trustedSnapshots.get(state.paperHash);
-      if (!state.assessment && trusted) state.assessment = stateFor(trusted.current);
+      if (!state.assessment && trusted) {
+        // New attempts already have a snapshot. Pre-snapshot attempts retain the old RTS rubric.
+        const previous = trusted.preRts;
+        if (!previous) throw fail('The historical assessment version could not be verified.', 409);
+        state.assessment = stateFor(previous);
+      }
       validate(state);
       if(require('../mock-result-review').held(state))throw fail('This report is awaiting instructor review and publication.');
       if (state.assessment.status === 'processing' || state.assessment.status === 'complete' && aggregate(saved.paper, state).ready) return state;
@@ -900,7 +923,7 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
             if (audio.status !== 'ready') { await persist({ status: 'pending', reason: audio.reason || 'recording-not-ready' }); continue; }
             recording = audio.recording;
           }
-          const value = await activeAdapters.assess(q, response, { recording, previous: stages, run: state.assessment.run,
+          const value = await assessWithSnapshot(activeAdapters, state, q, response, { recording, previous: stages, run: state.assessment.run,
             describeImagePolicy:state.assessment.snapshot.configuration.speakingContent.describeImagePolicy,
             deliveryPolicy:state.assessment.snapshot.configuration.delivery.version, ...(availableMarks(state)?{completionPolicy:COMPLETION_POLICY}:{}),
             legacyDelivery:![currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256, PREVIOUS_SWT_SOURCES.files['full-mock/adapters.js'].sha256, require('../content/full-mock/di-number-context-previous-sources.json').files['full-mock/adapters.js'].sha256].includes(state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256),
@@ -974,10 +997,16 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
     if (!trusted) throw fail('Unknown frozen assessment paper.', 409);
     return trusted.current;
   }
+  async function assessWithSnapshot(adapter, state, q, response, options) {
+    const question = questionForRtsPolicy(q, state.assessment.snapshot);
+    const result = await adapter.assess(question, response, options);
+    if (q.type !== 'rts' || result.status !== 'assessed') return result;
+    return { ...result, contentPolicyVersion: question.rtsContentPolicyVersion };
+  }
   async function prepareContent(state,q,response,{recording,previous,checkpoint}) {
     const adapter=validate(state);
     const run=1+Math.max(0,...Object.values(previous||{}).map(stage=>Number.isInteger(stage?.attemptedRun)?stage.attemptedRun:0));
-    return adapter.assess(q,response,{recording,previous,checkpoint,run,describeImagePolicy:state.assessment.snapshot.configuration.speakingContent.describeImagePolicy,completionPolicy:COMPLETION_POLICY,contentOnly:true});
+    return assessWithSnapshot(adapter,state,q,response,{recording,previous,checkpoint,run,describeImagePolicy:state.assessment.snapshot.configuration.speakingContent.describeImagePolicy,completionPolicy:COMPLETION_POLICY,contentOnly:true});
   }
   return { snapshot: currentSnapshot, snapshotFor, prepareContent, review:(uid,id,body)=>require('../mock-result-review').fullAction({store,uid,id,body,at:now(),validate,queue}),request,retryUnavailable, wakeMedia, results, recover, start, stop, drain, jobs, validate };
 }

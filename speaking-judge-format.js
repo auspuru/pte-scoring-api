@@ -2,6 +2,7 @@
 // Use the same forced structured-tool pattern as the portal's SWT reviewer.
 // Student word spans avoid asking the model to retype long spoken quotations.
 const NAME='submit_speaking_content';
+const situationPolicy = require('./situation-content-policy-developed');
 const applies=q=>['di','rl','sgd','rts'].includes(q?.type);
 const string={type:'string'},boolean={type:'boolean'};
 const object=properties=>({type:'object',additionalProperties:false,properties,required:Object.keys(properties)});
@@ -9,7 +10,15 @@ const span={type:'array',items:{type:'integer'},description:'Two student word nu
 function tool(q){
   const properties={total:{type:'integer',enum:[0,1,2,3,4,5,6]},overview:string,
     strengths:{type:'array',items:string},improvements:{type:'array',items:string}};
-  if(q.type==='rts')properties.communicationAssessment=object({
+  if(situationPolicy.forQuestion(q)===situationPolicy){
+    const evidenceFields=Object.fromEntries(situationPolicy.fields.map(field=>[field+'_span',{
+      ...span,description:'Exact contiguous STUDENT word span [first,last] supporting '+field+', or [] when absent.'
+    }]));
+    properties.communicationAssessment=object({
+      level:{type:'string',enum:[...new Set(situationPolicy.levels)]},
+      form:{type:'string',enum:['minimal','substantive']},...evidenceFields,reason:string
+    });
+  } else if(q.type==='rts')properties.communicationAssessment=object({
     level:{type:'string',enum:['effective','mostly_effective','partial','limited','none']},
     materialProblem:boolean,evidence_span:span,reason:string
   });
@@ -44,8 +53,10 @@ function request(prompt,model,context={}){
     specification.input_schema.properties.total.enum=Array.from({length:ceiling+1},(_,i)=>i);
   }
   const numbered=words(transcript).map((w,i)=>`${i+1}:${w.word}`).join(' ');
+  const rtsSpans=situationPolicy.forQuestion(question)===situationPolicy
+    ? ' For RTS use goalEvidence_span, contextEvidence_span, developmentEvidence_span, ownWordingEvidence_span and deductionEvidence_span. Use [] when the corresponding evidence is absent.' : '';
   return {model,temperature:0,max_tokens:4000,tools:[specification],tool_choice:{type:'tool',name:NAME},
-    messages:[{role:'user',content:prompt+'\n\nSTRUCTURED OUTPUT: Use submit_speaking_content instead of the earlier JSON-only or no-tool-call output instruction. Return every required field. In this wire format replace each evidence quotation with evidence_span from NUMBERED_STUDENT_WORDS below; replace coaching quotes with quote_span using the SAME student word numbers. The server restores the exact original words. Keep quotations short and contiguous (under 500 characters). Missing coverage uses []. A coaching strength with no real quote uses quote_span=[] and why="". Never use source/sample word numbers. Keep strengths, improvements and coaching changes to at most two each. Choose total consistently with the semantic assessment flags and the institute policy.\nNUMBERED_STUDENT_WORDS='+numbered}]};
+    messages:[{role:'user',content:prompt+'\n\nSTRUCTURED OUTPUT: Use submit_speaking_content instead of the earlier JSON-only or no-tool-call output instruction. Return every required field. In this wire format replace each evidence quotation with evidence_span from NUMBERED_STUDENT_WORDS below; replace coaching quotes with quote_span using the SAME student word numbers. The server restores the exact original words. Keep quotations short and contiguous (under 500 characters). Missing coverage uses []. A coaching strength with no real quote uses quote_span=[] and why="". Never use source/sample word numbers. Keep strengths, improvements and coaching changes to at most two each. Choose total consistently with the semantic assessment flags and the institute policy.'+rtsSpans+'\nNUMBERED_STUDENT_WORDS='+numbered}]};
 }
 function response(value,context={}){
   if(context.wholeMockEntries)return require('./speaking-mock-combined').response(value);
@@ -67,6 +78,15 @@ function response(value,context={}){
     return quote;
   }
   const restore=(item,missing=false)=>{const {evidence_span,...rest}=item||{};return {...rest,evidence:evidence(item,missing)};};
+  if(situationPolicy.forQuestion(question)===situationPolicy){
+    const a=raw.communicationAssessment;
+    const restored={level:a?.level,form:a?.form,reason:a?.reason};
+    for(const field of situationPolicy.fields){
+      const indices=a?.[field+'_span'];
+      restored[field]=evidence({evidence_span:indices},Array.isArray(indices)&&indices.length===0);
+    }
+    return {...raw,communicationAssessment:restored};
+  }
   return {...raw,...(question.type==='rts'?{communicationAssessment:restore(raw.communicationAssessment)}:{
     coverage:Array.isArray(raw.coverage)?raw.coverage.map(item=>restore(item,item.status==='missing')):raw.coverage,
     ...(question.type==='di'?{}:{summaryAssessment:restore(raw.summaryAssessment)})
