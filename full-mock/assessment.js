@@ -105,6 +105,18 @@ function transportSources(current) {
   return projected;
 }
 function compatibleTransportUpgrade(saved, current) {
+  // SWT exam reporting changes standalone practice routes only. Project the
+  // exact source pair back to the teaching-samples release before older pins.
+  const examReports = require('../content/full-mock/swt-exam-report-compatible-pins.json');
+  if (Object.entries(examReports.currentFiles).every(([name, sha]) => current.scoringSources.files[name]?.sha256 === sha)) {
+    const sources = structuredClone(current.scoringSources);
+    for (const [name, sha] of Object.entries(examReports.previousFiles)) sources.files[name].sha256 = sha;
+    if (digest(sources) === SWT_COMPATIBILITY.teachingSamples.currentDigest) {
+      const previous = { ...current, scoringSources: sources };
+      if (digest(saved) === digest(previous) || compatibleTransportUpgrade(saved, previous)) return true;
+    }
+  }
+
   // The teaching examples changed without changing the SWT scorer. Project
   // the exact release back through the standalone practice rewrite release.
   const teachingSamples = SWT_COMPATIBILITY.teachingSamples;

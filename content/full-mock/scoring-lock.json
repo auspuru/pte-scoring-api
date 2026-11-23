@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "cebb5b7",
-  "checkedAt": "2026-11-22",
-  "scope": "Standalone SWT response coaching route and exact compatibility with previously started Full Mocks.",
+  "baseCommit": "59858c2",
+  "checkedAt": "2026-11-23",
+  "scope": "Standalone SWT exam reporting and passage ordering with exact compatibility for saved Full Mock assessments.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -120,7 +120,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "fc51fad06d1cc060b04e3b7bd48deff6f409a719af06de32edd826f4eb61c230",
+        "sha256": "8f7d5baee0ff543211ccfad596cb2551dfa48f0b3a8b1901eef46ea4934b9845",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -213,7 +213,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "c14522d44e7210b8398a91aaf3833b1f834d8912cbaf100a028e2321938d8421",
+        "sha256": "13ebfa36fc9a78dcbc58fbe24785f6c1a2a865e03ea3ef494505677c54d917e9",
         "version": null
       },
       "situation-content-policy.js": {
