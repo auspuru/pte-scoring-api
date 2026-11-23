@@ -1,0 +1,11 @@
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { verifiedRepeatCount, sortSwtPassages } = require('../swt-repeat-ranking');
+const q = (id, count, evidence, extras={}) => ({id, questionSet:'nov23-2026-swt', repeatCount:count, repeatEvidence:evidence, ...extras});
+test('question number is not a frequency', () => assert.equal(verifiedRepeatCount({id:519,sourceQuestionNumber:519,questionSet:'nov23-2026-swt'}),null));
+test('counts sort descending', () => assert.deepEqual(sortSwtPassages([q(1,2,'dated'),q(2,12,'dated'),q(3,6,'dated')]).map(x=>x.id),[2,3,1]));
+test('unknown count stays unranked', () => assert.deepEqual(sortSwtPassages([q(1,null,''),q(2,4,'dated'),q(3,3,'')]).map(x=>x.id),[2,1,3]));
+test('ties use source order', () => assert.deepEqual(sortSwtPassages([q(1,2,'x',{sourceOrder:4}),q(2,2,'x',{sourceOrder:2})]).map(x=>x.id),[2,1]));
+test('legacy prediction rank intact when unranked', () => assert.deepEqual(sortSwtPassages([{id:12},{id:91},{id:30}],new Map([[91,0],[30,1]])).map(x=>x.id),[91,30,12]));
+test('other question sets not considered ranked',()=>assert.deepEqual(sortSwtPassages([{id:1,questionSet:'other',repeatCount:50,repeatEvidence:'x'},q(2,1,'dated')]).map(x=>x.id),[2,1]));
