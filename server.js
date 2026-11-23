@@ -22,6 +22,7 @@ const AccountProgress = require('./public/account-progress');
 const { createJudgmentService } = require('./swt-judgment-service');
 const { createResponseExamplesProvider, createResponseExamplesService, createResponseExamplesHandler } = require('./swt-response-examples');
 const { studentPassage, fallbackSample } = require('./swt-reference');
+const { sortSwtPassages, IMPORT_BATCH } = require('./swt-repeat-ranking');
 const { repairMissingSwtSamples } = require('./swt-sample-backfill');
 const { createEssayGrader, essayResultForClient } = require('./essay-grading');
 const EssayGenerationPolicy = require('./public/essay-generation-policy');
@@ -1324,13 +1325,7 @@ const PassageAPI = USE_POSTGRES ? PgPassageAPI : JsonPassageAPI;
 // remain authoritative, and a new deploy must not bulk-replace the live bank.
 const userSwtPassages = require('./content/user-swt-predictions').passages;
 const userSwtRank = new Map(userSwtPassages.map((p, index) => [p.id, index]));
-const predictionFirst = rows => [...rows].sort((a, b) => {
-  const aRank = userSwtRank.get(Number(a.id)), bRank = userSwtRank.get(Number(b.id));
-  if (aRank === undefined && bRank === undefined) return 0; // preserve old question order
-  if (aRank === undefined) return 1;
-  if (bRank === undefined) return -1;
-  return aRank - bRank;
-});
+const predictionFirst = rows => sortSwtPassages(rows, userSwtRank);
 
 async function seedUserSwtPredictions() {
   // Never overwrite a pre-existing question, even on deployments with a volume
@@ -1661,6 +1656,15 @@ function sanitizePassage(p) {
     if (typeof em.framework_reason === 'string') emOut.framework_reason = em.framework_reason.trim().slice(0, 500);
     if (typeof em.extractedAt === 'string') emOut.extractedAt = em.extractedAt.slice(0, 40);
     if (Object.keys(emOut).length) out.extractionMeta = emOut;
+  }
+  // Optional, verified November SWT import metadata. Absence means unranked.
+  if (p.questionSet === IMPORT_BATCH) {
+    out.questionSet = IMPORT_BATCH;
+    if (Number.isSafeInteger(p.sourceOrder) && p.sourceOrder > 0) out.sourceOrder = p.sourceOrder;
+    if (Number.isSafeInteger(p.sourceQuestionNumber) && p.sourceQuestionNumber > 0) out.sourceQuestionNumber = p.sourceQuestionNumber;
+    if (typeof p.sourceScreenshot === 'string') out.sourceScreenshot = p.sourceScreenshot.trim().slice(0, 200);
+    if (Number.isSafeInteger(p.repeatCount) && p.repeatCount >= 0) out.repeatCount = p.repeatCount;
+    if (typeof p.repeatEvidence === 'string') out.repeatEvidence = p.repeatEvidence.trim().slice(0, 1000);
   }
   return out;
 }
@@ -3870,6 +3874,16 @@ app.get('/api/admin/passages', requireAdmin, async (req, res) => {
 app.post('/api/admin/passages', requireAdmin, async (req, res) => {
   try {
     const body = req.body || {};
+    // Preserve rank and screenshot provenance when the older admin UI saves
+    // a passage without knowing about these new optional fields.
+    if (Number.isSafeInteger(Number(body.id)) && Number(body.id) > 0) {
+      const existing = await PassageAPI.getById(body.id);
+      if (existing?.questionSet === IMPORT_BATCH) {
+        for (const field of ['questionSet','sourceOrder','sourceQuestionNumber','sourceScreenshot','repeatCount','repeatEvidence']) {
+          if (!Object.prototype.hasOwnProperty.call(body, field) && Object.prototype.hasOwnProperty.call(existing, field)) body[field] = existing[field];
+        }
+      }
+    }
     if (!body.title || !body.text) return res.status(400).json({ error: 'title and text are required' });
     if (!body.keyElements || typeof body.keyElements !== 'object') {
       return res.status(400).json({ error: 'keyElements object is required' });
