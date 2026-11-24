@@ -226,6 +226,15 @@ body[data-section="practice"] #practiceScreen.practice-studio-surface .practice-
 body.portal-layout:not(.portal-exam-active) :is(#speakingPane,#readingPane,#writingLabScreen).portal-layout-question .practice-question-toolbar.practice-question-dock{position:sticky!important;top:0!important;z-index:35}
 
 /* All individual task menus share the SWT question-library structure. */
+.practice-question-library {
+  --sans: system-ui, sans-serif;
+  font-family: var(--sans);
+}
+
+.practice-question-library :is(button, input, select, textarea) {
+  font-family: inherit;
+}
+
 body :is(#speakingPane,#readingPane,#swtPane,#practiceScreen,#writingLabScreen,#lab) .practice-question-library{width:100%;max-width:1180px;margin:0 auto;padding:28px 32px;border:1px solid var(--line,#dce4e8);border-radius:12px;background:var(--bg-card,#fff);box-sizing:border-box;color:var(--ink,#24404a)}
 body :is(#speakingPane,#readingPane,#swtPane,#practiceScreen,#writingLabScreen,#lab) .practice-library-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin:0 0 28px;padding:0;border:0;background:none}
 body :is(#speakingPane,#readingPane,#swtPane,#practiceScreen,#writingLabScreen,#lab) .practice-library-heading .practice-library-eyebrow{font-size:11px;font-weight:650;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-soft,#60767c);margin:0 0 6px}
