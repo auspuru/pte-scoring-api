@@ -5,8 +5,27 @@ function validate() {
   const manifest=require('../content/speaking-audio-manifest')();
   let recordings=0;
   const discussions=[...require('../content/user-sgd-oct30.json'), ...require('../content/user-sgd-20261123.json')];
-  assert.equal(bank.questions.length,30+require('../content/di-user-predictions.json').length+require('../content/rts-original-practice.json').length+require('../content/user-speaking-oct24.json').length+discussions.length);assert.equal(new Set(bank.questions.map(q=>q.id)).size,bank.questions.length);
-  for(const type of Object.keys(bank.types))assert.equal(bank.questions.filter(q=>q.type===type).length,type==='di'?5+require('../content/di-user-predictions.json').length:type==='rts'?6+require('../content/rts-original-practice.json').length:type==='rl'?5+require('../content/user-speaking-oct24.json').filter(q=>q.type==='rl').length:type==='sgd'?5+discussions.length:5);
+  const suppliedSpeaking = require('../content/user-speaking-oct24.json');
+  const retellPredictions = require('../content/user-rl-20261123.json');
+  const diPredictions = require('../content/di-user-predictions.json');
+  const rtsPrompts = require('../content/rts-original-practice.json');
+  const picturedDurations = new Map(retellPredictions.map(({ id, source }) => {
+    const seconds = source.playerDurationSeconds;
+    assert(Number.isSafeInteger(seconds) && seconds > 0, id + ' source player duration');
+    return [id, seconds];
+  }));
+  const expectedCounts = {
+    di: 5 + diPredictions.length,
+    rts: 6 + rtsPrompts.length,
+    rl: 5 + suppliedSpeaking.filter(q => q.type === 'rl').length + retellPredictions.length,
+    sgd: 5 + discussions.length,
+  };
+  assert.equal(bank.questions.length, 30 + diPredictions.length + rtsPrompts.length
+    + suppliedSpeaking.length + discussions.length + retellPredictions.length);
+  assert.equal(new Set(bank.questions.map(q => q.id)).size, bank.questions.length);
+  for (const type of Object.keys(bank.types)) {
+    assert.equal(bank.questions.filter(q => q.type === type).length, expectedCounts[type] ?? 5);
+  }
   for(const q of bank.questions) {
     assert(q.sample&&q.sample.trim(),q.id+' sample');
     if(['ra','rts'].includes(q.type))assert(q.text.split(/\s+/).length<=60,q.id+' prompt length');
@@ -30,8 +49,13 @@ function validate() {
         assert.equal(new Set(Object.values(entry.speakerAccents)).size,3,q.id+' contrasting accents');
         assert.deepEqual(entry.turnSpeakers,q.turns.map(t=>t[0]),q.id+' recorded turn order');
       }
-      const bounds={rs:[3,9],rl:[45,90],sgd:[90,180],rts:[5,35]}[q.type];
-      assert(entry.seconds>=bounds[0]&&entry.seconds<=bounds[1],q.id+' duration');
+      const [minimum, maximum] = { rs:[3,9], rl:[45,90], sgd:[90,180], rts:[5,35] }[q.type];
+      // The supplied lectures vary in length. Allow the range shown in each
+      // source player so its transcript can be narrated at a natural pace.
+      const picturedSeconds = picturedDurations.get(q.id);
+      const low = Math.min(minimum, picturedSeconds ?? minimum);
+      const high = Math.max(maximum, picturedSeconds ?? maximum);
+      assert(entry.seconds >= low && entry.seconds <= high, q.id + ' duration');
     }
   }
   return {questions:bank.questions.length,recordings};

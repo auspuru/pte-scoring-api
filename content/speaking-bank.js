@@ -142,6 +142,11 @@ questions.push(...require('./user-sgd-20261123.json').map(q => ({
   ...q,
   title: novemberPracticeTitle(q.title),
 })));
+questions.push(...require('./user-rl-20261123.json').map(q => ({
+  ...types.rl,
+  ...q,
+  title: novemberPracticeTitle(q.title) + ' · AI practice narration',
+})));
 for (const q of questions) {
   if (q.turns) q.text = [...(q.narration ? ['Narration: ' + q.narration] : []), ...q.turns.map(([speaker, text]) => speaker + ': ' + text)].join('\n');
   if (['ra', 'rs'].includes(q.type)) q.sample = q.text;
