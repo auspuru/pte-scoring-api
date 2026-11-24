@@ -8,7 +8,7 @@
   const report = window.WritingLabReport;
   const listeningTasks = window.ListeningTasks;
   const studio = window.ListeningStudio;
-  let listeningMode='practice', listeningHistory=[], studioSearch='', studioFilter='all';
+  let listeningMode='practice', listeningTimed=false, listeningHistory=[], studioSearch='', studioFilter='all';
   let historyLoaded=false, historyScope='', historyRead=null, practiceContext=null, focusedQuestion='';
   const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const count = text => text.trim().split(/\s+/).filter(Boolean).length;
@@ -29,6 +29,12 @@
   const audioQuestion = q => ['sst','wfd','lmcma','lfi','hcs','lmcsa','smw','hiw'].includes(q.type);
   const practiceTypes=['sst','wfd','lmcma','lfi','hcs','lmcsa','smw','hiw'];
   const questionsFor=type=>studio?studio.questions(catalog,type):type==='sst'?catalog?.spoken||[]:type==='wfd'?catalog?.dictation||[]:(catalog?.listeningPractice||[]).filter(q=>q.type===type);
+  const practiceModeLabel=value=>value.mode==='practice'&&value.timedPractice!==true?'Untimed practice':'Timed practice';
+  function practiceSettings(current) {
+    const mode=current?.mode||listeningMode;
+    const timed=current ? current.timedPractice===true : listeningTimed;
+    return {mode,...(mode==='practice'&&timed?{timedPractice:true}:{})};
+  }
   const supportedPractice=()=>attempt?.kind!=='mock'&&attempt?.mode==='practice';
   const beforeDeadline=()=>!attempt?.pause&&(attempt?.deadline==null||attempt.deadline>Date.now()+offset);
   function bookmarks(){try{return JSON.parse(storage.get('ipt-listening-bookmarks:'+username)||'[]');}catch(_){return [];}}
@@ -43,6 +49,11 @@
     const search=document.getElementById('studio-search'),filter=document.getElementById('studio-filter');
     if(search)search.oninput=()=>{studioSearch=search.value;refresh();};
     if(filter)filter.onchange=()=>{studioFilter=filter.value;refresh();};
+    const timed=document.getElementById('listeningTimed');
+    if(timed)timed.onchange=()=>{
+      listeningTimed=timed.checked;
+      storage.put('ipt-listening-timed:'+username,String(listeningTimed));
+    };
   }
   const visiblePractice=type=>studio?.visibleQuestions({items:questionsFor(type),history:listeningHistory,bookmarks:bookmarks(),search:studioSearch,filter:studioFilter,mode:listeningMode})||questionsFor(type).map((q,index)=>({q,index}));
   function practiceQueue(type){
@@ -248,7 +259,7 @@
     setListeningStyle(practiceTypes.includes(tab)||(tab==='history'&&practiceTypes.includes(historyKind)));bindStudioLibrary();
     if(practiceTypes.includes(tab)&&studio){
       const library=root.querySelector?.('.studio-library');
-      if(library){library.innerHTML=window.PracticeStudio.questionLibrary({skill:'Listening',title:report.labels[tab],total:visiblePractice(tab).length,searchId:'studio-search',search:studioSearch,filterId:'studio-filter',filter:studioFilter,filters:[['all','All questions'],['new','Not attempted'],['draft','In progress'],['done','Completed'],['bookmarked','Bookmarked']],rowsId:'studio-question-list',options:'<div class="studio-modes" role="group" aria-label="Practice mode"><button type="button" data-listening-mode="practice" aria-pressed="'+(listeningMode==='practice')+'">Practice</button><button type="button" data-listening-mode="exam" aria-pressed="'+(listeningMode==='exam')+'">Exam-style</button></div>',extras:'<details><summary>Saved responses &amp; practice help</summary><p>'+esc(studio.help[tab])+'</p><button type="button" class="secondary" data-tab="history">Saved responses</button>'+(['hcs','hiw'].includes(tab)?'<button type="button" class="secondary" data-portal="listening-'+tab+'-bank">Earlier question bank</button>':'')+'</details>'});renderPracticeCards();bindStudioLibrary();
+      if(library){library.innerHTML=window.PracticeStudio.questionLibrary({skill:'Listening',title:report.labels[tab],total:visiblePractice(tab).length,searchId:'studio-search',search:studioSearch,filterId:'studio-filter',filter:studioFilter,filters:[['all','All questions'],['new','Not attempted'],['draft','In progress'],['done','Completed'],['bookmarked','Bookmarked']],rowsId:'studio-question-list',options:'<div class="studio-modes" role="group" aria-label="Practice mode"><button type="button" data-listening-mode="practice" aria-pressed="'+(listeningMode==='practice')+'">Practice</button><button type="button" data-listening-mode="exam" aria-pressed="'+(listeningMode==='exam')+'">Exam-style</button></div>'+(listeningMode==='practice'?'<label class="practice-library-timer"><input type="checkbox" id="listeningTimed" role="switch" '+(listeningTimed?'checked':'')+'> Timed</label>':''),extras:'<details><summary>Saved responses &amp; practice help</summary><p>'+esc(studio.help[tab])+'</p><button type="button" class="secondary" data-tab="history">Saved responses</button>'+(['hcs','hiw'].includes(tab)?'<button type="button" class="secondary" data-portal="listening-'+tab+'-bank">Earlier question bank</button>':'')+'</details>'});renderPracticeCards();bindStudioLibrary();
         const selected=[...(root.querySelectorAll?.('[data-listening-open]')||[])].find(b=>b.dataset.listeningOpen===practiceContext?.selectedId);selected?.focus({preventScroll:true});root.scrollTop=practiceContext?.scrollTop||0;const rows=document.getElementById('studio-question-list');if(rows)rows.scrollTop=practiceContext?.libraryScrollTop||0;
       }
     }
@@ -294,7 +305,7 @@
     try {
       if(mock && window.PortalExamMode?.prepare && !await window.PortalExamMode.prepare('writing',portalShell || root)) {button.disabled=false;return;}
       if(serial!==navigationSerial || !workspaceVisible)return;
-      const started=await api('/attempts',{id:crypto.randomUUID(),...(practiceSet?{practiceSet:{type:practiceSet.type,count:practiceSet.count}}:{testId}),...(!mock?{mode:listeningMode}:{})});
+      const started=await api('/attempts',{id:crypto.randomUUID(),...(practiceSet?{practiceSet:{type:practiceSet.type,count:practiceSet.count}}:{testId}),...(!mock?practiceSettings():{})});
       if (serial!==navigationSerial || !workspaceVisible) return;
       setAttempt(started);
       showAttempt();
@@ -324,7 +335,7 @@
     try {
       writeDraft();stopAudio();await saveAnswer(false);await saving;if(saveConflict||serial!==navigationSerial||!workspaceVisible){button.disabled=false;return;}
       // A new UUID keeps the completed attempt and its feedback in My attempts.
-      const value=await api('/attempts',{id:crypto.randomUUID(),testId,...(studio?{mode:attempt?.mode||listeningMode}:{})});
+      const value=await api('/attempts',{id:crypto.randomUUID(),testId,...(studio?practiceSettings(attempt):{})});
       if(serial!==navigationSerial || !workspaceVisible) return;
       storage.put(audioSkipKey(value.id),'1');
       setAttempt(value);
@@ -634,12 +645,12 @@
   function practiceNavigation() {
     if(!catalog||!attempt||attempt.kind==='mock'||!practiceTypes.includes(attempt.kind))return '';
     const questions=practiceQueue(attempt.kind),index=questions.findIndex(q=>q.id===attempt.testId);
-    return window.PracticeStudio.questionToolbar({title:report.labels[attempt.kind],position:index<0?'Choose a question from the list':'Question '+(index+1)+' of '+questions.length,mode:attempt.mode==='practice'?'Untimed practice':'Timed practice',status:attempt.status==='submitted'?'Completed':'In progress',className:'listening-practice-dock',actions:'<button type="button" class="secondary" data-tab="'+esc(attempt.kind)+'">← Return to questions</button><button type="button" class="secondary" data-reattempt="'+esc(attempt.testId)+'">↻ Reattempt</button><button type="button" class="secondary" data-practice-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><button type="button" class="secondary" data-practice-move="1" '+(index<0||index>=questions.length-1?'disabled':'')+'>Next →</button>'});
+    return window.PracticeStudio.questionToolbar({title:report.labels[attempt.kind],position:index<0?'Choose a question from the list':'Question '+(index+1)+' of '+questions.length,mode:practiceModeLabel(attempt),status:attempt.status==='submitted'?'Completed':'In progress',className:'listening-practice-dock',actions:'<button type="button" class="secondary" data-tab="'+esc(attempt.kind)+'">← Return to questions</button><button type="button" class="secondary" data-reattempt="'+esc(attempt.testId)+'">↻ Reattempt</button><button type="button" class="secondary" data-practice-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><button type="button" class="secondary" data-practice-move="1" '+(index<0||index>=questions.length-1?'disabled':'')+'>Next →</button>'});
   }
   function practiceHistory() {
     if(!attempt||attempt.kind==='mock'||!practiceTypes.includes(attempt.kind))return '';
     const rows=listeningHistory.filter(a=>a.testId===attempt.testId&&a.id!==attempt.id).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));
-    return window.PracticeStudio.attemptHistory(rows.map((a,i)=>({id:a.id,label:'Attempt '+(rows.length-i),date:window.PracticeStudio.brisbaneDate(a.startedAt),mode:a.mode==='practice'?'Untimed practice':'Timed practice',status:a.status==='submitted'?(a.total==null?'Feedback pending':a.total+'/'+a.maximum+' marks'):'In progress',actions:'<button type="button" class="secondary" data-listening-attempt="'+esc(a.id)+'">'+(a.status==='submitted'?'Answer &amp; feedback':'Resume saved attempt')+'</button>'})));
+    return window.PracticeStudio.attemptHistory(rows.map((a,i)=>({id:a.id,label:'Attempt '+(rows.length-i),date:window.PracticeStudio.brisbaneDate(a.startedAt),mode:practiceModeLabel(a),status:a.status==='submitted'?(a.total==null?'Feedback pending':a.total+'/'+a.maximum+' marks'):'In progress',actions:'<button type="button" class="secondary" data-listening-attempt="'+esc(a.id)+'">'+(a.status==='submitted'?'Answer &amp; feedback':'Resume saved attempt')+'</button>'})));
   }
   async function movePractice(direction,button) {
     if(moving||saveConflict||!attempt)return;
@@ -866,6 +877,7 @@
         const values=await Promise.all([api('/catalog'),api('/session'),api('/attempts')]);
         catalog=values[0];username=values[1].username;listeningHistory=values[2]||[];
         listeningMode=storage.get('ipt-listening-mode:'+username)==='exam'?'exam':'practice';
+        listeningTimed=storage.get('ipt-listening-timed:'+username)==='true';
         seenQuestionIds=new Set((values[2]||[]).filter(a=>a.status==='submitted').flatMap(a=>a.questionIds||[]));
         if(pendingRequest){const request=pendingRequest;pendingRequest=null;await handleRequest(request);}
         else if(!inPortal) await hub(requestedView);
@@ -886,7 +898,7 @@
     },
     leave:suspend,
     reset() {
-      suspend();clearInterval(timer);clearTimeout(saveTimer);clearTimeout(overallTimer);catalog=null;username=null;attempt=null;listeningHistory=[];historyLoaded=false;historyRead=null;historyScope='';practiceContext=null;focusedQuestion='';studioSearch='';studioFilter='all';requestedView='mocks';view='mocks';handledRequest=null;pendingRequest=null;
+      suspend();clearInterval(timer);clearTimeout(saveTimer);clearTimeout(overallTimer);catalog=null;username=null;attempt=null;listeningTimed=false;listeningHistory=[];historyLoaded=false;historyRead=null;historyScope='';practiceContext=null;focusedQuestion='';studioSearch='';studioFilter='all';requestedView='mocks';view='mocks';handledRequest=null;pendingRequest=null;
       shell.classList.remove('exam-mode');
       if(inPortal) root.innerHTML='<p class="loading" role="status">Open a Writing or Listening task to begin.</p>';
     }
@@ -916,7 +928,7 @@
     if(b.dataset.edit) return edit(b.dataset.edit);
     if(b.hasAttribute('data-random-practice'))return window.switchSection?.('practice-sets');
     if(b.hasAttribute('data-random-again'))return start(null,b,++navigationSerial,attempt.practiceSet);
-    if(b.dataset.leave && await confirmAction('Leave this attempt?',supportedPractice()?'Your answers stay saved in My attempts.':'Your saved answers remain in My attempts. The timer continues while you are away.','Save and exit')) {
+    if(b.dataset.leave && await confirmAction('Leave this attempt?',supportedPractice()&&attempt.deadline==null?'Your answers stay saved in My attempts.':'Your saved answers remain in My attempts. The timer continues while you are away.','Save and exit')) {
       const kind=attempt?.kind; await saveAnswer(false); hub(kind==='mock'?'mocks':kind || 'sst');
       if(kind==='mock')returnToPortal('mock-tests');
     }

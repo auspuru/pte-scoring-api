@@ -257,7 +257,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     for (const a of all) {
       const current = a.status==='active' && a.deadline!=null && Date.now()>=a.deadline ? await store.update(req.labUser,a.id, value => reconcile(value)) : a;
       const summary = report.summarize(current.questions, current.results, current);
-      entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,module:current.module || 'writing',mode:current.mode || 'exam',supported:current.mode==='practice',playCount:(current.playback||[]).reduce((n,p)=>n+(p?.plays||0),0),status:current.status,startedAt:current.startedAt,
+      entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,module:current.module || 'writing',mode:current.mode || 'exam',...(current.timedPractice===true?{timedPractice:true}:{}),supported:current.mode==='practice',playCount:(current.playback||[]).reduce((n,p)=>n+(p?.plays||0),0),status:current.status,startedAt:current.startedAt,
         index:current.index, completed:current.completed.filter(Boolean).length,questions:current.questions.length,
         questionIds:current.questions.map(q=>q.id),
         total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90,
@@ -266,7 +266,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     res.set('Cache-Control','no-store'); res.json(entries);
   }));
   router.post('/attempts', route(async(req,res) => {
-    const { id, testId, mode } = req.body || {};
+    const { id, testId, mode, timedPractice } = req.body || {};
+    if(timedPractice!==undefined&&typeof timedPractice!=='boolean')throw bad('Invalid timed practice setting.');
     if(mode!=null && !['practice','exam'].includes(mode))throw bad('Invalid practice mode.');
     const config=Object.hasOwn(req.body||{},'practiceSet')?randomPractice.options(req.body.practiceSet):null;
     if(config&&(config.type!=='wfd'||testId||req.body.questions||req.body.questionIds))throw bad('Choose Write From Dictation and a question count.');
@@ -278,6 +279,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       if (existing) {if(config&&(!existing.practiceSet||existing.practiceSet.type!==config.type||existing.practiceSet.count!==config.count))throw bad('This attempt belongs to another practice set.',409);return reconcile(existing);}
       return { id,testId:config?mock.id:testId,...(config?{practiceSet:mock.practiceSet}:{}),title:mock?.title || individual.title,module:mock?.module || (mock ? 'writing' : 'listening'),kind:mock ? 'mock' : individual.type,questions:q,index:0,
         mode:mock ? 'exam' : mode || 'exam',
+        ...(!mock&&mode==='practice'&&timedPractice===true?{timedPractice:true}:{}),
         status:mock ? 'active' : 'ready',startedAt:Date.now(),deadline:mock ? Date.now()+q[0].minutes*60000 : null,
         answers:q.map(()=>''),notes:'',revisions:q.map(()=>0),completed:q.map(()=>null),results:q.map(()=>null),playback:q.map(()=>null),
         ...(mock ? {integrity:{protected:true,events:[]}} : {}) };
@@ -313,7 +315,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   router.post('/attempts/:id/begin', route(async(req,res) => {
     const a = await store.update(req.labUser,req.params.id,value => {
       if (!value) throw bad('Attempt not found.',404);
-      if(value.status === 'ready') { value.status='active'; value.startedAt=Date.now(); value.deadline=value.mode==='practice'&&value.kind!=='mock'?null:value.startedAt+value.questions[0].minutes*60000; }
+      if(value.status === 'ready') { value.status='active'; value.startedAt=Date.now(); value.deadline=value.mode==='practice'&&value.kind!=='mock'&&value.timedPractice!==true?null:value.startedAt+value.questions[0].minutes*60000; }
       return reconcile(value);
     });
     assessSubmitted(req.labUser, a);

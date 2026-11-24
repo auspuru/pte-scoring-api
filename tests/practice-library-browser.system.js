@@ -50,6 +50,49 @@ for(const width of [1366,1920])test('Unified practice library '+width+'px: all 2
  assert.equal(await page.$eval('#summaryInput',node=>node.value),'An unfinished summary remains recoverable.');
  assert.equal(await page.$eval('#timerToggle',node=>node.getAttribute('aria-pressed')),'true');
  assert.match(await page.$eval('#timerDisplay',node=>node.textContent),/^09:/);
+ // Reading times fresh launches and restores the draft even if the switch changes.
+ await page.evaluate(()=>switchSection('reading-dropdown'));
+ const readingTimed='#readingPane [data-reading-library-timed]';
+ const readingOpen='#readingPane [data-practice-uid]';
+ const readingClock='#readingPane [data-timer]';
+ await page.waitForSelector(readingOpen,{visible:true});
+ assert.equal(await page.$eval(readingTimed,node=>node.checked),false);
+ await page.locator(readingTimed).click();
+ const readingUid=await page.$eval(readingOpen,node=>node.dataset.practiceUid);
+ await page.locator(readingOpen).click();
+ const readingSnapshot=()=>page.evaluate(()=>AccountProgress.unpackReading(JSON.parse(localStorage.getItem(ReadingPractice.storageKey(currentUserId)))));
+ await page.waitForSelector('#readingPane .reading-practice-dock');
+ const timedReading=(await readingSnapshot()).session;
+ assert.equal(timedReading.practiceUid,readingUid);
+ assert.equal(timedReading.deadline-timedReading.startedAt,120000);
+ assert.match(await page.$eval(readingClock,node=>node.textContent),/^(01:|02:00)/);
+ await page.locator('#readingPane .reading-practice-dock [data-action="home"]').click();
+ await page.waitForSelector(readingTimed,{visible:true});
+ await page.locator(readingTimed).click();
+ await page.locator('[data-reading-resume="'+timedReading.id+'"]').click();
+ await page.waitForSelector('#readingPane .reading-practice-dock');
+ assert.equal((await readingSnapshot()).session.id,timedReading.id);
+ assert.match(await page.$eval(readingClock,node=>node.textContent),/^(01:|02:00)/);
+
+ // Listening uses the practice clock without taking away replay or the saved mode.
+ await page.evaluate(()=>switchSection('dictation'));
+ const listeningTimed='#listeningTimed', listeningOpen='[data-listening-open]';
+ await page.waitForSelector(listeningOpen,{visible:true});
+ assert.equal(await page.$eval(listeningTimed,node=>node.checked),false);
+ await page.locator(listeningTimed).click();
+ const created=page.waitForResponse(response=>response.url().endsWith('/api/writing-lab/attempts')&&response.request().method()==='POST');
+ await page.locator(listeningOpen).click();
+ const timedListening=await (await created).json();
+ assert.equal(timedListening.mode,'practice');
+ assert.equal(timedListening.timedPractice,true);
+ await page.waitForSelector('#audio-replay',{visible:true});
+ assert.match(await page.$eval('.listening-practice-dock',node=>node.textContent),/Timed practice/);
+ await page.locator('.listening-practice-dock [data-tab="wfd"]').click();
+ await page.waitForSelector(listeningTimed,{visible:true});
+ await page.locator(listeningTimed).click();
+ await page.locator('[data-listening-attempt="'+timedListening.id+'"]').click();
+ await page.waitForSelector('#audio-replay',{visible:true});
+ assert.match(await page.$eval('.listening-practice-dock',node=>node.textContent),/Timed practice/);
  assert.deepEqual(errors,[]);assert.deepEqual(grades,[]);
 });
 

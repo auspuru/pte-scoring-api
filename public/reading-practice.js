@@ -312,7 +312,7 @@
     const preset = bank.mockCatalogue?.find(item => item.id === mode);
     const set = bank.sets.find(s => s.id === (preset?.setId || host.querySelector('#readingSet')?.value)) || bank.sets[0];
     const type = host.querySelector('#readingType')?.value || 'all';
-    const timed = practiceUid ? false : preset ? preset.timed : mode !== 'practice' || host.querySelector('#readingTimed')?.checked;
+    const timed = practiceUid ? libraryView?.timed === true : preset ? preset.timed : mode !== 'practice' || host.querySelector('#readingTimed')?.checked;
     const ticket = generation, startedOwner = owner, token = authToken();
     const startTicket = ++startGeneration;
     starting = true;
@@ -344,7 +344,7 @@
         if(practiceUid){
           const q=practiceLibraries().flatMap(l=>l.questions).find(item=>item.uid===practiceUid);
           if(!q)throw Error('This practice question is unavailable.');
-          plan={questions:[{...q}],minutes:0,name:q.title};
+          plan={questions:[{...q}],minutes:2,name:q.title};
         }
       }
       const protection = typeof window !== 'undefined' ? window.PortalExamMode : null;
@@ -429,7 +429,7 @@
     const saved=(matches(state.session||{})&&!state.session.done?`<div class="portal-resume"><strong>${escape(state.session.name)}</strong><button class="portal-button" data-action="resume">Continue question</button></div>`:'')
       + (drafts.length?`<details class="reading-home-help"><summary>Saved question drafts <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><strong>${escape(r.name)}</strong><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:'')
       + (history.length?`<details class="reading-home-help"><summary>Question attempts <span>${history.length}</span></summary><ul class="reading-history">${history.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${r.earned}/${r.possible} points</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul></details>`:'');
-    host.innerHTML=studio.wrap(practiceSkill(id),practiceRoute(id),studio.questionLibrary({skill:practiceSkill(id)==='listening'?'Listening':'Reading',title:library.name,total:libraryQuestions().length,searchAttrs:'data-library-search',search:query,filterAttrs:'data-library-status',filter:libraryView.status||'all',rowsAttrs:'data-library-list',rowsClass:'reading-library-rows',rows:libraryList(),extras:saved+'<p data-start-status role="status" aria-live="polite"></p>'}));
+    host.innerHTML=studio.wrap(practiceSkill(id),practiceRoute(id),studio.questionLibrary({skill:practiceSkill(id)==='listening'?'Listening':'Reading',title:library.name,total:libraryQuestions().length,searchAttrs:'data-library-search',search:query,filterAttrs:'data-library-status',filter:libraryView.status||'all',rowsAttrs:'data-library-list',rowsClass:'reading-library-rows',rows:libraryList(),options:'<label class="practice-library-timer"><input type="checkbox" role="switch" data-reading-library-timed '+(libraryView.timed===true?'checked':'')+'> Timed</label>',extras:saved+'<p data-start-status role="status" aria-live="polite"></p>'}));
     if(practiceSkill(id)==='listening'){const source=document.createElement?.('p');if(source){source.className='reading-note';source.innerHTML='Question source: Earlier bank · <button type="button" class="portal-button" data-action="current-listening-bank">Current bank</button>';host.querySelector?.('.practice-library-extras')?.prepend(source);}}
     const selected=[...(host.querySelectorAll?.('[data-practice-uid]')||[])].find(b=>b.dataset.practiceUid===libraryView.selectedUid);
     selected?.setAttribute('aria-current','true');selected?.focus({preventScroll:true});
@@ -722,6 +722,7 @@
   function editable() { if(expireSession())return false; const s=state?.session; return s&&!s.done&&!s.manualPause&&!s.checked.includes(s.questions[s.index].uid); }
   function change(e) {
     if(!owner||identity()!==owner)return;
+    if(e.target.hasAttribute?.('data-reading-library-timed')&&libraryView){libraryView.timed=e.target.checked;return;}
     if(e.target.hasAttribute?.('data-library-status')&&libraryView){libraryView.status=e.target.value;libraryView.page=0;refreshLibraryList();return;}
     if(state.session?.done&&e.target.dataset.reviewTask!==undefined){
       reviewView.type=Object.hasOwn(taskLabels,e.target.value)?e.target.value:'all';applyReviewFilters();return;

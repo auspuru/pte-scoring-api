@@ -254,6 +254,22 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   assert.equal(retry.status,'ready');assert.equal(retry.answers[0],'');
   const history=await request('/attempts');assert.equal(history.length,2);
   assert.equal(history.find(a=>a.id===id).score90,90);assert.equal(history.find(a=>a.id===retryId).kind,'wfd');
+  const timedId=randomUUID(),untimedId=randomUUID();
+  const timed=await request('/attempts',{id:timedId,testId:q.id,mode:'practice',timedPractice:true});
+  assert.equal(timed.mode,'practice');
+  assert.equal(timed.timedPractice,true);
+  assert.equal(timed.deadline,null);
+  const timedStart=await request('/attempts/'+timedId+'/begin',{});
+  assert.equal(timedStart.deadline-timedStart.startedAt,q.minutes*60000);
+  assert.equal((await request('/attempts/'+timedId+'/begin',{})).deadline,timedStart.deadline);
+  const resumed=await request('/attempts/'+timedId);
+  assert.equal(resumed.deadline,timedStart.deadline);
+  assert.equal(resumed.timedPractice,true);
+  const timedHistory=(await request('/attempts')).find(row=>row.id===timedId);
+  assert.equal(timedHistory.timedPractice,true);
+  assert.equal(timedHistory.supported,true);
+  await request('/attempts',{id:untimedId,testId:q.id,mode:'practice'});
+  assert.equal((await request('/attempts/'+untimedId+'/begin',{})).deadline,null);
   assert.equal(JSON.stringify(bank),before,'The original mock dictation timer group is unchanged');
 });
 

@@ -184,8 +184,27 @@ async function fixture(t, options = {}) {
   return { id, store, engine, engines, directory, state:async () => (await store.get('alice', id)).state };
 }
 
-function snapshotBeforeSwtImport(current) {
+function snapshotBeforePracticeIndex(current) {
   const snapshot = structuredClone(current);
+  const pins = require('../content/full-mock/practice-index-compatible-pins.json');
+  for (const [name, sha] of Object.entries(pins.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
+  assert.equal(digest(snapshot.scoringSources), pins.previousDigest);
+  return snapshot;
+}
+
+test('Practice index and timers retain the exact previously served Full Mock assessment',async t=>{
+  const f=await fixture(t);
+  const state=await f.state(),original=snapshotBeforePracticeIndex(f.engine.snapshot);
+  state.assessment=require('../full-mock/assessment').stateFor(original);
+  assert.doesNotThrow(()=>f.engine.validate(state));
+  const changed=structuredClone(state);
+  changed.assessment.snapshot.scoringSources.files['public/reading-practice.js'].sha256='0'.repeat(64);
+  changed.assessment.snapshotHash=digest(changed.assessment.snapshot);
+  assert.throws(()=>f.engine.validate(changed),{status:409});
+});
+
+function snapshotBeforeSwtImport(current) {
+  const snapshot = snapshotBeforePracticeIndex(current);
   const pins = require('../content/full-mock/swt-nov23-import-compatible-pins.json');
   for (const [name, sha] of Object.entries(pins.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
   assert.equal(digest(snapshot.scoringSources), pins.previousDigest);

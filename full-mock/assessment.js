@@ -126,7 +126,17 @@ function previousExamReportsSnapshot(current) {
   if (digest(sources) !== require('../content/full-mock/rts-content-upgrade-pins.json').currentDigest) return null;
   return { ...current, scoringSources: sources };
 }
+// These exact practice-only changes share files with the frozen mock inventory.
+function previousPracticeIndexSnapshot(current) {
+  const pins = require('../content/full-mock/practice-index-compatible-pins.json');
+  if (!Object.entries(pins.currentFiles).every(([name, sha]) => current.scoringSources.files[name]?.sha256 === sha)) return null;
+  const sources = structuredClone(current.scoringSources);
+  for (const [name, sha] of Object.entries(pins.previousFiles)) sources.files[name].sha256 = sha;
+  if (digest(sources) !== pins.previousDigest) return null;
+  return { ...current, scoringSources: sources };
+}
 function previousRtsSnapshot(current) {
+  current = previousPracticeIndexSnapshot(current) ?? current;
   current = previousSwtImportSnapshot(current) ?? current;
   current = previousExamReportsSnapshot(current) ?? current;
   const pins = require('../content/full-mock/rts-content-upgrade-pins.json');
@@ -140,6 +150,8 @@ function previousRtsSnapshot(current) {
   return { ...current, scoringSources: sources };
 }
 function compatibleTransportUpgrade(saved, current) {
+  const beforePracticeIndex = previousPracticeIndexSnapshot(current);
+  if (beforePracticeIndex && (digest(saved) === digest(beforePracticeIndex) || compatibleTransportUpgrade(saved, beforePracticeIndex))) return true;
   const beforeImport = previousSwtImportSnapshot(current);
   if (beforeImport && (digest(saved) === digest(beforeImport) || compatibleTransportUpgrade(saved, beforeImport))) return true;
   const beforeReports = previousExamReportsSnapshot(current);

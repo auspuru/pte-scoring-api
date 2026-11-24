@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "5a96070ce4f146a1728029f2493e7999afae990c",
+  "baseCommit": "19577f727e9b8abf5b52512581a173b4a39e303d",
   "checkedAt": "2026-11-24",
-  "scope": "November standalone SWT practice import and exact compatibility for saved Full Mock assessments.",
+  "scope": "Standalone practice index and timer changes with exact compatibility for saved Full Mock assessments.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -120,7 +120,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "3f12ee27db2fabc060b4c8baa0df33ee01396b09a06d0d71514c39e7a88f952c",
+        "sha256": "2f35fb5de2096af2434fea63e2391874881ba21ad83e52ebd74f4632bb22ad21",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -205,7 +205,7 @@
         "version": null
       },
       "public/reading-practice.js": {
-        "sha256": "2818c3305ae69d714d43014cd918d75bf101854e76fd420a5a507850e679dcb5",
+        "sha256": "42e8914410bf96dfd51e6278c770fe6b1d9a3e30de8e39f04243b24f23dddc39",
         "version": null
       },
       "public/writing-lab-report.js": {
@@ -213,7 +213,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "3525060a1b0ad764b19af5847088086da302258bfd3eac5f574a5676dc8c603c",
+        "sha256": "9323242bf3bbbf80be53765283203942fa327956c52e1b019b80f406a67a5919",
         "version": null
       },
       "situation-content-policy-developed.js": {
