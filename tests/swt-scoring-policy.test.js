@@ -51,7 +51,7 @@ function functionSource(name) {
   return source.slice(start, end);
 }
 
-async function grade(fixture, semanticJudgment, { passageId, getPassage } = {}) {
+async function grade(fixture, semanticJudgment, { passageId, getPassage, callSwtJudge } = {}) {
   let route;
   const context = {
     ...policy, swtSourceIdentity: policy.sourceIdentity, swtItemScore90: policy.itemScore90,
@@ -76,6 +76,16 @@ async function grade(fixture, semanticJudgment, { passageId, getPassage } = {}) 
     generateVocabSuggestions: () => []
   };
   vm.createContext(context);
+  if (callSwtJudge) {
+    Object.assign(context, {
+      anthropic: true, callSwtJudge, formatKeyElementsHint: JSON.stringify,
+      createJudgmentService: require('../swt-judgment-service').createJudgmentService
+    });
+    delete context.judgeContentWithClaude;
+    const start = source.indexOf('const swtJudgmentOptions =');
+    const end = source.indexOf('const legacySwtJudgmentService =', start);
+    vm.runInContext(source.slice(start, end) + 'async ' + functionSource('judgeContentWithClaude'), context);
+  }
   const functions = ['clampNumber', 'roundToTenth', 'countKeyElements', 'coverageToContentScore',
     'validateForm', 'checkGrammar', 'grammarScoreFromJudgment', 'scoreVocabulary',
     'rawToPTEDynamic', 'rawToBandDynamic', 'pteToRaw', 'buildPenaltiesList',
@@ -92,6 +102,33 @@ async function grade(fixture, semanticJudgment, { passageId, getPassage } = {}) 
   assert.equal(status, 200, JSON.stringify(response));
   return response;
 }
+
+test('Standalone grading confirms a slow assessment after an initial timeout and adjudication', async t => {
+  t.mock.timers.enable({ apis: ['Date', 'setTimeout'], now: 0 });
+  const fixture = fixtures[1];
+  const accepted = judgment(fixture);
+  const disputed = judgment(fixture, { content_score: 3 });
+  disputed.summary_assessment.relationships_clear = false;
+  const stages = [];
+  const result = grade(fixture, null, {
+    callSwtJudge: async (_prompt, timeout, { stage, signal }) => {
+      stages.push({ stage, timeout, signal });
+      if (stage === 'assessment') return new Promise(() => {});
+      return new Promise(resolve => setTimeout(() => resolve(stage === 'retry' ? disputed : accepted), 40000));
+    }
+  });
+  for (const [stage, elapsed] of [['assessment', 45000], ['retry', 40000], ['review', 40000], ['adjudication', 40000]]) {
+    await new Promise(setImmediate);
+    assert.equal(stages.at(-1)?.stage, stage);
+    assert.equal(stages.at(-1).timeout, 45000);
+    t.mock.timers.tick(elapsed);
+  }
+  const response = await result;
+  assert.equal(stages.length, 4);
+  assert.equal(stages[0].signal.aborted, true);
+  assert.equal(response.score_provisional, false);
+  assert.equal(response.trait_scores.content, 4);
+});
 
 test('Standalone grading returns the passage reference used for the assessment when the bank changes', async () => {
   const fixture = fixtures[1];

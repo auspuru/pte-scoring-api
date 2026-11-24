@@ -105,15 +105,20 @@ function transportSources(current) {
   }
   return projected;
 }
-// The November import only seeds standalone practice. Keep the exact deployed
-// assessment sources available to saved attempts.
-function previousSwtImportSnapshot(current) {
-  const pins = require('../content/full-mock/swt-nov23-import-compatible-pins.json');
+// The standalone SWT import and grading timeout changes leave the mock grader
+// intact. Keep the exact deployed assessment sources available to saved attempts.
+function projectSwtPracticeSnapshot(current, pins) {
   if (!Object.entries(pins.currentFiles).every(([name, sha]) => current.scoringSources.files[name]?.sha256 === sha)) return null;
   const sources = structuredClone(current.scoringSources);
   for (const [name, sha] of Object.entries(pins.previousFiles)) sources.files[name].sha256 = sha;
   if (digest(sources) !== pins.previousDigest) return null;
   return { ...current, scoringSources: sources };
+}
+function previousSwtTimeoutSnapshot(current) {
+  return projectSwtPracticeSnapshot(current, require('../content/full-mock/swt-practice-timeout-compatible-pins.json'));
+}
+function previousSwtImportSnapshot(current) {
+  return projectSwtPracticeSnapshot(current, require('../content/full-mock/swt-nov23-import-compatible-pins.json'));
 }
 // Match the exact pre-RTS release before following its historical compatibility chain.
 // Standalone SWT exam reporting changes practice transport only. Map the
@@ -127,6 +132,7 @@ function previousExamReportsSnapshot(current) {
   return { ...current, scoringSources: sources };
 }
 function previousRtsSnapshot(current) {
+  current = previousSwtTimeoutSnapshot(current) ?? current;
   current = previousSwtImportSnapshot(current) ?? current;
   current = previousExamReportsSnapshot(current) ?? current;
   const pins = require('../content/full-mock/rts-content-upgrade-pins.json');
@@ -140,6 +146,8 @@ function previousRtsSnapshot(current) {
   return { ...current, scoringSources: sources };
 }
 function compatibleTransportUpgrade(saved, current) {
+  const beforeTimeout = previousSwtTimeoutSnapshot(current);
+  if (beforeTimeout) return digest(saved) === digest(beforeTimeout) || compatibleTransportUpgrade(saved, beforeTimeout);
   const beforeImport = previousSwtImportSnapshot(current);
   if (beforeImport && (digest(saved) === digest(beforeImport) || compatibleTransportUpgrade(saved, beforeImport))) return true;
   const beforeReports = previousExamReportsSnapshot(current);

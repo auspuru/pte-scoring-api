@@ -4435,10 +4435,11 @@ function formatKeyElementsHint(keyElements) {
   return parts.join('\n');
 }
 
-async function judgeContentWithClaude(studentText, passageText, keyElements, timeoutMs = 30000, {legacy=false} = {}) {
+async function judgeContentWithClaude(studentText, passageText, keyElements, timeoutMs = 30000, {legacy=false, practice=false} = {}) {
   if (!anthropic) return null;
   const kpHint = formatKeyElementsHint(keyElements);
-  return (legacy ? legacySwtJudgmentService : swtJudgmentService).judge(studentText, passageText, kpHint, timeoutMs);
+  const service = legacy ? legacySwtJudgmentService : practice ? practiceSwtJudgmentService : swtJudgmentService;
+  return service.judge(studentText, passageText, kpHint, timeoutMs);
 }
 
 async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = false, legacy = false, stage } = {}) {
@@ -4450,13 +4451,15 @@ async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = 
   return format.response(response, { repairReview });
 }
 
-const swtJudgmentService = createJudgmentService({
+const swtJudgmentOptions = {
   call: callSwtJudge, buildPrompt: buildJudgingPrompt, policyVersion: POLICY_VERSION,
   requireEditEvidence: true,
   isComplete: (result, summary, passage) => !applyScoringPolicy(result, summary, passage).needs_semantic_review,
   validationIssues: (result, summary, passage) => applyScoringPolicy(result, summary, passage).assessment_issues,
   onAttemptError: details => console.warn('[swt-grade] attempt failed:', JSON.stringify(details))
-});
+};
+const swtJudgmentService = createJudgmentService(swtJudgmentOptions);
+const practiceSwtJudgmentService = createJudgmentService({ ...swtJudgmentOptions, totalTimeoutMs: 180000 });
 const legacySwtJudgmentService = createJudgmentService({
   call: (prompt, timeoutMs, options) => callSwtJudge(prompt, timeoutMs, { ...options, legacy:true }),
   buildPrompt: legacySwtPolicy.buildJudgingPrompt, policyVersion: legacySwtPolicy.POLICY_VERSION,
@@ -4503,7 +4506,7 @@ app.post('/api/swt/sample/:id', async (req, res) => {
     const form = validateForm(sample);
     if (!sample || !form.valid) return res.json({ status: 'needs_revision', sample,
       note: 'This reference needs a form correction before it can be a full-score example.', scoring_version: POLICY_VERSION });
-    const raw = await judgeContentWithClaude(sample, p.text, p.keyElements);
+    const raw = await judgeContentWithClaude(sample, p.text, p.keyElements, 45000, { practice: true });
     if (!raw) return res.json({ status: 'unavailable', sample,
       note: 'The score check is unavailable. You can still use this example to study how the ideas connect.', scoring_version: POLICY_VERSION });
     const judged = applyScoringPolicy(raw, sample, p.text);
@@ -4935,11 +4938,10 @@ app.post('/api/grade', async (req, res) => {
     const grammar = checkGrammar(text, prompt);
     let spelling = checkSpelling(text, prompt);
 
-    // The judgment service owns both retries and consistency reviews within
-    // one 90-second budget, including recovery for the independent review.
-    // Do not start another provider retry loop at the route level.
+    // Reserve enough time for four calls, including adjudication after a
+    // timeout and retry, without changing the mock assessment budget.
     let [llmJudgment, enrichedSpelling] = await Promise.all([
-      judgeContentWithClaude(text, prompt, keyPoints).catch(error => {
+      judgeContentWithClaude(text, prompt, keyPoints, 45000, { practice: true }).catch(error => {
         console.warn('[swt-grade] assessment unavailable:', error.code || error.name); return null;
       }),
       (EXTERNAL_SPELLCHECK_ENABLED ? enrichSpellingWithDatamuse(spelling, text) : Promise.resolve(spelling)).catch(() => spelling)
