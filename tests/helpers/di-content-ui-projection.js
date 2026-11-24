@@ -8,6 +8,6 @@ module.exports=function project(source){
  replace('const contentPending=contentNeedsReview(r);',"const contentPending=r.scoringMode==='local'||r.score_provisional===true;");
  replace("text=(!a.result||contentNeedsReview(a.result))?'Content review is still unavailable.","text=a.result?.scoringMode==='local'?'Content review is still unavailable.");
  replace('else if(contentNeedsReview(saved.result))contentRetries.add(saved.id);',"else if(saved.result?.scoringMode==='local')contentRetries.add(saved.id);");
- assert.equal(crypto.createHash('sha256').update(source).digest('hex'),'ab5d82319a4cd874e8497d40e3830b8bf1861b737872f741e74b5d5d704ed216');
+ assert.equal(crypto.createHash('sha256').update(source).digest('hex'),'762fce9618654922ea2f28f72f46a0aad22b3b0fda1258e868a0d4a3e208e0ca');
  return source;
 };

@@ -186,6 +186,9 @@ async function fixture(t, options = {}) {
 
 function snapshotBeforePracticeIndex(current) {
   const snapshot = structuredClone(current);
+  const search = require('../content/full-mock/practice-transcript-search-compatible-pins.json');
+  for (const [name, sha] of Object.entries(search.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
+  assert.equal(digest(snapshot.scoringSources), search.previousDigest);
   const pins = require('../content/full-mock/practice-index-compatible-pins.json');
   for (const [name, sha] of Object.entries(pins.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
   assert.equal(digest(snapshot.scoringSources), pins.previousDigest);
