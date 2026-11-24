@@ -4,7 +4,11 @@ const bank=require('../content/speaking-bank');
 function validate() {
   const manifest=require('../content/speaking-audio-manifest')();
   let recordings=0;
-  const discussions=[...require('../content/user-sgd-oct30.json'), ...require('../content/user-sgd-20261123.json')];
+  const discussions = [
+    ...require('../content/user-sgd-oct30.json'),
+    ...require('../content/user-sgd-20261123.json'),
+    ...require('../content/user-sgd-20261124.json'),
+  ];
   const suppliedSpeaking = require('../content/user-speaking-oct24.json');
   const retellPredictions = require('../content/user-rl-20261123.json');
   const diPredictions = require('../content/di-user-predictions.json');

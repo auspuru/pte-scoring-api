@@ -60,7 +60,8 @@
       storage.put('ipt-listening-timed:'+username,String(listeningTimed));
     };
   }
-  const visiblePractice=type=>studio?.visibleQuestions({items:questionsFor(type),history:listeningHistory,bookmarks:bookmarks(),search:studioSearch,filter:studioFilter,mode:listeningMode})||questionsFor(type).map((q,index)=>({q,index}));
+  const transcriptSearch=window.PracticeStudio?.createTranscriptSearch(window,token,renderPracticeCards);
+  const visiblePractice=type=>studio?.visibleQuestions({items:questionsFor(type),history:listeningHistory,bookmarks:bookmarks(),search:studioSearch,transcriptMatches:transcriptSearch?.(listeningRoute(type),studioSearch),filter:studioFilter,mode:listeningMode})||questionsFor(type).map((q,index)=>({q,index}));
   function practiceQueue(type){
     const items=questionsFor(type),ids=practiceContext?.type===type?practiceContext.queue:null;
     return window.PracticeStudio.selectedQueue(items,ids,attempt?.testId);
@@ -230,7 +231,7 @@
   }
   function renderPracticeCards(){
     const target=document.getElementById('studio-question-list');if(!target)return;
-    const rows=visiblePractice(view);target.innerHTML=studio?studio.rows({items:questionsFor(view),history:listeningHistory,bookmarks:bookmarks(),activeId:practiceContext?.selectedId,search:studioSearch,filter:studioFilter,mode:listeningMode}):'';
+    const rows=visiblePractice(view);target.innerHTML=studio?studio.rows({items:questionsFor(view),history:listeningHistory,bookmarks:bookmarks(),activeId:practiceContext?.selectedId,search:studioSearch,transcriptMatches:transcriptSearch?.(listeningRoute(view),studioSearch),filter:studioFilter,mode:listeningMode}):'';
     const count=root.querySelector?.('.practice-library-count');if(count)count.textContent=rows.length+' questions';
   }
   async function hub(tab=view) {
@@ -264,7 +265,7 @@
     setListeningStyle(practiceTypes.includes(tab)||(tab==='history'&&practiceTypes.includes(historyKind)));bindStudioLibrary();
     if(practiceTypes.includes(tab)&&studio){
       const library=root.querySelector?.('.studio-library');
-      if(library){library.innerHTML=window.PracticeStudio.questionLibrary({skill:'Listening',task:listeningRoute(tab),title:report.labels[tab],total:visiblePractice(tab).length,searchId:'studio-search',search:studioSearch,filterId:'studio-filter',filter:studioFilter,filters:[['all','All questions'],['new','Not attempted'],['draft','In progress'],['done','Completed']],rowsId:'studio-question-list',options:'<div class="studio-modes" role="group" aria-label="Practice mode"><button type="button" data-listening-mode="practice" aria-pressed="'+(listeningMode==='practice')+'">Practice</button><button type="button" data-listening-mode="exam" aria-pressed="'+(listeningMode==='exam')+'">Exam-style</button></div>'+(listeningMode==='practice'?'<label class="practice-library-timer"><input type="checkbox" id="listeningTimed" role="switch" '+(listeningTimed?'checked':'')+'> Timed</label>':''),extras:'<details><summary>Saved responses &amp; practice help</summary><p>'+esc(studio.help[tab])+'</p><button type="button" class="secondary" data-tab="history">Saved responses</button>'+(['hcs','hiw'].includes(tab)?'<button type="button" class="secondary" data-portal="listening-'+tab+'-bank">Earlier question bank</button>':'')+'</details>'});renderPracticeCards();bindStudioLibrary();
+      if(library){library.innerHTML=window.PracticeStudio.questionLibrary({skill:'Listening',task:listeningRoute(tab),title:report.labels[tab],total:visiblePractice(tab).length,searchId:'studio-search',transcriptSearch:true,search:studioSearch,filterId:'studio-filter',filter:studioFilter,filters:[['all','All questions'],['new','Not attempted'],['draft','In progress'],['done','Completed']],rowsId:'studio-question-list',options:'<div class="studio-modes" role="group" aria-label="Practice mode"><button type="button" data-listening-mode="practice" aria-pressed="'+(listeningMode==='practice')+'">Practice</button><button type="button" data-listening-mode="exam" aria-pressed="'+(listeningMode==='exam')+'">Exam-style</button></div>'+(listeningMode==='practice'?'<label class="practice-library-timer"><input type="checkbox" id="listeningTimed" role="switch" '+(listeningTimed?'checked':'')+'> Timed</label>':''),extras:'<details><summary>Saved responses &amp; practice help</summary><p>'+esc(studio.help[tab])+'</p><button type="button" class="secondary" data-tab="history">Saved responses</button>'+(['hcs','hiw'].includes(tab)?'<button type="button" class="secondary" data-portal="listening-'+tab+'-bank">Earlier question bank</button>':'')+'</details>'});renderPracticeCards();bindStudioLibrary();
         const selected=[...(root.querySelectorAll?.('[data-listening-open]')||[])].find(b=>b.dataset.listeningOpen===practiceContext?.selectedId);selected?.focus({preventScroll:true});root.scrollTop=practiceContext?.scrollTop||0;const rows=document.getElementById('studio-question-list');if(rows)rows.scrollTop=practiceContext?.libraryScrollTop||0;
       }
     }

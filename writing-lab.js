@@ -70,14 +70,15 @@ const predictionMocks = (bank.predictionEssays || []).map((essay, index) => {
 });
 const listening = require('./content/listening-mocks');
 const allMocks = [...bank.mocks, ...predictionMocks, ...listening.mocks];
+const additionalPractice = require('./content/additional-practice-questions.json');
 const userPredictionDictation = predictions.wfd.filter(q => q.predictionSource?.contentStatus === 'verbatim-user-provided');
 const previousDictation = [...new Map([...bank.mocks.flatMap(m => m.questions.filter(q => q.type === 'wfd')), ...(bank.dictation || [])].map(q => [q.id, q])).values()];
 const dictation = [...new Map([...userPredictionDictation, ...previousDictation,
-  ...predictions.wfd.filter(q=>approvedAudio.entryFor(q))].map(q=>[q.id,q])).values()];
+  ...predictions.wfd.filter(q=>approvedAudio.entryFor(q)), ...additionalPractice.filter(q=>q.type==='wfd')].map(q=>[q.id,q])).values()];
 // Individual listening questions reuse the verified mock sources and immutable keys.
 const listeningPractice = [...new Map(listening.mocks.flatMap(m => m.questions)
   .filter(q => listeningScoring.TYPES.has(q.type)).map(q => [q.id, { ...q, minutes:5 }])).values()];
-const spokenPractice = [...predictions.sst, ...require('./content/additional-practice-questions.json')];
+const spokenPractice = [...predictions.sst, ...additionalPractice.filter(q=>q.type==='sst')];
 // These screenshot transcripts already have stable practice IDs.
 const existingNewSstIds = new Set([
   'pred26-user-sst-01',
