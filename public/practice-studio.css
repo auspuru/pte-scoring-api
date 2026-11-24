@@ -288,3 +288,31 @@ body #lab:has(.practice-question-library){overflow:auto!important}
 /* Student-reported SWT exam questions: one-click reported state. */
 #swtPane .swt-report-button[aria-disabled="true"]{opacity:1;color:#326b4f;border-color:#a4ceba;background:#eef7f2;cursor:default}
 #swtPane .swt-report-button:focus-visible{outline:2px solid var(--accent,#326b4f);outline-offset:3px}
+
+body :is(#speakingPane,#readingPane,#swtPane,#practiceScreen,#writingLabScreen,#lab) .practice-library-row {
+  gap: 12px;
+  padding: 10px 4px;
+}
+
+body :is(#speakingPane,#readingPane,#swtPane,#practiceScreen,#writingLabScreen,#lab) .practice-library-row-copy {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: baseline;
+  gap: 2px 8px;
+}
+
+body :is(#speakingPane,#readingPane,#swtPane,#practiceScreen,#writingLabScreen,#lab) .practice-library-row-copy > :is(small,h3) {
+  margin: 0;
+}
+
+.practice-library-row-copy > :is(p,.practice-library-label) {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.practice-library-options > label:has(select) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}

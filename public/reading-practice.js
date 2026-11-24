@@ -411,7 +411,7 @@
   function questionRecords(uid){return [...new Map([state.session,...(state.drafts||[]),...state.history].filter(a=>a?.practiceUid===uid).map(a=>[a.id,a])).values()].sort((a,b)=>b.startedAt-a.startedAt);}
   function libraryQuestions() {
     const library=practiceLibraries().find(l=>l.id===libraryView?.id),query=(libraryView?.query||'').trim().toLowerCase(),status=libraryView?.status||'all';
-    return (library?.questions||[]).filter((q,i)=>{const rows=questionRecords(q.uid);return (!query||[i+1,q.title,q.topic,q.id].join(' ').toLowerCase().includes(query))&&(status==='all'||status==='new'&&!rows.length||status==='done'&&rows.some(a=>a.done)||status==='draft'&&rows.some(a=>!a.done));});
+    return (library?.questions||[]).filter((q,i)=>{const rows=questionRecords(q.uid);return (studio.matchesQuestionNumber(query,i+1) ?? (!query||[i+1,q.title,q.topic,q.id].join(' ').toLowerCase().includes(query)))&&(status==='all'||status==='new'&&!rows.length||status==='done'&&rows.some(a=>a.done)||status==='draft'&&rows.some(a=>!a.done));});
   }
   function libraryList() {
     const questions=libraryQuestions(),numbers=new Map((practiceLibraries().find(l=>l.id===libraryView.id)?.questions||[]).map((q,i)=>[q.uid,i+1]));

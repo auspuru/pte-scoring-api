@@ -13,7 +13,7 @@
     const query=search.trim().toLowerCase();
     const matches=globalThis.PortalUx?new Set(globalThis.PortalUx.search(items.map((q,index)=>({q,text:[index+1,q.id,q.title,q.topic].join(' ')})),query,['text']).map(row=>row.q)):null;
     return items.map((q,index)=>({q,index,last:latest(history,q.id,mode),records:history.filter(a=>String(a.testId)===String(q.id)&&attemptMode(a)===mode)})).filter(({q,index,last,records})=>
-      (!query||(matches?matches.has(q):[index+1,q.id,q.title,q.topic].join(' ').toLowerCase().includes(query)))&&
+      (practice.matchesQuestionNumber(query,index+1) ?? (!query||(matches?matches.has(q):[index+1,q.id,q.title,q.topic].join(' ').toLowerCase().includes(query))))&&
       (filter==='all'||filter==='new'&&!records.length||filter==='draft'&&records.some(a=>a.status!=='submitted')||filter==='done'&&records.some(a=>a.status==='submitted')||filter==='bookmarked'&&bookmarks.includes(q.id)));
   }
   function rows({items,history=[],bookmarks=[],activeId,search='',filter='all',mode='practice',compact=false}){
