@@ -770,5 +770,28 @@
       "sourceId": 60,
       "playerDurationSeconds": 51
     }
+  },
+  {
+    "id": "rl-user-20261123-165",
+    "type": "rl",
+    "title": "Pavlov Experiment (adapted)",
+    "text": "Today I want to talk about emotion, something we share with other animals, and how brain imaging can help us understand motivation and emotion. A familiar example comes from Pavlov’s research more than a century ago.\n\nThe dog hears a sound, waits, and then receives food powder. The researchers repeat this sequence. The sound is the cue, the wait is the period of anticipation, and receiving the food is the outcome.\n\nWith repetition, the sound comes to signal that food is on the way. Pavlov focused on the dog’s salivation, which increased as the dog learned to expect food. The dog also moved around more while it waited.\n\nWhat is happening in the brain during that period of anticipation? Brain imaging, including functional magnetic resonance imaging, can help us investigate that question. Think about how you feel when you’re looking forward to lunch. It’s a familiar example of anticipating a reward before it arrives.",
+    "facts": [
+      "The lecture relates reward processing to questions about motivation and emotion.",
+      "In Pavlov’s example, a repeated sound cue is followed by a wait and then food powder.",
+      "The reward sequence consists of a cue, anticipation and an outcome.",
+      "The dog learns to expect food. Its salivation increases and it moves around more while waiting.",
+      "The speaker uses brain imaging to frame a question about anticipation and compares it with looking forward to lunch."
+    ],
+    "sample": "The speaker uses Pavlov’s dog experiment to explain reward processing. The dog repeatedly hears a sound, waits, and receives food powder. It learns to anticipate food after the cue and shows increased salivation and movement. The lecturer relates this to looking forward to lunch and asks how brain imaging can help explain the anticipatory state.",
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-23",
+      "filename": "Screenshot 2026-11-23 153026.png",
+      "contentStatus": "adapted",
+      "sourceId": 165,
+      "playerDurationSeconds": 79,
+      "editorialNote": "Adapted from the supplied transcript and Reward Processing slide. The script uses the slide’s cue, anticipation and outcome labels to clarify the sequence."
+    }
   }
 ]

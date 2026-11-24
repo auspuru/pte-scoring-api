@@ -1875,5 +1875,20 @@
     "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
     "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
     "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-165": {
+    "textSha256": "216e859e6dd83c62abe1a030bd7cad1b83e82473cbde7a10f2afe1a9a6d9ef4e",
+    "audioSha256": "4e095266bd8bff9c4b459285860db3458f11d5741226c1669561d6698d9c805a",
+    "bytes": 303212,
+    "seconds": 50.496,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-27%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
   }
 }
