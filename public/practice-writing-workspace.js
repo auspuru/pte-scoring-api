@@ -11,6 +11,18 @@
  const clocks=new Map();
  function scope(){if(owner!==currentUserId||ownerToken!==sessionToken){owner=currentUserId;ownerToken=sessionToken;writingSelection++;swtSearch='';swtScroll=0;swtQueue=null;swtStatus='all';swtTimed=false;essayStatus='all';freshEssaySelection=null;clocks.clear();examReports=Object.create(null);examReportsReady=false;examReportFetch++;reporting.clear();}}
  function currentSwt(){return swtPassageAt(currentPassageId);}
+ function restoreSwtClock(clock){
+  stopTimer();
+  timerOn=clock.enabled;timerSeconds=clock.seconds;
+  doc.getElementById('timerState').textContent=timerOn?'Timer on':'Timer off';
+  const toggle=doc.getElementById('timerToggle'),display=doc.getElementById('timerDisplay');
+  toggle.setAttribute('aria-pressed',String(timerOn));
+  toggle.setAttribute('aria-label',timerOn?'Turn off the timer':'Turn on the 10-minute timer');
+  display.classList.toggle('expired',timerOn&&timerSeconds===0);
+  if(timerOn&&timerSeconds>0)startTimer();
+  else if(timerOn)renderTimer();
+  else{display.textContent='—';display.classList.remove('warning');}
+ }
  function rememberSwt(){scope();const p=currentSwt();if(!p)return;clocks.set(String(p.id),{enabled:timerOn,seconds:timerSeconds});stopTimer();}
  async function saveSwtBeforeLeave(){if(leaving)return false;leaving=true;rememberSwt();const uid=currentUserId,token=sessionToken;try{const keys=['summaries','scratch','scratchUpdatedAt'].map(getPteStorageKey);if(keys.some(k=>!practiceStorage.isDurable(k))&&!await practiceStorage.flush(keys)){toast('Could not save your response. Keep this question open and retry.',true);return false;}return uid===currentUserId&&token===sessionToken;}finally{leaving=false;}}
  function swtHistory(){const p=currentSwt();return p?(localAccountProgress().history?.[p.id]||[]):[];}
@@ -131,11 +143,11 @@
   if(!resume&&saved&&!await archiveDraft('swt',p.id,saved))return;
   const selected=swtPosition(p.id);if(!current()||!selected)return;
   loadPassage(selected);native.showSwtScreen('swtPracticeScreen');
-  if(resume&&saved){doc.getElementById('summaryInput').value=saved.text;onSummaryInput();const notes=doc.getElementById('scratchInput');if(notes&&saved.notes!=null){notes.value=saved.notes;notes.dispatchEvent(new Event('input',{bubbles:true}));}if(saved.clock){stopTimer();timerOn=saved.clock.enabled;timerSeconds=saved.clock.seconds;if(timerOn)startTimer();else renderTimer();}}
+  if(resume&&saved){doc.getElementById('summaryInput').value=saved.text;onSummaryInput();const notes=doc.getElementById('scratchInput');if(notes&&saved.notes!=null){notes.value=saved.notes;notes.dispatchEvent(new Event('input',{bubbles:true}));}if(saved.clock)restoreSwtClock(saved.clock);}
   else{resetSummary();const notes=doc.getElementById('scratchInput');if(notes){notes.value='';notes.dispatchEvent(new Event('input',{bubbles:true}));}stopTimer();timerSeconds=TIMER_START_SECONDS;clocks.delete(String(p.id));if(timerOn!==swtTimed)toggleTimer();else if(timerOn)startTimer();}
   refreshSwt();
  }
- env.loadPassage=function(position){swtMenuGeneration++;scope();if(portalWorkspace?.current()==='swt'&&doc.getElementById('swtPracticeScreen').classList.contains('active'))rememberSwt();const result=native.loadPassage(position),p=currentSwt(),clock=p&&clocks.get(String(p.id));if(clock){stopTimer();timerOn=clock.enabled;timerSeconds=clock.seconds;doc.getElementById('timerState').textContent=timerOn?'Timer on':'Timer off';doc.getElementById('timerToggle').setAttribute('aria-pressed',String(timerOn));if(timerOn)startTimer();else doc.getElementById('timerDisplay').textContent='—';}refreshSwt();if(portalWorkspace?.current()==='swt')native.showSwtScreen('swtPracticeScreen');return result;};
+ env.loadPassage=function(position){swtMenuGeneration++;scope();if(portalWorkspace?.current()==='swt'&&doc.getElementById('swtPracticeScreen').classList.contains('active'))rememberSwt();const result=native.loadPassage(position),p=currentSwt(),clock=p&&clocks.get(String(p.id));if(clock)restoreSwtClock(clock);refreshSwt();if(portalWorkspace?.current()==='swt')native.showSwtScreen('swtPracticeScreen');return result;};
  env.showSwtScreen=function(id){if(id!=='swtQuestionLibrary')swtMenuGeneration++;return native.showSwtScreen(id);};
  env.moveSwtQuestion=function(direction){const positions=swtPositions(),index=positions.indexOf(currentPassageId),target=positions[index+direction];if(index>=0&&target!=null)jumpToPassage(target);};
  function essayQuestionId(){return practiceState.view==='results'?practiceState.currentAttempt?.questionId:practiceState.selectedQuestionId;}
