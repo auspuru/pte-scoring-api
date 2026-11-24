@@ -33,7 +33,10 @@
     const modeName=mode=>mode==='untimed'?'Untimed practice':'Timed practice';
     const matchingMode=a=>modeOf(a)===practiceMode;
     function releasePromptSource(){promptRequest?.abort();promptRequest=null;if(promptSource)env.URL.revokeObjectURL(promptSource);promptSource='';promptAttemptId='';}
-    function modePicker(){return '<fieldset class="speaking-mode-picker"><legend>Practice mode</legend>'+['timed','untimed'].map(mode=>'<button type="button" class="portal-button '+(practiceMode===mode?'primary':'')+'" data-speaking-mode="'+mode+'" aria-pressed="'+(practiceMode===mode)+'">'+modeName(mode)+'</button>').join('')+'</fieldset>';}
+    function modePicker(){
+      const timed=practiceMode==='timed';
+      return '<button type="button" class="practice-timed-switch" role="switch" aria-checked="'+timed+'" data-speaking-mode="'+(timed?'untimed':'timed')+'">Timed</button>';
+    }
     let captureGeneration=0,levelContext,levelTimer,permissionTimer;
     let historyCache=null,historyRequest=null,historyScope='',focusedQuestion='';
     let comparisonTimer,comparisonBusy=false;
@@ -620,7 +623,7 @@
     }
     async function click(e) {
       const b=e.target.closest('button');if(!b||b.disabled)return;const d=b.dataset;
-      if(d.speakingMode&&!attempt&&['timed','untimed'].includes(d.speakingMode)){practiceMode=d.speakingMode;try{env.localStorage.setItem('ipt-speaking-mode:'+owner,practiceMode);}catch{}return library();}
+      if(d.speakingMode&&!attempt&&['timed','untimed'].includes(d.speakingMode)){practiceMode=d.speakingMode;try{env.localStorage.setItem('ipt-speaking-mode:'+owner,practiceMode);}catch{}const opened=library();host.querySelector('.practice-timed-switch')?.focus({preventScroll:true});return opened;}
       if(d.speakingPage!==undefined&&!attempt){filters().page=Number(d.speakingPage)||0;renderLibraryList();return;}
       if(d.speakingAction==='clear-filters'&&!attempt){libraryFilters.delete(activeType);return library();}
       if(d.speakingMove!==undefined)return moveQuestion(Number(d.speakingMove));

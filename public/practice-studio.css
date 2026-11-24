@@ -316,3 +316,32 @@ body :is(#speakingPane,#readingPane,#swtPane,#practiceScreen,#writingLabScreen,#
   align-items: center;
   gap: 6px;
 }
+
+.practice-library-options .practice-timed-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ink, #24404a);
+  font: inherit;
+  cursor: pointer;
+}
+.practice-timed-switch::before {
+  content: "";
+  width: 30px;
+  height: 18px;
+  border: 1px solid #829991;
+  border-radius: 12px;
+  background: radial-gradient(circle at 8px center, #fff 5px, transparent 6px), #dce6e0;
+}
+.practice-timed-switch[aria-checked="true"]::before {
+  background: radial-gradient(circle at 22px center, #fff 5px, transparent 6px), #34655a;
+}
+.practice-timed-switch:focus-visible {
+  outline: 2px solid var(--accent, #34655a);
+  outline-offset: 2px;
+}
