@@ -469,6 +469,14 @@ async function pgInitSchema() {
       reported_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       PRIMARY KEY (username, passage_id)
     );
+    CREATE TABLE IF NOT EXISTS practice_question_flags (
+      task          TEXT NOT NULL,
+      kind          TEXT NOT NULL CHECK (kind IN ('bookmark', 'report')),
+      question_id   TEXT NOT NULL,
+      username      TEXT NOT NULL REFERENCES accounts(username) ON DELETE CASCADE,
+      PRIMARY KEY (task, kind, question_id, username)
+    );
+    CREATE INDEX IF NOT EXISTS practice_question_flags_user_idx ON practice_question_flags (username, task);
     CREATE TABLE IF NOT EXISTS global_stats (
       id             INTEGER PRIMARY KEY DEFAULT 1,
       total_attempts BIGINT DEFAULT 0,
@@ -3879,6 +3887,16 @@ installSwtExamReports(app, {
   getAccount: uid => getPracticeAccount(uid, {fresh:true}),
   getPassage: id => PassageAPI.getById(id),
   rateLimiter: rateLimit ? rateLimit({windowMs:60*1000,max:12,standardHeaders:true,legacyHeaders:false,message:{error:'Too many updates. Please try again shortly.'}}) : null
+});
+
+require('./practice-library-flags').installPracticeLibraryFlags(app, {
+  pool: pgPool,
+  verifyToken: verifySessionToken,
+  getAccount: uid => getPracticeAccount(uid, { fresh: true }),
+  speakingAllowed: speakingAccess.allowed,
+  getPassage: id => PassageAPI.getById(id),
+  essaySeedCount: 35,
+  rateLimiter: rateLimit ? rateLimit({ windowMs: 60 * 1000, max: 60, standardHeaders: true, legacyHeaders: false }) : null
 });
 
 app.get('/api/admin/passages', requireAdmin, async (req, res) => {

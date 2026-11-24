@@ -345,3 +345,55 @@ body :is(#speakingPane,#readingPane,#swtPane,#practiceScreen,#writingLabScreen,#
   outline: 2px solid var(--accent, #34655a);
   outline-offset: 2px;
 }
+
+.practice-library-community {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.practice-library-community label,
+.practice-library-flags {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.practice-library-community button,
+.practice-library-community select {
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--line, #dce4e8);
+  border-radius: 6px;
+  background: var(--bg-card, #fff);
+  color: inherit;
+  font: inherit;
+}
+
+.practice-library-community button[aria-pressed="true"],
+.practice-library-flags button[aria-pressed="true"] {
+  background: var(--accent-soft, #e8f2ed);
+  color: var(--accent, #34655a);
+}
+
+body .practice-question-library .practice-library-row[hidden],
+.practice-library-community [hidden] {
+  display: none !important;
+}
+
+.practice-library-report small {
+  display: block;
+  text-align: center;
+}
+
+body :is(#speakingPane,#readingPane,#swtPane,#practiceScreen,#writingLabScreen,#lab) .practice-library-row-actions .practice-library-star {
+  min-width: 44px;
+  padding-inline: 8px;
+  font-size: 20px;
+}
+
+@media (max-width: 650px) {
+  .practice-library-flags { flex-wrap: wrap; }
+}

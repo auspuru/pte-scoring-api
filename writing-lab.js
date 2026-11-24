@@ -393,4 +393,4 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   const waitForJobs=async()=>{await Promise.allSettled([...pending.values()]);await reviewer.wait();};
   return { store, recover, waitForJobs, async start(){if(recoveryTimer)return;stopped=false;recoveryTimer=setInterval(()=>recover().catch(()=>console.warn('[writing-lab] Background recovery will resume.')),15000);recoveryTimer.unref?.();await recover().catch(()=>console.warn('[writing-lab] Background recovery will resume.'));}, async stop(){stopped=true;clearInterval(recoveryTimer);recoveryTimer=null;await recoveryTask?.catch(()=>{});await waitForJobs();} };
 }
-module.exports = { installWritingLab, advance, reconcile, present, predictionMocks };
+module.exports = { installWritingLab, advance, reconcile, present, predictionMocks, individualQuestions };

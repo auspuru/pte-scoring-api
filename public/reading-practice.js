@@ -415,7 +415,7 @@
   }
   function libraryList() {
     const questions=libraryQuestions(),numbers=new Map((practiceLibraries().find(l=>l.id===libraryView.id)?.questions||[]).map((q,i)=>[q.uid,i+1]));
-    return studio.libraryRows(questions.map(q=>{const rows=questionRecords(q.uid),draft=rows.find(a=>!a.done),done=rows.filter(a=>a.done).length;return {id:q.id,number:numbers.get(q.uid),title:q.title,status:done?'Completed · '+done+' saved attempts':draft?'In progress':'Not attempted',actions:'<button type="button" class="portal-button" data-practice-uid="'+escape(q.uid)+'">Practise →</button>'+(draft?'<button type="button" class="portal-button practice-library-resume" data-reading-resume="'+escape(draft.id)+'">Resume draft</button>':'')};}));
+    return studio.libraryRows(questions.map(q=>{const rows=questionRecords(q.uid),draft=rows.find(a=>!a.done),done=rows.filter(a=>a.done).length;return {id:q.id,key:q.uid,number:numbers.get(q.uid),title:q.title,status:done?'Completed · '+done+' saved attempts':draft?'In progress':'Not attempted',actions:'<button type="button" class="portal-button" data-practice-uid="'+escape(q.uid)+'">Practise →</button>'+(draft?'<button type="button" class="portal-button practice-library-resume" data-reading-resume="'+escape(draft.id)+'">Resume draft</button>':'')};}));
   }
   function browseLibrary(id, query, page, selectedUid) {
     const library=practiceLibraries().find(l=>l.id===id);if(!library)return;
@@ -429,7 +429,7 @@
     const saved=(matches(state.session||{})&&!state.session.done?`<div class="portal-resume"><strong>${escape(state.session.name)}</strong><button class="portal-button" data-action="resume">Continue question</button></div>`:'')
       + (drafts.length?`<details class="reading-home-help"><summary>Saved question drafts <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><strong>${escape(r.name)}</strong><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:'')
       + (history.length?`<details class="reading-home-help"><summary>Question attempts <span>${history.length}</span></summary><ul class="reading-history">${history.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${r.earned}/${r.possible} points</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul></details>`:'');
-    host.innerHTML=studio.wrap(practiceSkill(id),practiceRoute(id),studio.questionLibrary({skill:practiceSkill(id)==='listening'?'Listening':'Reading',title:library.name,total:libraryQuestions().length,searchAttrs:'data-library-search',search:query,filterAttrs:'data-library-status',filter:libraryView.status||'all',rowsAttrs:'data-library-list',rowsClass:'reading-library-rows',rows:libraryList(),options:'<label class="practice-library-timer"><input type="checkbox" role="switch" data-reading-library-timed '+(libraryView.timed===true?'checked':'')+'> Timed</label>',extras:saved+'<p data-start-status role="status" aria-live="polite"></p>'}));
+    host.innerHTML=studio.wrap(practiceSkill(id),practiceRoute(id),studio.questionLibrary({skill:practiceSkill(id)==='listening'?'Listening':'Reading',task:practiceRoute(id),title:library.name,total:libraryQuestions().length,searchAttrs:'data-library-search',search:query,filterAttrs:'data-library-status',filter:libraryView.status||'all',rowsAttrs:'data-library-list',rowsClass:'reading-library-rows',rows:libraryList(),options:'<label class="practice-library-timer"><input type="checkbox" role="switch" data-reading-library-timed '+(libraryView.timed===true?'checked':'')+'> Timed</label>',extras:saved+'<p data-start-status role="status" aria-live="polite"></p>'}));
     if(practiceSkill(id)==='listening'){const source=document.createElement?.('p');if(source){source.className='reading-note';source.innerHTML='Question source: Earlier bank · <button type="button" class="portal-button" data-action="current-listening-bank">Current bank</button>';host.querySelector?.('.practice-library-extras')?.prepend(source);}}
     const selected=[...(host.querySelectorAll?.('[data-practice-uid]')||[])].find(b=>b.dataset.practiceUid===libraryView.selectedUid);
     selected?.setAttribute('aria-current','true');selected?.focus({preventScroll:true});
@@ -872,11 +872,11 @@
       if(Number.isInteger(page)&&page>=0&&page<max){const next=page+(page>libraryView.page?1:-1);libraryView.page=page;refreshLibraryList();(host.querySelector('[data-library-page="'+next+'"]:not([disabled])')||host.querySelector('[data-library-page]:not([disabled])'))?.focus();}return;
     }
     if(d.practiceUid){
-      if(libraryView)Object.assign(libraryView,{queue:libraryQuestions().map(q=>q.uid),scrollTop:host.scrollTop||0,libraryScrollTop:host.querySelector?.('[data-library-list]')?.scrollTop||0,scrollY:globalThis.scrollY||0,selectedUid:d.practiceUid});
+      if(libraryView)Object.assign(libraryView,{queue:studio.libraryQueue(host,libraryQuestions().map(q=>q.uid)),scrollTop:host.scrollTop||0,libraryScrollTop:host.querySelector?.('[data-library-list]')?.scrollTop||0,scrollY:globalThis.scrollY||0,selectedUid:d.practiceUid});
       if(s&&!s.done){parkSession(s);state.drafts=[s,...(state.drafts||[]).filter(r=>r.id!==s.id)];if(!persist())return;}
       return start('practice',d.practiceUid);
     }
-    if(d.readingResume){if(libraryView)Object.assign(libraryView,{queue:libraryQuestions().map(q=>q.uid),libraryScrollTop:host.querySelector?.('[data-library-list]')?.scrollTop||0});if(s&&!s.done&&!persist())return;return showRequested({attemptId:d.readingResume,context:libraryView});}
+    if(d.readingResume){if(libraryView)Object.assign(libraryView,{queue:studio.libraryQueue(host,libraryQuestions().map(q=>q.uid)),libraryScrollTop:host.querySelector?.('[data-library-list]')?.scrollTop||0});if(s&&!s.done&&!persist())return;return showRequested({attemptId:d.readingResume,context:libraryView});}
     if(d.savedPracticeAttempt&&s?.practiceUid){if(s&&!s.done&&!persist())return;return showRequested({attemptId:d.savedPracticeAttempt,context:s?.practiceContext||libraryView});}
     if(d.action==='current-listening-bank')return typeof switchSection==='function'?switchSection('listening-'+libraryView.id):home();
     if(d.action==='practice-home')return typeof switchSection==='function'?switchSection('practice-hub'):home();
