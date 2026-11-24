@@ -23,7 +23,7 @@ const { createJudgmentService } = require('./swt-judgment-service');
 const { createResponseExamplesProvider, createResponseExamplesService, createResponseExamplesHandler } = require('./swt-response-examples');
 const { studentPassage, fallbackSample } = require('./swt-reference');
 const { sortSwtPassages, IMPORT_BATCH } = require('./swt-repeat-ranking');
-const { installSwtExamReports, readSwtReportCounts } = require('./swt-exam-reports');
+const { installSwtExamReports } = require('./swt-exam-reports');
 const { repairMissingSwtSamples } = require('./swt-sample-backfill');
 const { createEssayGrader, essayResultForClient } = require('./essay-grading');
 const EssayGenerationPolicy = require('./public/essay-generation-policy');
@@ -1332,7 +1332,7 @@ const PassageAPI = USE_POSTGRES ? PgPassageAPI : JsonPassageAPI;
 // remain authoritative, and a new deploy must not bulk-replace the live bank.
 const userSwtPassages = require('./content/user-swt-predictions').passages;
 const userSwtRank = new Map(userSwtPassages.map((p, index) => [p.id, index]));
-const predictionFirst = (rows, studentReports = new Map()) => sortSwtPassages(rows, userSwtRank, studentReports);
+const predictionFirst = rows => sortSwtPassages(rows, userSwtRank);
 
 async function seedUserSwtPredictions() {
   // Never overwrite a pre-existing question, even on deployments with a volume
@@ -3856,14 +3856,7 @@ app.post('/api/admin/vocab/extras', requireAdmin, async (req, res) => {
 app.get('/api/passages', async (req, res) => {
   try {
     const all = await PassageAPI.readAll();
-    // The SWT index order is global and consistent for all users. Reported
-    // questions take precedence; community counts are distinct students.
-    let reports = new Map();
-    if (USE_POSTGRES) {
-      try { reports = await readSwtReportCounts(pgPool); }
-      catch (error) { console.warn('[swt-report] Ranking fallback', error.message); }
-    }
-    res.json({ passages: predictionFirst(all, reports).map(studentPassage), count: all.length });
+    res.json({ passages: predictionFirst(all).map(studentPassage), count: all.length });
   } catch (e) {
     console.error('Read passages failed:', e.message);
     res.status(500).json({ error: 'Failed to load passages', details: e.message });

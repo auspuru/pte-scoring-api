@@ -5,10 +5,10 @@
  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const native={loadPassage,renderPracticeMain,showSwtScreen,backToEssayQuestions,pickLibraryQuestion,startExamSimulator,reattemptPractice,viewPracticeAttempt,moveEssayQuestion,renderQuestionPicker,setQuestionSource,startNewPractice};
  let owner='',ownerToken='',swtSearch='',swtScroll=0,swtQueue=null,leaving=false,swtMenuGeneration=0,swtStatus='all',essayStatus='all',freshEssaySelection=null,writingSelection=0;
- let examReports=Object.create(null),examReportsReady=false,examReportFetch=0,swtRankFetch=0,pendingSwtOrder=null;
+ let examReports=Object.create(null),examReportsReady=false,examReportFetch=0;
  const reporting=new Set();
  const clocks=new Map();
- function scope(){if(owner!==currentUserId||ownerToken!==sessionToken){owner=currentUserId;ownerToken=sessionToken;writingSelection++;swtSearch='';swtScroll=0;swtQueue=null;swtStatus='all';essayStatus='all';freshEssaySelection=null;clocks.clear();examReports=Object.create(null);examReportsReady=false;examReportFetch++;swtRankFetch++;pendingSwtOrder=null;reporting.clear();}}
+ function scope(){if(owner!==currentUserId||ownerToken!==sessionToken){owner=currentUserId;ownerToken=sessionToken;writingSelection++;swtSearch='';swtScroll=0;swtQueue=null;swtStatus='all';essayStatus='all';freshEssaySelection=null;clocks.clear();examReports=Object.create(null);examReportsReady=false;examReportFetch++;reporting.clear();}}
  function currentSwt(){return swtPassageAt(currentPassageId);}
  function rememberSwt(){scope();const p=currentSwt();if(!p)return;clocks.set(String(p.id),{enabled:timerOn,seconds:timerSeconds});stopTimer();}
  async function saveSwtBeforeLeave(){if(leaving)return false;leaving=true;rememberSwt();const uid=currentUserId,token=sessionToken;try{const keys=['summaries','scratch','scratchUpdatedAt'].map(getPteStorageKey);if(keys.some(k=>!practiceStorage.isDurable(k))&&!await practiceStorage.flush(keys)){toast('Could not save your response. Keep this question open and retry.',true);return false;}return uid===currentUserId&&token===sessionToken;}finally{leaving=false;}}
@@ -90,28 +90,6 @@
    if(swtLibraryActive())renderSwtRows();
   }catch(_){/* Keep the last successful counts when a refresh fails. */}
  }
- function applySwtOrder(){
-  if(!pendingSwtOrder)return;
-  const selected=currentSwt()?.id;
-  passages=pendingSwtOrder;
-  pendingSwtOrder=null;
-  currentPassageId=swtPosition(selected)||1;
-  populatePassageDropdowns();
- }
- async function refreshSwtOrder(isCurrent){
-  const ticket=++swtRankFetch;
-  const response=await fetch(API_URL+'/api/passages',{cache:'no-store'});
-  if(!response.ok)throw Error('Question order unavailable.');
-  const data=await response.json();
-  if(!isCurrent()||ticket!==swtRankFetch||!Array.isArray(data.passages)||!data.passages.length)return;
-  // Hold the new display order until the library is visible so an open editor
-  // keeps its passage number, draft and place in the current practice queue.
-  pendingSwtOrder=data.passages;
-  if(swtLibraryActive()){
-   applySwtOrder();
-   renderSwtRows();
-  }
- }
  async function reportSwtQuestion(questionId,button){
   scope();
   if(!swtPosition(questionId)||!sessionToken||reporting.has(questionId)||examReports[questionId]?.myReported)return;
@@ -128,7 +106,7 @@
    if(!isCurrent())return;
    examReportFetch++;
    examReports[questionId]=data.report;examReportsReady=true;
-   await Promise.allSettled([refreshSwtOrder(isCurrent),loadSwtExamReports()]);
+   await loadSwtExamReports();
    if(isCurrent())toast(data.alreadyReported?'You have already reported this question.':'Question reported. Thank you!');
   }catch(error){
    if(isCurrent())toast(error.message||'Could not report this question. Please retry.',true);
@@ -140,7 +118,7 @@
   }
  }
  function renderSwtMenu(){
-  scope();applySwtOrder();let library=doc.getElementById('swtQuestionLibrary');if(!library){library=doc.createElement('section');library.id='swtQuestionLibrary';library.className='swt-sub-screen';doc.getElementById('swtPane').prepend(library);}
+  scope();let library=doc.getElementById('swtQuestionLibrary');if(!library){library=doc.createElement('section');library.id='swtQuestionLibrary';library.className='swt-sub-screen';doc.getElementById('swtPane').prepend(library);}
   library.innerHTML=studio.questionLibrary({skill:'Writing',title:'Summarise Written Text',total:swtRows().length,searchId:'swtQuestionSearch',search:swtSearch,filterId:'swtQuestionFilter',filter:swtStatus,rowsId:'swtQuestionRows'});renderSwtRows();native.showSwtScreen('swtQuestionLibrary');library.querySelector('.practice-library-rows').scrollTop=swtScroll;
  }
  async function openSwtMenu(){const ticket=++swtMenuGeneration;if(!await saveSwtBeforeLeave()||ticket!==swtMenuGeneration||portalWorkspace?.current()!=='swt')return;renderSwtMenu();loadSwtExamReports();}
