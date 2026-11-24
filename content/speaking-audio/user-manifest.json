@@ -1335,5 +1335,545 @@
       "sampleRate": 24000,
       "bitRate": 128000
     }
+  },
+  "rl-user-20261123-587": {
+    "textSha256": "cda8a807920d22f7e8a6e75f0e0b02c1e66b4ba2ad3269b6d7b222d5d3c92e4d",
+    "audioSha256": "3af8aafb670f02fd638c921277b5a6efe85ca90c0faf24a490f697be6021216d",
+    "bytes": 344828,
+    "seconds": 57.432,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-27%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-344": {
+    "textSha256": "5dd892b7233667052552e9a83c7689d5aa71f0fe7c3f4ccf87b79e2fb4ce73ae",
+    "audioSha256": "b93b433a9b5da7424f99cd8d73b26977e13a4afcfdd0eed20c886c927e06b3a4",
+    "bytes": 471836,
+    "seconds": 78.6,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-38%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-311": {
+    "textSha256": "79740f5e63176fbefcd51bd8813e7d5bfa803f739ad22b28de1438e24e6526c6",
+    "audioSha256": "b7d072aa880d58af20a4ffd650b75bac81717bdf7cd4f57c91b37246bcc67b2c",
+    "bytes": 179372,
+    "seconds": 29.856,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-42%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-304": {
+    "textSha256": "a2284fb7fd046c0604ba2773e26fd68f2e86a00152515a202bb6663325d47356",
+    "audioSha256": "378662ccc88fd4edff033a9c64ad0ccfb6af84f7078ab5d12507267e14d646c9",
+    "bytes": 223724,
+    "seconds": 37.248,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-41%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-294": {
+    "textSha256": "db1523580b7233c60aee10c58cefa1343ec5830aee4252a6def167184d2e9372",
+    "audioSha256": "388653044af9735a48204369ff667b8b66902c4bd194215649a15419ac50eb71",
+    "bytes": 218684,
+    "seconds": 36.408,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-40%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-142": {
+    "textSha256": "40a1624e0c1c6dfc416f167c3d3aa320421d148dbf3cfd3b15e7655cb7e6c099",
+    "audioSha256": "71f8eafb4efd6251724575b3eb20fd7ccbf018dfee53a28441c4d5b2ba7c7f31",
+    "bytes": 484076,
+    "seconds": 80.64,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-42%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-249": {
+    "textSha256": "17e90c459f461e680b8eef138e25ca0af30799702bf9ceb15d98d082192683dd",
+    "audioSha256": "3fb9131dddbc0ed4ae9e5d246c91183ddccf20f2a7fa4f20e0190c6f07a71758",
+    "bytes": 473564,
+    "seconds": 78.888,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-41%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-241": {
+    "textSha256": "7f76d33d9e5bc2d4b85f8f42d44d0987e1074a9ac70006d733a42bfacc55d3cd",
+    "audioSha256": "35aaf6860b5ee8b8d01f8e7f90e911118f560f0820ff0744e7a354ff4f346dff",
+    "bytes": 429212,
+    "seconds": 71.496,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-27%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-272": {
+    "textSha256": "7a609dfe7de28f206c71dde720042ea79445df2e8ade35e7653a363dea18cd4f",
+    "audioSha256": "91fcd665d6dc92e7109b3b00fa89bd3bdcdd55ef9ae29eb638e65595dab7418d",
+    "bytes": 664940,
+    "seconds": 110.784,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-33%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-259": {
+    "textSha256": "5133d1afe0ac3371089bdecac953140b7634c2bb6d5699b104f4af1c3a72f1a2",
+    "audioSha256": "fbeedc508e49172bb3f6aa8db175655d807a5ca666a3f2ce16f3dc6ae017751b",
+    "bytes": 228044,
+    "seconds": 37.968,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-34%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-257": {
+    "textSha256": "361a99ecaa69bc000b0e1c2d72128c211512773a49f25dcf549155d2e8687678",
+    "audioSha256": "c8380815d75d61ef3efae54bb76b405913d0740266643422a4a5f7b88c7b5075",
+    "bytes": 392060,
+    "seconds": 65.304,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-27%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-254": {
+    "textSha256": "f35bc65829f2db91f731fbab6659728b2aa87e727725f24bf28349d78d089de2",
+    "audioSha256": "7943b0a0aacb95701d9139730325f9a9a0917c09839bae1ca7b961c8eec811b5",
+    "bytes": 321932,
+    "seconds": 53.616,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-27%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-248": {
+    "textSha256": "d3f92e181269f1a601e13c22e13db1cf62498c7fd336b52528dbc20916f3f3b0",
+    "audioSha256": "856816e2b9cf792e904724fed0f0e6511ee9ac0694fe932fbc6d132191800a40",
+    "bytes": 218252,
+    "seconds": 36.336,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-45%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-247": {
+    "textSha256": "88e5218cee88cd29eccc87c480b29c51ad75ee368b78783a67dff1b60d5350b1",
+    "audioSha256": "f3800ec89244f3a3f41de6950b9f1367dfd5507b3082a5a2e5a09b3b80b19fef",
+    "bytes": 455996,
+    "seconds": 75.96,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-39%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-244": {
+    "textSha256": "10076789146c5a4973ab1af135392f971cba09f3c924e06820af32184fbefe09",
+    "audioSha256": "149340f03f0d923801b28d599ec0a7742c502621627d037daa58a8b8cac9e92d",
+    "bytes": 651404,
+    "seconds": 108.528,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-27%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-174": {
+    "textSha256": "38902bfd1d8e09f21a0685c37ed8e434cacb14cc3cfba78bcd027e48272fc529",
+    "audioSha256": "18731c4a487765c1cb45a6222d962c85cbb45397d082a28f6c108041ee423af2",
+    "bytes": 818444,
+    "seconds": 136.368,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-35%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-173": {
+    "textSha256": "7e2bb44a121cb42f059ab7b8692c40a5a246cf7b0f03a5ad26724be7ed2263dc",
+    "audioSha256": "5f73671b059d229fc7796efd6aa4a541f0697fa0c606feccf719225755d00d6c",
+    "bytes": 258860,
+    "seconds": 43.104,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-44%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-124": {
+    "textSha256": "6c2e3dda4863130a2bd176f320b90e85c341e8dabfb3ff339e4b0495dee1303f",
+    "audioSha256": "a34bc493be57bab108d7a2bb4fd3dc63852b7cbdc094433b53948effe5cebacc",
+    "bytes": 439868,
+    "seconds": 73.272,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-37%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-064": {
+    "textSha256": "4591d82ee82375bd26caa7b86f6d6865dc695339af7721be317e1eaf1fc92bc9",
+    "audioSha256": "c13a0098bf259429efb5a1656ad2af05c0940749459eb8ae18e6117bd6c529be",
+    "bytes": 308540,
+    "seconds": 51.384,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-41%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-580": {
+    "textSha256": "afd0adae73ae15f1a91b89f449caaa4277e7c741a897a770e16618ea5e65b192",
+    "audioSha256": "ac350f8a8bdb092aed49982478d4d8f416c6c8a8241813816a897f00098bca41",
+    "bytes": 494444,
+    "seconds": 82.368,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-49%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-309": {
+    "textSha256": "f39e3add0f757a9fd584b07ae45e9756a888b4bfaaef7343bab6081d198315de",
+    "audioSha256": "dfa3059cbaa247d82d2d1f9d6bc85136b244bf9776c467c978faf139dea990b1",
+    "bytes": 381116,
+    "seconds": 63.48,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-33%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-285": {
+    "textSha256": "7b87285d2ff2fa26e0016fcef3928ccbaeb72678d54cb6ff5dba25f59573d915",
+    "audioSha256": "4a7df4bc983f066f76a1d5de9e63cbea81d6625cb8e177fbf439cbd1d8561fb9",
+    "bytes": 290252,
+    "seconds": 48.336,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-33%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-271": {
+    "textSha256": "aba2a06529a50ef2361899e41d9269995b982882aae4349dd81e3e78cf209817",
+    "audioSha256": "677cd37d1b953555348dd465a6cac17752da9d08c59f6ac0c7a396eeb04c5d0e",
+    "bytes": 293996,
+    "seconds": 48.96,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-42%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-270": {
+    "textSha256": "fe8d5911222d4b1a5a66172786f57d6aed22b7b206f1fb046ad9a97837592e47",
+    "audioSha256": "66e4728e3393f169042e9800c7fa5b98d0d38bf0e4aa74564d4deba0f85a64fe",
+    "bytes": 517196,
+    "seconds": 86.16,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-46%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-233": {
+    "textSha256": "12251e94041071ed637f77a46c5a2b801fe8e4ae491e89394fe333141518dee8",
+    "audioSha256": "b0f56dddd61f04bb72ed71022029019f8a14ae6b8e65677ed72d61f09c5d2f44",
+    "bytes": 444908,
+    "seconds": 74.112,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-37%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-188": {
+    "textSha256": "38f3e708f011253d99d23b4344ea413f908d0aa6bf05194c68b131d59099ab4d",
+    "audioSha256": "5ef972ab28f572d72488b4cb76827dc10815336864fcf4acec6189ac08932fce",
+    "bytes": 274556,
+    "seconds": 45.72,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-47%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-163": {
+    "textSha256": "8aff88832db1b5070e8a197a73031b5efad0e71637cba0d51a3fc316a4470102",
+    "audioSha256": "b38ee971409336f82b9e8a7fcafc1635788c4e3babdbf4491c4ff0251fd5c748",
+    "bytes": 359660,
+    "seconds": 59.904,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-41%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-161": {
+    "textSha256": "134e03e38cbae26b5a8ec0a6ff8c18a55bac7a49c94a4b8a15803094af0adfb5",
+    "audioSha256": "dd626c133727ee05ba21093b0709ace1d17158b150644cc61a6ad21e9c42c83e",
+    "bytes": 603308,
+    "seconds": 100.512,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-39%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-154": {
+    "textSha256": "b18967f17a113b6f69445377ea8ac99a006f2c08dc26ffbff2376df00f108345",
+    "audioSha256": "4999029217604094c75e27012a25d9f592ed38e05516c92c0ebc1bd23aab167e",
+    "bytes": 426188,
+    "seconds": 70.992,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-41%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-152": {
+    "textSha256": "95c5967433b09ebf4b7e10b41fe533d6a5a074e4619ebd9c2dcec19d6d6ab14e",
+    "audioSha256": "a90f47a1830246e634755578709d0f3e09b9e347774c54c1b31e7d2cf5f968ae",
+    "bytes": 315452,
+    "seconds": 52.536,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-43%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-147": {
+    "textSha256": "35078d35cbb0a9a351b8b4585ef1836550d64e8332d9f53a9b813cf804f79d52",
+    "audioSha256": "fa4d7d0fbe0fa06dd26542efd16f886554230818edf7084cc2e59308c6b59984",
+    "bytes": 467660,
+    "seconds": 77.904,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-39%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-139": {
+    "textSha256": "c1fc8ccf7c07e5bc64aa1a04aab4357472632fe52a7bda4872aab788694ebe8d",
+    "audioSha256": "fedc90da03a18b172643d11eef7ed146e024781e46b92921e7115dd170341438",
+    "bytes": 759404,
+    "seconds": 126.528,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-48%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-123": {
+    "textSha256": "f075df5eac2dd6b8d3804c7c5b5bf391039da877da034c2b487c4ec6894690e5",
+    "audioSha256": "1ccda7e8332831f1b2b6b7778a1fbb5a11abd7295eaf03eaefe7cd59c9d9729d",
+    "bytes": 614252,
+    "seconds": 102.336,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-45%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-072": {
+    "textSha256": "123dee6fb14d4cb0d06926cdbb8ee1b1428736e77328667a3bc927643821227c",
+    "audioSha256": "59e9c80e2ab5a133d671452e15cc0d01d6e2e59f71b90d2754957cabb691fa7a",
+    "bytes": 686396,
+    "seconds": 114.36,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-54%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-062": {
+    "textSha256": "742ff535920bd2df89f49f1e19832f707f9513473cd6323d7cf3c82f18895d85",
+    "audioSha256": "2659352066853d656e25d90dcf5604862ceace0420c2c6ae119d046f53880d90",
+    "bytes": 525692,
+    "seconds": 87.576,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-39%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
+  },
+  "rl-user-20261123-060": {
+    "textSha256": "086aed17a8893c74f1754a7fdd22e2b1f641c40f19365a6b9681defcbc2a15c1",
+    "audioSha256": "667231d3d2019e185d023a10726341bc9f5d33719702fd6c87b86234c7da1d93",
+    "bytes": 316028,
+    "seconds": 52.632,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "generator": "piper-tts 1.3.0 (local)",
+    "rate": "-48%",
+    "voiceModelRevision": "04ca88f5685ca5253c701af3687e155b113bd512",
+    "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
+    "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
+    "voiceSource": "sgd-voice-source.json"
   }
 }

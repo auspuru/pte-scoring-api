@@ -8,14 +8,41 @@ test('all 55 approved recordings resolve exact source and byte hashes, with six 
  for(const alias of require('../review/audio-refresh-remaining-20261104/shared-listening-hiw.json')){const source=predictions.sst.find(q=>q.id===alias.replacementCandidateId),q=audio.current({id:alias.consumerId,type:'hiw',audioId:source.id,text:source.text});assert.equal(q.audioKey,audio.current(source).audioKey);}
  assert.equal(audio.fileFor('../server.js'),null);assert.equal(audio.fileFor('__proto__'),null);
 });
-test('SGD and Writing attempts preserve keyed media and imported practice uses verified recordings',async t=>{
+test('Speaking and Writing attempts preserve keyed media and serve newly imported recordings',async t=>{
  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'approved-audio-')),app=express();app.use(express.json());
- const auth={directory,verifyToken:token=>token==='fixture'?'fixture':null,getAccount:async()=>({}),transcriptionAvailable:false,deliveryAssessmentAvailable:false,azureComparisonAvailable:false};
+ const auth={directory,verifyToken:token=>['fixture','retell-fixture'].includes(token)?token:null,getAccount:async()=>({}),transcriptionAvailable:false,deliveryAssessmentAvailable:false,azureComparisonAvailable:false};
  const speaking=require('../speaking-lab').installSpeakingLab(app,auth),writing=require('../writing-lab').installWritingLab(app,{...auth,directory:path.join(directory,'writing'),speakingAllowed:async()=>true});
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(async()=>{await speaking.waitForAssessments();await writing.stop();server.closeAllConnections();await new Promise(r=>server.close(r));await fs.rm(directory,{recursive:true,force:true});});
  const base='http://127.0.0.1:'+server.address().port;
- async function request(route,body){const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','x-session-token':'fixture'},body:body===undefined?undefined:JSON.stringify(body)});assert.equal(r.status,200,await r.clone().text());return r.json();}
+ async function request(route,body,token='fixture'){const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','x-session-token':token},body:body===undefined?undefined:JSON.stringify(body)});assert.equal(r.status,200,await r.clone().text());return r.json();}
  const catalogSpeaking=await request('/api/speaking/catalog');
+ const retellPredictions = require('../content/user-rl-20261123.json');
+ const retellCatalogue = catalogSpeaking.questions.filter(q => q.type === 'rl');
+ assert.equal(retellCatalogue.length, 65);
+ const labeledRetells = retellCatalogue.filter(q => q.title.startsWith('New Questions · '));
+ assert.deepEqual(labeledRetells.map(q => q.id), retellPredictions.map(q => q.id));
+ for (const [index, lecture] of retellPredictions.entries()) {
+   const id = crypto.randomUUID();
+   const created = await request('/api/speaking/attempts', { id, questionId: lecture.id }, 'retell-fixture');
+   const catalogueTitle = labeledRetells[index].title;
+   assert.equal(catalogueTitle, `New Questions · ${lecture.title} · AI practice narration`);
+   assert.equal(created.question.title, catalogueTitle);
+   assert.equal(created.question.preparation, 10);
+   assert.equal(created.question.seconds, 40);
+   assert.equal(created.question.reference, undefined);
+   assert.equal(new URL(created.question.audioUrl, base).pathname, `/speaking-audio/${lecture.id}.mp3`);
+   const recording = await fetch(base + created.question.audioUrl, { headers: { Range: 'bytes=0-255' } });
+   assert.equal(recording.status, 206);
+   assert.equal(recording.headers.get('content-type'), 'audio/mpeg');
+   assert.equal((await recording.arrayBuffer()).byteLength, 256);
+   if (index === 0) {
+     await request('/api/speaking/attempts/' + id + '/transcript', {
+       text: lecture.sample, revision: created.revision,
+     }, 'retell-fixture');
+     const reopened = await request('/api/speaking/attempts/' + id, undefined, 'retell-fixture');
+     assert.equal(reopened.transcript, lecture.sample);
+   }
+ }
  const imported=require('../content/user-sgd-20261123.json');
  const labeled=catalogSpeaking.questions.filter(q=>q.type==='sgd'&&q.title.startsWith('New Questions · '));
  assert.deepEqual(labeled.map(q=>q.id),['sgd-user-20261030-06','sgd-user-20261030-08','sgd-user-20261030-09',...imported.map(q=>q.id)]);
