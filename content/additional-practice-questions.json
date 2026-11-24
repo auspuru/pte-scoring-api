@@ -1,0 +1,30 @@
+[
+  {
+    "id": "sst-user-20261124-01",
+    "type": "sst",
+    "title": "Patients' Recovery",
+    "topic": "Hospital design and patient recovery",
+    "minutes": 10,
+    "text": "We have a long history of research into hospital design and patient recovery. A long time ago, people began to study therapeutic environments. For example, in 1855, Florence Nightingale recognized that colour and spatial forms could promote patients’ recovery. She found that grass, fresh air and sunlight had positive effects, and architectural design also played an important role. Views of hospital backyards can help patients rest well and fall asleep more easily, while also relieving their stress and pain because of the pleasant feelings caused by nature. Receiving visits from family and friends helps patients recover sooner, and so does staying in a private single room. Ninety percent of hospital patients and nurses agree that a well-designed hospital environment is associated with higher recovery rates.",
+    "keyPoints": [
+      "Research links hospital design to patient recovery, and Florence Nightingale identified benefits of colour and spatial design in 1855.",
+      "Grass, fresh air, sunlight and views of nature can support sleep and reduce stress and pain.",
+      "Visits from family and friends and private single rooms can help patients recover sooner.",
+      "Ninety percent of hospital patients and nurses associate well-designed hospitals with higher recovery rates."
+    ],
+    "sample": "Research links hospital design to patient recovery. In 1855, Florence Nightingale identified benefits of colour, spatial design, fresh air and sunlight. Views of nature improve sleep and ease stress and pain, while visits and private rooms help patients recover sooner. Ninety percent of patients and nurses associate well-designed hospitals with higher recovery rates.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "269",
+      "sourceTitle": "Patients' Recovery",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  }
+]
