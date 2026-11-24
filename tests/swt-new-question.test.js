@@ -9,3 +9,14 @@ test('submitted history hides NEW for that student',()=>assert.equal(isNew(q,{94
 test('saved attempted flag hides NEW when history unavailable',()=>assert.equal(isNew(q,{},new Set([940519])),false));
 test('other student remains NEW independently',()=>assert.equal(isNew(q,{},new Set()),true));
 test('older questions never display NEW label',()=>assert.equal(isNew({id:17}, {}, new Set()),false));
+
+test('new standalone SWT displays NEW until submitted without entering prediction mocks', () => {
+  const {passages, swt}=require('../content/user-swt-predictions');
+  for (const [id, sourceNumber] of [[910472, 472], [910504, 504]]) {
+    const added=passages.find(p=>p.id===id);
+    assert.equal(added.sourceNumber,sourceNumber);
+    assert.equal(isNew(added, {}, new Set()), true);
+    assert.equal(isNew(added, {[id]:[{text:'submitted'}]}, new Set()), false);
+    assert(!swt.some(q=>q.text===added.text));
+  }
+});

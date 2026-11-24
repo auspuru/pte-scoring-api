@@ -10,8 +10,8 @@ const { words, validateSwtContent } = require('../scripts/validate-swt-content')
 test('original SWT passages meet the 200–300 standard and screenshot text is kept verbatim', () => {
   const result = validateSwtContent();
   assert.deepEqual(result, {
-    total: 120,
-    standalone: 37,
+    total: 122,
+    standalone: 39,
     writingLab: 4,
     prediction: 35,
     advanced: 20,
@@ -31,7 +31,7 @@ test('all published SWT reference samples remain one-sentence answers', () => {
     ...writing.mocks.flatMap(m => m.questions.filter(q => q.type === 'swt').map(q => ({ id:q.id, sample:q.sample }))),
     ...predictions.swt.map(q => ({ id:q.id, sample:q.sample }))
   ];
-  assert.equal(all.length, 120);
+  assert.equal(all.length, 122);
   for (const row of all) {
     assert(row.sample && words(row.sample) >= 5 && words(row.sample) <= 75, row.id);
   }
@@ -52,9 +52,10 @@ test('prediction SWT items keep traceable source metadata', () => {
 
 test('user-provided priority SWT bank keeps the requested first five passages', () => {
   assert.deepEqual(userSwt.passages.slice(0,5).map(p => p.sourceNumber), [498, 108, 1, 174, 30]);
-  assert.equal(userSwt.passages.length, 17);
-  assert.deepEqual(predictions.swt.slice(0,17).map(q => Number(q.predictionSource.sourceId)), userSwt.passages.map(p => p.sourceNumber));
-  assert.equal(new Set(userSwt.passages.map(p => p.id)).size, 17);
+  const mockEligible = userSwt.passages.filter(p => !p.standaloneOnly);
+  assert.equal(mockEligible.length, 17);
+  assert.deepEqual(predictions.swt.slice(0,17).map(q => Number(q.predictionSource.sourceId)), mockEligible.map(p => p.sourceNumber));
+  assert.equal(new Set(userSwt.passages.map(p => p.id)).size, 19);
   for (const p of userSwt.passages) assert(p.text.length > 800, p.title);
 });
 

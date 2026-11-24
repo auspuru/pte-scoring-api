@@ -13,7 +13,7 @@ const { papers } = require('../content/full-mock/papers/catalogue.json');
 
 const books = [require('../passages.json'), require('../content/swt-legacy.json'),
   require('../content/swt-advanced.json'), require('../content/swt-advanced-revisions.json'),
-  require('../content/user-swt-predictions').passages];
+  require('../content/user-swt-predictions').passages.filter(p => !p.standaloneOnly)];
 
 test('Every audited exact SWT passage has a short one-sentence teaching sample', () => {
   assert.equal(Object.keys(guides).length, 95);
