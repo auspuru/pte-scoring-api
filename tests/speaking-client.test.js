@@ -469,8 +469,8 @@ test('NAV-09: Opening a copied Speaking question link never creates an attempt o
 
 
 test('Untimed practice waits for manual recording and stays active beyond the timed task limits',async()=>{
- const h=harness();await h.controller.open('ra');assert.match(h.host.innerHTML,/Timed practice/);assert.match(h.host.innerHTML,/Untimed practice/);
- await h.click({speakingMode:'untimed'});await h.click({speakingQuestion:'ra-1'});
+ const h=harness();await h.controller.open('ra');assert.match(h.host.innerHTML,/role="switch" aria-checked="true" data-speaking-mode="untimed">Timed/);
+ await h.click({speakingMode:'untimed'});assert.match(h.host.innerHTML,/role="switch" aria-checked="false" data-speaking-mode="timed">Timed/);await h.click({speakingQuestion:'ra-1'});
  assert.equal([...h.attempts.values()][0].practiceMode,'untimed');assert.equal(h.nodes.get('speaking-phase').textContent,'Ready when you are');assert.equal(h.nodes.get('speaking-clock').textContent,'Untimed');
  h.tick(120000);assert.equal(h.recorders.length,0);await h.click({speakingAction:'ready-record'});assert.equal(h.recorders[0].state,'recording');
  h.tick(120000);assert.equal(h.recorders[0].state,'recording');assert(!h.requests.some(r=>r.url.endsWith('/recording')&&r.body));
