@@ -7,7 +7,7 @@
   else root.SwtNewQuestion=api;
 })(typeof globalThis !== 'undefined'? globalThis : this, function () {
   const IMPORT_BATCH='nov23-2026-swt';
-  const recentStandaloneIds = new Set(['910472']);
+  const recentStandaloneIds = new Set(['910472', '910504']);
   function isNew(p, history, attemptedIds) {
     if (!p || (p.questionSet !== IMPORT_BATCH && !recentStandaloneIds.has(String(p.id)))) return false;
     const ids=[p.id,String(p.id)];

@@ -12,9 +12,11 @@ test('older questions never display NEW label',()=>assert.equal(isNew({id:17}, {
 
 test('new standalone SWT displays NEW until submitted without entering prediction mocks', () => {
   const {passages, swt}=require('../content/user-swt-predictions');
-  const added=passages.find(p=>p.id===910472);
-  assert.equal(added.sourceNumber,472);
-  assert.equal(isNew(added, {}, new Set()), true);
-  assert.equal(isNew(added, {910472:[{text:'submitted'}]}, new Set()), false);
-  assert(!swt.some(q=>q.text===added.text));
+  for (const [id, sourceNumber] of [[910472, 472], [910504, 504]]) {
+    const added=passages.find(p=>p.id===id);
+    assert.equal(added.sourceNumber,sourceNumber);
+    assert.equal(isNew(added, {}, new Set()), true);
+    assert.equal(isNew(added, {[id]:[{text:'submitted'}]}, new Set()), false);
+    assert(!swt.some(q=>q.text===added.text));
+  }
 });
