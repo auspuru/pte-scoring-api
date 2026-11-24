@@ -380,6 +380,248 @@ for(const width of [1363,390,320])test('SWT review: exact corrections, drafts, s
  assert.equal(calls,0,'Reviewing, revising and saving do not request an assessment');assert.deepEqual(errors,[]);
 });
 
+test('SWT review: NEW and one-click reporting keep student history, focus and question identity',{timeout:90000},async t=>{
+ const {randomUUID}=require('node:crypto'),{Pool}=require('pg');
+ const {testDatabaseUrl,until}=require('./helpers/full-mock-systems');
+ const base=testDatabaseUrl(process.env.FULL_MOCK_TEST_DATABASE_URL);
+ const schema='swt_reports_'+randomUUID().replaceAll('-','');
+ const pool=new Pool({connectionString:base,connectionTimeoutMillis:5000});
+ await pool.query('CREATE SCHEMA '+schema);
+ const connection=new URL(base);
+ connection.searchParams.set('options','-c search_path='+schema);
+ const passagePool=new Pool({connectionString:connection.toString(),connectionTimeoutMillis:5000});
+ const f=await authFixture(t,{databaseUrl:connection.toString(),afterStop:async()=>{
+  try{await passagePool.end();await pool.query('DROP SCHEMA '+schema+' CASCADE');}finally{await pool.end();}
+ }});
+
+ const staged=require('../content/swt-nov23-practice.staged.json');
+ const [first,second]=staged.slice(0,2).map(passage=>passage.id);
+ const search=String(first).slice(0,4);
+ const students=['swt-report-first','swt-report-second'],password='Synthetic-pass-123';
+ const sessions=[];
+ for(const username of students){
+  const registration=await f.request('/api/auth/register',{username,password,email:username+'@example.test'});
+  assert.equal(registration.body.success,true);
+  sessions.push(registration.body.token);
+ }
+ // Service readiness precedes the additive SWT bootstrap. The boot snapshot
+ // is captured after its seeds, revisions and sample backfill have completed.
+ await until(async()=>Boolean((await f.request('/api/health')).body.boot_snapshot),'SWT bootstrap did not finish.');
+ const baseline=(await f.request('/api/passages')).body.passages;
+ const batchIds=baseline.filter(passage=>passage.questionSet==='nov23-2026-swt').map(passage=>passage.id).sort((a,b)=>a-b);
+ assert.deepEqual(batchIds,staged.map(passage=>passage.id).sort((a,b)=>a-b),'The boot import exposes exactly the reviewed batch');
+ const indexed=new Map(baseline.map(passage=>[passage.id,passage]));
+ for(const passage of staged){
+  const published=indexed.get(passage.id);
+  assert.deepEqual(published&&[published.id,published.title,published.text,published.questionSet],
+   [passage.id,passage.title,passage.text,passage.questionSet]);
+ }
+ assert.notEqual(baseline[0].id,first);
+
+ const {importPassages}=require('../swt-nov23-import');
+ const readRows=async()=>(await passagePool.query('SELECT id, payload FROM passages ORDER BY id')).rows;
+ const bootRows=await readRows();
+ assert.equal(bootRows.length,baseline.length);
+ const replayImport=()=>importPassages(passagePool,staged);
+ for(const replay of await Promise.all([replayImport(),replayImport()])){
+  assert.deepEqual(replay,{checked:bootRows.length,added:0,alreadyPresent:staged.length});
+ }
+
+ const freshPassage={id:995401,title:'A staging transaction fixture',text:'A new fixture passage checks atomic insertion.'};
+ await assert.rejects(importPassages(passagePool,[freshPassage,{...staged[0],id:995402}]),/duplicate-passage/);
+ await assert.rejects(importPassages(passagePool,[freshPassage,{...freshPassage,id:first}]),/id-collision/);
+ await assert.rejects(importPassages(passagePool,[freshPassage,{...freshPassage,text:'A separate fixture forces an insert conflict.'}]),
+  {code:'23505'});
+ assert.deepEqual(await readRows(),bootRows,'Rejected imports leave all boot rows and IDs intact');
+
+ const teacherEdited={...staged.at(-1),text:'A teacher edited the imported wording while retaining its source receipt.'};
+ await passagePool.query('UPDATE passages SET payload=jsonb_set(payload, \'{text}\', to_jsonb($2::text)) WHERE id=$1',[teacherEdited.id,teacherEdited.text]);
+ const editedRows=await readRows();
+ assert.equal(editedRows.find(row=>row.id===teacherEdited.id).payload.text,teacherEdited.text);
+ assert.deepEqual(await replayImport(),{checked:bootRows.length,added:0,alreadyPresent:staged.length});
+ assert.deepEqual(await readRows(),editedRows,'A startup retry preserves an existing teacher edit');
+
+ const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});
+ t.after(()=>browser.close());
+ const errors=[],gradePassages=[],reportPosts=[];
+ const page=await browser.newPage();
+ page.on('pageerror',e=>errors.push(e.stack||e.message));
+ page.setDefaultTimeout(18000);
+ await page.setRequestInterception(true);
+ const {promise:reportGate,resolve:releaseReport}=Promise.withResolvers();
+ const {promise:pendingReport,resolve:reportStarted}=Promise.withResolvers();
+ t.after(releaseReport);
+ page.on('request',async request=>{
+  const url=new URL(request.url());
+  if(url.origin!==f.base)return request.abort();
+  if(request.method()==='POST'&&url.pathname==='/api/grade'){
+   gradePassages.push(JSON.parse(request.postData()).passageId);
+   return request.respond({status:200,contentType:'application/json',body:JSON.stringify({
+    overall_score:79,trait_scores:{content:3,form:1,grammar:2,vocabulary:2}
+   })});
+  }
+  if(request.method()==='POST'&&url.pathname.startsWith('/api/swt/exam-reports/')){
+   const id=Number(url.pathname.split('/').at(-1));
+   reportPosts.push(id);
+   if(id===second){
+    reportStarted();
+    await reportGate;
+   }
+  }
+  return request.continue();
+ });
+ const library='#swtQuestionLibrary.active',rows='#swtQuestionRows';
+ const row=id=>`${library} [data-question-key="${id}"]`;
+ const report=id=>`[data-swt-report="${id}"]`;
+ async function login(target,username){
+  await target.$eval('#loginUsername',e=>e.value='');
+  await target.$eval('#loginPassword',e=>e.value='');
+  await target.type('#loginUsername',username);
+  await target.type('#loginPassword',password);
+  await target.locator('#loginSubmitBtn').click();
+  try{
+   await target.waitForFunction((name,id)=>typeof currentUserId!=='undefined'&&currentUserId===name&&passages.some(p=>p.id===id)
+     &&document.getElementById('appShell')?.style.display==='grid'
+     &&document.getElementById('loadingVeil')?.classList.contains('hidden'),{},username,first);
+  }catch(error){
+   t.diagnostic(JSON.stringify(await target.evaluate(()=>({
+    signedInAs:typeof currentUserId==='string'?currentUserId:'',passageCount:typeof passages==='undefined'?-1:passages.length,
+    lastPassages:typeof passages==='undefined'?[]:passages.slice(-4).map(p=>p.id),
+    loginError:document.getElementById('loginError')?.textContent,shell:document.getElementById('appShell')?.style.display,
+    loading:document.getElementById('loadingVeil')?.className
+   }))));
+   t.diagnostic(JSON.stringify(errors));
+   throw error;
+  }
+ }
+ async function openLibrary(target){
+  await target.evaluate(()=>switchSection('swt'));
+  await target.waitForSelector(library+' [data-swt-open]',{visible:true});
+  await target.waitForFunction(()=>document.getElementById('swtQuestionRows')?.textContent.includes('Reported by'));
+ }
+ async function expectReport(target,id,count,reported){
+  await target.waitForFunction(({id,count,reported})=>{
+   const button=document.querySelector('#swtQuestionLibrary.active [data-swt-report="'+id+'"]');
+   const detail=button?.closest('[data-question-key]')?.textContent;
+   return !!detail?.includes('Reported by '+count+' student'+(count===1?'':'s'))
+     &&button.textContent.trim()===(reported?'✓ Reported':'Report');
+  },{},{id,count,reported});
+ }
+ async function fillDraft(target,text){
+  await target.$eval('#summaryInput',(input,value)=>{
+   input.value=value;
+   input.dispatchEvent(new Event('input',{bubbles:true}));
+  },text);
+ }
+ let step='initial login';
+ try{
+ await page.setViewport({width:1363,height:900});
+ await page.goto(f.base,{waitUntil:'domcontentloaded'});
+ await login(page,students[0]);
+ await openLibrary(page);
+ assert.equal(await page.$(row(baseline[0].id)+' .practice-library-label'),null);
+ await page.type('#swtQuestionSearch',search);
+ await expectReport(page,first,0,false);
+ assert.equal(await page.$eval(row(first)+' .practice-library-label',e=>e.textContent),'NEW');
+ step='first report and rerank';
+ await page.$eval(report(first),button=>{button.focus();button.click();button.click();});
+ await expectReport(page,first,1,true);
+ await page.waitForFunction(id=>passages[0]?.id===id,{},first);
+ assert.deepEqual(reportPosts,[first]);
+ const replays=await Promise.all([1,2].map(()=>f.request('/api/swt/exam-reports/'+first,{},sessions[0])));
+ for(const replay of replays){
+  assert.equal(replay.body.alreadyReported,true);
+  assert.deepEqual(replay.body.report,{myReported:true,reporterCount:1});
+ }
+ assert.equal(await page.$eval('#swtQuestionSearch',e=>e.value),search);
+ assert.equal(await page.evaluate(()=>document.activeElement.dataset.swtReport),String(first));
+ assert.equal(await page.$eval(report(first),e=>e.getAttribute('aria-disabled')),'true');
+ assert.equal(await page.$eval(row(first)+' .practice-library-label',e=>e.textContent),'NEW');
+ await page.locator(row(first)+' [data-swt-open]').click();
+ await page.waitForSelector('#swtPracticeScreen.active #swtQuestionNewBadge',{visible:true});
+ step='first draft, resume and submit';
+ const draft=staged[0].sampleResponse;
+ await fillDraft(page,draft);
+ await page.locator('[data-writing-return="swt"]').click();
+ await page.waitForSelector(row(first)+' [data-swt-resume]');
+ assert.equal(await page.$eval(row(first)+' .practice-library-label',e=>e.textContent),'NEW');
+ await page.locator(row(first)+' [data-swt-resume]').click();
+ await page.waitForSelector('#swtPracticeScreen.active #swtQuestionNewBadge',{visible:true});
+ assert.equal(await page.$eval('#summaryInput',e=>e.value),draft);
+ await page.locator('#scoreBtn').click();
+ await page.waitForSelector('#swtResultsScreen.active');
+ assert.deepEqual(gradePassages,[first]);
+ const persisted=await page.evaluate(async()=>{
+  await flushSyncDirect();
+  const result=await fetch(API_URL+'/api/sync/'+currentUserId,{headers:{'x-session-token':sessionToken}});
+  return (await result.json()).data.history;
+ });
+ assert.equal(persisted[first][0].text,draft);
+ assert.equal(persisted[second],undefined);
+
+ step='fresh device and submitted badge';
+ const freshContext=await browser.createBrowserContext();
+ const fresh=await freshContext.newPage();
+ await fresh.setViewport({width:390,height:900});
+ await fresh.setRequestInterception(true);
+ fresh.on('request',request=>new URL(request.url()).origin===f.base?request.continue():request.abort());
+ await fresh.goto(f.base,{waitUntil:'domcontentloaded'});
+ await login(fresh,students[0]);
+ await openLibrary(fresh);
+ await expectReport(fresh,first,1,true);
+ assert.equal(await fresh.$(row(first)+' .practice-library-label'),null);
+ await fresh.locator(row(first)+' [data-swt-open]').click();
+ await fresh.waitForSelector('#swtPracticeScreen.active #summaryInput',{visible:true});
+ assert.equal(await fresh.$eval('#swtQuestionNewBadge',e=>getComputedStyle(e).display),'none');
+
+ step='switch account';
+ await page.evaluate(()=>signOut());
+ await page.waitForSelector('#loginSubmitBtn',{visible:true});
+ await login(page,students[1]);
+ await openLibrary(page);
+ assert.equal(await page.$eval('#swtQuestionSearch',e=>e.value),'');
+ await expectReport(page,first,1,false);
+ assert.equal(await page.$eval(row(first)+' .practice-library-label',e=>e.textContent),'NEW');
+ await page.type('#swtQuestionSearch',search);
+ const oldPosition=await page.$eval(row(second)+' [data-swt-open]',e=>Number(e.dataset.swtOpen));
+ step='report while opening another question';
+ await page.locator(row(second)+' '+report(second)).click();
+ await pendingReport;
+ step='open and draft while the report request is held';
+ await page.locator(row(second)+' [data-swt-open]').click();
+ await page.waitForSelector('#swtPracticeScreen.active #swtQuestionNewBadge',{visible:true});
+ const otherDraft=staged[1].sampleResponse;
+ await fillDraft(page,otherDraft);
+ const ranking=page.waitForResponse(r=>r.ok()&&new URL(r.url()).pathname==='/api/passages');
+ step='release report and wait for authoritative order';
+ releaseReport();
+ const next=(await (await ranking).json()).passages;
+ assert.notEqual(next.findIndex(p=>p.id===second)+1,oldPosition);
+ assert.equal(await page.evaluate(()=>swtPassageStorageId()),second);
+ assert.equal(await page.$eval('#summaryInput',e=>e.value),otherDraft);
+ step='restore active draft after rerank';
+ await page.locator('[data-writing-return="swt"]').click();
+ await expectReport(page,second,1,true);
+ assert.equal(await page.$eval('#swtQuestionSearch',e=>e.value),search);
+ assert.equal(await page.$eval(row(second)+' .practice-library-label',e=>e.textContent),'NEW');
+ await page.locator(row(second)+' [data-swt-resume]').click();
+ await page.waitForSelector('#swtPracticeScreen.active #summaryInput',{visible:true});
+ assert.equal(await page.$eval('#summaryInput',e=>e.value),otherDraft);
+ assert.equal(await page.evaluate(id=>localAccountProgress().summaries[id]?.text,first),undefined);
+ await page.locator('[data-writing-return="swt"]').click();
+ await expectReport(page,first,1,false);
+ step='distinct reports from different accounts';
+ await page.locator(row(first)+' '+report(first)).click();
+ await expectReport(page,first,2,true);
+ assert.deepEqual(reportPosts,[first,second,first]);
+ assert.deepEqual(await page.$$eval(rows+' [data-question-key]',els=>els.slice(0,2).map(e=>Number(e.dataset.questionKey))),[first,second]);
+ assert.deepEqual(errors,[]);
+ }catch(error){
+  t.diagnostic(JSON.stringify({step,reportPosts,gradePassages,errors}));
+  throw error;
+ }
+});
+
 for(const width of [1363,390,320])test('SWT mock feedback: submitted Writing and Full reports are read-only and show exact corrections at '+width+'px',{timeout:45000},async t=>{
  const f=await fixture(t,width,true),{page}=f,id='swt-mock-feedback-fixture',answer='Trees cool cities and improves air quality, actually.',source='Trees cool cities and improve air quality, but species need careful selection.';
  const native={version:'saved-fixture',scores:{content:3,form:1,grammar:1,vocabulary:2},maxima:{content:4,form:1,grammar:2,vocabulary:2},total:7,maximum:9,feedback:{content:'Keep the planting caution.',grammar:'Use a plural verb.'},summary_assessment:{next_step:'Add careful species selection.',repair:'Trees cool cities and improve air quality, but species need careful selection.'},errors:[{phrase:'improves',correction:'improve',explanation:'Use the plural verb with trees.',affectsScore:true},{phrase:', actually',correction:'',explanation:'Remove the unnecessary aside.',affectsScore:true}],strengths:[],improvements:[],reasons:[]};

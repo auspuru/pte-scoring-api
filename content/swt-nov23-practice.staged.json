@@ -1,0 +1,715 @@
+[
+  {
+    "id": 950001,
+    "title": "Making Suggestions",
+    "category": "Writing/Communication",
+    "text": "You have a great idea — a product tweak that will save your company money, a process change to increase your team’s productivity, or a plan for heading off a looming crisis. There’s just one snag: you’re not sure how to approach your boss about it, or worse, you’ve tried and failed to get the attention of higher-ups.\n\nDespite abundant research on the value of bottom-up innovation and problem-solving, many workers still feel stifled in giving their bosses feedback or making suggestions. One survey of U.S. employees found that a full 70% weren’t comfortable raising an issue with their boss even when it was important, and a landmark 2003 study found that 85% of employees withheld their ideas because they were afraid to speak up.\n\nAdditional research shows that even when employees do speak up, their suggestions usually don’t lead to change. For example, an Accenture study showed that nearly three-fourths of ideas submitted through corporate online suggestion tools languished and were never implemented. Another study of a hospital found that of 200 ideas shared by employees, most were initially rejected and fewer than a quarter were ever implemented.\n\nFor the past two decades, I’ve studied how employees offer solicited and unsolicited recommendations and how managers respond. Obviously, there are many reasons why ideas — including those from senior leaders — fail to make it to implementation. But too often good ideas are ignored or rejected. I’ve found that two factors are key to a successful pitch: having the confidence to make your suggestion and knowing how to frame it to get the best reception from your boss. Some managers will be more unapproachable and unresponsive than others, but research shows that the majority are more open to ideas and suggestions than you might imagine — provided they are approached effectively.",
+    "keyElements": {
+      "what": "Employee suggestions can support bottom-up innovation and problem-solving.",
+      "why": "Many employees are afraid or uncomfortable bringing ideas to their managers.",
+      "how": "Studies indicate most suggestions are ignored, rejected or never implemented even when employees speak up.",
+      "result": "Confidence and thoughtful framing can improve the reception of suggestions, and many managers are receptive to an effective approach."
+    },
+    "sampleResponse": "Although employee suggestions can drive innovation, workers often hesitate to speak and submitted ideas rarely lead to change, but confidence and a pitch framed for the manager can improve the likelihood of a receptive response.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 1,
+    "sourceQuestionNumber": 246,
+    "sourceScreenshot": "Screenshot 2026-11-23 134923.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950004,
+    "title": "High-fat Diet",
+    "category": "Sport/Nutrition",
+    "text": "While endurance exercise can effectively burn fat during physical activity, new research has uncovered muscles' remarkable ability to process and consume fat for energy. Indeed, the fat being burned can be sourced from muscles' internal storage as well as fat circulating within the blood. However, this natural fat-burning capacity has clear biological boundaries and cannot be infinitely improved.\n\nRecently, some researchers have been investigating whether a high-fat diet can further increase the rate of fat burning in human bodies. Their studies have shown that it can indeed enhance fat oxidation. However, this positive effect has only been observed in elite or well-conditioned athletes rather than ordinary people. The article also mentioned the names of the researchers involved and explained the complex physiological mechanism behind this phenomenon. In the final section, it discussed the potential health risks of such a diet. Therefore, if your diet contains excessive fat over a long period of time, you face serious health risks such as high blood pressure.",
+    "keyElements": {
+      "what": "During endurance exercise, muscles burn fat from internal stores and the bloodstream.",
+      "why": "Natural fat-burning capacity has biological limits.",
+      "how": "Research found that high-fat diets enhanced fat oxidation in elite or well-conditioned athletes.",
+      "result": "The reported benefit has not been observed in ordinary people, and prolonged excessive fat intake can carry health risks including high blood pressure."
+    },
+    "sampleResponse": "Endurance exercise uses fat stored in muscles and circulating in blood, while high-fat diets can enhance fat oxidation in well-conditioned athletes, although their benefits have not been observed in ordinary people and prolonged excess may raise blood pressure.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 4,
+    "sourceQuestionNumber": 501,
+    "sourceScreenshot": "Screenshot 2026-11-23 135238.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950006,
+    "title": "Immune System",
+    "category": "Science/Health",
+    "text": "The immune system is a complex network of different organs, cells, and proteins that work together. There are two main parts of the immune system: the innate immune system - you are born with this, and the adaptive immune system - you develop this when your body is exposed to microbes or chemicals released by microbes. These two immune systems work together.\n\nThe innate immune system is your child's rapid response system. It is the first to respond when it finds an invader. It is made up of the skin, the eye's cornea, and the mucous membrane that lines the respiratory, gastrointestinal, and genitourinary tracts. These all create physical barriers to help protect your child's body. They protect against harmful germs, parasites (such as worms), or cells (such as cancer). The innate immune system is inherited. It is active from the moment your child is born. When this system recognizes an invader, it goes into action right away. The cells of this immune system surround and cover the invader. The invader is killed inside the immune system cells ( called phagocytes).\n\nThe acquired immune system, with help from the innate system, makes special proteins (called antibodies) to protect your body from a specific invader. These antibodies are developed by cells called B lymphocytes after the body has been exposed to the invader. The antibodies stay in your child's body. It can take several days for antibodies to form. But after the first exposure, the immune system will recognize the invader and defend against it. The acquired immune system changes during your child's life.Immunizations train your child's immune system to make antibodies to protect them from harmful diseases.",
+    "keyElements": {
+      "what": "The immune system consists of collaborating innate and adaptive defences.",
+      "why": "Innate immunity is present at birth and responds immediately to invaders.",
+      "how": "Innate barriers and phagocytes help block or destroy invaders, while adaptive B lymphocytes develop specific antibodies after exposure.",
+      "result": "Adaptive immunity helps recognise and defend against subsequent encounters, and immunisation trains that response."
+    },
+    "sampleResponse": "The innate immune system provides immediate defence through barriers and phagocytes, while the adaptive system develops specific antibodies after exposure, enabling later recognition and protection that immunisation can help establish.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 6,
+    "sourceQuestionNumber": 416,
+    "sourceScreenshot": "Screenshot 2026-11-23 135314.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950007,
+    "title": "Difference in Intelligence",
+    "category": "Science/Psychology",
+    "text": "People differ greatly in all aspects of what is casually known as intelligence. The differences are apparent not only in school, from kindergarten to college, but also in the most ordinary circumstances: in the words people use and comprehend, in their differing abilities to read a map or follow directions, or in their capacities for remembering telephone numbers or figuring change. The variations in these specific skills are so common that they are often taken for granted. Yet what makes people so different?\n\nIt would be reasonable to think that the environment is the source of differences in cognitive skills — that we are what we learn. It is clear, for example, that human beings are not born with a full vocabulary; they have to learn words. Hence, learning must be the mechanism by which differences in vocabulary arise among individuals. And differences in experience — say, in the extent to which parents model and encourage vocabulary skills or in the quality of language training provided by schools — must be responsible for individual differences in learning.\n\nEarlier in this century, psychology was in fact dominated by environmental explanations for variance in cognitive abilities. More recently, however, most psychologists have begun to embrace a more balanced view: one in which nature and nurture interact in cognitive development. During the past few decades, studies in genetics have pointed to a substantial role for heredity in molding the components of intellect, and researchers have even begun to track down the genes involved in cognitive function. These findings do not refute the notion that environmental factors shape the learning process. Instead they suggest that differences in people's genes affect how easily they learn.",
+    "keyElements": {
+      "what": "Cognitive abilities differ between individuals and these differences appear at school and in ordinary tasks.",
+      "why": "Environmental explanations attribute differences such as vocabulary to varied learning experiences.",
+      "how": "Genetic research indicates that heredity helps shape cognitive abilities and affects how easily people learn.",
+      "result": "Contemporary psychology increasingly treats cognitive development as an interaction between heredity and environment."
+    },
+    "sampleResponse": "People vary in everyday cognitive abilities, and although environmental experiences such as language instruction shape learning, genetic research suggests heredity affects how readily people learn, supporting a view of cognitive development that combines nature and nurture.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 7,
+    "sourceQuestionNumber": 336,
+    "sourceScreenshot": "Screenshot 2026-11-23 135320.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950008,
+    "title": "Fallacy",
+    "category": "Psychology/Society",
+    "text": "Things happen together, or one event happens after another, but this does not necessarily mean that one event causes the other. There may be other hidden factors that influence both events, or the connection between them may simply be a coincidence. Therefore, people need to consider all the relevant factors to determine the real relationship between two events instead of assuming that correlation is the same as causation.\n\nFallacies are common in daily life. For example, if person A lends a mobile phone to person B and the phone stops working after person B uses it, person A may believe that the phone broke because of person B’s use. However, this conclusion may be wrong because the phone might have already had a problem, or it might have stopped working for another reason. Similarly, a fallacy can lead to cognitive bias. For instance, if a student wears a particular shirt before an exam and gets a high score, the student may believe that the shirt brought good luck and continue wearing it before future exams, even though the result was probably caused by good preparation rather than the shirt.",
+    "keyElements": {
+      "what": "Events occurring together or in sequence do not by themselves establish causation.",
+      "why": "Coincidence or hidden factors can account for the apparent connection.",
+      "how": "People can examine relevant factors and alternative explanations before assigning a cause.",
+      "result": "Mistaking a sequence for a cause can create blame or reinforce cognitive biases such as belief in a lucky shirt."
+    },
+    "sampleResponse": "Events occurring together or in succession may reflect coincidence or hidden influences, so examining alternative explanations before assigning causes can prevent misplaced blame and cognitive biases such as crediting exam success to a lucky shirt.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 8,
+    "sourceQuestionNumber": 301,
+    "sourceScreenshot": "Screenshot 2026-11-23 135329.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950009,
+    "title": "Natural Language",
+    "category": "Language/Education",
+    "text": "When people start thinking about language, the first question which often occurs to them is this: is language natural to humans? - in the same way that grunting is natural to pigs, and barking comes naturally to dogs. Or is it just something we happen to have learned? - in the same way that dogs may learn to beg, or elephants may learn to waltz, or humans may learn to play the guitar.\n\nClearly, in one sense, children 'learn' whatever language they are exposed to, be it Chinese, Nootka or English. So no one would deny that ' learning' is very important. But the crucial question is whether children are born with 'blank sheets' in their head as far as language is concerned - or whether humans are 'programmed' with an outline knowledge of the structure of languages in general.\n\nThis question of whether language is partly due to nature or wholly due to learning or nurture is often referred to as the nature-nurture controversy, and has been discussed for centuries. For example, it was the topic of one of Plato's dialogues, the Cratylus. Controversies which have been going on for literally ages tend to behave in a characteristic fashion. They lie dormant for a while, then break out fiercely. This particular issue resurfaced in linguistics in 1959 when the linguist Noam Chomsky wrote a devastating and witty review of Verbal Behavior, a book by the Harvard psychologist B.F. Skinner (Skinner 1957; Chomsky 1959). This book claimed to 'explain' language as a set of habits gradually built up over the years. According to Skinner, no complicated innate or mental mechanisms are needed. All that is necessary is the systematic observation of the events in the external world which prompt the speaker to utter sounds.",
+    "keyElements": {
+      "what": "The nature–nurture debate asks whether language ability is partly innate or entirely acquired.",
+      "why": "Children learn the languages they encounter, but that fact leaves open whether they possess an inborn outline of linguistic structure.",
+      "how": "A centuries-old debate resurfaced in 1959 with Noam Chomsky’s review of B. F. Skinner’s Verbal Behavior.",
+      "result": "Skinner described language as habits formed through external events and saw no need for complex innate mental mechanisms."
+    },
+    "sampleResponse": "Children learn the languages they encounter, but whether linguistic structure is partly innate remains central to the debate revived by Chomsky’s review of Skinner, who explained language as habits gradually formed through external stimuli.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 9,
+    "sourceQuestionNumber": 230,
+    "sourceScreenshot": "Screenshot 2026-11-23 135345.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950010,
+    "title": "Environmental Technologies",
+    "category": "Science and Technology",
+    "text": "Many technologies have promised these qualities, but few have been commercially viable. What's been lacking is the performance data needed to demonstrate that these technologies are durable, genuinely environmentally beneficial, and suitable to be insured. Over the past 13 years, our Department of Architecture & Civil Engineering has led on research into straw as a low-impact building material. This work, which has included developing a unique straw bale panel as well as scientific monitoring and testing, has now culminated in crucial industry certifications. The BM TRADA's Q-Mark certification guarantees a straw building's energy efficiency, fire safety, durability and weather-resilience and means that developers and homebuyers can now get insurance and mortgages for straw homes and buildings.\n\nThe innovative straw walls in the new houses provide two times more insulation than required by current UK building regulations. Based on monitoring a residential straw-bale development in Leeds, fuel bill reductions up to 90% can be expected. The walls have been built using ModCell technology; prefabricated panels consisting of a wooden structural frame infilled with straw bales or hemp and rendered with either a breathable lime-based system or ventilated timber or brick cladding. This technology combines the lowest carbon footprint and the best operational CO² performance of any system of construction currently available. In fact, as an agricultural co-product, straw buildings can be carbon negative as straw absorbs CO² when it grows.",
+    "keyElements": {
+      "what": "Straw bale panels are a low-impact building technology.",
+      "why": "Commercial viability required evidence of environmental benefits, durability and insurability.",
+      "how": "The research team developed, monitored and tested prefabricated panels and secured Q-Mark certification.",
+      "result": "Certified straw construction can qualify for mortgages and insurance, provide strong insulation, cut fuel bills and store carbon."
+    },
+    "sampleResponse": "Research and testing earned straw bale construction certification that enables insurance and mortgages, while the prefabricated panels offer strong insulation, potentially lower fuel bills and a low carbon footprint because straw absorbs carbon dioxide as it grows.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 10,
+    "sourceQuestionNumber": 225,
+    "sourceScreenshot": "Screenshot 2026-11-23 135354.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950011,
+    "title": "South Africa",
+    "category": "History and Society",
+    "text": "The area that is now South Africa has been inhabited by humans for millennia. The San, the original inhabitants of this land, were migratory people who lived in small groups of about 15 to 20 people. They survived by fishing and hunting and by gathering roots and other wild foods. They did not build permanent dwellings but used rock shelters as temporary dwellings. Around 2,000 years ago Khoikhoi pastoralists migrated to the coast.\n\nIn the eastern part of present-day South Africa, iron-working societies date from about 300 A.D. The Sotho-Tswana and Nguni peoples arrived in this region around 1,200 A.D. They lived by agriculture and stock farming, mined gold, copper and tin and hunted for ivory and built stone-walled towns. Over the centuries, these societies had diverse contacts with the Khoisan. Strife between the San and the Khoikhoi developed over competition for game; eventually the Khoikhoi became dominant. These people lived in the western part of present-day South Africa and are known collectively as the Khoisan.",
+    "keyElements": {
+      "what": "The San were early inhabitants of South Africa and lived in small migratory groups.",
+      "why": "They hunted, fished and gathered wild foods while using temporary rock shelters.",
+      "how": "Khoikhoi pastoralists settled along the coast, while eastern iron-working communities and later Sotho-Tswana and Nguni peoples practised farming and mining.",
+      "result": "Eastern societies had varied contacts with the Khoisan, and competition for game led to Khoikhoi dominance over the San."
+    },
+    "sampleResponse": "Early South Africa was home to migratory San hunter-gatherers, coastal Khoikhoi pastoralists and eastern iron-working and farming communities, while competition for game between the San and Khoikhoi eventually left the Khoikhoi dominant.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 11,
+    "sourceQuestionNumber": 215,
+    "sourceScreenshot": "Screenshot 2026-11-23 135409.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950012,
+    "title": "Summer Vacation",
+    "category": "Education and Society",
+    "text": "There are few things U.S. students love more than summer vacation, that traditionally three-month break from school during June, July and August. But why does it even exist?\n\nA common theory holds that summer vacation was created for farm kids who needed to work. That's only marginally true: students at rural schools did get time off for harvests, but those breaks fell in the spring and the fall. In fact, summer vacation was born in the city. Calls for a break began in the mid-19th century, when many urban schools met year-round. Warnings about \"overstudy\" led reformers like Horace Mann to argue that time off would be good for kids' behavior and mental health, says Kenneth M. Gold, author of \"The History of Summer Education\" in American Public Schools.\n\nDoctors agreed: John C. Warren, a Harvard professor of anatomy and surgery, once remarked that 'too steady an application to literary pursuits' led to a 'debilitated body'. And in an era before AC, experts worried that poorly ventilated school buildings compounded the risks. Debate raged for decades. But as railroads made nature more accessible for city dwellers, wealthier parents increasingly took matters into their own hands and took their kids out of school. Eventually, the vacationers won out, and the break became official.\n\nNowadays, reformers have changed their tune: they argue that eliminating long summer vacations could shrink achievement gaps between students. It's an idea backed up by data—but one at which their forebears might shudder.",
+    "keyElements": {
+      "what": "The long American summer vacation originated in cities, while rural harvest breaks fell in spring and autumn.",
+      "why": "Reformers and doctors worried about overstudying, children’s health and poorly ventilated schools.",
+      "how": "Rail access allowed wealthy city families to take children out of school for summer trips, and the break eventually became official.",
+      "result": "Some modern reformers propose ending the long summer break to narrow achievement gaps."
+    },
+    "sampleResponse": "The American summer vacation began in cities as educators and doctors warned against overstudying and wealthy families took children out of school, while reformers now argue that ending the long break could reduce achievement gaps.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 12,
+    "sourceQuestionNumber": 206,
+    "sourceScreenshot": "Screenshot 2026-11-23 135419.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950013,
+    "title": "Bertrand Russell",
+    "category": "Philosophy and History",
+    "text": "Russell was arguably the greatest philosopher of the 20th century and the greatest logician since Aristotle. Analytic philosophy, the dominant philosophy of the twentieth century, owes its existence more to Russell than to any other philosopher. And the system of logic developed by Russell and A.N. Whitehead, based on earlier work by Dedekind, Cantor, Frege, and Peano, broke logic out of its Aristotelian straitjacket. He was also one of the century's leading public intellectuals and won the Nobel Prize for Literature in 1950 \"in recognition of his varied and significant writings in which he champions humanitarian ideals and freedom of thought.\"\n\nRussell was involved, often passionately, in numerous social and political controversies of his time. For example, he supported suffragists, free thought in religion and morals, and world government; he opposed World War I and the Vietnam War, nationalism, and political persecution. He was jailed in 1918 for anti-war views and in 1961 for his anti-nuclear weapons stance.\n\nHe was married 4 times and had 3 children. With Dora Russell, he founded the experimental Beacon Hill School. He knew or worked with many of the most prominent figures in late 19th and 20th century philosophy, mathematics, science, literature, and politics. Active as a political and social critic until his end, Russell died in 1970 at the age of 97.",
+    "keyElements": {
+      "what": "Bertrand Russell was a leading twentieth-century philosopher, logician and public intellectual.",
+      "why": "He helped establish analytic philosophy and developed a new system of logic with Whitehead.",
+      "how": "His writings championed humanitarian ideals and freedom of thought, and earned the 1950 Nobel Prize for Literature.",
+      "result": "He publicly supported reforms and opposed wars and nuclear weapons, and was imprisoned for his activism."
+    },
+    "sampleResponse": "Bertrand Russell helped establish analytic philosophy and modern logic, won the Nobel Prize for Literature for writings championing humanitarian ideals and freedom of thought, and remained a public activist whose anti-war and anti-nuclear positions led to imprisonment.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 13,
+    "sourceQuestionNumber": 197,
+    "sourceScreenshot": "Screenshot 2026-11-23 135426.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950015,
+    "title": "Seattle Commuters",
+    "category": "Transport and Urban Planning",
+    "text": "Seattle is among the fastest-growing cities in America, thanks largely to Amazon’s addition of 35,000 employees since 2010. For all the economic benefits that come with growth, it has also created a variety of civic headaches, traffic chief among them.\n\nBut thanks in part to efforts by the region’s largest employers, the share of commuters driving solo into downtown Seattle is on a dramatic decline. Just 25 percent of workers traveling into the city’s center drove themselves, according to the results of the latest annual commuter survey by the Seattle Department of Transportation (SDOT) and its nonprofit partner, Commute Seattle. This is the lowest share since the city started keeping track in 2010.\n\nThe number of cars is also trending downwards, according to responses collected from 1,784 downtown workers. While Seattle has gained about 60,000 jobs since 2010, there are approximately 4,500 fewer single-occupancy vehicles. Overwhelmingly, new workers are choosing transit. The share of commuters headed downtown by bus or train shot up from 42 to 48 percent from 2010 to 2017, with about 127,000 such trips during the average morning rush hour. Bus trips (as anyone who’s waited at a packed King County Metro stop on a weekday morning can attest) make up the vast majority of them.\n\nWalking, biking, and carpooling also picked up by thousands of trips per day, according to the survey. Note, though, that ride-hailing services such as Uber and Lyft weren’t explicitly identified as options in the survey, which comes from a state document that hasn’t changed much since 1991. Respondents might have registered those trips as “drive alone,” “other,” or as “rideshare” (meaning carpool), but there is currently no way of telling.",
+    "keyElements": {
+      "what": "Seattle’s rapid employment growth increased concern about traffic.",
+      "why": "The share and number of solo drivers entering downtown fell, with the survey showing a 25 percent solo-driving share.",
+      "how": "Major employers contributed to the shift and bus and train commutes rose, as did walking, cycling and carpooling.",
+      "result": "The survey lacked a separate ride-hailing option, so it cannot identify how respondents counted those trips."
+    },
+    "sampleResponse": "Despite rapid job growth, fewer commuters drove alone into downtown Seattle as transit use rose and walking, cycling and carpooling also increased, although the survey did not separately track ride-hailing trips.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 15,
+    "sourceQuestionNumber": 188,
+    "sourceScreenshot": "Screenshot 2026-11-23 135447.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950017,
+    "title": "Legume",
+    "category": "Agriculture and Environment",
+    "text": "Legumes, which are called pulses when they’re dried, have two key superpowers. They contain a high proportion of protein (more on this later), and they perform what’s called nitrogen fixation. Plants need nitrogen to make photosynthesis happen. It’s also a building block of their cells and DNA. Most plants take the nitrogen they need from the soil and legumes extract the nitrogen they need from the air. What they don’t use ends up in the soil, ready to be used by other plants.\n\nSo a crop of cereal grains will take nitrogen out of the soil, but a crop of legumes will put it back in. Rotating crops this way was, historically, how farmers recharged their soil with both nitrogen and organic matter. But after the Second World War, factory-produced, petroleum-derived nitrogen fertilisers took legumes out of the planting cycle.\n\nThere is no question that synthetic nitrogen fertiliser has allowed huge improvements in food outputs – but the downsides are considerable. It is increasingly expensive to use, because over-farmed soil becomes less fertile, requiring more of this energy-intensive finite resource. Runoff takes it into streams and ground water, where it spoils water quality and promotes algal blooms.\n\nAs it breaks down, it gives off nitrous oxide, a greenhouse gas that is 300 times more potent than carbon dioxide and affects the ozone layer. Plus, synthetic fertilisers don’t add any organic matter, part of the reason we now have serious soil degradation threatening global food security.",
+    "keyElements": {
+      "what": "Legumes provide protein and fix atmospheric nitrogen, leaving surplus nitrogen for other plants.",
+      "why": "Traditional rotation with cereals restored soil nitrogen and organic matter.",
+      "how": "Synthetic nitrogen fertilisers displaced legumes in the planting cycle after the Second World War and greatly increased food production.",
+      "result": "Synthetic fertilisers can raise costs, pollute waters, emit nitrous oxide and contribute to soil degradation because they add no organic matter."
+    },
+    "sampleResponse": "Legumes restore soil nitrogen and organic matter in crop rotations, whereas synthetic fertilisers, which largely displaced them and increased food production, can raise farming costs, pollute water, release nitrous oxide and contribute to soil degradation.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 17,
+    "sourceQuestionNumber": 178,
+    "sourceScreenshot": "Screenshot 2026-11-23 135504.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950018,
+    "title": "Importance of Soil",
+    "category": "Environment/Economics",
+    "text": "It's very easy to forget about what's in the ground beneath our feet and why it's so important to protect it. One tablespoon of soil contains more organisms than there are people on Earth; billions of bacteria, fungi and other microorganisms combine with minerals, water, air and organic matter to create a living system that supports plants and, in turn, all life. Healthy soil can store as much as 3,750 tonnes of water per hectare, reducing the risk of flooding, and the International Panel on Climate Change (IPCC) has said that 89% of all agricultural emissions could be mitigated if we improved the health of our soil.\n\nGood soil management also increases disease resistance in livestock and ultimately drives profits for farmers - yet soil and its impact on the health of our animals has, over recent decades, been one of the most neglected links in UK agriculture. Over the last 50 years, agriculture has become increasingly dependent on chemical fertilizers, with applications today around 10 times higher than in the 1950s. Farmers often think the chemical fertilizer NPK (nitrogen, phosphorous and potassium) provides all the nutrition a plant requires, but it also has a detrimental effect on the long-term health of the land: research suggests there are fewer than 100 harvests left in many of the world's soils.",
+    "keyElements": {
+      "what": "Soil is a living system that supports plants and other life.",
+      "why": "Its microorganisms interact with mineral and organic matter, water and air.",
+      "how": "Healthy soil stores water, mitigates agricultural emissions and improves livestock disease resistance and farm profitability.",
+      "result": "Growing reliance on synthetic fertilizers can undermine the long-term health of farmland."
+    },
+    "sampleResponse": "Healthy soil sustains life, stores water, mitigates agricultural emissions and benefits livestock and farmers, yet increasing reliance on chemical fertilizers degrades the land and threatens its long-term productivity.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 18,
+    "sourceQuestionNumber": 153,
+    "sourceScreenshot": "Screenshot 2026-11-23 135540.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950021,
+    "title": "Ethics",
+    "category": "Science/Ethics",
+    "text": "Ethics is a set of moral obligations that define right and wrong in our practices and decisions. Many professions have a formalized system of ethical practices that help guide professionals in the field. For example, doctors commonly take the Hippocratic Oath, which, among other things, states that doctors \"do no harm\" to their patients. Engineers follow an ethical guide that states that they \"hold paramount the safety, health, and welfare of the public.\" Within these professions, as well as within science, the principles become so ingrained that practitioners rarely have to think about adhering to the ethic – it's part of the way they practice. And a breach of ethics is considered very serious, punishable at least within the profession (by revocation of a license, for example) and sometimes by the law as well.\n\nScientific ethics calls for honesty and integrity in all stages of scientific practice, from reporting results regardless to properly attributing collaborators. This system of ethics guides the practice of science, from data collection to publication and beyond. As in other professions, the scientific ethics is deeply integrated into the way scientists work, and they are aware that the reliability of their work and scientific knowledge in general depends upon adhering to that ethic. Many of the ethical principles in science relate to the production of unbiased scientific knowledge, which is critical when others try to build upon or extend research findings. The open publication of data, peer review, replication, and collaboration required by the scientific ethic all help to keep science moving forward by validating research findings and confirming or raising questions about results.",
+    "keyElements": {
+      "what": "Professional ethics defines appropriate conduct and is integral to daily practice.",
+      "why": "Scientists must act honestly and with integrity from data collection and reporting to attribution and publication.",
+      "how": "Unbiased findings are necessary for others to build upon earlier work.",
+      "result": "Open data, peer review, replication and collaboration validate or challenge findings and support reliable scientific progress."
+    },
+    "sampleResponse": "Scientific ethics requires honesty and integrity throughout research, while open data, peer review, replication and collaboration help establish reliable, unbiased knowledge that researchers can verify, question and build upon.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 21,
+    "sourceQuestionNumber": 109,
+    "sourceScreenshot": "Screenshot 2026-11-23 135610.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950022,
+    "title": "Ecology and Climatology",
+    "category": "Science/Environment",
+    "text": "Ecology is the study of interactions of organisms among themselves and with their environment. It seeks to understand patterns in nature (e.g., the spatial and temporal distribution of organisms) and the processes governing those patterns. Climatology is the study of the physical state of the atmosphere – its instantaneous state or weather, its seasonal-to-interannual variability, its long-term average condition or climate, and how climate changes over time. These two fields of scientific study are distinctly different. Ecology is a discipline within the biological sciences and has as its core the principle of natural selection. Climatology is a discipline within the geophysical sciences based on applied physics and fluid dynamics. Both, however, share a common history.\n\nThe origin of these sciences is attributed to Aristotle and Theophrastus and their books Meteorological and Enquiry into Plants, respectively, but their modern beginnings trace back to natural history and plant geography. Seventeenth, eighteenth, and nineteenth century naturalists and geographers saw changes in vegetation as they explored new regions and laid the foundation for the development of ecology and climatology as they sought explanations for these geographic patterns. Alexander von Humboldt, in the early 1800s, observed that widely separated regions have structurally and functionally similar vegetation if their climates are similar. Alphonse de Candolle hypothesized that latitudinal zones of tropical, temperate, and arctic vegetation are caused by temperature and in 1874 proposed formal vegetation zones with associated temperature limits.",
+    "keyElements": {
+      "what": "Ecology studies organisms and their interactions, while climatology studies the physical state and variability of the atmosphere.",
+      "why": "The fields use distinct scientific principles but share origins in natural history and plant geography.",
+      "how": "Naturalists compared vegetation patterns across regions, and Humboldt recognized similarities where climates were similar.",
+      "result": "De Candolle linked vegetation zones with temperature and proposed formal zones with temperature limits."
+    },
+    "sampleResponse": "Ecology studies organisms and their environments, while climatology investigates atmospheric conditions, yet both disciplines grew from natural history and plant geography as researchers used climate, especially temperature, to explain patterns of vegetation across regions.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 22,
+    "sourceQuestionNumber": 99,
+    "sourceScreenshot": "Screenshot 2026-11-23 135621.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950023,
+    "title": "Greenland Sharks",
+    "category": "Science and Environment",
+    "text": "An international team of scientists, including a physiologist from The University of Manchester, will head to the largest island in the world later this month to investigate the Greenland shark – believed to be the longest-lived vertebrate animal. Dr Holly Shiels, who is also a trustee of the Physiological Society, will be the only UK-based scientist on the expedition aboard the research vessel Sanna commissioned by the Greenland government. The purpose of the mission is to understand more about the Greenland shark, a top predator in the Arctic, which lives for more than 272 years - possibly more than 400. This extreme age was only revealed by scientists from Copenhagen last year and published in the journal Science. Little else is known about how the shark survives in the deep seas around the Arctic Circle. It is both a hunter and a scavenger and has been seen to feed on seals and been found with the remains of polar bears and whales in its stomach. It is also one of the largest species of shark – growing to about five-and-a-half metres, just a bit smaller than the great white. However, more information is required to ensure the species is adequately protected, as Dr Shiels explained: \"Greenland sharks are classified as data deficient,\" she said. \"This means that we don't know enough to put measures in place to protect them from over-fishing, pollution or climate change. This expedition has a broad range of expertise which means that we'll be able to take full advantage of any sharks that we discover.\"",
+    "keyElements": {
+      "what": "An international expedition, including physiologist Holly Shiels, will study the Greenland shark.",
+      "why": "The shark is an Arctic predator that hunts and scavenges, can exceed 272 years of age and might live more than 400 years.",
+      "how": "Scientists know little about its survival in deep Arctic waters, and it is classified as data deficient.",
+      "result": "The expedition seeks evidence needed to protect the species from over-fishing, pollution and climate change."
+    },
+    "sampleResponse": "An international scientific expedition will study the exceptionally long-lived Greenland shark, a large Arctic predator whose biology remains poorly understood, to gather evidence for protecting it from overfishing, pollution and climate change.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 23,
+    "sourceQuestionNumber": 168,
+    "sourceScreenshot": "Screenshot 2026-11-23 135637.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950026,
+    "title": "Silent Movies",
+    "category": "Arts/History",
+    "text": "The 1920's movie-goers experience was largely dominated by silent movies but saw the introduction of synchronized sound. In the 1920's movie stars were really stars - with huge salaries, the fashions and activities of the Hollywood greats echoed around the world and 100,000 people would gather in cities all over the world, including such diverse cities as London and Moscow, to greet Mary Pickford and Douglas Fairbanks when they toured of Europe. Early silent movies were often accompanied by live piano or organ music and provided enormous entertainment value to audiences captivated by the experience of watching moving pictures on the silver screen. Although there had been previous attempts to introduce sound, it wasn’t until 1923 that a synchronized soundtrack was photographically recorded and printed on to the side of the strip of motion picture film and made it on to a commercially distributed movie. It would still be seven long years before talking pictures gained total supremacy and finally replaced the silent film era.\n\nThe first movie theatres were called Nickelodeons, and were very basic compared to the luxurious picture palaces that followed but what an aura of excitement, of laughter, fun and tears surrounded them! Before the introduction of movie soundtracks, movies were often accompanied by scripted music from a piano.",
+    "keyElements": {
+      "what": "Silent films dominated 1920s cinema and drew large audiences and celebrity followings.",
+      "why": "Pianists and organists often supplied live accompaniment while audiences watched moving pictures.",
+      "how": "A synchronized soundtrack was photographically recorded and printed on commercially distributed film in 1923.",
+      "result": "Talking pictures took another seven years to displace silent films."
+    },
+    "sampleResponse": "Silent films drew large audiences in the 1920s with star performers and live musical accompaniment, and although commercially distributed film carried synchronized sound in 1923, talking pictures took another seven years to replace silent cinema.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 26,
+    "sourceQuestionNumber": 103,
+    "sourceScreenshot": "Screenshot 2026-11-23 135704.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950028,
+    "title": "Written Language",
+    "category": "Language/Education",
+    "text": "The world engages in improving literacy of reading and writing, but it is not that important now. What is written language anyway? It's an ancient technology for storing and retrieving information. We store information by writing it, and we retrieve it by reading it. Six thousand to 10,000 years ago, many of our ancestors' hunter-gatherer societies settled on the land and began what's known as the agricultural revolution. That new land settlement led to private property and increased production and trade of goods, generating a huge new influx of information. Unable to keep all this information in their memories, our ancestors created systems of written records that evolved over millennia into today's written language. But this ancient technology is already becoming obsolete. Text has run its historic course and is now rapidly getting replaced in every area of our lives by the ever-increasing array of emerging technologies driven by voice, video, and body movement rather than the written word. In my view, this is a positive step forward in the evolution of human technology, and it carries great potential for a total positive redesign of education.",
+    "keyElements": {
+      "what": "Writing is an ancient technology for storing and retrieving information.",
+      "why": "Agricultural settlement, private property and increased production and trade generated more information than memory could hold.",
+      "how": "Systems of written records developed into written language, and newer technologies increasingly convey information through voice, video and movement.",
+      "result": "The author welcomes the transition and sees the potential to redesign education."
+    },
+    "sampleResponse": "Writing arose when agriculture and trade produced more information than people could remember, but the author argues that voice, video and movement technologies are increasingly replacing text and could positively transform education.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 28,
+    "sourceQuestionNumber": 84,
+    "sourceScreenshot": "Screenshot 2026-11-23 135722.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950029,
+    "title": "Tree Rings",
+    "category": "Science/Climate",
+    "text": "Here's how tree ring dating, known to scientists as dendrochronology, works. If you cut a tree down today, it is straightforward to count the rings inwards, starting from the tree's outside. Hence the sequence of the rings in a tree cross-section is like a message in Morse code formerly used for sending telegraph messages; dot-dot-dash-dot-dash in the Morse code, wide-wide-narrow-wide-narrow in the tree ring sequence. Actually, the tree-ring sequence is even more diagnostic and richer in information than the Morse code, because trees actually contain rings spanning much different width, rather than the Morse code choice between dot and dash.\n\nTree ring specialists (known as dendrochronologists) proceed by noting the sequence of wider and narrower rings in a tree cut down in a known recent year, and also noting the sequences in beams from trees cut down at various times in the past. In that way, dendrochronologists have constructed tree ring records extending back for thousands of years in some parts of the world. A bonus of dendrochronology is that the width and substructure of each ring reflect the amount of rain and the season at which the rain fell during that particular year. Thus, tree ring studies also allow one to reconstruct the past climate.",
+    "keyElements": {
+      "what": "Dendrochronology dates wood using the varying widths of tree rings.",
+      "why": "The many possible ring widths contain more information than the two signals of Morse code.",
+      "how": "Specialists compare patterns in recently cut trees of known dates with patterns in older beams to extend the chronology.",
+      "result": "Records can span thousands of years, and ring width and structure reveal past rainfall and climate."
+    },
+    "sampleResponse": "Dendrochronologists compare ring patterns from recently cut trees with those in older beams to build records spanning thousands of years, and use each ring’s width and structure to infer when and how much rain fell.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 29,
+    "sourceQuestionNumber": 72,
+    "sourceScreenshot": "Screenshot 2026-11-23 135728.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950030,
+    "title": "The History of the Khoikhoi",
+    "category": "Social/History",
+    "text": "In around 2300 BP (Before Present), hunter gatherers called the San acquired domestic stock in what is now modern day Botswana. Their population grew, and spread throughout the Western half of South Africa. They were the first pastoralists in southern Africa, and called themselves Khoikhoi (or Khoe), which means 'men of men' or 'the real people'. This name was chosen to show pride in their past and culture. The Khoikhoi brought a new way of life to South Africa and to the San, who were hunter gatherers as opposed to herders. This led to misunderstandings and subsequent conflict between the two groups.\n\nThe Khoikhoi were the first native people to come into contact with the Dutch settlers in the mid-17th century. As the Dutch took over land for farms, the Khoikhoi were dispossessed, exterminated, or enslaved and therefore their numbers dwindled. The Khoikhoi were called the 'Hottentots' by European settlers because the sound of their language was so different from any European language, and they could not pronounce many of the words and sounds.",
+    "keyElements": {
+      "what": "The Khoikhoi emerged among San people who acquired domestic livestock in present-day Botswana around 2300 BP.",
+      "why": "As the first pastoralists in southern Africa, they spread across western South Africa and chose a name expressing pride in their culture.",
+      "how": "Differences between Khoikhoi herding and San hunting and gathering led to misunderstandings and conflict.",
+      "result": "Dutch settlers took farmland in the mid-seventeenth century, and dispossession, killing and enslavement reduced the Khoikhoi population."
+    },
+    "sampleResponse": "The Khoikhoi became southern Africa’s first pastoralists after acquiring livestock, and their spread brought conflict with San hunter-gatherers before Dutch settlers seized land and reduced their numbers through dispossession, killing and enslavement.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 30,
+    "sourceQuestionNumber": 68,
+    "sourceScreenshot": "Screenshot 2026-11-23 135735.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950031,
+    "title": "Children Allowance",
+    "category": "Personal Finance",
+    "text": "Many people who have written on the subject of allowances say it is not a good idea to pay your child for work around the home. These jobs are a normal part of family life. Paying children to do extra work around the house, however, can be useful. It can even provide an understanding of how a business works. Allowances give children a chance to experience the things they can do with money. They can share it in the form of gifts or giving to a good cause. They can spend it by buying things they want. Or they can save and maybe even invest it. Saving helps children understand that costly goals require sacrifice: you have to cut costs and plan for the future. Requiring children to save part of their allowance can also open the door to future saving and investing. Many banks offer services to help children and teenagers learn about personal finance. A savings account is an excellent way to learn about the power of compound interest. Compounding works by paying interest on interest. So, for example, one dollar invested at two percent interest for two years will earn two cents in the first year. The second year, the money will earn two percent of one dollar and two cents, and so on. That may not seem like a lot. But over time it adds up.",
+    "keyElements": {
+      "what": "Allowances can teach children how to manage their money.",
+      "why": "Routine household chores are part of family life, while paid extra work can provide practical experience of earning.",
+      "how": "Children can share, spend, save or invest their allowance and learn to budget for costly goals.",
+      "result": "Savings accounts demonstrate how interest earned on earlier interest makes savings grow over time."
+    },
+    "sampleResponse": "While routine chores are part of family life, paid extra work and allowances can teach children to earn, share, spend and save money, and a savings account shows how compound interest increases savings over time.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 31,
+    "sourceQuestionNumber": 15,
+    "sourceScreenshot": "Screenshot 2026-11-23 135741.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950033,
+    "title": "Office Environment",
+    "category": "Business/Workplace",
+    "text": "The notion that office space has a role in promoting or inhibiting performance is backed up by solid research. A recent study conducted by Harvard University and Massachusetts General Hospital showed that improvements to the physical surroundings of workers impacted on productivity not just because the working environment was more attractive, but because the changes made employees feel cared for. A Swedish research paper revealed a strong link between the type of office an employee worked in and their overall job satisfaction and health. Various findings have emerged as a result of studies such as this. Pot plants and greenery can apparently have a real impact on psychological well-being. Those who work in a private room tend to be in better health than workers based in open-plan offices.\n\nSufficient light can reduce sickness among workers and increase productivity, and an attractive office can make workers feel more cared for and therefore more loyal to their company. Most of these points make good rational sense. But some companies aren't content simply to increase the health , productivity and contentment of their employees. Pioneers such as Google, Walt Disney and Dyson have tried to create offices that will do everything from promoting collaboration between workers to stimulating their creative juices. \"Environment, both physical and cultural, can make or break creativity.\" says Kursty Groves, author of I Wish I Worked There! A look inside the most creative spaces in business. Stimulating spaces expose the mind to a variety of stimuli - planned or random - In order to encourage people to think differently. Reflective spaces promote the filtering of information into the brain slowing it to make connections. An environment which encourages a team to build trust and to play freely is an essential ingredient for innovation.",
+    "keyElements": {
+      "what": "Research links the design of offices with employee productivity, health and job satisfaction.",
+      "why": "Light, greenery and private rooms can support well-being, while attractive surroundings make employees feel cared for.",
+      "how": "Some companies design stimulating and reflective spaces to support collaboration, different thinking and connections between ideas.",
+      "result": "Work environments that encourage trust and free play can promote creativity and innovation."
+    },
+    "sampleResponse": "Research links office design to employees’ health, satisfaction and productivity, while stimulating and reflective spaces can help teams collaborate, make connections and build the trust that supports creativity and innovation.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 33,
+    "sourceQuestionNumber": 46,
+    "sourceScreenshot": "Screenshot 2026-11-23 135801.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950035,
+    "title": "Australian Indigenous Food",
+    "category": "Food and Culture",
+    "text": "In its periodic quest for culinary identity, Australia automatically looks to its indigenous ingredients, the foods that are native to this country. \"There can be little doubt that using an indigenous product must qualify a dish as Australian\", notes Stephanie Alexander. Similarly, and without qualification, states that a uniquely Australian food culture can only be based upon foods indigenous to this country. However, as Craw remarks, proposing Australian native foods as national symbols relies more upon their association with nature and geographic origin than on common usage. Notwithstanding the lack of justification for the premise that national dishes are, of necessity, founded on ingredients native to the country—after all, Italy's gastronomic identity is tied to the non-indigenous tomato, Thailand's to the non-indigenous chili—the reality is that Australians do not eat indigenous foods in significant quantities. The exceptions are fish, crustaceans and shellfish from oceans, rivers and lakes, most of which are unarguably unique to this country. Despite valiant and well-intentioned efforts today at promoting and encouraging the consumption of native resources, bush foods are not harvested or produced in sufficient quantities for them to be a standard component of Australian diets, nor are they generally accessible. Indigenous foods are less relevant to Australian identity today than lamb and passionfruit, both initially imported and now naturalized.",
+    "keyElements": {
+      "what": "Australia often looks to native ingredients for a national culinary identity.",
+      "why": "Some advocates view native ingredients as the basis of an Australian food culture, though their symbolism comes more from origin than common use.",
+      "how": "Australians eat some native seafood, but limited supply and access keep bush foods out of most everyday diets.",
+      "result": "Naturalised imports such as lamb and passionfruit are more relevant to Australian food identity today."
+    },
+    "sampleResponse": "Although native ingredients are often proposed as symbols of Australian cuisine, bush foods are seldom eaten because supplies and access are limited, while naturalised imports such as lamb and passionfruit play a greater role in everyday culinary identity.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 35,
+    "sourceQuestionNumber": 10,
+    "sourceScreenshot": "Screenshot 2026-11-23 135818.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950036,
+    "title": "Plants Research",
+    "category": "Science/Environment",
+    "text": "Plants serve as the conduit of energy into the biosphere, provide food and materials used by humans, and shape our environment. According to Ehrhardt and Frommer, the three major challenges facing humanity in our time are food, energy, and environmental degradation. All three are plant related.\n\nAll of our food is produced by plants, either directly or indirectly via animals that eat them. Plants are a source of energy production. And they are intimately involved in climate change and a major factor in a variety of environmental concerns, including agricultural expansion and its impact on habitat destruction and waterway pollution.\n\nWhat's more, none of these issues are independent of each other. Climate change places additional stresses on the food supply and on various habitats. So, plant research is instrumental in addressing all of these problems and moving into the future. For plant research to move significantly forward, Ehrhardt and Frommer say technological development is critical, both to test existing hypotheses and to gain new information and generate fresh hypotheses. If we are to make headway in understanding how these essential organisms function and build the foundation for a sustainable future, then we need to apply the most advanced technologies available to the study of plant life, they say.",
+    "keyElements": {
+      "what": "Plants supply food, materials and energy while shaping the environment.",
+      "why": "Ehrhardt and Frommer identify food, energy and environmental degradation as interdependent challenges involving plants.",
+      "how": "Advanced technology allows researchers to test existing hypotheses and generate new ones about plant function.",
+      "result": "Better understanding of plants helps address the connected problems and lays a foundation for a sustainable future."
+    },
+    "sampleResponse": "Because plants underpin food and energy production and shape environmental conditions, Ehrhardt and Frommer argue that advanced technologies are vital for testing and developing hypotheses about plant function and addressing these interconnected challenges sustainably.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 36,
+    "sourceQuestionNumber": 55,
+    "sourceScreenshot": "Screenshot 2026-11-23 135824.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950037,
+    "title": "Museology",
+    "category": "Social/History",
+    "text": "What is museology? A simple definition might be that it is the study of museums, their history and underlying philosophy, the various ways in which they have, in the course of time, been established and developed, their avowed or unspoken aims and policies, their educative or political or social role. More broadly conceived, such a study might also embrace the bewildering variety of audiences — visitors, scholars, art lovers, children — at whom the efforts of museum staff are supposedly directed, as well as related topics such as the legal duties and responsibilities placed upon (or incurred by) museums, perhaps even some thought as to their future. Seen in this light, museology might appear at first sight a subject so specialized as to concern only museum professionals, who by virtue of their occupation are more or less obliged to take an interest in it. In reality, since museums are almost, if not quite as old as civilization itself, and since the plethora of present-day museums embraces virtually every field of human endeavor - not just art, or craft, or science, but entertainment, agriculture, rural life, childhood, fisheries, antiquities, automobiles: the list is endless - it is a field of enquiry so broad as to be a matter of concern to almost everybody.",
+    "keyElements": {
+      "what": "Museology studies museums, including their history, philosophy, development, aims, policies and social roles.",
+      "why": "Its wider scope includes diverse audiences, legal responsibilities and the future of museums.",
+      "how": "Museums are nearly as old as civilization and cover almost every field of human activity.",
+      "result": "Museology therefore concerns the wider public as well as museum professionals."
+    },
+    "sampleResponse": "Museology examines museums’ history, philosophy, roles, audiences and responsibilities, and its relevance extends beyond museum professionals because museums are almost as old as civilization and now encompass nearly every field of human endeavour.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 37,
+    "sourceQuestionNumber": 42,
+    "sourceScreenshot": "Screenshot 2026-11-23 135833.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950038,
+    "title": "Online Teaching & Learning",
+    "category": "Education/Technology",
+    "text": "What makes teaching online unique is that it uses the internet, especially the World Wide Web, as the primary means of communication. Thus, when you teach online, you don't have to be someplace to teach. You don't have to lug your briefcase full of paper or your laptop to a classroom, stand at a lectern, scribble on a chalkboard (or even use your high-tech, interactive classroom \"smart\" whiteboard), or grade papers in a stuffy room while your students take a test. You don't even have to sit in your office waiting for students to show up for conferences. You can hold \"office hours\" on weekends or at night after dinner. You can do all this while living in a small town in Wyoming or a big city like Bangkok, even if you are working for a college whose administrative office is located in Florida or Dubai. You can attend an important conference in Hawaii on the same day you teach your class in New Jersey, logging on from your laptop via the local café's wireless hotspot or your hotel room's high-speed network. Or you may simply pull out your smartphone to quickly check on the latest postings, email, or text messages from students.\n\nOnline learning offers more freedom for students as well. They can search for courses using the Web, scouring their institution or even the world for programs, classes, and instructors that fit their needs. Having found an appropriate course, they can enroll and register, shop for their books, read articles, listen to lectures, submit their homework assignments, confer with their instructors, and receive their final grades — all online. They can assemble virtual classrooms, joining other students from diverse geographical locales, forging bonds and friendships not possible in conventional classrooms, which are usually limited to students from a specific geographical area.",
+    "keyElements": {
+      "what": "Online teaching uses the internet, especially the Web, as its main means of communication.",
+      "why": "Instructors gain flexibility over where they teach and when they hold office hours.",
+      "how": "Students can find, enroll in and complete suitable courses online, including lectures, assignments and instructor consultations.",
+      "result": "Virtual classrooms let students connect with peers from many geographical locations."
+    },
+    "sampleResponse": "The internet lets teachers work from different places and hold flexible office hours, while students can find and complete suitable courses online and build relationships with classmates from a wide range of locations.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 38,
+    "sourceQuestionNumber": 48,
+    "sourceScreenshot": "Screenshot 2026-11-23 135847.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950039,
+    "title": "Small Wars",
+    "category": "International Relations",
+    "text": "In such an environment, warfare is no longer purely directed against the military potential of adversarial states. It is rather directed at infiltrating all areas of their societies and threatening their existences. The comparatively easy access to weapons of mass destruction, in particular low-cost biological agents, is of key concern. Both governmental and non-governmental actors prefer to use force in a way that can be characterized as \"unconventional\" or also as \"small wars\". War waged according to conventions is an interstate phenomenon. The \" small war\" is the archetype of war, in which the protagonists acknowledge no rules and permanently try to violate what conventions do exist. The protagonists of the \"small war\" observe neither international standards nor arms control agreements. They make use of territories where they do not have to fear any sanctions because there is no functioning state to assume charge of such sanctions or because the state in question is too weak to impose such sanctions. This type of war does not provide for any warning time. It challenges not only the external security of the nation states and international community, but also their internal safety.",
+    "keyElements": {
+      "what": "Unconventional “small wars” threaten societies as well as their military forces.",
+      "why": "State and non-state actors operate outside the conventions of interstate war.",
+      "how": "Protagonists ignore international standards and exploit the absence of effective sanctions in weak or non-functioning states.",
+      "result": "Such conflict can erupt without warning and threaten both external security and domestic safety."
+    },
+    "sampleResponse": "Unconventional warfare by state and non-state actors reaches beyond military targets, defies international conventions and exploits weak enforcement, threatening the domestic safety and external security of societies with little or no warning.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 39,
+    "sourceQuestionNumber": 40,
+    "sourceScreenshot": "Screenshot 2026-11-23 135854.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950040,
+    "title": "Plug-in Vehicle",
+    "category": "Technology/Environment",
+    "text": "Here's a term you're going to hear much more often: plug-in vehicle, and the acronym PEV. It's what you and many other people will drive to work in ten years and more from now. At that time, before you drive off in the morning you will first unplug your car - your plugin vehicle. Its big on board batteries will have been fully charged overnight, with enough power for you to drive 50-100 kilometers through city traffic.\n\nWhen you arrive at work you'll plug in your car once again, this time into a socket that allows power to flow from your car's batteries to the electricity grid. One of the things you did when you bought your car was to sign a contract with your favorite electricity supplier, allowing them to draw a limited amount of power from your car's batteries should they need to, perhaps because of a blackout, or very high wholesale spot power prices. The price you get for the power the distributor buys from your car would not only be the most attractive to you, but also be a good deal for them too, their alternative being very expensive power from peaking stations. If, driving home or for some other reason your batteries looked like running flat, a relatively small, but quiet and efficient engine running on petrol, diesel or compressed natural gas, even bio-fuel, would automatically cut in, driving a generator that supplied the batteries so you could complete your journey.\n\nConcerns over 'peak oil', increasing greenhouse gas emissions, and the likelihood that by the middle of this century there could be five times as many motor vehicles registered worldwide as there are now, mean that the world's almost total dependence on petroleum-based fuels for transport is, in every sense of the word, unsustainable.",
+    "keyElements": {
+      "what": "Plug-in vehicles could charge overnight and run on their batteries for 50 to 100 kilometers in city traffic.",
+      "why": "At work, the vehicle could supply limited power to the grid under an agreement that benefits both the driver and the electricity distributor.",
+      "how": "When batteries run low, a small engine can power a generator to finish the journey.",
+      "result": "Peak oil, rising emissions and the expected growth in vehicle numbers make dependence on petroleum unsustainable."
+    },
+    "sampleResponse": "Plug-in vehicles could address unsustainable petroleum dependence by charging overnight for city travel, selling battery power back to the grid when needed and using a small engine to generate electricity if the batteries run low.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 40,
+    "sourceQuestionNumber": 56,
+    "sourceScreenshot": "Screenshot 2026-11-23 135900.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950041,
+    "title": "Hookham",
+    "category": "Literature and History",
+    "text": "The booksellers of Hookham and Carpenter (hereafter referred to only as Hookham) were located on New Bond Street in London, and their records span the most politically turbulent decade of the eighteenth-century—the 1790's. Clients who frequented Hookham were primarily from the aristocratic or gentry classes. In fact, of Hookham's total buyers, 22% were aristocracy, and 35% of the aristocracy purchased novels. We can also confidently assume that untitled female customers were of gentry income because their addresses were primarily in London's fashionable 'West End'.\n\nHookham's ledgers not only reveal a dramatic increase in the proportion of female purchasers of novels by comparison to earlier studies of provincial women, but they also reveal a remarkable increase in the proportion of female purchases of novels authored by females. Such a marked increase illustrates that Hookham's leisured female customers were able to buy more novels.\n\nFurthermore, the fact that these female aristocrats and gentry have accounts under their own name, not their husbands, demonstrates the greater degree of agency and independence that these urban, moneyed women had relative to provincial women. However, because our study does not include an examination of male customers, we are very limited in what claims we can make about whether or not these women behaved according to the cliche that women were the predominant consumers of novels in the eighteenth-century.\n\nMoreover, while more disposable income and leisure time certainly account for the significant increase in female purchases of novels authored by women in the 1790s, this increase also strongly suggests a desire on the part of women readers to engage in this politically charged decade. Thus, novel-reading provided women readers with the means through which they were able to participate in the male-dominated world of politics. The latter part of our paper will more fully explore this hypothesis in the context of certain recent literary scholars claim that both Gothic and sentimental novels are actively engaged in political debate and discussion.",
+    "keyElements": {
+      "what": "Hookham’s London bookselling ledgers record novel purchases by wealthy women in the 1790s.",
+      "why": "Hookham’s female customers had more leisure and disposable income, and novels by women made up a larger share of their purchases than earlier provincial studies found.",
+      "how": "Accounts held in women’s own names indicate independence, while absent data on male buyers limit comparisons between genders.",
+      "result": "The researchers propose that reading novels also offered women a way to participate in political debate."
+    },
+    "sampleResponse": "Hookham’s ledgers show wealthy London women held independent accounts and bought a higher proportion of novels by women than earlier provincial studies found, suggesting that leisure and income enabled purchases and that reading offered a route into political debate.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 41,
+    "sourceQuestionNumber": 34,
+    "sourceScreenshot": "Screenshot 2026-11-23 135905.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950042,
+    "title": "Malaysia Tourism",
+    "category": "Travel and Tourism",
+    "text": "Malaysia is also launching its biggest ever tourism campaign in an effort to lure 20 million visitors here this year. Tourism is the Southeast Asian nation's second-largest source of foreign exchange after exports. Malaysia is one of the most pleasant, hassle-free countries to visit in Southeast Asia. Aside from its gleaming 21st century glass towers, it boasts some of the most superb beaches, mountains and national parks in the region.\n\nAny tourist itinerary would have to begin in the capital, Kuala Lumpur, where you will find the Petronas Twin Towers, which once comprised the world's tallest buildings and now hold the title of second-tallest. Both the 88-story towers soar 1,480 feet high and are connected by a sky-bridge on the 41st floor. The limestone temple Batu Caves, located 9 miles north of the city, have a 328-foot-high ceiling and feature ornate Hindu shrines, including a 141-foot-tall gold-painted statue of a Hindu deity. To reach the caves, visitors have to climb a steep flight of 272 steps. In Sabah state on Borneo island not to be confused with Indonesia's Borneo you'll find the small mushroom-shaped Sipadan island, off the coast of Sabah, rated as one of the top five diving sites in the world. Sipadan is the only oceanic island in Malaysia, rising from a 2,300-foot abyss in the Celebes Sea. You can also climb Mount Kinabalu, the tallest peak in Southeast Asia, visit the Sepilok Orang Utan Sanctuary, go white-water rafting and catch a glimpse of the bizarre proboscis monkey, a primate found only in Borneo with a huge pendulous nose, a characteristic pot belly and strange honking sounds.\n\nWhile you're in Malaysia, consider a trip to Malacca. In its heyday, this southern state was a powerful Malay sultanate and a booming trading port in the region. Facing the Straits of Malacca, this historical state is now a place of intriguing Chinese streets, antique shops, old temples and reminders of European colonial powers. Another interesting destination is Penang, known as the Pearl of the Orient. This island off the northwest coast of Malaysia boasts of a rich Chinese cultural heritage, good food and beautiful beaches.",
+    "keyElements": {
+      "what": "Malaysia is mounting its largest tourism campaign to attract 20 million visitors.",
+      "why": "Tourism is Malaysia’s second-largest source of foreign exchange after exports.",
+      "how": "Kuala Lumpur offers the Petronas Twin Towers and Batu Caves, while Sabah offers diving, mountains and wildlife.",
+      "result": "Malacca and Penang add historical and cultural attractions, and Penang also offers beaches and food."
+    },
+    "sampleResponse": "Malaysia aims to draw 20 million visitors through its biggest tourism campaign, promoting Kuala Lumpur’s landmarks, Sabah’s natural attractions and the heritage of Malacca and Penang to support a major source of foreign exchange.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 42,
+    "sourceQuestionNumber": 39,
+    "sourceScreenshot": "Screenshot 2026-11-23 135912.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  },
+  {
+    "id": 950043,
+    "title": "Paleolithic People",
+    "category": "Social/History",
+    "text": "The ways of life of Upper Paleolithic people are known through the remains of meals scattered around their hearths, together with many tools and weapons and the debris left over from their making. The people were hunter-gatherers who lived exclusively from what they could find in nature without practicing either agriculture or herding. They hunted the bigger herbivores, while berries, leaves, roots, wild fruit and mushrooms probably played a major role in their diet. Their hunting was indiscriminate, perhaps because so many animals were about they did not need to spare pregnant females or the young. In the cave of Enlene, for example, many bones of reindeer and bison fetuses were found. Apparently, upper Paleolithic people hunted like other predators and killed the weakest prey first. They did, however, sometimes concentrate on salmon runs and migrating herds of reindeer. Contrary to popular beliefs about cave man, upper Paleolithic people did not live deep inside caves. They rather chose the foot of cliffs, especially when an overhang provided good shelter. On the plains and in the valleys, they used tents made from hides of the animals they killed. At time, on the great Russian plains, they built huts with huge bones and tusks collected from skeletons of mammals. Men hunted mostly with spears, as the bow and arrow were probably not invented until the Magdalenian period that came at the end of the Upper Paleolithic. Tools and weapons, made out of wood or reindeer antlers, often had flint cutting edges.",
+    "keyElements": {
+      "what": "Meal remains, tools, weapons and manufacturing debris reveal how Upper Paleolithic people lived.",
+      "why": "They hunted and gathered wild resources instead of farming or herding.",
+      "how": "They sheltered at cliff bases or in tents of animal hides, and sometimes built bone and tusk huts.",
+      "result": "They hunted mainly with spears, and their wooden or antler tools and weapons often had flint edges."
+    },
+    "sampleResponse": "Remains around hearths show that Upper Paleolithic people lived by hunting and gathering, took shelter beneath cliffs or in hide tents and bone huts, and used spears and tools often edged with flint.",
+    "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
+    "questionSet": "nov23-2026-swt",
+    "sourceOrder": 43,
+    "sourceQuestionNumber": 51,
+    "sourceScreenshot": "Screenshot 2026-11-23 135917.png",
+    "editorialReview": {
+      "standard": "swt-user-verbatim",
+      "automatedValidation": "required",
+      "humanReview": "pending"
+    }
+  }
+]

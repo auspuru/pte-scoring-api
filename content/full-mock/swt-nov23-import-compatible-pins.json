@@ -1,0 +1,11 @@
+{
+  "previousDigest": "449694e71ff077da3f939e626077f0a9fa2d341640a524fda2babd218dffe8bc",
+  "previousFiles": {
+    "server.js": "13ebfa36fc9a78dcbc58fbe24785f6c1a2a865e03ea3ef494505677c54d917e9",
+    "full-mock/assessment.js": "f4c9173d7abceb774cd42f2fefb882e5d3e9652a83d55d25c02f617191a42a16"
+  },
+  "currentFiles": {
+    "server.js": "3525060a1b0ad764b19af5847088086da302258bfd3eac5f574a5676dc8c603c",
+    "full-mock/assessment.js": "3f12ee27db2fabc060b4c8baa0df33ee01396b09a06d0d71514c39e7a88f952c"
+  }
+}
