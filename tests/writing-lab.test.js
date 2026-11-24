@@ -7,7 +7,7 @@ const path=require('node:path');
 const {randomUUID}=require('node:crypto');
 const express=require('express');
 const policy=require('../writing-lab-scoring');
-const {installWritingLab,reconcile,present,advance,predictionMocks}=require('../writing-lab');
+const {installWritingLab,reconcile,present,advance,predictionMocks,individualQuestions}=require('../writing-lab');
 const report=require('../public/writing-lab-report');
 const {createStore}=require('../writing-lab-store');
 const {createNarration}=require('../writing-lab-audio');
@@ -36,6 +36,64 @@ test('Scoring rejects malformed traits and fabricated error evidence, gates off-
   assert.throws(()=>policy.normalize(q,text,{...raw,scores:{...raw.scores,content:5}}));
   assert.throws(()=>policy.normalize(q,text,{...raw,errors:[{phrase:'invented quotation',correction:'...',explanation:'...'}]}));
   assert.equal(policy.normalize(q,text,{...raw,scores:{...raw.scores,content:0},improvements:['Answer the lecture topic.']}).total,0);
+});
+test('SST practice keeps a saved fallback pending until a retry returns reviewed feedback', async t => {
+  const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'sst-practice-retry-'));
+  const app = express();
+  app.use(express.json());
+  let available = false;
+  let calls = 0;
+  const feedback = Object.fromEntries(Object.keys(policy.MAXIMA.sst).map(key => [key, 'Reviewed feedback.']));
+  const service = installWritingLab(app, { directory, verifyToken: token => token === 'tester' ? token : null,
+    getAccount: async () => ({}), callModel: async () => {
+      calls++;
+      if (!available) throw Error('Provider unavailable');
+      return { scores: { content: 2, form: 2, grammar: 1, vocabulary: 1, spelling: 2 },
+        formInvalid: false, formReason: '', feedback, strengths: [], improvements: ['Link the main ideas.'], errors: [] };
+    } });
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise(resolve => server.once('listening', resolve));
+  t.after(async () => {
+    await service.waitForJobs();
+    await new Promise(resolve => server.close(resolve));
+    await fs.rm(directory, { recursive: true, force: true });
+  });
+  const base = 'http://127.0.0.1:' + server.address().port + '/api/writing-lab/attempts';
+  const headers = { 'Content-Type': 'application/json', 'x-session-token': 'tester' };
+  const id = randomUUID();
+  const question = individualQuestions.find(q => q.id === 'sst-user-20261124-01');
+  const answer = question.sample;
+  const get = async suffix => (await fetch(base + suffix, { headers })).json();
+  const post = (suffix, body = {}) => fetch(base + suffix, { method: 'POST', headers, body: JSON.stringify(body) });
+  const suffix = '/' + id;
+  assert.equal((await post('', { id, testId: question.id, mode: 'practice', timedPractice: true })).status, 200);
+  assert.equal((await post(suffix + '/begin')).status, 200);
+  assert.equal((await post(suffix + '/answer', { index: 0, revision: 1, text: answer, next: true })).status, 200);
+  await service.waitForJobs();
+  assert.equal((await service.store.get('tester', id)).results[0].score_provisional, true);
+
+  const pending = await get(suffix);
+  assert.equal(pending.answers[0], answer);
+  assert.deepEqual(pending.results, [null]);
+  assert.equal(pending.report.score90, null);
+  assert.equal((await get('')).find(a => a.id === id).score90, null);
+  const failure = await post(suffix + '/score/0');
+  assert.equal(failure.status, 503);
+  assert.equal((await failure.json()).retryable, false);
+  assert.equal(calls, 4);
+
+  available = true;
+  const reviewed = await post(suffix + '/score/0');
+  assert.equal(reviewed.status, 200);
+  const result = await reviewed.json();
+  assert.equal(result.total, 8);
+  assert.equal(result.feedback.grammar, feedback.grammar);
+  const reopened = await get(suffix);
+  assert.equal(reopened.answers[0], answer);
+  assert.deepEqual(reopened.results[0], result);
+  assert.equal((await get('')).find(a => a.id === id).score90, 63);
+  assert.equal((await post(suffix + '/score/0')).status, 200);
+  assert.equal(calls, 5);
 });
 test('A substantial SST sentence cannot be erased by an unsupported fragment form gate',async()=>{
   const q=bank.spoken[0],text=sentence(57);

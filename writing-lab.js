@@ -104,12 +104,20 @@ function reconcile(a, now = Date.now()) {
   while (a.status === 'active' && !a.pause && a.deadline != null && now >= a.deadline) advance(a, a.deadline, 'Time expired');
   return a;
 }
+function pendingSstPractice(attempt, result) {
+  return attempt.kind === 'sst' && (result?.score_provisional === true || result?.needs_semantic_review === true);
+}
+function reviewedResults(attempt) {
+  return attempt.kind === 'sst'
+    ? attempt.results.map(result => pendingSstPractice(attempt, result) ? null : result)
+    : attempt.results;
+}
 function present(a) {
   const {assessmentRecovery,sstReassessment,sstReassessmentHistory,...visible}=a;
-  const result = { ...visible, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, a.results, a) : null };
+  const results = a.status === 'submitted' ? reviewedResults(a) : a.questions.map(() => null);
+  const result = { ...visible, results, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, results, a) : null };
   result.overallFeedback = overall.view(a);
   result.impactFeedback = require('./mock-feedback').lab(a, result.report || undefined);
-  if (a.status !== 'submitted') result.results = a.questions.map(() => null);
   result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes, timeGroup:q.timeGroup,
     ...(listeningScoring.TYPES.has(q.type) ? {maximum:listeningScoring.maximum(q)} : {}),
     ...(a.status === 'submitted' || i === a.index ? {prompt:q.prompt,choices:q.choices,passage:q.passage} : {}),
@@ -128,7 +136,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   const retryableSwt = (result,question) => !!(swtGrader && question?.type === 'swt' && result
     && (result.score_provisional === true || result.needs_semantic_review === true));
   const retryableResult = (result,question,attempt) => (attempt?.kind==='mock' && !!result && (result.score_provisional===true || result.needs_semantic_review===true)) || retryableSwt(result,question)
-    || (report.isWritingMock(attempt) && report.needsReview(result,question));
+    || pendingSstPractice(attempt,result) || (report.isWritingMock(attempt) && report.needsReview(result,question));
   const recovery = require('./writing-lab-recovery').createRecovery({store,now,isConfirmed:(a,i)=>!!a.results[i]&&!retryableResult(a.results[i],a.questions[i],a)});
   const sstReassessment = require('./writing-lab-sst-reassessment').createRunner({store,now,
     model:process.env.CLAUDE_MODEL||'claude-haiku-4-5-20251001',
@@ -218,6 +226,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     if(a.sstReassessment?.status==='queued')sstReassessment.run(uid,a.id).catch(()=>console.warn('[writing-sst-reassessment] Saved review needs attention.'));
     if(a.questions.every((q,i)=>a.results[i]&&!retryableResult(a.results[i],q,a)))reviewer.ensure(uid,a).catch(()=>console.warn('[writing-mock-overall] Saved feedback will recover automatically.'));
     a.questions.forEach((q, index) => {
+      // The practice review requests a fresh assessment for saved SST fallbacks.
+      if (pendingSstPractice(a,a.results[index])) return;
       const key = uid + ':' + a.id + ':' + index;
       const saved=a.assessmentRecovery?.[index];
       if(saved&&(['held','exhausted'].includes(saved.status)||saved.nextAt>now()||saved.status==='calling'&&saved.expiresAt>now()))return;
@@ -271,7 +281,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const entries = [];
     for (const a of all) {
       const current = a.status==='active' && a.deadline!=null && Date.now()>=a.deadline ? await store.update(req.labUser,a.id, value => reconcile(value)) : a;
-      const summary = report.summarize(current.questions, current.results, current);
+      const summary = report.summarize(current.questions, reviewedResults(current), current);
       entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,module:current.module || 'writing',mode:current.mode || 'exam',...(current.timedPractice===true?{timedPractice:true}:{}),supported:current.mode==='practice',playCount:(current.playback||[]).reduce((n,p)=>n+(p?.plays||0),0),status:current.status,startedAt:current.startedAt,
         index:current.index, completed:current.completed.filter(Boolean).length,questions:current.questions.length,
         questionIds:current.questions.map(q=>q.id),
@@ -383,7 +393,11 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     if(a.status !== 'submitted') throw bad('Finish the attempt before viewing scores.',409);
     if(!Number.isInteger(index) || !a.questions[index]) throw bad('Question not found.',404);
     if(a.results[index] && !retryableResult(a.results[index],a.questions[index],a)) return res.json(a.results[index]);
-    res.json(await assess(req.labUser, a, index));
+    const result = await assess(req.labUser, a, index);
+    if (pendingSstPractice(a,result)) {
+      return res.status(503).json({ error:'Assessment is unavailable. Your answer is saved. Please retry.', retryable:false });
+    }
+    res.json(result);
   }));
   router.post('/attempts/:id/overall-feedback', route(async(req,res) => {
     const a = await store.get(req.labUser,req.params.id);
