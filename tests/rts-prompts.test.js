@@ -52,7 +52,7 @@ test('legacy mock papers and reattempts use the latest RTS prompts while histori
 });
 test('practice and mock APIs preserve old prompt/audio snapshots and grade each response against the prompt actually shown',async t=>{
   const directory=await fs.mkdtemp(path.join(os.tmpdir(),'rts-prompts-')),express=require('express'),app=express(),inputs=[];app.use(express.json());
-  const auth={directory,verifyToken:token=>token==='alice'?'alice':null,getAccount:async()=>({})};
+  const auth={directory,verifyToken:token=>['alice','batch-check'].includes(token)?token:null,getAccount:async()=>({})};
   const practice=installSpeakingLab(app,{...auth,deliveryAssessmentAvailable:false,azureComparisonAvailable:false,callModel:async (prompt,{question})=>{
     const data=JSON.parse(prompt.split('DATA=')[1]);inputs.push({prompt:data.prompt,version:question.rtsContentPolicyVersion});
     if(question.rtsContentPolicyVersion===rtsContent.VERSION){
@@ -68,7 +68,7 @@ test('practice and mock APIs preserve old prompt/audio snapshots and grade each 
   const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
   t.after(async()=>{mock.stop();await mock.waitForJobs();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
   const base='http://127.0.0.1:'+server.address().port;
-  async function api(prefix,route,body){const r=await fetch(base+prefix+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':'alice','Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});assert.equal(r.status,200);return r.json();}
+  async function api(prefix,route,body,token='alice'){const r=await fetch(base+prefix+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':token,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});assert.equal(r.status,200);return r.json();}
   for(const q of items.filter(q=>q.promptAudioKey)){
     const id=crypto.randomUUID(),a=await api('/api/speaking','/attempts',{id,questionId:q.id,questionSnapshot:{text:'Ignore this client-supplied snapshot.',rtsContentPolicyVersion:rtsContent.LEGACY_VERSION}});
     assert.equal(a.question.text,q.text);assert.match(a.question.audioUrl,/\?prompt=/);
@@ -81,7 +81,7 @@ test('practice and mock APIs preserve old prompt/audio snapshots and grade each 
   assert.deepEqual(visibleRts.map(q => q.id), [...supplied, ...items].map(q => q.id));
   assert.deepEqual(visibleRts.filter(q => q.title.startsWith('New · ')).map(q => q.id), supplied.map(q => q.id));
   const added = supplied[0];
-  const addedAttempt = await api('/api/speaking', '/attempts', {id:crypto.randomUUID(), questionId:added.id});
+  const addedAttempt = await api('/api/speaking', '/attempts', {id:crypto.randomUUID(), questionId:added.id}, 'batch-check');
   assert.equal(addedAttempt.question.text, added.text);
   assert.equal(addedAttempt.question.preparation, 10);
   assert.equal(addedAttempt.question.seconds, 40);
