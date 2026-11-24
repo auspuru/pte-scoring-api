@@ -460,8 +460,10 @@ test('SWT review: NEW and one-click reporting keep student history, focus and qu
     overall_score:79,trait_scores:{content:3,form:1,grammar:2,vocabulary:2}
    })});
   }
-  if(request.method()==='POST'&&url.pathname.startsWith('/api/swt/exam-reports/')){
-   const id=Number(url.pathname.split('/').at(-1));
+  if(request.method()==='PUT'&&url.pathname==='/api/practice-library/swt/flags'){
+   const {questionId,kind,enabled}=JSON.parse(request.postData());
+   if(kind!=='report'||!enabled)return request.continue();
+   const id=Number(questionId);
    reportPosts.push(id);
    if(id===second){
     reportStarted();
@@ -472,7 +474,7 @@ test('SWT review: NEW and one-click reporting keep student history, focus and qu
  });
  const library='#swtQuestionLibrary.active',rows='#swtQuestionRows';
  const row=id=>`${library} [data-question-key="${id}"]`;
- const report=id=>`[data-swt-report="${id}"]`;
+ const report=id=>row(id)+' [data-library-flag="report"]';
  async function login(target,username){
   await target.$eval('#loginUsername',e=>e.value='');
   await target.$eval('#loginPassword',e=>e.value='');
@@ -497,14 +499,14 @@ test('SWT review: NEW and one-click reporting keep student history, focus and qu
  async function openLibrary(target){
   await target.evaluate(()=>switchSection('swt'));
   await target.waitForSelector(library+' [data-swt-open]',{visible:true});
-  await target.waitForFunction(()=>document.getElementById('swtQuestionRows')?.textContent.includes('Reported by'));
+  await target.waitForSelector(library+' [data-library-flag=report]:not(:disabled)');
  }
  async function expectReport(target,id,count,reported){
   await target.waitForFunction(({id,count,reported})=>{
-   const button=document.querySelector('#swtQuestionLibrary.active [data-swt-report="'+id+'"]');
-   const detail=button?.closest('[data-question-key]')?.textContent;
-   return !!detail?.includes('Reported by '+count+' student'+(count===1?'':'s'))
-     &&button.textContent.trim()===(reported?'✓ Reported':'Report');
+   const row=document.querySelector('#swtQuestionLibrary.active [data-question-key="'+id+'"]');
+   const button=row?.querySelector('[data-library-flag="report"]');
+   return row?.querySelector('[data-library-report-count]')?.textContent===count+(count===1?' report':' reports')
+     &&button?.getAttribute('aria-pressed')===String(reported)&&!button.disabled;
   },{},{id,count,reported});
  }
  async function fillDraft(target,text){
@@ -526,7 +528,15 @@ test('SWT review: NEW and one-click reporting keep student history, focus and qu
  step='first report and rerank';
  await page.$eval(report(first),button=>{button.focus();button.click();button.click();});
  await expectReport(page,first,1,true);
- await page.waitForFunction(id=>passages[0]?.id===id,{},first);
+ assert.equal(await page.evaluate(()=>passages[0]?.id),baseline[0].id);
+ await page.evaluate(id=>{
+  document.querySelector('[data-question-key="'+id+'"] [data-swt-open]').focus();
+  const sort=document.querySelector('#swtQuestionLibrary [data-library-sort]');
+  sort.value='reported';
+  sort.dispatchEvent(new Event('change',{bubbles:true}));
+ },first);
+ assert.equal(await page.$eval(rows+' [data-question-key]',el=>Number(el.dataset.questionKey)),first);
+ assert.equal(await page.evaluate(()=>document.activeElement.closest('[data-question-key]')?.dataset.questionKey),String(first));
  assert.deepEqual(reportPosts,[first]);
  const replays=await Promise.all([1,2].map(()=>f.request('/api/swt/exam-reports/'+first,{},sessions[0])));
  for(const replay of replays){
@@ -534,8 +544,6 @@ test('SWT review: NEW and one-click reporting keep student history, focus and qu
   assert.deepEqual(replay.body.report,{myReported:true,reporterCount:1});
  }
  assert.equal(await page.$eval('#swtQuestionSearch',e=>e.value),search);
- assert.equal(await page.evaluate(()=>document.activeElement.dataset.swtReport),String(first));
- assert.equal(await page.$eval(report(first),e=>e.getAttribute('aria-disabled')),'true');
  assert.equal(await page.$eval(row(first)+' .practice-library-label',e=>e.textContent),'NEW');
  await page.locator(row(first)+' [data-swt-open]').click();
  await page.waitForSelector('#swtPracticeScreen.active #swtQuestionNewBadge',{visible:true});
@@ -585,23 +593,23 @@ test('SWT review: NEW and one-click reporting keep student history, focus and qu
  await page.type('#swtQuestionSearch',search);
  const oldPosition=await page.$eval(row(second)+' [data-swt-open]',e=>Number(e.dataset.swtOpen));
  step='report while opening another question';
- await page.locator(row(second)+' '+report(second)).click();
+ await page.locator(report(second)).click();
  await pendingReport;
  step='open and draft while the report request is held';
  await page.locator(row(second)+' [data-swt-open]').click();
  await page.waitForSelector('#swtPracticeScreen.active #swtQuestionNewBadge',{visible:true});
  const otherDraft=staged[1].sampleResponse;
  await fillDraft(page,otherDraft);
- const ranking=page.waitForResponse(r=>r.ok()&&new URL(r.url()).pathname==='/api/passages');
- step='release report and wait for authoritative order';
+ const savedReport=page.waitForResponse(r=>r.ok()&&r.request().method()==='PUT'&&new URL(r.url()).pathname==='/api/practice-library/swt/flags');
+ step='release report and wait for the saved count';
  releaseReport();
- const next=(await (await ranking).json()).passages;
- assert.notEqual(next.findIndex(p=>p.id===second)+1,oldPosition);
+ await savedReport;
  assert.equal(await page.evaluate(()=>swtPassageStorageId()),second);
  assert.equal(await page.$eval('#summaryInput',e=>e.value),otherDraft);
- step='restore active draft after rerank';
+ step='restore active draft after the report';
  await page.locator('[data-writing-return="swt"]').click();
  await expectReport(page,second,1,true);
+ assert.equal(await page.$eval(row(second)+' [data-swt-open]',e=>Number(e.dataset.swtOpen)),oldPosition);
  assert.equal(await page.$eval('#swtQuestionSearch',e=>e.value),search);
  assert.equal(await page.$eval(row(second)+' .practice-library-label',e=>e.textContent),'NEW');
  await page.locator(row(second)+' [data-swt-resume]').click();
@@ -611,9 +619,10 @@ test('SWT review: NEW and one-click reporting keep student history, focus and qu
  await page.locator('[data-writing-return="swt"]').click();
  await expectReport(page,first,1,false);
  step='distinct reports from different accounts';
- await page.locator(row(first)+' '+report(first)).click();
+ await page.locator(report(first)).click();
  await expectReport(page,first,2,true);
  assert.deepEqual(reportPosts,[first,second,first]);
+ await page.select(library+' [data-library-sort]','reported');
  assert.deepEqual(await page.$$eval(rows+' [data-question-key]',els=>els.slice(0,2).map(e=>Number(e.dataset.questionKey))),[first,second]);
  assert.deepEqual(errors,[]);
  }catch(error){
