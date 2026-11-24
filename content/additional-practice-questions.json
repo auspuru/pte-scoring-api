@@ -26,5 +26,1144 @@
       "task": "sst",
       "audioStatus": "generated-from-transcript"
     }
+  },
+  {
+    "id": "sst-user-20261124-271",
+    "type": "sst",
+    "title": "Internet Growth",
+    "topic": "Internet Growth",
+    "minutes": 10,
+    "text": "The rapid expansion of the Internet has revolutionized our lives, influencing both the quality and quantity of interactions and information accessibility. One significant change is in the realm of research. Online research offers several advantages, such as speed, cost-efficiency, and the ability to reach diverse or otherwise inaccessible groups. These features have made it a cornerstone of modern studies and data collection, enabling researchers to gather vast amounts of information quickly. However, this shift to online methods is not without challenges. One major drawback is the lack of face-to-face communication, which eliminates the ability to interpret body language or other non-verbal cues that are essential for understanding context and intent. Additionally, the anonymity of the Internet means researchers cannot always verify the identity of participants, leading to potential issues with data reliability and authenticity. As online research continues to grow, balancing its advantages with strategies to mitigate its shortcomings will be crucial for maintaining the quality and credibility of studies conducted in the digital age.",
+    "keyPoints": [
+      "The rapid expansion of the Internet has revolutionized our lives.",
+      "One significant change is in the realm of research.",
+      "To be more specific, online research enables researchers to gather vast amounts of information quickly.",
+      "However, it also has drawbacks, such as the lack of face-to-face communication.",
+      "Besides, there are also potential issues with data reliability and authenticity.",
+      "Therefore, balancing its advantages and shortcomings will be crucial for maintaining the quality."
+    ],
+    "sample": "The rapid expansion of the Internet has revolutionized our lives. One significant change is in the realm of research. To be more specific, online research enables researchers to gather vast amounts of information quickly. However, it also has drawbacks, such as the lack of face-to-face communication. Besides, there are also potential issues with data reliability and authenticity. Therefore, balancing its advantages and shortcomings will be crucial for maintaining the quality.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "271",
+      "sourceTitle": "Internet Growth",
+      "filename": "Screenshot 2026-11-24 154437.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-40",
+    "type": "sst",
+    "title": "Global Warming",
+    "topic": "Global Warming",
+    "minutes": 10,
+    "text": "There can now be no reasonable, science-based, doubt about the reality of global climate change effects brought on by the cumulative and rapidly growing emission of so-called “greenhouse gases” - primarily carbon dioxide - into the atmosphere. As these effects become increasingly more obvious worldwide, so commercial interests, groups of concerned individuals and national governments have been gripped by what amounts to mass panic about what to do about it. To many, Paul Ehrlich's Malthusian “Population Bomb\" of 1968 appears about to explode in the world’s face in an indirect version of his millenarian vision of population growth which outpaces agricultural production capacity - with predictably catastrophic results for humanity. And his three-part crisis scenario does indeed seem now to be present: a rapid rate of change, a limit of some sort, and delays in perceiving that limit. Ehrlich's work was roundly criticized at the time, and later, from many quarters, and much of what he predicted did not come about. Nevertheless, can the world afford to take the risk that the climate scientists have got it wrong? Is it not in everyone's interest to apply the Precautionary Principle in attempting to avoid the worst of their predictions - now, rather than at some future time? As the Chairman of the Intergovernmental Panel on Climate Change, Mr. Rajendra Pachauri, has recently pointed out, eleven of the warmest years since instrumental records began have occurred in the past twelve, while major precipitation changes are taking place on a global scale.",
+    "keyPoints": [
+      "The lecture links rising greenhouse gas emissions to global warming and describes growing concern over the consequences.",
+      "It refers to Ehrlich’s warning about population growth exceeding agricultural capacity and notes that eleven of the twelve most recent years in the cited record were among the warmest.",
+      "The speaker urges precaution as precipitation patterns change."
+    ],
+    "sample": "The lecture links rising greenhouse gas emissions to global warming and describes growing concern over the consequences. It refers to Ehrlich’s warning about population growth exceeding agricultural capacity and notes that eleven of the twelve most recent years in the cited record were among the warmest. The speaker urges precaution as precipitation patterns change.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "40",
+      "sourceTitle": "Global Warming",
+      "filename": "Screenshot 2026-11-24 154453.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-108",
+    "type": "sst",
+    "title": "Globalization and Detraditionalization",
+    "topic": "Globalization and Detraditionalization",
+    "minutes": 10,
+    "text": "So, I think you all know what I mean by globalization, don't you? This is the idea that we all live in a global village. With instant communications, we can share ideas, and consume cultural artifacts from countries all over the world, just by going into the Internet and all dream up, basically. The world is shrinking. In terms of speeds, it is accelerating, but in terms of distance, it's shrinking. What do I mean by detraditionalization? I mean the disappearance or the erosion, for the better word to use, the erosion of traditional values, of conventional ways of doing things, of conventional moralities. More and more young people around the world are rejecting the culture they grow up in, and it's probably a little bit cruel. But some imitating a Hollywood model of society, rather than the one which they inherit from their local tradition background. OK?",
+    "keyPoints": [
+      "Globalization is the idea that we all live in a global village.",
+      "With instant communications, we can share ideas and access cultural artifacts from countries all over the world.",
+      "However, it also leads to the disappearance or erosion of traditional values.",
+      "To be more specific, young people are rejecting the culture they have grown up in."
+    ],
+    "sample": "Globalization is the idea that we all live in a global village. With instant communications, we can share ideas and access cultural artifacts from countries all over the world. However, it also leads to the disappearance or erosion of traditional values. To be more specific, young people are rejecting the culture they have grown up in.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "108",
+      "sourceTitle": "Globalization and Detraditionalization",
+      "filename": "Screenshot 2026-11-24 154510.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-120",
+    "type": "sst",
+    "title": "Canned Food",
+    "topic": "Canned Food",
+    "minutes": 10,
+    "text": "One of the things that was going on during the Great Depression was the beginning of this sort of modern food technology that rules, you know, the way Americans eat today. That is there are a lot of canned foods were being - coming onto the market at the time. And also, refrigerators were really becoming very, very popular during the Great Depression, both in cities and in rural parts of the country. Thanks to electrification, the Rural Electrification Administration, people could buy appliances. You know, farmers could buy appliances. And that meant frozen foods were becoming big. And, you know, at that time, few people could afford to buy them during the early years of the Great Depression. But, you know, gradually, these things picked up. And so this was, like, the sort of beginning of the era when people were starting to think about supermarkets with rows and rows of freezer cases and rows and rows of canned foods.",
+    "keyPoints": [
+      "The Great Depression was the beginning of modern food technology, when canned foods entered the market.",
+      "Meanwhile, refrigerators were very popular in urban and rural areas.",
+      "Moreover, the Rural Electrification Administration enabled farmers to purchase appliances, meaning frozen foods were experiencing rapid growth.",
+      "As a result of these changes, people started to think about supermarkets with many freezer cases and canned foods."
+    ],
+    "sample": "The Great Depression was the beginning of modern food technology, when canned foods entered the market. Meanwhile, refrigerators were very popular in urban and rural areas. Moreover, the Rural Electrification Administration enabled farmers to purchase appliances, meaning frozen foods were experiencing rapid growth. As a result of these changes, people started to think about supermarkets with many freezer cases and canned foods.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "120",
+      "sourceTitle": "Canned Food",
+      "filename": "Screenshot 2026-11-24 154530.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-123",
+    "type": "sst",
+    "title": "Negativity Bias",
+    "topic": "Negativity Bias",
+    "minutes": 10,
+    "text": "Negativity bias refers to the psychological phenomenon where humans tend to focus more on negative emotions or experiences than positive ones. Although we experience positive emotions like contentment and pleasure more frequently, these feelings tend to be lighter in intensity and are less likely to be remembered or linger in our minds. On the other hand, negative emotions such as fear, anger, or sadness, although less frequent, tend to be much stronger and more intense, making them easier to recall and harder to forget. This bias has evolutionary significance. In the past, paying more attention to negative events like threats or dangers would have been advantageous for survival. By being more sensitive to potential threats—whether from predators, environmental hazards, or social conflicts—humans could respond quickly to life-threatening situations. This heightened awareness of negative stimuli would have helped our ancestors make decisions that favored safety and survival. In today's world, while the immediate life-threatening threats may have diminished, the negativity bias still plays a role in how we evaluate the environment and survive, sometimes leading us to focus on potential risks or problems rather than opportunities or positive outcomes. Understanding this bias can help us manage our reactions and potentially shift our focus towards a more balanced perspective.",
+    "keyPoints": [
+      "Negativity bias means humans usually pay more attention to negative emotions rather than positive emotions.",
+      "We feel content and pleasant more frequently, but these positive emotions are lighter, which means they cannot be easily recalled or stay in our minds.",
+      "However, negative emotions happen less frequently, but they are strong and intense.",
+      "Negativity bias can help us evaluate the environment and survive when we face life-threatening issues."
+    ],
+    "sample": "Negativity bias means humans usually pay more attention to negative emotions rather than positive emotions. We feel content and pleasant more frequently, but these positive emotions are lighter, which means they cannot be easily recalled or stay in our minds. However, negative emotions happen less frequently, but they are strong and intense. Negativity bias can help us evaluate the environment and survive when we face life-threatening issues.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "123",
+      "sourceTitle": "Negativity Bias",
+      "filename": "Screenshot 2026-11-24 154539.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-126",
+    "type": "sst",
+    "title": "Food Production",
+    "topic": "Food Production",
+    "minutes": 10,
+    "text": "It is projected that people are going to suffer from a serious food crisis for the next 30 years until 2030. Unless immediate action is taken, it is increasingly clear that there is an impending global food emergency that could have long-term impacts on hundreds of millions of children and adults. We must double the yield of our production by increasing 100% to feed a growing global population and to cater for the future demand of food. This is an urgent matter and is quite frightening. About 50 million people risk falling into extreme poverty this year. People should elevate food production now. Scientists have predicted an increase in food production of 30% to 50% for developing countries in the next three years. There will be an increase of the cost of the production. There is also an opportunity for developing countries to improve food systems alongside reducing poverty and increasing global resilience to shocks.",
+    "keyPoints": [
+      "The speaker mentions that people are going to suffer from a serious food crisis.",
+      "He also says that the global food emergency could impact children and adults, so we must double the yield.",
+      "Although there will be an increase of the cost of the production, there is also an opportunity for developing countries."
+    ],
+    "sample": "The speaker mentions that people are going to suffer from a serious food crisis. He also says that the global food emergency could impact children and adults, so we must double the yield. Although there will be an increase of the cost of the production, there is also an opportunity for developing countries.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "126",
+      "sourceTitle": "Food Production",
+      "filename": "Screenshot 2026-11-24 154548.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-136",
+    "type": "sst",
+    "title": "Recycling Water",
+    "topic": "Recycling Water",
+    "minutes": 10,
+    "text": "Why do we need to recycle water? Because we don't generate much new water. Chemically the process of generating water, which is basically taking hydrogen and oxygen and burning them to produce water, is not a process that happens a lot anymore. So in terms of our total volume of water in the world, yes it is changing, but it's not changing significantly relative to the rate at which we are using or demand fresh new water. Now there are a lot of different areas of technology involved in water recycling, and we are later in the interview going to get to industrial use and the reclamation of sewerage. What about in the home at the moment; what sort of technology is being utilized in the home when we talk about water recycling? Well very little on average. Typically in a modern home, we turn on the tap, we take a glass of water, we probably in turning on that tap flush ten glasses of water down the sink. We take a shower, we use fresh water, we do a whole range of things, and there is nominally very little recycling of that. It goes down the drain and it goes off to a wastewater treatment plant. There is actually very, very little recycling at a local level. People don't actually say well I'm now going to take the water I just used, put it through a sophisticated process and reuse it and have a closed loop. It's not a closed loop in the home.",
+    "keyPoints": [
+      "We need to recycle water because we don't generate much new water.",
+      "Generating water is not a process that happens a lot anymore.",
+      "However, when we use water at home, there is very little recycling at a local level.",
+      "This is because it’s not a closed loop in the home."
+    ],
+    "sample": "We need to recycle water because we don't generate much new water. Generating water is not a process that happens a lot anymore. However, when we use water at home, there is very little recycling at a local level. This is because it’s not a closed loop in the home.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "136",
+      "sourceTitle": "Recycling Water",
+      "filename": "Screenshot 2026-11-24 154559.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-144",
+    "type": "sst",
+    "title": "Good Ideas",
+    "topic": "Good Ideas",
+    "minutes": 10,
+    "text": "To be a successful entrepreneur, you should have good ideas, but the definition of a great idea can vary according to whom you ask. A great idea should have several features. Firstly, the great idea should be various and novel. Secondly, it should be unique, something that no one has thought of in exactly the same way before. Thirdly, it is essential for great ideas to be transformative and protectable. All ideas are essentially a combination of other smaller ideas, but this doesn't mean they can't be unique. Merely copying doesn't make anything idiosyncratic, it's the individuality that one puts in which makes a concept stand out. Constant innovation leaves no room for stagnation and thus, adds on to the basic idea, effectively making it unique. Unique ideas are inspired by basic things, they are simply extensions of pre-existing notions. And, an idea or a concept is unique only when it transcends its predecessor and serves its purpose in a better and more precise way.",
+    "keyPoints": [
+      "To be successful, you should have great ideas.",
+      "A great idea should have three features.",
+      "Firstly, it should be various and novel.",
+      "Secondly, great ideas should be unique.",
+      "Constant innovation effectively makes ideas unique.",
+      "A unique idea often serves its purpose in a better way.",
+      "Thirdly, a great idea should be transformative and protectable."
+    ],
+    "sample": "To be successful, you should have great ideas. A great idea should have three features. Firstly, it should be various and novel. Secondly, great ideas should be unique. Constant innovation effectively makes ideas unique. A unique idea often serves its purpose in a better way. Thirdly, a great idea should be transformative and protectable.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "144",
+      "sourceTitle": "Good Ideas",
+      "filename": "Screenshot 2026-11-24 154621.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-149",
+    "type": "sst",
+    "title": "Globalization",
+    "topic": "Globalization",
+    "minutes": 10,
+    "text": "Globalization is an overused and often misunderstood concept. We hear it all the time on news broadcasts and in any type of public discussion. But the starting point for understanding globalization is that it is industries and markets that globalize, not countries. That's why it's helpful to think of globalization as ‘the integration of economic activities across borders’. But why does globalization matter? I would argue globalization matters because it means the rise of interconnectedness between countries and markets across the world. For example, one of the reasons why the financial crash of 2007/2008 was so serious was because the financial and banking systems of countries around the world have become so closely interconnected with the globalization of markets.",
+    "keyPoints": [
+      "Globalization is an overused and often misunderstood concept.",
+      "First of all, it is industries and markets that globalize.",
+      "It is also known as the integration of economic activities across borders.",
+      "Globalization is very important because it makes countries and markets more connected across the world, especially the financial and banking systems."
+    ],
+    "sample": "Globalization is an overused and often misunderstood concept. First of all, it is industries and markets that globalize. It is also known as the integration of economic activities across borders. Globalization is very important because it makes countries and markets more connected across the world, especially the financial and banking systems.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "149",
+      "sourceTitle": "Globalization",
+      "filename": "Screenshot 2026-11-24 154641.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-162",
+    "type": "sst",
+    "title": "Children's Life Quality",
+    "topic": "Children's Life Quality",
+    "minutes": 10,
+    "text": "We have done a social science research on capacity of families and found this compelling and disturbing fact. The most disturbing thing to me is that well-educated parents can always promise their children a prosperous future because these children have sufficient educational capacity and support since they were born. The life chance of a child was set when they were five years old. Well, this finding has been quite disturbing to me. And, I have to confess that currently there is no obvious way to address this deep root of inequality in our society. Even public schools cannot completely offset the huge gaps brought by different family backgrounds for vulnerable children. It reminds us that early-stage conditions play an enormous role in shaping the life chance of every individual.",
+    "keyPoints": [
+      "Well-educated parents can always promise their children a prosperous future.",
+      "This is because these children have sufficient educational capacity and support since they were born.",
+      "Besides, a disturbing fact is that the life chance of a child has been set by five years old.",
+      "However, currently there is no obvious way to address this deep root of inequality in our society."
+    ],
+    "sample": "Well-educated parents can always promise their children a prosperous future. This is because these children have sufficient educational capacity and support since they were born. Besides, a disturbing fact is that the life chance of a child has been set by five years old. However, currently there is no obvious way to address this deep root of inequality in our society.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "162",
+      "sourceTitle": "Children's Life Quality",
+      "filename": "Screenshot 2026-11-24 154648.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-166",
+    "type": "sst",
+    "title": "Definition of Risk",
+    "topic": "Definition of Risk",
+    "minutes": 10,
+    "text": "What's the literal definition of \"risk\"? Business schools use risk analysis. So, what do you mean by “risk”, and we need a dictionary. When you look at dictionary, this is literal, literal definition of risk. What it says is, the definition for example, the possibility of injury, a dangerous element or factor, chance of, degree or possibility of such loss, and so on. So, risk has two parts, as you look at the literal definition of risk. One part is the consequence of some kind of particular danger, hazard loss. And the other is about the probability, of it: chance and consequence, OK? And then at least just as English language concerns, when you look up the word of safe and safety, which you'll earn as, it's a little bit of a loop, a little circular argument that free from harm or risks, secure from danger, harm or loss, the condition of being safe and so on for all. And why we take out of it? At least when we talk about “safe” at least in English language, we are talking about something that is safe, or it sounds safe.",
+    "keyPoints": [
+      "The literal definition of risk mainly has two parts.",
+      "One is the consequence of particular danger or hazard loss.",
+      "The other one is the probability or chance of it.",
+      "Thus, safety usually means that we are free from harm or risk, or secure from danger or harm.",
+      "It can also refer to the condition of being safe."
+    ],
+    "sample": "The literal definition of risk mainly has two parts. One is the consequence of particular danger or hazard loss. The other one is the probability or chance of it. Thus, safety usually means that we are free from harm or risk, or secure from danger or harm. It can also refer to the condition of being safe.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "166",
+      "sourceTitle": "Definition of Risk",
+      "filename": "Screenshot 2026-11-24 154657.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-169",
+    "type": "sst",
+    "title": "The Republic",
+    "topic": "The Republic",
+    "minutes": 10,
+    "text": "Why should we read the Republic? I image lots of students asked this question to me when they're given it as a set book at the beginning of their university course, but in fact there are many good reasons to read the Republic. And first one I would pick on is just that it is immensely readable. It's not Plato did not write philosophy like a dry text book. He wrote it like a living conversation. The whole of the Republic which is fairly fat book is a living conversation written in short almost soundbite type answers, but nevertheless, developing some very important ideas so my first answer then we should read the Republic just because it is readable. It is readable it was written by a genius and it's worth reading. It's easy to read. It's not difficult. But then there's also obviously the thoughts, the content of the book and he's asking this absolutely fundamental question why should we bother to be good, what's in it for us effectively. It seems when we look at the world, it looks as though injustice pays. It looks as though crime pays whereas the good people get trodden down. So, Plato addresses this absolutely fundamental question why should we be good. I'm not going to tell you his answer. Read the book.",
+    "keyPoints": [
+      "The lecture is about the reasons why we should read the Republic.",
+      "Firstly, it is immensely readable, as it is written like a living conversation.",
+      "Secondly, the writer Plato has developed some very important ideas, and it is easy to read.",
+      "Lastly, he addresses this absolutely fundamental question why we should be good in this book."
+    ],
+    "sample": "The lecture is about the reasons why we should read the Republic. Firstly, it is immensely readable, as it is written like a living conversation. Secondly, the writer Plato has developed some very important ideas, and it is easy to read. Lastly, he addresses this absolutely fundamental question why we should be good in this book.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "169",
+      "sourceTitle": "The Republic",
+      "filename": "Screenshot 2026-11-24 154708.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-171",
+    "type": "sst",
+    "title": "IT Development",
+    "topic": "IT Development",
+    "minutes": 10,
+    "text": "The history of software is of course very very new. And the whole IT industry is really only six, seventy years old which is extraordinary and to be so close to the birth of a major new technology, a major new discipline is quite remarkable given where we got to in those sixty-seven years. And the progression has been not so much a progression as a stampede because Moore's Law, the rapid expansion in the power of computing and the rapid fall of the cost of computing and storage and communications has made it feasible for information technology to move into all sorts of areas of life that were never originally envisaged. What has happened is that there has been as I said a stampede for people to pick the low-hanging fruit. And that is what's guided the development of software and information technology over the past decades and continues to do so with a number of consequences that we will explore.",
+    "keyPoints": [
+      "Information technology is a young discipline that has advanced extraordinarily quickly.",
+      "Under Moore’s Law, computing power expanded rapidly while computing, storage and communication costs fell.",
+      "This made it possible to introduce information technology into unexpected areas of life.",
+      "The rush to seize the easiest opportunities shaped software development and continues to have consequences today."
+    ],
+    "sample": "Information technology is a young discipline that has advanced extraordinarily quickly. Under Moore’s Law, computing power expanded rapidly while computing, storage and communication costs fell. This made it possible to introduce information technology into unexpected areas of life. The rush to seize the easiest opportunities shaped software development and continues to have consequences today.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "171",
+      "sourceTitle": "IT Development",
+      "filename": "Screenshot 2026-11-24 154717.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-172",
+    "type": "sst",
+    "title": "Architecture Design",
+    "topic": "Architecture Design",
+    "minutes": 10,
+    "text": "When we are dealing with buildings of the Victorian era or earlier we are looking at a building stock that has already been rid of architectural flops. In a process of natural selection the many thousands of buildings that were built or designed poorly have already fallen down or have already been modified and the faults rectified. So, this is James Wyatt's masterpiece Fonthill Abbey, a building of unquestioned brilliance, historical importance, even genius. It started to fall down, and finally collapsed in 1825, long before listing of buildings was invented or even contemplated. Then even earlier in February 1322, the central tower of Ely Cathedral collapsed. And when it came to reconstructing it, it was decided to build an octagon of stone with a much lighter timber structure on top, a work of genius but not the original intended crowning feature. So, the cathedral we have today has long ago been rid of its design and engineering faults. But when we are dealing with buildings which are only fifty or sixty years old, we are often confronting design flaws or poor workmanship that are only just coming to light, or only just in the process of being rectified. This again challenges our perception of authenticity. Most historic buildings (by which I mean buildings a hundred years or more old) have been adapted and modified to iron out design and construction flaws and so their so-called original state is, in fact, an altered state in which they perform well, in fact often better than when they were first completed. Late twentieth century buildings are still going through this Darwinian process of natural selection that will decide whether they will survive having been adapted or whether they will die being unsuited to their function. So criticizing them for their design flaws may be seen as being rather unfair.",
+    "keyPoints": [
+      "Historic buildings have undergone natural selection, with poorly designed structures either falling down or being modified to correct their design and construction flaws.",
+      "So many of them now perform well, or better than when originally completed.",
+      "In contrast, newer buildings may still have flaws just coming to light and are undergoing adaptation and selection.",
+      "Therefore, criticizing their design flaws too early may be unfair."
+    ],
+    "sample": "Historic buildings have undergone natural selection, with poorly designed structures either falling down or being modified to correct their design and construction flaws. So many of them now perform well, or better than when originally completed. In contrast, newer buildings may still have flaws just coming to light and are undergoing adaptation and selection. Therefore, criticizing their design flaws too early may be unfair.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "172",
+      "sourceTitle": "Architecture Design",
+      "filename": "Screenshot 2026-11-24 154730.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-176",
+    "type": "sst",
+    "title": "Organizational Study",
+    "topic": "Organizational Study",
+    "minutes": 10,
+    "text": "Organization studies seem to draw on the whole family of social sciences, clearly psychology, clearly sociology, but also economics, anthropology, politics, as we said, philosophy to a degree, history, sometimes literary studies, cultural studies, so on and so forth. I think that's absolutely right. And for me, that's absolutely the pleasure and even on good days, the joy of doing organizations studies, because it enables you not just enables, but requires you in some sense, to have some kind of broad familiarization of that sort. Now, there's a price to be paid for that because that kind of breadth, if you like, does come, I suppose as the cost of depth. And I guess there would be people who are clearly within academic disciplines or sociology or economics or whatever, who might say, well, these are sort of Magpie-sh, amateurish kind of forays into our territory. You know, I wouldn't necessarily disown that idea. But I think that what studying organizations teaches us and teaches me is actually the artificiality of those academic subdivisions. And as soon as we start to actually think about something like the organized world, then immediately, the kinds of things that come into focus are things have traditionally been studied by different demands. And so, I think it's a liberating idea, the idea that we don't need to be bound by those strictures and structures of disciplinary division, and that we can be free actually to imagine and think about the social world through an agglomeration of techniques and ideas and theories and concepts from across the social sciences.",
+    "keyPoints": [
+      "Organizational studies draw on psychology, sociology, economics and other social sciences.",
+      "The breadth of the field demands familiarity with several disciplines and can come at the expense of depth.",
+      "The speaker argues that crossing academic boundaries frees researchers to combine methods and theories and better understand how the social world is organized."
+    ],
+    "sample": "Organizational studies draw on psychology, sociology, economics and other social sciences. The breadth of the field demands familiarity with several disciplines and can come at the expense of depth. The speaker argues that crossing academic boundaries frees researchers to combine methods and theories and better understand how the social world is organized.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "176",
+      "sourceTitle": "Organizational Study",
+      "filename": "Screenshot 2026-11-24 154739.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-179",
+    "type": "sst",
+    "title": "Wildlife as Food",
+    "topic": "Wildlife as Food",
+    "minutes": 10,
+    "text": "In my view, it's impossible not to talk about wildlife, and not think about its role in livelihood. And I guess part of that is my own view, part of the research that I do in Africa. In most Eastern West Africa, I look at the role. All the humans rely on wildlife as the source of food, and also the source of income. And we talk about our wildlife, if we talking about fish, we are talking about what is probably the single most important source of protein for human that across the globe. And, so, billions of, or more than a billion of people rely on fish as their primary source of animal protein, and most of these people living in poverty. So the management of wild fish resource in that sense causing incredibly important to livelihoods and health. And also, wildlife tourism is the multi-billion-dollar industry, and in many places, such as Africa, South America, it can be the No.1 source of income. It can be the No.1 source of foreign income for economies.",
+    "keyPoints": [
+      "All humans rely on wildlife as the source of food, and also the source of income.",
+      "For example, we consider fish as the single most important source of protein.",
+      "Therefore, the management of wild fish resources is very important to livelihoods and health.",
+      "Moreover, in many places, wildlife tourism can be the No.1 source of foreign income for economies."
+    ],
+    "sample": "All humans rely on wildlife as the source of food, and also the source of income. For example, we consider fish as the single most important source of protein. Therefore, the management of wild fish resources is very important to livelihoods and health. Moreover, in many places, wildlife tourism can be the No.1 source of foreign income for economies.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "179",
+      "sourceTitle": "Wildlife as Food",
+      "filename": "Screenshot 2026-11-24 154749.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-211",
+    "type": "sst",
+    "title": "Brand Image",
+    "topic": "Brand Image",
+    "minutes": 10,
+    "text": "It turns out consumers are incredibly smart. They combine a lifetime of experience with that brand, combined with whatever its designed appeal is, how it makes them feel, performance and price. And they do all that in a few seconds. So brands are essential to our business to allow us to deliver the increased consumer value associated with our products. We're not into the generic business of toilet paper. We're into probably about the softest product you're going to want to buy. We're not into a generic soap. We're into the best, you know, stain removing laundry detergent you're going to buy. But we're going to want you to remember that as the tide brand. Now, that means there's a second moment of truth. If they do select you and they pay 50% more than they would have paid for Walmart's brand, when they get home, it'd better perform when it's used. And here's where the science starts, folks. There's an amazing number of fundamental engineering contradictions, right? Airplanes deal with, you know, weight and strength. I want something that's light but strong. That's an engineering contradiction. Once I deal with our things, got to be strong but soft. They have to be strong even when they're wet. Bright but not tear, liquids, mixtures, not common things, but they need, they can't separate. You don't want to shake before use, before you pour down in your washing machine.",
+    "keyPoints": [
+      "Consumers use years of experience to assess a brand’s appeal, performance and price in seconds.",
+      "Brands can command a premium by offering greater value, but products must then deliver when customers use them.",
+      "Engineers must balance competing requirements such as making a product both strong and soft or keeping a mixture from separating."
+    ],
+    "sample": "Consumers use years of experience to assess a brand’s appeal, performance and price in seconds. Brands can command a premium by offering greater value, but products must then deliver when customers use them. Engineers must balance competing requirements such as making a product both strong and soft or keeping a mixture from separating.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "211",
+      "sourceTitle": "Brand Image",
+      "filename": "Screenshot 2026-11-24 154759.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-217",
+    "type": "sst",
+    "title": "Decline of Bees",
+    "topic": "Decline of Bees",
+    "minutes": 10,
+    "text": "So various conclusions. Yes, bees are in decline. These declines are well-documented. They are real and supported by good, strong scientific evidence, which is the only of these counts. The drivers of decline on many varied depending on species. The effects of pollinator loss could be absolutely huge. So is it a catastrophe? Not yet. But it could be. On the positive side, we are aware of the problem. Awareness is being raised all the time and people are taking actions. Before fixing is missing, you can recognize the problem. At least it's been done.",
+    "keyPoints": [
+      "Bees are in decline.",
+      "These declines are well-documented and real, as they are supported by good and strong scientific evidence.",
+      "The drivers of decline vary depending on species, and the effects of pollinator loss could be absolutely huge.",
+      "However, awareness is being raised all the time and people are taking action."
+    ],
+    "sample": "Bees are in decline. These declines are well-documented and real, as they are supported by good and strong scientific evidence. The drivers of decline vary depending on species, and the effects of pollinator loss could be absolutely huge. However, awareness is being raised all the time and people are taking action.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "217",
+      "sourceTitle": "Decline of Bees",
+      "filename": "Screenshot 2026-11-24 154816.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-218",
+    "type": "sst",
+    "title": "Misuse of Drugs",
+    "topic": "Misuse of Drugs",
+    "minutes": 10,
+    "text": "“But what are the dangers of keeping these drugs at home?\" “There are a number of dangers. Parents should know that leftover drugs are dangerous because they may be accidentally ingested by children. Either adults don't keep the bottles properly closed and stored or because even many kids can sometimes open childproof lids. Patients may use the drugs after their expiration date. The leftover drugs may be taken for the wrong reasons. For example, someone may have a viral infection and self-prescribed to left over into microbial that was prescribed for a bacterial infection. But that drug will have no effect as the viral infections. Drugs that are left over might be given to or taken by someone else who may have a serious allergy to the medicine and who for that reason would not be prescribed to medicine under the supervision of a physician. Finally, inappropriate use of drugs promotes drug resistance if the drug is taken for the wrong indication, the wrong duration, or in the wrong dosage. “Todd, what can people do about this how can the situation be improved?\" “| think physicians, patients and parents of patients can take steps to improve the situation. First of all, physicians should prescribe the drug only when appropriate, only in the correct amount and only for the correct duration. Also, the physician must stress to the patient that the full course of the drug must be taken. This is recommended even if symptoms resolved before the end of the prescription and parents of children on antibiotics need to ensure they complete their course as well.”",
+    "keyPoints": [
+      "There are a number of dangers of keeping drugs at home.",
+      "Firstly, they may be accidentally ingested by children.",
+      "Secondly, patients may use the drugs after their expiration date.",
+      "Thirdly, the leftover drugs may be taken for the wrong reasons.",
+      "To solve this problem, physicians should prescribe the drugs only when appropriate, and the full course of the drug must be taken."
+    ],
+    "sample": "There are a number of dangers of keeping drugs at home. Firstly, they may be accidentally ingested by children. Secondly, patients may use the drugs after their expiration date. Thirdly, the leftover drugs may be taken for the wrong reasons. To solve this problem, physicians should prescribe the drugs only when appropriate, and the full course of the drug must be taken.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "218",
+      "sourceTitle": "Misuse of Drugs",
+      "filename": "Screenshot 2026-11-24 154829.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-238",
+    "type": "sst",
+    "title": "Paper Rejection",
+    "topic": "Paper Rejection",
+    "minutes": 10,
+    "text": "Rejection happens to all of us, and it can be a disappointing experience. I will now give some advice for young researchers. Many things have changed today, which can be a troubling issue. The chance of getting paper published is becoming smaller and smaller. Although it never is easy to take, rejection is particularly hard at the beginning of your career. But rejections will lead to a better result and will be good for the career path. Use this feedback to improve your paper for submission to another journal as well as your next, more robust study of the topic. Usually several individuals with expertise in the topic have donated substantial time to provide detailed advice to advance your paper and future work. Also remember that publication does not mean funding. Investors will learn how to attract and engage young researchers at the same time.",
+    "keyPoints": [
+      "Rejection is common in academic publishing and especially discouraging early in a research career.",
+      "The speaker urges young researchers to use detailed feedback from experts to improve their papers before submitting elsewhere and to design stronger future studies.",
+      "Rejection can ultimately improve the work, and publication alone does not guarantee funding."
+    ],
+    "sample": "Rejection is common in academic publishing and especially discouraging early in a research career. The speaker urges young researchers to use detailed feedback from experts to improve their papers before submitting elsewhere and to design stronger future studies. Rejection can ultimately improve the work, and publication alone does not guarantee funding.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "238",
+      "sourceTitle": "Paper Rejection",
+      "filename": "Screenshot 2026-11-24 154847.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-239",
+    "type": "sst",
+    "title": "Luxury Brand",
+    "topic": "Luxury Brand",
+    "minutes": 10,
+    "text": "The question today of what makes a luxury brand, a luxury brand and how do we distinguish it, is very hard to answer. The standard business response is to say they are more exclusive. And we get exclusivity by having high price and relatively small amounts of the product available. The reality, however, of luxury brands is that they are sold in their millions, and in some cases, are not priced that much higher than the standard output. The only way I can really answer your question is to say, it is all relative. As you said in your introduction, it wasn't that long ago in Australia that we would have considered two televisions to be a luxury, or even further back, one colour television. And you can make a strong argument, for example, that Starbucks in China, right now, is a luxury purchase because of its cost, because of how frequently it is purchased by many people. So, I think the long answer is a complicated one, but the answer is, it depends who you talk to. I think in the business community what we would say, is that there is a small cluster of more expensive brands which have a distinct strategy that we would identify as being luxury brands. And they start with the Rolls Royce and the Tiffanys and the Louis Vuittons of the world. And, I think that tends to be how we see them.",
+    "keyPoints": [
+      "It is very hard to answer what makes a luxury brand and how we distinguish it.",
+      "A brand is exclusive because of its high price and relatively small quantities of the product available.",
+      "Despite the high price, luxury brands are still sold in millions.",
+      "Therefore, the long answer is a complicated one, and it depends on whom you talk to."
+    ],
+    "sample": "It is very hard to answer what makes a luxury brand and how we distinguish it. A brand is exclusive because of its high price and relatively small quantities of the product available. Despite the high price, luxury brands are still sold in millions. Therefore, the long answer is a complicated one, and it depends on whom you talk to.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "239",
+      "sourceTitle": "Luxury Brand",
+      "filename": "Screenshot 2026-11-24 154900.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-246",
+    "type": "sst",
+    "title": "Literature in Poem",
+    "topic": "Literature in Poem",
+    "minutes": 10,
+    "text": "My lectures are going to presume no special knowledge on your part. I see this as a course that's an introduction to the literature of a period, to modern poetry. We'll be studying several poets in some detail. The presumption is that they all reward and demand a certain amount of close reading. At the same time, I do mean to give you some sense of the period in which they're writing, some sense of modernism as a field, as one of the richest fields in English language writing. Finally, though, this really is a course in poetry, plain and simple. I mean to introduce you to particular poems, to give you ways to possess them, enjoy them, be puzzled or frustrated by them too, to learn something from them and to care about them and to carry them with you as you go forward after this class.",
+    "keyPoints": [
+      "This course is an introduction to the literature of modern poetry.",
+      "Several poets will be studied in detail, and they also demand a certain amount of close reading.",
+      "Meanwhile, some sense of the period in which they're writing will be given.",
+      "Finally, the lecturer will give ways to possess and enjoy particular poems.",
+      "In this way, students can learn from them and care about them."
+    ],
+    "sample": "This course is an introduction to the literature of modern poetry. Several poets will be studied in detail, and they also demand a certain amount of close reading. Meanwhile, some sense of the period in which they're writing will be given. Finally, the lecturer will give ways to possess and enjoy particular poems. In this way, students can learn from them and care about them.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "246",
+      "sourceTitle": "Literature in Poem",
+      "filename": "Screenshot 2026-11-24 154938.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-247",
+    "type": "sst",
+    "title": "Children Directors",
+    "topic": "Children Directors",
+    "minutes": 10,
+    "text": "Social skills are vital in enabling an individual to have and maintain positive interactions with others. Many of these skills are crucial in making and sustaining friendships. Social interactions do not always run smoothly and an individual needs to be able to implement appropriate strategies, such as conflict resolution when difficulties in interactions arise. It is also important for individuals to have ‘empathy’ as it allows them to respond in an understanding and caring way to how others are feeling. Children are facing social difficulties with particular risks. Young people who do not have strong relationships with the adults in their family are even more at risk. In an experiment in a high school, which lasted for 8 to 12 weeks, the students were told to be a movie director and to choose their own story structure. The students worked with each other, which involved lots of different skills, and social interactivity. The movies they had made were actually cool. Then, the researchers tested the intervention effect, finding this can improve their self-regulation, and they found this can improve their self-regulation and critical thinking skills.",
+    "keyPoints": [
+      "Social skills and empathy help young people sustain friendships and manage conflict.",
+      "Children without strong family relationships face greater risks of social difficulties.",
+      "In an eight-to-twelve-week high school experiment, students chose their stories and worked together to make films.",
+      "Researchers found that the filmmaking activity could improve the students’ self-regulation and critical thinking."
+    ],
+    "sample": "Social skills and empathy help young people sustain friendships and manage conflict. Children without strong family relationships face greater risks of social difficulties. In an eight-to-twelve-week high school experiment, students chose their stories and worked together to make films. Researchers found that the filmmaking activity could improve the students’ self-regulation and critical thinking.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "247",
+      "sourceTitle": "Children Directors",
+      "filename": "Screenshot 2026-11-24 154949.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-248",
+    "type": "sst",
+    "title": "Dancing Bees",
+    "topic": "Dancing Bees",
+    "minutes": 10,
+    "text": "Honeybees do a waggle dance to direct other bees to sources of nectar, but dancing bees like this one can be halted by a headbutt from another bee. Now, researchers have found that this headbutt is actually a warning signal. A feeding station was set up in the lab to mimic a source of nectar. Then foraging bees were introduced to dangers at the station, such as competition from rival colonies. When foragers returned to the hive, they stopped bees dancing. Scientists think the behavior warns dancers of a dangerous source of nectar.",
+    "keyPoints": [
+      "Honeybees do a waggle dance to direct other bees to sources of nectar.",
+      "However, dancing bees can be halted by a headbutt from another bee, which has been found to be a warning signal.",
+      "After conducting an experiment, the scientists believe that the behavior warns dancers of a dangerous source of nectar."
+    ],
+    "sample": "Honeybees do a waggle dance to direct other bees to sources of nectar. However, dancing bees can be halted by a headbutt from another bee, which has been found to be a warning signal. After conducting an experiment, the scientists believe that the behavior warns dancers of a dangerous source of nectar.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "248",
+      "sourceTitle": "Dancing Bees",
+      "filename": "Screenshot 2026-11-24 155003.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-255",
+    "type": "sst",
+    "title": "Bees and Darwin",
+    "topic": "Bees and Darwin",
+    "minutes": 10,
+    "text": "Worker bees exhibit remarkable altruism, a behavior deeply embedded in their genetic and evolutionary traits. To protect the hive from intruders, worker bees willingly sacrifice their lives, ensuring the safety of the next generation. This selflessness is not just a random occurrence but a critical mechanism for maintaining the colony's survival and stability. Charles Darwin studied this phenomenon and connected it to the broader principles of evolution. He noted that the survival of a bee colony depends heavily on the reproductive success of the queen bee. By enhancing the queen's ability to produce offspring, the genetic legacy of the entire colony is safeguarded.",
+    "keyPoints": [
+      "This lecture discusses the genes of bees and their evolution.",
+      "In order to protect the next generation in the hive, the worker bees attack intruders and then die.",
+      "Worker bees sacrifice their lives to protect the next generation.",
+      "Darwin realized that by improving the reproductivity of the queen bees, the genetic legacy of the entire colony is safeguarded."
+    ],
+    "sample": "This lecture discusses the genes of bees and their evolution. In order to protect the next generation in the hive, the worker bees attack intruders and then die. Worker bees sacrifice their lives to protect the next generation. Darwin realized that by improving the reproductivity of the queen bees, the genetic legacy of the entire colony is safeguarded.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "255",
+      "sourceTitle": "Bees and Darwin",
+      "filename": "Screenshot 2026-11-24 155012.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-256",
+    "type": "sst",
+    "title": "Development of Machines",
+    "topic": "Development of Machines",
+    "minutes": 10,
+    "text": "The advancement of machines serves as a critical indicator of a nation’s development and progress. Today, machines have become incredibly sophisticated, with technologies like face recognition and natural language processing transforming how we live and work. Our dependence on machines has grown significantly, not only improving daily life but also providing avenues for economic gain and innovation. However, this growing reliance on automation brings challenges, particularly in employment. The increase in the use of machines often leads to job losses or large-scale redundancies. For example, bus drivers are among the occupations most likely to be replaced by automation, and many may need to transition into retail or other service-sector roles. To balance these advancements and address rising unemployment rates, it is essential to develop new industries and opportunities that can absorb the workforce affected by automation. Without proactive measures, we will surely see more and more people losing their jobs, with the unemployment rate increasing.",
+    "keyPoints": [
+      "The development of machines is a sign of the development of the country.",
+      "Machines are getting more advanced with face recognition or language processing techniques.",
+      "Now our life is dependent on machines from which people also make a profit.",
+      "However, as machines continue to improve, unemployment and redundancies will rise.",
+      "Therefore, we need to create more jobs, or more people will lose jobs and the unemployment rate will increase."
+    ],
+    "sample": "The development of machines is a sign of the development of the country. Machines are getting more advanced with face recognition or language processing techniques. Now our life is dependent on machines from which people also make a profit. However, as machines continue to improve, unemployment and redundancies will rise. Therefore, we need to create more jobs, or more people will lose jobs and the unemployment rate will increase.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "256",
+      "sourceTitle": "Development of Machines",
+      "filename": "Screenshot 2026-11-24 155021.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-257",
+    "type": "sst",
+    "title": "Stone Balls",
+    "topic": "Stone Balls",
+    "minutes": 10,
+    "text": "I suppose you wouldn't expect perhaps to find a mathematician in a museum of historical objects, but actually, the objects that I've been drawn to in this museum have quite a lot of mathematical significance. These Neolithic stones, discovered in Scotland, dating back 5,000 years, are probably the first examples of humans exploring the concept of symmetry. And that's what I do as a practicing mathematician. I spend my life trying to understand what symmetries are possible, in nature and in mathematics and abstractly. And here I've got a connection, going back 5,000 years, to people who are already trying to understand — how can I arrange patches on the side of these stone balls in a symmetrical manner? One of the intriguing things about these stones is that we don't actually know what they're for. They might have been for divination — trying to predict the future. They might have been part of a game. They look very much like dice, but we don't really think there is any game associated with them. Maybe they were just for chucking around, they're very nice in the hand when you hold them. Or maybe they were symbols of power in the clan. I suppose that's why I like them because we don't really know what they are.",
+    "keyPoints": [
+      "The speaker describes 5,000-year-old Neolithic stone balls found in Scotland as possible early evidence of humans exploring symmetry.",
+      "Their patterned surfaces connect the makers’ work to the speaker’s own mathematical interests.",
+      "Their purpose remains unknown, though they may have served for divination, games or as symbols of power, and that uncertainty makes them especially intriguing."
+    ],
+    "sample": "The speaker describes 5,000-year-old Neolithic stone balls found in Scotland as possible early evidence of humans exploring symmetry. Their patterned surfaces connect the makers’ work to the speaker’s own mathematical interests. Their purpose remains unknown, though they may have served for divination, games or as symbols of power, and that uncertainty makes them especially intriguing.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "257",
+      "sourceTitle": "Stone Balls",
+      "filename": "Screenshot 2026-11-24 155030.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-190",
+    "type": "sst",
+    "title": "Automatic Driving",
+    "topic": "Automatic Driving",
+    "minutes": 10,
+    "text": "Transportation officials, advocates, companies and users around the world are talking about how automated vehicles will change transportation as we know it, autonomous vehicles are split into six levels of automation as defined by the Society of Automotive Engineers. Zero, no automation. One, driver assistance. Two, partial automation. Three, conditional automation. Four, high automation. And five, full automation. Humans are responsible for monitoring the vehicle and performing most functions in levels one and two, while an automated driving system performs all functions in levels three, four and five. Vehicles at levels three and up are considered highly automated vehicles. As vehicles progress to higher levels of automation, less responsibility is put on the driver for monitoring the vehicle. Here's how an automated vehicle works. Several systems work in conjunction with each other to control an automated vehicle. Radar sensors dotted around the car monitor the position of vehicles nearby. Video cameras detect traffic lights, read road signs and keep track of other vehicles while also looking out for pedestrians and other obstacles.",
+    "keyPoints": [
+      "Autonomous vehicles are split into six levels of automation.",
+      "Humans are responsible for monitoring the vehicle in “driver assistance\" and “partial automation\".",
+      "Conditional, high and full automation are considered highly automated, where the driver is less responsible for monitoring the vehicle.",
+      "Several systems work together to control an automated vehicle, which is how an automated vehicle works."
+    ],
+    "sample": "Autonomous vehicles are split into six levels of automation. Humans are responsible for monitoring the vehicle in “driver assistance\" and “partial automation\". Conditional, high and full automation are considered highly automated, where the driver is less responsible for monitoring the vehicle. Several systems work together to control an automated vehicle, which is how an automated vehicle works.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "190",
+      "sourceTitle": "Automatic Driving",
+      "filename": "Screenshot 2026-11-24 155040.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-263",
+    "type": "sst",
+    "title": "Management",
+    "topic": "Management",
+    "minutes": 10,
+    "text": "Although managers often have busy schedules, they should read more to gain a broad range of perspectives and go back to university to improve themselves. This isn't just about collecting degrees—it's about opening their minds. Reading widely enables managers to apply their skills in different circumstances. In fact, some managers need all kinds of perspectives to navigate complex challenges and lead diverse teams successfully. Experience is not necessary, but management knowledge is much more important because learning management is a highlighted point for being a manager. Practical experience may bring temporary solutions, but systematic management knowledge provides long-term guidance. So, what does the ideal manager look like? The best manager is not only to know their organization better, but also to be a professor of management. This means they shouldn't just understand how their company works—they must also master the principles of leadership, strategy, and people management, using this knowledge to make informed decisions that drive the team and the organization forward.",
+    "keyPoints": [
+      "Managers should read more to gain a broad range of perspectives, because reading widely enables them to apply their skills in different circumstances.",
+      "Experience is not necessary, but management knowledge is much more important.",
+      "Thus, the best manager should not only know their organization better, but also be a professor of management."
+    ],
+    "sample": "Managers should read more to gain a broad range of perspectives, because reading widely enables them to apply their skills in different circumstances. Experience is not necessary, but management knowledge is much more important. Thus, the best manager should not only know their organization better, but also be a professor of management.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "263",
+      "sourceTitle": "Management",
+      "filename": "Screenshot 2026-11-24 155049.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-264",
+    "type": "sst",
+    "title": "Newspaper Industry",
+    "topic": "Newspaper Industry",
+    "minutes": 10,
+    "text": "Because of the economic model, the newspaper industry has been shrinking drastically from the last 50 years of the 20th century in some states of America. Also as the economic model changed, newspapers increased the cash flow. However, there are still some newspaper industries losing money because of a decrease in advertising and buyers. They can't find buyers. Only a few newspapers have positive cash flow. Over 100 newspapers with cash flow in the red had no money to publish the newspaper every day. Some of them published three days per week. Small-sized newspapers only published once a week and had to go online. Some newspapers even disappeared. The staff working in newspaper industry decreased by 30-60% or more.",
+    "keyPoints": [
+      "Because of the economic model, the newspaper industry has been shrinking drastically, and newspapers have increased the cash flow.",
+      "However, there are still some newspaper industries losing money because of a decrease in advertising and buyers.",
+      "As a result, the staff working in the newspaper industry has decreased by more than 30%."
+    ],
+    "sample": "Because of the economic model, the newspaper industry has been shrinking drastically, and newspapers have increased the cash flow. However, there are still some newspaper industries losing money because of a decrease in advertising and buyers. As a result, the staff working in the newspaper industry has decreased by more than 30%.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "264",
+      "sourceTitle": "Newspaper Industry",
+      "filename": "Screenshot 2026-11-24 155100.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-274",
+    "type": "sst",
+    "title": "Chimpanzees",
+    "topic": "Chimpanzees",
+    "minutes": 10,
+    "text": "We are from an organization called Nonhuman Rights Project, and we fight for legal rights of non-human animals. Drawing a line in order to enslave an autonomous and self-determining being is a violation of equality. We then searched through 80 jurisdictions. We chose the state of New York. Then we decided upon who our plaintiffs are going to be. We decided upon chimpanzees. We know the extraordinary cognitive capabilities that they have, and they also resemble the kind that human beings have. And so we chose chimpanzees, and we began to then canvass the world to find the experts in chimpanzee cognition. So now we needed to find our chimpanzee. Our chimpanzee, first we found two of them in the state of New York. Both of them would die before we could even get our suits filed. Then we found Tommy. Tommy is a chimpanzee. Tommy was a chimpanzee. We found him in that cage. We found him in a small room that was filled with cages in a larger warehouse structure on a used trailer lot in central New York. And so on the last week of December 2013, the Nonhuman Rights Project filed three suits all across the state of New York using the same common law argument. The court didn't approve our appeal because they think chimpanzees are not humans even though they have cognitive skills. We proved to the court that chimpanzees also have cognitive capabilities, and they were not hearing us.",
+    "keyPoints": [
+      "Our organization is called Nonhuman Rights Project.",
+      "We fight for the legal rights of non-human animals, and we decided upon chimpanzees.",
+      "After we found our chimpanzee, we filed three suits.",
+      "However, the court didn't approve our appeal because they think chimpanzees are not humans, even if we proved to the court that chimpanzees also have cognitive capabilities."
+    ],
+    "sample": "Our organization is called Nonhuman Rights Project. We fight for the legal rights of non-human animals, and we decided upon chimpanzees. After we found our chimpanzee, we filed three suits. However, the court didn't approve our appeal because they think chimpanzees are not humans, even if we proved to the court that chimpanzees also have cognitive capabilities.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "274",
+      "sourceTitle": "Chimpanzees",
+      "filename": "Screenshot 2026-11-24 155133.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-278",
+    "type": "sst",
+    "title": "DNA Pieces",
+    "topic": "DNA Pieces",
+    "minutes": 10,
+    "text": "My lab works on the applications of synthetic biology, so we're very interested in doing useful things with biological systems. Up to now, life has evolved, and now we actually have the ability and the power to engineer it, to design it. And so I'm curious about what the natural world is going to look like in the future. So synthetic biology is sort of the next level of genetic engineering. So about 40 years ago, we being scientists and engineers, developed techniques to basically move pieces of DNA from one organism to another. And this was sort of done by physically cutting and pasting. Now we're moving beyond that where we can write DNA so we're no longer limited to the pieces. We can cut from one and put in another. We can chemically synthesize this DNA on a machine and put that into an organism. And now we can even create new organisms completely from scratch. So if you imagine a cell that's programmed to make a useful compound, say, material or drug, then what you have is basically a micro-scale manufacturing unit. It's basically a cellular factory. And the cool thing about a cellular factory is that when you want more factories, you let the cells grow and divide. So in in the lab, if we have one bacteria, we put it in a flask. The next day we come in. We have millions, if not billions of bacteria.",
+    "keyPoints": [
+      "Life has evolved, and now we have the ability and the power to engineer and design it.",
+      "Thus, synthetic biology is the next level of genetic engineering.",
+      "Moreover, we are no longer limited to the pieces, and we can even create new organisms.",
+      "For example, a cell that's programmed to make a useful compound is called a cellular factory."
+    ],
+    "sample": "Life has evolved, and now we have the ability and the power to engineer and design it. Thus, synthetic biology is the next level of genetic engineering. Moreover, we are no longer limited to the pieces, and we can even create new organisms. For example, a cell that's programmed to make a useful compound is called a cellular factory.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "278",
+      "sourceTitle": "DNA Pieces",
+      "filename": "Screenshot 2026-11-24 155145.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-280",
+    "type": "sst",
+    "title": "Credit Card",
+    "topic": "Credit Card",
+    "minutes": 10,
+    "text": "An experiment on customer behavior explored the impact of messaging strategies on the usage of inactive credit cards. Participants were divided into two groups, each receiving a different type of communication. One group was presented with messages highlighting the benefits they could gain from using their credit cards, such as rewards or cash-back incentives. The other group received messages emphasizing potential penalties or missed opportunities if they failed to use their cards, such as losing loyalty points or account privileges. The findings revealed a significant psychological difference in customer motivation based on the type of message: twice as many people in the second group used their credit cards as in the first group. This suggests that threatening potential losses is more effective than highlighting potential benefits when encouraging customers to take action. Customers who were informed about potential losses exhibited a stronger inclination to activate and use their cards compared to those who were promised gains. This outcome aligns with the well-established concept in behavioral economics known as “loss aversion,\" which suggests that individuals tend to prioritize avoiding losses over acquiring equivalent gains.",
+    "keyPoints": [
+      "In an experiment on customers’ behaviors, one group of inactive credit card users received a message offering benefits that they could gain by using the cards.",
+      "The other group received a message implying a penalty if it is not used.",
+      "The result shows that customers are more motivated by a potential loss when not using this card, rather than by the benefit they could gain by using the card."
+    ],
+    "sample": "In an experiment on customers’ behaviors, one group of inactive credit card users received a message offering benefits that they could gain by using the cards. The other group received a message implying a penalty if it is not used. The result shows that customers are more motivated by a potential loss when not using this card, rather than by the benefit they could gain by using the card.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "280",
+      "sourceTitle": "Credit Card",
+      "filename": "Screenshot 2026-11-24 155155.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-283",
+    "type": "sst",
+    "title": "Approach and Avoidance",
+    "topic": "Approach and Avoidance",
+    "minutes": 10,
+    "text": "Approach and avoidance motivation is composed of three conceptually distinct components. Approach indicates a propensity to move toward (or maintain contact with) a desired stimulus, such as vocational plans. Avoidance indicates a propensity to move away from (or maintain distance from) an undesired stimulus in order to reduce anxiety. Motivation is defined as the energization and direction of behavior. The valence of stimuli is at the core of the distinction between approach and avoidance, with positively valenced stimuli typically leading to approach and negatively valenced stimuli typically leading to avoidance. Stimuli can be external or internal, implicit or explicit, conscious or non-conscious.",
+    "keyPoints": [
+      "Approach and avoidance motivation is composed of three different components.",
+      "To start with, approach indicates a propensity to move toward a desired stimulus, while avoidance indicates a propensity to move away from it.",
+      "Moreover, motivation is defined as the energization and direction of behavior.",
+      "Consequently, the valence of stimuli is at the core of the distinction between approach and avoidance."
+    ],
+    "sample": "Approach and avoidance motivation is composed of three different components. To start with, approach indicates a propensity to move toward a desired stimulus, while avoidance indicates a propensity to move away from it. Moreover, motivation is defined as the energization and direction of behavior. Consequently, the valence of stimuli is at the core of the distinction between approach and avoidance.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "283",
+      "sourceTitle": "Approach and Avoidance",
+      "filename": "Screenshot 2026-11-24 155202.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-284",
+    "type": "sst",
+    "title": "Hook Sentence",
+    "topic": "Hook Sentence",
+    "minutes": 10,
+    "text": "An essay is a chance to identify what you have read and learned. As a writer, you first need to collect many materials, then write an essay in four or five paragraphs, structures and quotes. If someone is searching for a book or article to read, he or she will decide from the very beginning whether this work is worth attention. If you want to wow your teacher, polish the introduction, especially the first couple of sentences. Add an essay hook-something interesting, funny, shocking, or intriguing to win the reader's attention. Build an emotional connection with your reader right from the start. A hook in the essay is a catchy sentence or paragraph in the impressive introduction which serves as an attention element and an important part. An excellent hook sentence is engaging and interesting; it is a perfect method to start an argumentative or persuasive essay. The hook for your essay often appears in the first sentence. The opening paragraph includes a thesis sentence. Some popular hook choices can include using an interesting quote, a little-known fact, famous last words, or a statistic.",
+    "keyPoints": [
+      "As a writer, you first need to collect many materials, then write an essay.",
+      "You are also suggested to build an emotional connection with your reader right from the start.",
+      "This can be achieved by a hook in the essay, which is a catchy sentence or paragraph.",
+      "It serves as an attention element, and should be engaging and interesting.",
+      "It often appears in the first sentence."
+    ],
+    "sample": "As a writer, you first need to collect many materials, then write an essay. You are also suggested to build an emotional connection with your reader right from the start. This can be achieved by a hook in the essay, which is a catchy sentence or paragraph. It serves as an attention element, and should be engaging and interesting. It often appears in the first sentence.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "284",
+      "sourceTitle": "Hook Sentence",
+      "filename": "Screenshot 2026-11-24 155212.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-292",
+    "type": "sst",
+    "title": "Internet and Journalism",
+    "topic": "Internet and Journalism",
+    "minutes": 10,
+    "text": "In recent decades journalism has been faced with challenges. So, what has happened to journalism? The rise of the Internet has a great impact on journalism, specifically the ways it is produced and consumed. Because the Internet democratizes people, ordinary people can get involved in journalism. It takes steps for people to feel enthusiastic about the changes in journalism. The Internet not only speeds up spread of news, but also helps people gain information in various ways. Thus, journalism now becomes a collaborative process in an imaginary way, which is unexpected. For example, even small pieces of ordinary video can be of a new type of journalism.",
+    "keyPoints": [
+      "Recently, journalism has been faced with challenges.",
+      "This is because the rise of the Internet has a great impact on journalism, as it enables ordinary people to get involved in journalism.",
+      "Moreover, the Internet not only speeds up the spread of news, but also helps people gain information in various ways."
+    ],
+    "sample": "Recently, journalism has been faced with challenges. This is because the rise of the Internet has a great impact on journalism, as it enables ordinary people to get involved in journalism. Moreover, the Internet not only speeds up the spread of news, but also helps people gain information in various ways.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "292",
+      "sourceTitle": "Internet and Journalism",
+      "filename": "Screenshot 2026-11-24 155219.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-129",
+    "type": "sst",
+    "title": "Australian Culture",
+    "topic": "Australian Culture",
+    "minutes": 10,
+    "text": "Australia is a vibrant, multicultural country. It is home to the world's oldest continuous cultures, as well as Australians who identify with more than 270 ancestries. Nearly half of Australians were born overseas or have at least one overseas-born parent. Migrants make an enormous contribution to Australia's economy and provide an estimated fiscal benefit of over 10 billion dollars in their first ten years of settlement. Despite legal protection, too many people in Australia continue to experience prejudice and unfair treatment because of how they look or where they come from. Most new migrants say they feel a strong sense of belonging to Australia and that this feeling deepens over time. This rich cultural diversity is one of Australia's greatest strengths, although it has a negative effect, which we do not emphasize in detail.",
+    "keyPoints": [
+      "Australia is a multicultural country with the world’s oldest continuous cultures and more than 270 ancestries.",
+      "Nearly half its people were born overseas or have a parent who was.",
+      "Migrants make a significant economic contribution and most feel a strong sense of belonging, although prejudice and unfair treatment persist.",
+      "The speaker sees diversity as a national strength."
+    ],
+    "sample": "Australia is a multicultural country with the world’s oldest continuous cultures and more than 270 ancestries. Nearly half its people were born overseas or have a parent who was. Migrants make a significant economic contribution and most feel a strong sense of belonging, although prejudice and unfair treatment persist. The speaker sees diversity as a national strength.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "129",
+      "sourceTitle": "Australian Culture",
+      "filename": "Screenshot 2026-11-24 155230.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    }
+  },
+  {
+    "id": "sst-user-20261124-731",
+    "type": "sst",
+    "title": "Industrial Revolution (Short Version)",
+    "topic": "Industrial Revolution (Short Version)",
+    "minutes": 10,
+    "text": "Through the 1950s and into the 1960s, the idea of the Industrial Revolution was that it was the work of some genius inventors who created machines used primarily in the textile industry — but also in mining — that eliminated blocks to assembly line production. Then everybody was crowded into factories and the new brave world opened up. In fact, one of the most interesting books and great classics that is still in print was written by an economic historian at Harvard who's still around called David Landes. It's a good book called The Unbound Prometheus, which was basically that. Some of the inventions that I briefly describe in your reading, the spinning jenny, etc., refer to that. Well, that kind of analysis led one to concentrate on England, where the Industrial Revolution began, and to view industrialization as being a situation of winners and losers. That analysis has been rejected greatly over the past years, because the Industrial Revolution is measured by more than simply large factories with industrial workers and the number of machines. This is the point of the beginning of this. The more that we look at the Industrial Revolution, the more we see that the Industrial Revolution was first and foremost an intensification of forms of production, of kinds of production that was already there. Thus, we spend more time looking at the intensification of artisanal production, craft production, domestic industry — which we've already mentioned, that is, people, mostly women but also men and children, too, working in the countryside. The rapid rise of industrial production was very much tied to traditional forms of production.",
+    "keyPoints": [
+      "Earlier historians portrayed the Industrial Revolution as the work of inventors whose machines transformed textiles, mining and factory production, with England at the centre.",
+      "The speaker says historians now measure it more broadly.",
+      "They emphasize the intensification of existing artisanal, craft and household production, including the work of women, men and children in the countryside."
+    ],
+    "sample": "Earlier historians portrayed the Industrial Revolution as the work of inventors whose machines transformed textiles, mining and factory production, with England at the centre. The speaker says historians now measure it more broadly. They emphasize the intensification of existing artisanal, craft and household production, including the work of women, men and children in the countryside.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.94,
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "User supplied SST screenshot",
+      "sourceId": "731",
+      "sourceTitle": "Industrial Revolution",
+      "filename": "Screenshot 2026-11-24 155242.png",
+      "checkedAt": "2026-11-24",
+      "contentStatus": "transcribed-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript",
+      "relatedPracticeId": "pred26-user-sst-09"
+    }
   }
 ]

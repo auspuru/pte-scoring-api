@@ -232,7 +232,18 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab';
   async function request(route,body) { const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','x-session-token':'tester'},body:body===undefined?undefined:JSON.stringify(body)});assert(r.ok);return r.json(); }
   const before=JSON.stringify(bank),catalog=await request('/catalog');
-  assert.equal(catalog.spoken.length,31);assert.equal(catalog.spoken[0].id,predictions.sst[0].id);assert.equal(catalog.spoken[12].id,predictions.sst[12].id);assert.equal(catalog.spoken[13].id,predictions.sst[13].id);
+  const practiceSst = require('../content/additional-practice-questions.json');
+  assert.deepEqual(catalog.spoken.map(q => q.id), [...predictions.sst, ...practiceSst].map(q => q.id));
+  assert.equal(new Set(catalog.spoken.map(q => q.id)).size, catalog.spoken.length);
+  const markedSst = catalog.spoken.filter(q => q.newInCatalogue);
+  assert.equal(markedSst.length, 44);
+  const library = require('../public/listening-studio').rows({items:catalog.spoken});
+  assert.equal((library.match(/aria-label="Question status: NEW"/g) || []).length, 44);
+  for (const q of markedSst) {
+    assert(q.audioUrl.includes(q.id));
+    assert.equal(q.text, undefined);
+    assert.equal(q.sample, undefined);
+  }
   const previous=[...new Map([...bank.mocks.flatMap(m=>m.questions.filter(q=>q.type==='wfd')),...bank.dictation].map(q=>[q.id,q])).values()];
   assert.equal(catalog.dictation.length,92);assert.equal(new Set(catalog.dictation.map(q=>q.id)).size,92);
   assert.deepEqual(catalog.dictation.slice(0,33).map(q=>q.id),predictions.wfd.slice(0,33).map(q=>q.id));
@@ -257,6 +268,12 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   const sst = catalog.spoken.find(q => q.id === 'sst-user-20261124-01');
   assert.equal(sst.title, "Patients' Recovery");
   assert.equal(sst.minutes, 10);
+  assert.equal(sst.newInCatalogue, true);
+  const imported = markedSst.find(q => q.id === 'sst-user-20261124-271');
+  const importedAttempt = await request('/attempts', {id:randomUUID(), testId:imported.id});
+  assert.equal(importedAttempt.kind, 'sst');
+  assert.equal(importedAttempt.questions[0].audioUrl, imported.audioUrl);
+  assert.equal(importedAttempt.questions[0].text, '');
   const sstId = randomUUID();
   const sstReady = await request('/attempts', {id:sstId, testId:sst.id});
   assert.equal(sstReady.kind, 'sst');
@@ -292,9 +309,9 @@ test('Prediction and standalone practice IDs are accepted by the narration resol
   const audio=createNarration(dir,async input=>{seen.push(input.input);return Buffer.alloc(2000,7);});
   await audio.get(predictions.sst[0].id);
   await audio.get(predictions.wfd[0].id);
-  const [practiceSst] = require('../content/additional-practice-questions.json');
-  await audio.get(practiceSst.id);
-  assert.deepEqual(seen,[predictions.sst[0].narrationText,predictions.wfd[0].text,practiceSst.text]);
+  const practiceSst = require('../content/additional-practice-questions.json');
+  for (const q of practiceSst) await audio.get(q.id);
+  assert.deepEqual(seen,[predictions.sst[0].narrationText,predictions.wfd[0].text,...practiceSst.map(q => q.text)]);
 });
 
 test('Narration accepts only bank IDs, shares concurrent generation and survives restart',async t=>{

@@ -78,6 +78,15 @@ const dictation = [...new Map([...userPredictionDictation, ...previousDictation,
 const listeningPractice = [...new Map(listening.mocks.flatMap(m => m.questions)
   .filter(q => listeningScoring.TYPES.has(q.type)).map(q => [q.id, { ...q, minutes:5 }])).values()];
 const spokenPractice = [...predictions.sst, ...require('./content/additional-practice-questions.json')];
+// These screenshot transcripts already have stable practice IDs.
+const existingNewSstIds = new Set([
+  'pred26-user-sst-01',
+  'pred26-user-sst-02',
+  'pred26-user-sst-04',
+  'pred26-user-sst-05',
+  'pred26-user-sst-12',
+  'sst-user-20261124-01'
+]);
 const individualQuestions = [...spokenPractice, ...dictation, ...listeningPractice];
 const bad = (message, status = 400) => Object.assign(Error(message), { status });
 function advance(a, at, reason) {
@@ -229,7 +238,11 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   router.get('/catalog', route(async(req,res) => res.json({ version:bank.version,
     speakingMocks:await speakingAllowed(verifyToken(req.headers['x-session-token']||''))?require('./content/speaking-mocks').catalogue():[],
     predictionBank:{source:predictions.source,userSource:predictions.userSource,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
-    spoken:spokenPractice.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
+    spoken:spokenPractice.map(q => ({
+      id:q.id, title:q.title, topic:q.topic, minutes:q.minutes,
+      ...((q.newInCatalogue || existingNewSstIds.has(q.id)) ? {newInCatalogue:true} : {}),
+      audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION
+    })),
     dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     listeningPractice:listeningPractice.map(q=>({id:q.id,type:q.type,title:q.title,minutes:q.minutes})),
     listeningMocks:require('./listening-mock/papers').catalogue(),
