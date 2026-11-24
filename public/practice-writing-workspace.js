@@ -53,7 +53,34 @@
   const text=progress.summaries?.[p.id]?.text||'',submitted=(progress.history?.[p.id]||[]).some(a=>a.text===text)||progress.scores?.[p.id]?.__text===text;
   return text.trim()&&!submitted?{text,notes:progress.scratch?.[p.id]||'',clock:clocks.get(String(p.id))}:archived('swt',p.id)[0];
  }
- function swtRows(){const query=swtSearch.toLowerCase().trim(),progress=localAccountProgress();return passages.map((p,index)=>({p,position:index+1,done:(progress.history?.[p.id]||[]).length,latestScore:studio.latestWritingScore(progress.history?.[p.id]||[],'swt'),isNew:env.SwtNewQuestion?.isNew(p,progress.history,attempted)===true,draft:swtDraft(p,progress)})).filter(({p,position,done,draft})=>(studio.matchesQuestionNumber(query,position) ?? (!query||[position,p.id,p.title].join(' ').toLowerCase().includes(query)))&&(swtStatus==='all'||swtStatus==='new'&&!done&&!draft||swtStatus==='done'&&done||swtStatus==='draft'&&draft));}
+ function swtPassageExcerpt(text, lowerText, query, keywords){
+  const phraseAt=lowerText.indexOf(query);
+  const keyword=keywords.find(word=>lowerText.includes(word));
+  const matchAt=phraseAt>=0?phraseAt:lowerText.indexOf(keyword||query);
+  const before=Math.max(0,matchAt-48);
+  const start=before?text.lastIndexOf(' ',before)+1:0;
+  const end=text.indexOf(' ',start+180);
+  return (start?'…':'')+text.slice(start,end<0?text.length:end)+(end<0?'':'…');
+ }
+ function swtRows(){
+  const query=swtSearch.toLowerCase().trim().replace(/\s+/g,' '),progress=localAccountProgress();
+  const keywords=query.split(' ').sort((a,b)=>b.length-a.length);
+  return passages.flatMap((p,index)=>{
+   const position=index+1;
+   let passage;
+   if(query){
+    const numberMatch=studio.matchesQuestionNumber(query,position);
+    if(numberMatch===false)return [];
+    const text=String(p.text??'').trim().replace(/\s+/g,' '),lowerText=text.toLowerCase();
+    const searchable=[position,p.id,p.title].join(' ').toLowerCase()+' '+lowerText;
+    if(numberMatch===null&&!keywords.every(word=>searchable.includes(word)))return [];
+    if(text)passage={text:p.text,excerpt:swtPassageExcerpt(text,lowerText,query,keywords)};
+   }
+   const attempts=progress.history?.[p.id]||[],done=attempts.length,draft=swtDraft(p,progress);
+   if(!(swtStatus==='all'||swtStatus==='new'&&!done&&!draft||swtStatus==='done'&&done||swtStatus==='draft'&&draft))return [];
+   return [{p,position,done,draft,passage,latestScore:studio.latestWritingScore(attempts,'swt'),isNew:env.SwtNewQuestion?.isNew(p,progress.history,attempted)===true}];
+  });
+ }
  function swtExamReportDetails(p){
   return p.questionSet==='nov23-2026-swt'&&Number.isSafeInteger(p.repeatCount)?'Source report: '+p.repeatCount+' mentions':'';
  }
@@ -62,11 +89,11 @@
   const focused=list.contains(doc.activeElement)?doc.activeElement:null;
   const focusedQuestion=focused?.closest('[data-question-key]')?.dataset.questionKey;
   const focusedAction=['data-swt-open','data-swt-resume'].find(name=>focused?.hasAttribute(name));
-  list.innerHTML=studio.libraryRows(rows.map(({p,position,done,draft,latestScore,isNew})=>{
+  list.innerHTML=studio.libraryRows(rows.map(({p,position,done,draft,latestScore,isNew,passage})=>{
    return {
     id:p.id,number:position,title:p.title,badge:isNew?'NEW':'',latestScore,
     status:done?'Completed · '+done+' saved attempts':draft?'In progress':'Not attempted',
-    detail:swtExamReportDetails(p),
+    detail:swtExamReportDetails(p),passage,
     actions:'<button type="button" class="portal-button" data-swt-open="'+position+'">Practise →</button>'
        +(draft?'<button type="button" class="portal-button practice-library-resume" data-swt-resume="'+position+'">Resume draft</button>':'')
    };
@@ -81,7 +108,7 @@
  }
  function renderSwtMenu(){
   scope();let library=doc.getElementById('swtQuestionLibrary');if(!library){library=doc.createElement('section');library.id='swtQuestionLibrary';library.className='swt-sub-screen';doc.getElementById('swtPane').prepend(library);}
-  library.innerHTML=studio.questionLibrary({skill:'Writing',task:'swt',title:'Summarise Written Text',total:swtRows().length,searchId:'swtQuestionSearch',search:swtSearch,filterId:'swtQuestionFilter',filter:swtStatus,rowsId:'swtQuestionRows',options:'<label class="practice-library-timer"><input type="checkbox" role="switch" id="swtLibraryTimed" '+(swtTimed?'checked':'')+'> Timed</label>'});renderSwtRows();native.showSwtScreen('swtQuestionLibrary');library.querySelector('.practice-library-rows').scrollTop=swtScroll;
+  library.innerHTML=studio.questionLibrary({skill:'Writing',task:'swt',title:'Summarise Written Text',searchId:'swtQuestionSearch',search:swtSearch,searchPlaceholder:'Title, passage text or #number',filterId:'swtQuestionFilter',filter:swtStatus,rowsId:'swtQuestionRows',options:'<label class="practice-library-timer"><input type="checkbox" role="switch" id="swtLibraryTimed" '+(swtTimed?'checked':'')+'> Timed</label>'});renderSwtRows();native.showSwtScreen('swtQuestionLibrary');library.querySelector('.practice-library-rows').scrollTop=swtScroll;
  }
  async function openSwtMenu(){const ticket=++swtMenuGeneration;if(!await saveSwtBeforeLeave()||ticket!==swtMenuGeneration||portalWorkspace?.current()!=='swt')return;renderSwtMenu();}
  async function openSwt(position,{resume=false}={}){

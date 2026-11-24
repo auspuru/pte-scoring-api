@@ -7,3 +7,27 @@
 /* Repeated writing controls stay still when the pointer happens to hover them. */
 #swtPracticeScreen .btn:hover,#essayQuestionNav .btn:hover{transform:none;transition-property:background-color,border-color,color}
 #swtPracticeScreen .btn-primary{background:var(--accent,#34655a)!important;border-color:var(--accent,#34655a)!important;color:#fff!important}
+
+#swtQuestionRows .practice-library-passage {
+  grid-column: 2;
+  max-width: 72ch;
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+#swtQuestionRows .practice-library-passage p { margin: 0; }
+#swtQuestionRows .practice-library-passage summary {
+  width: fit-content;
+  padding-block: 11px;
+  color: var(--accent, #34655a);
+  font-weight: 600;
+  cursor: pointer;
+}
+#swtQuestionRows .practice-library-passage-text {
+  color: var(--ink, #24404a);
+  white-space: pre-wrap;
+}
+@media (max-width: 650px) {
+  #swtQuestionRows .practice-library-row-copy:has(.practice-library-passage) { flex-basis: 100%; }
+}
