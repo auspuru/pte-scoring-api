@@ -1,18 +1,19 @@
 'use strict';
 
 const catalogue = require('./public/practice-catalogue');
+const { createTextMatcher, maskPassageBlanks, passagePreview } = require('./public/practice-studio');
 const { validPassageId } = require('./swt-exam-reports');
 
 const reading = catalogue.readingLibraries(require('./public/reading-bank.json'));
 const speaking = require('./content/speaking-bank').questions;
 const additionalEssaySeeds = new Set(['seed_35', 'seed_36']);
 const ids = new Map();
-const transcripts = new Map();
-const normalizeTranscript = text => text.trim().toLowerCase().replace(/\s+/g, ' ');
-function registerTranscript(task, id, text) {
-  if (typeof text !== 'string' || !text.trim()) return;
-  if (!transcripts.has(task)) transcripts.set(task, new Map());
-  transcripts.get(task).set(String(id), normalizeTranscript(text));
+const searchableQuestions = new Map();
+function registerText(task, id, fields, preview) {
+  const text = fields.flat().filter(value => typeof value === 'string' && value.trim());
+  if (!text.length) return;
+  if (!searchableQuestions.has(task)) searchableQuestions.set(task, []);
+  searchableQuestions.get(task).push({ id: String(id), text, preview });
 }
 function register(task, id) {
   if (!ids.has(task)) ids.set(task, new Set());
@@ -25,12 +26,20 @@ for (const library of reading) {
 for (const question of speaking) {
   const route = 'speaking-' + question.type;
   register(route, question.id);
-  if (['ra', 'rs', 'rl', 'sgd', 'rts'].includes(question.type)) registerTranscript(route, question.id, question.text);
+  if (question.type === 'di') {
+    const image = question.visual || {};
+    registerText(route, question.id, [question.title, question.topic, image.title, image.subtitle,
+      image.description, image.labels, image.columns, image.steps]);
+  } else {
+    const preview = ['ra', 'rts'].includes(question.type) ? question.text : null;
+    registerText(route, question.id, [question.text], preview);
+  }
 }
 for (const question of require('./writing-lab').individualQuestions) {
   const route = { sst: 'spoken-text', wfd: 'dictation' }[question.type] || 'listening-' + question.type;
   register(route, question.id);
-  registerTranscript(route, question.id, question.text);
+  const preview = question.passage ? maskPassageBlanks(question.passage) : question.prompt;
+  registerText(route, question.id, [question.text, question.prompt, question.passage, question.choices], preview);
 }
 
 const flagsSql = `
@@ -100,16 +109,25 @@ function installPracticeLibraryFlags(app, { pool, verifyToken, getAccount, speak
       return res.status(503).json({ error: 'Account verification is unavailable.' });
     }
   };
-  app.get('/api/practice-library/:task/transcript-search', authorize, (req, res) => {
-    const query = typeof req.query.q === 'string' ? normalizeTranscript(req.query.q) : '';
+  const search = (req, res) => {
+    const value = req.method === 'POST' ? req.body?.q : req.query.q;
+    const query = typeof value === 'string' ? value.trim() : '';
     const matches = [];
-    if (query && query.length <= 500) {
-      for (const [id, transcript] of transcripts.get(req.params.task) || []) {
-        if (transcript.includes(query)) matches.push(id);
+    const previews = Object.create(null);
+    if (query && query.length <= 12000) {
+      const { rank } = createTextMatcher(query);
+      for (const item of searchableQuestions.get(req.params.task) || []) {
+        if (!item.text.some(text => rank(text, false))) continue;
+        matches.push(item.id);
+        if (req.method === 'POST' && item.preview) {
+          previews[item.id] = passagePreview(item.preview, query, 'Read full prompt');
+        }
       }
     }
-    res.json({ matches });
-  });
+    res.json(req.method === 'POST' ? { matches, previews } : { matches });
+  };
+  app.get('/api/practice-library/:task/transcript-search', authorize, search);
+  app.post('/api/practice-library/:task/transcript-search', authorize, search);
   const requirePool = (req, res, next) => {
     if (!pool) return res.status(503).json({ error: 'Revision and exam reports are unavailable.' });
     next();

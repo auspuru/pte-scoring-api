@@ -135,7 +135,9 @@ function previousPracticeIndexSnapshot(current, pins = require('../content/full-
   return { ...current, scoringSources: sources };
 }
 const transcriptSearchPins = require('../content/full-mock/practice-transcript-search-compatible-pins.json');
+const passageSearchPins = require('../content/full-mock/practice-passage-search-compatible-pins.json');
 function previousRtsSnapshot(current) {
+  current = previousPracticeIndexSnapshot(current, passageSearchPins) ?? current;
   current = previousPracticeIndexSnapshot(current, transcriptSearchPins) ?? current;
   current = previousPracticeIndexSnapshot(current) ?? current;
   current = previousSwtImportSnapshot(current) ?? current;
@@ -151,6 +153,8 @@ function previousRtsSnapshot(current) {
   return { ...current, scoringSources: sources };
 }
 function compatibleTransportUpgrade(saved, current) {
+  const beforePassageSearch = previousPracticeIndexSnapshot(current, passageSearchPins);
+  if (beforePassageSearch && (digest(saved) === digest(beforePassageSearch) || compatibleTransportUpgrade(saved, beforePassageSearch))) return true;
   const beforeTranscriptSearch = previousPracticeIndexSnapshot(current, transcriptSearchPins);
   if (beforeTranscriptSearch && (digest(saved) === digest(beforeTranscriptSearch) || compatibleTransportUpgrade(saved, beforeTranscriptSearch))) return true;
   const beforePracticeIndex = previousPracticeIndexSnapshot(current);

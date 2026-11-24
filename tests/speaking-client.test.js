@@ -25,7 +25,7 @@ function harness({includePredictions=false,audioCue=false}={}) {
   env.fetch=async(url,options={})=>{
     requests.push({url,body:options.body});const route=url.replace('/api/speaking',''),parts=route.split('/').filter(Boolean),body=typeof options.body==='string'?JSON.parse(options.body):options.body;
     const reply=(data,ok=true)=>({ok,json:async()=>data,blob:async()=>new Blob([Buffer.alloc(300)])});
-    if(url.startsWith('/api/practice-library/')&&url.includes('/transcript-search?'))return reply({matches:[]});
+    if(url.startsWith('/api/practice-library/')&&url.endsWith('/transcript-search'))return reply({matches:[],previews:{}});
     if(route==='/catalog')return reply({types:bank.types,source:bank.source,questions:includePredictions?bank.questions:bank.questions.filter(q=>!q.predictionSource),transcriptionAvailable:true,deliveryAssessmentAvailable:true,deliveryVersion:'test-delivery',deliveryVersions:env.deliveryVersions||{}});
     if(route==='/attempts'&&!body)return reply([...attempts.values()].map(a=>({...a,title:bank.questions.find(q=>q.id===a.questionId).title,type:bank.questions.find(q=>q.id===a.questionId).type})));
     if(route==='/attempts'){const q=bank.questions.find(q=>q.id===body.questionId),a={id:body.id,questionId:body.questionId,practiceMode:body.practiceMode||'timed',...(q.type==='rts'?{questionSnapshot:structuredClone(q)}:{}),status:'draft',revision:0,transcript:'',startedAt:now};attempts.set(a.id,a);return reply(present(a));}

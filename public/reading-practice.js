@@ -409,13 +409,46 @@
   }
 
   function questionRecords(uid){return [...new Map([state.session,...(state.drafts||[]),...state.history].filter(a=>a?.practiceUid===uid).map(a=>[a.id,a])).values()].sort((a,b)=>b.startedAt-a.startedAt);}
+  function readingSearchRank(q, rank) {
+    const texts=[q.passage,q.audioText,q.prompt];
+    if(q.type==='dropdown'||q.type==='wordbank'){
+      texts.push(String(q.passage??'').replace(/\[\[(\d+)\]\]/g,(_,n)=>q.answers?.[n-1]||''));
+    }
+    if(q.type==='reorder'){
+      const paragraphs=new Map(q.items.map(item=>[item.key,item.text]));
+      texts.push(...paragraphs.values(),q.items.map(item=>item.text).join(' '),q.answers.map(key=>paragraphs.get(key)).join(' '));
+    }
+    return Math.max(...texts.map(text=>rank(text)));
+  }
   function libraryQuestions() {
-    const library=practiceLibraries().find(l=>l.id===libraryView?.id),query=(libraryView?.query||'').trim().toLowerCase(),status=libraryView?.status||'all';
-    return (library?.questions||[]).filter((q,i)=>{const rows=questionRecords(q.uid);return (studio.matchesQuestionNumber(query,i+1) ?? (!query||[i+1,q.title,q.topic,q.id].join(' ').toLowerCase().includes(query)||q.audioText?.toLowerCase().replace(/\s+/g,' ').includes(query.replace(/\s+/g,' '))))&&(status==='all'||status==='new'&&!rows.length||status==='done'&&rows.some(a=>a.done)||status==='draft'&&rows.some(a=>!a.done));});
+    const library=practiceLibraries().find(l=>l.id===libraryView?.id),status=libraryView?.status||'all';
+    const {query,rank}=studio.createTextMatcher(libraryView?.query);
+    const questions=(library?.questions||[]).map((q,i)=>{
+      const number=studio.matchesQuestionNumber(query,i+1);
+      const content=query&&number===null?readingSearchRank(q,rank):0;
+      const match=number??(!query||!!content||!!rank([i+1,q.title,q.label,q.topic,q.id].join(' '))||q.choices?.some(choice=>rank(choice,false)));
+      return {q,match,content};
+    });
+    const bestMatch=questions.reduce((best,{content})=>Math.max(best,content),0);
+    const preferPassage=query.split(/\s+/).length>=5&&bestMatch>=2;
+    return questions.filter(({q,match,content})=>{
+      if(!match||(preferPassage&&content!==bestMatch))return false;
+      const rows=questionRecords(q.uid);
+      return status==='all'||status==='new'&&!rows.length||status==='done'&&rows.some(a=>a.done)||status==='draft'&&rows.some(a=>!a.done);
+    }).map(({q})=>q);
+  }
+  function readingPassagePreview(q,query,rank) {
+    if(!query)return null;
+    if(q.type==='reorder'){
+      const paragraph=q.items.find(item=>rank(item.text,false))||q.items.find(item=>rank(item.text))||q.items[0];
+      return studio.passagePreview(paragraph?.text,query,'Read paragraph');
+    }
+    return studio.passagePreview(q.passage?studio.maskPassageBlanks(q.passage):q.prompt,query);
   }
   function libraryList() {
     const questions=libraryQuestions(),numbers=new Map((practiceLibraries().find(l=>l.id===libraryView.id)?.questions||[]).map((q,i)=>[q.uid,i+1]));
-    return studio.libraryRows(questions.map(q=>{const rows=questionRecords(q.uid),draft=rows.find(a=>!a.done),done=rows.filter(a=>a.done).length;return {id:q.id,key:q.uid,number:numbers.get(q.uid),title:q.title,status:done?'Completed · '+done+' saved attempts':draft?'In progress':'Not attempted',actions:'<button type="button" class="portal-button" data-practice-uid="'+escape(q.uid)+'">Practise →</button>'+(draft?'<button type="button" class="portal-button practice-library-resume" data-reading-resume="'+escape(draft.id)+'">Resume draft</button>':'')};}));
+    const {query,rank}=studio.createTextMatcher(libraryView?.query);
+    return studio.libraryRows(questions.map(q=>{const rows=questionRecords(q.uid),draft=rows.find(a=>!a.done),done=rows.filter(a=>a.done).length;return {id:q.id,key:q.uid,number:numbers.get(q.uid),title:q.title||q.label,passage:readingPassagePreview(q,query,rank),status:done?'Completed · '+done+' saved attempts':draft?'In progress':'Not attempted',actions:'<button type="button" class="portal-button" data-practice-uid="'+escape(q.uid)+'">Practise →</button>'+(draft?'<button type="button" class="portal-button practice-library-resume" data-reading-resume="'+escape(draft.id)+'">Resume draft</button>':'')};}));
   }
   function browseLibrary(id, query, page, selectedUid) {
     const library=practiceLibraries().find(l=>l.id===id);if(!library)return;
@@ -429,7 +462,7 @@
     const saved=(matches(state.session||{})&&!state.session.done?`<div class="portal-resume"><strong>${escape(state.session.name)}</strong><button class="portal-button" data-action="resume">Continue question</button></div>`:'')
       + (drafts.length?`<details class="reading-home-help"><summary>Saved question drafts <span>${drafts.length}</span></summary><ul class="reading-history">${drafts.map(({r,i})=>`<li><strong>${escape(r.name)}</strong><button class="portal-button" data-draft="${i}">Continue</button></li>`).join('')}</ul></details>`:'')
       + (history.length?`<details class="reading-home-help"><summary>Question attempts <span>${history.length}</span></summary><ul class="reading-history">${history.map(({r,i})=>`<li><div><strong>${escape(r.name)}</strong><span>${r.earned}/${r.possible} points</span></div><button class="portal-button" data-history="${i}">Review</button></li>`).join('')}</ul></details>`:'');
-    host.innerHTML=studio.wrap(practiceSkill(id),practiceRoute(id),studio.questionLibrary({skill:practiceSkill(id)==='listening'?'Listening':'Reading',task:practiceRoute(id),title:library.name,total:libraryQuestions().length,searchAttrs:'data-library-search',transcriptSearch:practiceSkill(id)==='listening',search:query,filterAttrs:'data-library-status',filter:libraryView.status||'all',rowsAttrs:'data-library-list',rowsClass:'reading-library-rows',rows:libraryList(),options:'<label class="practice-library-timer"><input type="checkbox" role="switch" data-reading-library-timed '+(libraryView.timed===true?'checked':'')+'> Timed</label>',extras:saved+'<p data-start-status role="status" aria-live="polite"></p>'}));
+    host.innerHTML=studio.wrap(practiceSkill(id),practiceRoute(id),studio.questionLibrary({skill:practiceSkill(id)==='listening'?'Listening':'Reading',task:practiceRoute(id),title:library.name,total:libraryQuestions().length,searchAttrs:'data-library-search',searchPlaceholder:practiceSkill(id)==='listening'?'Title, transcript or #number':'Title, passage text or #number',search:query,filterAttrs:'data-library-status',filter:libraryView.status||'all',rowsAttrs:'data-library-list',rowsClass:'reading-library-rows',rows:libraryList(),options:'<label class="practice-library-timer"><input type="checkbox" role="switch" data-reading-library-timed '+(libraryView.timed===true?'checked':'')+'> Timed</label>',extras:saved+'<p data-start-status role="status" aria-live="polite"></p>'}));
     if(practiceSkill(id)==='listening'){const source=document.createElement?.('p');if(source){source.className='reading-note';source.innerHTML='Question source: Earlier bank · <button type="button" class="portal-button" data-action="current-listening-bank">Current bank</button>';host.querySelector?.('.practice-library-extras')?.prepend(source);}}
     const selected=[...(host.querySelectorAll?.('[data-practice-uid]')||[])].find(b=>b.dataset.practiceUid===libraryView.selectedUid);
     selected?.setAttribute('aria-current','true');selected?.focus({preventScroll:true});

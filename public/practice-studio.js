@@ -40,6 +40,15 @@
       switcher.open = false;
       switcher.querySelector?.('summary')?.focus();
     });
+    doc.addEventListener?.('paste', event => {
+      const field = event.target;
+      if (event.defaultPrevented || !field.matches?.('.practice-question-library input[type="search"]')) return;
+      const text = event.clipboardData?.getData('text/plain');
+      if (!text || !/[\r\n\t]/.test(text)) return;
+      event.preventDefault();
+      field.setRangeText(text.replace(/\s+/g, ' '), field.selectionStart, field.selectionEnd, 'end');
+      field.dispatchEvent(new env.Event('input', { bubbles: true }));
+    });
   }
   function focusQuestion(host, selector='[data-question-heading], h2, h1') {
     const heading=host?.querySelector?.(selector);
@@ -92,6 +101,39 @@
   function matchesQuestionNumber(query, number) {
     return /^#\d+$/.test(query) ? Number(query.slice(1)) === number : null;
   }
+  function normalizeSearchText(value) {
+    return String(value ?? '').normalize('NFKC').toLowerCase()
+      .replace(/\[\[\d+\]\]/g, ' ').replace(/['’]/g, '')
+      .replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+  }
+  function createTextMatcher(value) {
+    const query = String(value ?? '').trim();
+    const normalized = normalizeSearchText(query);
+    const words = normalized.split(' ');
+    function rank(text, keywords = true) {
+      if (!normalized) return query ? 0 : 1;
+      const source = normalizeSearchText(text);
+      if (source === normalized) return 3;
+      if (source.includes(normalized)) return 2;
+      return keywords && words.length > 1 && words.every(word => source.includes(word)) ? 1 : 0;
+    }
+    return { query, rank };
+  }
+  function passagePreview(text, query, label) {
+    if (typeof text !== 'string' || !text.trim() || !query) return null;
+    const line = text.trim().replace(/\s+/g, ' ');
+    const lower = line.toLowerCase();
+    const phraseAt = lower.indexOf(query.toLowerCase().replace(/\s+/g, ' '));
+    const keywords = normalizeSearchText(query).split(' ').sort((a,b) => b.length - a.length);
+    const word = keywords.find(term => lower.includes(term));
+    const matchAt = phraseAt >= 0 ? phraseAt : lower.indexOf(word || query);
+    const before = Math.max(0, matchAt - 48);
+    const start = before ? line.lastIndexOf(' ', before) + 1 : 0;
+    const end = line.indexOf(' ', start + 180);
+    const excerpt = (start ? '…' : '') + line.slice(start, end < 0 ? line.length : end) + (end < 0 ? '' : '…');
+    return { text, excerpt, label };
+  }
+  const maskPassageBlanks = text => String(text ?? '').replace(/\[\[\d+\]\]/g, '_____');
   function libraryQueue(container, fallback) {
     const rows=container?.querySelectorAll?.('.practice-library-rows > [data-question-key]');
     if (!rows?.length) return fallback;
@@ -139,7 +181,7 @@
     const now=Date.now();
     return rows.map(row=>{
       const isNew=isNewQuestion(row,now),badge=isNew?'NEW':row.badge;
-      const passage=row.passage?'<div class="practice-library-passage"><p>'+esc(row.passage.excerpt)+'</p><details><summary>Read full passage</summary><p class="practice-library-passage-text">'+esc(row.passage.text)+'</p></details></div>':'';
+      const passage=row.passage?'<div class="practice-library-passage"><p>'+esc(row.passage.excerpt)+'</p><details><summary>'+esc(row.passage.label||'Read full passage')+'</summary><p class="practice-library-passage-text">'+esc(row.passage.text)+'</p></details></div>':'';
       return '<article class="practice-library-row" role="group" aria-label="Question '+esc(row.number)+': '+esc(row.title||row.id)+'" data-question-key="'+esc(row.key ?? row.id)+'" data-question-number="'+esc(row.number)+'" data-question-new="'+isNew+'" data-question-reportable="'+(row.reportable!==false)+'"><div class="practice-library-row-copy"><small class="practice-library-number">#'+esc(row.number)+'</small><h3>'+esc(row.title||'Question '+row.number)+'</h3>'+(badge?'<span class="practice-library-label" aria-label="Question status: '+esc(badge)+'">'+esc(badge)+'</span>':'')+'<p>'+esc(row.status||'Not attempted')+'</p>'+(row.latestScore?'<p class="practice-library-detail practice-library-score">'+esc(row.latestScore)+'</p>':'')+(row.detail?'<p class="practice-library-detail">'+esc(row.detail)+'</p>':'')+passage+'</div><div class="practice-library-row-actions">'+row.actions+'</div></article>';
     }).join('');
   }
@@ -151,16 +193,17 @@
       if (scope?.task === task && scope.query === query && scope.session === session) return scope.matches;
       env.clearTimeout(timer);
       const request = scope = {task, query, session, matches: null};
-      if (!task || !session || !query || query.length > 500 || /^#?\d+$/.test(query)) return null;
+      if (!task || !session || !query || query.length > 12000 || /^#?\d+$/.test(query)) return null;
       timer = env.setTimeout(async () => {
         try {
-          const response = await env.fetch('/api/practice-library/' + task + '/transcript-search?q=' + encodeURIComponent(query), {
-            headers: {'x-session-token': session}, cache: 'no-store', signal: AbortSignal.timeout(10000)
+          const response = await env.fetch('/api/practice-library/' + task + '/transcript-search', {
+            method: 'POST', headers: {'Content-Type':'application/json','x-session-token':session},
+            body:JSON.stringify({q:query}), cache:'no-store', signal:AbortSignal.timeout(10000)
           });
           if (!response.ok) return;
-          const {matches} = await response.json();
+          const {matches, previews} = await response.json();
           if (scope !== request || token() !== session || !Array.isArray(matches)) return;
-          request.matches = new Set(matches);
+          request.matches = {ids:new Set(matches),previews:new Map(Object.entries(previews || {}))};
           refresh();
         } catch {
           // Title and question number results remain available.
@@ -177,5 +220,5 @@
     const date=new Date(value);if(!Number.isFinite(date.getTime()))return 'Saved attempt';
     return date.toLocaleString('en-AU',{timeZone:'Australia/Brisbane',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
   }
-  return { navigation, heading, wrap, install, focusQuestion, pinNavigation, selectedQueue, questionToolbar, attemptHistory, matchesQuestionNumber, libraryQueue, isNewQuestion, libraryRows, createTranscriptSearch, questionLibrary, brisbaneDate, essayAttempts, latestWritingScore };
+  return { navigation, heading, wrap, install, focusQuestion, pinNavigation, selectedQueue, questionToolbar, attemptHistory, matchesQuestionNumber, createTextMatcher, passagePreview, maskPassageBlanks, libraryQueue, isNewQuestion, libraryRows, createTranscriptSearch, questionLibrary, brisbaneDate, essayAttempts, latestWritingScore };
 });

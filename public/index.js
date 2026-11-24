@@ -12523,7 +12523,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-exam-player.js?v=sha256-855619510b75', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=sha256-98e9c23a186f', 'reading review'],
-      ['reading-practice.js?v=sha256-8aaab980ee82', 'reading practice']
+      ['reading-practice.js?v=sha256-e6dfb8f8b103', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
     // downloads overlap. Initialise the practice client only after all succeed.
@@ -12554,7 +12554,7 @@ function ensureSpeakingRuntimeLoaded() {
   if (window.SpeakingPractice) return Promise.resolve(window.SpeakingPractice);
   if (speakingRuntimeLoadPromise) return speakingRuntimeLoadPromise;
 
-  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-a32f35745868', 'speaking practice'))
+  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-95057b0b433b', 'speaking practice'))
     .then(() => {
       if (!window.SpeakingPractice) throw new Error('Speaking practice did not initialise.');
       return window.SpeakingPractice;
@@ -12593,7 +12593,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-e1a73c120cd7', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-1f9bca8742cd', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;

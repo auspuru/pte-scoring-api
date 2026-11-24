@@ -437,3 +437,27 @@ body :is(#speakingPane,#readingPane,#swtPane,#practiceScreen,#writingLabScreen,#
 @media (max-width: 650px) {
   .practice-library-flags { flex-wrap: wrap; }
 }
+
+.practice-question-library .practice-library-passage {
+  grid-column: 2;
+  max-width: 72ch;
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.practice-question-library .practice-library-passage p { margin: 0; }
+.practice-question-library .practice-library-passage summary {
+  width: fit-content;
+  padding-block: 11px;
+  color: var(--accent, #34655a);
+  font-weight: 600;
+  cursor: pointer;
+}
+.practice-question-library .practice-library-passage-text {
+  color: var(--ink, #24404a);
+  white-space: pre-wrap;
+}
+@media (max-width: 650px) {
+  .practice-question-library .practice-library-row-copy:has(.practice-library-passage) { flex-basis: 100%; }
+}
