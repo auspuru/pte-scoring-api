@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "baseCommit": "19577f727e9b8abf5b52512581a173b4a39e303d",
   "checkedAt": "2026-11-24",
-  "scope": "Standalone practice index, timing, revision and exam reporting with exact compatibility for saved Full Mock assessments.",
+  "scope": "Standalone practice index, timing, revision, exam reporting and transcript search with exact compatibility for saved Full Mock assessments.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -120,7 +120,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "2f35fb5de2096af2434fea63e2391874881ba21ad83e52ebd74f4632bb22ad21",
+        "sha256": "e37b9e2f44d48cab0e97b895f2fb607d7534fc2d232e6acb78efeab8ea912671",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -205,7 +205,7 @@
         "version": null
       },
       "public/reading-practice.js": {
-        "sha256": "432967d9b6bc529d6618bea8af65bae682d526b0e3f8d0963624a7e890418ad6",
+        "sha256": "8aaab980ee824b4b4ec03c899cff89dd69a39b9defdfc42370061c989f96033f",
         "version": null
       },
       "public/writing-lab-report.js": {
