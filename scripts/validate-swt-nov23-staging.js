@@ -9,9 +9,9 @@ const review = require('../content/swt-nov23-report-frequency.review.json');
 const { IMPORT_BATCH } = require('../swt-repeat-ranking');
 const { formFor, sentenceCount } = require('../writing-lab-scoring');
 const { words } = require('./validate-swt-content');
+const { compareCatalogue, normalizedPassageHash: passageHash } = require('../swt-nov23-import');
 
 const hash = value => createHash('sha256').update(value).digest('hex');
-const passageHash = text => hash((text.normalize('NFKC').toLowerCase().match(/[\p{L}\p{N}]+/gu) || []).join(' '));
 const isHash = value => typeof value === 'string' && /^[a-f0-9]{64}$/.test(value);
 
 function repositoryPassages() {
@@ -29,24 +29,9 @@ function repositoryPassages() {
   return [...current, ...revisions, ...revisions.filter(row => row.previousText).map(row => ({ ...row, text: row.previousText }))];
 }
 
-function compareCatalogue(passages, existing) {
-  assert(Array.isArray(existing) && existing.length && existing.every(row =>
-    row && typeof row.text === 'string' && row.text.trim() && typeof row.title === 'string'), 'Expected a nonempty SWT catalogue with full passage text.');
-  const ids = new Map(existing.filter(row => row.id != null).map(row => [String(row.id), row]));
-  const texts = new Map(existing.map(row => [passageHash(row.text), row]));
-  return passages.flatMap(passage => {
-    const idMatch = ids.get(String(passage.id));
-    const textMatch = texts.get(passageHash(passage.text));
-    if (!idMatch && !textMatch) return [];
-    const existingRow = idMatch || textMatch;
-    const status = idMatch ? passageHash(idMatch.text) === passageHash(passage.text) ? 'already-present' : 'id-collision' : 'duplicate-passage';
-    return [{ proposedId: passage.id, status, existingId: existingRow.id ?? null, existingTitle: existingRow.title }];
-  });
-}
-
 function validateStagedPassages({ catalogue, screenshotDirectory } = {}) {
   assert.equal(review.batchId, IMPORT_BATCH);
-  assert.equal(review.status, 'staged-only');
+  assert.equal(review.status, 'approved-for-import');
   assert.equal(review.rows.length, review.screenshotCount);
   assert.equal(review.screenshotCount, 43);
   const disposition = new Map(review.rows.map(row => [row.proposedId, row]));
@@ -98,7 +83,12 @@ function validateStagedPassages({ catalogue, screenshotDirectory } = {}) {
   }
   const repository = repositoryPassages();
   assert.deepEqual(compareCatalogue(readyPassages, repository), [], 'Ready passages must be new to the repository banks.');
-  const liveConflicts = catalogue ? compareCatalogue(readyPassages, catalogue) : null;
+  if (catalogue) {
+    assert(Array.isArray(catalogue) && catalogue.length && catalogue.every(row =>
+      row && typeof row.text === 'string' && row.text.trim() && typeof row.title === 'string'),
+    'Expected a nonempty SWT catalogue with full passage text.');
+  }
+  const liveConflicts = catalogue ? compareCatalogue(readyPassages, catalogue).filter(row => row.status !== 'already-present') : null;
   return { screenshots: review.screenshotCount, ready: readyPassages.length, withheld: review.rows.length - readyPassages.length, repositoryVersions: repository.length, liveConflicts };
 }
 

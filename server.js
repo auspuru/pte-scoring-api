@@ -6742,6 +6742,19 @@ const httpServer = app.listen(PORT, '0.0.0.0', async () => {
     if (restored) console.log(`Restored ${restored} missing SWT sample answer${restored === 1 ? '' : 's'}.`);
   } catch (e) { console.error('SWT sample backfill failed:', e.message); }
 
+  if (USE_POSTGRES) {
+    try {
+      const { importPassages } = require('./swt-nov23-import');
+      const passages = require('./content/swt-nov23-practice.staged.json').map(sanitizePassage);
+      const result = await importPassages(pgPool, passages);
+      PgPassageAPI._cache = null;
+      PgPassageAPI._cacheLoaded = false;
+      console.log('[swt-nov23-import]', JSON.stringify(result));
+    } catch (error) {
+      console.error('[swt-nov23-import] Rolled back:', error.message);
+    }
+  }
+
   // Boot diagnostic — relevant whether or not Postgres is active.
   await captureBootSnapshot();
   console.log('');

@@ -171,7 +171,7 @@
       "how": "Khoikhoi pastoralists settled along the coast, while eastern iron-working communities and later Sotho-Tswana and Nguni peoples practised farming and mining.",
       "result": "Eastern societies had varied contacts with the Khoisan, and competition for game led to Khoikhoi dominance over the San."
     },
-    "sampleResponse": "Early South Africa was home to migratory San hunter-gatherers, followed by coastal Khoikhoi pastoralists and eastern iron-working and farming societies, while contact among these groups included competition for game that eventually left the Khoikhoi dominant.",
+    "sampleResponse": "Early South Africa was home to migratory San hunter-gatherers, coastal Khoikhoi pastoralists and eastern iron-working and farming communities, while competition for game between the San and Khoikhoi eventually left the Khoikhoi dominant.",
     "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
     "questionSet": "nov23-2026-swt",
     "sourceOrder": 11,
@@ -192,7 +192,7 @@
       "what": "The long American summer vacation originated in cities, while rural harvest breaks fell in spring and autumn.",
       "why": "Reformers and doctors worried about overstudying, children’s health and poorly ventilated schools.",
       "how": "Rail access allowed wealthy city families to take children out of school for summer trips, and the break eventually became official.",
-      "result": "Some modern reformers propose shortening or eliminating the long break to narrow achievement gaps."
+      "result": "Some modern reformers propose ending the long summer break to narrow achievement gaps."
     },
     "sampleResponse": "The American summer vacation began in cities as educators and doctors warned against overstudying and wealthy families took children out of school, while reformers now argue that ending the long break could reduce achievement gaps.",
     "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
@@ -650,11 +650,11 @@
     "text": "The booksellers of Hookham and Carpenter (hereafter referred to only as Hookham) were located on New Bond Street in London, and their records span the most politically turbulent decade of the eighteenth-century—the 1790's. Clients who frequented Hookham were primarily from the aristocratic or gentry classes. In fact, of Hookham's total buyers, 22% were aristocracy, and 35% of the aristocracy purchased novels. We can also confidently assume that untitled female customers were of gentry income because their addresses were primarily in London's fashionable 'West End'.\n\nHookham's ledgers not only reveal a dramatic increase in the proportion of female purchasers of novels by comparison to earlier studies of provincial women, but they also reveal a remarkable increase in the proportion of female purchases of novels authored by females. Such a marked increase illustrates that Hookham's leisured female customers were able to buy more novels.\n\nFurthermore, the fact that these female aristocrats and gentry have accounts under their own name, not their husbands, demonstrates the greater degree of agency and independence that these urban, moneyed women had relative to provincial women. However, because our study does not include an examination of male customers, we are very limited in what claims we can make about whether or not these women behaved according to the cliche that women were the predominant consumers of novels in the eighteenth-century.\n\nMoreover, while more disposable income and leisure time certainly account for the significant increase in female purchases of novels authored by women in the 1790s, this increase also strongly suggests a desire on the part of women readers to engage in this politically charged decade. Thus, novel-reading provided women readers with the means through which they were able to participate in the male-dominated world of politics. The latter part of our paper will more fully explore this hypothesis in the context of certain recent literary scholars claim that both Gothic and sentimental novels are actively engaged in political debate and discussion.",
     "keyElements": {
       "what": "Hookham’s London bookselling ledgers record novel purchases by wealthy women in the 1790s.",
-      "why": "Leisure and disposable income help explain why these women bought more novels, especially by women authors, than the provincial women in earlier studies.",
+      "why": "Hookham’s female customers had more leisure and disposable income, and novels by women made up a larger share of their purchases than earlier provincial studies found.",
       "how": "Accounts held in women’s own names indicate independence, while absent data on male buyers limit comparisons between genders.",
       "result": "The researchers propose that reading novels also offered women a way to participate in political debate."
     },
-    "sampleResponse": "Hookham’s ledgers show that wealthy London women in the 1790s held independent accounts and bought more novels by women than earlier studies found among provincial women, suggesting that leisure and income enabled purchases and that reading offered a route into political debate.",
+    "sampleResponse": "Hookham’s ledgers show wealthy London women held independent accounts and bought a higher proportion of novels by women than earlier provincial studies found, suggesting that leisure and income enabled purchases and that reading offered a route into political debate.",
     "sampleNotes": "Teaching reference based on the supplied screenshot passage.",
     "questionSet": "nov23-2026-swt",
     "sourceOrder": 41,

@@ -184,8 +184,16 @@ async function fixture(t, options = {}) {
   return { id, store, engine, engines, directory, state:async () => (await store.get('alice', id)).state };
 }
 
-function snapshotBeforeExamReports(current) {
+function snapshotBeforeSwtImport(current) {
   const snapshot = structuredClone(current);
+  const pins = require('../content/full-mock/swt-nov23-import-compatible-pins.json');
+  for (const [name, sha] of Object.entries(pins.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
+  assert.equal(digest(snapshot.scoringSources), pins.previousDigest);
+  return snapshot;
+}
+
+function snapshotBeforeExamReports(current) {
+  const snapshot = snapshotBeforeSwtImport(current);
   const pins = require('../content/full-mock/swt-exam-report-compatible-pins.json');
   for (const [name, sha] of Object.entries(pins.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
   assert.equal(digest(snapshot.scoringSources), require('../content/full-mock/rts-content-upgrade-pins.json').currentDigest);
@@ -203,16 +211,17 @@ function snapshotBeforeRts(current) {
   return snapshot;
 }
 
-for (const variant of ['current', 'before exam reports', 'previous', 'pre-snapshot']) test('RTS assessment and content recovery use the ' + variant + ' Full Mock policy', async t => {
+for (const variant of ['current', 'before SWT import', 'before exam reports', 'previous', 'pre-snapshot']) test('RTS assessment and content recovery use the ' + variant + ' Full Mock policy', async t => {
   const { stateFor } = require('../full-mock/assessment');
   const policy = require('../situation-content-policy-developed');
-  const expected = ['current', 'before exam reports'].includes(variant) ? policy.VERSION : policy.LEGACY_VERSION;
+  const expected = ['current', 'before SWT import', 'before exam reports'].includes(variant) ? policy.VERSION : policy.LEGACY_VERSION;
   const versions = [];
   const f = await fixture(t, { adapters: { assess: async q => {
     if (q.type === 'rts') versions.push(q.rtsContentPolicyVersion);
     return full(q);
   } } });
   const original = variant === 'current' ? f.engine.snapshot
+    : variant === 'before SWT import' ? snapshotBeforeSwtImport(f.engine.snapshot)
     : variant === 'before exam reports' ? snapshotBeforeExamReports(f.engine.snapshot) : snapshotBeforeRts(f.engine.snapshot);
   if (variant !== 'pre-snapshot') {
     await f.store.update('alice', f.id, state => { state.assessment = stateFor(original); return state; });

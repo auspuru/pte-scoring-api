@@ -33,5 +33,5 @@ Reporting and the per-student NEW indicator shipped in PR #369. The November scr
 
 - Unit test coverage: duplicate report prevention, session authentication, per-student reporting, aggregation privacy, source-count ordering, reported question priority, stable IDs.
 - Before any production launch: run full Node tests and release checks, verify PostgreSQL schema migration and browser interaction in a staging environment, and confirm the order in the student portal under multiple student accounts.
-- The November audit stages 31 of 43 candidates for review, with 12 withheld. The staged data has no runtime import hook.
+- The November import adds 31 of 43 audited candidates through an additive PostgreSQL transaction. The remaining 12 stay outside the practice library.
 - Do **not** merge to `main`, deploy Railway production, or modify existing student records without approval.

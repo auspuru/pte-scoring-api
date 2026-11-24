@@ -389,8 +389,9 @@ test('SWT review: NEW and one-click reporting keep student history, focus and qu
  await pool.query('CREATE SCHEMA '+schema);
  const connection=new URL(base);
  connection.searchParams.set('options','-c search_path='+schema);
+ const passagePool=new Pool({connectionString:connection.toString(),connectionTimeoutMillis:5000});
  const f=await authFixture(t,{databaseUrl:connection.toString(),afterStop:async()=>{
-  try{await pool.query('DROP SCHEMA '+schema+' CASCADE');}finally{await pool.end();}
+  try{await passagePool.end();await pool.query('DROP SCHEMA '+schema+' CASCADE');}finally{await pool.end();}
  }});
 
  const staged=require('../content/swt-nov23-practice.staged.json');
@@ -406,24 +407,40 @@ test('SWT review: NEW and one-click reporting keep student history, focus and qu
  // Service readiness precedes the additive SWT bootstrap. The boot snapshot
  // is captured after its seeds, revisions and sample backfill have completed.
  await until(async()=>Boolean((await f.request('/api/health')).body.boot_snapshot),'SWT bootstrap did not finish.');
- const existing=(await f.request('/api/passages')).body.passages;
- assert.equal(staged.some(passage=>existing.some(saved=>saved.id===passage.id)),false);
- for(const passage of staged){
-  const saved=await f.request('/api/admin/passages',passage,null,true);
-  assert.equal(saved.body.success,true);
-  assert.equal(saved.body.passage.questionSet,'nov23-2026-swt');
- }
  const baseline=(await f.request('/api/passages')).body.passages;
- assert.equal(baseline.length,existing.length+staged.length);
+ const batchIds=baseline.filter(passage=>passage.questionSet==='nov23-2026-swt').map(passage=>passage.id).sort((a,b)=>a-b);
+ assert.deepEqual(batchIds,staged.map(passage=>passage.id).sort((a,b)=>a-b),'The boot import exposes exactly the reviewed batch');
  const indexed=new Map(baseline.map(passage=>[passage.id,passage]));
- for(const passage of existing)assert.deepEqual(indexed.get(passage.id),passage,'Existing SWT '+passage.id+' changed');
  for(const passage of staged){
   const published=indexed.get(passage.id);
   assert.deepEqual(published&&[published.id,published.title,published.text,published.questionSet],
    [passage.id,passage.title,passage.text,passage.questionSet]);
  }
  assert.notEqual(baseline[0].id,first);
- assert.equal(baseline.find(p=>p.id===second)?.questionSet,'nov23-2026-swt');
+
+ const {importPassages}=require('../swt-nov23-import');
+ const readRows=async()=>(await passagePool.query('SELECT id, payload FROM passages ORDER BY id')).rows;
+ const bootRows=await readRows();
+ assert.equal(bootRows.length,baseline.length);
+ const replayImport=()=>importPassages(passagePool,staged);
+ for(const replay of await Promise.all([replayImport(),replayImport()])){
+  assert.deepEqual(replay,{checked:bootRows.length,added:0,alreadyPresent:staged.length});
+ }
+
+ const freshPassage={id:995401,title:'A staging transaction fixture',text:'A new fixture passage checks atomic insertion.'};
+ await assert.rejects(importPassages(passagePool,[freshPassage,{...staged[0],id:995402}]),/duplicate-passage/);
+ await assert.rejects(importPassages(passagePool,[freshPassage,{...freshPassage,id:first}]),/id-collision/);
+ await assert.rejects(importPassages(passagePool,[freshPassage,{...freshPassage,text:'A separate fixture forces an insert conflict.'}]),
+  {code:'23505'});
+ assert.deepEqual(await readRows(),bootRows,'Rejected imports leave all boot rows and IDs intact');
+
+ const teacherEdited={...staged.at(-1),text:'A teacher edited the imported wording while retaining its source receipt.'};
+ await passagePool.query('UPDATE passages SET payload=jsonb_set(payload, \'{text}\', to_jsonb($2::text)) WHERE id=$1',[teacherEdited.id,teacherEdited.text]);
+ const editedRows=await readRows();
+ assert.equal(editedRows.find(row=>row.id===teacherEdited.id).payload.text,teacherEdited.text);
+ assert.deepEqual(await replayImport(),{checked:bootRows.length,added:0,alreadyPresent:staged.length});
+ assert.deepEqual(await readRows(),editedRows,'A startup retry preserves an existing teacher edit');
+
  const browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{})});
  t.after(()=>browser.close());
  const errors=[],gradePassages=[],reportPosts=[];
