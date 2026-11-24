@@ -14,11 +14,14 @@
     const aliases={bar:'bar',barchart:'bar',bargraph:'bar',line:'line',linegraph:'line',linechart:'line',pie:'pie',piechart:'pie',process:'process',processchart:'process',flowchart:'process',table:'table',map:'map',mixed:'mixed',mixedcharts:'mixed',photo:'photo',photograph:'photo',photography:'photo',random:'photo',randomimage:'photo',picture:'photo',scene:'photo',other:'other',diagram:'other'};
     return Object.prototype.hasOwnProperty.call(aliases,raw)?aliases[raw]:'unclassified';
   }
-  function filterQuestions(questions,type,{search='',category='all',prediction='all'}={}) {
+  function filterQuestions(questions,type,{search='',category='all',prediction='all',transcriptMatches=null}={}) {
     const query=String(search).trim().toLowerCase();
-    if(globalThis.PortalUx)return globalThis.PortalUx.search(questions.filter(q=>q.type===type&&(prediction==='all'||(prediction==='weekly'?q.predictionSource?.weekly:!q.predictionSource))&&(type!=='di'||category==='all'||imageCategory(q)===category)).map(q=>({q,text:[q.id,q.title,q.topic,q.predictionSource?.sourceId,imageCategories[imageCategory(q)]].filter(Boolean).join(' ')})),query,['text']).map(row=>row.q);
-    return questions.filter(q=>q.type===type&&(prediction==='all'||(prediction==='weekly'?q.predictionSource?.weekly:!q.predictionSource))&&(type!=='di'||category==='all'||imageCategory(q)===category)
-      &&(!query||[q.id,q.title,q.topic,q.predictionSource?.sourceId,imageCategories[imageCategory(q)]].filter(Boolean).join(' ').toLowerCase().includes(query)));
+    const rows=questions.filter(q=>q.type===type&&(prediction==='all'||(prediction==='weekly'?q.predictionSource?.weekly:!q.predictionSource))&&(type!=='di'||category==='all'||imageCategory(q)===category))
+      .map(q=>({q,text:[q.id,q.title,q.topic,q.predictionSource?.sourceId,imageCategories[imageCategory(q)]].filter(Boolean).join(' ')}));
+    const matches=globalThis.PortalUx?globalThis.PortalUx.search(rows,query,['text']):rows.filter(row=>row.text.toLowerCase().includes(query));
+    const results=new Set(matches);
+    if(transcriptMatches)for(const row of rows)if(transcriptMatches.has(String(row.q.id)))results.add(row);
+    return [...results].map(row=>row.q);
   }
   function createController(env,{getUserId=()=>env.currentUserId||''}={}) {
     const doc=env.document,now=()=>env.Date?env.Date.now():Date.now(),pendingUploads=new Map(),startCue=cues.create(env),imageViewer=images.create(env);
@@ -153,7 +156,9 @@
       }catch(e){if(valid(ticket,user)){chrome('<h2>Speaking practice</h2><p>'+esc(e.message)+'</p><button class="portal-button" data-speaking-action="reload">Retry</button>');}}
     }
     function questionRecords(id){return (historyCache||[]).filter(a=>a.questionId===id&&matchingMode(a)).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));}
-    function visibleLibraryQuestions(){const f=filters(),query=f.search?.trim()||'',number=/^#?\d+$/.test(query)?Number(query.replace(/^#/,'')):null,all=catalog.questions.filter(q=>q.type===activeType);return filterQuestions(catalog.questions,activeType,{...f,search:number?'':f.search}).filter(q=>(studio.matchesQuestionNumber(query,all.indexOf(q)+1) ?? (!number||all.indexOf(q)+1===number||filterQuestions([q],activeType,f).length))).filter(q=>{const rows=questionRecords(q.id),status=filters().status||'all';return status==='all'||status==='new'&&!rows.length||status==='done'&&rows.some(a=>a.status==='submitted')||status==='draft'&&rows.some(a=>a.status!=='submitted');});}
+    const hasTranscriptSearch=type=>['ra','rs','rl','sgd','rts'].includes(type);
+    const transcriptSearch=studio.createTranscriptSearch(env,token,renderLibraryList);
+    function visibleLibraryQuestions(){const f=filters(),query=f.search?.trim()||'',number=/^#?\d+$/.test(query)?Number(query.replace(/^#/,'')):null,all=catalog.questions.filter(q=>q.type===activeType);return filterQuestions(catalog.questions,activeType,{...f,search:number?'':f.search,transcriptMatches:transcriptSearch(hasTranscriptSearch(activeType)?'speaking-'+activeType:null,f.search)}).filter(q=>(studio.matchesQuestionNumber(query,all.indexOf(q)+1) ?? (!number||all.indexOf(q)+1===number||filterQuestions([q],activeType,f).length))).filter(q=>{const rows=questionRecords(q.id),status=filters().status||'all';return status==='all'||status==='new'&&!rows.length||status==='done'&&rows.some(a=>a.status==='submitted')||status==='draft'&&rows.some(a=>a.status!=='submitted');});}
     function renderLibraryList() {
       const node=doc.getElementById('speaking-library-list');if(!node||attempt)return;
       const all=catalog.questions.filter(q=>q.type===activeType),matches=visibleLibraryQuestions();
@@ -163,7 +168,7 @@
     async function library() {
       const type=activeType,ticket=serial,user=owner,f=filters(),questions=catalog.questions.filter(q=>q.type===type);
       const categories=type==='di'?'<label>Image type<select id="speaking-image-category"><option value="all">All image types</option>'+Object.entries(imageCategories).map(([key,label])=>'<option value="'+key+'" '+(f.category===key?'selected':'')+'>'+esc(label)+'</option>').join('')+'</select></label><label>Question set<select id="speaking-prediction"><option value="all">All questions</option><option value="weekly" '+(f.prediction==='weekly'?'selected':'')+'>Weekly Prediction</option><option value="original" '+(f.prediction==='original'?'selected':'')+'>Original practice</option></select></label>':'';
-      chrome(studio.questionLibrary({skill:'Speaking',task:'speaking-'+type,title:catalog.types[type].name,total:questions.length,searchId:'speaking-search',search:f.search,filterId:'speaking-status',filter:f.status||'all',rowsId:'speaking-library-list',rowsClass:'speaking-library-rows',options:modePicker()+categories+'<details><summary>Practice options</summary><div>'+'<button class="portal-button" data-speaking-action="clear-filters">Clear filters</button><p>'+esc(practiceMode==='timed'?'Timed practice keeps its preparation and response countdowns.':'Prepare at your own pace before recording.')+'</p></div></details>',extras:'<details class="speaking-card"><summary>Saved responses</summary><div id="speaking-history">Loading…</div></details>'}));
+      chrome(studio.questionLibrary({skill:'Speaking',task:'speaking-'+type,title:catalog.types[type].name,total:questions.length,searchId:'speaking-search',transcriptSearch:hasTranscriptSearch(type),search:f.search,filterId:'speaking-status',filter:f.status||'all',rowsId:'speaking-library-list',rowsClass:'speaking-library-rows',options:modePicker()+categories+'<details><summary>Practice options</summary><div>'+'<button class="portal-button" data-speaking-action="clear-filters">Clear filters</button><p>'+esc(practiceMode==='timed'?'Timed practice keeps its preparation and response countdowns.':'Prepare at your own pace before recording.')+'</p></div></details>',extras:'<details class="speaking-card"><summary>Saved responses</summary><div id="speaking-history">Loading…</div></details>'}));
       renderLibraryList();
       env.PortalQuestionNavigation?.update({library:true,mode:practiceMode,context:f});
       const selected=[...(host.querySelectorAll?.('[data-speaking-question]')||[])].find(b=>b.dataset.speakingQuestion===f.selectedId);selected?.focus({preventScroll:true});host.scrollTop=f.scrollTop||0;const rows=doc.getElementById('speaking-library-list');if(rows)rows.scrollTop=f.libraryScrollTop||0;

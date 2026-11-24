@@ -6,6 +6,13 @@ const { validPassageId } = require('./swt-exam-reports');
 const reading = catalogue.readingLibraries(require('./public/reading-bank.json'));
 const speaking = require('./content/speaking-bank').questions;
 const ids = new Map();
+const transcripts = new Map();
+const normalizeTranscript = text => text.trim().toLowerCase().replace(/\s+/g, ' ');
+function registerTranscript(task, id, text) {
+  if (typeof text !== 'string' || !text.trim()) return;
+  if (!transcripts.has(task)) transcripts.set(task, new Map());
+  transcripts.get(task).set(String(id), normalizeTranscript(text));
+}
 function register(task, id) {
   if (!ids.has(task)) ids.set(task, new Set());
   ids.get(task).add(String(id));
@@ -14,10 +21,15 @@ for (const library of reading) {
   const route = ['hcs', 'hiw'].includes(library.id) ? 'listening-' + library.id + '-bank' : 'reading-' + library.id;
   for (const question of library.questions) register(route, question.uid);
 }
-for (const question of speaking) register('speaking-' + question.type, question.id);
+for (const question of speaking) {
+  const route = 'speaking-' + question.type;
+  register(route, question.id);
+  if (['ra', 'rs', 'rl', 'sgd', 'rts'].includes(question.type)) registerTranscript(route, question.id, question.text);
+}
 for (const question of require('./writing-lab').individualQuestions) {
   const route = { sst: 'spoken-text', wfd: 'dictation' }[question.type] || 'listening-' + question.type;
   register(route, question.id);
+  registerTranscript(route, question.id, question.text);
 }
 
 const flagsSql = `
@@ -75,28 +87,41 @@ function installPracticeLibraryFlags(app, { pool, verifyToken, getAccount, speak
     const task = req.params.task;
     if (!ids.has(task) && task !== 'swt' && task !== 'practice') return res.status(404).json({ error: 'Unknown practice task.' });
     const username = verifyToken(req.get('x-session-token') || '');
-    if (!username) return res.status(401).json({ error: 'Please sign in to update your practice list.' });
+    if (!username) return res.status(401).json({ error: 'Please sign in to access your practice list.' });
     try {
       const account = await getAccount(username);
       if (!account || account.blocked || (task.startsWith('speaking-') && !await speakingAllowed(username))) {
         return res.status(403).json({ error: 'This practice list is unavailable for your account.' });
       }
-      if (!pool) return res.status(503).json({ error: 'Revision and exam reports are unavailable.' });
       req.practiceFlagUser = username;
       next();
     } catch {
       return res.status(503).json({ error: 'Account verification is unavailable.' });
     }
   };
+  app.get('/api/practice-library/:task/transcript-search', authorize, (req, res) => {
+    const query = typeof req.query.q === 'string' ? normalizeTranscript(req.query.q) : '';
+    const matches = [];
+    if (query && query.length <= 500) {
+      for (const [id, transcript] of transcripts.get(req.params.task) || []) {
+        if (transcript.includes(query)) matches.push(id);
+      }
+    }
+    res.json({ matches });
+  });
+  const requirePool = (req, res, next) => {
+    if (!pool) return res.status(503).json({ error: 'Revision and exam reports are unavailable.' });
+    next();
+  };
   const route = '/api/practice-library/:task/flags';
-  app.get(route, authorize, async (req, res) => {
+  app.get(route, authorize, requirePool, async (req, res) => {
     try {
       res.json({ username: req.practiceFlagUser, questions: await readFlags(pool, req.params.task, req.practiceFlagUser) });
     } catch {
       res.status(503).json({ error: 'Could not load revision and exam reports.' });
     }
   });
-  const middleware = rateLimiter ? [authorize, rateLimiter] : [authorize];
+  const middleware = rateLimiter ? [authorize, requirePool, rateLimiter] : [authorize, requirePool];
   app.put(route, ...middleware, async (req, res) => {
     const task = req.params.task;
     const { questionId, kind, enabled } = req.body || {};

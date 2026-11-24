@@ -127,15 +127,16 @@ function previousExamReportsSnapshot(current) {
   return { ...current, scoringSources: sources };
 }
 // These exact practice-only changes share files with the frozen mock inventory.
-function previousPracticeIndexSnapshot(current) {
-  const pins = require('../content/full-mock/practice-index-compatible-pins.json');
+function previousPracticeIndexSnapshot(current, pins = require('../content/full-mock/practice-index-compatible-pins.json')) {
   if (!Object.entries(pins.currentFiles).every(([name, sha]) => current.scoringSources.files[name]?.sha256 === sha)) return null;
   const sources = structuredClone(current.scoringSources);
   for (const [name, sha] of Object.entries(pins.previousFiles)) sources.files[name].sha256 = sha;
   if (digest(sources) !== pins.previousDigest) return null;
   return { ...current, scoringSources: sources };
 }
+const transcriptSearchPins = require('../content/full-mock/practice-transcript-search-compatible-pins.json');
 function previousRtsSnapshot(current) {
+  current = previousPracticeIndexSnapshot(current, transcriptSearchPins) ?? current;
   current = previousPracticeIndexSnapshot(current) ?? current;
   current = previousSwtImportSnapshot(current) ?? current;
   current = previousExamReportsSnapshot(current) ?? current;
@@ -150,6 +151,8 @@ function previousRtsSnapshot(current) {
   return { ...current, scoringSources: sources };
 }
 function compatibleTransportUpgrade(saved, current) {
+  const beforeTranscriptSearch = previousPracticeIndexSnapshot(current, transcriptSearchPins);
+  if (beforeTranscriptSearch && (digest(saved) === digest(beforeTranscriptSearch) || compatibleTransportUpgrade(saved, beforeTranscriptSearch))) return true;
   const beforePracticeIndex = previousPracticeIndexSnapshot(current);
   if (beforePracticeIndex && (digest(saved) === digest(beforePracticeIndex) || compatibleTransportUpgrade(saved, beforePracticeIndex))) return true;
   const beforeImport = previousSwtImportSnapshot(current);

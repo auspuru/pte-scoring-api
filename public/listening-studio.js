@@ -9,15 +9,15 @@
     return history.filter(a=>String(a.testId)===String(id)&&attemptMode(a)===mode)
       .sort((a,b)=>new Date(b.startedAt).getTime()-new Date(a.startedAt).getTime())[0];
   }
-  function visibleQuestions({items,history=[],bookmarks=[],search='',filter='all',mode='practice'}){
+  function visibleQuestions({items,history=[],bookmarks=[],search='',transcriptMatches=null,filter='all',mode='practice'}){
     const query=search.trim().toLowerCase();
     const matches=globalThis.PortalUx?new Set(globalThis.PortalUx.search(items.map((q,index)=>({q,text:[index+1,q.id,q.title,q.topic].join(' ')})),query,['text']).map(row=>row.q)):null;
     return items.map((q,index)=>({q,index,last:latest(history,q.id,mode),records:history.filter(a=>String(a.testId)===String(q.id)&&attemptMode(a)===mode)})).filter(({q,index,last,records})=>
-      (practice?.matchesQuestionNumber(query,index+1) ?? (!query||(matches?matches.has(q):[index+1,q.id,q.title,q.topic].join(' ').toLowerCase().includes(query))))&&
+      (practice?.matchesQuestionNumber(query,index+1) ?? (!query||transcriptMatches?.has(String(q.id))||(matches?matches.has(q):[index+1,q.id,q.title,q.topic].join(' ').toLowerCase().includes(query))))&&
       (filter==='all'||filter==='new'&&!records.length||filter==='draft'&&records.some(a=>a.status!=='submitted')||filter==='done'&&records.some(a=>a.status==='submitted')||filter==='bookmarked'&&bookmarks.includes(q.id)));
   }
-  function rows({items,history=[],bookmarks=[],activeId,search='',filter='all',mode='practice',compact=false}){
-    const visible=visibleQuestions({items,history,bookmarks,search,filter,mode});
+  function rows({items,history=[],bookmarks=[],activeId,search='',transcriptMatches=null,filter='all',mode='practice',compact=false}){
+    const visible=visibleQuestions({items,history,bookmarks,search,transcriptMatches,filter,mode});
     return practice.libraryRows(visible.map(({q,index,last})=>{const records=history.filter(a=>String(a.testId)===String(q.id)&&attemptMode(a)===mode),draft=records.filter(a=>a.status!=='submitted').sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt))[0],done=records.filter(a=>a.status==='submitted').length;return {id:q.id,number:index+1,title:q.title,status:done?'Completed · '+done+' saved attempts':draft?'In progress':'Not attempted',detail:[q.prediction?'Prediction':'',bookmarks.includes(q.id)?'Bookmarked':''].filter(Boolean).join(' · '),actions:'<button type="button" class="portal-button" data-listening-open="'+esc(q.id)+'">Practise →</button>'+(draft?'<button type="button" class="portal-button practice-library-resume" data-listening-attempt="'+esc(draft.id)+'" data-listening-question="'+esc(q.id)+'">Resume draft</button>':'')};}));
   }
   function wrap(content,{type,mode='practice',mock=false,items=[],history=[],bookmarks=[],activeId,search='',filter='all',library=false}){
