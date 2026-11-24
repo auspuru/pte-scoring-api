@@ -8,7 +8,7 @@ for(const width of [1366,1920])test('Unified practice library '+width+'px: all 2
  const browser=await puppeteer.launch({headless:true,executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH||undefined});t.after(()=>browser.close());
  const page=await browser.newPage();await page.setViewport({width,height:900});page.setDefaultTimeout(30000);const errors=[],grades=[];
  page.on('pageerror',e=>{errors.push(e.message);console.error('browser error',e.message);});page.on('request',r=>{if(r.method()==='POST'&&/\/(?:grade|score)(?:\/|$)/.test(new URL(r.url()).pathname))grades.push(r.url());});
- await page.goto(f.base);await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
+ await page.goto(f.base,{waitUntil:'domcontentloaded',timeout:45000});await page.type('#loginUsername',username);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden'));
  const tasks=require('../public/practice-catalogue').groups.flatMap(g=>g.tasks);
  for(const task of tasks){
   await page.evaluate(route=>switchSection(route),task.route);
@@ -21,6 +21,14 @@ for(const width of [1366,1920])test('Unified practice library '+width+'px: all 2
     .map(selector=>[selector,getComputedStyle(library.querySelector(selector)).fontFamily]);
   });
   for(const [selector,family] of fonts)assert.equal(family,'system-ui, sans-serif',task.route+' '+selector);
+  const timerShape=await page.$eval('.pane.active .practice-question-library [role="switch"]',node=>{
+   const css=getComputedStyle(node,node.matches('button')?'::before':null);
+   return {kind:node.tagName,appearance:css.appearance,width:css.width,height:css.height};
+  });
+  assert.equal(timerShape.width,'30px',task.route);
+  assert.equal(timerShape.height,'18px',task.route);
+  assert.equal(timerShape.kind,task.route.startsWith('speaking-')?'BUTTON':'INPUT',task.route);
+  if(timerShape.kind==='INPUT')assert.equal(timerShape.appearance,'none',task.route);
   if(['swt','speaking-ra','speaking-sgd','reading-dropdown','spoken-text','practice'].includes(task.route)){const fs=require('node:fs/promises');await fs.mkdir(require('node:path').join(__dirname,'../.cache'),{recursive:true});await page.screenshot({path:require('node:path').join(__dirname,'../.cache/practice-library-'+task.route+'.png')});}
   assert(shape.libraryWidth>=shape.viewport-100,task.route+' library must fill the desktop '+JSON.stringify(shape));assert.deepEqual(shape.labels,['Find a question','Show'],task.route);assert.equal(shape.horizontal,true,task.route);assert.equal(shape.meta,'#1',task.route);assert.equal(shape.title,true);assert.equal(shape.action,'Practise →',task.route);assert(shape.buttonHeight>=44,task.route+' '+JSON.stringify(shape));assert.equal(shape.rowsOverflow,'auto',task.route);assert.equal(shape.rowFont,'16px',task.route);assert.equal(shape.rowsHeight,'585px',task.route);assert.equal(shape.extraHeading,false,task.route);assert(shape.listeningModes<=2,task.route+' has duplicate mode controls');assert.equal(shape.overflow,false,task.route);
  }
@@ -34,7 +42,9 @@ for(const width of [1366,1920])test('Unified practice library '+width+'px: all 2
  const timedSwitch='#swtLibraryTimed';
  await page.waitForSelector(swtOpen,{visible:true});
  assert.equal(await page.$eval(timedSwitch,node=>node.checked),false);
- await page.locator(timedSwitch).click();
+ await page.focus(timedSwitch);
+ await page.keyboard.press('Space');
+ await page.waitForFunction(selector=>getComputedStyle(document.querySelector(selector)).backgroundColor==='rgb(52, 101, 90)',{},timedSwitch);
  await page.locator(swtOpen).click();
  await page.waitForSelector('#summaryInput',{visible:true});
  assert.equal(await page.$eval('#timerToggle',node=>node.getAttribute('aria-pressed')),'true');
