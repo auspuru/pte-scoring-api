@@ -15,11 +15,11 @@ for(const width of [1365,390])test('Speaking practice '+width+'px: session fallb
  const click=async selector=>{await page.locator(selector).click();};
  await page.waitForSelector('#speaking-library-list .practice-library-row');
  const rows=await page.$$eval('#speaking-library-list .practice-library-row', elements=>elements.map(row=>({
-  id:row.dataset.questionKey,badge:row.querySelector('.practice-library-label')?.textContent,
+  id:row.dataset.questionKey,title:row.querySelector('h3')?.textContent,
  })));
- assert.deepEqual(rows.slice(0,suppliedRts.length),suppliedRts.map(q=>({id:q.id,badge:'New'})));
+ assert.deepEqual(rows.slice(0,suppliedRts.length),suppliedRts.map(q=>({id:q.id,title:'New · '+q.title})));
  assert.equal(rows[suppliedRts.length].id,'rts-1');
- assert(rows.slice(suppliedRts.length).every(row=>row.badge===undefined));
+ assert(rows.slice(suppliedRts.length).every(row=>!row.title.startsWith('New · ')));
  await click('[data-speaking-mode="untimed"]');await click('[data-speaking-question="'+suppliedRts[0].id+'"]');
  await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Ready when you are');assert.equal(await page.evaluate(()=>__plays),1);assert.equal(await page.evaluate(()=>__records),0);
  await page.evaluate(()=>__offset+=120000);assert.equal(await page.$eval('#speaking-clock',e=>e.textContent),'Untimed');await click('#speaking-ready-start');await page.waitForFunction(()=>__bytes>100);
