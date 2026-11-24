@@ -5,6 +5,7 @@ const { validPassageId } = require('./swt-exam-reports');
 
 const reading = catalogue.readingLibraries(require('./public/reading-bank.json'));
 const speaking = require('./content/speaking-bank').questions;
+const additionalEssaySeeds = new Set(['seed_35', 'seed_36']);
 const ids = new Map();
 const transcripts = new Map();
 const normalizeTranscript = text => text.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -135,7 +136,8 @@ function installPracticeLibraryFlags(app, { pool, verifyToken, getAccount, speak
         known = id !== null && String(id) === questionId && await getPassage(id);
       } else if (task === 'practice') {
         const seed = /^seed_(0|[1-9]\d*)$/.exec(questionId);
-        known = kind === 'bookmark' || !!seed && Number(seed[1]) < essaySeedCount;
+        known = kind === 'bookmark' || additionalEssaySeeds.has(questionId) ||
+          (!!seed && Number(seed[1]) < essaySeedCount);
       } else {
         known = ids.get(task).has(questionId);
       }
