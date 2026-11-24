@@ -232,7 +232,7 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab';
   async function request(route,body) { const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json','x-session-token':'tester'},body:body===undefined?undefined:JSON.stringify(body)});assert(r.ok);return r.json(); }
   const before=JSON.stringify(bank),catalog=await request('/catalog');
-  assert.equal(catalog.spoken.length,30);assert.equal(catalog.spoken[0].id,predictions.sst[0].id);assert.equal(catalog.spoken[12].id,predictions.sst[12].id);assert.equal(catalog.spoken[13].id,predictions.sst[13].id);
+  assert.equal(catalog.spoken.length,31);assert.equal(catalog.spoken[0].id,predictions.sst[0].id);assert.equal(catalog.spoken[12].id,predictions.sst[12].id);assert.equal(catalog.spoken[13].id,predictions.sst[13].id);
   const previous=[...new Map([...bank.mocks.flatMap(m=>m.questions.filter(q=>q.type==='wfd')),...bank.dictation].map(q=>[q.id,q])).values()];
   assert.equal(catalog.dictation.length,92);assert.equal(new Set(catalog.dictation.map(q=>q.id)).size,92);
   assert.deepEqual(catalog.dictation.slice(0,33).map(q=>q.id),predictions.wfd.slice(0,33).map(q=>q.id));
@@ -254,6 +254,19 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   assert.equal(retry.status,'ready');assert.equal(retry.answers[0],'');
   const history=await request('/attempts');assert.equal(history.length,2);
   assert.equal(history.find(a=>a.id===id).score90,90);assert.equal(history.find(a=>a.id===retryId).kind,'wfd');
+  const sst = catalog.spoken.find(q => q.id === 'sst-user-20261124-01');
+  assert.equal(sst.title, "Patients' Recovery");
+  assert.equal(sst.minutes, 10);
+  const sstId = randomUUID();
+  const sstReady = await request('/attempts', {id:sstId, testId:sst.id});
+  assert.equal(sstReady.kind, 'sst');
+  assert.equal(sstReady.questions[0].audioUrl, sst.audioUrl);
+  assert.equal(sstReady.questions[0].text, '');
+  const sstStart = await request('/attempts/'+sstId+'/begin', {});
+  assert.equal(sstStart.deadline - sstStart.startedAt, 600000);
+  const response = 'The lecture describes how hospital design can improve patient recovery.';
+  const saved = await request('/attempts/'+sstId+'/answer', {index:0, text:response, revision:1});
+  assert.equal(saved.answers[0], response);
   const timedId=randomUUID(),untimedId=randomUUID();
   const timed=await request('/attempts',{id:timedId,testId:q.id,mode:'practice',timedPractice:true});
   assert.equal(timed.mode,'practice');
@@ -273,13 +286,15 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   assert.equal(JSON.stringify(bank),before,'The original mock dictation timer group is unchanged');
 });
 
-test('Prediction SST and WFD IDs are accepted by the narration resolver',async t=>{
+test('Prediction and standalone practice IDs are accepted by the narration resolver',async t=>{
   const dir=await fs.mkdtemp(path.join(os.tmpdir(),'prediction-audio-test-'));t.after(()=>fs.rm(dir,{recursive:true,force:true}));
   const seen=[];
   const audio=createNarration(dir,async input=>{seen.push(input.input);return Buffer.alloc(2000,7);});
   await audio.get(predictions.sst[0].id);
   await audio.get(predictions.wfd[0].id);
-  assert.deepEqual(seen,[predictions.sst[0].narrationText,predictions.wfd[0].text]);
+  const [practiceSst] = require('../content/additional-practice-questions.json');
+  await audio.get(practiceSst.id);
+  assert.deepEqual(seen,[predictions.sst[0].narrationText,predictions.wfd[0].text,practiceSst.text]);
 });
 
 test('Narration accepts only bank IDs, shares concurrent generation and survives restart',async t=>{

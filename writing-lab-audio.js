@@ -8,6 +8,7 @@ const { createHash, randomUUID } = require('node:crypto');
 const run = promisify(execFile);
 const bank = require('./content/writing-lab.json');
 const predictions = require('./content/writing-predictions-sep-2026');
+const additionalPractice = require('./content/additional-practice-questions.json');
 const RUNTIME_CACHE_VERSION = 'openai-tts1-hd-realism-v7';
 const PREVIOUS_RUNTIME_CACHE_VERSIONS = [];
 const SST_PACING_VERSION = 'natural-pace-v2';
@@ -209,7 +210,7 @@ function createNarration(directory, generate, { bundledDirectory, cacheVersion, 
     catch(error) { if(error.code === 'ENOENT') return false; throw error; }
   };
   async function get(id) {
-    const q = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(mock => mock.questions), ...(predictions.sst || []), ...(predictions.wfd || []), ...require('./content/listening-mocks').missing].find(item => item.id === id && ['sst', 'wfd', 'smw'].includes(item.type));
+    const q = [...bank.spoken, ...(bank.dictation || []), ...bank.mocks.flatMap(mock => mock.questions), ...(predictions.sst || []), ...(predictions.wfd || []), ...additionalPractice, ...require('./content/listening-mocks').missing].find(item => item.id === id && ['sst', 'wfd', 'smw'].includes(item.type));
     if (!q) throw Object.assign(Error('Recording not found.'), { status: 404 });
     const minimumSeconds = q.type === 'sst' ? minimumSstSeconds : 0;
     let bundledSource = null;
@@ -391,7 +392,7 @@ function installNarration(app, directory, { prewarm=true } = {}) {
       res.status(e.status||503).json({error:e.status?e.message:'The recording could not be loaded. Please retry shortly.'});
     }
   });
-  const sstIds=(predictions.sst||[]).filter(q=>!approvedAudio.entryFor(q)).map(q=>q.id);
+  const sstIds=[...predictions.sst,...additionalPractice].filter(q=>q.type==='sst' && !approvedAudio.entryFor(q)).map(q=>q.id);
   if(prewarm) setImmediate(()=>prewarmNarration(narration,require('./content/listening-mocks').missing.map(q=>q.id),{attempts:1}).catch(error=>
     console.warn('[writing-audio] Listening prewarm task failed:',error.message)));
   if(prewarm) setImmediate(()=>prewarmNarration(narration,sstIds).catch(error=>

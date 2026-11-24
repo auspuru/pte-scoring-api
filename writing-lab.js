@@ -77,7 +77,8 @@ const dictation = [...new Map([...userPredictionDictation, ...previousDictation,
 // Individual listening questions reuse the verified mock sources and immutable keys.
 const listeningPractice = [...new Map(listening.mocks.flatMap(m => m.questions)
   .filter(q => listeningScoring.TYPES.has(q.type)).map(q => [q.id, { ...q, minutes:5 }])).values()];
-const individualQuestions = [...predictions.sst, ...dictation, ...listeningPractice];
+const spokenPractice = [...predictions.sst, ...require('./content/additional-practice-questions.json')];
+const individualQuestions = [...spokenPractice, ...dictation, ...listeningPractice];
 const bad = (message, status = 400) => Object.assign(Error(message), { status });
 function advance(a, at, reason) {
   const previous = a.questions[a.index];
@@ -228,7 +229,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   router.get('/catalog', route(async(req,res) => res.json({ version:bank.version,
     speakingMocks:await speakingAllowed(verifyToken(req.headers['x-session-token']||''))?require('./content/speaking-mocks').catalogue():[],
     predictionBank:{source:predictions.source,userSource:predictions.userSource,mockCount:predictionMocks.length,unique:{swt:predictions.swt.length,sst:predictions.sst.length,wfd:predictions.wfd.length}},
-    spoken:predictions.sst.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
+    spoken:spokenPractice.map(q => ({ id:q.id,title:q.title,topic:q.topic,minutes:q.minutes,audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
     listeningPractice:listeningPractice.map(q=>({id:q.id,type:q.type,title:q.title,minutes:q.minutes})),
     listeningMocks:require('./listening-mock/papers').catalogue(),
