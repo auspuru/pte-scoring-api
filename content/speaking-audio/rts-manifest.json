@@ -70,5 +70,1331 @@
       "en-AU-NatashaNeural"
     ],
     "generator": "edge-tts 7.3.1"
+  },
+  "rts-user-20261124-242-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-242",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "a52163f475fccfb9e67b0ece0f57538d49e1e84cf0165f0c8c47bca573c374fc",
+    "audioSha256": "74293427c8edb4ee373b758b46b5ede3b5b385602f1293d48dc2932822090693",
+    "bytes": 182444,
+    "seconds": 9.096,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_e80f0d6252754398b328486c2bc0c1ad",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.6
+    },
+    "loudnessLUFS": -19.3,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_36a8fb96e7ab40ed87ce387d9a9b40a8",
+      "text": "You have a friend who wants to borrow your completed assignment for reference before submitting it to the tutor, but you're reluctant to lend it to them. What would you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-47-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-47",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "ae5d1db5d4d10e74c978c598f0f95d5ed7a43537ddf000e89c9cfc3c28c0a1d4",
+    "audioSha256": "825a28ef24212339e15123092bd8c3cfcbc3e47e5f3380ec155d6d207df51968",
+    "bytes": 334124,
+    "seconds": 16.68,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_95d084cf186a44aa82e64dfb77408859",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.72
+    },
+    "loudnessLUFS": -18.62,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_a0f9d7449a0a440b8d774c2da6e0dfbb",
+      "text": "Your neighbor has been playing loud music late at night, making it difficult for you to sleep. You want to address the situation diplomatically to maintain a good relationship with your neighbor while ensuring the noise is reduced during late hours. What would you say to your neighbor?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-64-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-64",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "4a14416f6718211e80d0ac76557df0d930f6df219afe718795f526f2597014ef",
+    "audioSha256": "d1ab62a8ff1dca3c538dd79f470dad345e3bcff688af409b759e2441b2ba0fc5",
+    "bytes": 431084,
+    "seconds": 21.528,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_b209a0a2fbeb4a799ee6ae187313f9a8",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 1.44
+    },
+    "loudnessLUFS": -19.73,
+    "truePeakDbTP": -2.46,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_38f24b4a908f444fa3e07c403efef849",
+      "text": "You have an assignment due next week. Now you are in the library, but someone next to you is playing a video without headphones, and you can hear their audio. You are too distracted to focus on your study, and your assignment is very important. You should have a conversation with him to make sure you have a quiet place. What would you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-65-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-65",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "4a3e37ce41a056f4f8b8f41ff9b945b4cf683a8d3c6f3cfc0b52d628ae1c7202",
+    "audioSha256": "a3fb0b1e3bdcaad7c7632a7e7322cff3a8512e8ca342979ea90583fb9a7a800f",
+    "bytes": 272204,
+    "seconds": 13.584,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_12dc7d2528a04a299f8e1277d48e8431",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.28
+    },
+    "loudnessLUFS": -18.47,
+    "truePeakDbTP": -2.92,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_1d24067254a54804bbc7931c7b919a4c",
+      "text": "You have borrowed a book from the university library. When you open it, you notice that the first two pages are missing, but you are not responsible for this. What would you say to the librarian when you return the book?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-81-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-81",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "7b6738805b928b6620fac6aaff077d1d68fa3f03553c0a352ef8c64def7d2fd6",
+    "audioSha256": "65390e6e94bed8f8b1c22a33bff61a961973b3a6b825f476ba78ce56777e1702",
+    "bytes": 431084,
+    "seconds": 21.528,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_332e5fb80d5a49e9a8cddbab57dbc592",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.25
+    },
+    "loudnessLUFS": -20.29,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_02b08aeaf5fe453783b4e6fc63a95e7a",
+      "text": "When you arrive at the usual classroom where you normally have class, you find a notice saying that the computer is broken and you need to move to another new classroom. However, you are late today and the other students have already moved to the new classroom, so you call one of your classmates to ask about how to get to the new classroom. What will you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-83-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-83",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "ecb6d06afb6cc6ead3c6b3521c5b529c85a5afab853a8d7f97e71241ee79307a",
+    "audioSha256": "6ab94f766a7274c5247135cd3c5fccef2c2ae900d294f92d033f82350183ccd8",
+    "bytes": 258284,
+    "seconds": 12.888,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_6a9f765eff4f4eccaa1c82d858aa12bc",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.94
+    },
+    "loudnessLUFS": -19.15,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_4b280bedf1884c129b10ec1cd6386d5f",
+      "text": "You have a tutorial at 3 p.m. on Wednesday afternoon, but unfortunately there is a football match that you need to attend at the same time. You want to rearrange the time with the teacher. What would you say to your teacher?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-86-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-86",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "a2c4aaba442af88cffcf9217231fb99c318795b9f0e6e55b0736ddb72dbc6d47",
+    "audioSha256": "44ebc810216e6f926112ec9a0e01a77f8b63642a29cd274dd6c7ce85f71c6542",
+    "bytes": 389804,
+    "seconds": 19.464,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_37d8844727ac4d54b4dc9ef4ba2e6620",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.01
+    },
+    "loudnessLUFS": -18.44,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_226dcea607fb4350aa8a4643ed1d36e6",
+      "text": "You are interested in applying for a part-time job in the school cafe. You know that the boss is looking for someone to work at weekends and requires working experience, which you are actually currently lacking. However, you are eager to learn and determined to work hard. What do you have to say to get this chance?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-128-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-128",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "3fff9209233e6be0e4aa7bd8086669d73acaf375c674b1261362974bcadaf2f1",
+    "audioSha256": "ddc4a2ccfd3df9bf146d99596571973525cfaf85ab62f29910177e77cceae4da",
+    "bytes": 270764,
+    "seconds": 13.512,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_ee5ee8978e22448daf7c733f383e8ac3",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.63
+    },
+    "loudnessLUFS": -19.48,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_c2ba13c49a004c96b7e3363da61e3cd0",
+      "text": "The deadline for your assignment is tomorrow, but your computer has broken down, causing you to lose the completed assignment saved on it, and you want to ask your tutor for an extension. What would you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-132-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-132",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "aefa18d64f89a401c990f074849a5c38e0435f9e20dc59d90b698854beb9c3ff",
+    "audioSha256": "8e70c1db4b3a02373ca5b2ebb1433bc00389e4e7cd19383802e3ce17171a8de0",
+    "bytes": 185804,
+    "seconds": 9.264,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_fc9ef39b7d864519b74b7341b523d5e7",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.63
+    },
+    "loudnessLUFS": -19.64,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_7870ef7523d944628096abf06c68837b",
+      "text": "You want to copy some documents, but you notice the photocopier does not have paper and the tray icon is flashing red. What would you say to the library staff?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-133-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-133",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "7edc90980ad04457ca305620d4b6517f0b55d5fce7da58ca89577fd9908fe627",
+    "audioSha256": "d238590a5ef485d26ee212a16f52303ed2ebafd570ba429485a38f0609404189",
+    "bytes": 232844,
+    "seconds": 11.616,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_88dbcca9392c4224b91cc565ff0a40ba",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.21
+    },
+    "loudnessLUFS": -18.46,
+    "truePeakDbTP": -2.88,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_0a65c1bc5c3d44148f8274fbe83d26b4",
+      "text": "You're sharing a flat with a few other students, but you've noticed they often use your desk and your stationery. You're concerned that they may also start using your work notes. What would you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-136-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-136",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "282c8973970a5c743fff8add668b0f308fafe9479778670d6b745b7f703166ab",
+    "audioSha256": "62df7ab6aa74cbaa8c19694ebf7a8a76b02c143fa575ec1f12a9482504593662",
+    "bytes": 295244,
+    "seconds": 14.736,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_6071f2262ca148d39432d0579172f137",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.82
+    },
+    "loudnessLUFS": -18.56,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_389592843f714f228c8f0a26b86f40c5",
+      "text": "Your loan has been delayed, so you can't pay the full amount of the accommodation fee at once. You have a part-time job, but it's not enough. You are going to ask the university accommodation officer for advice. What will you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-137-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-137",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "2733c0db9e5e0cfdd642e1b05428c0f4bbe48b76bdd78570ea9fb9e0a3311f4a",
+    "audioSha256": "a4a04d7c04df79be6ae3998445ac48c859b404a588789e83dfd6e4235ee5363f",
+    "bytes": 264524,
+    "seconds": 13.2,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_a0f92f0bb38a4945bc2c4502bd5a29b0",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.18
+    },
+    "loudnessLUFS": -19.57,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_59da074d432c4096986109ff42890d34",
+      "text": "Your flatmate's visitors don't follow the rules, and your cheese and tomatoes in the fridge keep disappearing. You are very unhappy and need to talk to your flatmate about it. What will you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-140-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-140",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "f6a0564b5058647a03e6450b7ed742c78aa59f07d59246702d70797e1d5b2435",
+    "audioSha256": "81bddbf3f6e9bdbcc528f4d1f179df7d378c3e0abd307cabf2abebe6ceb3cd74",
+    "bytes": 318284,
+    "seconds": 15.888,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_c38adbbac93d41308a99476c923a46e3",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.29
+    },
+    "loudnessLUFS": -19.66,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_2675736815a043d980b89bbfc4443ad7",
+      "text": "You live in a four-person dorm with three classmates. You notice that one of them hasn't been cleaning the bathroom and the kitchen according to the duty schedule, so you tell him that he needs to do his cleaning on time in the future. What would you say to him?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-142-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-142",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "0411db1c1533104721a88ec5d063e647cb2c170bf0ea671c3d4005ba43a6adb2",
+    "audioSha256": "973b2fdfa2ba6b35fb2653d995d8937e213e5461c0d39a5e3abe9410497fc2a3",
+    "bytes": 169004,
+    "seconds": 8.424,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_d67bf315b9344f15ad4ddc07f78f364d",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.0
+    },
+    "loudnessLUFS": -18.9,
+    "truePeakDbTP": -2.46,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_426b06b2832c4c9d843cc7b4dd8fa352",
+      "text": "You lent an English book to a friend three weeks ago and he hasn't returned it yet. Now you need the book very much. What would you say to him?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-143-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-143",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "08d1f74eedc9adfc520a2663ed4adac242200b702f58b44d31900bbeb877b950",
+    "audioSha256": "b0a3f1a364214016a2da3e3ba3cbc3a6613cb9bd8178aa31a4e8c59e741cdad1",
+    "bytes": 262604,
+    "seconds": 13.104,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_3b5c89982bd54f868a2a599322b22bc4",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.63
+    },
+    "loudnessLUFS": -19.18,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_a03724475c8f439ab5f388547ab963c7",
+      "text": "Your family and friends are holding a party with loud music in the living room at night, which is too noisy and influences your sleep, but you have an important exam early tomorrow morning. What should you say to them?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-144-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-144",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "a389e631c7345d5864b6e7220129be32fb67cc44d4105c952a54b7b39cb9e12d",
+    "audioSha256": "bbe2766b0ceefbb4162bbb1c613c015bf7ddcf88484e9e608dcdec14e7044814",
+    "bytes": 237164,
+    "seconds": 11.832,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_1a75d3bbb7a74bae8d420070969d53fa",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.78
+    },
+    "loudnessLUFS": -18.46,
+    "truePeakDbTP": -3.0,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_991376e9a56c4275b25a09c2f0e20adb",
+      "text": "You have written an essay in a short amount of time and have submitted it to your tutor. You need to ask your tutor whether your essay has fully covered the topic. What would you say to them?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-147-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-147",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "f4a8d4865aa3b1611bd2a5e6e2e7a9a5549dbadd7d9d1d578f1415065e97b9ab",
+    "audioSha256": "01cc7ef4ed6dd786ef6b399071a09997d14b5c12f5e0e75218db5ef252860e6e",
+    "bytes": 185804,
+    "seconds": 9.264,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_11ef4c691b354ca0bfed23152c218ba4",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.88
+    },
+    "loudnessLUFS": -20.91,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_d747a095d5cb4242b16b6a11c0c2f6df",
+      "text": "Your classmate Sue has injured her leg, but she needs to return some books to the library. You are planning to help her by returning them. What would you say to her?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-150-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-150",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "15119eed2322545d655aa22f2f78d19890e5ac86a655d2460575d22344cc8b38",
+    "audioSha256": "64dc2e7ca0f0cf57f80a8965a98951940f26b5cd891c69af423f327225e88660",
+    "bytes": 189164,
+    "seconds": 9.432,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_5ef6c084af4e4b6db5a289b77b54080b",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.49
+    },
+    "loudnessLUFS": -19.45,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_7e429f1af3804f40abb9343da328a4f3",
+      "text": "The food served in the school canteen is not healthy enough. What would you say to the canteen manager to express your concerns?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-151-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-151",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "505b61d1c05e676a176b96841e5a49680089cdd0271d92b1d98b84ff78b914ca",
+    "audioSha256": "49ed82851bb2a90e7b6e834ab09346bf2c3076895e0bbd663cb7dd4bab2a79fb",
+    "bytes": 184844,
+    "seconds": 9.216,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_44dc79e7c5964a8a9eb284cb7497a4a7",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.42
+    },
+    "loudnessLUFS": -19.04,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_79c03667bec94408b09153e6b7e397a5",
+      "text": "Your friend frequently skips classes, arrives late, leaves early, and does not submit assignments on time. What advice would you give them?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-155-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-155",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "f75dbca5b3aea6774a9127f9dd70bb04b370e75f317cf22640c02e44e2a73f9b",
+    "audioSha256": "25e3ae191336fb6f3276a2f68178a25ecee933aa81f8e8274c34bdcb4b347d41",
+    "bytes": 347084,
+    "seconds": 17.328,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_0f03c35e85f64abeb8bfcf6ba3a34e39",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.25
+    },
+    "loudnessLUFS": -20.17,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_4c720db7b72941e5bbf15e3415a27299",
+      "text": "You are on your way to campus to deliver a presentation when a fallen tree blocks the road, preventing you from arriving on time. You call your professor to ask if it would be possible to reschedule your presentation for later, or allow another student to present first. What would you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-158-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-158",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "45d029244a7fd22ec10016e7c910e12504257368ed49c7df5cc64b362a6e94c6",
+    "audioSha256": "334af1b96b6b948f22fcea41f93854a8108caf1b179184746b404f1767ec4d4e",
+    "bytes": 244844,
+    "seconds": 12.216,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_dbb63376a60c49e3b9198c6786b1e596",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.25
+    },
+    "loudnessLUFS": -18.57,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_df03dea2058348b2a9e3157e5ae2d931",
+      "text": "Your friend has chosen the same course as you, but he can't understand the lectures and asks you for help. However, you don't understand them either. You suggest seeking help from the tutor. What would you say to your friend?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-160-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-160",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "66728be6f44f4007d962d4d752b5ec28e2949efc616b212cd1658bb6734ec312",
+    "audioSha256": "b9ae0a7402aaabd5b938c0b3c07d3a1189da0312b9387bb9470bf6608fa2f10f",
+    "bytes": 400364,
+    "seconds": 19.992,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_68c1b5dedd1649639df23dcdec3b28a3",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.88
+    },
+    "loudnessLUFS": -18.45,
+    "truePeakDbTP": -2.61,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_c3330168e39a4cd594f2b4fefd07873b",
+      "text": "You attended a lecture earlier today, but you lost the notebook in which you wrote all your notes. Your friend also attended the lecture and took very clear and detailed notes. You decide to ask her to lend her notes to you because you need them for your assignment. What would you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-164-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-164",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "85a2077b1a3b1f1035736b52256590ec3bb36e19bd2e8b57068ff229cda4d5f8",
+    "audioSha256": "f7cccfc17ff51ba4baf2007d33576f10e433cecbdb845c6d1dac5470afb6879e",
+    "bytes": 263564,
+    "seconds": 13.152,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_fc82d6c3451841ac97236c55d6e41885",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.26
+    },
+    "loudnessLUFS": -18.69,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_aa9abbd860e042f6bc02e0b7637841d9",
+      "text": "You promised to take notes for a friend who was on leave from a certain class, but that morning you woke up late and missed the class yourself, so you didn't take any notes. How should you explain this to your friend?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-170-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-170",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "e04c3376cd9d1bb5769ab6c8810abd4be09021ad6ffc931f6322c346346d9803",
+    "audioSha256": "c01f862501f1b8278061a8a6448401c3a859226f32ce3962e1cf49aeee7a8fa8",
+    "bytes": 272204,
+    "seconds": 13.584,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_4ab5725d56a84705bdc7815a68be5593",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.78
+    },
+    "loudnessLUFS": -19.16,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_72f0b8c9e93649499152a530d5c70eab",
+      "text": "You bring your newly purchased laptop to the classroom and plan to use it, but you don't know how to set it up. Your classmate happens to have the same model of laptop, so you ask him for help. What would you say to him?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-171-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-171",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "d889efe9edfbee504cc3490af56b4f672b3dfe9a89119bff4c1e9498ee6ff11b",
+    "audioSha256": "f01f134d8790823518b50db96a97151e786092da6d0b197cdf9ef312ea9d2475",
+    "bytes": 334124,
+    "seconds": 16.68,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_ee8ce6f1ae414b26b289ccabd1d9ed20",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.46
+    },
+    "loudnessLUFS": -18.59,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_ce761125b25f4ec0a60c91b5f20d62fc",
+      "text": "You just told one of your friends that the exam time is 3 p.m. tomorrow afternoon, but you've just found out that you were wrong. The exam is actually at 2 p.m. this afternoon. You want to correct this mistake immediately. What would you say to the friend?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-179-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-179",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "60fbe08a1beb1421e5697b66c42bb39a12aa392479725d272cdc360c468b5238",
+    "audioSha256": "2fa317a62c9cef5be6fc02a51f5364b1d1487b4afe9dc97b77318726e6f4a9ca",
+    "bytes": 194444,
+    "seconds": 9.696,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_681030606ca040e4a95e9ceb895b092d",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.6
+    },
+    "loudnessLUFS": -18.45,
+    "truePeakDbTP": -3.54,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_bcd3d43d7bd24fb5806d2916d04a66e9",
+      "text": "You had nearly finished your assignment, but your sister asked you to attend your parents' party, and as a result, you missed the deadline. What would you say to your tutor?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-190-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-190",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "e29a490909ca8296727d0a8592a3b67285ce846b4e0872b7d95e9b67a986f0ee",
+    "audioSha256": "da55412647c54c3f578aa56aa63eef34722c54dc59b684ed728464307424b562",
+    "bytes": 241484,
+    "seconds": 12.048,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_e53e910c73ce4b6dacbfd6d2cae812a4",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.35
+    },
+    "loudnessLUFS": -18.45,
+    "truePeakDbTP": -3.02,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_d755caa903894652a7f6bf1c33dbc995",
+      "text": "Your class is going to organize a party, and your classmate Max is responsible for preparing the food. You want to ask him what you can do to help, and when exactly the party will start. What would you say to him?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-195-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-195",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "dc1e2e53ba9f9571aa1aefac04fda44d6dfb1eb7199cedd0f87a1fa5194d44c7",
+    "audioSha256": "1f4618d77cefdbbd3f12da83f9e66f2c17318616c5704c0511b071128a413cbb",
+    "bytes": 217484,
+    "seconds": 10.848,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_b8848117731f42919e5c49ef6bebf39d",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.56
+    },
+    "loudnessLUFS": -18.81,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_f658ce841c9d4bd6b3466d635d09f897",
+      "text": "Your friend has invited you to join a sports club. You are interested in the sport, but you cannot join because you are in your final year at university. What would you say to your friend?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-199-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-199",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "11e720d76ec5318db078847b1e75d06bbdc3ce4f0aef0989fc088a853240db65",
+    "audioSha256": "664ea72e97ade9cff47facc81b2298c0cf370d52f26b7d7939789f93e2c34b71",
+    "bytes": 130124,
+    "seconds": 6.48,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_126633683a2f46649726a16be2391998",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 5.22
+    },
+    "loudnessLUFS": -18.44,
+    "truePeakDbTP": -3.14,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_9ed34d0927fe4c73b7bd4028ff5e8e32",
+      "text": "Your friend Ali wants you to help him with his homework, but you don't have time. What would you say to him?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-200-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-200",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "aa70c2e4024207871e15a20f886920c2e0647965266f75596b461b69b359b81a",
+    "audioSha256": "4e71df3265d01064eee9d43f61293d2554757472bf95cfb573481df7490f53a6",
+    "bytes": 303404,
+    "seconds": 15.144,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_32ee3728afde47639035a3b59532c654",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.43
+    },
+    "loudnessLUFS": -18.45,
+    "truePeakDbTP": -3.18,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_f62058a484f548dd82b9663d927bdda9",
+      "text": "You forgot to bring your dormitory key and can't get into your room, but there is still food cooking on the stove inside. You need to contact the dormitory staff immediately to solve the problem. What would you say to them?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-202-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-202",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "b1e5b8442a797e550f5e4a675b8a774722ebb0637eba06ea9c3a029e0bc6085a",
+    "audioSha256": "45ce09aeb131de2333f619c0c8c9ac1783375eb6a59786adbbbb1f2b3d19b4d7",
+    "bytes": 268844,
+    "seconds": 13.416,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_5ad3ee77cec44f1e87f18c7ec4d72a3a",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.35
+    },
+    "loudnessLUFS": -18.59,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_187778c03ea442f9818183f454785ddf",
+      "text": "You need to hand in some documents to your department office, but you are not feeling well today. Since you do not feel well enough to go yourself, you want to ask a colleague to help you submit them for you. What do you say to your colleague?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-203-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-203",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "5881ed0c5e3f119541ac3d4a8833950b0ac9148d9c54f5539cac043097008c25",
+    "audioSha256": "8abc2707e6863822a3c834a0acfad140c9fc660d55906b139a93e016cdc6fed8",
+    "bytes": 219404,
+    "seconds": 10.944,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_e48e5a8ec18c4050a9d8713b3dc24744",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.79
+    },
+    "loudnessLUFS": -19.05,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_d8182245cfc9491da9faa8f25d7e0ce1",
+      "text": "A friend asks you for help with an assignment, but you do not understand it either, so you tell your friend that you are going to ask the tutor for help. What would you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-204-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-204",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "8cb83f96304b479178616227b02cdf82bc0f7a730c3e6b7255a6aada5b2c87c4",
+    "audioSha256": "1fe2f2a413717c386f203d13603e770d824f8528ba22b6d3f3cbfc681f0ca43b",
+    "bytes": 169004,
+    "seconds": 8.424,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_d8c54f11597b4fe48ddb44e6959b46d1",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.87
+    },
+    "loudnessLUFS": -18.78,
+    "truePeakDbTP": -2.43,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_53d5cf0f32194acabb8c076fa4c98d41",
+      "text": "Your friend Tom does not want to go to class tomorrow, but the class is very important. How would you convince him to attend the class?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-211-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-211",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "1019d3190973fb7795ee59ca6603699538ae9364158624465615d1e59e30de65",
+    "audioSha256": "40c89002dbfc8058ccc4982696239ad5baa7b77a6bc0a0b881ed6af5424b6451",
+    "bytes": 289004,
+    "seconds": 14.424,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_25ea9bbe6d124440b6abc7256ecc349e",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.65
+    },
+    "loudnessLUFS": -20.19,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_b1fe705a2d3c4f32bf3cad72816adc28",
+      "text": "Your computer has broken down, but your tutor requires you to submit a report every day. You will not be able to hand in tomorrow's report because you need to take your computer to the IT service center for repair. What would you say to your tutor?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-215-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-215",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "ef3ed0d9aaf07d0c4ba551dea7754ff5d7cdc0a9ee41934babd2ef6de12f3eae",
+    "audioSha256": "205390e6782a67d9663f59965ea73d580d272009892008e40ca00aff74354f60",
+    "bytes": 220364,
+    "seconds": 10.992,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_74f61aea02b84964a4b2cfe80c883878",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.42
+    },
+    "loudnessLUFS": -20.13,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_0bfc18d3d08d49f198e269e4e26b3d81",
+      "text": "Your friend comes to borrow a book from you for an assignment, but the assignment is due tomorrow and you need the same book to finish your own assignment. What would you say to them?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-218-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-218",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "b48f1b653aa1d3b1954ef422e4181ec944796b7aa4b579fe2b8ea30b9b115f5f",
+    "audioSha256": "4928dd5ee29c03246846541ac4eb1297520c76f7bc705d61ca287d5c370305a0",
+    "bytes": 276524,
+    "seconds": 13.8,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_31e343e57c2d4d23943b3cc2e584ce39",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 4.09
+    },
+    "loudnessLUFS": -18.45,
+    "truePeakDbTP": -2.9,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_781b8cc87deb4569b3f18e0b69d76315",
+      "text": "You've invited your student and his wife to dinner, but you're unsure what kind of food they prefer. You called them, yet there was no answer, so you need to send them a text message. What would you say in the message?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-222-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-222",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "d66884c1b8d72b53a468a5d8923ee2068d2aa4ab9f052afb3b00db6a89598fea",
+    "audioSha256": "55760ea4dbb7fd66e7116de4ecec8b7722645d3961d6cad52ff7d647d204baca",
+    "bytes": 296204,
+    "seconds": 14.784,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_5ffaed9bb7204d829b11ae72b89daa4e",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.54
+    },
+    "loudnessLUFS": -18.51,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_b0d798e9060844cdab285db27b8f4154",
+      "text": "You are a volleyball player, but your university does not place enough importance on this sport and has not organized any volleyball-related activities. You need to express your suggestions to the university administrator. What would you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-232-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-232",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "e1f1f3d8afe7cb5b15c75c4f124fc27190794242b971549597e37343db374e87",
+    "audioSha256": "3fc5bd26ab3828554b1c230637eec4008d4e0de53f32eba7b4e468ebced3df36",
+    "bytes": 261644,
+    "seconds": 13.056,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_05f350caa3bc4b3ca99e7e08f946b0a0",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 2.23
+    },
+    "loudnessLUFS": -21.04,
+    "truePeakDbTP": -2.45,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_51fbc138c75846f99142c49b41d16d04",
+      "text": "Your neighbor has a dog that barks throughout the night. The noise makes it difficult for you to fall asleep, and you have an important exam tomorrow morning. You meet your neighbor the next day. What would you say to them?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-234-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-234",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "8298b8563e13e40b1c4f1618804fcc40a50aaff6e845f743768a444530978c19",
+    "audioSha256": "5d36a79c6db3aca49b983fad53f919e41ba35eb2c0855e4d2c78a80e9e290474",
+    "bytes": 329324,
+    "seconds": 16.44,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation.",
+      "speed": 0.95,
+      "requestId": "req_52a1b5ca422f44c7a07f88358811910f",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.86
+    },
+    "loudnessLUFS": -18.74,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_b92a868ea65e4360ae81e401d6abb209",
+      "text": "You share a house with two people. You bought tomatoes and cheese on Monday and put them in the refrigerator. Today you are going to make lunch, but you cannot find them in the refrigerator. You want to ask your roommates if they have seen them. What would you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants"
+  },
+  "rts-user-20261124-187-prompt-20261028-1": {
+    "questionId": "rts-user-20261124-187",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "8a0349c273d4943e4302c1e9e0e5568370569d7d36dbdd03a6cda4e226f3f841",
+    "audioSha256": "051fea54d90cbdbf5cd4acfa2bc9a515d5c5a4601f106333731e3bc4c9e6b871",
+    "bytes": 186764,
+    "seconds": 9.312,
+    "voices": [
+      "marin"
+    ],
+    "generator": "gpt-4o-mini-tts-2025-12-15",
+    "generation": {
+      "model": "gpt-4o-mini-tts-2025-12-15",
+      "voice": "marin",
+      "instructions": "Read exactly the supplied text, without adding, dropping or changing any words. Do not read out these instructions. Clear consonants and complete word endings. Natural conversational delivery, comfortable steady volume, no music or sound effects. Use clear British English. Aim around 155 words per minute. Use natural phrase pauses and gentle emphasis, with an engaged but relaxed teaching voice. Speak the final question clearly with a natural questioning intonation. In the phrase \"the assignment you've finished\", pronounce the v sound in you've distinctly.",
+      "speed": 0.95,
+      "requestId": "req_e0bac65bee7140d98bce40ed71b7e5aa",
+      "nativeRateHz": 24000
+    },
+    "processing": {
+      "kind": "constant-gain-only",
+      "constantGainDb": 3.57
+    },
+    "loudnessLUFS": -19.06,
+    "truePeakDbTP": -2.44,
+    "transcription": {
+      "model": "whisper-1",
+      "requestId": "req_675d4864cbc246f0a548e3f7f89126c5",
+      "text": "You need to print out the assignment you've finished and hand it in, but your printer is broken. You want to borrow a printer from your friend Carl. What would you say?",
+      "sourcePromptProvided": false
+    },
+    "transcriptStatus": "independent-ASR-word-match-with-orthographic-variants",
+    "transcriptionComparison": {
+      "model": "gpt-4o-transcribe",
+      "requestId": "req_f36649b96db54220a11f87a2583c7c97",
+      "text": "You need to print out the assignment you finished and hand it in, but your printer is broken. You want to borrow a printer from your friend Carl. What would you say?",
+      "sourcePromptProvided": false
+    }
   }
 }

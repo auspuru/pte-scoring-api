@@ -376,7 +376,8 @@ test('Respond now stops the situation audio and starts exactly one recording',as
 test('Skipping a listening question ignores late audio completion',async()=>{
  const h=harness();await h.controller.open('rts');await h.click({speakingQuestion:'rts-1'});h.tick(5000);await flush();const ended=h.audio[0].onended;
  await h.click({speakingMove:'1'});ended();assert.equal(h.audio[0].paused,true);
- assert.match(h.host.innerHTML,/Question 2 of/);assert.equal(h.nodes.get('speaking-phase').textContent,'Audio starts in');h.tick(5000);await flush();assert.equal(h.nodes.get('speaking-phase').textContent,'Listening');assert.equal(h.recorders.length,0);
+ const nextPosition = bank.questions.filter(q => q.type === 'rts').findIndex(q => q.id === 'rts-2') + 1;
+ assert(h.host.innerHTML.includes('Question '+nextPosition+' of'));assert.equal(h.nodes.get('speaking-phase').textContent,'Audio starts in');h.tick(5000);await flush();assert.equal(h.nodes.get('speaking-phase').textContent,'Listening');assert.equal(h.recorders.length,0);
 });
 
 test('Question list remains accessible on the last unattempted question',async()=>{

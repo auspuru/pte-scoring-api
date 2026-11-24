@@ -4,7 +4,8 @@ const prompts=require('../rts-prompts'),bank=require('../content/speaking-bank')
 const {question,installSpeakingLab}=require('../speaking-lab'),{installSpeakingMock}=require('../speaking-mock');
 const rtsContent=require('../situation-content-policy-developed');
 const hash=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
-const items=bank.questions.filter(q=>q.type==='rts');
+const items=bank.questions.filter(q=>q.type==='rts'&&Object.hasOwn(prompts.legacy.questions,q.id));
+const supplied=require('../content/user-rts-20261124.json');
 test('all 36 portal RTS prompts name the listener in a direct final question and retain samples and response windows',()=>{
   assert.equal(items.length,36);assert.deepEqual(items.map(q=>q.id).sort(),Object.keys(prompts.legacy.questions).sort());
   for(const q of items){
@@ -17,7 +18,7 @@ test('all 36 portal RTS prompts name the listener in a direct final question and
   assert.equal(items.filter(q=>q.audioPrompt===false).length,0);assert.equal(items.filter(q=>q.promptAudioKey).length,36);
 });
 test('the six revised narrations and all original narrations are bound to their own text and byte hashes',async()=>{
-  const active=require('../content/speaking-audio/rts-manifest.json');assert.equal(Object.keys(active).length,6);
+  const active=require('../content/speaking-audio/rts-manifest.json');assert.equal(Object.keys(active).length,6+supplied.length);
   for(const q of items.filter(q=>q.promptAudioKey&&!q.id.startsWith('rts-original-'))){
     const modern=prompts.requestedAudio(q.id,q.promptAudioKey),legacy=prompts.requestedAudio(q.id),before=prompts.legacy.questions[q.id];
     assert(modern.versioned);assert(!legacy.versioned);assert.notEqual(modern.file,legacy.file);
@@ -75,6 +76,18 @@ test('practice and mock APIs preserve old prompt/audio snapshots and grade each 
     assert.equal(questionSnapshot.text,q.text);assert.equal(questionSnapshot.rtsContentPolicyVersion,rtsContent.VERSION);
     const audio=await fetch(base+a.question.audioUrl);assert.equal(audio.status,200);assert.match(audio.headers.get('content-type'),/audio\/mpeg/);assert.equal(hash(Buffer.from(await audio.arrayBuffer())),prompts.audioEntry(q).audioSha256);
   }
+  const catalog = await api('/api/speaking', '/catalog');
+  const visibleRts = catalog.questions.filter(q => q.type === 'rts');
+  assert.deepEqual(visibleRts.map(q => q.id), [...supplied, ...items].map(q => q.id));
+  assert.deepEqual(visibleRts.filter(q => q.title.startsWith('New · ')).map(q => q.id), supplied.map(q => q.id));
+  const added = supplied[0];
+  const addedAttempt = await api('/api/speaking', '/attempts', {id:crypto.randomUUID(), questionId:added.id});
+  assert.equal(addedAttempt.question.text, added.text);
+  assert.equal(addedAttempt.question.preparation, 10);
+  assert.equal(addedAttempt.question.seconds, 40);
+  const addedAudio = await fetch(base + addedAttempt.question.audioUrl);
+  assert.equal(addedAudio.status, 200);
+  assert.equal(hash(Buffer.from(await addedAudio.arrayBuffer())), prompts.audioEntry(bank.questions.find(q => q.id === added.id)).audioSha256);
   const textOnly=items.find(q=>q.id==='rts-original-20261024-04'),textAttempt=await api('/api/speaking','/attempts',{id:crypto.randomUUID(),questionId:textOnly.id});
   assert.equal(textAttempt.question.text,textOnly.text);assert.equal(textAttempt.question.audioUrl,prompts.publicAudio(textOnly,'/speaking-audio').audioUrl);
   const oldId=crypto.randomUUID(),oldQ=prompts.legacy.questions['rts-1'];

@@ -1,0 +1,802 @@
+[
+  {
+    "id": "rts-user-20261124-242",
+    "type": "rts",
+    "title": "Assignment for Reference",
+    "text": "You have a friend who wants to borrow your completed assignment for reference before submitting it to the tutor, but you're reluctant to lend it to them. What would you say?",
+    "facts": [
+      "Friend wants to see your finished assignment",
+      "Politely decline to share it",
+      "Offer another way to help"
+    ],
+    "sample": "I understand you want an example before you submit yours, but I'd rather keep my completed assignment private. I'm happy to talk through the instructions or help you plan your own response if that would help.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 242,
+      "title": "Assignment for Reference",
+      "filename": "Screenshot 2026-11-24 122130.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-47",
+    "type": "rts",
+    "title": "Loud Music",
+    "text": "Your neighbor has been playing loud music late at night, making it difficult for you to sleep. You want to address the situation diplomatically to maintain a good relationship with your neighbor while ensuring the noise is reduced during late hours. What would you say to your neighbor?",
+    "facts": [
+      "Neighbor plays loud music late at night",
+      "Explain the impact on your sleep",
+      "Politely request lower volume during late hours"
+    ],
+    "sample": "Hi, could I ask a quick favor? The music carries into my bedroom late at night, and I've been having trouble sleeping. Would you mind turning it down later in the evening? I'd really appreciate it.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 47,
+      "title": "Loud Music",
+      "filename": "Screenshot 2026-11-24 122134.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-64",
+    "type": "rts",
+    "title": "Noisy Library",
+    "text": "You have an assignment due next week. Now you are in the library, but someone next to you is playing a video without headphones and you can hear their audio. You are too distracted to focus on your study and your assignment is very important. You should have a conversation with him to make sure you have a quiet place. What would you say?",
+    "facts": [
+      "Assignment due next week",
+      "Nearby video audio is distracting you in the library",
+      "Ask the person to use headphones or mute the video"
+    ],
+    "sample": "Excuse me, would you mind using headphones or turning the sound off? I'm trying to work on an important assignment that's due next week, and I'm finding it hard to concentrate with the video playing. Thanks for helping me keep this area quiet.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 64,
+      "title": "Noisy Library",
+      "filename": "Screenshot 2026-11-24 122139.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-65",
+    "type": "rts",
+    "title": "Missing Pages",
+    "text": "You have borrowed a book from the university library. When you open it, you notice that the first two pages are missing, but you are not responsible for this. What would you say to the librarian when you return the book?",
+    "facts": [
+      "First two pages of the borrowed book were already missing when you opened it",
+      "Tell the librarian when returning it",
+      "Ask them to record the damage"
+    ],
+    "sample": "Hi, I'm returning this book and wanted to let you know the first two pages were already missing when I opened it. Could you please make a note of that on the return so the damage isn't attributed to me?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 65,
+      "title": "Missing Pages",
+      "filename": "Screenshot 2026-11-24 122145.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-81",
+    "type": "rts",
+    "title": "New Classroom",
+    "text": "When you arrive at the usual classroom where you normally have class, you find a notice saying that the computer is broken and you need to move to another new classroom. However, you are late today, and the other students have already moved to the new classroom. So you call one of your classmates to ask about how to get to the new classroom. What will you say?",
+    "facts": [
+      "Usual classroom changed because of a broken computer",
+      "You arrived late and classmates already moved",
+      "Call a classmate for the new room and directions"
+    ],
+    "sample": "Hi, I've just got to our usual classroom and seen the notice about the broken computer. I'm running late and everyone's already moved. Could you tell me the new room number and how to get there from here?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 81,
+      "title": "New Classroom",
+      "filename": "Screenshot 2026-11-24 122151.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-83",
+    "type": "rts",
+    "title": "Absence for Tutorial",
+    "text": "You have a tutorial at 3 P.M. on Wednesday afternoon, but unfortunately there is a football match that you need to attend at the same time. You want to rearrange the time with the teacher. What would you say to your teacher?",
+    "facts": [
+      "Wednesday tutorial at 3 p.m. clashes with a football match you need to attend",
+      "Explain to the teacher",
+      "Ask to attend at another time"
+    ],
+    "sample": "Hi, could I arrange a different time for my tutorial? I need to attend a football match at three this Wednesday, so I can't make my usual session. Is there another tutorial I could join that week?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 83,
+      "title": "Absence for Tutorial",
+      "filename": "Screenshot 2026-11-24 122156.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-86",
+    "type": "rts",
+    "title": "Cafe Job",
+    "text": "You are interested in applying for a part-time job in the school cafe. You know that the boss is looking for someone to work at weekends and requires working experience, which you are actually currently lacking. However, you are eager to learn and determined to work hard. What do you have to say to get this chance?",
+    "facts": [
+      "Apply to the school cafe for weekend work",
+      "Acknowledge lack of experience",
+      "Show willingness to learn and work hard"
+    ],
+    "sample": "Hi, I'd like to apply for the weekend position at the school cafe. I haven't worked in a cafe before, but I'm available on weekends and eager to learn. I'd be happy to start with training and work hard to pick up the routine. Would you consider me for the role?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 86,
+      "title": "Cafe Job",
+      "filename": "Screenshot 2026-11-24 122200.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-128",
+    "type": "rts",
+    "title": "Assignment Extension",
+    "text": "The deadline for your assignment is tomorrow, but your computer has broken down, causing you to lose the completed assignment saved on it, and you want to ask your tutor for an extension. What would you say?",
+    "facts": [
+      "Assignment is due tomorrow",
+      "Computer broke and the finished file was lost",
+      "Ask your tutor for an extension"
+    ],
+    "sample": "Hi, could I have a short extension on the assignment due tomorrow? My computer broke down and I lost the completed file. I need time to recover it or redo the work. Would two extra days be possible?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 128,
+      "title": "Assignment Extension",
+      "filename": "Screenshot 2026-11-24 122205.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-132",
+    "type": "rts",
+    "title": "Broken Photocopier",
+    "text": "You want to copy some documents, but you notice the photocopier does not have paper and the tray icon is flashing red. What would you say to the library staff?",
+    "facts": [
+      "Library photocopier is out of paper and tray light is flashing red",
+      "Tell staff you need to copy documents",
+      "Ask for paper or another copier"
+    ],
+    "sample": "Excuse me, I'm trying to copy some documents, but this copier appears to be out of paper and the tray light is flashing red. Could someone refill it, or is there another copier I can use?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 132,
+      "title": "Broken Photocopier",
+      "filename": "Screenshot 2026-11-24 122210.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-133",
+    "type": "rts",
+    "title": "Roommate",
+    "text": "You're sharing a flat with a few other students, but you've noticed they often use your desk and your stationery. You're concerned that they may also start using your work notes. What would you say?",
+    "facts": [
+      "Flatmates use your desk and stationery",
+      "You are worried about your work notes",
+      "Ask them to respect these boundaries"
+    ],
+    "sample": "Hey, could you ask me before using my desk or borrowing any of my stationery? I need to keep the desk clear for work, and I'd like my notes to stay private. If you need to borrow something, just check with me first.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 133,
+      "title": "Roommate",
+      "filename": "Screenshot 2026-11-24 122215.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-136",
+    "type": "rts",
+    "title": "Delay of Loan",
+    "text": "Your loan has been delayed, so you can't pay the full amount of the accommodation fee at once. You have a part-time job, but it's not enough. You are going to ask the university accommodation officer for advice. What will you say?",
+    "facts": [
+      "Loan is delayed and part-time income cannot cover full accommodation fee",
+      "Ask accommodation officer for advice",
+      "Propose instalments or more time"
+    ],
+    "sample": "Hello, my loan has been delayed, and my part-time wages aren't enough to cover the full accommodation fee at once. Could you advise me on my options? Would it be possible to pay part now and the rest when the loan comes through?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 136,
+      "title": "Delay of Loan",
+      "filename": "Screenshot 2026-11-24 122225.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-137",
+    "type": "rts",
+    "title": "Disappearing Food",
+    "text": "Your flatmate's visitors don't follow the rules, and your cheese and tomatoes in the fridge keep disappearing. You are very unhappy and need to talk to your flatmate about it. What will you say?",
+    "facts": [
+      "Flatmate's visitors disregard house rules",
+      "Your cheese and tomatoes keep disappearing",
+      "Ask flatmate to remind visitors about food rules"
+    ],
+    "sample": "Hey, can we talk about the food in the fridge? My cheese and tomatoes keep disappearing, and I'm getting frustrated. Could you remind your visitors to check with us before taking anything that isn't theirs? I'd like us to stick to the house rules.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 137,
+      "title": "Disappearing Food",
+      "filename": "Screenshot 2026-11-24 122229.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-140",
+    "type": "rts",
+    "title": "Housework",
+    "text": "You live in a four-person dorm with three classmates. You notice that one of them hasn't been cleaning the bathroom and the kitchen according to the duty schedule, so you tell him that he needs to do his cleaning on time in the future. What would you say to him?",
+    "facts": [
+      "Four-person dorm has a duty schedule",
+      "One classmate missed bathroom and kitchen cleaning",
+      "Ask them to clean on time in future"
+    ],
+    "sample": "Hey, I noticed the bathroom and kitchen weren't cleaned on your turn. Could you take care of them and stick to the schedule next time? If your usual day is difficult, let us know in advance so we can arrange a swap.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 140,
+      "title": "Housework",
+      "filename": "Screenshot 2026-11-24 122234.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-142",
+    "type": "rts",
+    "title": "Book to Return",
+    "text": "You lent an English book to a friend three weeks ago, and he hasn't returned it yet. Now, you need the book very much. What would you say to him?",
+    "facts": [
+      "You lent a friend an English book three weeks ago",
+      "You need it now",
+      "Politely ask for its return"
+    ],
+    "sample": "Hey, do you still have the English book I lent you three weeks ago? I need to use it now. Could you bring it back today, or let me know when I can pick it up?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 142,
+      "title": "Book to Return",
+      "filename": "Screenshot 2026-11-24 122243.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-143",
+    "type": "rts",
+    "title": "Noisy Party",
+    "text": "Your family and friends are holding a party with loud music in the living room at night, which is too noisy and influences your sleep, but you have an important exam early tomorrow morning. What should you say to them?",
+    "facts": [
+      "Family and friends are playing loud music in the living room at night",
+      "Important exam early tomorrow",
+      "Ask them to lower the volume"
+    ],
+    "sample": "Hey everyone, I'm glad you're having a good time, but the music is keeping me awake and I have an important exam early tomorrow. Could you turn it down a bit so I can get some sleep? I'd really appreciate it.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 143,
+      "title": "Noisy Party",
+      "filename": "Screenshot 2026-11-24 122249.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-144",
+    "type": "rts",
+    "title": "Feedback of Essay",
+    "text": "You have written an essay in a short amount of time and have submitted it to your tutor. You need to ask your tutor whether your essay has fully covered the topic. What would you say to them?",
+    "facts": [
+      "Submitted an essay written in a short time",
+      "Ask the tutor if it fully covers the topic",
+      "Request feedback on any gaps"
+    ],
+    "sample": "Hi, could I get your feedback on the essay I submitted? I wrote it in a short amount of time, and I'd like to know whether it fully addresses the topic. If anything important is missing, could you point it out so I can improve next time?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 144,
+      "title": "Feedback of Essay",
+      "filename": "Screenshot 2026-11-24 122254.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-147",
+    "type": "rts",
+    "title": "Injured Classmate",
+    "text": "Your classmate Sue has injured her leg, but she needs to return some books to the library. You are planning to help her by returning them. What would you say to her?",
+    "facts": [
+      "Sue injured her leg",
+      "She has library books to return",
+      "Offer to return the books for her"
+    ],
+    "sample": "Hi Sue, I heard you hurt your leg. Since you still have library books to return, I'd be happy to drop them off for you. I can collect them whenever it suits you, and I'll let you know once I've returned them.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 147,
+      "title": "Injured Classmate",
+      "filename": "Screenshot 2026-11-24 122301.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-150",
+    "type": "rts",
+    "title": "Unhealthy Food",
+    "text": "The food served in the school canteen is not healthy enough. What would you say to the canteen manager to express your concerns?",
+    "facts": [
+      "School canteen food is not healthy enough",
+      "Raise concern with the manager",
+      "Suggest healthier options respectfully"
+    ],
+    "sample": "Hello, could I share some feedback about the canteen? I'd like to see more balanced meals available. Could you consider adding options like fresh fruit, salads or meals with more vegetables? It would make it easier for students to choose something healthy at lunch.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 150,
+      "title": "Unhealthy Food",
+      "filename": "Screenshot 2026-11-24 122307.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-151",
+    "type": "rts",
+    "title": "Advice for Friend",
+    "text": "Your friend frequently skips classes, arrives late, leaves early, and does not submit assignments on time. What advice would you give them?",
+    "facts": [
+      "Friend skips classes, arrives late and leaves early",
+      "Assignments are submitted late",
+      "Give supportive advice on attendance and deadlines"
+    ],
+    "sample": "Hey, I've noticed you've been missing classes and often getting there late or leaving early. That can make it hard to keep up and get assignments in on time. Could you try setting reminders for classes and due dates? If something's getting in the way, your tutor may be able to help.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 151,
+      "title": "Advice for Friend",
+      "filename": "Screenshot 2026-11-24 122312.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-155",
+    "type": "rts",
+    "title": "Fallen Tree",
+    "text": "You are on your way to campus to deliver a presentation when a fallen tree blocks the road, preventing you from arriving on time. You call your professor to ask if it would be possible to reschedule your presentation for later, or allow another student to present first. What would you say?",
+    "facts": [
+      "Fallen tree blocks your way to campus",
+      "Call the professor because you'll miss your presentation slot",
+      "Request a later slot or another student first"
+    ],
+    "sample": "Hello Professor, I'm on my way to campus, but a fallen tree is blocking the road and I won't make my presentation slot. Could another student present first, or could I give mine later? I'll update you as soon as I know when I can arrive.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 155,
+      "title": "Fallen Tree",
+      "filename": "Screenshot 2026-11-24 122317.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-158",
+    "type": "rts",
+    "title": "Difficult Class",
+    "text": "Your friend has chosen the same course as you, but he can't understand the lectures and asks you for help. However, you don’t understand them either. You suggest seeking help from the tutor. What would you say to your friend?",
+    "facts": [
+      "Friend in your course asks for help understanding lectures",
+      "You are also struggling",
+      "Suggest asking the tutor together"
+    ],
+    "sample": "I'm having trouble following the lectures too, so I probably can't explain them properly. Why don't we write down the parts we're stuck on and ask our tutor to go through them with us? I can come with you after class.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 158,
+      "title": "Difficult Class",
+      "filename": "Screenshot 2026-11-24 122321.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-160",
+    "type": "rts",
+    "title": "Lost Notebook",
+    "text": "You attended a lecture earlier today, but you lost the notebook in which you wrote all your notes. Your friend also attended the lecture and took very clear and detailed notes. You decide to ask her to lend her notes to you because you need them for your assignment. What would you say?",
+    "facts": [
+      "Lost your notebook after today's lecture",
+      "Friend took detailed notes",
+      "Ask to borrow them for your assignment"
+    ],
+    "sample": "Hey, I lost the notebook I used in today's lecture, and I need those notes for my assignment. Could I borrow yours briefly or take photos of them? I'll make sure you have them back before you need them.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 160,
+      "title": "Lost Notebook",
+      "filename": "Screenshot 2026-11-24 122326.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-164",
+    "type": "rts",
+    "title": "Missing a Class",
+    "text": "You promised to take notes for a friend who was on leave from a certain class, but that morning you woke up late and missed the class yourself, so you didn't take any notes. How should you explain this to your friend?",
+    "facts": [
+      "Promised to take notes for an absent friend",
+      "Overslept and missed the class yourself",
+      "Apologise and offer to help find notes"
+    ],
+    "sample": "Hey, I owe you an apology. I promised to take notes for you, but I overslept and missed the class myself, so I don't have any notes to share. I'll check whether another classmate can send us theirs.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 164,
+      "title": "Missing a Class",
+      "filename": "Screenshot 2026-11-24 122330.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-170",
+    "type": "rts",
+    "title": "New Laptop",
+    "text": "You bring your newly purchased laptop to the classroom and plan to use it, but you don't know how to set it up. Your classmate happens to have the same model of laptop, so you ask him for help. What would you say to him?",
+    "facts": [
+      "New laptop needs setting up in class",
+      "Classmate has the same model",
+      "Ask for setup help"
+    ],
+    "sample": "Hey, I just got this laptop and I'm trying to get it set up for class. I noticed you have the same model. Would you mind showing me how to get started when you have a moment?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 170,
+      "title": "New Laptop",
+      "filename": "Screenshot 2026-11-24 122335.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-171",
+    "type": "rts",
+    "title": "Wrong Time",
+    "text": "You just told one of your friends that the exam time is 3 p.m. tomorrow afternoon. But you've just found out that you were wrong—the exam is actually at 2 p.m. this afternoon. You want to correct this mistake immediately. What would you say to the friend?",
+    "facts": [
+      "You gave the friend the wrong exam time of 3 p.m. tomorrow",
+      "Correct it urgently to 2 p.m. this afternoon",
+      "Ask them to confirm they received the update"
+    ],
+    "sample": "Hey, urgent correction about the exam. I told you it was at three tomorrow, but it's actually at two this afternoon. Please go by the new time. Could you reply when you see this so I know you've got it?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 171,
+      "title": "Wrong Time",
+      "filename": "Screenshot 2026-11-24 122340.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-179",
+    "type": "rts",
+    "title": "Party for Parents",
+    "text": "You had nearly finished your assignment, but your sister asked you to attend your parents’ party, and as a result you missed the deadline. What would you say to your tutor?",
+    "facts": [
+      "Assignment was nearly finished",
+      "Attended your parents' party at your sister's request and missed the deadline",
+      "Apologise and ask about late submission"
+    ],
+    "sample": "Hi, I wanted to apologise for missing the assignment deadline. I'd nearly finished it when my sister asked me to attend a party for our parents, and I didn't manage my time well. Would you accept a late submission if I finish it and send it in today?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 179,
+      "title": "Party for Parents",
+      "filename": "Screenshot 2026-11-24 122345.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-187",
+    "type": "rts",
+    "title": "Borrowing Printer",
+    "text": "You need to print out the assignment you've finished and hand it in, but your printer is broken. You want to borrow a printer from your friend Carl. What would you say?",
+    "facts": [
+      "Completed assignment needs printing before submission",
+      "Your printer is broken",
+      "Ask Carl to let you use his printer"
+    ],
+    "sample": "Hey Carl, my printer's broken and I need to print my finished assignment to hand it in. Would you mind if I used your printer for a few minutes? I can bring my own paper if that helps.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 187,
+      "title": "Borrowing Printer",
+      "filename": "Screenshot 2026-11-24 122349.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-190",
+    "type": "rts",
+    "title": "Food for Party",
+    "text": "Your class is going to organize a party, and your classmate Max is responsible for preparing the food. You want to ask him what you can do to help and when exactly the party will start. What would you say to him?",
+    "facts": [
+      "Max is responsible for class party food",
+      "Offer to help and ask what he needs",
+      "Ask the exact start time"
+    ],
+    "sample": "Hey Max, I hear you're organising the food for our class party. Is there anything I can bring or help prepare? Could you also let me know exactly what time the party starts so I can plan when to get there?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 190,
+      "title": "Food for Party",
+      "filename": "Screenshot 2026-11-24 122354.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-195",
+    "type": "rts",
+    "title": "Invitation to Club",
+    "text": "Your friend has invited you to join a sports club. You are interested in the sport, but you cannot join because you are in your final year at university. What would you say to your friend?",
+    "facts": [
+      "Friend invited you to join a sports club",
+      "You are interested but final-year commitments prevent joining",
+      "Decline warmly"
+    ],
+    "sample": "Thanks for inviting me. I'm really interested in the sport, but I'm in my final year and I can't fit the club into my schedule right now. I'd love to hear how it goes, and I might be able to join once I've finished university.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 195,
+      "title": "Invitation to Club",
+      "filename": "Screenshot 2026-11-24 122358.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-199",
+    "type": "rts",
+    "title": "Friend's Homework",
+    "text": "Your friend Ali wants you to help him with his homework, but you don't have time. What would you say to him?",
+    "facts": [
+      "Ali asks for homework help",
+      "You have no time now",
+      "Decline politely and suggest a realistic alternative"
+    ],
+    "sample": "Hey Ali, I'd like to help, but I don't have time to go through the homework right now. If you need help today, you could ask the tutor. Otherwise, send me the part you're stuck on and I'll take a look when I'm free.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 199,
+      "title": "Friend's Homework",
+      "filename": "Screenshot 2026-11-24 122403.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-200",
+    "type": "rts",
+    "title": "Dorm Key",
+    "text": "You forgot to bring your dormitory key and can't get into your room, but there is still food cooking on the stove inside. You need to contact the dormitory staff immediately to solve the problem. What would you say to them?",
+    "facts": [
+      "Locked out of your dorm room without a key",
+      "Food is still cooking on the stove inside",
+      "Tell dorm staff immediately and request urgent help"
+    ],
+    "sample": "Hi, I need urgent help. I've locked myself out of my dorm room and there's food cooking on the stove inside. Could you send someone with a key right away so the stove can be turned off? I can give you my room number now.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 200,
+      "title": "Dorm Key",
+      "filename": "Screenshot 2026-11-24 122407.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-202",
+    "type": "rts",
+    "title": "Help from Colleague",
+    "text": "You need to hand in some documents to your department office, but you are not feeling well today. Since you do not feel well enough to go yourself, you want to ask a colleague to help you submit them for you. What do you say to your colleague?",
+    "facts": [
+      "You are too unwell to go to the department office",
+      "Documents need submitting there",
+      "Ask a colleague to deliver them and confirm receipt"
+    ],
+    "sample": "Hi, I'm not feeling well enough to go to the department office today. Could you please drop these documents off there on my behalf? I'd really appreciate it if you could let me know once they've been handed in.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 202,
+      "title": "Help from Colleague",
+      "filename": "Screenshot 2026-11-24 122411.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-203",
+    "type": "rts",
+    "title": "Help for Assignment",
+    "text": "A friend asks you for help with an assignment, but you do not understand it either. So you tell your friend that you are going to ask the tutor for help. What would you say?",
+    "facts": [
+      "Friend asks for assignment help",
+      "You also do not understand it",
+      "Tell them you plan to ask the tutor for help"
+    ],
+    "sample": "I'm stuck on this assignment too, so I'm going to ask the tutor to clarify the instructions. If you tell me which part you're struggling with, I can ask about that as well and share what the tutor says.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 203,
+      "title": "Help for Assignment",
+      "filename": "Screenshot 2026-11-24 122418.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-204",
+    "type": "rts",
+    "title": "Important Class",
+    "text": "Your friend Tom does not want to go to class tomorrow, but the class is very important. How would you convince him to attend the class?",
+    "facts": [
+      "Tom wants to skip tomorrow's important class",
+      "Explain why attending matters",
+      "Encourage him to come"
+    ],
+    "sample": "Tom, I know you'd rather skip class tomorrow, but it's an important session and it could be hard to catch up on your own. Why don't we go together? We can compare notes afterwards and make sure we've both understood it.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 204,
+      "title": "Important Class",
+      "filename": "Screenshot 2026-11-24 122424.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-211",
+    "type": "rts",
+    "title": "Computer and Report",
+    "text": "Your computer has broken down, but your tutor requires you to submit a report every day. You will not be able to hand in tomorrow's report because you need to take your computer to the IT Service Center for repair. What would you say to your tutor?",
+    "facts": [
+      "Broken computer needs repair at the IT Service Center",
+      "Explain why tomorrow's daily report will be missed",
+      "Tell the tutor and request an arrangement"
+    ],
+    "sample": "Hi, my computer has broken down, and I need to take it to the IT Service Center tomorrow. I won't be able to submit tomorrow's daily report on time. Could I send it once I have access to a computer again, or is there another arrangement you'd prefer?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 211,
+      "title": "Computer and Report",
+      "filename": "Screenshot 2026-11-24 122428.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-215",
+    "type": "rts",
+    "title": "Book for Essay",
+    "text": "Your friend comes to borrow a book from you for an assignment, but the assignment is due tomorrow, and you need the same book to finish your own assignment. What would you say to them?",
+    "facts": [
+      "Friend wants to borrow a book for an assignment due tomorrow",
+      "You need the same book to finish your own work",
+      "Explain and offer a way to share"
+    ],
+    "sample": "I need this book to finish my own assignment, so I can't lend it out just yet. I know yours is due tomorrow. Which pages do you need? I can send you photos of those now or let you borrow the book once I'm finished.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 215,
+      "title": "Book for Essay",
+      "filename": "Screenshot 2026-11-24 122434.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-218",
+    "type": "rts",
+    "title": "Message about Food",
+    "text": "You've invited your student and his wife to dinner, but you're unsure what kind of food they prefer. You called them, yet there was no answer, so you need to send them a text message. What would you say in the message?",
+    "facts": [
+      "Invited your student and his wife to dinner",
+      "Phone call went unanswered",
+      "Text to ask both about food preferences or dietary needs"
+    ],
+    "sample": "Hi, I'm looking forward to having you and your wife over for dinner. I tried calling earlier to check what you'd both like to eat. Could you text me any favorite dishes and let me know if either of you has any dietary requirements?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 218,
+      "title": "Message about Food",
+      "filename": "Screenshot 2026-11-24 122438.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-222",
+    "type": "rts",
+    "title": "Volleyball",
+    "text": "You are a volleyball player, but your university does not place enough importance on this sport and has not organized any volleyball-related activities. You need to express your suggestions to the university administrator. What would you say?",
+    "facts": [
+      "You play volleyball and university has not organised any volleyball activities",
+      "Raise the issue with university administration",
+      "Propose a concrete activity"
+    ],
+    "sample": "Hello, I'm a volleyball player and I'd like the university to offer more opportunities to play. Would you consider starting a social volleyball session or organising an interfaculty tournament? I can help gauge student interest and find people to get it started.",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 222,
+      "title": "Volleyball",
+      "filename": "Screenshot 2026-11-24 122448.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-232",
+    "type": "rts",
+    "title": "Barking Dog",
+    "text": "Your neighbor has a dog that barks throughout the night. The noise makes it difficult for you to fall asleep, and you have an important exam tomorrow morning. You meet your neighbor the next day. What would you say to them?",
+    "facts": [
+      "Neighbor's dog barks throughout the night",
+      "Noise keeps you from sleeping before an important exam tomorrow morning",
+      "Ask the neighbor to reduce the barking tonight"
+    ],
+    "sample": "Hi, I wanted to mention that your dog was barking through the night, and I had trouble falling asleep. I've got an important exam tomorrow morning. Would you be able to bring the dog inside tonight or do something to help keep it quiet?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 232,
+      "title": "Barking Dog",
+      "filename": "Screenshot 2026-11-24 122453.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  },
+  {
+    "id": "rts-user-20261124-234",
+    "type": "rts",
+    "title": "Food in the Refrigerator",
+    "text": "You share a house with two people. You bought tomatoes and cheese on Monday and put them in the refrigerator. Today, you are going to make lunch, but you cannot find them in the refrigerator. You want to ask your roommates if they have seen them. What would you say?",
+    "facts": [
+      "You share a house with two roommates",
+      "Tomatoes and cheese bought on Monday are missing from the fridge before lunch",
+      "Ask roommates if they have seen the food"
+    ],
+    "sample": "Hey, have either of you seen the tomatoes and cheese I put in the fridge on Monday? I was going to use them for lunch, but I can't find them. Could you let me know if you moved them or know where they are?",
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-24",
+      "sourceId": 234,
+      "title": "Food in the Refrigerator",
+      "filename": "Screenshot 2026-11-24 122459.png",
+      "contentStatus": "transcribed-user-provided"
+    }
+  }
+]

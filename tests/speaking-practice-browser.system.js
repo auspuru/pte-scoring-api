@@ -2,6 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),path=require('node:path'),os=require('node:os'),express=require('express'),puppeteer=require('puppeteer'),run=require('node:util').promisify(require('node:child_process').execFile);
 const {installSpeakingLab}=require('../speaking-lab'),{until}=require('./helpers/full-mock-systems');
 const root=path.resolve(__dirname,'..');
+const suppliedRts=require('../content/user-rts-20261124.json');
 for(const width of [1365,390])test('Speaking practice '+width+'px: session fallback, RTS modes plus RL/SGD pre-audio buffer, ten-second preparation and recording cues',{timeout:60000},async t=>{
  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-modes-browser-')),source=path.join(root,'content/speaking-audio/rs-1.mp3'),clip=path.join(directory,'prompt.mp3'),mic=path.join(directory,'mic.wav');
  await run('ffmpeg',['-hide_banner','-loglevel','error','-nostdin','-y','-i',source,'-t','2','-c:a','libmp3lame',clip]);await run('ffmpeg',['-hide_banner','-loglevel','error','-nostdin','-y','-i',source,'-ar','48000','-ac','1','-c:a','pcm_s16le',mic]);
@@ -12,7 +13,14 @@ for(const width of [1365,390])test('Speaking practice '+width+'px: session fallb
  browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{}),args:['--autoplay-policy=no-user-gesture-required','--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream','--use-file-for-fake-audio-capture='+mic]});
  const page=await browser.newPage();await page.setViewport({width,height:950});page.setDefaultTimeout(12000);const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:'+server.address().port);
  const click=async selector=>{await page.locator(selector).click();};
- await click('[data-speaking-mode="untimed"]');await click('[data-speaking-question="rts-original-20261024-01"]');
+ await page.waitForSelector('#speaking-library-list .practice-library-row');
+ const rows=await page.$$eval('#speaking-library-list .practice-library-row', elements=>elements.map(row=>({
+  id:row.dataset.questionKey,badge:row.querySelector('.practice-library-label')?.textContent,
+ })));
+ assert.deepEqual(rows.slice(0,suppliedRts.length),suppliedRts.map(q=>({id:q.id,badge:'New'})));
+ assert.equal(rows[suppliedRts.length].id,'rts-1');
+ assert(rows.slice(suppliedRts.length).every(row=>row.badge===undefined));
+ await click('[data-speaking-mode="untimed"]');await click('[data-speaking-question="'+suppliedRts[0].id+'"]');
  await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Ready when you are');assert.equal(await page.evaluate(()=>__plays),1);assert.equal(await page.evaluate(()=>__records),0);
  await page.evaluate(()=>__offset+=120000);assert.equal(await page.$eval('#speaking-clock',e=>e.textContent),'Untimed');await click('#speaking-ready-start');await page.waitForFunction(()=>__bytes>100);
  await page.evaluate(()=>__offset+=120000);assert.equal(await page.$eval('#speaking-phase',e=>e.textContent),'● Recording');await click('#speaking-finish');
@@ -38,7 +46,7 @@ for(const width of [1365,390])test('Speaking practice '+width+'px: session fallb
   await until(async()=>(await service.store.list('fixture')).some(a=>a.questionId===questionId&&a.recording),'Buffered response did not stop and save');
   await page.waitForFunction(()=>!document.querySelector('[data-speaking-action="list"]').disabled);await click('[data-speaking-action="list"]');
  }
- const attempts=await service.store.list('fixture');assert.equal(attempts.length,4);assert.deepEqual(attempts.filter(a=>a.questionId==='rts-original-20261024-01').map(a=>a.practiceMode).sort(),['timed','untimed']);await page.evaluate(()=>SpeakingPractice.open('rs'));await click('[data-speaking-question="rs-1"]');await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Audio starts in');
+ const attempts=await service.store.list('fixture');assert.equal(attempts.length,4);assert.equal(attempts.find(a=>a.questionId===suppliedRts[0].id).practiceMode,'untimed');assert.equal(attempts.find(a=>a.questionId==='rts-original-20261024-01').practiceMode,'timed');await page.evaluate(()=>SpeakingPractice.open('rs'));await click('[data-speaking-question="rs-1"]');await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Audio starts in');
  const draft=(await service.store.list('fixture')).find(a=>a.questionId==='rs-1');await page.evaluate(()=>__offset+=2000);await click('[data-speaking-action="list"]');await click('[data-speaking-resume-question="rs-1"][data-speaking-attempt="'+draft.id+'"]');
  await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent.includes('paused'));assert.equal((await service.store.list('fixture')).filter(a=>a.questionId==='rs-1').length,1);assert.match(await page.$eval('#speaking-clock',e=>e.textContent),/0:0[23]/);
  await click('#speaking-record');await page.evaluate(()=>__offset+=3500);await page.waitForFunction(()=>document.getElementById('speaking-phase')?.textContent==='Listening');assert.equal(await page.$eval('[data-speaking-action="reattempt"]',e=>e.disabled),false);assert.equal(await page.$eval('[data-speaking-move="1"]',e=>e.disabled),false);
