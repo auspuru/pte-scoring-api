@@ -1,0 +1,60 @@
+[
+  {
+    "id": "sgd-user-20261124-01",
+    "type": "sgd",
+    "title": "Pros and Cons of Group Discussions",
+    "narration": "Three speakers are discussing the pros and cons of group discussions.",
+    "turns": [
+      [
+        "Speaker 1",
+        "Hey, guys. I don’t know if you think group discussions are helpful. For me, I don’t really enjoy group discussions—I’m shy and always get nervous when talking in front of classmates. Even when I have good ideas in my head, I struggle to speak up openly in front of the whole group."
+      ],
+      [
+        "Speaker 2",
+        "I totally get you! I don’t like group discussions either—especially when someone in the group is really dominant; it makes the whole discussion super annoying. Some people take over the whole conversation and leave quieter members almost no chance to express their real thoughts."
+      ],
+      [
+        "Speaker 3",
+        "Well, I actually quite like group discussions. I will have a chance to learn from my peers, hear new ways of thinking, and sometimes even get help from partners when there is a problem. The group discussion can make the whole learning process more collaborative and less stressful. We can pick up practical skills that we would hardly gain when studying all by ourselves."
+      ],
+      [
+        "Speaker 1",
+        "I totally get what you mean about helping each other—that’s really valuable. I think it’s fine to discuss ideas and share perspectives. But I’m not comfortable actually creating the work as a group, because when too many people try to write or build something together, it often becomes messy or unproductive. Different personal standards make it hard to produce satisfying work together."
+      ],
+      [
+        "Speaker 2",
+        "Agreed! Finding the right partners and dividing group tasks properly can be quite challenging, yet it’s essential for a productive group discussion. Poor coordination in these areas often leads to misunderstandings or even conflict. It is really difficult to match everyone’s study pace and personal timetable."
+      ],
+      [
+        "Speaker 3",
+        "That makes sense. I have run into those troubles many times in past group projects. Still, I believe its advantages can outweigh the disadvantages if we manage everything from the very start."
+      ],
+      [
+        "Speaker 1",
+        "Exactly. I’m okay with exchanging opinions, but joint creation tends to cause disagreements and nobody’s idea gets shown clearly. Too many conflicting suggestions will slow down our progress significantly."
+      ],
+      [
+        "Speaker 2",
+        "Right. Balancing different opinions and personal schedules really wastes plenty of our study time. Sometimes small disagreements can turn into unnecessary arguments among teammates."
+      ],
+      [
+        "Speaker 3",
+        "True. If everyone respects others and sets clear responsibilities at the beginning, group discussion can still bring us fresh viewpoints we cannot get alone. When rules are clear, both outgoing and shy members can get something useful out of the activity."
+      ]
+    ],
+    "source": {
+      "kind": "user-supplied-transcript",
+      "provider": "APEUni",
+      "date": "2026-11-24",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "audioRate": "-17%",
+    "facts": [
+      "The three speakers discuss the benefits and drawbacks of group discussions.",
+      "Speaker 1 is shy about speaking in front of classmates and prefers exchanging ideas to creating work jointly, where different standards and conflicting suggestions can stall progress.",
+      "Speaker 2 dislikes dominant members crowding out quieter voices and says that coordinating partners, responsibilities and schedules takes time and can lead to conflict.",
+      "Speaker 3 values peer support, fresh perspectives and practical skills, and believes the advantages can outweigh the drawbacks if members respect one another and establish clear responsibilities from the start."
+    ],
+    "sample": "The speakers discuss the pros and cons of group discussions. The first finds it hard to speak up and sees value in exchanging ideas, but feels that creating work together can be unproductive when people have different standards. The second dislikes dominant speakers who shut others out and points to the time and conflict involved in dividing tasks and coordinating schedules. The third values peer support, new perspectives and practical skills. Although this speaker recognises the difficulties, they argue that clear rules and responsibilities agreed from the outset can give both quieter and more outgoing members a chance to benefit."
+  }
+]
