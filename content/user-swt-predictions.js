@@ -11,7 +11,8 @@ const originalPassages = [
 const passages = Object.freeze([
   ...originalPassages.slice(0, 2),
   ...require('./user-swt-predictions-oct23'),
-  ...originalPassages.slice(2)
+  ...originalPassages.slice(2),
+  ...require('./user-swt-practice-nov24')
 ].map(row => ({
   ...row,
   sampleNotes: 'Teacher-editable draft SWT reference; human review pending.',
@@ -31,7 +32,7 @@ const source = Object.freeze({
   task: 'swt'
 });
 
-const swt = Object.freeze(passages.map(row => ({
+const swt = Object.freeze(passages.filter(row => !row.standaloneOnly).map(row => ({
   id: row.predictionId,
   type: 'swt',
   title: row.title,
