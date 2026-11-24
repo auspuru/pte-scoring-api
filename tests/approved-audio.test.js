@@ -18,9 +18,13 @@ test('Speaking and Writing attempts preserve keyed media and serve newly importe
  const catalogSpeaking=await request('/api/speaking/catalog');
  const retellPredictions = require('../content/user-rl-20261123.json');
  const retellCatalogue = catalogSpeaking.questions.filter(q => q.type === 'rl');
- assert.equal(retellCatalogue.length, 65);
+ assert.equal(retellCatalogue.length, 66);
  const labeledRetells = retellCatalogue.filter(q => q.title.startsWith('New Questions · '));
  assert.deepEqual(labeledRetells.map(q => q.id), retellPredictions.map(q => q.id));
+ const pavlov = retellPredictions.find(q => q.source.sourceId === 165);
+ assert.equal(pavlov.source.contentStatus, 'adapted');
+ assert.equal(labeledRetells.find(q => q.id === pavlov.id).title,
+   'New Questions · Pavlov Experiment (adapted) · AI practice narration');
  for (const [index, lecture] of retellPredictions.entries()) {
    const id = crypto.randomUUID();
    const created = await request('/api/speaking/attempts', { id, questionId: lecture.id }, 'retell-fixture');
