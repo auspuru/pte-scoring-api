@@ -143,3 +143,25 @@ test('Essay attempt matching uses the actual prompt and retains legacy ID-only r
  const q={id:'seed_0',question:'Discuss libraries and digital learning.'},rows=[{id:'current',questionId:'seed_0',questionText:q.question},{id:'legacy',questionId:'old-seed',questionText:'Discuss libraries and  digital learning.'},{id:'id-only',questionId:'seed_0'},{id:'reused-id',questionId:'seed_0',questionText:'Discuss a different topic.'},{id:'same-title',questionTitle:'Same title',questionText:'Another question.'}];
  assert.deepEqual(studio.essayAttempts(q,rows).map(a=>a.id),['current','legacy','id-only']);
 });
+
+
+test('New only uses catalogue markers and dated releases in the Brisbane calendar', () => {
+ const now=Date.parse('2026-11-23T14:01:00Z');
+ assert.equal(studio.isNewQuestion({id:940519,badge:'NEW'},now),true);
+ assert.equal(studio.isNewQuestion({id:'pred26-user-sst-01',badge:'NEW'},now),true);
+ assert.equal(studio.isNewQuestion({id:940519,badge:''},now),false);
+ assert.equal(studio.isNewQuestion({id:'rl-user-20261123-165'},now),true);
+ assert.equal(studio.isNewQuestion({id:'rl-user-20261123-165'},now-86400000),false);
+ assert.equal(studio.isNewQuestion({id:'di-user-2026111714'},now),true);
+ assert.equal(studio.isNewQuestion({id:'di-pred-3000114'},now),true);
+ assert.equal(studio.isNewQuestion({id:'di-pred-3000195'},now),false);
+ assert.equal(studio.isNewQuestion({id:'di-ipt-di-20261106-01'},now),true);
+ assert.equal(studio.isNewQuestion({id:'seed_35',addedOn:'2026-11-24'},now),true);
+ assert.equal(studio.isNewQuestion({id:'seed_35',addedOn:'2026-11-11'},now),true);
+ assert.equal(studio.isNewQuestion({id:'seed_35',addedOn:'2026-11-10'},now),false);
+ assert.equal(studio.isNewQuestion({id:'seed_35',addedOn:'2026-11-25'},now),false);
+ assert.equal(studio.isNewQuestion({id:'seed_35',addedOn:'2026-11-31'},now),false);
+ assert.equal(studio.isNewQuestion({id:'RFIB_016'},now),false);
+ assert.match(studio.questionLibrary({task:'swt'}),/role="switch" aria-checked="false" data-library-new-only>New only/);
+ assert.match(studio.libraryRows([{id:940519,number:1,title:'Sample',badge:'NEW',actions:''}]),/data-question-new="true"/);
+});

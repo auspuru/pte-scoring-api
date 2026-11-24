@@ -2,7 +2,7 @@
   "baselineCommit": "960d1fd1dc37d5772f24c27286181a0b30d461b2",
   "scope": "Reviewed SWT scoring, feedback and report references, plus Describe Image numerical context, frozen-policy routing, standalone content-format repair and retry feedback. Saved marks and historical scoring sources remain preserved. This revision adds versioned RTS Content grading and routes saved attempts to their original rubric.",
   "files": {
-    "server.js": "c06d7dd40adc22c9bd0461ada2d8fbc226d4efed320eefa0e38a971f6a016543",
+    "server.js": "b8ead09eed050b8a75249b9e8f1101c44fa3ff77f26bba6c32c90b35ee529fba",
     "full-mock/assessment.js": "e37b9e2f44d48cab0e97b895f2fb607d7534fc2d232e6acb78efeab8ea912671",
     "full-mock/adapters.js": "b08379517a343298f7aecc7ef89f7ff06d50a7871a8126ee6efab71d1edf908b",
     "full-mock/aggregation.js": "6fcd85d0317145d0b0686882f998659c1c8326bf5165a95ae14f5c28894b488d",

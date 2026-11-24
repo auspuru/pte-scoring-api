@@ -3895,7 +3895,7 @@ require('./practice-library-flags').installPracticeLibraryFlags(app, {
   getAccount: uid => getPracticeAccount(uid, { fresh: true }),
   speakingAllowed: speakingAccess.allowed,
   getPassage: id => PassageAPI.getById(id),
-  essaySeedCount: 35,
+  essaySeedCount: 37,
   rateLimiter: rateLimit ? rateLimit({ windowMs: 60 * 1000, max: 60, standardHeaders: true, legacyHeaders: false }) : null
 });
 

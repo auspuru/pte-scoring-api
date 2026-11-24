@@ -23,7 +23,7 @@
       sessions.clear();
     }
     if (!sessions.has(task)) sessions.set(task, {
-      token: current, questions: new Map(), pending: new Set(), revision: false, sort: false,
+      token: current, questions: new Map(), pending: new Set(), revision: false, sort: false, newOnly: false,
       username: '', loaded: false, checkedAt: 0, error: '', loading: null
     });
     return sessions.get(task);
@@ -134,6 +134,11 @@
         load(task, session, true);
         return;
       }
+      if (button.hasAttribute('data-library-new-only')) {
+        session.newOnly = !session.newOnly;
+        render(library);
+        return;
+      }
       if (button.dataset.libraryView) {
         session.revision = button.dataset.libraryView === 'revision';
         render(library);
@@ -184,7 +189,7 @@
       const questionId = row.dataset.questionKey;
       const info = session.questions.get(questionId) || {};
       const bookmarked = info.bookmarked === true || legacy.has(questionId);
-      row.hidden = session.revision && !bookmarked;
+      row.hidden = (session.revision && !bookmarked) || (session.newOnly && row.dataset.questionNew !== 'true');
       let actions = row.querySelector('.practice-library-flags');
       if (!actions) {
         const report = row.dataset.questionReportable !== 'false';
@@ -217,11 +222,13 @@
       button.setAttribute('aria-pressed', String(session.revision === (button.dataset.libraryView === 'revision')));
       button.disabled = !session.loaded && button.dataset.libraryView === 'revision';
     }
+    library.querySelector('[data-library-new-only]')?.setAttribute('aria-checked', String(session.newOnly));
     const sort = library.querySelector('[data-library-sort]');
     sort.value = session.sort ? 'reported' : 'default';
     sort.disabled = !session.loaded;
     const feedback = library.querySelector('[data-library-feedback]');
-    const message = session.error || (session.revision && !visible ? 'No matching revision questions.' : '');
+    const empty = visible || !rows.length ? '' : session.newOnly ? 'No new questions match these filters.' : session.revision ? 'No matching revision questions.' : '';
+    const message = [empty, session.error].filter(Boolean).join(' ');
     if (feedback.textContent !== message) feedback.textContent = message;
     library.querySelector('[data-library-retry]').hidden = !session.error;
   }

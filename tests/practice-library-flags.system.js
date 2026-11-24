@@ -35,7 +35,9 @@ test('Practice flags share only report totals and preserve SWT numbering across 
     passages = (await f.request('/api/passages')).body.passages;
     return passages?.some(p => p.questionSet === 'nov23-2026-swt');
   }, 'SWT prediction import completes in the isolated database');
-  const questionId = String(passages[1].id);
+  const newPosition = passages.findIndex(p => p.questionSet === 'nov23-2026-swt');
+  assert.ok(newPosition > 0);
+  const questionId = String(passages[newPosition].id);
   const swtRoute = '/api/practice-library/swt/flags';
   async function put(task, questionId, kind, enabled, token) {
     const response = await fetch(f.base + '/api/practice-library/' + task + '/flags', {
@@ -68,6 +70,10 @@ test('Practice flags share only report totals and preserve SWT numbering across 
   assert.deepEqual(otherReport, { count: 1, reported: false, bookmarked: false });
   assert.equal((await put('dictation', 'unrecognised-question', 'report', true, first)).status, 404);
   assert.equal((await put('practice', 'personal-essay', 'report', true, first)).status, 404);
+  for (const id of ['seed_35', 'seed_36']) {
+    assert.equal((await put('practice', id, 'report', true, first)).body.count, 1);
+  }
+  assert.equal((await put('practice', 'seed_37', 'report', true, first)).status, 404);
 
   const browser = await puppeteer.launch({ headless: true, executablePath: process.env.FULL_MOCK_TEST_CHROME_PATH || undefined });
   t.after(() => browser.close());
@@ -78,7 +84,7 @@ test('Practice flags share only report totals and preserve SWT numbering across 
     if (response.url().includes('/api/practice-library/') && !response.ok()) errors.push('Flag request HTTP ' + response.status());
   });
   await page.setViewport({ width: 390, height: 850 });
-  await page.goto(f.base);
+  await page.goto(f.base, { waitUntil: 'domcontentloaded', timeout: 45000 });
   await page.type('#loginUsername', 'report-first');
   await page.type('#loginPassword', password);
   await page.locator('#loginSubmitBtn').click();
@@ -97,7 +103,20 @@ test('Practice flags share only report totals and preserve SWT numbering across 
     assert.fail(JSON.stringify({ errors, details, failure: error.message }));
   }
   assert.match(await page.$eval(row + ' [data-library-report-count]', el => el.textContent), /^1 report$/);
-  assert.equal(await page.$eval(row + ' .practice-library-number', el => el.textContent), '#2');
+  assert.equal(await page.$eval(row + ' .practice-library-number', el => el.textContent), '#' + (newPosition + 1));
+  const newSwitch='#swtQuestionLibrary [data-library-new-only]';
+  await page.focus(newSwitch);
+  await page.keyboard.press('Space');
+  assert.equal(await page.$eval(newSwitch, el => el.getAttribute('aria-checked')), 'true');
+  const visible='#swtQuestionRows > article:not([hidden])';
+  assert.equal(await page.$$eval(visible, rows => rows.every(el => el.dataset.questionNew === 'true')), true);
+  assert.ok(await page.$(visible+'[data-question-key="'+questionId+'"]'));
+  assert.ok(await page.$('#swtQuestionRows > article[data-question-new="false"][hidden]'));
+  await page.locator('#swtQuestionSearch').fill('#1');
+  await page.waitForFunction(() => document.querySelector('#swtQuestionLibrary [data-library-feedback]')?.textContent === 'No new questions match these filters.');
+  await page.$eval('#swtQuestionSearch', node => node.select());
+  await page.keyboard.press('Backspace');
+  await page.waitForSelector(visible+'[data-question-key="'+questionId+'"]', { visible: true });
   await page.select('[data-practice-library-task="swt"] [data-library-sort]', 'reported');
   assert.equal(await page.$eval('#swtQuestionRows > article', el => el.dataset.questionKey), questionId);
   await page.locator('[data-practice-library-task="swt"] [data-library-view="revision"]').click();
@@ -108,6 +127,9 @@ test('Practice flags share only report totals and preserve SWT numbering across 
   await page.locator('[data-practice-library-task="swt"] [data-library-view="all"]').click();
   await page.locator(row + ' [data-library-flag="report"]').click();
   await page.waitForFunction(sel => document.querySelector(sel + ' [data-library-report-count]')?.textContent === '0 reports', {}, row);
+  await page.locator(newSwitch).click();
+  assert.equal(await page.$eval(newSwitch, el => el.getAttribute('aria-checked')), 'false');
+  assert.ok(await page.$(visible+'[data-question-new="false"]'));
   await page.select('[data-practice-library-task="swt"] [data-library-sort]', 'default');
   assert.equal(await page.$eval('#swtQuestionRows > article', el => el.dataset.questionKey), String(passages[0].id));
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), 390);

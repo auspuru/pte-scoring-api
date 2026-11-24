@@ -29,6 +29,11 @@ for(const width of [1366,1920])test('Unified practice library '+width+'px: all 2
   assert.equal(timerShape.height,'18px',task.route);
   assert.equal(timerShape.kind,task.route.startsWith('speaking-')?'BUTTON':'INPUT',task.route);
   if(timerShape.kind==='INPUT')assert.equal(timerShape.appearance,'none',task.route);
+  const newSwitch=await page.$eval('.pane.active .practice-question-library [data-library-new-only]',node=>{
+   const css=getComputedStyle(node,'::before');
+   return {label:node.textContent,role:node.getAttribute('role'),checked:node.getAttribute('aria-checked'),width:css.width,height:css.height};
+  });
+  assert.deepEqual(newSwitch,{label:'New only',role:'switch',checked:'false',width:'30px',height:'18px'},task.route);
   if(['swt','speaking-ra','speaking-sgd','reading-dropdown','spoken-text','practice'].includes(task.route)){const fs=require('node:fs/promises');await fs.mkdir(require('node:path').join(__dirname,'../.cache'),{recursive:true});await page.screenshot({path:require('node:path').join(__dirname,'../.cache/practice-library-'+task.route+'.png')});}
   assert(shape.libraryWidth>=shape.viewport-100,task.route+' library must fill the desktop '+JSON.stringify(shape));assert.deepEqual(shape.labels,['Find a question','Show'],task.route);assert.equal(shape.horizontal,true,task.route);assert.equal(shape.meta,'#1',task.route);assert.equal(shape.title,true);assert.equal(shape.action,'Practise →',task.route);assert(shape.buttonHeight>=44,task.route+' '+JSON.stringify(shape));assert.equal(shape.rowsOverflow,'auto',task.route);assert.equal(shape.rowFont,'16px',task.route);assert.equal(shape.rowsHeight,'585px',task.route);assert.equal(shape.extraHeading,false,task.route);assert(shape.listeningModes<=2,task.route+' has duplicate mode controls');assert.equal(shape.overflow,false,task.route);
  }

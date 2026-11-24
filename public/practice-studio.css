@@ -290,7 +290,8 @@ body #lab .listening-studio:has(.practice-question-library)>.studio-heading{disp
 body #lab:has(.practice-question-library){overflow:auto!important}
 
 /* November SWT imports: first-attempt New label, scoped to student history. */
-#swtPane .practice-library-label{display:inline-flex;align-items:center;margin:0 0 8px;padding:3px 8px;border-radius:999px;border:1px solid #bd273b;color:#a61d31;background:#fff0f2;font-size:10px;font-weight:800;line-height:1.35;letter-spacing:.055em;text-transform:uppercase}
+#swtPane .practice-library-label,
+.practice-library-row[data-question-new="true"] .practice-library-label{display:inline-flex;align-items:center;margin:0 0 8px;padding:3px 8px;border-radius:999px;border:1px solid #bd273b;color:#a61d31;background:#fff0f2;font-size:10px;font-weight:800;line-height:1.35;letter-spacing:.055em;text-transform:uppercase}
 
 /* Student-reported SWT exam questions: one-click reported state. */
 #swtPane .swt-report-button[aria-disabled="true"]{opacity:1;color:#326b4f;border-color:#a4ceba;background:#eef7f2;cursor:default}

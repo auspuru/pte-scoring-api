@@ -98,8 +98,49 @@
     const keys=new Map(fallback.map(id=>[String(id),id]));
     return [...rows].filter(row=>!row.hidden&&keys.has(row.dataset.questionKey)).map(row=>keys.get(row.dataset.questionKey));
   }
+  const datedReleaseId = /^(?:ra|rs|di|rl|sgd|rts|sst|wfd)-(?:user|upload|original|adapted|ipt-di)-(\d{4})(\d{2})(\d{2})(?:[-\d]|$)/;
+  // These images entered the bank on 17 November with source IDs that omit the release date.
+  const novemberImageReleaseIds = new Set([
+    3000114, 3000139, 3000141, 3000145, 3000148, 3000154, 3000161, 3000172,
+    3000185, 3000199, 3000202, 3000208, 3000213, 3000216, 3000217, 3000222,
+    3000224, 3000229, 3000233, 3000234, 3000241, 3000243, 3000250, 3000251,
+    3000268, 3000295, 3000307, 3000311, 3000324, 3000339, 3000500, 3000508,
+    3000517, 3000532, 3000537, 3000616, 3000636, 3000645, 3000662, 3000674,
+    3000683, 3000690, 3000693, 3000703, 3000709, 3000714, 3000715, 3000717,
+    3000834, 3000835, 3000845, 3001354, 3001357, 3001358, 3001371, 3001379,
+    3001383, 3001385, 3001408, 3001410, 3001411, 3001414, 3001415, 3001417,
+    3001420, 3001426, 3001428, 3001431, 3001433, 3001436, 3001437, 3001439,
+    3001445, 3001446,
+  ].map(sourceId => 'di-pred-' + sourceId).concat([
+    '01', '02', '03', '04', '05', '06', '08', '10', '11', '12', '13', '14', '17',
+  ].map(sourceId => 'di-ipt-di-20261106-' + sourceId)));
+  const dayMs = 24 * 60 * 60 * 1000;
+  const brisbaneOffsetMs = 10 * 60 * 60 * 1000;
+
+  function isNewQuestion(row, now = Date.now()) {
+    if (row.badge === 'NEW') return true;
+    const id = String(row.id);
+    let date = row.addedOn;
+    if (!date) {
+      if (novemberImageReleaseIds.has(id)) date = '2026-11-17';
+      // This Retell Lecture batch was published the day after its source date.
+      else if (id.startsWith('rl-user-20261123-')) date = '2026-11-24';
+      else date = datedReleaseId.exec(id)?.slice(1).join('-');
+    }
+    if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+    const published = Date.parse(date + 'T00:00:00Z');
+    if (!Number.isFinite(published) || new Date(published).toISOString().slice(0, 10) !== date) return false;
+    const age = Math.floor((now + brisbaneOffsetMs) / dayMs) - published / dayMs;
+    return age >= 0 && age < 14;
+  }
+
   function libraryRows(rows,{empty='No questions match these filters.'}={}) {
-    return rows.length?rows.map(row=>'<article class="practice-library-row" role="group" aria-label="Question '+esc(row.number)+': '+esc(row.title||row.id)+'" data-question-key="'+esc(row.key ?? row.id)+'" data-question-number="'+esc(row.number)+'" data-question-reportable="'+(row.reportable!==false)+'"><div class="practice-library-row-copy"><small class="practice-library-number">#'+esc(row.number)+'</small><h3>'+esc(row.title||'Question '+row.number)+'</h3>'+(row.badge?'<span class="practice-library-label" aria-label="Question status: '+esc(row.badge)+'">'+esc(row.badge)+'</span>':'')+'<p>'+esc(row.status||'Not attempted')+'</p>'+(row.latestScore?'<p class="practice-library-detail practice-library-score">'+esc(row.latestScore)+'</p>':'')+(row.detail?'<p class="practice-library-detail">'+esc(row.detail)+'</p>':'')+'</div><div class="practice-library-row-actions">'+row.actions+'</div></article>').join(''):'<p class="practice-library-empty" role="status">'+esc(empty)+'</p>';
+    if (!rows.length) return '<p class="practice-library-empty" role="status">'+esc(empty)+'</p>';
+    const now=Date.now();
+    return rows.map(row=>{
+      const isNew=isNewQuestion(row,now),badge=isNew?'NEW':row.badge;
+      return '<article class="practice-library-row" role="group" aria-label="Question '+esc(row.number)+': '+esc(row.title||row.id)+'" data-question-key="'+esc(row.key ?? row.id)+'" data-question-number="'+esc(row.number)+'" data-question-new="'+isNew+'" data-question-reportable="'+(row.reportable!==false)+'"><div class="practice-library-row-copy"><small class="practice-library-number">#'+esc(row.number)+'</small><h3>'+esc(row.title||'Question '+row.number)+'</h3>'+(badge?'<span class="practice-library-label" aria-label="Question status: '+esc(badge)+'">'+esc(badge)+'</span>':'')+'<p>'+esc(row.status||'Not attempted')+'</p>'+(row.latestScore?'<p class="practice-library-detail practice-library-score">'+esc(row.latestScore)+'</p>':'')+(row.detail?'<p class="practice-library-detail">'+esc(row.detail)+'</p>':'')+'</div><div class="practice-library-row-actions">'+row.actions+'</div></article>';
+    }).join('');
   }
   function createTranscriptSearch(env, token, refresh) {
     let scope, timer;
@@ -128,11 +169,12 @@
     };
   }
   function questionLibrary({skill,title,task,description='Choose a question before entering your practice workspace.',total=0,searchId='',searchAttrs='',search='',transcriptSearch=false,filterId='',filterAttrs='',filter='all',filters=[['all','All questions'],['new','Not attempted'],['draft','In progress'],['done','Completed']],rowsId='',rowsAttrs='',rowsClass='',rows='',options='',extras='',className=''}={}) {
-    return '<section class="practice-question-library '+esc(className)+'"'+(task?' data-practice-library-task="'+esc(task)+'"':'')+'><header class="practice-library-heading"><div><p class="practice-library-eyebrow">'+esc(skill)+' practice</p><h2>'+esc(title)+'</h2><p>'+esc(description)+'</p></div><span class="practice-library-count" role="status">'+esc(total)+' questions</span></header>'+(options?'<div class="practice-library-options">'+options+'</div>':'')+'<div class="practice-library-filters"><label>Find a question<input type="search" '+(searchId?'id="'+esc(searchId)+'" ':'')+searchAttrs+' value="'+esc(search)+'" placeholder="'+(transcriptSearch?'Title, transcript or #number':'Title or #number')+'"></label><label>Show<select '+(filterId?'id="'+esc(filterId)+'" ':'')+filterAttrs+'>'+filters.map(([value,label])=>'<option value="'+esc(value)+'" '+(value===filter?'selected':'')+'>'+esc(label)+'</option>').join('')+'</select></label></div><div class="practice-library-rows '+esc(rowsClass)+'" '+(rowsId?'id="'+esc(rowsId)+'" ':'')+rowsAttrs+'>'+rows+'</div>'+(extras?'<div class="practice-library-extras">'+extras+'</div>':'')+'</section>';
+    const newControl = task ? '<button type="button" class="practice-timed-switch" role="switch" aria-checked="false" data-library-new-only>New only</button>' : '';
+    return '<section class="practice-question-library '+esc(className)+'"'+(task?' data-practice-library-task="'+esc(task)+'"':'')+'><header class="practice-library-heading"><div><p class="practice-library-eyebrow">'+esc(skill)+' practice</p><h2>'+esc(title)+'</h2><p>'+esc(description)+'</p></div><span class="practice-library-count" role="status">'+esc(total)+' questions</span></header>'+(options||newControl?'<div class="practice-library-options">'+options+newControl+'</div>':'')+'<div class="practice-library-filters"><label>Find a question<input type="search" '+(searchId?'id="'+esc(searchId)+'" ':'')+searchAttrs+' value="'+esc(search)+'" placeholder="'+(transcriptSearch?'Title, transcript or #number':'Title or #number')+'"></label><label>Show<select '+(filterId?'id="'+esc(filterId)+'" ':'')+filterAttrs+'>'+filters.map(([value,label])=>'<option value="'+esc(value)+'" '+(value===filter?'selected':'')+'>'+esc(label)+'</option>').join('')+'</select></label></div><div class="practice-library-rows '+esc(rowsClass)+'" '+(rowsId?'id="'+esc(rowsId)+'" ':'')+rowsAttrs+'>'+rows+'</div>'+(extras?'<div class="practice-library-extras">'+extras+'</div>':'')+'</section>';
   }
   function brisbaneDate(value) {
     const date=new Date(value);if(!Number.isFinite(date.getTime()))return 'Saved attempt';
     return date.toLocaleString('en-AU',{timeZone:'Australia/Brisbane',day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
   }
-  return { navigation, heading, wrap, install, focusQuestion, pinNavigation, selectedQueue, questionToolbar, attemptHistory, matchesQuestionNumber, libraryQueue, libraryRows, createTranscriptSearch, questionLibrary, brisbaneDate, essayAttempts, latestWritingScore };
+  return { navigation, heading, wrap, install, focusQuestion, pinNavigation, selectedQueue, questionToolbar, attemptHistory, matchesQuestionNumber, libraryQueue, isNewQuestion, libraryRows, createTranscriptSearch, questionLibrary, brisbaneDate, essayAttempts, latestWritingScore };
 });
