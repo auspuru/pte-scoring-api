@@ -8,7 +8,7 @@ test('the seven single-task pools are unique, ready and only advertise supported
     assert(meta.counts.every(n=>[5,10,15,20].includes(n)&&n<=pool.length));
     for(const count of meta.counts){const paper=random.make({type:meta.type,count},[],n=>n-1);assert.equal(paper.questions.length,count);assert(paper.questions.every(q=>q.type===meta.type));assert.equal(new Set(paper.questions.map(q=>q.id)).size,count);assert(paper.minutes>0);}
   }
-  assert.deepEqual(random.catalogue().find(q=>q.type==='sgd').counts,[5,10,15]);
+  assert.deepEqual(random.catalogue().find(q=>q.type==='sgd').counts,[5,10,15,20]);
   assert(random.pools().rs.every(q=>q.text.split(/\s+/u).length<=12));
   for(const q of Object.values(random.pools()).flat().filter(q=>['rs','rl','sgd','rts'].includes(q.type)))assert(q.audioSource&&q.audioSeconds>0);
 });
@@ -16,7 +16,7 @@ test('selection is random, avoids previously used questions where possible and r
   const original=JSON.stringify(require('../content/speaking-mocks').papers),config={type:'ra',count:5};
   const one=random.make(config,[],n=>n-1),two=random.make(config,[],()=>0);assert.notDeepEqual(one.questions.map(q=>q.id),two.questions.map(q=>q.id));
   const fresh=random.make(config,[{practiceSet:one.practiceSet,questions:one.questions}],n=>n-1);assert(fresh.questions.every(q=>!one.questions.some(old=>old.id===q.id)));
-  for(const bad of [{type:['ra','rs'],count:5},{type:'ra',count:'5'},{type:'ra',count:4},{type:'ra',count:5,questionIds:['ra-1']},{type:'sgd',count:20}])assert.throws(()=>random.options(bad));
+  for(const bad of [{type:['ra','rs'],count:5},{type:'ra',count:'5'},{type:'ra',count:4},{type:'ra',count:5,questionIds:['ra-1']},{type:'sgd',count:25}])assert.throws(()=>random.options(bad));
   assert.equal(JSON.stringify(require('../content/speaking-mocks').papers),original);
 });
 test('speaking practice freezes a random selection, keeps native scores and includes deliberate skips',async t=>{
