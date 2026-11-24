@@ -142,6 +142,11 @@ questions.push(...require('./user-sgd-20261123.json').map(q => ({
   ...q,
   title: novemberPracticeTitle(q.title),
 })));
+questions.push(...require('./user-sgd-20261124.json').map(q => ({
+  ...types.sgd,
+  ...q,
+  title: novemberPracticeTitle(q.title),
+})));
 questions.push(...require('./user-rl-20261123.json').map(q => ({
   ...types.rl,
   ...q,

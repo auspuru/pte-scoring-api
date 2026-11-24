@@ -47,7 +47,9 @@ test('Speaking and Writing attempts preserve keyed media and serve newly importe
      assert.equal(reopened.transcript, lecture.sample);
    }
  }
- const imported=require('../content/user-sgd-20261123.json');
+ const novemberDiscussions = require('../content/user-sgd-20261123.json');
+ const newDiscussions = require('../content/user-sgd-20261124.json');
+ const imported = [...novemberDiscussions, ...newDiscussions];
  const labeled=catalogSpeaking.questions.filter(q=>q.type==='sgd'&&q.title.startsWith('New Questions · '));
  assert.deepEqual(labeled.map(q=>q.id),['sgd-user-20261030-06','sgd-user-20261030-08','sgd-user-20261030-09',...imported.map(q=>q.id)]);
  for(const source of bank.questions.filter(q=>q.type==='sgd')){
@@ -60,7 +62,7 @@ test('Speaking and Writing attempts preserve keyed media and serve newly importe
    const r=await fetch(base+created.question.audioUrl,{headers:{Range:'bytes=0-255'}});
    assert.equal(r.status,206);
    assert.equal((await r.arrayBuffer()).byteLength,256);
-   if(source.id===imported[0].id){
+   if (source.id === novemberDiscussions[0].id || newDiscussions.some(q => q.id === source.id)) {
      assert.equal(created.question.preparation,10);
      assert.equal(created.question.seconds,120);
      const saved=await request('/api/speaking/attempts/'+id+'/transcript',{text:source.sample,revision:created.revision});

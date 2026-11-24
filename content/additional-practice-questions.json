@@ -26,5 +26,23 @@
       "task": "sst",
       "audioStatus": "generated-from-transcript"
     }
+  },
+  {
+    "id": "wfd-user-20261124-01",
+    "type": "wfd",
+    "title": "Dictation · 24 Nov 2026 · 1",
+    "minutes": 4,
+    "text": "Students are encouraged to monitor their own attendance",
+    "sample": "Students are encouraged to monitor their own attendance",
+    "narrationText": "Students are encouraged to monitor their own attendance.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "tts-1-hd",
+    "audioSpeed": 0.95,
+    "source": {
+      "kind": "user-supplied-transcript",
+      "date": "2026-11-24",
+      "contentStatus": "verbatim-user-provided"
+    }
   }
 ]
