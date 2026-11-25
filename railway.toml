@@ -1,6 +1,6 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "node --check server.js"
+buildCommand = "node scripts/verify-release.js"
 
 [deploy]
 healthcheckPath = "/api/ready"
