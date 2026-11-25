@@ -338,14 +338,14 @@ test('Unknown visual kinds are never guessed to be photographs; aliases and sour
  test('Supplied weekly DI items intersect with chart filters and search and clear correctly',async()=>{
  const h=harness({includePredictions:true});await h.controller.open('di');
  await h.host.onchange({target:{id:'speaking-prediction',value:'weekly'}});
- assert.equal(h.nodes.get('library-count').textContent,'49 questions');
+ assert.equal(h.nodes.get('library-count').textContent,'58 questions');
  await h.host.onchange({target:{id:'speaking-image-category',value:'photo'}});
  assert.equal(h.nodes.get('library-count').textContent,'4 questions');
  h.host.oninput({target:{id:'speaking-search',value:'3000125'}});
  assert.equal(h.nodes.get('library-count').textContent,'1 questions');
  assert.match(h.nodes.get('speaking-library-list').innerHTML,/Weekly Prediction/);
  await h.click({speakingAction:'clear-filters'});
- assert.equal(h.nodes.get('library-count').textContent,'210 questions');
+ assert.equal(h.nodes.get('library-count').textContent,'219 questions');
  assert.equal(h.attempts.size,0);
  });
 test('Skipping preparation opens the next question without submitting an empty attempt',async()=>{

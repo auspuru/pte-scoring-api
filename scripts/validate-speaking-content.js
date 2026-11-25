@@ -8,12 +8,16 @@ function validate() {
     ...require('../content/user-sgd-oct30.json'),
     ...require('../content/user-sgd-20261123.json'),
     ...require('../content/user-sgd-20261124.json'),
+    ...require('../content/user-sgd-pte-nepal-20261122.json'),
   ];
   const suppliedSpeaking = require('../content/user-speaking-oct24.json');
   const retellPredictions = require('../content/user-rl-20261123.json');
+  const bookletLectures = require('../content/user-rl-pte-nepal-20261122.json');
   const diPredictions = require('../content/di-user-predictions.json');
   const rtsPrompts = require('../content/rts-original-practice.json');
   const suppliedRts = require('../content/user-rts-20261124.json');
+  const bookletRts = require('../content/user-rts-pte-nepal-20261122.json');
+  const bookletRtsById = new Map(bookletRts.map(q => [q.id, q]));
   const originalReadAloud = require('../content/ra-original-20261125.json');
   const suppliedRtsById = new Map(suppliedRts.map(q => [q.id, q]));
   const picturedDurations = new Map(retellPredictions.map(({ id, source }) => {
@@ -22,18 +26,19 @@ function validate() {
     return [id, seconds];
   }));
   const suppliedRepeatSentences = require('../content/user-rs-20261125.json');
+  const bookletRepeatSentences = require('../content/user-rs-pte-nepal-20261122.json');
   const bookletReadAloud = require('../content/user-ra-pte-nepal-20261122.json');
   const bookletReadAloudById = new Map(bookletReadAloud.map(q => [q.id, q]));
   const expectedCounts = {
-    rs: 5 + suppliedRepeatSentences.length,
+    rs: 5 + suppliedRepeatSentences.length + bookletRepeatSentences.length,
     ra: 5 + originalReadAloud.length + bookletReadAloud.length,
     di: 5 + diPredictions.length,
-    rts: 6 + rtsPrompts.length + suppliedRts.length,
-    rl: 5 + suppliedSpeaking.filter(q => q.type === 'rl').length + retellPredictions.length,
+    rts: 6 + rtsPrompts.length + suppliedRts.length + bookletRts.length,
+    rl: 5 + suppliedSpeaking.filter(q => q.type === 'rl').length + retellPredictions.length + bookletLectures.length,
     sgd: 5 + discussions.length,
   };
   assert.equal(bank.questions.length, 30 + diPredictions.length + rtsPrompts.length
-    + suppliedSpeaking.length + discussions.length + retellPredictions.length + suppliedRts.length + originalReadAloud.length + suppliedRepeatSentences.length + bookletReadAloud.length);
+    + suppliedSpeaking.length + discussions.length + retellPredictions.length + bookletLectures.length + suppliedRts.length + bookletRts.length + originalReadAloud.length + suppliedRepeatSentences.length + bookletReadAloud.length + bookletRepeatSentences.length);
   assert.equal(new Set(bank.questions.map(q => q.id)).size, bank.questions.length);
   for (const type of Object.keys(bank.types)) {
     assert.equal(bank.questions.filter(q => q.type === type).length, expectedCounts[type] ?? 5);
@@ -41,9 +46,10 @@ function validate() {
   for(const q of bank.questions) {
     assert(q.sample&&q.sample.trim(),q.id+' sample');
     const suppliedScenario = suppliedRtsById.get(q.id);
+    const bookletScenario = bookletRtsById.get(q.id);
     const suppliedPassage = bookletReadAloudById.get(q.id);
     if (suppliedPassage) assert.equal(q.text, suppliedPassage.text, q.id + ' supplied wording');
-    if (!suppliedScenario && !suppliedPassage && ['ra','rts'].includes(q.type))assert(q.text.split(/\s+/).length<=60,q.id+' prompt length');
+    if (!suppliedScenario && !suppliedPassage && !bookletScenario && ['ra','rts'].includes(q.type))assert(q.text.split(/\s+/).length<=60,q.id+' prompt length');
     if(q.type==='di'){assert(q.sample.startsWith('The given image provides the detailed information about'));assert(q.facts.length>=2);if(q.imageUrl){assert(/^\/assets\/di-predictions-20260930\/\d+\.(?:png|jpg|jpeg)$/.test(q.imageUrl));assert(fs.statSync(path.join(__dirname,'../public',q.imageUrl)).size>0);assert.equal(q.predictionSource.contentStatus,'verbatim-user-provided');}}
     if(q.type==='sgd')assert.equal(new Set(q.turns.map(t=>t[0])).size,3);
     if(q.audioPrompt===false){assert.equal(q.type,'rts');assert(q.text.endsWith('?'));}
@@ -52,6 +58,10 @@ function validate() {
         assert.equal(q.text, suppliedScenario.text, q.id + ' supplied wording');
         assert(q.text.endsWith('?'), q.id + ' final question');
         assert.equal(q.title, 'New · ' + suppliedScenario.title, q.id + ' New label');
+        assert(q.facts.length >= 2, q.id + ' response reference');
+      } else if (bookletScenario) {
+        assert.equal(q.text, bookletScenario.text, q.id + ' supplied wording');
+        assert(q.promptAudioKey, q.id + ' versioned narration');
         assert(q.facts.length >= 2, q.id + ' response reference');
       } else {
         assert.match(q.text, /What would you say to [^?]+\?$/);
