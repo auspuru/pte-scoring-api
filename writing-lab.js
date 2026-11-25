@@ -91,8 +91,10 @@ const existingNewSstIds = new Set([
 // Existing WFD sentences featured in the 25 November screenshot batch.
 const existingNewWfdIds = new Set([
   'pred26-user-wfd-01', 'pred26-user-wfd-03', 'pred26-user-wfd-04',
-  'pred26-user-wfd-08', 'pred26-user-wfd-11', 'pred26-user-wfd-19',
-  'pred26-user-wfd-31', 'pred26-user-wfd-32', 'pred26-user-wfd-33'
+  'pred26-user-wfd-08', 'pred26-user-wfd-11', 'pred26-user-wfd-14',
+  'pred26-user-wfd-15', 'pred26-user-wfd-19', 'pred26-user-wfd-20',
+  'pred26-user-wfd-24', 'pred26-user-wfd-31', 'pred26-user-wfd-32',
+  'pred26-user-wfd-33', 'wfd-user-20261124-01'
 ]);
 const individualQuestions = [...spokenPractice, ...dictation, ...listeningPractice];
 const bad = (message, status = 400) => Object.assign(Error(message), { status });
@@ -261,7 +263,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION
     })),
     dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,
-      ...(existingNewWfdIds.has(q.id) ? {newInCatalogue:true} : {}),
+      ...((q.newInCatalogue || existingNewWfdIds.has(q.id)) ? {newInCatalogue:true} : {}),
       audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION
     })),
     listeningPractice:listeningPractice.map(q=>({id:q.id,type:q.type,title:q.title,minutes:q.minutes})),

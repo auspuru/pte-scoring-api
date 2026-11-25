@@ -309,7 +309,10 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   assert.deepEqual(catalog.dictation.slice(92).map(q=>q.id),addedDictations.map(q=>q.id));
   assert(catalog.dictation.some(q=>q.id==='pred26-user-wfd-11'));
   assert.deepEqual(catalog.dictation.slice(0,33).map(q=>q.id),predictions.wfd.slice(0,33).map(q=>q.id));
-  assert.deepEqual(catalog.dictation.flatMap((q,i)=>q.newInCatalogue?[i+1]:[]),[1,3,4,8,11,19,31,32,33]);
+  const screenshotBatch=Array.from({length:139},(_,i)=>'wfd-user-20261125-'+String(i+1).padStart(3,'0'));
+  assert.deepEqual(catalog.dictation.slice(93,232).map(q=>q.id),screenshotBatch);
+  assert.deepEqual(catalog.dictation.slice(0,232).flatMap((q,i)=>q.newInCatalogue?[i+1]:[]),
+    [1,3,4,8,11,14,15,19,20,24,31,32,33,...Array.from({length:140},(_,i)=>i+93)]);
   assert(catalog.dictation.slice(0,33).every(q=>q.prediction===true));
   assert.equal(catalog.dictation[33].id,previous[0].id);
   assert.equal(catalog.dictation[33].prediction,false);
@@ -369,12 +372,17 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
 test('Prediction and standalone practice IDs are accepted by the narration resolver',async t=>{
   const dir=await fs.mkdtemp(path.join(os.tmpdir(),'prediction-audio-test-'));t.after(()=>fs.rm(dir,{recursive:true,force:true}));
   const seen=[];
-  const audio=createNarration(dir,async input=>{seen.push(input.input);return Buffer.alloc(2000,7);});
+  const audio=createNarration(dir,async input=>{seen.push(input);return Buffer.alloc(2000,7);});
   await audio.get(predictions.sst[0].id);
   await audio.get(predictions.wfd[0].id);
   const standalone = require('../content/additional-practice-questions.json');
   for(const question of standalone) await audio.get(question.id);
-  assert.deepEqual(seen,[predictions.sst[0].narrationText,predictions.wfd[0].text,...standalone.map(q=>q.narrationText||q.text)]);
+  assert.deepEqual(seen.map(item=>item.input),[predictions.sst[0].narrationText,predictions.wfd[0].text,...standalone.map(q=>q.narrationText||q.text)]);
+  const voices=['coral','ash','sage','echo','nova'];
+  const newDictationInputs=seen.filter(input=>input.model==='gpt-4o-mini-tts'&&input.instructions.startsWith('Read the sentence once'));
+  assert.equal(newDictationInputs.length,139);
+  assert.deepEqual(newDictationInputs.map(input=>input.voice),Array.from({length:139},(_,i)=>voices[i%voices.length]));
+  assert(newDictationInputs.every(input=>input.speed===1&&input.requireNeural&&input.ambience.length===0));
 });
 
 test('Narration accepts only bank IDs, shares concurrent generation and survives restart',async t=>{
@@ -494,12 +502,27 @@ test('Fifty additional dictations have distinct sentences and exact sample answe
 });
 test('Expanded dictation bank starts every question and retains the earliest attempt',async t=>{
  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'dictation-expanded-')),app=express();app.use(express.json());
- installWritingLab(app,{directory:dir,verifyToken:token=>token==='tester'?'tester':null,getAccount:async()=>({}),callModel:()=>{throw Error('No model required');}});
+ installWritingLab(app,{directory:dir,verifyToken:token=>/^dictation-tester-\d+$/.test(token)?token:null,getAccount:async()=>({}),callModel:()=>{throw Error('No model required');}});
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(async()=>{await new Promise(resolve=>server.close(resolve));await fs.rm(dir,{recursive:true,force:true});});
- const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab',headers={'Content-Type':'application/json','x-session-token':'tester'};
- const catalog=await (await fetch(base+'/catalog')).json();let first;
- for(const q of catalog.dictation){const id=randomUUID();first ||= id;const response=await fetch(base+'/attempts',{method:'POST',headers,body:JSON.stringify({id,testId:q.id})});assert.equal(response.status,200);const a=await response.json();assert.equal(a.questions[0].text,'');assert.equal(a.questions[0].sample,undefined);assert.equal(a.status,'ready');}
- const history=await (await fetch(base+'/attempts',{headers})).json();assert.equal(history.length,catalog.dictation.length);assert(history.some(a=>a.id===first));assert(history.some(a=>a.testId==='pred26-user-wfd-01'));assert(history.some(a=>a.testId==='wfd-practice-50'));
+ const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab';
+ const catalog=await (await fetch(base+'/catalog')).json();
+ const history=[];let first;
+ // Cover the whole bank without exceeding the real per-account start limit.
+ for(let offset=0;offset<catalog.dictation.length;offset+=100){
+  const headers={'Content-Type':'application/json','x-session-token':'dictation-tester-'+offset};
+  const batch=catalog.dictation.slice(offset,offset+100);
+  for(const q of batch){
+   const id=randomUUID();first ||= id;
+   const response=await fetch(base+'/attempts',{method:'POST',headers,body:JSON.stringify({id,testId:q.id})});
+   assert.equal(response.status,200,q.id);
+   const a=await response.json();assert.equal(a.questions[0].text,'');assert.equal(a.questions[0].sample,undefined);assert.equal(a.status,'ready');
+  }
+  const saved=await (await fetch(base+'/attempts',{headers})).json();
+  assert.equal(saved.length,batch.length);
+  history.push(...saved);
+ }
+ assert.equal(history.length,catalog.dictation.length);
+ assert(history.some(a=>a.id===first));assert(history.some(a=>a.testId==='pred26-user-wfd-01'));assert(history.some(a=>a.testId==='wfd-practice-50'));
 });
 
 

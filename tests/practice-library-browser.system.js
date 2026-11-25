@@ -195,7 +195,7 @@ for(const width of [1366,1920])test('Unified practice library '+width+'px: all 2
  const dictationLibrary='[data-practice-library-task="dictation"]';
  const dictationRows=dictationLibrary+' .practice-library-row';
  const newOnly=dictationLibrary+' [data-library-new-only]';
- const featured=[1,3,4,8,11,19,31,32,33];
+ const featured=[1,3,4,8,11,14,15,19,20,24,31,32,33];
  assert.deepEqual(await page.$$eval(dictationRows,rows=>rows.filter(row=>Number(row.dataset.questionNumber)<=33&&row.querySelector('.practice-library-label')?.textContent==='NEW').map(row=>Number(row.dataset.questionNumber))),featured);
  await page.locator(newOnly).click();
  assert.equal(await page.$eval(newOnly,node=>node.getAttribute('aria-checked')),'true');

@@ -1183,5 +1183,2817 @@
       "audioStatus": "generated-from-transcript",
       "relatedPracticeId": "pred26-user-sst-09"
     }
+  },
+  {
+    "id": "wfd-user-20261125-001",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 1",
+    "minutes": 4,
+    "text": "The educational level is found to be related to social and economic background.",
+    "sample": "The educational level is found to be related to social and economic background.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101300.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-002",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 2",
+    "minutes": 4,
+    "text": "A very basic feature of computing would be counting and calculating.",
+    "sample": "A very basic feature of computing would be counting and calculating.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101309.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-003",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 3",
+    "minutes": 4,
+    "text": "All lectures and learning materials can be found on the internet.",
+    "sample": "All lectures and learning materials can be found on the internet.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101318.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-004",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 4",
+    "minutes": 4,
+    "text": "Our view is that all the educational reforms have been inadequately implemented.",
+    "sample": "Our view is that all the educational reforms have been inadequately implemented.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101332.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-005",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 5",
+    "minutes": 4,
+    "text": "Although sustainable development is not easy, it is an unavoidable responsibility.",
+    "sample": "Although sustainable development is not easy, it is an unavoidable responsibility.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101340.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-006",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 6",
+    "minutes": 4,
+    "text": "Consumer confidence has a direct influence on sales.",
+    "sample": "Consumer confidence has a direct influence on sales.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101348.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-007",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 7",
+    "minutes": 4,
+    "text": "Convincing evidence to support this theory is hard to obtain.",
+    "sample": "Convincing evidence to support this theory is hard to obtain.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101355.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-008",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 8",
+    "minutes": 4,
+    "text": "Economic problems caused a big rise in unemployment.",
+    "sample": "Economic problems caused a big rise in unemployment.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101402.png",
+      "filenames": [
+        "Screenshot 2026-11-25 101402.png",
+        "Screenshot 2026-11-25 101414.png"
+      ]
+    }
+  },
+  {
+    "id": "wfd-user-20261125-009",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 9",
+    "minutes": 4,
+    "text": "Experts are now able to forecast weather over much longer periods.",
+    "sample": "Experts are now able to forecast weather over much longer periods.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101431.png",
+      "filenames": [
+        "Screenshot 2026-11-25 101431.png",
+        "Screenshot 2026-11-25 101537.png"
+      ]
+    }
+  },
+  {
+    "id": "wfd-user-20261125-010",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 10",
+    "minutes": 4,
+    "text": "Making mistakes is fine, as long as you learn from them.",
+    "sample": "Making mistakes is fine, as long as you learn from them.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101546.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-011",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 11",
+    "minutes": 4,
+    "text": "Most scientists believe that climate change threatens lives on the earth.",
+    "sample": "Most scientists believe that climate change threatens lives on the earth.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101551.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-012",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 12",
+    "minutes": 4,
+    "text": "Nurses can specialize in clinical work or management.",
+    "sample": "Nurses can specialize in clinical work or management.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101558.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-013",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 13",
+    "minutes": 4,
+    "text": "Packaging is very important to attract the attention of a buyer.",
+    "sample": "Packaging is very important to attract the attention of a buyer.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101610.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-014",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 14",
+    "minutes": 4,
+    "text": "Parents are financially responsible for their children right up until they reach adulthood.",
+    "sample": "Parents are financially responsible for their children right up until they reach adulthood.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101617.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-015",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 15",
+    "minutes": 4,
+    "text": "Recession triggers exciting creativity, according to public wisdom.",
+    "sample": "Recession triggers exciting creativity, according to public wisdom.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101624.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-016",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 16",
+    "minutes": 4,
+    "text": "Scientists are always asking the government for more money.",
+    "sample": "Scientists are always asking the government for more money.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101630.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-017",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 17",
+    "minutes": 4,
+    "text": "She began by giving an outline of the previous lecture.",
+    "sample": "She began by giving an outline of the previous lecture.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101636.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-018",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 18",
+    "minutes": 4,
+    "text": "Some people believe that education should be free for all.",
+    "sample": "Some people believe that education should be free for all.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101642.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-019",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 19",
+    "minutes": 4,
+    "text": "Statistical results should be expressed in different ways depending on the circumstances.",
+    "sample": "Statistical results should be expressed in different ways depending on the circumstances.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101648.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-020",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 20",
+    "minutes": 4,
+    "text": "Student representatives will be visiting the classes with voting forms.",
+    "sample": "Student representatives will be visiting the classes with voting forms.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101654.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-021",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 21",
+    "minutes": 4,
+    "text": "You are advised to use multiple methods for this project.",
+    "sample": "You are advised to use multiple methods for this project.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101659.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-022",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 22",
+    "minutes": 4,
+    "text": "Students who are successful have a good strategy for learning.",
+    "sample": "Students who are successful have a good strategy for learning.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101704.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-023",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 23",
+    "minutes": 4,
+    "text": "Students will focus on reporting news on the changing media world.",
+    "sample": "Students will focus on reporting news on the changing media world.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101709.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-024",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 24",
+    "minutes": 4,
+    "text": "Studies show that there is a positive correlation between the two variables.",
+    "sample": "Studies show that there is a positive correlation between the two variables.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101715.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-025",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 25",
+    "minutes": 4,
+    "text": "The business policy seminar includes an internship with a local firm.",
+    "sample": "The business policy seminar includes an internship with a local firm.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101721.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-026",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 26",
+    "minutes": 4,
+    "text": "The cafeteria features sandwiches, salads, soup, fish and chicken.",
+    "sample": "The cafeteria features sandwiches, salads, soup, fish and chicken.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101726.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-027",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 27",
+    "minutes": 4,
+    "text": "The course helps students to improve their pronunciation skills.",
+    "sample": "The course helps students to improve their pronunciation skills.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101731.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-028",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 28",
+    "minutes": 4,
+    "text": "The dance department stages elaborate performances each semester.",
+    "sample": "The dance department stages elaborate performances each semester.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101737.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-029",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 29",
+    "minutes": 4,
+    "text": "The designers will complete the plan later today.",
+    "sample": "The designers will complete the plan later today.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101743.png",
+      "filenames": [
+        "Screenshot 2026-11-25 101743.png",
+        "Screenshot 2026-11-25 101811.png"
+      ]
+    }
+  },
+  {
+    "id": "wfd-user-20261125-030",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 30",
+    "minutes": 4,
+    "text": "The economy is now showing the first sign of recovery.",
+    "sample": "The economy is now showing the first sign of recovery.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101818.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-031",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 31",
+    "minutes": 4,
+    "text": "The faculty staff are very approachable, friendly and extremely helpful.",
+    "sample": "The faculty staff are very approachable, friendly and extremely helpful.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101823.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-032",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 32",
+    "minutes": 4,
+    "text": "The lecture tomorrow will discuss the educational policy of the United States.",
+    "sample": "The lecture tomorrow will discuss the educational policy of the United States.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101828.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-033",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 33",
+    "minutes": 4,
+    "text": "The plight of wildlife has been ignored by local developers.",
+    "sample": "The plight of wildlife has been ignored by local developers.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101833.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-034",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 34",
+    "minutes": 4,
+    "text": "The summer course was canceled due to insufficient re-enrollments.",
+    "sample": "The summer course was canceled due to insufficient re-enrollments.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101838.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-035",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 35",
+    "minutes": 4,
+    "text": "The theme of the instrumental work exhibits more of a demure, compositional style.",
+    "sample": "The theme of the instrumental work exhibits more of a demure, compositional style.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101843.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-036",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 36",
+    "minutes": 4,
+    "text": "Traffic is the main cause of pollution in many cities.",
+    "sample": "Traffic is the main cause of pollution in many cities.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101849.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-037",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 37",
+    "minutes": 4,
+    "text": "Understanding how to use the library will save your time.",
+    "sample": "Understanding how to use the library will save your time.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101855.png",
+      "filenames": [
+        "Screenshot 2026-11-25 101855.png",
+        "Screenshot 2026-11-25 101914.png"
+      ]
+    }
+  },
+  {
+    "id": "wfd-user-20261125-038",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 38",
+    "minutes": 4,
+    "text": "University fees are expected to increase next year.",
+    "sample": "University fees are expected to increase next year.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101919.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-039",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 39",
+    "minutes": 4,
+    "text": "You must be able to work in a team.",
+    "sample": "You must be able to work in a team.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101924.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-040",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 40",
+    "minutes": 4,
+    "text": "We have sufficient methods to study brain activity.",
+    "sample": "We have sufficient methods to study brain activity.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101929.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-041",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 41",
+    "minutes": 4,
+    "text": "You can use your laptops in the lecture.",
+    "sample": "You can use your laptops in the lecture.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101936.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-042",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 42",
+    "minutes": 4,
+    "text": "Consumer confidence tends to increase as the economy expands.",
+    "sample": "Consumer confidence tends to increase as the economy expands.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 101942.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-043",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 43",
+    "minutes": 4,
+    "text": "Industry experts will discuss job opportunities in an automated workforce.",
+    "sample": "Industry experts will discuss job opportunities in an automated workforce.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102018.png",
+      "filenames": [
+        "Screenshot 2026-11-25 102018.png",
+        "Screenshot 2026-11-25 102058.png"
+      ]
+    }
+  },
+  {
+    "id": "wfd-user-20261125-044",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 44",
+    "minutes": 4,
+    "text": "It would be extremely beneficial to work together.",
+    "sample": "It would be extremely beneficial to work together.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102104.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-045",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 45",
+    "minutes": 4,
+    "text": "Manufacturing now employs more people than agriculture and fishing combined.",
+    "sample": "Manufacturing now employs more people than agriculture and fishing combined.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102110.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-046",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 46",
+    "minutes": 4,
+    "text": "Mature students usually adapt to university life extremely well.",
+    "sample": "Mature students usually adapt to university life extremely well.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102115.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-047",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 47",
+    "minutes": 4,
+    "text": "Our courses help to improve critical thinking and independent learning skills.",
+    "sample": "Our courses help to improve critical thinking and independent learning skills.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102121.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-048",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 48",
+    "minutes": 4,
+    "text": "Our laboratory equipment is provided free of charge.",
+    "sample": "Our laboratory equipment is provided free of charge.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102128.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-049",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 49",
+    "minutes": 4,
+    "text": "The science library is currently located on the ground floor.",
+    "sample": "The science library is currently located on the ground floor.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102135.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-050",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 50",
+    "minutes": 4,
+    "text": "Several candidates will be qualified as the greatest scientists of all time.",
+    "sample": "Several candidates will be qualified as the greatest scientists of all time.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102144.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-051",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 51",
+    "minutes": 4,
+    "text": "Strangely, people are simultaneously impressed by and skeptical of statistics.",
+    "sample": "Strangely, people are simultaneously impressed by and skeptical of statistics.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102150.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-052",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 52",
+    "minutes": 4,
+    "text": "The Industrial Revolution in Europe was driven by steam technology.",
+    "sample": "The Industrial Revolution in Europe was driven by steam technology.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102155.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-053",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 53",
+    "minutes": 4,
+    "text": "The site is designed to be highly interactive.",
+    "sample": "The site is designed to be highly interactive.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102201.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-054",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 54",
+    "minutes": 4,
+    "text": "The teacher training includes observing the classes.",
+    "sample": "The teacher training includes observing the classes.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102207.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-055",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 55",
+    "minutes": 4,
+    "text": "Tutors should set a clear goal at the start of the class.",
+    "sample": "Tutors should set a clear goal at the start of the class.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102214.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-056",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 56",
+    "minutes": 4,
+    "text": "Universities need to secure the grants for research projects.",
+    "sample": "Universities need to secure the grants for research projects.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102220.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-057",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 57",
+    "minutes": 4,
+    "text": "Native speakers are exempt from the language tests in their own languages.",
+    "sample": "Native speakers are exempt from the language tests in their own languages.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102227.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-058",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 58",
+    "minutes": 4,
+    "text": "I thought it was through the small meeting room.",
+    "sample": "I thought it was through the small meeting room.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 102257.png",
+      "filenames": [
+        "Screenshot 2026-11-25 102257.png",
+        "Screenshot 2026-11-25 103202.png"
+      ]
+    }
+  },
+  {
+    "id": "wfd-user-20261125-059",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 59",
+    "minutes": 4,
+    "text": "Some people are motivated by competition, while others prefer to collaborate.",
+    "sample": "Some people are motivated by competition, while others prefer to collaborate.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103209.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-060",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 60",
+    "minutes": 4,
+    "text": "Good nutrition is crucial to the general health and vitality.",
+    "sample": "Good nutrition is crucial to the general health and vitality.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103223.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-061",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 61",
+    "minutes": 4,
+    "text": "Many vocational courses in the institution are funded by private enterprises.",
+    "sample": "Many vocational courses in the institution are funded by private enterprises.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103233.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-062",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 62",
+    "minutes": 4,
+    "text": "Please make sure you choose a course that provides good career opportunities.",
+    "sample": "Please make sure you choose a course that provides good career opportunities.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103240.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-063",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 63",
+    "minutes": 4,
+    "text": "It is necessary to dress formally for the graduation ceremony.",
+    "sample": "It is necessary to dress formally for the graduation ceremony.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103246.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-064",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 64",
+    "minutes": 4,
+    "text": "Too much information may be avoided by good research design.",
+    "sample": "Too much information may be avoided by good research design.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103254.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-065",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 65",
+    "minutes": 4,
+    "text": "Banks charge interest on the money they lend to customers.",
+    "sample": "Banks charge interest on the money they lend to customers.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103301.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-066",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 66",
+    "minutes": 4,
+    "text": "Journalism faces a crisis in light of the digital revolution.",
+    "sample": "Journalism faces a crisis in light of the digital revolution.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103309.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-067",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 67",
+    "minutes": 4,
+    "text": "Sugar is a compound including carbon, hydrogen and oxygen atoms.",
+    "sample": "Sugar is a compound including carbon, hydrogen and oxygen atoms.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103315.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-068",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 68",
+    "minutes": 4,
+    "text": "The stock market crash had repercussions throughout the world.",
+    "sample": "The stock market crash had repercussions throughout the world.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103322.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-069",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 69",
+    "minutes": 4,
+    "text": "Plants are able to continue growing throughout their lives.",
+    "sample": "Plants are able to continue growing throughout their lives.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103329.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-070",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 70",
+    "minutes": 4,
+    "text": "Speed is defined as how quickly an object or a person moves.",
+    "sample": "Speed is defined as how quickly an object or a person moves.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103336.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-071",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 71",
+    "minutes": 4,
+    "text": "Trees benefit the city by soaking up the rainwater that runs off its road.",
+    "sample": "Trees benefit the city by soaking up the rainwater that runs off its road.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103343.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-072",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 72",
+    "minutes": 4,
+    "text": "New developments in manufacturing are constantly changing the way we live.",
+    "sample": "New developments in manufacturing are constantly changing the way we live.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103353.png",
+      "filenames": [
+        "Screenshot 2026-11-25 103353.png",
+        "Screenshot 2026-11-25 103810.png"
+      ]
+    }
+  },
+  {
+    "id": "wfd-user-20261125-073",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 73",
+    "minutes": 4,
+    "text": "There will be a chemistry test in the class next week.",
+    "sample": "There will be a chemistry test in the class next week.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103821.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-074",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 74",
+    "minutes": 4,
+    "text": "The history course is assessed via three written assignments.",
+    "sample": "The history course is assessed via three written assignments.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103826.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-075",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 75",
+    "minutes": 4,
+    "text": "The farmers need to adapt to the changes in the climate.",
+    "sample": "The farmers need to adapt to the changes in the climate.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103833.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-076",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 76",
+    "minutes": 4,
+    "text": "Extracurricular activities can help students to develop more talents.",
+    "sample": "Extracurricular activities can help students to develop more talents.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103838.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-077",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 77",
+    "minutes": 4,
+    "text": "Please return the textbooks to the correct bookshelves in the library.",
+    "sample": "Please return the textbooks to the correct bookshelves in the library.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103848.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-078",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 78",
+    "minutes": 4,
+    "text": "Linguistics is the scientific study and analysis of language.",
+    "sample": "Linguistics is the scientific study and analysis of language.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103854.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-079",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 79",
+    "minutes": 4,
+    "text": "Calculators allow us to add numbers without making mistakes.",
+    "sample": "Calculators allow us to add numbers without making mistakes.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103908.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-080",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 80",
+    "minutes": 4,
+    "text": "It takes a long time to walk to the university.",
+    "sample": "It takes a long time to walk to the university.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103914.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-081",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 81",
+    "minutes": 4,
+    "text": "The economic predictions turned out to be incorrect.",
+    "sample": "The economic predictions turned out to be incorrect.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103930.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-082",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 82",
+    "minutes": 4,
+    "text": "Cells are the basic building blocks of all animals and plants.",
+    "sample": "Cells are the basic building blocks of all animals and plants.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103940.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-083",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 83",
+    "minutes": 4,
+    "text": "A series of lectures showcasing economic research have been recorded.",
+    "sample": "A series of lectures showcasing economic research have been recorded.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 103955.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-084",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 84",
+    "minutes": 4,
+    "text": "Years of training are required to become a medical specialist.",
+    "sample": "Years of training are required to become a medical specialist.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 104001.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-085",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 85",
+    "minutes": 4,
+    "text": "Global connections increased in academic communities, thanks to social media.",
+    "sample": "Global connections increased in academic communities, thanks to social media.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 104009.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-086",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 86",
+    "minutes": 4,
+    "text": "The department is doing some crucial work on climate change.",
+    "sample": "The department is doing some crucial work on climate change.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 104016.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-087",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 87",
+    "minutes": 4,
+    "text": "New media journalism is an exciting area of study.",
+    "sample": "New media journalism is an exciting area of study.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 104021.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-088",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 88",
+    "minutes": 4,
+    "text": "There is an accounting assignment for finance students.",
+    "sample": "There is an accounting assignment for finance students.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 104342.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-089",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 89",
+    "minutes": 4,
+    "text": "Practical experiments are a central part of the chemistry course.",
+    "sample": "Practical experiments are a central part of the chemistry course.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 104350.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-090",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 90",
+    "minutes": 4,
+    "text": "Students are advised that all the lectures today have been canceled.",
+    "sample": "Students are advised that all the lectures today have been canceled.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 104357.png",
+      "filenames": [
+        "Screenshot 2026-11-25 104357.png",
+        "Screenshot 2026-11-25 105431.png"
+      ]
+    }
+  },
+  {
+    "id": "wfd-user-20261125-091",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 91",
+    "minutes": 4,
+    "text": "Statistically speaking, the likelihood of this result is extremely low.",
+    "sample": "Statistically speaking, the likelihood of this result is extremely low.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105438.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-092",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 92",
+    "minutes": 4,
+    "text": "A world-renowned expert on financial management will give a guest lecture.",
+    "sample": "A world-renowned expert on financial management will give a guest lecture.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105444.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-093",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 93",
+    "minutes": 4,
+    "text": "Information technology has changed the way people study today.",
+    "sample": "Information technology has changed the way people study today.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105450.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-094",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 94",
+    "minutes": 4,
+    "text": "Many food crops require a large amount of water and fertilizer.",
+    "sample": "Many food crops require a large amount of water and fertilizer.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105455.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-095",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 95",
+    "minutes": 4,
+    "text": "New materials and techniques are changing the style of modern architecture.",
+    "sample": "New materials and techniques are changing the style of modern architecture.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105500.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-096",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 96",
+    "minutes": 4,
+    "text": "There is probably life on other planets in the universe.",
+    "sample": "There is probably life on other planets in the universe.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105507.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-097",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 97",
+    "minutes": 4,
+    "text": "Graduates from this course typically pursue careers in the financial sector.",
+    "sample": "Graduates from this course typically pursue careers in the financial sector.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105513.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-098",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 98",
+    "minutes": 4,
+    "text": "Scientists have found all parts of society today.",
+    "sample": "Scientists have found all parts of society today.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105519.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-099",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 99",
+    "minutes": 4,
+    "text": "Practical experience is a vital part of legal training.",
+    "sample": "Practical experience is a vital part of legal training.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105524.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-100",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 100",
+    "minutes": 4,
+    "text": "You should submit your term papers to the general office.",
+    "sample": "You should submit your term papers to the general office.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105533.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-101",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 101",
+    "minutes": 4,
+    "text": "The speaker began by giving an outline of her presentation.",
+    "sample": "The speaker began by giving an outline of her presentation.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105541.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-102",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 102",
+    "minutes": 4,
+    "text": "You should return books to the library before ending your term.",
+    "sample": "You should return books to the library before ending your term.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105549.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-103",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 103",
+    "minutes": 4,
+    "text": "His analysis study appears to be based on the false premise.",
+    "sample": "His analysis study appears to be based on the false premise.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105628.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-104",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 104",
+    "minutes": 4,
+    "text": "We no longer respond to any postal reference requests.",
+    "sample": "We no longer respond to any postal reference requests.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105634.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-105",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 105",
+    "minutes": 4,
+    "text": "Before choosing your university courses, you should consider your future career.",
+    "sample": "Before choosing your university courses, you should consider your future career.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105640.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-106",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 106",
+    "minutes": 4,
+    "text": "Currently the growth of the economy is unpredictable.",
+    "sample": "Currently the growth of the economy is unpredictable.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105647.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-107",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 107",
+    "minutes": 4,
+    "text": "The timetable for the next term will be available next week.",
+    "sample": "The timetable for the next term will be available next week.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105701.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-108",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 108",
+    "minutes": 4,
+    "text": "Our facility includes five libraries across the university.",
+    "sample": "Our facility includes five libraries across the university.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105708.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-109",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 109",
+    "minutes": 4,
+    "text": "The population will shrink drastically over the next twenty years.",
+    "sample": "The population will shrink drastically over the next twenty years.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105715.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-110",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 110",
+    "minutes": 4,
+    "text": "The news will not be received until the following week.",
+    "sample": "The news will not be received until the following week.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105722.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-111",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 111",
+    "minutes": 4,
+    "text": "Football is played all year at the university.",
+    "sample": "Football is played all year at the university.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105729.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-112",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 112",
+    "minutes": 4,
+    "text": "Tact is the knack of making a point without making an enemy.",
+    "sample": "Tact is the knack of making a point without making an enemy.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105748.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-113",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 113",
+    "minutes": 4,
+    "text": "The conference will be held on Thursday morning.",
+    "sample": "The conference will be held on Thursday morning.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105755.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-114",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 114",
+    "minutes": 4,
+    "text": "Nursing is defined as medical practice and clinical work.",
+    "sample": "Nursing is defined as medical practice and clinical work.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105801.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-115",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 115",
+    "minutes": 4,
+    "text": "The university requires all new students to attend an orientation session before classes begin.",
+    "sample": "The university requires all new students to attend an orientation session before classes begin.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105809.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-116",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 116",
+    "minutes": 4,
+    "text": "Teachers should establish clear rules before classes begin.",
+    "sample": "Teachers should establish clear rules before classes begin.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105816.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-117",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 117",
+    "minutes": 4,
+    "text": "Most university teaching still takes place in lectures and seminars.",
+    "sample": "Most university teaching still takes place in lectures and seminars.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105822.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-118",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 118",
+    "minutes": 4,
+    "text": "Please check the information on the website for the opening time.",
+    "sample": "Please check the information on the website for the opening time.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105829.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-119",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 119",
+    "minutes": 4,
+    "text": "There is a welcome party for all new students each term.",
+    "sample": "There is a welcome party for all new students each term.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105835.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-120",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 120",
+    "minutes": 4,
+    "text": "In his lifetime, he composed a large number of works.",
+    "sample": "In his lifetime, he composed a large number of works.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105843.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-121",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 121",
+    "minutes": 4,
+    "text": "Research shows that exercising makes us feel better.",
+    "sample": "Research shows that exercising makes us feel better.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105849.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-122",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 122",
+    "minutes": 4,
+    "text": "The office hours will be changed from next term.",
+    "sample": "The office hours will be changed from next term.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105855.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-123",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 123",
+    "minutes": 4,
+    "text": "The new technician dropped the microscope in the biology lab.",
+    "sample": "The new technician dropped the microscope in the biology lab.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105902.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-124",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 124",
+    "minutes": 4,
+    "text": "You must answer security questions when you reset your password.",
+    "sample": "You must answer security questions when you reset your password.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105910.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-125",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 125",
+    "minutes": 4,
+    "text": "You need to put these books on the table over there.",
+    "sample": "You need to put these books on the table over there.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105918.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-126",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 126",
+    "minutes": 4,
+    "text": "The history department is very active in research.",
+    "sample": "The history department is very active in research.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105927.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-127",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 127",
+    "minutes": 4,
+    "text": "An effective business manager is always open to new ideas.",
+    "sample": "An effective business manager is always open to new ideas.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105934.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-128",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 128",
+    "minutes": 4,
+    "text": "The course places considerable emphasis on critical thinking skills.",
+    "sample": "The course places considerable emphasis on critical thinking skills.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105943.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-129",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 129",
+    "minutes": 4,
+    "text": "Global connections thrive in academic communities, thanks to social media.",
+    "sample": "Global connections thrive in academic communities, thanks to social media.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105951.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-130",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 130",
+    "minutes": 4,
+    "text": "Computers used to be larger than they are now.",
+    "sample": "Computers used to be larger than they are now.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 105958.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-131",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 131",
+    "minutes": 4,
+    "text": "We are looking for new ways to engage learners.",
+    "sample": "We are looking for new ways to engage learners.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 110004.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-132",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 132",
+    "minutes": 4,
+    "text": "I thought we would meet in the small meeting room.",
+    "sample": "I thought we would meet in the small meeting room.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 110026.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-133",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 133",
+    "minutes": 4,
+    "text": "Remember to sign the attendance register before leaving the lecture hall.",
+    "sample": "Remember to sign the attendance register before leaving the lecture hall.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 110042.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-134",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 134",
+    "minutes": 4,
+    "text": "This course provides the opportunity to get valuable industry experience.",
+    "sample": "This course provides the opportunity to get valuable industry experience.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 110119.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-135",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 135",
+    "minutes": 4,
+    "text": "The visiting speaker used to be a lecturer in this department.",
+    "sample": "The visiting speaker used to be a lecturer in this department.",
+    "voice": "nova",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 110126.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-136",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 136",
+    "minutes": 4,
+    "text": "Without doubt, this theory has a number of limitations.",
+    "sample": "Without doubt, this theory has a number of limitations.",
+    "voice": "coral",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 110133.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-137",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 137",
+    "minutes": 4,
+    "text": "The opening hours of the library are reduced during summer.",
+    "sample": "The opening hours of the library are reduced during summer.",
+    "voice": "ash",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 110142.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-138",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 138",
+    "minutes": 4,
+    "text": "Measures must be taken to prevent unemployment rate from increasing.",
+    "sample": "Measures must be taken to prevent unemployment rate from increasing.",
+    "voice": "sage",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 110150.png"
+    }
+  },
+  {
+    "id": "wfd-user-20261125-139",
+    "type": "wfd",
+    "title": "Dictation · 25 Nov 2026 · 139",
+    "minutes": 4,
+    "text": "A typical part of this course involves the study of society.",
+    "sample": "A typical part of this course involves the study of society.",
+    "voice": "echo",
+    "audioMode": "runtime-neural",
+    "ttsModel": "gpt-4o-mini-tts",
+    "audioSpeed": 1,
+    "audioInstructions": "Read the sentence once in a natural, clear academic dictation style, at a regular pace. Use no fillers or sound effects.",
+    "newInCatalogue": true,
+    "source": {
+      "kind": "user-supplied-screenshot",
+      "date": "2026-11-25",
+      "contentStatus": "transcribed-user-provided",
+      "filename": "Screenshot 2026-11-25 110157.png"
+    }
   }
 ]
