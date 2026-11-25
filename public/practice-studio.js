@@ -181,8 +181,12 @@
     const now=Date.now();
     return rows.map(row=>{
       const isNew=isNewQuestion(row,now),badge=isNew?'NEW':row.badge;
+      const number='#'+esc(row.number);
+      const heading=row.numberOnly?'<h3 class="practice-library-number">'+number+'</h3>':
+        '<small class="practice-library-number">'+number+'</small><h3>'+esc(row.title||'Question '+row.number)+'</h3>';
+      const label='Question '+esc(row.number)+(row.numberOnly?'':': '+esc(row.title||row.id));
       const passage=row.passage?'<div class="practice-library-passage"><p>'+esc(row.passage.excerpt)+'</p><details><summary>'+esc(row.passage.label||'Read full passage')+'</summary><p class="practice-library-passage-text">'+esc(row.passage.text)+'</p></details></div>':'';
-      return '<article class="practice-library-row" role="group" aria-label="Question '+esc(row.number)+': '+esc(row.title||row.id)+'" data-question-key="'+esc(row.key ?? row.id)+'" data-question-number="'+esc(row.number)+'" data-question-new="'+isNew+'" data-question-reportable="'+(row.reportable!==false)+'"><div class="practice-library-row-copy"><small class="practice-library-number">#'+esc(row.number)+'</small><h3>'+esc(row.title||'Question '+row.number)+'</h3>'+(badge?'<span class="practice-library-label" aria-label="Question status: '+esc(badge)+'">'+esc(badge)+'</span>':'')+'<p>'+esc(row.status||'Not attempted')+'</p>'+(row.latestScore?'<p class="practice-library-detail practice-library-score">'+esc(row.latestScore)+'</p>':'')+(row.detail?'<p class="practice-library-detail">'+esc(row.detail)+'</p>':'')+passage+'</div><div class="practice-library-row-actions">'+row.actions+'</div></article>';
+      return '<article class="practice-library-row" role="group" aria-label="'+label+'" data-question-key="'+esc(row.key ?? row.id)+'" data-question-number="'+esc(row.number)+'" data-question-new="'+isNew+'" data-question-reportable="'+(row.reportable!==false)+'"><div class="practice-library-row-copy">'+heading+(badge?'<span class="practice-library-label" aria-label="Question status: '+esc(badge)+'">'+esc(badge)+'</span>':'')+'<p>'+esc(row.status||'Not attempted')+'</p>'+(row.latestScore?'<p class="practice-library-detail practice-library-score">'+esc(row.latestScore)+'</p>':'')+(row.detail?'<p class="practice-library-detail">'+esc(row.detail)+'</p>':'')+passage+'</div><div class="practice-library-row-actions">'+row.actions+'</div></article>';
     }).join('');
   }
   function createTranscriptSearch(env, token, refresh) {
