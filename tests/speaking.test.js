@@ -2,6 +2,7 @@
 const newReadAloud = require('../content/ra-original-20261125.json');
 const newRepeatSentences = require('../content/user-rs-20261125.json');
 const bookletReadAloud = require('../content/user-ra-pte-nepal-20261122.json');
+const bookletRepeatSentences = require('../content/user-rs-pte-nepal-20261122.json');
 const bookletImages = require('../content/di-user-predictions.json').filter(q=>q.id.startsWith('di-user-20261125'));
 const addedPracticeCount = require('../content/user-rts-20261124.json').length
   + require('../content/user-sgd-20261124.json').length;
@@ -9,8 +10,8 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const bank=require('../content/speaking-bank'),scoring=require('../speaking-scoring'),delivery=require('../speaking-delivery'),{installSpeakingLab,transcribeRecording,question}=require('../speaking-lab');
 const {createStore}=require('../writing-lab-store'),localEngine=require('../local-scoring-engine');
 test('Speaking questions include the original situation practice set, samples and verified audio',()=>{
-  assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:361+addedPracticeCount+newReadAloud.length+newRepeatSentences.length+bookletReadAloud.length+bookletImages.length,recordings:146+addedPracticeCount+newRepeatSentences.length});
-  assert(!bank.types.asq);assert.equal(new Set(bank.questions.map(q=>q.sample)).size,361+addedPracticeCount+newReadAloud.length+newRepeatSentences.length+bookletReadAloud.length+bookletImages.length);
+  assert.deepEqual(require('../scripts/validate-speaking-content').validate(),{questions:361+addedPracticeCount+newReadAloud.length+newRepeatSentences.length+bookletReadAloud.length+bookletImages.length+bookletRepeatSentences.length,recordings:146+addedPracticeCount+newRepeatSentences.length+bookletRepeatSentences.length});
+  assert(!bank.types.asq);assert.equal(new Set(bank.questions.map(q=>q.sample)).size,361+addedPracticeCount+newReadAloud.length+newRepeatSentences.length+bookletReadAloud.length+bookletImages.length+bookletRepeatSentences.length);
   for(const q of bank.questions.filter(q=>q.type==='sgd'))assert.equal(new Set(q.turns.map(t=>t[0])).size,3);
 });
 test('Read Aloud checks omissions, insertions and replacements without inventing a delivery score',()=>{
@@ -184,9 +185,9 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
   const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(async()=>{await new Promise(r=>server.close(r));await fs.rm(directory,{recursive:true,force:true});});
   const base='http://127.0.0.1:'+server.address().port;
   async function request(route,body,user='alice',raw=false) {const r=await fetch(base+'/api/speaking'+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':user,'Content-Type':raw?'audio/webm':'application/json'},body:body===undefined?undefined:raw?body:JSON.stringify(body)});return {status:r.status,body:await r.json()};}
-  const catalog=await request('/catalog',undefined,'');assert.equal(catalog.body.questions.length,358+addedPracticeCount+newReadAloud.length+newRepeatSentences.length+bookletReadAloud.length+bookletImages.length);
+  const catalog=await request('/catalog',undefined,'');assert.equal(catalog.body.questions.length,358+addedPracticeCount+newReadAloud.length+newRepeatSentences.length+bookletReadAloud.length+bookletImages.length+bookletRepeatSentences.length);
   assert.deepEqual(catalog.body.questions.filter(q=>q.id.startsWith('ra-original-20261125-')).map(({id,title})=>({id,title})),newReadAloud.map(({id,title})=>({id,title})));
-  assert.deepEqual(catalog.body.questions.filter(q=>q.id.startsWith('rs-user-20261125-')).map(({id,title})=>({id,title})),newRepeatSentences.map(({id,title})=>({id,title})));
+  assert.deepEqual(catalog.body.questions.filter(q=>q.id.startsWith('rs-user-20261125-')&&!q.id.startsWith('rs-user-20261125-booklet-')).map(({id,title})=>({id,title})),newRepeatSentences.map(({id,title})=>({id,title})));
   for(const id of ['di-pred-3001061','di-pred-3001369'])assert(!catalog.body.questions.some(q=>q.id===id));
   assert.deepEqual(catalog.body.questions.filter(q=>q.type==='di'&&!q.predictionSource).map(q=>q.imageCategory),['bar','pie','line','table','process']);
   assert(catalog.body.questions.every(q=>!q.visual&&!q.facts&&!q.sample));
@@ -205,6 +206,19 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
     assert.equal((await request(route,undefined,testUser)).body.transcript,'Synthetic booklet response.');
   }
 
+  for(const q of [bookletRepeatSentences[0],bookletRepeatSentences.find(row=>row.source.originalTask==='Read Aloud')]) {
+    const visible=catalog.body.questions.find(row=>row.id===q.id);
+    assert(visible,q.id);
+    assert(require('../public/practice-studio').isNewQuestion(visible,Date.parse('2026-11-25T20:00Z')));
+    const started=await request('/attempts',{id:crypto.randomUUID(),questionId:q.id},'import-2026112503');
+    assert.equal(started.status,200);
+    assert.match(started.body.question.audioUrl,new RegExp('/'+q.id+'\\.mp3'));
+    assert.equal(started.body.question.seconds,15);
+    const audio=await fetch(base+started.body.question.audioUrl);
+    assert.equal(audio.status,200);
+    const entry=require('../content/speaking-audio-manifest')()[q.id];
+    assert.equal(crypto.createHash('sha256').update(Buffer.from(await audio.arrayBuffer())).digest('hex'),entry.audioSha256);
+  }
   const imported=require('../content/di-import-20261117.json');
   for(const row of imported.entries){
     const visible=catalog.body.questions.find(q=>q.id===row.id),testUser='import-'+row.collectionNumber;

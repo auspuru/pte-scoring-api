@@ -188,5 +188,1355 @@
       "en-US-GuyNeural",
       "en-GB-SoniaNeural"
     ]
+  },
+  "rs-user-20261125-booklet-002": {
+    "textSha256": "bca4ec89ebb847b4e6cbb8d12eafc5ab1a330fd0ea8171338962bb6b149d748c",
+    "audioSha256": "9fbda8aabc4560ab5a88bbfdb43711896f0cfbf56412415c1033742388646f80",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-004": {
+    "textSha256": "e4a8fa7446af3d216bd4dd67e87d067957ff5c9dd241ce9f1bb8605793c29acb",
+    "audioSha256": "9dab4c33eee4a828b8804f6a7230d8b73f1fa88164847baed6c07bd93528559a",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-005": {
+    "textSha256": "daf7933d42dfb4dd58905fca5584d2e15f8f42cb1b73a7dd720de7e79065c302",
+    "audioSha256": "ad7316dcb8da32b7e0260c041c0c5f0ae6eb1ffa8aa3c749bd36b38c4dea2603",
+    "bytes": 26156,
+    "seconds": 4.32,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-006": {
+    "textSha256": "7030b6a7b729c5996882f5dabc6822ba78c791f3b9fdf6180ecf8ed1bc22e567",
+    "audioSha256": "7ad736109a34df913ccc395d6c89b459ed832a67ba4e2b68190208cafc047975",
+    "bytes": 22988,
+    "seconds": 3.792,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-007": {
+    "textSha256": "1dec5ec5c5e80e78b8ff18bebaf20b9728c0cd6d0cc6643f4cc65483af8ec506",
+    "audioSha256": "af5159886c6d50504c5e222cfe9256894bcc0e258c523b14a6c448ee0ade5bbb",
+    "bytes": 22556,
+    "seconds": 3.72,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-008": {
+    "textSha256": "2ed18a39f6010c748830b78c4766bea43de730bd2fe06784328df00efe9a9253",
+    "audioSha256": "c7d3119b681000f5dc11df3e959141b5ee4ef8ff81b244563d96823b03acd325",
+    "bytes": 28028,
+    "seconds": 4.632,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-009": {
+    "textSha256": "0a6af3e5df6ec662b3aa461af8af9fa700d0b44e23d99ffbc460fc5012c8d763",
+    "audioSha256": "3ce204de83895e74ac8fe007b02d82f5996032bda194b494d10ecba551425f72",
+    "bytes": 19100,
+    "seconds": 3.144,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-010": {
+    "textSha256": "eab3c6f6b741381d2e56dfd748fbd6e6f0469fefbb7bc155644d69a2b955eeb6",
+    "audioSha256": "2c563067b7d72cef1fea3abfe4278a00c1b95d428fb24b8583598c09a1c7d3f1",
+    "bytes": 22988,
+    "seconds": 3.792,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-011": {
+    "textSha256": "45acb6875617e3f3da5f9e1649c741a4099e69bbe1f61b8bcb6789730c08fe8c",
+    "audioSha256": "ed83e6784acc87f91cd399b8d64484166e3ec747287c2667c84fabc5e943bdad",
+    "bytes": 22988,
+    "seconds": 3.792,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-012": {
+    "textSha256": "935070ccdeea5941ef9c4edca8465102ddf7eb8f084357e03ff6b7a04c9d8dbb",
+    "audioSha256": "32d570858c8aa22b31b3404c054e9d1a686716cee8a21a048de1788d725bd410",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-013": {
+    "textSha256": "71aa303813a038cf78c9a9f64b8af453e8463fbaf80e0c6154207ed7ad2b0806",
+    "audioSha256": "aa008f860dcc260121e7a4a15762d27838bbdd03146c6dc8ac658bfcac01629b",
+    "bytes": 22412,
+    "seconds": 3.696,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-017": {
+    "textSha256": "61c5fa7e81abbcb6bc6170e4de46999ee747a554b3665969c35547fd24ecadb3",
+    "audioSha256": "eb96e0a2b0dbf90dfdfe4fb8773fe51f8db7cda4664c5bc2bffafb69ea9c7678",
+    "bytes": 24716,
+    "seconds": 4.08,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-018": {
+    "textSha256": "1dfb041324ccd93be497ae19b87196ba4d8c38f44eb0c2b8feaa2d882470eef3",
+    "audioSha256": "a9bde515448c96ff4bafa3351011c6dbe9e3ec4803703208fa427a42dfcbb6d9",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-019": {
+    "textSha256": "0edfd522798c9f43ba9c5ea83eb8e2894a11cd0903ffba8372730a2b2ff31331",
+    "audioSha256": "87f5715f11952e5c21bd453b34f8c1fa95a1b1d3181bd24d1ee4daa832c4386a",
+    "bytes": 19964,
+    "seconds": 3.288,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-020": {
+    "textSha256": "d4f114766f408d68e15a21b69f535d32d5b2f230fc13cd2b9c1e42905e40b261",
+    "audioSha256": "3216154cc2079299f0a7644dd403adc698e44bfc03c93ecfd98d50ce9c0fefc3",
+    "bytes": 25004,
+    "seconds": 4.128,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-023": {
+    "textSha256": "dd9699978ecff7bf5e554ce843971fcbcd83e1985a8812390458e844e6e959ee",
+    "audioSha256": "37fa6a819c269474c972942738474d2ec94bc11965b9281412dbdc4c9c392212",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-024": {
+    "textSha256": "e2416fe0149216fa7a67ceacdf80b2c74afba8085913920f9a850c80a438b5be",
+    "audioSha256": "3e4e2974407edd151218450b2b6a406cc615406d0b2b41c59cde31f0c55dad78",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-028": {
+    "textSha256": "823f8efa27b09e16238292210b4125f0adb75fd8a708c1f864c0bcd078e49d77",
+    "audioSha256": "433b9b619794ab906bf88f2d746a5ab7a254d01053c8610bd1de7864d3c9309c",
+    "bytes": 23708,
+    "seconds": 3.912,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-030": {
+    "textSha256": "7a46163785b8986830cd82d5e39cfb99c97ae892bb17d66f298b0a34d23a5c43",
+    "audioSha256": "4c7935d77c91d00c6e2990bc899c57417fe5a83eeb3fa93e46755c164089d071",
+    "bytes": 31484,
+    "seconds": 5.208,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-032": {
+    "textSha256": "d82acf25e200d619c731713e414e2f50c2315354d20db857c192d54b7a168be1",
+    "audioSha256": "c2d6c9022940dd44d1d0b6d24165193f98ab5054b0ee3e43bad855755ed298f1",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-034": {
+    "textSha256": "d8c5c75d795eedbf8cd7959cc360233ee5c8553ee0253e15106a9c9f93a8e053",
+    "audioSha256": "1c782136850f26062ac042e6e1cc13b26affe3b4f4e4eb1cde01361b4c4f59f0",
+    "bytes": 28460,
+    "seconds": 4.704,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-036": {
+    "textSha256": "c0f4a4620b62551c49f6d6cc7d5c26453ce3db6f52dc584903fc94b94801cad5",
+    "audioSha256": "e7ba63724662390e4a2928fff516fd3217bff7b973a7e667c217dfa1b654ab34",
+    "bytes": 31196,
+    "seconds": 5.16,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-037": {
+    "textSha256": "5308f9fe503501750cb8ec0a5f6e8320be6ddeec06ed0c0dcce6d23e5a76e0f5",
+    "audioSha256": "980ff97d03756e7342bed4f46828ed663fb936cb68209e738d609b1150eec9f0",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-040": {
+    "textSha256": "3dc1175e19e8652f4b84910874299df04aa2bf700a21def3103cd4cdb54c6834",
+    "audioSha256": "1e70adee930e802f2e817dc4af9d5588d5e8ff80a3c2d9c7ef590edbdddc5f3d",
+    "bytes": 28460,
+    "seconds": 4.704,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-041": {
+    "textSha256": "9f44863371061389c494a77ce9d7b30fe269f24b65d284af4213fecbec809ce4",
+    "audioSha256": "d923983f17b750855ee0f8e5284be2a91a55b31ead29267c40b1ed084847d705",
+    "bytes": 29324,
+    "seconds": 4.848,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-042": {
+    "textSha256": "f042706e026d766dba9c029059276dc05ba064b6fdfbc8b334d3d5ef0909f27f",
+    "audioSha256": "0c6f1e114a280a98d43944d159ae54ae73864ddbe7d02de57ccd4162903c56ad",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-044": {
+    "textSha256": "d255a7d8e95fa6710c3ad4e24520921010a5e8b17919c909ad4b5f6c883e25ac",
+    "audioSha256": "b8aba20f6121e15977890c65c4f35b1e0207555b5e7e3b309dd1be3b277cdac3",
+    "bytes": 23132,
+    "seconds": 3.816,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-045": {
+    "textSha256": "f1f1864299a2360207ac65c40e75068039f26c86e4090e8469708f6e635a7e84",
+    "audioSha256": "6cc58e24332fd81b5f0e89a92597d4881322b3bd28fc3c6c82134bfe09d27c1f",
+    "bytes": 25436,
+    "seconds": 4.2,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-046": {
+    "textSha256": "74d982083415d9967cfbf89929eabb2a4bc0a1429fd143fae48b75c9bcc44324",
+    "audioSha256": "ff0556a75027b3d6cca4251678cd642040c79e7b6949c6a4d339aa8815b32efd",
+    "bytes": 25580,
+    "seconds": 4.224,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-047": {
+    "textSha256": "41336294d3f1124345e6edf56dbf26fd16778ee74683292f1181b80135b34f1d",
+    "audioSha256": "d7955d8c48c4b16353e10bf8bbe38de04f8ae7377c84492b8781005911969257",
+    "bytes": 22556,
+    "seconds": 3.72,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-048": {
+    "textSha256": "6fa7d9247400f85235554ac1c16ce73c8b3a1a63b27e99064df92a03c8ae3c2d",
+    "audioSha256": "f649c65383a1dde3f42131a85f790d1ee712f69ffc203150c2e73af62298420d",
+    "bytes": 27596,
+    "seconds": 4.56,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-050": {
+    "textSha256": "fcbf92d01671eb285d9a38fd8b4f7a93d89787c58e71df07ce5041ee64aca06d",
+    "audioSha256": "c29bee50ed8965cf050c82970306ae9410597f83185bd5f69b464cdcd64cf642",
+    "bytes": 21836,
+    "seconds": 3.6,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-052": {
+    "textSha256": "ecc9a7921490988c4f90d1a2fc21e87e3ae0ec66d040c83892799528c9968009",
+    "audioSha256": "11628588599278e56dfd6a4a38d56f33814c4ef284fa79500c46c4ea1383e3e7",
+    "bytes": 38108,
+    "seconds": 6.312,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-054": {
+    "textSha256": "6ee4a844c7c64a8dd6a055ffe342417673a614d13de3aa4a9ff5aae17cadd145",
+    "audioSha256": "d38e68c13f490b1b4ca3a53167372b4d4acf73f2a34a5647104d721a5cb97bf3",
+    "bytes": 31052,
+    "seconds": 5.136,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-055": {
+    "textSha256": "c63c8919cfee1d0e0283a890b1a1b5183a13891688db2e8883380b23425bed76",
+    "audioSha256": "54da8ade751cbe780bf44819d7a3c90c469246dec0bccf81c9fcdefb0332e73a",
+    "bytes": 25868,
+    "seconds": 4.272,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-058": {
+    "textSha256": "8de0abf110353063967a9885d1988adfd5ae943bbf85b48efa8cd1a40701e360",
+    "audioSha256": "dc04f614233c25e7f9ab3a003b76c2611d7734a008773f3aca0be52ef7f10639",
+    "bytes": 20684,
+    "seconds": 3.408,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-059": {
+    "textSha256": "4bd7514005c54d073e3b8d28a3aebc85b6e36cde85b229e018ce27f8647d483b",
+    "audioSha256": "e601b3cce4d44b994e78112d407f57b6a9800f27aface23a64e864586cc82ded",
+    "bytes": 24428,
+    "seconds": 4.032,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-060": {
+    "textSha256": "cd578b3c89be9a1d8f663b7e76dd8c7c29646e5422ca8862fc722916f010aadf",
+    "audioSha256": "7225760c9d363a6f67dcb15566fd55d38ca594e0b44016400741eb31d18c5baa",
+    "bytes": 24860,
+    "seconds": 4.104,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-061": {
+    "textSha256": "47c4e962f3e07a2591f42ac7a3988bf570048a4979c49e4d74bd56b86dbcfb09",
+    "audioSha256": "c04848cd9e31244806d082b394afb6aaaef6ad3d5da1ce8c5bdb448d0644dc67",
+    "bytes": 23564,
+    "seconds": 3.888,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-062": {
+    "textSha256": "8b3e437be4ea212892f7eca0b7145c9a28decde8b6b803af764c91ea5afa73be",
+    "audioSha256": "161974628f7c7375c33c0635df4fa6ec921219273aa0789438ae24cfa4d205e7",
+    "bytes": 27020,
+    "seconds": 4.464,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-063": {
+    "textSha256": "40ef177904c93b58c9f5750f3f25ed31a22928261413aafd9cf1c1b87aba894e",
+    "audioSha256": "80f70d08ccb9d4f222961723b648ee8c5d84cac97f149dc66e1adb3e4f44b6b4",
+    "bytes": 19100,
+    "seconds": 3.144,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-064": {
+    "textSha256": "73551ff6947229b8a8f647fa6d4bd4eca2a2365d12a26a69fade2cff7ba0b9f3",
+    "audioSha256": "2db4c6a0fe1fe7c86634abdcfd861838bf2248132588d526f6cc7341b14da8fe",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-065": {
+    "textSha256": "4731a047966342d206a84a6e988e68893a5c635afaab9aa188eb5be7d290d3bc",
+    "audioSha256": "ba5643a57fb109e95f10c3e4ca0fa302c358ef400ca32587beb186672f1c9c30",
+    "bytes": 26588,
+    "seconds": 4.392,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-066": {
+    "textSha256": "c184ba65797b5849053a828a38d7ab786e8e832cb21aa816fe8ed213c88ca08c",
+    "audioSha256": "afc69098ac2f9d58416c4651ada4fd061cff096b1dc2c722fd7d93114398f89e",
+    "bytes": 21404,
+    "seconds": 3.528,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-067": {
+    "textSha256": "002e9be26f2e050bcbec686b7cf40d98218486700efd14f5fb10fb083c740841",
+    "audioSha256": "916508355e2cef636e051bbeffcd354dca32b3626a7d42fb9195f0672246c237",
+    "bytes": 22556,
+    "seconds": 3.72,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-068": {
+    "textSha256": "b5145fd9b83c8c8c4e24c0678876bbfa93967adea657aa7c2172e8718f0a25ca",
+    "audioSha256": "e49b6e0f162e0cc61cc98a7aac8c97b8299ad050ceef1a38dd9dcdfd5e107010",
+    "bytes": 20540,
+    "seconds": 3.384,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-070": {
+    "textSha256": "91f555eca343df60476fa0fad5d484b7e852b4e851a3cc1fb89a5a310d505dc2",
+    "audioSha256": "82a7904e84ef07827aea1e8e452726a0eec0b4bcefe619c650127a2c62ec2174",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-071": {
+    "textSha256": "a66ec1ace9736ef01de37252f8acf32e61d7132e155f27df2b529c7ed1887990",
+    "audioSha256": "699e56dac5940a9bc8c9ad4a0824e34a67e93792d185d6184d44f8953c02bad7",
+    "bytes": 29468,
+    "seconds": 4.872,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-072": {
+    "textSha256": "9e757a39d23897431045cf122f3a86b7b81bb7360d03236840f8c0b750686846",
+    "audioSha256": "d86da66ba5f8281bac0be4c6339cd79ee6f2e445eaf1999da5c96e65a53599fe",
+    "bytes": 21548,
+    "seconds": 3.552,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-073": {
+    "textSha256": "efebbfe881b566cbe932e8c8f874e382721f7a454c772c6bd46a4f47f18337bb",
+    "audioSha256": "24727a38e5e35e2f422f23e77b31b6871ab38304de8c0496fecc8bf0b22f2240",
+    "bytes": 22268,
+    "seconds": 3.672,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-074": {
+    "textSha256": "66b8dd84018b21d9e751f1592dbf41bba00d728d84197efb80a10f35ba89becc",
+    "audioSha256": "72e1bb6aaacd53f73d666a29e095e8c0f9c92fcf65a07a5084adad5dc1b54ee7",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-075": {
+    "textSha256": "6a9a2e5e185bbf5000385cce9a915a5a664dbd884a17a5c72e14586e44752289",
+    "audioSha256": "ba70de246a52529233a985ef21aafffe31653da146caa57e8aedd69e1aef68bc",
+    "bytes": 21404,
+    "seconds": 3.528,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-076": {
+    "textSha256": "762426e65127bc909dc67b152c012feccd20e8664bc37eca6e8c77c68e276d43",
+    "audioSha256": "1ea7745d5248479a8f04de3f9cf56d326ec26f1ff2e34934c31831487405267a",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-077": {
+    "textSha256": "b2ba6d07831c75d373da9584f48e15784afd6be70d7d76b16489a68ab3d8bf1c",
+    "audioSha256": "0349928fa5eb52f632bc2cb08f3c476bff0a5896d6909d4a14a5672bb549daaa",
+    "bytes": 23420,
+    "seconds": 3.864,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-080": {
+    "textSha256": "6d2ff0fb396fd4c94768b0e2f3e9feb1e51fb110ab9f2a18dedc1a3660fb5e3a",
+    "audioSha256": "05524000b0bf69b1ae49541709a247f99b7d9138bd4e2bafa4b68df239c00621",
+    "bytes": 38540,
+    "seconds": 6.384,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-081": {
+    "textSha256": "dee92aa0f9ae497400557e1fb89956c866fbea3d0ec8318a13bb454359516a7b",
+    "audioSha256": "b63b98028bc6ed87eba1f8e9ee63e0324d79a254c89a42c67d74a7318ca0025e",
+    "bytes": 22556,
+    "seconds": 3.72,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-083": {
+    "textSha256": "c1fd42a66408d76a63415c1f08ce5b96d4c4b218ca6f161bdfd42581f6c829ad",
+    "audioSha256": "4cb6f355785daa6c49314421aaa8d393078033c976684e6685c630035ab6513a",
+    "bytes": 19100,
+    "seconds": 3.144,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-084": {
+    "textSha256": "59aff142d69cc5507b954c9e66913077f7c54d039f9e3310638fdf9bee59bb3c",
+    "audioSha256": "a3a2f247f2ef34f0e5b8b35cb3a6fbb4dfa1715776742eb75a981c045642c45f",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-085": {
+    "textSha256": "3bbc2585ac29145636351e80ed9e8c6df41d33066b42b401cfca5717a012e4de",
+    "audioSha256": "4c96526840305e9bae7bb1cd04ec18c3baf5e5f80ce541dce818608b3baa308c",
+    "bytes": 20972,
+    "seconds": 3.456,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-087": {
+    "textSha256": "bf4edd3ec03212d2627806f5bdb766509cb4beb5820329c3a6e686ebdca9da1c",
+    "audioSha256": "017e8408e74ad65e3f5ab3320c0ad3315545f744b7c6c83f2d7b00379b1dfed5",
+    "bytes": 37244,
+    "seconds": 6.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-089": {
+    "textSha256": "81676c292b405eee26f9feb30d804f57639f9b01163648fe53b0378876d91232",
+    "audioSha256": "8fc17a3ab8f3bdbce528ad6a71f9fe0cdba1cc84cc1bf1c730b1363e0b46432f",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-091": {
+    "textSha256": "e2f482c3af86da4d60b0d90a8425e548082244a6fa61434871c95b0567b0d2f0",
+    "audioSha256": "bc5ed1cb7a7dce49c0de903c48c3774efe8e61ebcbe0857797e4b3ffcaa00f10",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-092": {
+    "textSha256": "4686c7bc46f72a788fe120371bc32b418d879e171737055e61e4737020dadf05",
+    "audioSha256": "be5de351a6e53d750d27b4e04130b58616caa6817597a44a69446dbb87d4a405",
+    "bytes": 38108,
+    "seconds": 6.312,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-093": {
+    "textSha256": "b5aa02ae6b73eb4daad24c9d4af7178037dc988a249be63f747fb7339d220427",
+    "audioSha256": "1f4fdaa3480007da4b274a7f8e6df4e9132ae7dadd1593415880436d6b546155",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-094": {
+    "textSha256": "e4e54e441a57b81eca61f77f3b9631efa6fe3fb7149d5d9558a2e95b1c9be128",
+    "audioSha256": "f55993e020e7cc35e5ef1238bd60fc6d6acae146813457057ea46fc57060f421",
+    "bytes": 25004,
+    "seconds": 4.128,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-096": {
+    "textSha256": "6ab65767d2fe6633a18d9a1290afbd987eb2c67c0786a692610d93bfcd905be5",
+    "audioSha256": "5b41de40228aa14514e7f748d2212804025361f3fa1eda871f1310f6e361c93d",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-097": {
+    "textSha256": "f331b50a01c5af1250b11b6856c5a48b11df2cea163bed0444df2f4fdf9ba1b0",
+    "audioSha256": "aafd38bd106c28f74d123084c5444f9e9b8a79494da43599ff48398843511eaf",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-098": {
+    "textSha256": "57d8b82bd702327a7e290ff29527585b152614a94155ff86da26fa18868dcd14",
+    "audioSha256": "a179d3c2c3033e3205a12983dfd01ffc0194c63058490537b1e3a6140f2e9f19",
+    "bytes": 25436,
+    "seconds": 4.2,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-099": {
+    "textSha256": "b19d1af4e42c07419e4db0745b693fd73cb6623daf7e37938512fc057a247637",
+    "audioSha256": "21fa1977d90f6ad2890758c8aa68f8a26cd794bc5b59a62ff508e7364f1ccf0f",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-100": {
+    "textSha256": "72677e83a35f43de87fb44d91746261f60efe98cb22d6dd82c708358244905f9",
+    "audioSha256": "45e45771fb7f8401dab122d8210ed0757d0e8b777e849492d3a37f5290dbe03c",
+    "bytes": 29180,
+    "seconds": 4.824,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-101": {
+    "textSha256": "b5c1eff2c9bea26341cd2e71bebac4252ce48e02780463647d45b53f887552d5",
+    "audioSha256": "2d8cac56bb9b35d65dd013717cebd3e40f8a0f7988287556d760ee2c097e0381",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-102": {
+    "textSha256": "62ffa10b7660bd0ff4adcf494099ac1a12bb41db6cebf74f4879a009f85a2fb0",
+    "audioSha256": "8c119c768fe22b29ff9e7a52ad8045745a86284fcc2164cb103f07fb28a3c25c",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-104": {
+    "textSha256": "042dfe5068bc208e0573baf41244938421f026cd3a30317a1b273b88a5f0ac8d",
+    "audioSha256": "80be18d6dfd11f738ac831d4c6c84a88ab99a5616e9be25b6956992b88ae5163",
+    "bytes": 20108,
+    "seconds": 3.312,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-106": {
+    "textSha256": "534097060ceb7672d82a24731d7b2c203dd34f8f7b96560bbacc05f26d65fc61",
+    "audioSha256": "a211f068c3ae78677e3f0744c6a2c129ed57652e3f8de33f7707e1418f73ac56",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-107": {
+    "textSha256": "4125f0e2b349cb4efaa3b5a7cb18a7c5266edd59971473a6b11d9d26ab496e36",
+    "audioSha256": "fb315e7c9aab1c519b3d19023f9ef135427e59d34841ab06aeffa1e4f03dd665",
+    "bytes": 33932,
+    "seconds": 5.616,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-108": {
+    "textSha256": "db3e80c1903ace5f6e7387345a1c6ff8161b6114819273c35c47249c24d5eaaa",
+    "audioSha256": "b0839a7928772effa732c590c16e7304038de0d830e580a0890025156b01f28f",
+    "bytes": 20972,
+    "seconds": 3.456,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-110": {
+    "textSha256": "0d1a0c0ed2a73daef59f66b81cb0c1e820adcb1e6c4cfcd9a5d940735fff43b5",
+    "audioSha256": "f5a82e13de99e1231185f4144d2e1566a2c11ae328a41bd09eb07139c527ce04",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-111": {
+    "textSha256": "e17c64026e5d826e4edb7755deb69efb7a745c4b407f35f646abe6ae24891ad8",
+    "audioSha256": "82fba597b08ebf575f92338ba45d7c73ce2012979c9616c8412e9676c06d567c",
+    "bytes": 35516,
+    "seconds": 5.88,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-112": {
+    "textSha256": "2b5d0e14a2b42a96d8bcd2e4e6102feb6a95af94904f0ddefd77ebb990509aaa",
+    "audioSha256": "9e9bbc145b18c4620bfb7e3478a0dc61623a26b91e02a17ca5326d065ba974f3",
+    "bytes": 25868,
+    "seconds": 4.272,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-113": {
+    "textSha256": "f9308c82c0fcbbdeca70dbb27b5001dc54efb6456c79af85567cdf15ef9e4fd1",
+    "audioSha256": "70613c93e77d17af591b1f4d05de042293fefe2c92fe9b7e364a9004c416c54c",
+    "bytes": 23276,
+    "seconds": 3.84,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-114": {
+    "textSha256": "5f1c8f7396c212cea6c4a7a39d36ea3421d04d0d08516bc8738c0d5df40fe4b8",
+    "audioSha256": "cd4cf9df7173015d4fb256cb15deb6992eb47953aebc778b82a3dda4d6f86687",
+    "bytes": 31628,
+    "seconds": 5.232,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-115": {
+    "textSha256": "3141b59a9985e7075f4305dcea667750befa28ed76ed3370161be57144b4d4b0",
+    "audioSha256": "6b2e39b440a05e527fda73016fef35a4d906890dcb4283e10014f93cc304b98e",
+    "bytes": 32780,
+    "seconds": 5.424,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-116": {
+    "textSha256": "9bafd85be52f0012ed7c7f8b954f6960e2ae96c433dafb56dcaa818042486143",
+    "audioSha256": "19226f8027b7cf6cf485d1ae85c55528b9a95e4ab8189463b2fa73ca6d44bc87",
+    "bytes": 21548,
+    "seconds": 3.552,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-117": {
+    "textSha256": "affcf2de24fe045651353f82e6391b2aaca0db6d10a648d12fb0919ea9f769f0",
+    "audioSha256": "2c6c2da287b60ea4d7a20a1039145b84d45290ab3faddfd4b5cab7cd2565d208",
+    "bytes": 24572,
+    "seconds": 4.056,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-118": {
+    "textSha256": "65d10816d3642fb2b7d978b0d6ceea93f2a8fb03d153f21df33c61486d836ab2",
+    "audioSha256": "e18f022a3466038d6ebf20dd515b5cf64c8e3496b42270b6b7f80ae0155ef8ca",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-120": {
+    "textSha256": "6eb2917eef862c954cc23125616b762fec494829c1ab3979ddd60d343f9d2517",
+    "audioSha256": "1092bb31f11570f9dca21935b83fd0bc4db743ac897211448c5a979daab51f62",
+    "bytes": 19532,
+    "seconds": 3.216,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-121": {
+    "textSha256": "117842d5ea0c3dcb545361261ef924a038d3fd7175087a1d0bbd668e57a239c2",
+    "audioSha256": "b5c9fd4ec82559938f8c69f0670bc4171e9145a2b053850f3a4d3011992a6a29",
+    "bytes": 25580,
+    "seconds": 4.224,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-122": {
+    "textSha256": "2a4a4d55546db29938a37ab5370dec98d900b0a26b68396e3501c5e14395efd0",
+    "audioSha256": "548b390fb1e98d1087b066356053948dff6dba02130eb72fd13d97d5d9da4e28",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-123": {
+    "textSha256": "f1dba58b40347043e9bf9d84493dfc032470a95fc26fda42496c66aa46f98b56",
+    "audioSha256": "4f2edd4389f501e8d7a397bab2ce8214e92568d030ca5efb41a258f0a297f4f3",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-124": {
+    "textSha256": "5316624d280c3c8d0df5341f9fb090f89ea838c4c910ffe6fdab130ad46c7fc6",
+    "audioSha256": "46e558fbf6239ddcaa9dcd46bb3255bceb33c6e669c307c0c55a0d28280a9037",
+    "bytes": 34508,
+    "seconds": 5.712,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-125": {
+    "textSha256": "db833cf4c103eea73c5bcbe1e29169fb59db7b347e7393782e11a42a95b34f03",
+    "audioSha256": "89a570a406a995a3d4c9283aa7175b756c86493fd9124524f9120fd4b39bc686",
+    "bytes": 27740,
+    "seconds": 4.584,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-126": {
+    "textSha256": "956207d9c95438bb55bd6a22dc16d6240a629af1769e3b8e4f7f77e660459484",
+    "audioSha256": "e3afb6f71a11d822ed2182e5a6b81f8b8dde5239eae053f89a91b46718b628ac",
+    "bytes": 24428,
+    "seconds": 4.032,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-127": {
+    "textSha256": "dc23d4d2d335768549ca0dcef70f8980d80decf59d31404d1663752f837f6134",
+    "audioSha256": "2d8051fe86c11d0e20b3ee757611d74546363e509772bc5c6dc0448aa37c2d41",
+    "bytes": 23564,
+    "seconds": 3.888,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-128": {
+    "textSha256": "c2f03d11594d515984a2005e79e2b20be8cb4b09ef9649b2bf1a03acbd3cbfd9",
+    "audioSha256": "1fe7bf1e0e7e8bed54b04c06243c9f0de1393020bbb6b4a5481c3089b6026cb6",
+    "bytes": 20972,
+    "seconds": 3.456,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-130": {
+    "textSha256": "b34db51b7329915cf78db636d723b8f390d893b15e6756253d31d7735cbc6d0d",
+    "audioSha256": "befc59c264df527c4760255e65636f2b1c396d882200a77be1c6f021dcc23bbf",
+    "bytes": 21980,
+    "seconds": 3.624,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-132": {
+    "textSha256": "746e0fc8374ff9b8e7fe8f81de9b2a0ff36f34a294f59d12c78006bdc50db0d2",
+    "audioSha256": "12f9cda493aa1e379075ebedd2297089b66b37ea16d8e881547898121d6bf2a1",
+    "bytes": 25436,
+    "seconds": 4.2,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-133": {
+    "textSha256": "de2e00a05275729491f9ffd6b8f63043f7c51231bf91a357989d3dfd4b988f8a",
+    "audioSha256": "e10f96ed42887dc3a3a5f82bf82d62bcdcba518229f8deeb4d4198202af89fd8",
+    "bytes": 22268,
+    "seconds": 3.672,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-135": {
+    "textSha256": "b9edc75f0922a3e87c053773cc86a2dbe1084da67daebe379a9464b5c246b57d",
+    "audioSha256": "099e37126647ff907e29d92ed24d19da64dd1d68fc9bb1e4989246b86f88cad8",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-136": {
+    "textSha256": "d8c041ae390404760e0a64c18c40737b78e9da3ebdb7912011f9fe1a51fdf2bb",
+    "audioSha256": "da3677f193c1f98790a533b14c814ab77aaabb40aeee9cf7c8db932111e60652",
+    "bytes": 29036,
+    "seconds": 4.8,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-140": {
+    "textSha256": "598bf7cb8c9ed990e6c4880e2c458c4444dff915580197a68927ec8919c1a3ba",
+    "audioSha256": "fd90f67388375da51f024dbfe9b37bc14d0b13246209730c2a16b1bc7fa1f8a1",
+    "bytes": 20972,
+    "seconds": 3.456,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-141": {
+    "textSha256": "acbd9d1f801333e66d5771fec3339079ab89242d6c912f66fdc51f98228284c1",
+    "audioSha256": "087cc9f5013d9c2a79af204e5c789dbbe449408ea6869410fb301c8fe03ae9fd",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-144": {
+    "textSha256": "15cfc50dfdb6767d51f9be7bc73f4f46c96004e8a18843ed0e78f0163a101036",
+    "audioSha256": "284d9d008dfee1cca37f2cfcfeb4862fda8250dcbd16c1a422d72e82c224fd33",
+    "bytes": 22412,
+    "seconds": 3.696,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-146": {
+    "textSha256": "ad4f26df903e61af6572443528a84edd7c561ecc570b0594aed204f51349af3c",
+    "audioSha256": "454acc4d75e52072f50f61625c473060e403bd20e3ef0e9c1fa34c34dafd889a",
+    "bytes": 19820,
+    "seconds": 3.264,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-149": {
+    "textSha256": "bcc744684d29fee8b9bb52eca3dff327abc3c291d618e5c0a7583627e8d0a083",
+    "audioSha256": "a6576c3d4259bd41f56a92f5dc2382900d15f534cca4055a836503f9f07222e5",
+    "bytes": 19820,
+    "seconds": 3.264,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-150": {
+    "textSha256": "28d2c044f1633e5117cdaa033d20cad2726cffeebe9e3691cddf3213dbf83f3d",
+    "audioSha256": "3537f4de0400681fddae3ccf55ab4405479ba316ff15a567ebb995291cedc9a6",
+    "bytes": 27452,
+    "seconds": 4.536,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-153": {
+    "textSha256": "d8f6f118f5ef5471de1774d8ff66720d6ce0fecc15b157047b76a2458b7e48b1",
+    "audioSha256": "3c6042b6ebfe6f4fb073068d0572acfe9a58af0d5bb7e967394ccca5e0f2d1f9",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-154": {
+    "textSha256": "eefd81cf024aa90e4a43e6bc821251da10311eef4b0b1de438edda30982ebb1e",
+    "audioSha256": "e3bb2c5c880f8562f7eda91be62a0ef190cddc5b312cfcd996600e67bd0f3912",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-155": {
+    "textSha256": "5bd5a3d26ea3c968cb8a18476b99af5a78d019fd50f256c3fdabd1efe55fdc6a",
+    "audioSha256": "01568bcea7318164a624a29ccc3934394cf5e23edeb3ee63a4db01451c30f0c5",
+    "bytes": 20972,
+    "seconds": 3.456,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-156": {
+    "textSha256": "bdb94539b5dd8f1efae58475fa40a9539772c82427be383eafb8ecb63a0ddee1",
+    "audioSha256": "ef9e017cf1b06c86c575ad9aaeee444c901e504c750e5831a0b884008b42747d",
+    "bytes": 21980,
+    "seconds": 3.624,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-157": {
+    "textSha256": "a50164d626ef77393ee58e7c7989360b337d39dfb15151cddce0a094aff87183",
+    "audioSha256": "1c69f841825931846e8bb7343264d8da760c7157be449f575b3d30c7f0f5d886",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-158": {
+    "textSha256": "f04abc972149b6d26ddfcb1bac1416e03a9826b8a3f1046282e9f1a7c19a5748",
+    "audioSha256": "cf89c53f6ca40620a6f1d7a0cafa890ba8bea59856a1db17f0323c6c36dfc6bc",
+    "bytes": 30908,
+    "seconds": 5.112,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-159": {
+    "textSha256": "1ec12959e96b6159512a370d55f85dc29c2d350d36765907336816e678438439",
+    "audioSha256": "abbbd1e7df5bed4d35e9c7d2c78b82b61b6de0b6db748110ae9bc65ae78c3aee",
+    "bytes": 24140,
+    "seconds": 3.984,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-160": {
+    "textSha256": "5ec030b09bd90f07b59157295300d22184f6ab505acb332d453b5d0277d9c771",
+    "audioSha256": "2cfc3109742bceff62d7cd0ceccaba1c3f7f2c50e117bda5434cbf450d8fb01b",
+    "bytes": 21692,
+    "seconds": 3.576,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-162": {
+    "textSha256": "2452b38002edf833af0ef4a1ec41f4a074cb706169eada53cbdfdee722bd1e04",
+    "audioSha256": "54c22f8d20784369e93b68fc50b57cbd301edfa5f8c3086083be348f6ba59779",
+    "bytes": 20540,
+    "seconds": 3.384,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-163": {
+    "textSha256": "890feb9cf7d281462da32211966db1e870778162aeb9dd762a413f1ab96cbd35",
+    "audioSha256": "3cf86e9c100e5855087919b87992b7f4b7e084ef7167442c39182cd09fda57f8",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-164": {
+    "textSha256": "5987922276993350be190cd6792349e155a3771425cabb4c83735e47e813b0ec",
+    "audioSha256": "da53761405b9b3e4630ee029fd139c6b448cf907865508c4d94f3a3c81a8185f",
+    "bytes": 19532,
+    "seconds": 3.216,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-165": {
+    "textSha256": "af7b0f26d70e22b1a1cb813cc593ce7d2bc495e37fadf1f4fbba9d2032bf5c48",
+    "audioSha256": "d1728f7a1c417fe70c39b3faca4655ec4c4fcea65c1a71dd679b960915dd299a",
+    "bytes": 24428,
+    "seconds": 4.032,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-166": {
+    "textSha256": "4449d04b8b2da5deec55937be87fa44647808265f23c2c30671122f3bfd837c7",
+    "audioSha256": "974d81b4e168519c2ca96c8f399fe2b59ec98b38f576342f17c2576f5f6ef0a3",
+    "bytes": 25148,
+    "seconds": 4.152,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-167": {
+    "textSha256": "31f7e420bebcbbf951d0f533624d7381fc33a529344984b1fce412fe743432d3",
+    "audioSha256": "6a8216099a55fb2260dbc02f1b9914095fd8ab58ebcf027bcecc086e97b83bf0",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-168": {
+    "textSha256": "daaa7f845cccdd4b018a92e5cc1ad01a15f1dba30f9885479f82a34c2ddd7ae0",
+    "audioSha256": "6a8f22481ab2538b0453c3170155055d4870fe2780cf9ee1d7877a915500225b",
+    "bytes": 24140,
+    "seconds": 3.984,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-169": {
+    "textSha256": "a25ac2d6b3a969d363b4fad521dc8a657ef6517815502b4379149e04b2c4d642",
+    "audioSha256": "a8c6a73180f8508ac9cd6f095d1aa48e821e7cdc3a4a108a3b5dc0647db2aeba",
+    "bytes": 19100,
+    "seconds": 3.144,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-170": {
+    "textSha256": "c55665b2df8e78affbf7f0a5de3d67cd7cbafa35e3889ed9129fb6b4ec8e9d22",
+    "audioSha256": "fc493b3090bb8f1b5b0dbcd29113d8fa967a1a897d7f909e600e5fdeaff1a94f",
+    "bytes": 25436,
+    "seconds": 4.2,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-058": {
+    "textSha256": "c2a9bcb3370cfac6c9a37e13855f8b857ac38bdef9741687eb64d0a1be71dbbe",
+    "audioSha256": "db8379316c0cc6950e6d36a6af63ea12ab518c9aadd579ce42e333cc2596b823",
+    "bytes": 30188,
+    "seconds": 4.992,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-059": {
+    "textSha256": "3d7f8f3845222265633a9406982ab8f031940019633707787ce216c6ead97eb9",
+    "audioSha256": "b94cfca2ce8a4769d33dbe42cffa89fece4ace6ba4a82a23a8f527ae16d95d02",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-061": {
+    "textSha256": "4cae7181831afd9ad2613f51deafa423715f78cfaa45f18ee3347a9924a05de8",
+    "audioSha256": "7446a6f1e1107a2831ca157c1f0d5a5577caa86bc7216e3653c1e7a99492b7f2",
+    "bytes": 22124,
+    "seconds": 3.648,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-062": {
+    "textSha256": "59a57f259cd69e8f2d6ca82d49def1a8f4d7248310128a1b71fdf1f77de9d098",
+    "audioSha256": "85b89f4dcd522383b487389588e5a0fa2d07f1122e5610221f8f1bba699094c8",
+    "bytes": 32924,
+    "seconds": 5.448,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-063": {
+    "textSha256": "6fc03e82c30b6b4fbbe4f02b90db1bb615a7895b7e5f906f77405bc5d05c2e74",
+    "audioSha256": "755245747541f723a4688a73d349ebd551021332519c74d6444d0d53da50600c",
+    "bytes": 32204,
+    "seconds": 5.328,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-067": {
+    "textSha256": "ab5d993878c0782aba31bb72c256019064ba104825a1ced0ebe6d49499bdc6ab",
+    "audioSha256": "3129ca32aa6dfde4a63d067c32621b6c1b37052eb37d10c5d5664391c95eb09b",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-068": {
+    "textSha256": "8f38547a62825578e2b9c10b73eb9c496308a7ead4ac70c3354ca106fbce5529",
+    "audioSha256": "ef76a88d4514d8912cb9b00341bf2f40c1f9db3ef48ae7c1f407862235436c8b",
+    "bytes": 22556,
+    "seconds": 3.72,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-071": {
+    "textSha256": "f30375be537954f84e6e6e5ee9073ac861718b3e7f53544c6f9997125bf60343",
+    "audioSha256": "f625ee38c6e4966f6b23b5d952cc35fbceeb732e6aba0019c0cbf05c709f8a11",
+    "bytes": 25724,
+    "seconds": 4.248,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-072": {
+    "textSha256": "fa78b5f91dcb086d599e01b7b5cd16a44158b7001f1557f96b81c9876a1a943a",
+    "audioSha256": "9dd9722f83350f3b662e5fc242743167479a67eed1c0676cf2167b996ab9c9f5",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-079": {
+    "textSha256": "a647f67b04d9f9e753c39b9628617b89dcc48484c88e8cf03d0df3621dc5ef4d",
+    "audioSha256": "b25ce1eed51bef5cf94848cd5dd7c5d622deba1eded12f02bb2f450f1d1e58df",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-080": {
+    "textSha256": "0d7eeca231ece4816e73f7fdf73bd7350ec721e6f2391fad04ccfe217222f72d",
+    "audioSha256": "d90357b8cf6c1edde170394b10d0ba4de95b551a23aac39a807535066885ccf5",
+    "bytes": 19964,
+    "seconds": 3.288,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-081": {
+    "textSha256": "3891011c00359ddc92e371de860c61d74adaa13f3378d1802ec696881fa8fa69",
+    "audioSha256": "11804b7c168a1692ab3bd1f08e692f3140c68de409bcfdf957ca2e700304b906",
+    "bytes": 19244,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p237"
+    ],
+    "source": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-booklet-supplement-082": {
+    "textSha256": "519fcb16720b77301f8b243ada0f52e0e7d6d9f3d65891745d8e85532035effb",
+    "audioSha256": "803ad2ae71db6eb8aa8b97f7b51c36d81ff302801d4dc6003599c0e7580d448c",
+    "bytes": 26300,
+    "seconds": 4.344,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "source": "sgd-voice-source.json"
   }
 }
