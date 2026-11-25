@@ -15,7 +15,7 @@ const batch = require('../content/additional-practice-questions.json')
   .filter(q => /^(sst|lfi|wfd)-pte-nepal-20261122-\d{3}$/.test(q.id));
 const publicDirectory = path.join(__dirname, '..', 'public');
 const hash = value => createHash('sha256').update(value).digest('hex');
-const types = { wfd: ['dictation', 153] };
+const types = { lfi: ['listeningPractice', 33], wfd: ['dictation', 153] };
 
 test('November listening additions have matching playable assets, transcripts and practice-only keys', async () => {
   assert.equal(new Set(batch.map(q => q.id)).size, Object.values(types).reduce((total, [, count]) => total + count, 0));

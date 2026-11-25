@@ -14064,5 +14064,1681 @@
       }
     },
     "sample": "A celebrated theory is still the source of great controversy."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-001",
+    "type": "lfi",
+    "title": "Puffin Conservation",
+    "minutes": 5,
+    "text": "The puffin is a small seabird known for its colorful beak and unique behaviors. It lives in colonies on rocky cliffs near the ocean. This bird allows other species to share its habitat without much conflict. However, it must be cautious of predators like seagulls that might steal its food. The puffins cooperate with each other to protect their nests from danger. A corporate organization recently started a campaign to keep these birds safe by raising awareness. They introduced a new conception of wildlife protection to the public. This led to increased consumption of eco-friendly products to support the cause.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q01",
+      "sourceTitle": "Puffin Conservation",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 539,
+      "answerTranscriptPage": 574,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-001-c27534e67057.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "d22e6f51ccdbbe251086d9adba04642b1848d23757651080a7c357264ca9e51d",
+      "sha256": "c27534e67057c01a88f037e58abc3d4dfe731ae6e311ad34154c930ced95b507",
+      "seconds": 32.472,
+      "bytes": 260012,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "The [[1]] is a small seabird known for its colorful beak and unique behaviors. It lives in colonies on rocky cliffs near the ocean. This bird allows other species to share its habitat without much conflict. However, it must be cautious of [[2]] like seagulls that might steal its food. The puffins cooperate with each other to protect their nests from danger. A corporate organization recently started a campaign to keep these birds [[3]] by raising awareness. They introduced a new [[4]] of wildlife protection to the public. This led to increased [[5]] of eco-friendly products to support the cause.",
+    "answers": [
+      "puffin",
+      "predators",
+      "safe",
+      "conception",
+      "consumption"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are puffin, predators, safe, conception, consumption."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-002",
+    "type": "lfi",
+    "title": "Evolution of American Cars",
+    "minutes": 5,
+    "text": "For many years, most vehicles in the U.S. were gas powered, relying on fossil fuels for energy. These cars contributed to air pollution and climate change. The urgency to find cleaner alternatives led to new innovations in the automotive industry. Engineers began designing sleek electric cars that were both fast and stylish. They also developed hydrogen cars, which use a renewable energy source to reduce emissions. These advancements are helping create a more sustainable future.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q02",
+      "sourceTitle": "Evolution of American Cars",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 540,
+      "answerTranscriptPage": 574,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-002-960523f924a7.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "5c2e54bb8b5755beec461f4f3d2e08a64a4682f909d3f43b1fdc735480d7dc53",
+      "sha256": "960523f924a71e8fe958375a23c899e4f0f7a5c9f9012818e2cbe02fa5de23c3",
+      "seconds": 26.76,
+      "bytes": 214316,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "For many years, most vehicles in the U.S. were gas powered, relying on fossil [[1]] for energy. These cars [[2]] to air [[3]] and climate change. The [[4]] to find cleaner alternatives led to new innovations in the automotive industry. Engineers began designing [[5]] electric cars that were both fast and stylish. They also developed [[6]] cars, which use a renewable energy source to reduce emissions. These advancements are helping create a more sustainable future.",
+    "answers": [
+      "fuels",
+      "contributed",
+      "pollution",
+      "urgency",
+      "sleek",
+      "hydrogen"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are fuels, contributed, pollution, urgency, sleek, hydrogen."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-003",
+    "type": "lfi",
+    "title": "Art Gallery Exhibition",
+    "minutes": 5,
+    "text": "At the art gallery, every painting on display captured the attention of visitors. The artist used bold techniques to create dramatic effects. One piece featured a huge portrait of a person's face that filled the entire canvas. The lighting in the artwork created a striking shadow across the image. This made the painting look more realistic and emotional. Many people admired the creativity.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q03",
+      "sourceTitle": "Art Gallery Exhibition",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 541,
+      "answerTranscriptPage": 574,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-003-c298619715c9.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "5817bea10ceda41f8fb6c97f168aeca5f8b5b1e63689ab3810662db135e19408",
+      "sha256": "c298619715c9af9db302d2601cac4fc711df1dc196a7dfaf6e79315987e9595f",
+      "seconds": 20.496,
+      "bytes": 164204,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "At the art gallery, [[1]] painting on display captured the attention of visitors. The artist used bold techniques to create dramatic effects. One piece featured a [[2]] portrait of a person's [[3]] that filled the entire canvas. The lighting in the artwork created a striking [[4]] across the image. This made the painting look more realistic and emotional. Many people admired the creativity.",
+    "answers": [
+      "every",
+      "huge",
+      "face",
+      "shadow"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are every, huge, face, shadow."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-004",
+    "type": "lfi",
+    "title": "Driving Test Preparation",
+    "minutes": 5,
+    "text": "The driving school is always busy during the summer as many students sign up for lessons. They want to get their licenses before school starts. The instructor is responsible for teaching them how to drive safely. They are requiring each student to demonstrate their ability to handle the car properly. This ensures everyone is ready for the road. Passing the test is a big achievement for new drivers.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q04",
+      "sourceTitle": "Driving Test Preparation",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 542,
+      "answerTranscriptPage": 575,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-004-98fe81f30186.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "e21a2ff7969e952d538b22857b73b390add00ce5795026a2771271153a8aad7c",
+      "sha256": "98fe81f301864bcf0caa0881a40028e0f66f596d44bd8bdbdc4c8c87b7fd6070",
+      "seconds": 22.08,
+      "bytes": 176876,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "The driving school is always [[1]] during the summer as many students sign up for lessons. They want to get their licenses before school starts. The [[2]] is responsible for teaching them how to drive safely. They are [[3]] each student to demonstrate their ability to [[4]] the car properly. This ensures everyone is ready for the road. Passing the test is a big achievement for new drivers.",
+    "answers": [
+      "busy",
+      "instructor",
+      "requiring",
+      "handle"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are busy, instructor, requiring, handle."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-005",
+    "type": "lfi",
+    "title": "Free Phone",
+    "minutes": 5,
+    "text": "The free phone is the Samsung U740 handheld mobile device, which has MP3, video, text-message and instant- message functions. \"Students will earn text messages, talk time, and other rewards, such as free ring tones, music downloads, or event tickets, through their performance in school, \"The Education Department said in a news release.\" Students will be evaluated on the basis of attendance and behavior, along with three other indicators - such as homework completion, class participation, or course grades - chosen by educators and customized to address academic priorities in their specific schools. Administrators will have access to significant new data on student performance, allowing them to track the short-term indicators that contribute to larger goals of boosting student achievement and graduation rates.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q05",
+      "sourceTitle": "Free Phone",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 543,
+      "answerTranscriptPage": 575,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-005-80da036b4b24.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "f592b0205025275ed81b1ac9a0edb59950b62123aab152431887861ed9b41326",
+      "sha256": "80da036b4b247effc3e36149cec4a1673020a37c8a4230ef23bfedeefdba3100",
+      "seconds": 45.072,
+      "bytes": 360812,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "The free phone is the Samsung U740 handheld mobile device, which has MP3, video, text-message and instant- message functions. \"Students will earn text messages, talk time, and other rewards, such as free ring tones, music [[1]], or [[2]] tickets, through their performance in school, \"The Education Department said in a news [[3]].\" Students will be evaluated on the basis of attendance and behavior, along with three other indicators - such as homework completion, class [[4]], or course grades - chosen by educators and customized to address academic [[5]] in their specific schools. Administrators will have access to significant new data on student performance, allowing them to [[6]] the short-term indicators that contribute to larger goals of boosting student achievement and graduation rates.",
+    "answers": [
+      "downloads",
+      "event",
+      "release",
+      "participation",
+      "priorities",
+      "track"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are downloads, event, release, participation, priorities, track."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-006",
+    "type": "lfi",
+    "title": "Climate Change",
+    "minutes": 5,
+    "text": "In recent years, the phenomenon of climate change has garnered widespread attention. It is widely acknowledged that human activities, particularly the burning of fossil fuels and deforestation, have significantly contributed to this global issue. Scientists around the world are urgently researching sustainable solutions to mitigate the effects of climate change. Among these, renewable energy sources such as solar and wind power are increasingly being viewed as vital components of a more sustainable future. However, transitioning to these cleaner energy sources requires substantial investment and international cooperation.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q06",
+      "sourceTitle": "Climate Change",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 544,
+      "answerTranscriptPage": 575,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-006-430b18a6fbee.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "8fc292bc6a59d1822c30e6cd0b2a9cddca77d55795d6998943ee8bf8efba5cb0",
+      "sha256": "430b18a6fbee982f79182f969a73cb4d4d4bdf47a8b92ccff72775f477dffa04",
+      "seconds": 28.68,
+      "bytes": 229676,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "In recent years, the [[1]] of climate change has garnered widespread attention. It is widely acknowledged that human activities, particularly the burning of fossil fuels and [[2]], have [[3]] contributed to this global issue. Scientists around the world are urgently researching sustainable [[4]] to mitigate the effects of climate change. Among these, [[5]] energy sources such as solar and wind power are increasingly being viewed as vital components of a more sustainable future. However, [[6]] to these cleaner energy sources requires substantial investment and international cooperation.",
+    "answers": [
+      "phenomenon",
+      "deforestation",
+      "significantly",
+      "solutions",
+      "renewable",
+      "transitioning"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are phenomenon, deforestation, significantly, solutions, renewable, transitioning."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-007",
+    "type": "lfi",
+    "title": "Burial",
+    "minutes": 5,
+    "text": "So between 4,000 and 3,000 BC the Mesopotamian Samarian cultures do not practice any kind of burial. And then, about 3,000, in the early Dynastic Period, these burials start to reappear, and they reappear with a certain amount of conspicuous consumption, and this is the context for the royal burials at Ur. OK, so, the royal cemetery consists of quite a number of pits, so these are the excavation workers who are coming down into the pits. So you get some sense of how really deep and how really difficult it was to construct these chambers.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q07",
+      "sourceTitle": "Burial",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 545,
+      "answerTranscriptPage": 576,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-007-5c87b7633339.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "3d59f62c93a66a5e41feccea815f5cc953b8cd60c301b1014cf1a634e93ff510",
+      "sha256": "5c87b763333962c2cc8adef497dc9c9925b4017a1cc8fa014ea5ff6b6bd62b97",
+      "seconds": 31.176,
+      "bytes": 249644,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "So between 4,000 and 3,000 BC the Mesopotamian Samarian cultures do not [[1]] any kind of burial. And then, about 3,000, in the early Dynastic Period, these burials start to reappear, and they reappear with a certain amount of [[2]] consumption, and this is the context for the royal burials at Ur. OK, so, the royal cemetery consists of quite a number of pits, so these are the [[3]] workers who are coming down into the pits. So you get some sense of how really deep and how really difficult it was to construct these [[4]].",
+    "answers": [
+      "practice",
+      "conspicuous",
+      "excavation",
+      "chambers"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are practice, conspicuous, excavation, chambers."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-009",
+    "type": "lfi",
+    "title": "Belief",
+    "minutes": 5,
+    "text": "Belief is the human capacity to imagine, to be creative, to hope and dream, to infuse the world with meanings, and to cast our aspirations far and wide. Limited neither by personal experience nor material reality. Believing is a commitment, an investment, a devotion to possibilities. Beliefs permeate neurobiologies, bodies and ecologies acting as dynamic agents in evolutionary processes. The human capacity for belief, the specifics of belief, and I, and our diverse belief systems shape, structure and alter our daily lives, our societies, and the world around us.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q09",
+      "sourceTitle": "Belief",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 547,
+      "answerTranscriptPage": 576,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-009-eb94b2881726.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "d98de2d586971d9b9a3ce1082db7c296ebafba0142f3bd2f08b06e5e5a3af61a",
+      "sha256": "eb94b2881726d5c07aef03e5774c5d4ebac237c74919158af19b780f7a01d632",
+      "seconds": 30.24,
+      "bytes": 242156,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "Belief is the human capacity to imagine, to be creative, to hope and dream, to infuse the world with meanings, and to cast our aspirations far and wide. Limited neither by personal experience nor [[1]] reality. Believing is a [[2]], an investment, a devotion to possibilities. Beliefs [[3]] neurobiologies, bodies and ecologies acting as dynamic agents in evolutionary processes. The human capacity for belief, the [[4]] of belief, and I, and our diverse belief systems shape, structure and alter our daily lives, our societies, and the world around us.",
+    "answers": [
+      "material",
+      "commitment",
+      "permeate",
+      "specifics"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are material, commitment, permeate, specifics."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-010",
+    "type": "lfi",
+    "title": "Library Catalog",
+    "minutes": 5,
+    "text": "In this tutorial, we will show you how to find specific journal articles using the library catalog. The university subscribes to over 18,000 journals across a variety of subjects, most of which are available electronically to find a specific journal article using a library catalog. We need to search by the journal name as individual article titles are not listed in the catalog.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q10",
+      "sourceTitle": "Library Catalog",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 548,
+      "answerTranscriptPage": 576,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-010-aa0c95a01ffd.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "dcab5e293cc332f363c2f0dee993028107e38e0696814a4683d539f5f6d94349",
+      "sha256": "aa0c95a01ffd776322bf6a9371a8481bfff5c26aae8ffe67baa15e87a808d3fe",
+      "seconds": 20.472,
+      "bytes": 164012,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "In this tutorial, we will show you how to find specific journal articles using the library catalog. The university [[1]] to over 18,000 journals across a variety of subjects, most of which are available [[2]] to find a specific journal article using a library catalog. We need to [[3]] by the journal name as individual article titles are not [[4]] in the catalog.",
+    "answers": [
+      "subscribes",
+      "electronically",
+      "search",
+      "listed"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are subscribes, electronically, search, listed."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-011",
+    "type": "lfi",
+    "title": "Life on Mars",
+    "minutes": 5,
+    "text": "The thing that makes it difficult is because even if life had evolved on Mars, the chances of being preserved are very small. If we use Earth as a reference and our planet is teeming with life, yet it rarely preserves evidence of life of the fossil record. And the focus now is on exploring for habitable environments. If you're looking for water, a source of energy, either solar energy or thermal energy or chemical energy, and then organic carbon, assuming life as we know it on Earth based on carbon. So those are sort of the three things that we're looking for in the course of our mission.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q11",
+      "sourceTitle": "Life on Mars",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 549,
+      "answerTranscriptPage": 577,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-011-09809571e5d8.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "33a937bb06c2f575ead7e143c358afc0ab3c1e7c191d1a273d121fdbe8c66934",
+      "sha256": "09809571e5d886f3d432805277b07346da909e4d159e7a54d8555dc1bb318feb",
+      "seconds": 35.4,
+      "bytes": 283436,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "The thing that makes it difficult is because even if life had evolved on Mars, the chances of being preserved are very small. If we use Earth as a [[1]] and our planet is teeming with life, yet it rarely preserves evidence of life of the fossil record. And the focus now is on exploring for [[2]] environments. If you're looking for water, a [[3]] of energy, either solar energy or thermal energy or chemical energy, and then [[4]] carbon, assuming life as we know it on Earth based on carbon. So those are sort of the three things that we're looking for in the course of our mission.",
+    "answers": [
+      "reference",
+      "habitable",
+      "source",
+      "organic"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are reference, habitable, source, organic."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-012",
+    "type": "lfi",
+    "title": "Green Chemistry",
+    "minutes": 5,
+    "text": "Green chemistry is a concept designed to develop technologies that allow chemistry to be practiced with minimal environmental damage or in an environmentally compatible way. It's meant to cover both chemical processes and chemical products. The center, if you would, was set up about seven or eight years ago, and the idea was to provide a hub of activities that covered fundamental research work, industrial collaboration, and educational developments. We work with schools, on public projects, and networking. We network out to well over 1000 people around the globe.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q12",
+      "sourceTitle": "Green Chemistry",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 550,
+      "answerTranscriptPage": 577,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-012-f0e1c22f2e7f.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "682adbb897b5411989347ded5be56f226490fcfb98f34ed046dbbdf24218c9ff",
+      "sha256": "f0e1c22f2e7f7ec8ce9270c7d7e1bafeb8f562d6b38535794471f036b5254c98",
+      "seconds": 28.92,
+      "bytes": 231596,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "Green chemistry is a concept designed to develop [[1]] that allow chemistry to be practiced with minimal environmental damage or in an environmentally [[2]] way. It's meant to cover both chemical [[3]] and chemical [[4]]. The center, if you would, was set up about seven or eight years ago, and the idea was to provide a hub of activities that covered [[5]] research work, industrial collaboration, and educational developments. We work with schools, on public projects, and [[6]]. We network out to well over 1000 people around the globe.",
+    "answers": [
+      "technologies",
+      "compatible",
+      "processes",
+      "products",
+      "fundamental",
+      "networking"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are technologies, compatible, processes, products, fundamental, networking."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-013",
+    "type": "lfi",
+    "title": "Corporate Culture",
+    "minutes": 5,
+    "text": "For a long time now, it's been a widely accepted and rarely questioned belief that a strong corporate culture goes hand in hand with success. However, a recent study has cast some doubt on this principle. After all, the authors of the report argue for culture. A company's build-up may be strong, but wrong. There is little point in every employee marching to the same tune if they are all marching in the wrong direction.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q13",
+      "sourceTitle": "Corporate Culture",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 551,
+      "answerTranscriptPage": 577,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-013-54d5ea966bed.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "bdfdf9010271fe10b6e7c34be26e074c57d8633eeab0be180145f52dcc462a77",
+      "sha256": "54d5ea966bed63663de9a5c9144a377dbc55014189d102f0837c60a0a5fd4dcb",
+      "seconds": 24.36,
+      "bytes": 195116,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "For a long time now, it's been a widely accepted and [[1]] questioned belief that a strong corporate culture goes hand in hand with success. However, a recent study has [[2]] some doubt on this principle. After all, the [[3]] of the report argue for culture. A company's build-up may be strong, but wrong. There is little point in every [[4]] marching to the same tune if they are all marching in the wrong direction.",
+    "answers": [
+      "rarely",
+      "cast",
+      "authors",
+      "employee"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are rarely, cast, authors, employee."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-014",
+    "type": "lfi",
+    "title": "Malaria",
+    "minutes": 5,
+    "text": "Also, malaria is something that is a very complex disease with this complex life cycle. That means that if you're going to eliminate it, you have to be able to target cute parasites and humans. You have to be able to target parasites in the mosquitoes, that mosquito population. And so that requires a lot of resources. It requires really good planning and a health system across all these different levels. And so I think the political capital that you need for that, the educational infrastructure you need for that, the economic resources you need for that are quite a challenge.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q14",
+      "sourceTitle": "Malaria",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 552,
+      "answerTranscriptPage": 578,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-014-f9e323edabea.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "9d5417f1854130293c2cb84c46deb7029fa5380f6ea1067c184015a8d863a7ec",
+      "sha256": "f9e323edabea6b19c81d464e0ec0d07e3fee887cd6aa1dfa151f47bd07ef7553",
+      "seconds": 32.808,
+      "bytes": 262700,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "Also, malaria is something that is a very complex disease with this complex life cycle. That means that if you're going to [[1]] it, you have to be able to target cute parasites and humans. You have to be able to target parasites in the mosquitoes, that mosquito [[2]]. And so that requires a lot of resources. It requires really good planning and a health system across all these different [[3]]. And so I think the political capital that you need for that, the educational [[4]] you need for that, the economic resources you need for that are quite a [[5]].",
+    "answers": [
+      "eliminate",
+      "population",
+      "levels",
+      "infrastructure",
+      "challenge"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are eliminate, population, levels, infrastructure, challenge."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-015",
+    "type": "lfi",
+    "title": "Water Crisis",
+    "minutes": 5,
+    "text": "Now that story's been scorched, as only part of contingency planning. But it was a symptom of the dramatic turn of events in South Australia, and it flushed out other remarks from water academics and people like Tim Flannery, indicating that things were really much worse than had been foreshadowed, even earlier this year. So is Adelaide, let alone some whole regions of South Australia, in serious bother? Considering that the vast amount of its drinking water comes from the beleaguered Murray, something many of us outside the State may not have quite realized. Is their predicament something we have to face up to as a nation?",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q15",
+      "sourceTitle": "Water Crisis",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 553,
+      "answerTranscriptPage": 578,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-015-89957ec01724.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "d656cff54770b4bb45e0c6726bd60d8b9653731a406a37ce5fd672ef53e47e65",
+      "sha256": "89957ec0172471474d8e36ad4b9afd2d0491eb43791ad23eda6ed351423f3902",
+      "seconds": 34.752,
+      "bytes": 278252,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "Now that story's been scorched, as only part of [[1]] planning. But it was a symptom of the dramatic turn of events in South Australia, and it flushed out other remarks from water [[2]] and people like Tim Flannery, indicating that things were really much worse than had been [[3]], even earlier this year. So is Adelaide, let alone some whole regions of South Australia, in serious bother? Considering that the vast amount of its drinking water comes from the [[4]] Murray, something many of us outside the State may not have quite realized. Is their [[5]] something we have to face up to as a nation?",
+    "answers": [
+      "contingency",
+      "academics",
+      "foreshadowed",
+      "beleaguered",
+      "predicament"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are contingency, academics, foreshadowed, beleaguered, predicament."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-016",
+    "type": "lfi",
+    "title": "Cars in America",
+    "minutes": 5,
+    "text": "There are some 250 million cars in America, 250 million cars in the country with just over 300 million people. And most of those vehicles, of course, are gas-powered. This poses a huge challenge given the limited supplies of oil and the growing urgency of the global warming crisis. But there is good news, according to our guests today. And that is we have the know-how and the technology to build sleek, fast automobiles that don't use gasoline. These vehicles of tomorrow are powered by hydrogen, electricity, bio-fuels, and digital technology. And they already exist. So what's stopping us from putting them on the roads? Our guests today will help answer that.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q16",
+      "sourceTitle": "Cars in America",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 554,
+      "answerTranscriptPage": 578,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-016-e2e344af4a05.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "a9a4d1a6090da418bf9b7426ea6d3524379cb2dab2adef92178363ac9c55d0f8",
+      "sha256": "e2e344af4a05943bb3b725771a2c479883fd825933adee4826cb0acb59876902",
+      "seconds": 36.384,
+      "bytes": 291308,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "There are some 250 million cars in America, 250 million cars in the country with just over 300 million people. And most of those vehicles, of course, are gas-powered. This poses a huge [[1]] given the limited supplies of oil and the growing urgency of the global warming crisis. But there is good news, according to our guests today. And that is we have the know-how and the [[2]] to build sleek, fast [[3]] that don't use gasoline. These vehicles of tomorrow are powered by hydrogen, electricity, bio-fuels, and digital technology. And they already exist. So what's [[4]] us from putting them on the roads? Our guests today will help answer that.",
+    "answers": [
+      "challenge",
+      "technology",
+      "automobiles",
+      "stopping"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are challenge, technology, automobiles, stopping."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-017",
+    "type": "lfi",
+    "title": "Sunflowers by Van Gogh",
+    "minutes": 5,
+    "text": "These two paintings, both called \"Sunflowers,\" are generally accepted as the finest of several depictions of the thick-stemmed, nodding blooms that Van Gogh made in 1888 and 1889 during his time in Arles. The first is now in the collection of the National Gallery in London, and the second is in the Van Gogh Museum in Amsterdam. Van Gogh referred to this work as a repetition of the London painting. But art historians and curators have long been curious to know how different this \"repetition\" is from the first. Should it be considered a copy, an independent artwork, or something in between? An extensive research project conducted over the past three years by conservation experts at both the National Gallery and the Van Gogh Museum has concluded that the second painting was \"not intended as an exact copy of the original example,\" said Ella Hendriks, a professor of conservation and restoration at the University of Amsterdam, who was the lead researcher on the project.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q17",
+      "sourceTitle": "Sunflowers by Van Gogh",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 555,
+      "answerTranscriptPage": 579,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-017-35a87fa46de8.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "e6becbf0dbab0cf694e3a14956a826e33f139703fde01a46473b9a8c855e749b",
+      "sha256": "35a87fa46de8e52cb63829690f906f4dbf75b61f278b69d4c36e53e9c4405878",
+      "seconds": 54.912,
+      "bytes": 439532,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "These two paintings, both called \"Sunflowers,\" are generally accepted as the finest of several [[1]] of the thick-stemmed, nodding blooms that Van Gogh made in 1888 and 1889 during his time in Arles. The first is now in the collection of the National Gallery in London, and the second is in the Van Gogh Museum in Amsterdam. Van Gogh referred to this work as a [[2]] of the London painting. But art historians and curators have long been [[3]] to know how different this \"repetition\" is from the first. Should it be considered a copy, an independent artwork, or something in between? An [[4]] research project conducted over the past three years by conservation experts at both the National Gallery and the Van Gogh Museum has concluded that the second painting was \"not intended as an exact copy of the [[5]] example,\" said Ella Hendriks, a professor of conservation and restoration at the University of Amsterdam, who was the lead researcher on the project.",
+    "answers": [
+      "depictions",
+      "repetition",
+      "curious",
+      "extensive",
+      "original"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are depictions, repetition, curious, extensive, original."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-018",
+    "type": "lfi",
+    "title": "British Library",
+    "minutes": 5,
+    "text": "To begin with, you should be standing on the main floor of the British Library. British Library is situated in the Euston road next to some pipe crustacean press, in the foyer to the left of the information desk. It was a large white staircase. Follow this up towards the gallery at the top of the stairs pause and look to your left for attention. This is Robert Cotton, born in 1570, and died in 1631. Cotton was a member of parliament but he's mainly known as a great antiquarian collector of manuscripts. It is the covenant we have a great depth and the survival of many English manuscripts.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q18",
+      "sourceTitle": "British Library",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 556,
+      "answerTranscriptPage": 579,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-018-c326086af981.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "3f67faeb0e62792ec8b4b5a747d909aee26e2a38b49447babf049d3af7093c9b",
+      "sha256": "c326086af98114e92fdc09d93ac619b9a77f8c6604311c6f329ad81931c6eb88",
+      "seconds": 35.4,
+      "bytes": 283436,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "To begin with, you should be standing on the main [[1]] of the British Library. British Library is situated in the Euston road next to some pipe crustacean press, in the foyer to the left of the [[2]] desk. It was a large white staircase. Follow this up towards the gallery at the top of the [[3]] pause and look to your left for attention. This is Robert Cotton, born in 1570, and died in 1631. Cotton was a member of parliament but he's mainly known as a great antiquarian [[4]] of manuscripts. It is the covenant we have a great depth and the survival of many English manuscripts.",
+    "answers": [
+      "floor",
+      "information",
+      "stairs",
+      "collector"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are floor, information, stairs, collector."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-019",
+    "type": "lfi",
+    "title": "Rebuilding",
+    "minutes": 5,
+    "text": "Rebuilding carbon-rich agricultural soils is the only real productive, permanent solution to taking excess carbon dioxide from the atmosphere. She's frustrated that scientists and politicians don't see the same opportunities she sees. This year, Australia will emit just over 600 million tonnes of carbon. We can sequester 685 million tonnes of carbon by increasing soil carbon by half a percent on only 2% of the farms. If we increased it on all of the farms, we could sequester the whole world's emissions of carbon.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q19",
+      "sourceTitle": "Rebuilding",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 557,
+      "answerTranscriptPage": 579,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-019-6918055c1804.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "4f1a9b8d3e233af1ca9ab4c3f686b371ab3cf797fbb43cde1896cacc5c6c0ca6",
+      "sha256": "6918055c18049611d06301822542dbc8e21b4f5ec0616d74a0fbb737929e2b22",
+      "seconds": 27.288,
+      "bytes": 218540,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "Rebuilding carbon-rich agricultural soils is the only real productive, [[1]] solution to taking excess carbon dioxide from the atmosphere. She's [[2]] that scientists and politicians don't see the same opportunities she sees. This year, Australia will [[3]] just over 600 million tonnes of carbon. We can sequester 685 million tonnes of carbon by [[4]] soil carbon by half a percent on only 2% of the farms. If we increased it on all of the farms, we could sequester the [[5]] world's emissions of carbon.",
+    "answers": [
+      "permanent",
+      "frustrated",
+      "emit",
+      "increasing",
+      "whole"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are permanent, frustrated, emit, increasing, whole."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-020",
+    "type": "lfi",
+    "title": "Online Dating",
+    "minutes": 5,
+    "text": "Bruch and her colleague Mark Newman studied \"Who swapped messages with whom\", on a popular online dating platform in the month of January 2014. They categorized users by desirability using PageRank, one of the algorithms behind search technology. Essentially, if you receive a dozen messages from desirable users, you must be more desirable than someone who receives the same number of messages from average users. Then they asked: How far \"out of their league\" do online daters tend to go when pursuing a partner? \"I think people are optimistic realists\". In other words, they found that both men and women tended to pursue mates just 25 percent more desirable than themselves. \"So, they're being optimistic, but they're not..they're..they're also umm..taking into account their own relative position within this overall desirability hierarchy.\" And the study did have a few more lessons for people on the market: \"I think one of the take-home messages from this study is women could probably afford to be more aspirational in their mate pursuit.\"",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q20",
+      "sourceTitle": "Online Dating",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 558,
+      "answerTranscriptPage": 580,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-020-a23f8205033c.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "10c056f52790b48c3460046631b5e3dcd2d3ae90d4093543c79eb85f6e3ddc2c",
+      "sha256": "a23f8205033c0650251a3606f3700909cd88ac6f387e211e35c2b82c8a86e1ae",
+      "seconds": 55.2,
+      "bytes": 441836,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "Bruch and her colleague Mark Newman studied \"Who swapped messages with whom\", on a popular online [[1]] platform in the month of January 2014. They categorized users by [[2]] using PageRank, one of the algorithms behind search technology. [[3]], if you receive a dozen messages from desirable users, you must be more desirable than someone who receives the same number of [[4]] from average users. Then they asked: How far \"out of their league\" do online daters tend to go when pursuing a partner? \"I think people are optimistic realists\". In other words, they found that both men and women tended to pursue mates just 25 percent more desirable than themselves. \"So, they're being optimistic, but they're not..they're..they're also umm..taking into account their own relative position within this overall desirability hierarchy.\" And the study did have a few more [[5]] for people on the market: \"I think one of the take-home messages from this study is women could probably afford to be more aspirational in their [[6]] pursuit.\"",
+    "answers": [
+      "dating",
+      "desirability",
+      "Essentially",
+      "messages",
+      "lessons",
+      "mate"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are dating, desirability, Essentially, messages, lessons, mate."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-021",
+    "type": "lfi",
+    "title": "Financial Market Trading",
+    "minutes": 5,
+    "text": "Financial markets swung wildly yesterday in frenzied trading market by further selling of equities and fears about an unraveling of the global carry trade. At the same time trading in the European credit markets in London was exceptionally heavy as traders frantically reassessed their appetite for risk-prompting wild swings in the prices of the key derivatives. It was the third day of frenetic activity in the European credit markets, suggesting that equity market swings were prompting a wider repositioning of investors in a host of asset classes.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q21",
+      "sourceTitle": "Financial Market Trading",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 559,
+      "answerTranscriptPage": 580,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-021-8e410e072a15.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "82afc380ec143c157a6baef8687eeccd49b13f2a1a2da5b084074cb3aec2c3ac",
+      "sha256": "8e410e072a155bb168cfa2724659a55d35dc0e053c1b8e8616baf12919c5fc28",
+      "seconds": 28.272,
+      "bytes": 226412,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "Financial markets swung wildly yesterday in frenzied trading market by further selling of [[1]] and [[2]] about an unraveling of the global carry trade. At the same time trading in the European credit markets in London was [[3]] heavy as traders frantically reassessed their appetite for risk-prompting wild [[4]] in the prices of the key derivatives. It was the third day of frenetic activity in the European credit markets, suggesting that equity market swings were prompting a wider repositioning of [[5]] in a host of asset classes.",
+    "answers": [
+      "equities",
+      "fears",
+      "exceptionally",
+      "swings",
+      "investors"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are equities, fears, exceptionally, swings, investors."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-022",
+    "type": "lfi",
+    "title": "Ocean Currents",
+    "minutes": 5,
+    "text": "For many years, the favorite horror story about abrupt climate change was that a shift in ocean currents could radically cool Europe's climate. These currents, called the overturning circulation, bring warm water and warm temperatures north from the equator to Europe. Susan Lozier, an oceanographer at Duke University, says scientists have long worried that this ocean circulation could be disrupted.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q22",
+      "sourceTitle": "Ocean Currents",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 560,
+      "answerTranscriptPage": 580,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-022-76179d6dd9a1.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "9d0d34f3da1cb36df903c7cacad52d3b20124bc0bce7c12613d010222fc1fb75",
+      "sha256": "76179d6dd9a15e03a68bce74d63d9f0160f6500d46b29020e2156c4377562731",
+      "seconds": 20.04,
+      "bytes": 160556,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "For many years, the favorite horror story about [[1]] climate change was that a shift in ocean currents could [[2]] cool Europe's climate. These currents, called the overturning [[3]], bring warm water and warm temperatures north from the equator to Europe. Susan Lozier, an [[4]] at Duke University, says scientists have long worried that this ocean circulation could be disrupted.",
+    "answers": [
+      "abrupt",
+      "radically",
+      "circulation",
+      "oceanographer"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are abrupt, radically, circulation, oceanographer."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-023",
+    "type": "lfi",
+    "title": "William Shakespeare",
+    "minutes": 5,
+    "text": "For all his fame and celebration, William Shakespeare remains a mysterious figure with regards to personal history. There are just two primary sources for information on the Bard: his works, and various legal and church documents that have survived from Elizabethan times. Naturally, there are many gaps in this body of information, which tells us little about Shakespeare the man.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q23",
+      "sourceTitle": "William Shakespeare",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 561,
+      "answerTranscriptPage": 581,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-023-cd0b4cefec52.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "9ae2f94cdc1874a1d6fd3c4e07863f63dbdb89b498a8614b738eb25eda79b183",
+      "sha256": "cd0b4cefec52aba0c6e456d916bddbba6c15088f47412b4ae444a2805c920e1a",
+      "seconds": 20.376,
+      "bytes": 163244,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "For all his fame and celebration, William Shakespeare remains a [[1]] figure with regards to personal history. There are just two primary sources for information on the Bard: his works, and various legal and [[2]] documents that have survived from Elizabethan times. Naturally, there are many [[3]] in this body of information, which tells us little about Shakespeare the man.",
+    "answers": [
+      "mysterious",
+      "church",
+      "gaps"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are mysterious, church, gaps."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-024",
+    "type": "lfi",
+    "title": "Laurence Stephen Lowry",
+    "minutes": 5,
+    "text": "Laurence Stephen Lowry RBS RA was an English artist. Many of his drawings and paintings depict Pend Lebury, Lancashire, where he lived and worked for more than 40 years, and also Salford and its surrounding areas. Lowry is famous for painting scenes of life in the industrial districts of North West England in the mid-20th century. He developed a distinctive style of painting and is best known for his urban landscapes peopled with human figures often referred to as matchstick man. He painted mysterious unpopulated landscapes, brooding portraits and the unpublished \"marionette\" works, which were only found after his death.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q24",
+      "sourceTitle": "Laurence Stephen Lowry",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 562,
+      "answerTranscriptPage": 581,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-024-70bb1aca4ff1.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "881d79a333ab1b01c8f101d869ac8176c75474d119f870086c374154bcf9548b",
+      "sha256": "70bb1aca4ff18419f745a0cd2c76c76404585190dd7544e445b2b79f4a62619d",
+      "seconds": 32.472,
+      "bytes": 260012,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "Laurence Stephen Lowry RBS RA was an English artist. Many of his drawings and paintings depict Pend Lebury, Lancashire, where he lived and [[1]] for more than 40 years, and also Salford and its surrounding areas. Lowry is famous for painting scenes of life in the [[2]] districts of North West England in the mid-20th century. He [[3]] a [[4]] style of painting and is best known for his urban landscapes peopled with human figures often referred to as [[5]] man. He painted mysterious unpopulated landscapes, brooding [[6]] and the unpublished \"marionette\" works, which were only found after his death.",
+    "answers": [
+      "worked",
+      "industrial",
+      "developed",
+      "distinctive",
+      "matchstick",
+      "portraits"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are worked, industrial, developed, distinctive, matchstick, portraits."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-025",
+    "type": "lfi",
+    "title": "Central Patterns Generator",
+    "minutes": 5,
+    "text": "In animals, a movement is coordinated by a cluster of neurons in the spinal cord called the Central Patterns Generator (CPG). This produces signals that drive muscles to contract rhythmically in a way that produces running or walking, depending on the pattern of pulses. A simple signal from the brain instructs the CPG to switch between different modes, such as going from a standstill to walking.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q25",
+      "sourceTitle": "Central Patterns Generator",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 563,
+      "answerTranscriptPage": 581,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-025-703e20798742.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "9e7e6f33d324d096872f471be6bd8eb6205af2b3e825e190cd1a6de991998c6d",
+      "sha256": "703e20798742ad73eff3e0e6ac6ec1159d5ce401b3f52b97053b012248a94474",
+      "seconds": 21.432,
+      "bytes": 171692,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "In animals, a movement is coordinated by a cluster of neurons in the spinal cord called the Central Patterns Generator (CPG). This produces signals that drive muscles to [[1]] rhythmically in a way that produces running or walking, depending on the pattern of pulses. A simple signal from the brain instructs the CPG to switch between different [[2]], such as going from a [[3]] to walking.",
+    "answers": [
+      "contract",
+      "modes",
+      "standstill"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are contract, modes, standstill."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-026",
+    "type": "lfi",
+    "title": "US High School",
+    "minutes": 5,
+    "text": "A majority of U.S. high school students say they get bored in class every day, and more than one out of five has considered dropping out, according to a survey released on Wednesday. The survey of 81,000 students in twenty-six states found two-thirds of high school students complain of boredom, usually because the subject matter was irrelevant or their teachers didn't seem to care about them.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q26",
+      "sourceTitle": "US High School",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 564,
+      "answerTranscriptPage": 581,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-026-c8822fee1f39.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "74abf0f0e4ae64eb48cb8dbae88502e205b9b90ca3f6cf05707c0ffac95e9b59",
+      "sha256": "c8822fee1f39252c960d549528dd802f43675d933a276230a5f9d068583f2b72",
+      "seconds": 21.456,
+      "bytes": 171884,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "A majority of U.S. high school students say they get [[1]] in class every day, and more than one out of [[2]] has considered dropping out, according to a survey released on Wednesday. The survey of 81,000 students in twenty-six states found two-thirds of high school students complain of [[3]], usually because the subject matter was [[4]] or their teachers didn't seem to care about them.",
+    "answers": [
+      "bored",
+      "five",
+      "boredom",
+      "irrelevant"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are bored, five, boredom, irrelevant."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-027",
+    "type": "lfi",
+    "title": "Integrated Ticket",
+    "minutes": 5,
+    "text": "Well in 2004 we integrated ticketing in South East Queensland, so we have introduced a paper ticket that allowed you to travel across all the three modes in South East Queensland, so bus, train and ferry and the second stage of integrated ticketing is the introduction of a Smart Card, and the Smart Card will enable people to store a value so to put a value on the card, and then to use the card for traveling around the system.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q27",
+      "sourceTitle": "Integrated Ticket",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 565,
+      "answerTranscriptPage": 582,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-027-c14d7af7d0db.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "416360ae7989c91bc0a40686a54b65799c302d19676df75f65b6df8b316b320e",
+      "sha256": "c14d7af7d0db60a8b4d31b183aaab0ae94f5d1f07febc9a02104a30cb2c14fce",
+      "seconds": 25.992,
+      "bytes": 208172,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "Well in 2004 we integrated ticketing in South East Queensland, so we have [[1]] a paper ticket that allowed you to travel across all the three [[2]] in South East Queensland, so bus, train and [[3]] and the second stage of integrated ticketing is the introduction of a Smart Card, and the Smart Card will enable people to [[4]] a value so to put a value on the card, and then to use the card for traveling around the system.",
+    "answers": [
+      "introduced",
+      "modes",
+      "ferry",
+      "store"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are introduced, modes, ferry, store."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-028",
+    "type": "lfi",
+    "title": "Neo-Latin",
+    "minutes": 5,
+    "text": "Those of you who've never heard the term neo-Latin may be forgiven for thinking it's a new South American dance craze. If you're puzzled when I tell you it has something to do with the language of Romans, take heart, over the years many classes who have confessed they are not really sure what it is either. Some have assumed that they are so-called 'Late-Latin', written at the end of the Roman Empire. Others have supposed it must have something to do with the middle ages. Or perhaps it's that pseudo-Latin which my five and seven-year-old boys seem to have gleaned from the Harry Potter books, useful for spells and curses that they zip one another with makeshift paper ash ones. No, in fact, neo-Latin is more or less the same as the Latin that was written in the ancient world, classical Latin. So, what's so new about it?",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q28",
+      "sourceTitle": "Neo-Latin",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 566,
+      "answerTranscriptPage": 582,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-028-31c603f96b9a.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "dafe5893dc48be320e9057c23aab7ac79f78f28f1b0b42b0db76e3b15e2768f1",
+      "sha256": "31c603f96b9a2b2f2605461659a4db3cec8d5fa08401361d1667d9d99a9df8ae",
+      "seconds": 48.384,
+      "bytes": 387308,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "Those of you who've never heard the term neo-Latin may be forgiven for thinking it's a new South American dance [[1]]. If you're [[2]] when I tell you it has something to do with the language of Romans, take heart, over the years many classes who have [[3]] they are not really sure what it is either. Some have [[4]] that they are so-called 'Late-Latin', written at the end of the Roman Empire. Others have supposed it must have something to do with the middle ages. Or perhaps it's that pseudo-Latin which my five and seven-year-old boys seem to have [[5]] from the Harry Potter books, useful for spells and curses that they zip one another with makeshift paper ash ones. No, in fact, neo-Latin is more or less the same as the Latin that was written in the [[6]] world, classical Latin. So, what's so new about it?",
+    "answers": [
+      "craze",
+      "puzzled",
+      "confessed",
+      "assumed",
+      "gleaned",
+      "ancient"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are craze, puzzled, confessed, assumed, gleaned, ancient."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-029",
+    "type": "lfi",
+    "title": "Traffic Jams",
+    "minutes": 5,
+    "text": "For the first time, Japanese researchers have conducted a real-life experiment that shows how some traffic jams appear for no apparent reason. They placed the 22 vehicles on a single track and asked the drivers to cruise around at a constant speed of 30 kilometers an hour. At first, traffic moves smoothly, but soon, the distance between cars started to vary and vehicles clumped together at one point on the track, but the jams spread backward around the track, like a shockwave at a rate of about 20 kilometers an hour. Real-life jams move backward at about the same speed.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q29",
+      "sourceTitle": "Traffic Jams",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 567,
+      "answerTranscriptPage": 582,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-029-f80b66a6a91e.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "e16018d4938c0f0469b56a41f27384fec788455c1e9b6e4e087f624cd11df210",
+      "sha256": "f80b66a6a91e51eab5b712012bcc5bbc001c646a71cd7beb595e00ee369cce23",
+      "seconds": 32.472,
+      "bytes": 260012,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "For the first time, Japanese researchers have conducted a real-life experiment that shows how some traffic jams appear for no apparent reason. They placed the 22 vehicles on a single [[1]] and asked the drivers to cruise around at a [[2]] speed of 30 kilometers an hour. At first, traffic moves smoothly, but soon, the distance between cars started to [[3]] and vehicles clumped together at one point on the track, but the jams [[4]] backward around the track, like a shockwave at a rate of about 20 kilometers an hour. Real-life jams move backward at about the same speed.",
+    "answers": [
+      "track",
+      "constant",
+      "vary",
+      "spread"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are track, constant, vary, spread."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-030",
+    "type": "lfi",
+    "title": "Patriotism",
+    "minutes": 5,
+    "text": "The effect of the first difference is, on the one hand, to refine and enlarge the public views, bypassing them through the medium of a chosen body of citizens, whose wisdom may best discern the true interest of their country, and whose patriotism and love of justice will be least likely to sacrifice it to temporary or partial considerations.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q30",
+      "sourceTitle": "Patriotism",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 568,
+      "answerTranscriptPage": 583,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-030-523bb6fc1f57.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "1f1c6c669a5de03506018180804ebc90abf4407dc89eda7dc38bcf9f521f6ea5",
+      "sha256": "523bb6fc1f57744a50ba82a1ef4ab1f97014bc71a1dab2a34062cceed095d9d2",
+      "seconds": 20.04,
+      "bytes": 160556,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "The effect of the first difference is, on the one hand, to refine and [[1]] the public views, bypassing them through the [[2]] of a chosen body of citizens, whose wisdom [[3]] best discern the true interest of their country, and whose [[4]] and love of justice will be least likely to sacrifice it to temporary or [[5]] considerations.",
+    "answers": [
+      "enlarge",
+      "medium",
+      "may",
+      "patriotism",
+      "partial"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are enlarge, medium, may, patriotism, partial."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-031",
+    "type": "lfi",
+    "title": "The Ocean",
+    "minutes": 5,
+    "text": "The ocean has been getting bluer, according to a study published in the journal Nature. But that's not really good news for the planet It means that the plants that give the ocean its green tint aren't doing well. Scientists say that's because the ocean has been getting warmer.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q31",
+      "sourceTitle": "The Ocean",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 569,
+      "answerTranscriptPage": 583,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-031-5d5009ea9961.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "1f1f7ce2d559f49feebee9b0bc116d0f9804d8ff5f0db197c7711bf0a57c917a",
+      "sha256": "5d5009ea9961d2c0c62f6f12a6819d0b272e3bf683337537fbb21d02cb5507a1",
+      "seconds": 20.016,
+      "bytes": 160364,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "The ocean has been getting [[1]], according to a study published in the journal Nature. But that's not really good news for the [[2]] It means that the plants that give the ocean its [[3]] tint aren't doing well. Scientists say that's because the ocean has been getting [[4]].",
+    "answers": [
+      "bluer",
+      "planet",
+      "green",
+      "warmer"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are bluer, planet, green, warmer."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-032",
+    "type": "lfi",
+    "title": "Beautiful Buildings",
+    "minutes": 5,
+    "text": "Along the way, we have built unashamedly beautiful buildings, two of which have won and been runner-up in the prestigious United Nations World Habitat Award: the first time an Australian building has received that international honor. We rely on older concepts of Australian architecture that are heavily influenced by the bush. All residents have private verandas which allows them to socialize outdoors and also creates some \"defensible space\" between their bedrooms and public areas. We use a lot of natural or soft materials and build beautifully landscaped gardens.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q32",
+      "sourceTitle": "Beautiful Buildings",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 570,
+      "answerTranscriptPage": 583,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-032-b458f47643f7.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "85fcdda3e060d209ce4b6ef5f8ecf36027bf92d769e531bed7bd54b4219eb81b",
+      "sha256": "b458f47643f7087f3f24ce5cf141d98be91161af5a1ecd71c63937a05a2af525",
+      "seconds": 30.072,
+      "bytes": 240812,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "Along the way, we have built [[1]] beautiful buildings, two of which have won and been runner-up in the prestigious United Nations World [[2]] Award: the first time an Australian building has received that international honor. We rely on older [[3]] of Australian architecture that are heavily influenced by the bush. All residents have private verandas which allows them to socialize [[4]] and also creates some \"defensible space\" between their bedrooms and public areas. We use a lot of [[5]] or soft materials and build beautifully landscaped gardens.",
+    "answers": [
+      "unashamedly",
+      "Habitat",
+      "concepts",
+      "outdoors",
+      "natural"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are unashamedly, Habitat, concepts, outdoors, natural."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-033",
+    "type": "lfi",
+    "title": "Nanotechnology",
+    "minutes": 5,
+    "text": "What is nanotechnology? Well, a report that was put together by a combination of the Royal Society and the Royal Academy of Engineering that came out last summer, identified two topics. Nano- science is the study of the phenomenon and the manipulation of materials at atomic, molecular, and macromolecular scales, where properties differ significantly from those on a larger scale. Nanotechnologies are the design characterization, production, and application of structures, devices, and systems by controlling shape and size at the nanometer scale. I'll talk a little bit more in a moment about what a nanometer is, but loosely speaking people think of nanotechnologies as being sort of a hundred nanometers or less.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q33",
+      "sourceTitle": "Nanotechnology",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 571,
+      "answerTranscriptPage": 583,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-033-8cb0aa2dbf47.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "79979cb58f5fd5bb2c67ee25535915828ed0f346f8ca0865162465461db57660",
+      "sha256": "8cb0aa2dbf4720b92f443bcfa9c2120814ed7a12554af57ff8dca6790f925ea1",
+      "seconds": 36.36,
+      "bytes": 291116,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "What is nanotechnology? Well, a report that was put together by a [[1]] of the Royal Society and the Royal Academy of Engineering that came out last summer, [[2]] two topics. Nano- science is the study of the [[3]] and the manipulation of materials at atomic, molecular, and [[4]] scales, where properties differ significantly from those on a larger scale. Nanotechnologies are the design characterization, production, and application of [[5]], devices, and systems by controlling shape and size at the nanometer scale. I'll talk a little bit more in a moment about what a nanometer is, but [[6]] speaking people think of nanotechnologies as being sort of a hundred nanometers or less.",
+    "answers": [
+      "combination",
+      "identified",
+      "phenomenon",
+      "macromolecular",
+      "structures",
+      "loosely"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are combination, identified, phenomenon, macromolecular, structures, loosely."
+  },
+  {
+    "id": "lfi-pte-nepal-20261122-035",
+    "type": "lfi",
+    "title": "Having Dogs",
+    "minutes": 5,
+    "text": "Dogs are not just man's best friend. Previous studies have shown that kids with dogs are less likely to develop asthma. Now a new study may show how if results from mice apply to us. The work was presented at a meeting of the American Society for Microbiology. The study tests what's called the hygiene hypothesis. The idea is that extreme cleanliness may actually promote disease later on. Researchers collected dust from homes that had a dog. They fed that house dust to mice. They then infected the mice with a common childhood infection called respiratory syncytial virus or RSV. Mice who ate the dog dust were protected against RSV infection symptoms, like inflamed, mucus coated airways, suggesting exposure helped them stave off the virus. Those mice also had more diverse communities of gut bacteria than control mice did. The researchers say our pet's microbes may colonize our gut too, and help the immune system learn to respond to infections. That's important because when kids develop severe RSV their risk of asthma goes up. So next time buster sheds all over the couch, think of it as a bonus dose of probiotics.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q35",
+      "sourceTitle": "Having Dogs",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 573,
+      "answerTranscriptPage": 584,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "lfi",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/lfi-pte-nepal-20261122-035-8220e5a59678.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "d3076a2c7f048a3693521af641c7f6f8a123d7a50a3741ec45c2e3df209bb496",
+      "sha256": "8220e5a596785f9f07a981af286159a30f197b8d9646faec43b68d50d677a1fc",
+      "seconds": 62.328,
+      "bytes": 498860,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "passage": "Dogs are not just man's best friend. Previous studies have shown that kids with dogs are less likely to develop asthma. Now a new study may show how if results from mice apply to us. The work was presented at a meeting of the American Society for Microbiology. The study tests what's called the [[1]] hypothesis. The idea is that extreme cleanliness may actually promote disease later on. Researchers collected dust from homes that had a dog. They fed that house dust to mice. They then infected the mice with a common [[2]] infection called [[3]] syncytial virus or RSV. Mice who ate the dog dust were protected against RSV infection symptoms, like inflamed, mucus [[4]] airways, suggesting [[5]] helped them stave off the virus. Those mice also had more diverse communities of gut bacteria than control mice did. The researchers say our pet's microbes may [[6]] our gut too, and help the immune system learn to [[7]] to infections. That's important because when kids develop severe RSV their risk of asthma goes up. So next time buster sheds all over the couch, think of it as a [[8]] dose of probiotics.",
+    "answers": [
+      "hygiene",
+      "childhood",
+      "respiratory",
+      "coated",
+      "exposure",
+      "colonize",
+      "respond",
+      "bonus"
+    ],
+    "prompt": "Listen and type the missing words in the transcript.",
+    "explanation": "The missing words, in order, are hygiene, childhood, respiratory, coated, exposure, colonize, respond, bonus."
   }
 ]
