@@ -75,8 +75,8 @@ const userPredictionDictation = predictions.wfd.filter(q => q.predictionSource?.
 const previousDictation = [...new Map([...bank.mocks.flatMap(m => m.questions.filter(q => q.type === 'wfd')), ...(bank.dictation || [])].map(q => [q.id, q])).values()];
 const dictation = [...new Map([...userPredictionDictation, ...previousDictation,
   ...predictions.wfd.filter(q=>approvedAudio.entryFor(q)), ...additionalPractice.filter(q=>q.type==='wfd')].map(q=>[q.id,q])).values()];
-// Individual listening questions reuse the verified mock sources and immutable keys.
-const listeningPractice = [...new Map(listening.mocks.flatMap(m => m.questions)
+// Keep standalone practice additions out of the existing mock papers.
+const listeningPractice = [...new Map([...listening.mocks.flatMap(m => m.questions), ...additionalPractice]
   .filter(q => listeningScoring.TYPES.has(q.type)).map(q => [q.id, { ...q, minutes:5 }])).values()];
 const spokenPractice = [...predictions.sst, ...additionalPractice.filter(q=>q.type==='sst')];
 // These screenshot transcripts already have stable practice IDs.
