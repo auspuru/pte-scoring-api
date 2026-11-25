@@ -294,9 +294,9 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   assert.deepEqual(catalog.spoken.map(q => q.id), [...predictions.sst, ...practiceSst].map(q => q.id));
   assert.equal(new Set(catalog.spoken.map(q => q.id)).size, catalog.spoken.length);
   const markedSst = catalog.spoken.filter(q => q.newInCatalogue);
-  assert.equal(markedSst.length, 44);
+  assert.equal(markedSst.length, 72);
   const library = require('../public/listening-studio').rows({items:catalog.spoken});
-  assert.equal((library.match(/aria-label="Question status: NEW"/g) || []).length, 44);
+  assert.equal((library.match(/aria-label="Question status: NEW"/g) || []).length, 72);
   for (const q of markedSst) {
     assert(q.audioUrl.includes(q.id));
     assert.equal(q.text, undefined);

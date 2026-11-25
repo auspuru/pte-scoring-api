@@ -15740,5 +15740,1345 @@
     ],
     "prompt": "Listen and type the missing words in the transcript.",
     "explanation": "The missing words, in order, are hygiene, childhood, respiratory, coated, exposure, colonize, respond, bonus."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-003",
+    "type": "sst",
+    "title": "Managers",
+    "minutes": 10,
+    "text": "Today, I'd like to talk about an Why managers should read more to gain a broad range of perspectives and consider going back to university to improve themselves. In today's fast-changing world, managing is more than just making decisions; it's about understanding people, systems, and ideas from many angles. Some managers need all kinds of perspectives to lead effectively. By reading widely, they expose themselves to new thoughts, strategies, and global trends. Reading widely enable managers to apply their skills in different circumstances, whether in times of growth crisis or change. But reading isn't the only path forward. Going back to university can be a powerful way to gain fresh insights, challenge old habits, and learn modern management theory. In fact, the best manager is not only to know their organization better, but also to be a professor of management, someone who teaches, inspires, and shares knowledge with others. It's also important to understand that experience is not necessary, but management knowledge is Important. Of course, experience has its value, but without proper knowledge, managers may repeat mistakes or Miss opportunities for innovation.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q03",
+      "sourceTitle": "Managers",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 490,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-003-c3304dee61cf.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "1b327bea4580389a02b0b3c9e6d91456ca07e411de7784ceba714b9df9467131",
+      "sha256": "c3304dee61cfc498f13b8afa3fec36d67e3b368439fdc67ff639907467d11ef8",
+      "seconds": 60.768,
+      "bytes": 486380,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Managers",
+    "keyPoints": [
+      "Managers need broad perspectives to lead effectively.",
+      "Wide reading exposes them to ideas and strategies they can apply in changing circumstances.",
+      "Returning to university can challenge old habits and provide modern management knowledge.",
+      "Experience remains valuable, and formal learning helps managers avoid repeating mistakes, recognise opportunities for innovation and share what they learn with others."
+    ],
+    "sample": "Managers need broad perspectives to lead effectively. Wide reading exposes them to ideas and strategies they can apply in changing circumstances. Returning to university can challenge old habits and provide modern management knowledge. Experience remains valuable, and formal learning helps managers avoid repeating mistakes, recognise opportunities for innovation and share what they learn with others."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-006",
+    "type": "sst",
+    "title": "Defining Need",
+    "minutes": 10,
+    "text": "Let's start with a simple fact. In the English language, not in the American language, the term 'need' has different meanings. Its interpretation depends entirely on the context.Often, we use \"need\" to express a strong personal desire. When you say, 'I need a vacation', it is an expression of a strong desire but not a basic need. Here, \"need\" is subjective and emotional. However, it also can be an objective statement. This is its more factual application. For example, when a designer wants to design a planet, the planet needs sunlight, water, organism systems, and so on. All the things mentioned above are essential to a planet. In this context, \"need\" describes an absolute, non-negotiable requirement for survival or function. Meanwhile, This term is a multifunctional word which is very important and has benefits when used in the social environment. When someone lacks something as a psychological desire, 'need' is a psychological term as humans are involved in nature. Our psychological needs, like belonging or esteem, are powerful drivers of behavior. Ultimately, people's needs advance revolutions of social structures.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q06",
+      "sourceTitle": "Defining Need",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 491,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-006-02be4d453f11.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "61c3001e312cfb0b6016566c0a6a60c6a028d163ba41112142c36d6d2b0c4ef5",
+      "sha256": "02be4d453f1103e3a5d5eda5f85974ad48a213de1d1250c13d17a0ebcf34abe4",
+      "seconds": 60.792,
+      "bytes": 486572,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Defining Need",
+    "keyPoints": [
+      "The meaning of need depends on its context.",
+      "It can express a strong subjective wish, such as wanting a holiday, or identify an objective requirement for survival or functioning, such as a planet needing water and sunlight.",
+      "Social and psychological needs, including belonging and esteem, also drive behaviour and can help change social structures."
+    ],
+    "sample": "The meaning of need depends on its context. It can express a strong subjective wish, such as wanting a holiday, or identify an objective requirement for survival or functioning, such as a planet needing water and sunlight. Social and psychological needs, including belonging and esteem, also drive behaviour and can help change social structures."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-007",
+    "type": "sst",
+    "title": "Produce Hygiene",
+    "minutes": 10,
+    "text": "Fruits and vegetables are required to be washed. If not, you will take bacteria. This can help prevent food-borne illnesses. So, how do we do it effectively? Usually, it is all right to wash them with cold water, but sometimes a brush is needed for produce with tougher skins, like potatoes or melons, to scrub away dirt and microbes. Before washing, read the instruction on the packaging. You don't have to wash them if they have already been washed. Many packaged greens are pre- cleaned. For instance, Spinach and lettuce are triply washed by the producer. Washing them again at home is often unnecessary and can actually increase the risk of contamination from your sink. While running water is usually sufficient, there are specialized products on the market. There may be special washer for fruits and vegetables available at the grocery store. These can be sprays or washes designed to help remove pesticides and waxes. However, for most people, the best practice remains using cold running water and a clean brush for certain items, as this method is widely recommended by health experts as both effective and accessible for everyone.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q07",
+      "sourceTitle": "Produce Hygiene",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 492,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-007-6725583ddc7c.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "22c2342f7021402ed9aba10847abb846a0d9063dfbf5a811d6d52f16f0cf5223",
+      "sha256": "6725583ddc7c0d587c33111e5ddbc1bee21332293945b65621aea2d2bad06dff",
+      "seconds": 63.384,
+      "bytes": 507308,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Produce Hygiene",
+    "keyPoints": [
+      "Washing produce reduces contamination and the risk of foodborne illness.",
+      "Cold running water is usually enough, although a clean brush can help scrub firm-skinned produce.",
+      "Packaging should be checked first because washing pre-cleaned greens again can introduce contamination from the sink.",
+      "Specialised washes exist, but water and brushing are practical and accessible for most people."
+    ],
+    "sample": "Washing produce reduces contamination and the risk of foodborne illness. Cold running water is usually enough, although a clean brush can help scrub firm-skinned produce. Packaging should be checked first because washing pre-cleaned greens again can introduce contamination from the sink. Specialised washes exist, but water and brushing are practical and accessible for most people."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-008",
+    "type": "sst",
+    "title": "Science and Human Values",
+    "minutes": 10,
+    "text": "Science and human values are deeply interconnected, as scientific progress alone does not determine its impact on society. While science generates knowledge and technological advancements, it is human values that shape how these discoveries are applied. For example, breakthroughs in medicine, artificial intelligence, and genetic research can lead to significant benefits, but also raise ethical concerns regarding privacy, equity, and potential misuse. This highlights the need for a moral compass to guide scientific innovation. Facts and data can inform decisions, but compassion, responsibility, and justice must influence the direction those decisions take. Education plays a critical role in fostering this balance by encouraging both scientific understanding and ethical reasoning. In solving global issues like climate change or pandemics, a blend of scientific insight and human values ensures that progress is both effective and humane. Without such integration, scientific developments risk being driven solely by profit or power, rather than the well-being of individuals and communities.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q08",
+      "sourceTitle": "Science and Human Values",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 493,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-008-8dd77d701076.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "e3086fc53ec7fde2664855a38a614415409797b8ece5aa1ba2efb816ae4bdc52",
+      "sha256": "8dd77d70107665ac3a1f0d5704c1ee0e5a3f1695973c94117525894d4f5e1dfb",
+      "seconds": 60.552,
+      "bytes": 484652,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Science and Human Values",
+    "keyPoints": [
+      "Science produces knowledge, while human values guide its application.",
+      "Advances in medicine, artificial intelligence and genetics offer benefits and raise questions about privacy, equity and misuse.",
+      "Education can develop both scientific understanding and ethical reasoning, helping people use evidence alongside compassion, justice and responsibility when responding to problems such as climate change and pandemics."
+    ],
+    "sample": "Science produces knowledge, while human values guide its application. Advances in medicine, artificial intelligence and genetics offer benefits and raise questions about privacy, equity and misuse. Education can develop both scientific understanding and ethical reasoning, helping people use evidence alongside compassion, justice and responsibility when responding to problems such as climate change and pandemics."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-009",
+    "type": "sst",
+    "title": "Threatening with losses",
+    "minutes": 10,
+    "text": "Research in behavioral psychology highlights that people are often more motivated by the fear of losing something than by the possibility of gaining a reward. This idea, known as loss aversion, suggests that the emotional impact of a potential loss is stronger than the satisfaction of a potential gain. For instance, individuals are more likely to take action when told they could lose money, health, or opportunities, rather than when encouraged with possible benefits. This principle is widely applied in areas such as marketing, health campaigns, and education. Statements like \"you could lose your progress\" tend to drive better results than \"you could improve your outcome.\" The underlying reason is that humans are naturally more sensitive to threats than to rewards, which affects how decisions are made. Framing information in terms of what might be lost, rather than what could be gained, can therefore be a more effective strategy in influencing behavior and encouraging change.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q09",
+      "sourceTitle": "Threatening with losses",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 494,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-009-c7479264b7d5.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "e56afdf0758839db5510a116a3ae63fa0eb1bba2d6c3e24aff84b561bc3801ca",
+      "sha256": "c7479264b7d5860eedc4ab7bb7f1f47aba70073a04ad0b4f995c8da4d536c2f2",
+      "seconds": 61.032,
+      "bytes": 488492,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Threatening with losses",
+    "keyPoints": [
+      "Loss aversion describes the stronger emotional response people often have to a potential loss than to an equivalent gain.",
+      "Warnings about losing money, health or progress can therefore motivate action more effectively than promises of rewards.",
+      "Marketing, education and public health campaigns can use this tendency to frame information in ways that encourage behavioural change."
+    ],
+    "sample": "Loss aversion describes the stronger emotional response people often have to a potential loss than to an equivalent gain. Warnings about losing money, health or progress can therefore motivate action more effectively than promises of rewards. Marketing, education and public health campaigns can use this tendency to frame information in ways that encourage behavioural change."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-010",
+    "type": "sst",
+    "title": "Shifting Economic Priorities",
+    "minutes": 10,
+    "text": "America's economy has long been centered around the automobile industry, but experts argue that diversifying economic priorities is essential for long-term sustainability. Dependence on cars has contributed to issues such as urban sprawl, environmental damage, and over-reliance on fossil fuels. T o address these challenges, the country needs to invest in alternative industries, including public transportation, renewable energy, and green technology. Developing robust public transit systems can reduce the reliance on private cars while creating jobs in infrastructure development and maintenance. Encouraging the adoption of renewable energy sources, such as wind and solar power, can not only reduce emissions but also stimulate economic growth in emerging sectors. Additionally, promoting sustainable urban planning can lead to denser, more walkable cities, reducing the need for excessive car use. Shifting away from an automobile-centric economy requires strategic investments and policy changes, but it holds the promise of a cleaner environment and a more resilient and diversified economic foundation.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q10",
+      "sourceTitle": "Shifting Economic Priorities",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 495,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-010-47e47b1ce6c9.mp3",
+    "narrationText": "America's economy has long been centered around the automobile industry, but experts argue that diversifying economic priorities is essential for long-term sustainability. Dependence on cars has contributed to issues such as urban sprawl, environmental damage, and over-reliance on fossil fuels. To address these challenges, the country needs to invest in alternative industries, including public transportation, renewable energy, and green technology. Developing robust public transit systems can reduce the reliance on private cars while creating jobs in infrastructure development and maintenance. Encouraging the adoption of renewable energy sources, such as wind and solar power, can not only reduce emissions but also stimulate economic growth in emerging sectors. Additionally, promoting sustainable urban planning can lead to denser, more walkable cities, reducing the need for excessive car use. Shifting away from an automobile-centric economy requires strategic investments and policy changes, but it holds the promise of a cleaner environment and a more resilient and diversified economic foundation.",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "eccca12a19eb29acb90bbf53a93dd9c134336d3a771c185e0ddfc2b2819f45c6",
+      "sha256": "47e47b1ce6c92441132718fadf42c2b7c90eaa481134d0b25fa257cfab510ef0",
+      "seconds": 61.056,
+      "bytes": 488684,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      },
+      "narrationTextSha256": "d9281b4b01dec3fb2a40dc1f474b4aa1edca2a591df3f0af45033f554e574d9e"
+    },
+    "topic": "Shifting Economic Priorities",
+    "keyPoints": [
+      "Dependence on the automobile industry has contributed to urban sprawl, environmental damage and fossil fuel consumption in the United States.",
+      "Public transport, renewable energy and green technology can create jobs while reducing emissions and dependence on cars.",
+      "Strategic investment and walkable urban planning could help diversify the economy and make it more resilient."
+    ],
+    "sample": "Dependence on the automobile industry has contributed to urban sprawl, environmental damage and fossil fuel consumption in the United States. Public transport, renewable energy and green technology can create jobs while reducing emissions and dependence on cars. Strategic investment and walkable urban planning could help diversify the economy and make it more resilient."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-011",
+    "type": "sst",
+    "title": "Railway Cards",
+    "minutes": 10,
+    "text": "Railway cards are a convenient option for frequent travelers, offering flexibility and cost savings. These cards often provide benefits such as discounted fares, priority booking, or access to special seating areas, making them particularly useful for commuters and long-distance travelers. Many railway systems offer different types of cards tailored to specific needs, such as student passes, senior citizen discounts, or family travel cards. One of the key advantages of railway cards is their ability to simplify travel planning. By preloading funds or purchasing subscription-based cards, passengers can reduce the need for individual ticket purchases, saving both time and effort. Additionally, railway cards often come with loyalty programs that reward consistent usage, adding more value for travelers. Despite their advantages, it is important for users to read the terms and conditions carefully to understand eligibility and usage limitations. Railway cards have become an efficient solution for making train travel more affordable and accessible across various demographics.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q11",
+      "sourceTitle": "Railway Cards",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 496,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-011-6a85a73d77e7.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "7b9d652c58325a5e045431e0fc63f1191467024a8a6c49231c637322d38947cc",
+      "sha256": "6a85a73d77e72d7d1a2697f5e98f76d77f477e8c1c87d56158bf2f6a77b75bdd",
+      "seconds": 60.792,
+      "bytes": 486572,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Railway Cards",
+    "keyPoints": [
+      "Railway cards make frequent train travel more convenient and affordable.",
+      "They can provide reduced fares, booking or seating benefits, and options tailored to students, older people or families.",
+      "Prepaid and subscription cards simplify ticket purchases, while some schemes also reward regular use.",
+      "Travellers should check eligibility rules and restrictions before choosing a card."
+    ],
+    "sample": "Railway cards make frequent train travel more convenient and affordable. They can provide reduced fares, booking or seating benefits, and options tailored to students, older people or families. Prepaid and subscription cards simplify ticket purchases, while some schemes also reward regular use. Travellers should check eligibility rules and restrictions before choosing a card."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-012",
+    "type": "sst",
+    "title": "Recruitment Types",
+    "minutes": 10,
+    "text": "Recruitment is a critical process for organizations to identify and hire the best candidates for specific roles. There are two primary types of recruitment: internal and external. Internal recruitment involves selecting candidates from within the organization. This approach is cost-effective, encourages employee loyalty, and allows companies to leverage existing talent. Common methods include promotions, transfers, or employee referrals. In contrast, external recruitment focuses on attracting candidates from outside the organization. It expands the talent pool and brings fresh perspectives and skills to the team. Methods of external recruitment include job advertisements, recruitment agencies, campus hiring, and online job portals. However, this approach can be more time- consuming and expensive compared to internal recruitment. Both recruitment types have their advantages and limitations, and organizations often use a combination of the two to meet their specific needs. The ultimate goal is to ensure a fair, efficient, and effective process that aligns with the company's long-term objectives.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q12",
+      "sourceTitle": "Recruitment Types",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 497,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-012-2162885011bb.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "03712155574195520b19c0ef7b2e63f5fe7ffbd06f57593104aa0163e53adced",
+      "sha256": "2162885011bbfa743b4cff19308cf510261eda3d68d7920140e50294b9532f98",
+      "seconds": 61.032,
+      "bytes": 488492,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Recruitment Types",
+    "keyPoints": [
+      "Internal recruitment fills roles from within the organisation through mechanisms such as promotions and transfers, which can lower costs and support loyalty.",
+      "External recruitment uses channels such as advertising, agencies and campus hiring to reach a wider pool and bring in new skills.",
+      "Employers can combine both approaches according to their needs and long-term goals."
+    ],
+    "sample": "Internal recruitment fills roles from within the organisation through mechanisms such as promotions and transfers, which can lower costs and support loyalty. External recruitment uses channels such as advertising, agencies and campus hiring to reach a wider pool and bring in new skills. Employers can combine both approaches according to their needs and long-term goals."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-013",
+    "type": "sst",
+    "title": "Computers",
+    "minutes": 10,
+    "text": "Computers have become an integral part of modern life, revolutionizing the way people work, communicate, and access information. They are powerful tools used in almost every field, from education and healthcare to business and entertainment. By automating repetitive tasks and processing large amounts of data efficiently, computers save time and improve productivity. For instance, businesses rely on computers for tasks like data analysis, financial management, and communication through emails and video conferencing. In education, computers enhance learning by providing access to vast online resources, interactive tools, and virtual classrooms. However, their widespread use also brings challenges, such as dependency, cybersecurity risks, and the digital divide, which limits access for some communities. Despite these challenges, continuous advancements in computer technology, such as artificial intelligence and quantum computing, promise to bring even greater benefits in the future. Overall, computers are indispensable, shaping modern society and driving innovation in countless ways.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q13",
+      "sourceTitle": "Computers",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 498,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-013-da11c8e4bc74.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "df73b0cacdaff4e562d6f7cc5593cbf8c95795288558c8e8ef1a0e8824aa0118",
+      "sha256": "da11c8e4bc74be1aeaed37d0b00c77dc8c72dd86db0641a15881087011f8aeb5",
+      "seconds": 61.056,
+      "bytes": 488684,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Computers",
+    "keyPoints": [
+      "Computers improve productivity by automating tasks and handling large amounts of data, and they support communication, business and education through tools such as video calls and virtual classrooms.",
+      "Widespread use also creates concerns about dependency, cybersecurity and unequal access.",
+      "Advances in artificial intelligence and quantum computing could bring further benefits."
+    ],
+    "sample": "Computers improve productivity by automating tasks and handling large amounts of data, and they support communication, business and education through tools such as video calls and virtual classrooms. Widespread use also creates concerns about dependency, cybersecurity and unequal access. Advances in artificial intelligence and quantum computing could bring further benefits."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-014",
+    "type": "sst",
+    "title": "New Employee Orientation",
+    "minutes": 10,
+    "text": "New Employee Orientation is a critical process that helps newcomers integrate into their workplace smoothly and effectively. The primary purpose of this session is to familiarize employees with the organization's mission, values, and work culture, ensuring they align with company goals. During orientation, participants are introduced to key policies and procedures, such as attendance, workplace safety, and performance expectations, which provide clarity about their responsibilities. Another essential aspect of the session is acquainting employees with available resources, such as IT support, training programs, and wellness initiatives, to enhance their productivity and well-being. Additionally, orientation often includes introductions to team members and managers, encouraging collaboration and fostering a sense of belonging. Interactive activities, like team-building exercises or Q&A sessions, are commonly incorporated to make the experience engaging and memorable. Overall, New Employee Orientation plays a vital role in setting the foundation for a successful journey within the organization by equipping employees with essential tools and knowledge.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q14",
+      "sourceTitle": "New Employee Orientation",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 499,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-014-002507b04029.mp3",
+    "narrationText": "New Employee Orientation is a critical process that helps newcomers integrate into their workplace smoothly and effectively. The primary purpose of this session is to familiarize employees with the organization's mission, values, and work culture, ensuring they align with company goals. During orientation, participants are introduced to key policies and procedures, such as attendance, workplace safety, and performance expectations, which provide clarity about their responsibilities. Another essential aspect of the session is acquainting employees with available resources, such as I T support, training programs, and wellness initiatives, to enhance their productivity and well-being. Additionally, orientation often includes introductions to team members and managers, encouraging collaboration and fostering a sense of belonging. Interactive activities, like team-building exercises or Q&A sessions, are commonly incorporated to make the experience engaging and memorable. Overall, New Employee Orientation plays a vital role in setting the foundation for a successful journey within the organization by equipping employees with essential tools and knowledge.",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "646cf823fdbc670b101d908b67043494ad5c23380c33f5a27700be04b8e9cd4f",
+      "sha256": "002507b04029fd63dfd57782ba014347ffd94e2449153eeec74cf81464d4e379",
+      "seconds": 63.0,
+      "bytes": 504236,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      },
+      "narrationTextSha256": "23c59ba931701dd79458abe7ee38774f163b230ec2f5f84fddd6ceff3b8df241"
+    },
+    "topic": "New Employee Orientation",
+    "keyPoints": [
+      "New employee orientation helps newcomers understand an organisation's mission, culture and policies.",
+      "It clarifies responsibilities and introduces resources such as training, IT support and wellness programmes.",
+      "Meeting colleagues and managers and taking part in interactive activities can encourage collaboration and belonging.",
+      "This preparation gives employees the knowledge and tools to begin their roles successfully."
+    ],
+    "sample": "New employee orientation helps newcomers understand an organisation's mission, culture and policies. It clarifies responsibilities and introduces resources such as training, IT support and wellness programmes. Meeting colleagues and managers and taking part in interactive activities can encourage collaboration and belonging. This preparation gives employees the knowledge and tools to begin their roles successfully."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-015",
+    "type": "sst",
+    "title": "Travel's Overrated Value",
+    "minutes": 10,
+    "text": "Travel is often perceived as an essential way to broaden perspectives, experience new cultures, and enhance personal growth. While these benefits are undeniable, the value of travel may sometimes be overrated. Many people believe that traveling far and wide is the only way to learn about the world, but this overlooks the rich experiences available within one's own local community or country. T echnology, such as virtual tours and online resources, now provides access to global cultures without the need for physical travel. Additionally, modern tourism often has environmental and cultural downsides, including increased pollution and the exploitation of local traditions for commercial purposes. It's also worth noting that the transformative effects of travel are not guaranteed- true growth comes from how individuals reflect on and process their experiences, whether abroad or at home. Ultimately, while travel can be enriching, its value should not be exaggerated at the expense of other meaningful ways to learn and grow.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q15",
+      "sourceTitle": "Travel's Overrated Value",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 500,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-015-fa441749e259.mp3",
+    "narrationText": "Travel is often perceived as an essential way to broaden perspectives, experience new cultures, and enhance personal growth. While these benefits are undeniable, the value of travel may sometimes be overrated. Many people believe that traveling far and wide is the only way to learn about the world, but this overlooks the rich experiences available within one's own local community or country. Technology, such as virtual tours and online resources, now provides access to global cultures without the need for physical travel. Additionally, modern tourism often has environmental and cultural downsides, including increased pollution and the exploitation of local traditions for commercial purposes. It's also worth noting that the transformative effects of travel are not guaranteed- true growth comes from how individuals reflect on and process their experiences, whether abroad or at home. Ultimately, while travel can be enriching, its value should not be exaggerated at the expense of other meaningful ways to learn and grow.",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "63de502cbc48c59ae6ff927eb4368c3cb3f2858f5f0bbf4d9056d50e8fbf2f92",
+      "sha256": "fa441749e2599586b1ed0a732344fa779eee006bc1b255d7fa9e8ceb2a806401",
+      "seconds": 61.032,
+      "bytes": 488492,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      },
+      "narrationTextSha256": "35551e94e8b5b2f1d4c5c28c31b1de8d50285bda46946e0b7ab25d1d8a7ac55b"
+    },
+    "topic": "Travel's Overrated Value",
+    "keyPoints": [
+      "Travel can expose people to unfamiliar places and cultures, yet personal growth also comes from experiences closer to home.",
+      "Cost, time and environmental impact can limit the value of travel, while superficial visits may offer little insight.",
+      "Reading, learning and engaging with local communities can provide meaningful ways to broaden perspectives without relying on travel."
+    ],
+    "sample": "Travel can expose people to unfamiliar places and cultures, yet personal growth also comes from experiences closer to home. Cost, time and environmental impact can limit the value of travel, while superficial visits may offer little insight. Reading, learning and engaging with local communities can provide meaningful ways to broaden perspectives without relying on travel."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-016",
+    "type": "sst",
+    "title": "Information Technology",
+    "minutes": 10,
+    "text": "Information T echnology, often referred to as IT , has become an essential part of modern life, revolutionizing the way individuals and organizations operate. IT encompasses a broad range of activities, including data storage, processing, and communication. Over the years, advancements in IT have greatly influenced industries such as healthcare, education, and business. For instance, electronic health records have improved patient care, while online learning platforms have made education accessible to millions worldwide. Additionally, IT has facilitated globalization, enabling businesses to communicate and collaborate across continents. However, these benefits come with challenges, such as cybersecurity risks and the ethical concerns surrounding data privacy. It is crucial for governments and organizations to implement effective policies to address these issues and ensure the responsible use of technology. Ultimately, IT continues to shape the way we live, offering endless opportunities for innovation while demanding constant vigilance to manage its risks and complexities.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q16",
+      "sourceTitle": "Information Technology",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 501,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-016-ef88df65f410.mp3",
+    "narrationText": "Information Technology, often referred to as I T , has become an essential part of modern life, revolutionizing the way individuals and organizations operate. I T encompasses a broad range of activities, including data storage, processing, and communication. Over the years, advancements in I T have greatly influenced industries such as healthcare, education, and business. For instance, electronic health records have improved patient care, while online learning platforms have made education accessible to millions worldwide. Additionally, I T has facilitated globalization, enabling businesses to communicate and collaborate across continents. However, these benefits come with challenges, such as cybersecurity risks and the ethical concerns surrounding data privacy. It is crucial for governments and organizations to implement effective policies to address these issues and ensure the responsible use of technology. Ultimately, I T continues to shape the way we live, offering endless opportunities for innovation while demanding constant vigilance to manage its risks and complexities.",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "cde453805979ad1b579ee402585ada6141b685793cae121acee96b6659883860",
+      "sha256": "ef88df65f4104db5c6076451e786ff266c9b9894f6957068d2d2cd650453473d",
+      "seconds": 61.032,
+      "bytes": 488492,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      },
+      "narrationTextSha256": "1eda09551bd0b957bfa849ce00785bd9a11eb1faaf6cd97bef6edbd14472d940"
+    },
+    "topic": "Information Technology",
+    "keyPoints": [
+      "Information technology changes how people communicate, handle data and work.",
+      "It enables efficient services, global connectivity and innovation across fields such as business, education and healthcare.",
+      "Dependence on digital systems also creates risks, including threats to privacy and security.",
+      "The benefits can be sustained by managing these challenges as information technology continues to develop."
+    ],
+    "sample": "Information technology changes how people communicate, handle data and work. It enables efficient services, global connectivity and innovation across fields such as business, education and healthcare. Dependence on digital systems also creates risks, including threats to privacy and security. The benefits can be sustained by managing these challenges as information technology continues to develop."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-017",
+    "type": "sst",
+    "title": "Credit Card",
+    "minutes": 10,
+    "text": "About a study by a banker on using credit cards, examining how messages influence decisions. A bank issued credit cards to consumers, but many of them did not use the cards. Then the bank asked the inactive consumers why, and found they feared possible loss. There are two groups of inactive credit card users. One group received messages saying they would be offered benefits if they continued to use the credit cards. The other group received messages saying they would incur a penalty if they didn't use the credit cards anymore. The potential loss of not using the cards is mentioned a few times. The conclusion is that customers are more motivated by a threat to lose something than by potential gains or persuasive messages. This phenomenon highlights that the fear of loss is a more effective motivator than the promise of being beneficial or receiving cash rewards.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q17",
+      "sourceTitle": "Credit Card",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 502,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-017-188d51cf2273.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "dcb70c3a6c04b7669f259a5b66c502da526ad6345414af5100efd948c81576fe",
+      "sha256": "188d51cf227305d775eff9e402d91fc14697a71a2101fbfc4e7d0505b8569a62",
+      "seconds": 61.032,
+      "bytes": 488492,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Credit Card",
+    "keyPoints": [
+      "A bank compared two messages aimed at people who had stopped using its credit cards.",
+      "One group was promised benefits for using the cards, while the other was told that inactivity would lead to a penalty.",
+      "The stronger response to a potential loss suggested that fear of losing something could motivate customers more than a reward."
+    ],
+    "sample": "A bank compared two messages aimed at people who had stopped using its credit cards. One group was promised benefits for using the cards, while the other was told that inactivity would lead to a penalty. The stronger response to a potential loss suggested that fear of losing something could motivate customers more than a reward."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-023",
+    "type": "sst",
+    "title": "Safe Produce",
+    "minutes": 10,
+    "text": "It is essential to wash fruits and vegetables thoroughly before consumption to remove dirt, pesticides, and potential contaminants. Spinach and lettuce, in particular, are often recommended to be washed multiple times due to their intricate leaves. This process helps ensure they are clean and safe to eat. Some grocery stores offer special washers designed for fruits and vegetables, providing added convenience for shoppers concerned about food safety. These washers use techniques like gentle agitation or water filtration to cleanse products effectively without damaging their delicate textures or nutrients. This extra step can reassure consumers that their fresh produce is not only visually clean but also free from harmful residues. By making washing a routine part of food preparation, consumers can significantly reduce their exposure to potentially harmful substances, promoting better health and peace of mind. T aking these precautions ensures that fruits and vegetables not only taste better but also contribute to overall well-being.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q23",
+      "sourceTitle": "Safe Produce",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 508,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-023-3182267c2303.mp3",
+    "narrationText": "It is essential to wash fruits and vegetables thoroughly before consumption to remove dirt, pesticides, and potential contaminants. Spinach and lettuce, in particular, are often recommended to be washed multiple times due to their intricate leaves. This process helps ensure they are clean and safe to eat. Some grocery stores offer special washers designed for fruits and vegetables, providing added convenience for shoppers concerned about food safety. These washers use techniques like gentle agitation or water filtration to cleanse products effectively without damaging their delicate textures or nutrients. This extra step can reassure consumers that their fresh produce is not only visually clean but also free from harmful residues. By making washing a routine part of food preparation, consumers can significantly reduce their exposure to potentially harmful substances, promoting better health and peace of mind. Taking these precautions ensures that fruits and vegetables not only taste better but also contribute to overall well-being.",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "abbd8ecfbc20f33d4a87d56099afd9ede1f0590dc399f115d482da8c89d3b1f6",
+      "sha256": "3182267c23034d3e2403658da42f36793d52eebcc865b9173cfb01c9a1c38440",
+      "seconds": 61.056,
+      "bytes": 488684,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      },
+      "narrationTextSha256": "b19dcf1c728404c18365e564c5f52af60aa447526b064d089e89d89b82ab154e"
+    },
+    "topic": "Safe Produce",
+    "keyPoints": [
+      "Washing fruits and vegetables removes dirt, pesticides and other potential contaminants.",
+      "Leafy greens such as spinach and lettuce may benefit from repeated washing because of their intricate leaves.",
+      "Special washers can use gentle agitation or filtered water to clean delicate produce.",
+      "The speaker presents washing as a routine way to make fresh produce safer to eat."
+    ],
+    "sample": "Washing fruits and vegetables removes dirt, pesticides and other potential contaminants. Leafy greens such as spinach and lettuce may benefit from repeated washing because of their intricate leaves. Special washers can use gentle agitation or filtered water to clean delicate produce. The speaker presents washing as a routine way to make fresh produce safer to eat."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-030",
+    "type": "sst",
+    "title": "Park Cleanup",
+    "minutes": 10,
+    "text": "Hello everyone! well.... thank you so much for coming to help with cleaning the park. um.... I really appreciate you taking your time out of your busy schedules to be here. So.... today's cleanup will be divided into three different tasks, and we will be having three different teams for these tasks. um.... The first task is picking up the trash which is laying around.....so.... this will be headed by our friend Michael, so.... if you want to be a part of that job you can go and join Michael, um.... the one who is standing by the tree and the second task is removing the plants that do not belong here.....so....we have a few pictures of the plants that do not belong here and maybe because they are not supposed to be here or they will harm the environment so this team will be headed by Karen, .....so....if you want to do that you can join Karen and the last task will be to paint and repaint the tables and chairs in the park and make them look good and this one will be headed by me. so if you like to do this, you can join my team and um.... then we'll start with the cleanup. Okay!",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q30",
+      "sourceTitle": "Park Cleanup",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 510,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-030-3781ea8c8b5b.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "bf9ed50038a2d86532af05312729552b8ac5867f94c500328e57e2aa14f747b4",
+      "sha256": "3781ea8c8b5b1380c98a7913f4e9b871f4bd97d1fc9286351380ee07c310501a",
+      "seconds": 69.696,
+      "bytes": 557804,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Park Cleanup",
+    "keyPoints": [
+      "The organiser thanks volunteers and divides the park cleanup into three teams.",
+      "Michael, standing by a tree, will lead rubbish collection.",
+      "Karen will guide volunteers in removing plants that do not belong in the park, using pictures for identification.",
+      "The organiser will lead the team repainting tables and chairs, and volunteers can choose which group to join."
+    ],
+    "sample": "The organiser thanks volunteers and divides the park cleanup into three teams. Michael, standing by a tree, will lead rubbish collection. Karen will guide volunteers in removing plants that do not belong in the park, using pictures for identification. The organiser will lead the team repainting tables and chairs, and volunteers can choose which group to join."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-033",
+    "type": "sst",
+    "title": "Ocean",
+    "minutes": 10,
+    "text": "In today's discussion, we explore the profound consequences of climate change on our oceans and the urgent need for action. Our oceans are in crisis. Rising global temperatures have led to sea-level rise and ocean acidification, endangering marine ecosystems and coastal communities. Moreover, climate change disrupts ocean currents and weather patterns, resulting in more frequent and severe storms, affecting millions of people living along coastlines. Furthermore, the warming oceans contribute to the loss of coral reefs, threatening marine biodiversity and fisheries that millions depend on for food and livelihoods. In conclusion, addressing climate change is not just an environmental issue but a matter of global urgency. We must take immediate action to mitigate its impact on our oceans, preserving these vital ecosystems and protecting the well-being of countless communities around the world.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q33",
+      "sourceTitle": "Ocean",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 513,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-033-1012616403a8.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "31979058bb546b773b21e9046f99d0d02a9fce06ef2bd3c4c032f84ddc4c24e9",
+      "sha256": "1012616403a8019a6b49c0e03732df73e1c771d4cd317efdab6e825f6a93e27c",
+      "seconds": 61.032,
+      "bytes": 488492,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Ocean",
+    "keyPoints": [
+      "Climate change threatens oceans and people who depend on them.",
+      "Rising temperatures and acidification damage marine ecosystems, while changes in currents and weather intensify coastal risks from storms and rising seas.",
+      "Loss of coral reefs threatens biodiversity and fisheries.",
+      "The speaker calls for urgent action to protect marine ecosystems and coastal communities."
+    ],
+    "sample": "Climate change threatens oceans and people who depend on them. Rising temperatures and acidification damage marine ecosystems, while changes in currents and weather intensify coastal risks from storms and rising seas. Loss of coral reefs threatens biodiversity and fisheries. The speaker calls for urgent action to protect marine ecosystems and coastal communities."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-034",
+    "type": "sst",
+    "title": "Bee Hives",
+    "minutes": 10,
+    "text": "A healthy hive of honeybees functions like a perfect and fluid organism at the center of all activity is the queen and egg laying machine. The queen is actually a slave to her duties, playing up to 2500 eggs a day, as many as two million in her lifetime. The worker bees are all female and make up the bulk of the colony. In a typical hive of 30000 bees, only about 100 are males called drones with oversize eyes and bulky bodies. Drones are not equipped to gather pollen or nectar and must rely on the workers to feed them. The invaluable work bees do takes its toll in the summer. Workers only live around 30 days, literally work to death. But the hive is constantly replenished with new generations of bees ready to go to work from the moment they hatch.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q34",
+      "sourceTitle": "Bee Hives",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 514,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-034-dbeff909c18b.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "40a917fa0fffb7a0b24bc7ccebea814c6657261799cb514f6d54ee9e058fd3a1",
+      "sha256": "dbeff909c18be7844b13e14f205b986e3e399036d969003cdf314dcb8c182184",
+      "seconds": 61.032,
+      "bytes": 488492,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Bee Hives",
+    "keyPoints": [
+      "A honeybee hive relies on specialised roles.",
+      "Its queen can lay up to 2,500 eggs daily, and female workers form most of the colony.",
+      "Male drones cannot collect pollen or nectar and depend on workers for food.",
+      "Although summer workers live only around thirty days, successive generations continually replenish the workforce and keep the hive functioning."
+    ],
+    "sample": "A honeybee hive relies on specialised roles. Its queen can lay up to 2,500 eggs daily, and female workers form most of the colony. Male drones cannot collect pollen or nectar and depend on workers for food. Although summer workers live only around thirty days, successive generations continually replenish the workforce and keep the hive functioning."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-035",
+    "type": "sst",
+    "title": "Organization Studies",
+    "minutes": 10,
+    "text": "It's really recommend that everybody take some organization studies courses that even if you're not planning to become a nature specialist. These courses will provide leadership skills that we've got courses such as his Rosens on Leadership Development. They're going to give you the interpersonal competencies and skills to advance in your career. So I think that's org (organization) studies give people a place to go into a number of different careers, be it in the public sector of the private sector or a nonprofit. Think everyone needs to understand how organizations are structured, how they function and how people interact. And then to get to your strategic goal. It's really important to take organization studies courses. And I know it's a bit of a hard sell for a lot of students who are appearing in it. But over and over, alumni come back to me and say, you know what, the most important course I've ever took was organization studies. And I really wish I took it more because those are the skills that really help me move up in my career. So those are the competencies or political skills for understanding myself for knowing how to work with difficult people, for knowing how to manage my boss, knowing how to structure the organization, knowing how to create sustainable competitive advantage. And those are the skills that really differentiate people who are going to have long term successful careers.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q35",
+      "sourceTitle": "Organization Studies",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 515,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-035-ce94395b61f6.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "6186f69f2822001076bdea372905a744a3453ebe7a9765cd6bb42ea277216ddf",
+      "sha256": "ce94395b61f6270a6f52f37293788c20591a5ed199eb209b993d6b1e62854732",
+      "seconds": 80.04,
+      "bytes": 640556,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Organization Studies",
+    "keyPoints": [
+      "Organisation studies can benefit students across public, private and nonprofit careers.",
+      "The subject develops leadership and interpersonal skills alongside an understanding of organisational structure and how people work together.",
+      "Alumni value these skills when dealing with colleagues, managers and strategic decisions.",
+      "The speaker argues that these capabilities can support career advancement and long-term success."
+    ],
+    "sample": "Organisation studies can benefit students across public, private and nonprofit careers. The subject develops leadership and interpersonal skills alongside an understanding of organisational structure and how people work together. Alumni value these skills when dealing with colleagues, managers and strategic decisions. The speaker argues that these capabilities can support career advancement and long-term success."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-036",
+    "type": "sst",
+    "title": "Separation of Powers",
+    "minutes": 10,
+    "text": "So what is the separation of powers? So as discussed in a prior video, the US Constitution establishes the framework for the United States government. That is Article one, establish the legislative branch, the US House of Representatives and the US Senate article to establish the office of the presidency, the executive branch of government in Article three, establish the judicial branch, the United States Supreme Court. OK, now the powers vested in these individual branches. So the legislative branch creates law. Bills turn into statutes. Right? And then they can delegate these the statutory authority to regulatory agencies to create or administrative agencies to create regulations in furtherance of those laws. All right. Now the executive branch is charged with carrying out or executing those laws that is enforcing them against the public. As part of that role, the executive branch can create administrative agencies or the administrative agencies at least report up through there, even though the authority comes from the legislative branch to create these agencies. But they report up to the executive branch and they generally have regulatory authority. So they'll take the statutes created by Congress pursuant to an enabling statute that grants and the authority to do so and create regulations to carry out or implement these statutes that Congress passes. OK, so in this way, the president carries out the laws that that Congress makes and then the judiciary checks those laws or reviews those laws for violations of constitutionality and to make certain that they are applied correctly. So Congress cannot pass a law that's unconstitutional and the executive cannot take action enforcing law that in some way violates an individual's constitutional rights or can again cannot enforce an unconstitutional statute. OK, and so and then the judiciary, again, they simply interpret the laws and add to the law through their interpretations. That is, they form the common law.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q36",
+      "sourceTitle": "Separation of Powers",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 516,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-036-76ff0a7f932b.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "867d5ef697b50d23c21275f25464bbc11da74e22e70098b046589ce971a7b8d2",
+      "sha256": "76ff0a7f932b6f87926f8d6c9fa4f280cbbb96f10bf253f308c056966eb24d3c",
+      "seconds": 105.696,
+      "bytes": 845804,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Separation of Powers",
+    "keyPoints": [
+      "The United States Constitution separates power among the legislative, executive and judicial branches.",
+      "Congress makes laws and can delegate regulatory authority, while the executive implements laws through agencies.",
+      "Courts interpret laws, review their constitutionality and check how they are applied.",
+      "These roles create limits that prevent Congress or the executive from acting outside constitutional requirements."
+    ],
+    "sample": "The United States Constitution separates power among the legislative, executive and judicial branches. Congress makes laws and can delegate regulatory authority, while the executive implements laws through agencies. Courts interpret laws, review their constitutionality and check how they are applied. These roles create limits that prevent Congress or the executive from acting outside constitutional requirements."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-037",
+    "type": "sst",
+    "title": "Emotional Stability",
+    "minutes": 10,
+    "text": "Far more than we're inclined to accept and sometimes even realize we are creatures of mood, that is our sense of our value as human beings is prone to extraordinary fluctuation at times. We know how to tolerate ourselves. The future seems benevolent. We can bear who we are in the eyes of others, and we can forgive ourselves for the desperate errors of the past. And then at other points, the mood dips and we lament most of what we've ever done. We see ourselves as natural targets for contempt. We feel undeserving, guilty, weak and headed for retribution and disaster. But it can be very hard to grasp what causes our moods to shift. A day that started with energy and hope can by lunchtime end up mired in self-hatred and tearfulness. A sure sense that we finally turned the corner and are on the way to better things can be replaced at speed by an alternative certainty that we are a cosmic error. We cannot, it appears, ever prevent our moods from being subject to change. But what is open to us all is to learn how to manage the change more effectively so that our downturn's can be ever so slightly more gentle or sadness more containable, and our inconstancy less shameful in our eyes.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q37",
+      "sourceTitle": "Emotional Stability",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 517,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-037-731795b6fe7b.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "69920a781b5622c168a271bf9cee57ef663f8c6b737b8ca7820824580ba102f5",
+      "sha256": "731795b6fe7b21d250a565bdad8d855d1804a6a0d2bd4a2a581dd6e53cb56356",
+      "seconds": 73.032,
+      "bytes": 584492,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Emotional Stability",
+    "keyPoints": [
+      "Moods strongly influence how people judge themselves and imagine their future.",
+      "A hopeful outlook can suddenly give way to shame, sadness or fear, and the causes are often difficult to identify.",
+      "Although mood changes are unavoidable, people can learn to manage them more effectively, making difficult periods easier to tolerate and reducing shame about emotional fluctuations."
+    ],
+    "sample": "Moods strongly influence how people judge themselves and imagine their future. A hopeful outlook can suddenly give way to shame, sadness or fear, and the causes are often difficult to identify. Although mood changes are unavoidable, people can learn to manage them more effectively, making difficult periods easier to tolerate and reducing shame about emotional fluctuations."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-043",
+    "type": "sst",
+    "title": "Hook Sentence",
+    "minutes": 10,
+    "text": "Introducing your persuasive essay, Hook Your Audience. There are many different types of leads or hooks that you can use to begin your persuasive essay. A good introduction, remember, has a few functions, including grabbing the reader's attention, introducing the topic and your position, and previewing the main points of your essay. Let's look at a few examples of ways to hook a reader. A news lead sounds like a newspaper article because you simply state the facts who, what, where, how, and why. An anecdote or short story tells the story of a real person directly impacted by the topic of your essay, like a child soldier or a child slave in the tobacco fields. A question can get the reader thinking about your topic. Reader Identification is another kind of hook that shows the reader how the story relates to them. A shocking fact or statistic can surprise a reader and make him or her want to read more. Guided imagery is where you use your best descriptive five senses skills and transport the reader into the world that you were describing. Dialogue allows the story to unfold through conversation of main characters. Remember, whatever hook or lead idea you use, it should be something new and not a cliche or overused expression. Be bold and make a statement to get your reader to feel emotion or be shocked into wanting to learn more.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q43",
+      "sourceTitle": "Hook Sentence",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 520,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-043-1c7104836444.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "7295706be6b3bf40ce27e07b327bd546dbdd85833db91cffe18f4c14963cb5b2",
+      "sha256": "1c71048364448730844b7e4d94ff7a4b4c6f1820d76f6503405194ce15c538f2",
+      "seconds": 78.72,
+      "bytes": 629996,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Hook Sentence",
+    "keyPoints": [
+      "A persuasive essay uses its introduction to catch attention, state the writer’s position and preview the argument.",
+      "Possible hooks include a short anecdote, a striking statistic, a question or a vivid scene.",
+      "The speaker encourages writers to connect the hook to the subject and use an original approach that makes readers want to continue."
+    ],
+    "sample": "A persuasive essay uses its introduction to catch attention, state the writer’s position and preview the argument. Possible hooks include a short anecdote, a striking statistic, a question or a vivid scene. The speaker encourages writers to connect the hook to the subject and use an original approach that makes readers want to continue."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-044",
+    "type": "sst",
+    "title": "Tutorials",
+    "minutes": 10,
+    "text": "Before each tutorial, we're asked to prepare in advance. We usually give a reading lists, which we have to complete before each tutorial. We are given Web sites to look at E-journals to look at. And we have to prepare by writing our notes down. In every tutorial, there's about 5 to 15 students and these are led by the tutors, which are usually masters or PhD students. And then when we come into the tutorial, we put into small groups and we are asked to discuss our ideas, generate new ideas, and give feedback to the class. During art tutorials, there is a lot of support given our tutors are there so that we can ask questions at any time. We also have our peers there, which we can also ask questions to. If we need help before the tutorial, we can email any of the tutors and they will provide you with help. The difference between lectures and tutorials is that in lectures you usually have about 200 to 300 students, whereas in tutorials is about five to 15 students, which allows you to discuss matters, put your hand up and talk to your tutors about any difficulties you may have with the subject. The skills that I have developed through participating in these tutorials is time management, critical thinking, being able to work better in a group and improving my confidence to speak up in a group. At the end of a tutorial, each group will have to give feedback on what they've been discussing throughout the tutorial. So this may consist of having to present to the rest of the students in the class and it allows me to improve my group working skills and also working in a group allows us to generate more ideas and discuss the topic in more depth. The advice I have for potential University of Edinburgh students to make the most out of your tutorial sessions is to complete the reading that you're given by your tutors beforehand. This will enable you to discuss more in groups and generate more ideas. It's also beneficial to raise your hand and develop your confidence so that you can have better discussions in class.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q44",
+      "sourceTitle": "Tutorials",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 521,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-044-5ba23cc28404.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "777240b6900c73bc14163e0906bae145a7a51b6c96208fb478c2bf21b81f0a3d",
+      "sha256": "5ba23cc2840403cddae5590b435abb95bd6282ce573c73d8e0538295d1e1c150",
+      "seconds": 123.72,
+      "bytes": 989996,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Tutorials",
+    "keyPoints": [
+      "Tutorials use smaller groups than lectures and require advance reading and note-taking.",
+      "Students discuss ideas, ask questions, receive support and present their group's conclusions.",
+      "The speaker found that tutorials improved time management, critical thinking, confidence and teamwork.",
+      "Completing assigned reading and speaking up help students take advantage of group discussion and explore topics in greater depth."
+    ],
+    "sample": "Tutorials use smaller groups than lectures and require advance reading and note-taking. Students discuss ideas, ask questions, receive support and present their group's conclusions. The speaker found that tutorials improved time management, critical thinking, confidence and teamwork. Completing assigned reading and speaking up help students take advantage of group discussion and explore topics in greater depth."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-045",
+    "type": "sst",
+    "title": "Stone Balls",
+    "minutes": 10,
+    "text": "I suppose you wouldn't expect perhaps to find a mathematician in a museum of historical objects, but actually, the objects that I've been drawn to in this museum have quite a lot of mathematical significance. These Neolithic stones, discovered in Scotland, dating back 5,000 years, are probably the first examples of humans exploring the concept of symmetry. And that's what I do as a practicing mathematician. I spend my life trying to understand what symmetries are possible, in nature and in mathematics and abstractly. And here I've got a connection, going back 5,000 years, to people who are already trying to understand how can I arrange patches on the side of these stone balls in a symmetrical manner? One of the intriguing things about these stones is that we don't actually know what they're for. They might have been for divination trying to predict the future. They might have been part of a game. They look very much like dice, but we don't really think there is any game associated with them. Maybe they were just for chucking around, they're very nice in the hand when you hold them. Or maybe they were symbols of power in the clan. I suppose that's why I like them because we don't really know what they are. If I had a theory about why they were doing this it would be that actually, they were starting to be mathematicians, and that here we see the first example of abstract thought at work. That these weren't for a purpose. Mathematics is a great subject, created a lot of the technology around us, but mathematicians we create our mathematical objects for the joy and the beauty, so it will be lovely to think that these didn't actually have a use, that they were just really a celebration of what's possible.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q45",
+      "sourceTitle": "Stone Balls",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 522,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-045-07244772c2a4.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "3644ffa53de5a2acd7a652a5a71086af9d14fd6aa0d41f57762f25f7997536d7",
+      "sha256": "07244772c2a472409dbc9a6beedeb5468c089b8f6c9a28046e9a6ea92582802d",
+      "seconds": 101.736,
+      "bytes": 814124,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Stone Balls",
+    "keyPoints": [
+      "A mathematician sees five-thousand-year-old Scottish stone balls as early explorations of symmetry.",
+      "Their symmetrical carved arrangements suggest abstract thinking, although their original purpose is unknown and theories include divination, games and symbols of power.",
+      "The speaker hopes they were made for the pleasure of discovering beautiful mathematical possibilities, much as mathematicians explore ideas today."
+    ],
+    "sample": "A mathematician sees five-thousand-year-old Scottish stone balls as early explorations of symmetry. Their symmetrical carved arrangements suggest abstract thinking, although their original purpose is unknown and theories include divination, games and symbols of power. The speaker hopes they were made for the pleasure of discovering beautiful mathematical possibilities, much as mathematicians explore ideas today."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-050",
+    "type": "sst",
+    "title": "Consumers",
+    "minutes": 10,
+    "text": "Consumers are the core section of any business. In fact, the whole concept of any business is surrounded by the behavior of consumers. And the value of consumers is a crucial factor. Now, we have to understand a consumer is not to be taken likely. He knows what product he wants. Consumers are extremely smart. They could make decisions about the price and value of products in minutes or sometimes in a few seconds. So, a business, therefore, needs to uplift its brand image. Consumers are willing to pay 15 more for quality products. However, the conflict starts when manufacturers failed to meet the expectations. This lies in the basic fundamental of engineering in designing a product. Consumers want products to be softest. But at the same time, they also want products like toilet papers to be light and strong, something which can be easily be torn. Brand Tide is a really good example. There was a problem of shaking the washing powder before being put into the machine as it causes damage to the material of the clothes. Tide has to make up a lot of expectations for consumers.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q50",
+      "sourceTitle": "Consumers",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 527,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-050-b4abed7b61e3.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "3d82546be98f478415565ff5169fe9e465db294f6666d875906ca5a2f889ee6e",
+      "sha256": "b4abed7b61e3a5f36f7b259a091ebda68bd645c23a8ea5681fa949a23104447c",
+      "seconds": 63.384,
+      "bytes": 507308,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Consumers",
+    "keyPoints": [
+      "Consumer expectations shape a business's products and reputation.",
+      "Buyers quickly assess price and quality and may pay more when they see value, but manufacturers must meet several design demands at once.",
+      "The examples of toilet paper and Tide show how practical concerns about strength, ease of use and product performance can challenge businesses trying to satisfy customers."
+    ],
+    "sample": "Consumer expectations shape a business's products and reputation. Buyers quickly assess price and quality and may pay more when they see value, but manufacturers must meet several design demands at once. The examples of toilet paper and Tide show how practical concerns about strength, ease of use and product performance can challenge businesses trying to satisfy customers."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-053",
+    "type": "sst",
+    "title": "Personal Happiness",
+    "minutes": 10,
+    "text": "In the last 50 years, there has been no apparent increase in personal happiness in Western nations, despite steadily growing economies. In both Europe and the USA surveys have found no greater level of happiness since the 1950s, which seems strange since wealthier people generally claim to be happier than poorer people. In America, for example, more than a third of the richest group said they were 'very happy', while only half this number of the poorest made the same claim. Although it would be logical to expect that rising national wealth would lead to greater national happiness, this has not happened. Individually, more money does seem to increase happiness, but when everyone gets richer, no one appears to feel better. Economists have recently paid more attention to studying happiness, instead of the more traditional GDP per person. One suggestion has been that people rapidly get used to improvements, and therefore devalue them. Central heating is a good example: whereas 30 years ago it was a luxury item, today it is standard in nearly every home.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q53",
+      "sourceTitle": "Personal Happiness",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 529,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-053-c0b2d909e172.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "4e46e1278abfda0626ac2ae7d4079275ee3fd814c510c40097176097dafcf017",
+      "sha256": "c0b2d909e1727c573609d6ac5ccc9f9997e66fcfdde0c25fc7b655cf04fe047a",
+      "seconds": 61.056,
+      "bytes": 488684,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Personal Happiness",
+    "keyPoints": [
+      "Despite decades of economic growth in Europe and the United States, surveys show little increase in overall happiness.",
+      "Wealthier individuals often report greater happiness, but rising national income does not necessarily produce the same effect across society.",
+      "One explanation is that people adapt to improvements such as central heating, prompting economists to study happiness alongside conventional economic measures."
+    ],
+    "sample": "Despite decades of economic growth in Europe and the United States, surveys show little increase in overall happiness. Wealthier individuals often report greater happiness, but rising national income does not necessarily produce the same effect across society. One explanation is that people adapt to improvements such as central heating, prompting economists to study happiness alongside conventional economic measures."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-055",
+    "type": "sst",
+    "title": "18th-century Industrialization",
+    "minutes": 10,
+    "text": "Within most developed countries, we have notions of pragmatism, notions of the fact that we have democracies that have succeeded in tempering the market economy. In the 19th century, 18th-century industrial revolution had some very negative effects on people, particularly working classes all over the world. We see data where life expectancy was reduced, hikes were reduced. We can look at medical records and see that actually living standards in much of the large fractions of the population actually went down. But eventually, we passed legislation about working conditions and eventually we circumscribed some of the worst kinds of behavior. We eventually in the 20th century, we put in regulations that impose better environmental conditions. And so some of the damage was reversed. And we have made the market economy work in ways that the benefits of it are at least far more widely shared than they were 100 years ago.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q55",
+      "sourceTitle": "18th-century Industrialization",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 531,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-055-1a1effecf01d.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "b961587ea973b2d6f2d72cbb16d683503a2c14b735207a767a6280fbb9fed1bd",
+      "sha256": "1a1effecf01d0c6065a8096622758f36a88b432d3c16760d66707438bed6fbcf",
+      "seconds": 61.032,
+      "bytes": 488492,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "18th-century Industrialization",
+    "keyPoints": [
+      "Early industrialisation harmed many workers, and historical records suggest that life expectancy and living standards fell for parts of the population.",
+      "Democratic governments later regulated working conditions and introduced environmental protections.",
+      "These reforms helped reverse some of the damage and allowed market economies to distribute their benefits more widely than in the early industrial period."
+    ],
+    "sample": "Early industrialisation harmed many workers, and historical records suggest that life expectancy and living standards fell for parts of the population. Democratic governments later regulated working conditions and introduced environmental protections. These reforms helped reverse some of the damage and allowed market economies to distribute their benefits more widely than in the early industrial period."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-057",
+    "type": "sst",
+    "title": "Emotions",
+    "minutes": 10,
+    "text": "What is the fight or flight response? T o really understand the fight or flight response? It helps to think about the role of emotions in our lives. Many of us would prefer to focus on our logical thinking nature and ignore our sometimes trouble with some emotions. But emotions do have a purpose. Our most basic emotions like fear, anger, or disgust. They are actually vital messengers. They evolved as signals to help us meet our basic needs for self preservation and safety, and it would be really dangerous to be indecisive about a threat to our survival. So the brain runs on information from our senses through the most primitive, reactive parts of our brains. First, these areas of the brain control instinctive responses, and they don't do too much thinking this most primitive part of our brain. It communicates with the rest of our brain and our body to create signals we can't ignore easily, powerful emotions and symptoms. The fight or flight response is a physiological response triggered when we feel the strong emotions, such as fear. Fear is the normal emotion to feel in response to a dangerous threat. Fear also has a close relative, and we call this anxiety the fight or flight response evolved to enable us to react with appropriate actions, to run away or to fight, or sometimes even to freeze, to be less visible to a target. So it's important to think of this as a normal response, but one which could be treated too often by things which we perceive as a threat to us.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q57",
+      "sourceTitle": "Emotions",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 533,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-057-3577228bfa36.mp3",
+    "narrationText": "What is the fight or flight response? To really understand the fight or flight response? It helps to think about the role of emotions in our lives. Many of us would prefer to focus on our logical thinking nature and ignore our sometimes trouble with some emotions. But emotions do have a purpose. Our most basic emotions like fear, anger, or disgust. They are actually vital messengers. They evolved as signals to help us meet our basic needs for self preservation and safety, and it would be really dangerous to be indecisive about a threat to our survival. So the brain runs on information from our senses through the most primitive, reactive parts of our brains. First, these areas of the brain control instinctive responses, and they don't do too much thinking this most primitive part of our brain. It communicates with the rest of our brain and our body to create signals we can't ignore easily, powerful emotions and symptoms. The fight or flight response is a physiological response triggered when we feel the strong emotions, such as fear. Fear is the normal emotion to feel in response to a dangerous threat. Fear also has a close relative, and we call this anxiety the fight or flight response evolved to enable us to react with appropriate actions, to run away or to fight, or sometimes even to freeze, to be less visible to a target. So it's important to think of this as a normal response, but one which could be treated too often by things which we perceive as a threat to us.",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "bea1cc15577517e95951e008c6ab841b36f85bceb0812e156a6db03b6eaea8a2",
+      "sha256": "3577228bfa3683945a37443bc72a7c140e936f3179e631ac422378731aa5a75c",
+      "seconds": 88.704,
+      "bytes": 709868,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      },
+      "narrationTextSha256": "5c400dd613d52c8049e972bc2b293034b9751e3c55566f74d594e8f07d8d89a0"
+    },
+    "topic": "Emotions",
+    "keyPoints": [
+      "Basic emotions such as fear evolved to alert people to threats and support survival.",
+      "The brain rapidly processes sensory information and triggers physical changes that can lead to fighting, fleeing or freezing.",
+      "This response is useful when danger is present, but fear and related anxiety can also activate it too often when people perceive threats."
+    ],
+    "sample": "Basic emotions such as fear evolved to alert people to threats and support survival. The brain rapidly processes sensory information and triggers physical changes that can lead to fighting, fleeing or freezing. This response is useful when danger is present, but fear and related anxiety can also activate it too often when people perceive threats."
+  },
+  {
+    "id": "sst-pte-nepal-20261122-063",
+    "type": "sst",
+    "title": "Development of Genes",
+    "minutes": 10,
+    "text": "So, the pace, at which human minds have evolved over the last half- million years and more recently the last 200,000 years, has been so frighteningly rapid that the evolution of cognitive function and perception can only occur in a small number of genes. If one needed to adapt dozens of genes changes in concert, in order to acquire the penetrating minds that we now have, which our ancestors 5,000 years ago didn't have, the evolution could not have taken place, it could not have occurred so quickly. And for that reason alone, one begins to really suspect that the genetic differences between people who lived 5,000 years ago is evidence that the difference between their cognitive functions and ours is not actually as large. Therefore, a rather small number of genes may be responsible for the powerful minds that humans have which most of us now possess.",
+    "newInCatalogue": true,
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q63",
+      "sourceTitle": "Development of Genes",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 535,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "sst",
+      "audioStatus": "generated-from-transcript"
+    },
+    "audioUrl": "/assets/pte-nepal-writing-listening-20261122/sst-pte-nepal-20261122-063-3b4876870315.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "945f289202bdbc3207dc506b73eb8a61c15d85e24c3ffb61a3b3281b25c13797",
+      "sha256": "3b48768703156bff104d637dd4cdd295b51dac2649eacb79a3904d40c6477afd",
+      "seconds": 61.032,
+      "bytes": 488492,
+      "normalization": "EBU R128 -18 LUFS / -1.5 dBTP",
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus: English Multi-speaker Corpus for CSTR Voice Cloning Toolkit (version 0.92)",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    },
+    "topic": "Development of Genes",
+    "keyPoints": [
+      "The speaker discusses how rapidly human cognition may have evolved over the last half-million years.",
+      "Coordinated changes in dozens of genes, the speaker argues, would take too long to explain that pace.",
+      "A small number of genes may therefore account for some changes, and differences between modern humans and their ancestors may be smaller than assumed."
+    ],
+    "sample": "The speaker discusses how rapidly human cognition may have evolved over the last half-million years. Coordinated changes in dozens of genes, the speaker argues, would take too long to explain that pace. A small number of genes may therefore account for some changes, and differences between modern humans and their ancestors may be smaller than assumed."
   }
 ]

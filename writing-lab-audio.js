@@ -392,7 +392,7 @@ function installNarration(app, directory, { prewarm=true } = {}) {
       res.status(e.status||503).json({error:e.status?e.message:'The recording could not be loaded. Please retry shortly.'});
     }
   });
-  const sstIds=[...predictions.sst,...additionalPractice].filter(q=>q.type==='sst' && !approvedAudio.entryFor(q)).map(q=>q.id);
+  const sstIds=[...predictions.sst,...additionalPractice].filter(q=>q.type==='sst' && !q.audioUrl && !approvedAudio.entryFor(q)).map(q=>q.id);
   if(prewarm) setImmediate(()=>prewarmNarration(narration,require('./content/listening-mocks').missing.map(q=>q.id),{attempts:1}).catch(error=>
     console.warn('[writing-audio] Listening prewarm task failed:',error.message)));
   if(prewarm) setImmediate(()=>prewarmNarration(narration,sstIds).catch(error=>
