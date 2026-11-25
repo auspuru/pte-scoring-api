@@ -6926,6 +6926,222 @@
         "sourceRepository": "auspuru/pte-scoring-api",
         "collectionNumber": 194
       }
+    },
+    "di-user-20261125025": {
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "f6f70319416b8c2e38f56882a67923e9e337d75fd0de19acae087dd9c14827e3"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/20261125025.png",
+      "mapping": {
+        "title": "New · Food Storage Process",
+        "category": "process",
+        "facts": [
+          "The four-panel illustration shows a food safety process in the order clean, separate, cook and chill.",
+          "The first two panels show handwashing and keeping raw meat separate from the vegetables during preparation.",
+          "The third panel shows poultry cooking with a thermometer, and the final panel shows food being chilled in a refrigerator."
+        ],
+        "visual": {
+          "kind": "process",
+          "title": "Food Storage Process",
+          "description": "The four-panel illustration shows a food safety process in the order clean, separate, cook and chill. The first two panels show handwashing and keeping raw meat separate from the vegetables during preparation. The third panel shows poultry cooking with a thermometer, and the final panel shows food being chilled in a refrigerator."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "550586139200701a012337f544de3d063d7bcc9a8fc41e5969f036326324c06f",
+      "sample": "The given image provides the detailed information about food storage process. The four-panel illustration shows a food safety process in the order clean, separate, cook and chill. The first two panels show handwashing and keeping raw meat separate from the vegetables during preparation. The third panel shows poultry cooking with a thermometer, and the final panel shows food being chilled in a refrigerator."
+    },
+    "di-user-20261125038": {
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "fac0be7ce16848ac4acdb202de0bf48419a036d433a0ec79bf8860d137bc73a6"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/20261125038.png",
+      "mapping": {
+        "title": "New · Pet Ownership",
+        "category": "pie",
+        "facts": [
+          "The pie chart compares shares of pet ownership across six regions.",
+          "North America has the largest share at 40 percent, followed by Europe at 25 percent. Together they account for 65 percent of the chart.",
+          "Asia accounts for 15 percent and South America for 10 percent. Africa and Oceania tie for the smallest share at 5 percent each."
+        ],
+        "visual": {
+          "kind": "pie",
+          "title": "Pet Ownership",
+          "description": "The pie chart compares shares of pet ownership across six regions. North America has the largest share at 40 percent, followed by Europe at 25 percent. Together they account for 65 percent of the chart. Asia accounts for 15 percent and South America for 10 percent. Africa and Oceania tie for the smallest share at 5 percent each."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "8c31ad167acc28e94778d70f24c9836e4f7cf38c41bde83ccb7b586bca9d402b",
+      "sample": "The given image provides the detailed information about pet ownership. The pie chart compares shares of pet ownership across six regions. North America has the largest share at 40 percent, followed by Europe at 25 percent. Together they account for 65 percent of the chart. Asia accounts for 15 percent and South America for 10 percent. Africa and Oceania tie for the smallest share at 5 percent each."
+    },
+    "di-user-20261125040": {
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "f841ec5d3fd023e4986ead97829d16b08d9cc4d0be6f9af267dafd7bf575335a"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/20261125040.png",
+      "mapping": {
+        "title": "New · Apartment Plan",
+        "category": "map",
+        "facts": [
+          "The image is an overhead view of a furnished apartment and its room layout.",
+          "The upper left has a seating area with sofas and coffee tables, while the bedroom at the upper right has a double bed.",
+          "The lower left contains the main dining table beside the kitchen counters and sink. A second seating area with blue sofas sits at the lower right."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "Apartment Plan",
+          "description": "The image is an overhead view of a furnished apartment and its room layout. The upper left has a seating area with sofas and coffee tables, while the bedroom at the upper right has a double bed. The lower left contains the main dining table beside the kitchen counters and sink. A second seating area with blue sofas sits at the lower right."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "899a9e7319c427734212f19c9243089741239d084e2fef263a4037064ff5eb62",
+      "sample": "The given image provides the detailed information about apartment plan. The image is an overhead view of a furnished apartment and its room layout. The upper left has a seating area with sofas and coffee tables, while the bedroom at the upper right has a double bed. The lower left contains the main dining table beside the kitchen counters and sink. A second seating area with blue sofas sits at the lower right."
+    },
+    "di-user-20261125041": {
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "96aa1c506d0f2d4e87ea3c759f804aeaeb60ffaaa424cfef4d9a31f6c758e22a"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/20261125041.png",
+      "mapping": {
+        "title": "New · US Population",
+        "category": "table",
+        "facts": [
+          "The table shows the population, area and population density of five large US cities in 2020.",
+          "New York leads in population at 8,419,000 and in density at 10,740 people per square kilometre. Phoenix has the smallest population at 1,686,000 and lowest density at 1,257.",
+          "Houston has the largest area at about 1,651 square kilometres, but has fewer people than New York, Los Angeles and Chicago."
+        ],
+        "visual": {
+          "kind": "table",
+          "title": "US Population",
+          "description": "The table shows the population, area and population density of five large US cities in 2020. New York leads in population at 8,419,000 and in density at 10,740 people per square kilometre. Phoenix has the smallest population at 1,686,000 and lowest density at 1,257. Houston has the largest area at about 1,651 square kilometres, but has fewer people than New York, Los Angeles and Chicago."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "30bef553322c0aae527ae9e96ebaa52615e55e7606339e3a5088b63c89adb551",
+      "sample": "The given image provides the detailed information about us population. The table shows the population, area and population density of five large US cities in 2020. New York leads in population at 8,419,000 and in density at 10,740 people per square kilometre. Phoenix has the smallest population at 1,686,000 and lowest density at 1,257. Houston has the largest area at about 1,651 square kilometres, but has fewer people than New York, Los Angeles and Chicago."
+    },
+    "di-user-20261125044": {
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "32cc1a2a5a9a893beebd320c0cc1ed478dc28043c2a2de78fd8934fe3d9d77ae"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/20261125044.png",
+      "mapping": {
+        "title": "New · Gender Inequality",
+        "category": "map",
+        "facts": [
+          "The world map groups places into six colour bands by Gender Inequality Index, from 0.05–0.14 in light green to 0.60–0.77 in dark red.",
+          "Canada, Australia and several countries in northern and western Europe appear in the lowest band.",
+          "India and several countries in sub-Saharan Africa appear in the highest band. The United States and Russia appear in a middle band."
+        ],
+        "visual": {
+          "kind": "map",
+          "title": "Gender Inequality",
+          "description": "The world map groups places into six colour bands by Gender Inequality Index, from 0.05–0.14 in light green to 0.60–0.77 in dark red. Canada, Australia and several countries in northern and western Europe appear in the lowest band. India and several countries in sub-Saharan Africa appear in the highest band. The United States and Russia appear in a middle band."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "74456f2e2f6c8777b2b4fdbddc07626881ef033972f5f7026e3d7f4629c89c4c",
+      "sample": "The given image provides the detailed information about gender inequality. The world map groups places into six colour bands by Gender Inequality Index, from 0.05–0.14 in light green to 0.60–0.77 in dark red. Canada, Australia and several countries in northern and western Europe appear in the lowest band. India and several countries in sub-Saharan Africa appear in the highest band. The United States and Russia appear in a middle band."
+    },
+    "di-user-20261125047": {
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "c72601843556066593c9ed0c2276fb2eb4bb8410fec33fe704943a2cbd50813f"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/20261125047.png",
+      "mapping": {
+        "title": "New · Australian Airline Passengers",
+        "category": "bar",
+        "facts": [
+          "The bar chart shows annual growth in Australian domestic airline passenger numbers to the June quarter of 2011.",
+          "Mining-exposed routes grew the most, by about 7.5 percent. Inter-capital routes rose by just over 2 percent and the overall increase was just under 2 percent.",
+          "Leisure was the only category to decline, by about 3.5 percent."
+        ],
+        "visual": {
+          "kind": "bar",
+          "title": "Australian Airline Passengers",
+          "description": "The bar chart shows annual growth in Australian domestic airline passenger numbers to the June quarter of 2011. Mining-exposed routes grew the most, by about 7.5 percent. Inter-capital routes rose by just over 2 percent and the overall increase was just under 2 percent. Leisure was the only category to decline, by about 3.5 percent."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "0ba7f4acf5a4a604dafd3f166ff236d9d2b631b164928074a4ddef85200511aa",
+      "sample": "The given image provides the detailed information about australian airline passengers. The bar chart shows annual growth in Australian domestic airline passenger numbers to the June quarter of 2011. Mining-exposed routes grew the most, by about 7.5 percent. Inter-capital routes rose by just over 2 percent and the overall increase was just under 2 percent. Leisure was the only category to decline, by about 3.5 percent."
+    },
+    "di-user-20261125051": {
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "7ccdc262aa853dc8788bf292d382f1049827a6d80be86eab71d32f4117cf14f4"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/20261125051.png",
+      "mapping": {
+        "title": "New · World Population Data",
+        "category": "table",
+        "facts": [
+          "The graphic compares countries with the smallest and largest percentages of people aged 15 to 24.",
+          "Bulgaria has the smallest share shown at 9.1 percent. All seven countries in the smallest group are below 10 percent.",
+          "Ethiopia has the largest share shown at 21.8 percent. Lesotho, Swaziland and Timor-Leste follow at 21.7 percent each."
+        ],
+        "visual": {
+          "kind": "table",
+          "title": "World Population Data",
+          "description": "The graphic compares countries with the smallest and largest percentages of people aged 15 to 24. Bulgaria has the smallest share shown at 9.1 percent. All seven countries in the smallest group are below 10 percent. Ethiopia has the largest share shown at 21.8 percent. Lesotho, Swaziland and Timor-Leste follow at 21.7 percent each."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "861f345e5c8a34a40db348df645712f28c4cbaf419703377d2bfe9b87c28cf92",
+      "sample": "The given image provides the detailed information about world population data. The graphic compares countries with the smallest and largest percentages of people aged 15 to 24. Bulgaria has the smallest share shown at 9.1 percent. All seven countries in the smallest group are below 10 percent. Ethiopia has the largest share shown at 21.8 percent. Lesotho, Swaziland and Timor-Leste follow at 21.7 percent each."
+    },
+    "di-user-20261125052": {
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "d585c5aa9a53772bb664bc5fa0447a47f90cd853396c5aa0708a0f914f0ad583"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/20261125052.png",
+      "mapping": {
+        "title": "New · Life Expectancy",
+        "category": "line",
+        "facts": [
+          "The line graph shows life expectancy at birth in South Africa from 1960 to 2015 for males, females and the overall population.",
+          "Female life expectancy stays above male life expectancy throughout the period, with the overall series between them.",
+          "All three lines rise to an early-1990s peak, dip to a low around 2005 and recover by 2015. At the end, female life expectancy is about 66 years and male life expectancy is about 58."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "Life Expectancy",
+          "description": "The line graph shows life expectancy at birth in South Africa from 1960 to 2015 for males, females and the overall population. Female life expectancy stays above male life expectancy throughout the period, with the overall series between them. All three lines rise to an early-1990s peak, dip to a low around 2005 and recover by 2015. At the end, female life expectancy is about 66 years and male life expectancy is about 58."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "35ad05d000dc75fb8fea92f0d66ab44ed6e29b23e1d3337affcc5613354e19f1",
+      "sample": "The given image provides the detailed information about life expectancy. The line graph shows life expectancy at birth in South Africa from 1960 to 2015 for males, females and the overall population. Female life expectancy stays above male life expectancy throughout the period, with the overall series between them. All three lines rise to an early-1990s peak, dip to a low around 2005 and recover by 2015. At the end, female life expectancy is about 66 years and male life expectancy is about 58."
+    },
+    "di-user-20261125134": {
+      "source": {
+        "kind": "image-sha256",
+        "sha256": "deaafbd371efe30cdea4557a8a7b276bb6f6942387bb2df9cd6825ac49fad337"
+      },
+      "portalImageUrl": "/assets/di-predictions-20260930/20261125134.png",
+      "mapping": {
+        "title": "New · Meat Consumption Trends",
+        "category": "line",
+        "facts": [
+          "The chart compares trends in meat consumption in Brazil, China, Liberia, India and Ethiopia from 1961 to 2009.",
+          "Brazil leads across the period and ends in the mid-80s on the chart scale. China rises strongly from below 10 to about 60 by 2009.",
+          "Liberia, India and Ethiopia stay well below Brazil and China at the end of the period."
+        ],
+        "visual": {
+          "kind": "line",
+          "title": "Meat Consumption Trends",
+          "description": "The chart compares trends in meat consumption in Brazil, China, Liberia, India and Ethiopia from 1961 to 2009. Brazil leads across the period and ends in the mid-80s on the chart scale. China rises strongly from below 10 to about 60 by 2009. Liberia, India and Ethiopia stay well below Brazil and China at the end of the period."
+        },
+        "optionalFactIndices": []
+      },
+      "mappingHash": "fb20c32bef8b687c9b8f90f21cd26dc467a31de9581ef22f393347d9a0050523",
+      "sample": "The given image provides the detailed information about meat consumption trends. The chart compares trends in meat consumption in Brazil, China, Liberia, India and Ethiopia from 1961 to 2009. Brazil leads across the period and ends in the mid-80s on the chart scale. China rises strongly from below 10 to about 60 by 2009. Liberia, India and Ethiopia stay well below Brazil and China at the end of the period."
     }
   }
 }

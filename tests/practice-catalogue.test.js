@@ -7,6 +7,7 @@ const { routes } = require('../public/portal-workspace');
 const bank = require('../public/reading-bank.json');
 const fibQuality = require('../public/reading-fib-quality');
 const patternBank = require('../public/reading-fib-pattern-bank');
+const booklet = require('../public/reading-prediction-practice-nov-2026');
 const writing = {
   spoken: Array.from({ length: 30 }, (_, i) => ({ id:'sst-'+i })),
   dictation: Array.from({ length: 36 }, (_, i) => ({ id:'wfd-'+i })),
@@ -45,10 +46,11 @@ test('Reading and Listening individual libraries reuse complete keys and stable 
     assert(derived, original.id);
     for (const q of derived.questions) {
       const source = original.questions.find(item => item.id === q.id)
-        || (patternBank[original.id] || []).find(item => item.id === q.id);
+        || (patternBank[original.id] || []).find(item => item.id === q.id)
+        || (booklet[original.id] || []).find(item => item.id === q.id);
       assert(source, q.id);
       assert.deepEqual(q.answers, source.answers);
-      if (['dropdown','wordbank'].includes(original.id)) {
+      if (['dropdown','wordbank'].includes(original.id) && !booklet[original.id]?.includes(source)) {
         assert.equal(q.fibQuality?.focus, 'grammar-vocabulary');
         assert.equal(fibQuality.audit(q), true, q.id);
       }

@@ -6093,5 +6093,277 @@
       "description": "The diagram shows 1386000000 cubic kilometres of global water, divided into 97.5 percent saltwater and 2.5 percent freshwater. The labelled total freshwater volume is 35029000 cubic kilometres. The freshwater breakdown shows glaciers and permanent snow at 68.7 percent, groundwater at 30.06 percent, ground ice and permafrost at 0.86 percent, and other water at 1.22 percent. These are the printed labels; do not rescale them to force an exact total. The small-store labels are lakes 0.26 percent, soil 0.05 percent, atmosphere 0.04 percent, wetlands 0.03 percent, rivers 0.006 percent, and plants and animals 0.003 percent. The enlarged bars are marked times 12 and times 30. Their magnification is not a change in water volume."
     },
     "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-20261125025",
+    "title": "New · Food Storage Process",
+    "imageCategory": "process",
+    "imageUrl": "/assets/di-predictions-20260930/20261125025.png",
+    "facts": [
+      "The four-panel illustration shows a food safety process in the order clean, separate, cook and chill.",
+      "The first two panels show handwashing and keeping raw meat separate from the vegetables during preparation.",
+      "The third panel shows poultry cooking with a thermometer, and the final panel shows food being chilled in a refrigerator."
+    ],
+    "sample": "The given image provides the detailed information about food storage process. The four-panel illustration shows a food safety process in the order clean, separate, cook and chill. The first two panels show handwashing and keeping raw meat separate from the vegetables during preparation. The third panel shows poultry cooking with a thermometer, and the final panel shows food being chilled in a refrigerator.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q25",
+      "sourceTitle": "Food Storage Process",
+      "suppliedFile": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "bookletPage": 43,
+      "sourcePage": 17,
+      "week": "16–22 November 2026",
+      "weekly": true,
+      "priority": "Prediction",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "process",
+      "title": "Food Storage Process",
+      "description": "The four-panel illustration shows a food safety process in the order clean, separate, cook and chill. The first two panels show handwashing and keeping raw meat separate from the vegetables during preparation. The third panel shows poultry cooking with a thermometer, and the final panel shows food being chilled in a refrigerator."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-20261125038",
+    "title": "New · Pet Ownership",
+    "imageCategory": "pie",
+    "imageUrl": "/assets/di-predictions-20260930/20261125038.png",
+    "facts": [
+      "The pie chart compares shares of pet ownership across six regions.",
+      "North America has the largest share at 40 percent, followed by Europe at 25 percent. Together they account for 65 percent of the chart.",
+      "Asia accounts for 15 percent and South America for 10 percent. Africa and Oceania tie for the smallest share at 5 percent each."
+    ],
+    "sample": "The given image provides the detailed information about pet ownership. The pie chart compares shares of pet ownership across six regions. North America has the largest share at 40 percent, followed by Europe at 25 percent. Together they account for 65 percent of the chart. Asia accounts for 15 percent and South America for 10 percent. Africa and Oceania tie for the smallest share at 5 percent each.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q38",
+      "sourceTitle": "Pet Ownership",
+      "suppliedFile": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "bookletPage": 44,
+      "sourcePage": 27,
+      "week": "16–22 November 2026",
+      "weekly": true,
+      "priority": "Prediction",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "pie",
+      "title": "Pet Ownership",
+      "description": "The pie chart compares shares of pet ownership across six regions. North America has the largest share at 40 percent, followed by Europe at 25 percent. Together they account for 65 percent of the chart. Asia accounts for 15 percent and South America for 10 percent. Africa and Oceania tie for the smallest share at 5 percent each."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-20261125040",
+    "title": "New · Apartment Plan",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/20261125040.png",
+    "facts": [
+      "The image is an overhead view of a furnished apartment and its room layout.",
+      "The upper left has a seating area with sofas and coffee tables, while the bedroom at the upper right has a double bed.",
+      "The lower left contains the main dining table beside the kitchen counters and sink. A second seating area with blue sofas sits at the lower right."
+    ],
+    "sample": "The given image provides the detailed information about apartment plan. The image is an overhead view of a furnished apartment and its room layout. The upper left has a seating area with sofas and coffee tables, while the bedroom at the upper right has a double bed. The lower left contains the main dining table beside the kitchen counters and sink. A second seating area with blue sofas sits at the lower right.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q40",
+      "sourceTitle": "Apartment Plan",
+      "suppliedFile": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "bookletPage": 45,
+      "sourcePage": 29,
+      "week": "16–22 November 2026",
+      "weekly": true,
+      "priority": "Prediction",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Apartment Plan",
+      "description": "The image is an overhead view of a furnished apartment and its room layout. The upper left has a seating area with sofas and coffee tables, while the bedroom at the upper right has a double bed. The lower left contains the main dining table beside the kitchen counters and sink. A second seating area with blue sofas sits at the lower right."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-20261125041",
+    "title": "New · US Population",
+    "imageCategory": "table",
+    "imageUrl": "/assets/di-predictions-20260930/20261125041.png",
+    "facts": [
+      "The table shows the population, area and population density of five large US cities in 2020.",
+      "New York leads in population at 8,419,000 and in density at 10,740 people per square kilometre. Phoenix has the smallest population at 1,686,000 and lowest density at 1,257.",
+      "Houston has the largest area at about 1,651 square kilometres, but has fewer people than New York, Los Angeles and Chicago."
+    ],
+    "sample": "The given image provides the detailed information about us population. The table shows the population, area and population density of five large US cities in 2020. New York leads in population at 8,419,000 and in density at 10,740 people per square kilometre. Phoenix has the smallest population at 1,686,000 and lowest density at 1,257. Houston has the largest area at about 1,651 square kilometres, but has fewer people than New York, Los Angeles and Chicago.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q41",
+      "sourceTitle": "US Population",
+      "suppliedFile": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "bookletPage": 46,
+      "sourcePage": 29,
+      "week": "16–22 November 2026",
+      "weekly": true,
+      "priority": "Prediction",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "table",
+      "title": "US Population",
+      "description": "The table shows the population, area and population density of five large US cities in 2020. New York leads in population at 8,419,000 and in density at 10,740 people per square kilometre. Phoenix has the smallest population at 1,686,000 and lowest density at 1,257. Houston has the largest area at about 1,651 square kilometres, but has fewer people than New York, Los Angeles and Chicago."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-20261125044",
+    "title": "New · Gender Inequality",
+    "imageCategory": "map",
+    "imageUrl": "/assets/di-predictions-20260930/20261125044.png",
+    "facts": [
+      "The world map groups places into six colour bands by Gender Inequality Index, from 0.05–0.14 in light green to 0.60–0.77 in dark red.",
+      "Canada, Australia and several countries in northern and western Europe appear in the lowest band.",
+      "India and several countries in sub-Saharan Africa appear in the highest band. The United States and Russia appear in a middle band."
+    ],
+    "sample": "The given image provides the detailed information about gender inequality. The world map groups places into six colour bands by Gender Inequality Index, from 0.05–0.14 in light green to 0.60–0.77 in dark red. Canada, Australia and several countries in northern and western Europe appear in the lowest band. India and several countries in sub-Saharan Africa appear in the highest band. The United States and Russia appear in a middle band.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q44",
+      "sourceTitle": "Gender Inequality",
+      "suppliedFile": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "bookletPage": 47,
+      "sourcePage": 31,
+      "week": "16–22 November 2026",
+      "weekly": true,
+      "priority": "Prediction",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "map",
+      "title": "Gender Inequality",
+      "description": "The world map groups places into six colour bands by Gender Inequality Index, from 0.05–0.14 in light green to 0.60–0.77 in dark red. Canada, Australia and several countries in northern and western Europe appear in the lowest band. India and several countries in sub-Saharan Africa appear in the highest band. The United States and Russia appear in a middle band."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-20261125047",
+    "title": "New · Australian Airline Passengers",
+    "imageCategory": "bar",
+    "imageUrl": "/assets/di-predictions-20260930/20261125047.png",
+    "facts": [
+      "The bar chart shows annual growth in Australian domestic airline passenger numbers to the June quarter of 2011.",
+      "Mining-exposed routes grew the most, by about 7.5 percent. Inter-capital routes rose by just over 2 percent and the overall increase was just under 2 percent.",
+      "Leisure was the only category to decline, by about 3.5 percent."
+    ],
+    "sample": "The given image provides the detailed information about australian airline passengers. The bar chart shows annual growth in Australian domestic airline passenger numbers to the June quarter of 2011. Mining-exposed routes grew the most, by about 7.5 percent. Inter-capital routes rose by just over 2 percent and the overall increase was just under 2 percent. Leisure was the only category to decline, by about 3.5 percent.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q47",
+      "sourceTitle": "Australian Airline Passengers",
+      "suppliedFile": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "bookletPage": 48,
+      "sourcePage": 33,
+      "week": "16–22 November 2026",
+      "weekly": true,
+      "priority": "Prediction",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "bar",
+      "title": "Australian Airline Passengers",
+      "description": "The bar chart shows annual growth in Australian domestic airline passenger numbers to the June quarter of 2011. Mining-exposed routes grew the most, by about 7.5 percent. Inter-capital routes rose by just over 2 percent and the overall increase was just under 2 percent. Leisure was the only category to decline, by about 3.5 percent."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-20261125051",
+    "title": "New · World Population Data",
+    "imageCategory": "table",
+    "imageUrl": "/assets/di-predictions-20260930/20261125051.png",
+    "facts": [
+      "The graphic compares countries with the smallest and largest percentages of people aged 15 to 24.",
+      "Bulgaria has the smallest share shown at 9.1 percent. All seven countries in the smallest group are below 10 percent.",
+      "Ethiopia has the largest share shown at 21.8 percent. Lesotho, Swaziland and Timor-Leste follow at 21.7 percent each."
+    ],
+    "sample": "The given image provides the detailed information about world population data. The graphic compares countries with the smallest and largest percentages of people aged 15 to 24. Bulgaria has the smallest share shown at 9.1 percent. All seven countries in the smallest group are below 10 percent. Ethiopia has the largest share shown at 21.8 percent. Lesotho, Swaziland and Timor-Leste follow at 21.7 percent each.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q51",
+      "sourceTitle": "World Population Data",
+      "suppliedFile": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "bookletPage": 49,
+      "sourcePage": 36,
+      "week": "16–22 November 2026",
+      "weekly": true,
+      "priority": "Prediction",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "table",
+      "title": "World Population Data",
+      "description": "The graphic compares countries with the smallest and largest percentages of people aged 15 to 24. Bulgaria has the smallest share shown at 9.1 percent. All seven countries in the smallest group are below 10 percent. Ethiopia has the largest share shown at 21.8 percent. Lesotho, Swaziland and Timor-Leste follow at 21.7 percent each."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-20261125052",
+    "title": "New · Life Expectancy",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/20261125052.png",
+    "facts": [
+      "The line graph shows life expectancy at birth in South Africa from 1960 to 2015 for males, females and the overall population.",
+      "Female life expectancy stays above male life expectancy throughout the period, with the overall series between them.",
+      "All three lines rise to an early-1990s peak, dip to a low around 2005 and recover by 2015. At the end, female life expectancy is about 66 years and male life expectancy is about 58."
+    ],
+    "sample": "The given image provides the detailed information about life expectancy. The line graph shows life expectancy at birth in South Africa from 1960 to 2015 for males, females and the overall population. Female life expectancy stays above male life expectancy throughout the period, with the overall series between them. All three lines rise to an early-1990s peak, dip to a low around 2005 and recover by 2015. At the end, female life expectancy is about 66 years and male life expectancy is about 58.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q52",
+      "sourceTitle": "Life Expectancy",
+      "suppliedFile": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "bookletPage": 50,
+      "sourcePage": 37,
+      "week": "16–22 November 2026",
+      "weekly": true,
+      "priority": "Prediction",
+      "contentStatus": "verbatim-user-provided"
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Life Expectancy",
+      "description": "The line graph shows life expectancy at birth in South Africa from 1960 to 2015 for males, females and the overall population. Female life expectancy stays above male life expectancy throughout the period, with the overall series between them. All three lines rise to an early-1990s peak, dip to a low around 2005 and recover by 2015. At the end, female life expectancy is about 66 years and male life expectancy is about 58."
+    },
+    "optionalFactIndices": []
+  },
+  {
+    "id": "di-user-20261125134",
+    "title": "New · Meat Consumption Trends",
+    "imageCategory": "line",
+    "imageUrl": "/assets/di-predictions-20260930/20261125134.png",
+    "facts": [
+      "The chart compares trends in meat consumption in Brazil, China, Liberia, India and Ethiopia from 1961 to 2009.",
+      "Brazil leads across the period and ends in the mid-80s on the chart scale. China rises strongly from below 10 to about 60 by 2009.",
+      "Liberia, India and Ethiopia stay well below Brazil and China at the end of the period."
+    ],
+    "sample": "The given image provides the detailed information about meat consumption trends. The chart compares trends in meat consumption in Brazil, China, Liberia, India and Ethiopia from 1961 to 2009. Brazil leads across the period and ends in the mid-80s on the chart scale. China rises strongly from below 10 to about 60 by 2009. Liberia, India and Ethiopia stay well below Brazil and China at the end of the period.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q134",
+      "sourceTitle": "Meat Consumption Trends",
+      "suppliedFile": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "bookletPage": 51,
+      "sourcePage": 94,
+      "week": "16–22 November 2026",
+      "weekly": true,
+      "priority": "Prediction",
+      "contentStatus": "verbatim-user-provided",
+      "variantOf": "di-user-2026111749",
+      "variantReason": "The supplied version compares five developing countries and omits the US series in the existing six-country chart."
+    },
+    "visual": {
+      "kind": "line",
+      "title": "Meat Consumption Trends",
+      "description": "The chart compares trends in meat consumption in Brazil, China, Liberia, India and Ethiopia from 1961 to 2009. Brazil leads across the period and ends in the mid-80s on the chart scale. China rises strongly from below 10 to about 60 by 2009. Liberia, India and Ethiopia stay well below Brazil and China at the end of the period."
+    },
+    "optionalFactIndices": []
   }
 ]

@@ -36,14 +36,26 @@ test('Reading storage is isolated by account and normalizes case',()=>{
  assert.equal(storageKey(' A@B.COM '),storageKey('a@b.com'));assert.notEqual(storageKey('a'),storageKey('b'));
 });
 const fs=require('node:fs'),vm=require('node:vm');
-function client(){
+function client({booklet=false}={}){
  const values=new Map(), timers=[];
  const host={hidden:false,innerHTML:'',replaceChildren(){this.innerHTML='';},querySelector(selector){return {'#readingSet':{value:'v1'},'#readingType':{value:'dropdown'},'#readingTimed':{checked:false}}[selector]||null;},querySelectorAll(){return [];}};
  const ctx={MockReportUI:require('../public/mock-report-ui'),currentUserId:'first',document:{getElementById:()=>host,hidden:false},localStorage:{getItem:k=>values.get(k),setItem:(k,v)=>values.set(k,v)},fetch:async()=>({ok:true,json:async()=>bank}),AbortSignal,Date,setInterval:fn=>{timers.push(fn);return timers.length;},clearInterval(){},setTimeout,clearTimeout,portalConfirm:async()=>true};
- vm.createContext(ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-fib-quality'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-fib-pattern-bank'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/practice-catalogue'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/practice-studio'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-predictions-sep-2026'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-mock-tools'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-exam-player'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-session-timing'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-review'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-practice'),'utf8'),ctx);
+ vm.createContext(ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-fib-quality'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-fib-pattern-bank'),'utf8'),ctx);if(booklet)vm.runInContext(fs.readFileSync(require.resolve('../public/reading-prediction-practice-nov-2026'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/practice-catalogue'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/practice-studio'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-predictions-sep-2026'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-mock-tools'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-exam-player'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-session-timing'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-review'),'utf8'),ctx);vm.runInContext(fs.readFileSync(require.resolve('../public/reading-practice'),'utf8'),ctx);
  const click=dataset=>host.onclick({target:{closest:()=>({dataset,disabled:false,setAttribute(){}})}});
  return {ctx,host,values,timers,click};
 }
+test('November booklet Reading questions open, save a keyed answer and restore the draft',async()=>{
+ const h=client({booklet:true});
+ const q=require('../public/reading-prediction-practice-nov-2026').dropdown[0];
+ await h.ctx.ReadingPractice.open({libraryId:'dropdown'});
+ assert(h.host.innerHTML.includes(q.uid));
+ await h.click({practiceUid:q.uid});
+ h.host.onchange({target:{dataset:{answer:'0'},value:q.answers[0]}});
+ assert.equal(snapshot(h).session.answers[q.uid][0],q.answers[0]);
+ h.ctx.ReadingPractice.reset();
+ await h.ctx.ReadingPractice.open();
+ assert.equal(snapshot(h).session.answers[q.uid][0],q.answers[0]);
+});
 test('Reading UI saves an answer, restores it, and removes it when another account opens',async()=>{
  const h=client();await h.ctx.ReadingPractice.open();h.click({start:'practice'});
  h.host.onchange({target:{dataset:{answer:'0'},value:'Calm'}});

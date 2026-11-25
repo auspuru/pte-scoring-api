@@ -1,11 +1,12 @@
 (function (root, factory) {
   const fibQuality = root.ReadingFibQuality || (typeof require === 'function' ? require('./reading-fib-quality') : null);
   const patternBank = root.ReadingFibPatternBank || (typeof require === 'function' ? require('./reading-fib-pattern-bank') : null);
+  const predictionPractice = root.ReadingPredictionPracticeNov2026 || (typeof require === 'function' ? require('./reading-prediction-practice-nov-2026') : null);
   const currentAudio=q=>{const tools=root.ReadingMockTools||(typeof require==='function'?require('./reading-mock-tools'):null);return tools?.approvedQuestion?tools.approvedQuestion(q):q;};
-  const api = factory(fibQuality, patternBank, currentAudio);
+  const api = factory(fibQuality, patternBank, currentAudio, predictionPractice);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PracticeCatalogue = api;
-})(typeof globalThis !== 'undefined' ? globalThis : this, function (fibQuality, patternBank, currentAudio) {
+})(typeof globalThis !== 'undefined' ? globalThis : this, function (fibQuality, patternBank, currentAudio, predictionPractice) {
   'use strict';
   const groups = [
     { id: 'speaking', title: 'Speaking Practice', tasks: [
@@ -72,6 +73,10 @@
         if (seen.has(q.uid)) return false;
         seen.add(q.uid); return true;
       }) });
+    }
+    for (const library of libraries) {
+      // Booklet choices and keyed phrases belong to the individual practice catalogue.
+      library.questions.push(...(predictionPractice?.[library.id] || []));
     }
     return libraries;
   }

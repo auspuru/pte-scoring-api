@@ -140,7 +140,7 @@
     const keys=new Map(fallback.map(id=>[String(id),id]));
     return [...rows].filter(row=>!row.hidden&&keys.has(row.dataset.questionKey)).map(row=>keys.get(row.dataset.questionKey));
   }
-  const datedReleaseId = /^(?:ra|rs|di|rl|sgd|rts|sst|wfd)-(?:user|upload|original|adapted|ipt-di)-(\d{4})(\d{2})(\d{2})(?:[-\d]|$)/;
+  const datedReleaseId = /^(?:ra|rs|di|rl|sgd|rts|sst|wfd|reading-dropdown|reading-wordbank|reading-reorder)-(?:user|upload|original|adapted|ipt-di)-(\d{4})(\d{2})(\d{2})(?:[-\d]|$)/;
   // These images entered the bank on 17 November with source IDs that omit the release date.
   const novemberImageReleaseIds = new Set([
     3000114, 3000139, 3000141, 3000145, 3000148, 3000154, 3000161, 3000172,
