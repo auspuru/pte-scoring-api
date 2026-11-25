@@ -418,6 +418,9 @@ test('The new HIW practice questions have exact keys and fixed audio on the List
   const catalogue = (await request('/catalog')).listeningPractice.filter(q => q.type === 'hiw');
   assert.equal(batch.length, 50);
   assert.deepEqual(catalogue.map(q => q.id), [...new Set(existing), ...batch.map(q => q.id)]);
+  assert.deepEqual(catalogue.filter(q => q.newInCatalogue).map(q => q.id), batch.map(q => q.id));
+  const library = require('../public/listening-studio').rows({items:catalogue});
+  assert.equal((library.match(/aria-label="Question status: NEW"/g) || []).length, 50);
   const hashes = new Set();
   const hash = bytes => createHash('sha256').update(bytes).digest('hex');
   const {inspectMp3} = require('../scripts/validate-writing-audio');

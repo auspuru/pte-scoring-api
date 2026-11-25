@@ -266,7 +266,8 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       ...((q.newInCatalogue || existingNewWfdIds.has(q.id)) ? {newInCatalogue:true} : {}),
       audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION
     })),
-    listeningPractice:listeningPractice.map(q=>({id:q.id,type:q.type,title:q.title,minutes:q.minutes})),
+    listeningPractice:listeningPractice.map(q=>({id:q.id,type:q.type,title:q.title,minutes:q.minutes,
+      ...(q.newInCatalogue ? {newInCatalogue:true} : {})})),
     listeningMocks:require('./listening-mock/papers').catalogue(),
     mocks:allMocks.filter(m=>m.module!=='listening').map(m => ({ id:m.id,title:m.title,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
       tasks:Object.entries(report.labels).flatMap(([type,label]) => {

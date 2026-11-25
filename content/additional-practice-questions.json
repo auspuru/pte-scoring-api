@@ -3999,6 +3999,7 @@
   {
     "id": "hiw-practice-20261125-01",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "The Dawn Chorus",
     "minutes": 5,
     "text": "If you walk through a city park before sunrise, it may be hard to believe how many birds are already awake. Listen closely and you can hear the chirping of birds. Researchers call this morning performance the dawn chorus. One explanation is that sound travels well when the air is still and there is little traffic. Another is that the early light is too dim for some birds to search for food. Singing may be a better use of that short window. Researchers who place recorders near busy roads find that some birds begin singing earlier than birds in quiet areas. The extra time may help them communicate before the first rush of vehicles.",
@@ -4039,6 +4040,7 @@
   {
     "id": "hiw-practice-20261125-02",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Rain in the Courtyard",
     "minutes": 5,
     "text": "Rainwater often disappears into a drain within minutes of hitting a city street. A rain garden is designed to slow that journey down. The first sign of a shower might be the sound of rain tapping on glass. Outside, a shallow hollow collects water from roofs and paths. The plants and soil help the water soak into the ground, giving the drainage system less to deal with at once. A good design uses plants that can tolerate both wet and dry conditions. The garden also needs a clear overflow route for unusually heavy storms. When several of these gardens are installed in one neighbourhood, even small reductions in runoff can make a noticeable difference.",
@@ -4079,6 +4081,7 @@
   {
     "id": "hiw-practice-20261125-03",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "The Railway Crossing",
     "minutes": 5,
     "text": "At a railway crossing, warning systems give drivers and pedestrians time to clear the tracks. Depending on the crossing, the first warning may be the steady ring of a crossing bell. Sensors detect an approaching train and send a signal to the crossing equipment. As the lights flash, barriers lower across the road. The timing must account for the train's speed and for the amount of time people need to move clear of the rails. At some crossings, the warning is deliberately long enough for slower vehicles to get through safely. If a second train is approaching from the other direction, the warning can continue after the first train has passed.",
@@ -4118,6 +4121,7 @@
   {
     "id": "hiw-practice-20261125-04",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Waves and the Beach",
     "minutes": 5,
     "text": "Beaches can look permanent when we visit them on a calm day. In fact, each incoming wave moves small amounts of material. At the water's edge, you can hear the waves washing ashore. Water rushing up the beach carries sand and small shells. The water then retreats, taking some material back with it. When waves arrive at an angle, this repeated motion can move sand sideways along the coast. A storm may remove a large amount of sand in a single night, while gentler waves can gradually build the beach up again. That is why researchers often measure the same beach more than once before drawing conclusions about how it is changing.",
@@ -4158,6 +4162,7 @@
   {
     "id": "hiw-practice-20261125-05",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "The Clockmaker’s Workshop",
     "minutes": 5,
     "text": "A mechanical clock needs more than a source of power. It also needs a way to release that energy in regular amounts. In a quiet workshop, the first thing you may notice is the ticking of the clock. That sound comes from a mechanism which locks and releases a toothed wheel. In a pendulum clock, the length of the pendulum helps determine the interval between ticks. Because heat can cause some materials to expand, changes in temperature may affect how fast the clock runs. Clockmakers have used different materials to reduce this variation. Even with careful construction, a mechanical clock usually needs an occasional adjustment to stay accurate.",
@@ -4198,6 +4203,7 @@
   {
     "id": "hiw-practice-20261125-06",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "How Bats Find Flies",
     "minutes": 5,
     "text": "Here's one way bats might get their next meal: by eavesdropping on flies having sex. Bats eat a lot of seemingly undetectable flies. To find out how the winged mammals find the insects, researchers set up a video camera inside a cowshed that was home to a bat colony and lots of bugs. The video showed that bats rely on their echolocation skills to detect flies at a specific time: when they're engaged in rather noisy sex. Flies are usually quiet in bat territory and sit on cluttered ceilings in caves where background noise masks the echoes from their movement. But when flies are feeling frisky, males can't help but flutter their wings, emitting a burst of click sounds that the bats pick up on. During more than one thousand sexual encounters caught in the act on video, five percent of the insects were caught in the act by bats. The research is published in the journal Current Biology. The study shows that ignorance can be safer than carnal knowledge when predators are on the prowl.",
@@ -4235,6 +4241,7 @@
   {
     "id": "hiw-practice-20261125-07",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "The Silent Revolution",
     "minutes": 5,
     "text": "What drives what's going on right now in Europe? Obviously, it could be the economic recession, or it could be patterns of immigration. We think what's driving it is really long-term change, which is generational and educational. There are transformations in our values that have been happening over time. This goes right back to Ron Inglehart's earliest work, which he wrote in nineteen seventy-seven on the Silent Revolution. He said that new values are emerging, values which are very socially tolerant, both of minorities and of sexual diversity. These values are pro-environmentalism and pro-cosmopolitanism, being part of an international community, and are very secular versus religious. Those values he called the Silent Revolution. Everybody has probably read about them in sociology or cultural studies. The new aspect is the backlash against those ideas. And why does it come about?",
@@ -4272,6 +4279,7 @@
   {
     "id": "hiw-practice-20261125-08",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Household Debt",
     "minutes": 5,
     "text": "Household debt is the amount of money that households have borrowed and need to repay. Their most recent data indicate that households are in debt somewhere around fourteen trillion dollars. Most of that fourteen trillion, nine trillion or so, is debt that's due from mortgages. And the rest of the debt are things like cars, college debt, which is growing and becoming a problem, and credit card debt. I think it's not just the bottom end. It's certainly greater at the bottom end since they have less income and less ability to get out of debt, but it also is becoming a problem for the middle class.",
@@ -4308,6 +4316,7 @@
   {
     "id": "hiw-practice-20261125-09",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "How Whales Turn Down the Volume",
     "minutes": 5,
     "text": "Have you ever wanted to turn down the volume at a deafening concert or noisy bar? Envy the whale: a new study finds that toothed whales can reduce their own auditory sensitivity when they expect a loud sound. The work is presented at this week's Acoustics 2012 meeting. Whales and dolphins rely on their responsive hearing to interpret returning echolocation clicks. Previous research suggested that these marine mammals could dull their hearing before uttering outgoing echolocation clicks, which are very loud. Could they use the same coping mechanism for external noises? To find out, researchers trained a false killer whale that a loud noise would always follow a brief warning signal. Then, they attached suction cup sensors to the outside of the whale's head and played the signal. The sensors measured brainwaves that indicated the whale did reduce its hearing sensitivity in expectation of a clamor. The researchers hope to test other species as well. Loud noises from ships can disturb whales. To accommodate marine life, perhaps vessels could emit signals before making a ruckus, warning whales to tune out.",
@@ -4346,6 +4355,7 @@
   {
     "id": "hiw-practice-20261125-10",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Measuring Change in Popular Music",
     "minutes": 5,
     "text": "Flip through Rolling Stone, and you'll read about a lot of revolutions in popular music: rock and roll and punk, disco and new wave. But for Matthias Mauch, an engineer at Queen Mary University of London, the qualitative analysis of musical evolution, the music critic's take, left him wondering: Is there some way in which we can take this kind of pub conversation and make it more quantifiable? So he and his colleagues analyzed fragments from more than seventeen thousand songs on the Billboard Hot One Hundred, from nineteen sixty to twenty ten. They processed the audio to extract information about timbral and harmonic qualities, tagging the files for attributes like orchestra, harmonic, or calm, quiet, mellow. Then they used those tags, which they compared to a musical fossil record, to tease out trends about musical evolution.",
@@ -4381,6 +4391,7 @@
   {
     "id": "hiw-practice-20261125-11",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Reading a Building",
     "minutes": 5,
     "text": "When you walk into a familiar building, you probably notice the people before you notice the structure. Try looking up next time. The height of a ceiling, the distance between doors, and the position of the windows all affect how a space feels. A low entrance can make the room beyond it seem surprisingly large. A bright window may draw you toward a seat even when other chairs are empty. These effects are often deliberate. Architects can guide people through a room using light and proportion, with very little help from signs or instructions.",
@@ -4417,6 +4428,7 @@
   {
     "id": "hiw-practice-20261125-12",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Keeping an Oral History",
     "minutes": 5,
     "text": "An oral historian often begins with a simple question: what do you remember about this place? The answer may start somewhere entirely different, perhaps with a journey to work or a meal at a neighbour's house. These details are useful because they show what a routine felt like to someone who lived it. The interviewer should leave room for pauses and avoid supplying words when the speaker hesitates. Later, a recording can be compared with letters and photographs. If two accounts disagree, the disagreement itself may reveal how memory changes when people tell the same story from different positions.",
@@ -4452,6 +4464,7 @@
   {
     "id": "hiw-practice-20261125-13",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "How a Puppet Comes to Life",
     "minutes": 5,
     "text": "A puppet on a table is just an object until someone moves it. What gives it a sense of life is not constant motion but a clear reason for each gesture. A puppeteer might turn the head toward an imagined sound, wait a moment, and then lift the whole body. That short delay helps the audience read the action as a decision. The eyes of the person operating the puppet can direct attention, too. When the performer watches the puppet instead of looking out at the crowd, viewers are more likely to follow the same line of sight.",
@@ -4488,6 +4501,7 @@
   {
     "id": "hiw-practice-20261125-14",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Designing for Repair",
     "minutes": 5,
     "text": "When a household device breaks, a repairer first needs to reach the part that failed. That can be easy if the case opens with ordinary screws, or difficult if the panels have been glued together. Designers who plan for repair think about access early. They might leave enough space around a connector for fingers to grip it, or use markings that show which way a part goes back in. A clear set of diagrams is also useful because it reduces the risk of damaging something nearby. A repairable product can cost less to keep in use, even when its original price stays the same.",
@@ -4522,6 +4536,7 @@
   {
     "id": "hiw-practice-20261125-15",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "A Garden Shared by Tenants",
     "minutes": 5,
     "text": "A shared garden can be a good way for people in the same building to meet, but the work has to be organised. The first issue is often water. If the hose is kept behind a locked gate, someone needs to make sure the key is available. The group may also decide which beds are for individual use and which plants anybody may pick. Written notes can prevent small disputes when people come at different times. Over a season, the plan will usually change. A bed that looks ideal in spring might sit in deep shade after the trees nearby have grown their leaves.",
@@ -4557,6 +4572,7 @@
   {
     "id": "hiw-practice-20261125-16",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Why Libraries Keep Multiple Editions",
     "minutes": 5,
     "text": "Two editions of the same book can seem identical until you compare the extra material. An earlier copy might have a preface that was removed from a later version, while the newer one might have corrections or an updated index. Libraries keep several editions when the differences matter to readers. A student investigating how a novel was first received may want to see its original cover and the wording of its introduction. Someone looking up a term may find the latest index more helpful. Keeping both versions gives readers a choice, and the catalogue should make it easy to tell the copies apart.",
@@ -4592,6 +4608,7 @@
   {
     "id": "hiw-practice-20261125-17",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Learning with Worked Examples",
     "minutes": 5,
     "text": "Imagine being shown a solved problem before trying one on your own. It might feel like the teacher is giving the answer away, but the real value is seeing how the steps fit together. A well written example marks the points where a learner must make a choice. It also explains why the solution uses one method rather than another. Once pupils understand that pattern, the teacher can remove some steps and ask them to fill the gaps. The final task should have a slightly different structure. That makes it easier to find out whether learners can adapt the method instead of simply copying it.",
@@ -4628,6 +4645,7 @@
   {
     "id": "hiw-practice-20261125-18",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Why a Market Moves Indoors",
     "minutes": 5,
     "text": "An outdoor market can attract people walking past, but it depends heavily on the weather. When traders move inside, the roof protects goods from rain and wind. The building may also let them stay open on days when they would otherwise cancel. However, a permanent hall has costs of its own, including lighting, cleaning, and maintenance. The building has to be easy to enter if the market is to retain its casual visitors. An entrance that looks closed from the street may discourage people from exploring. Market planners therefore consider both shelter and the way shoppers approach the site.",
@@ -4662,6 +4680,7 @@
   {
     "id": "hiw-practice-20261125-19",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Crossing a Language Boundary",
     "minutes": 5,
     "text": "Translators sometimes meet an expression that cannot be translated word for word. A phrase that sounds playful in one language may seem rude in another. Translating it accurately means deciding which part of the meaning is most important. Is the speaker teasing a close friend, or trying to make a stranger feel comfortable? The translator may choose a different expression that preserves the tone of the exchange. Sometimes a short note is useful, especially if the original wording matters to the story. In dialogue, however, an explanation can slow the scene down, so the translation has to balance clarity and pace.",
@@ -4697,6 +4716,7 @@
   {
     "id": "hiw-practice-20261125-20",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Facilitating a Public Workshop",
     "minutes": 5,
     "text": "A public workshop can be more productive if people do some thinking alone before the group discussion starts. Otherwise, participants may concentrate on the first proposal they hear and overlook their own ideas. One useful approach is to give everybody two minutes to write a note. The facilitator can put the notes up, read them briefly, and group suggestions that deal with the same issue. This does not make all ideas equally practical, but it does show how widely they differ. When it is time to choose a proposal, the group can discuss the main tradeoffs and record why one option was chosen.",
@@ -4732,6 +4752,7 @@
   {
     "id": "hiw-practice-20261125-21",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Taking Notes from Objects",
     "minutes": 5,
     "text": "In a museum storeroom, the most informative detail may be on the back of an object. A handwritten number can link a painting to a sales record. A label may show who lent it to an exhibition. Even small repairs can reveal how an object was used or how an owner tried to protect it. Researchers take photographs and write notes so they can check these observations later. They also distinguish what they can see from what they have inferred. A faded label, for example, might identify a workshop, but its presence alone does not prove that the entire object was made there.",
@@ -4767,6 +4788,7 @@
   {
     "id": "hiw-practice-20261125-22",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "What Makes a Queue Feel Long",
     "minutes": 5,
     "text": "Two people can wait for the same amount of time and remember the experience quite differently. If one has to stand without any indication of progress, a few minutes may feel endless. If the other can see the line moving or read an estimate of the wait, the delay may seem more manageable. Businesses sometimes change the layout so it is easier to see where a queue starts. They may also provide a single line for several counters, which can make the service order feel fairer. These changes cannot remove every delay, but they help people understand what will happen next.",
@@ -4801,6 +4823,7 @@
   {
     "id": "hiw-practice-20261125-23",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Designing a Public Notice",
     "minutes": 5,
     "text": "A public notice has to work for readers who are already doing something else. A person walking toward a lift may have only a moment to find the message on a poster. The heading should say what the notice is about, and the most important action should come early. A designer can improve readability by leaving enough space around the text and by using a clear contrast between letters and background. It also helps to test the notice at the distance where people will encounter it. Something that looks obvious on a computer screen can be hard to read from the other side of a hallway.",
@@ -4837,6 +4860,7 @@
   {
     "id": "hiw-practice-20261125-24",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "The Value of an Open Rehearsal",
     "minutes": 5,
     "text": "At an open rehearsal, an audience is allowed to watch performers while their work is still in progress. The experience can be quite different from attending a finished show. A band might stop halfway through a piece to discuss a transition, or repeat the same section with different timing. Watching those decisions makes the structure of the music easier to hear. However, the rehearsal still needs to serve the performers. Visitors should know whether they are expected to listen quietly or will have a chance to ask questions. A short explanation at the beginning can make those expectations clear.",
@@ -4872,6 +4896,7 @@
   {
     "id": "hiw-practice-20261125-25",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Mapping a Neighbourhood",
     "minutes": 5,
     "text": "A neighbourhood map drawn by residents may look very different from an official street plan. Instead of showing all the roads at the same level of detail, it might give more room to a playground, a steep path, or a crossing people try to avoid. These features can reflect the daily experiences of the person drawing the map. When several maps are compared, recurring marks can suggest places worth investigating in more detail. Differences are useful as well. Someone who walks to school may describe a route quite differently from a person who drives across the area. Both accounts can inform a better design for shared space.",
@@ -4907,6 +4932,7 @@
   {
     "id": "hiw-practice-20261125-26",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Ceramics in Daily Use",
     "minutes": 5,
     "text": "A cup made for regular use has to do more than look attractive. Its handle needs enough room for a hand to hold it without touching the hot surface. The rim should feel smooth, and the base should be wide enough that the cup does not easily tip. Potters often test these details by making a series of similar shapes and using them at home. They can then observe which design is most comfortable to drink from, wash, and store. A tiny adjustment to the angle of a handle may have a larger effect on everyday use than a change of colour.",
@@ -4942,6 +4968,7 @@
   {
     "id": "hiw-practice-20261125-27",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Sharing Tools Locally",
     "minutes": 5,
     "text": "A tool library lends items that people need only occasionally, such as a ladder or a hand drill. It can save members money and reduce the number of objects stored in every household. The scheme depends on good records because staff need to know who has an item and when it is due back. It also helps to check equipment after each loan so faults are found before the next person goes home with a broken tool. A short demonstration can help beginners understand how to use unfamiliar equipment safely. The collection works best when borrowing is easy and responsibilities are clear.",
@@ -4977,6 +5004,7 @@
   {
     "id": "hiw-practice-20261125-28",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Lighting an Exhibition",
     "minutes": 5,
     "text": "Lighting in an exhibition affects how visitors see both the objects and the space around them. Strong light can make details easier to find, but it can also introduce reflections, especially when an object is kept behind glass. Curators may adjust the angle of a lamp so that its beam falls across a surface. This can make texture easier to see than lighting it from directly above. For fragile objects, there may be a limit on how much light they can receive. The exhibition team has to balance the need to protect the collection with the desire to give visitors a good view.",
@@ -5011,6 +5039,7 @@
   {
     "id": "hiw-practice-20261125-29",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Why Apprentices Observe First",
     "minutes": 5,
     "text": "An apprentice in a workshop will often spend a little time watching before attempting a new task. By standing in the right place, they can see how an experienced worker positions an object and prepares the tools. Some actions happen too quickly to understand on a first viewing, so the worker might repeat a movement at a slower pace. After that, the apprentice tries it with close guidance. The aim is to learn more than a sequence of operations. The learner also needs to recognise how the material responds and decide when to adjust the force or change the angle of a tool.",
@@ -5047,6 +5076,7 @@
   {
     "id": "hiw-practice-20261125-30",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Reading a Family Photograph",
     "minutes": 5,
     "text": "A family photograph can preserve details the photographer was not trying to record. A sign in the background might help identify a street, or the things on a table might show what people were doing before the picture was taken. These clues are often more useful when compared with other sources. Someone may remember the people in the image while a calendar helps establish the date. It is easy to tell a confident story based on a single object, so careful historians note which parts are certain and which remain guesses. A picture can give us many leads without answering every question.",
@@ -5081,6 +5111,7 @@
   {
     "id": "hiw-practice-20261125-31",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Composing a Walking Tour",
     "minutes": 5,
     "text": "A good walking tour gives people time to look as well as time to hear an explanation. The guide might stop somewhere quiet before pointing out a feature that is hard to see from a crowded street. Linking each stop with a clear theme helps the group remember why they are visiting it. The route also needs to allow for uneven pavement, places to rest, and traffic at crossings. Some details are best told while the group is standing still, because the guide can show the exact window or doorway involved. Other parts of the story make more sense while everyone is moving.",
@@ -5117,6 +5148,7 @@
   {
     "id": "hiw-practice-20261125-32",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "How Glaciers Move",
     "minutes": 5,
     "text": "A glacier can look as solid as the mountains around it, yet its ice is constantly moving. Snow that survives the summer is buried beneath new layers. Over time the weight of those layers compresses the snow until it becomes dense ice. Higher up the slope, the glacier gains material. Lower down, melting and the breaking away of ice remove material. The glacier moves partly because the ice deforms under its own weight, and partly because the base can slide over the rock below. Researchers place markers on the surface and return to measure how far they have shifted. The results often reveal movement too gradual to notice during a single visit.",
@@ -5151,6 +5183,7 @@
   {
     "id": "hiw-practice-20261125-33",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Why Bread Rises",
     "minutes": 5,
     "text": "When bread dough rises, its increasing volume comes from gas rather than from extra flour. Yeast uses sugars in the dough and releases carbon dioxide. A network of proteins in wheat traps some of that gas in tiny pockets. As the pockets expand, the dough becomes lighter and softer. The amount of water matters because very dry dough resists stretching, whereas very wet dough may be difficult to shape. Temperature also changes the rate at which yeast works. In the oven the gas expands again and the heat eventually sets the structure around it. A slice of bread therefore preserves a rough record of the air pockets that grew before and during baking.",
@@ -5186,6 +5219,7 @@
   {
     "id": "hiw-practice-20261125-34",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Heat Pumps in Winter",
     "minutes": 5,
     "text": "A heat pump can warm a room even when the air outside feels cold. The system uses a fluid that can evaporate at a low temperature. As the fluid evaporates, it absorbs heat from the outdoor air. A compressor then raises the pressure and temperature of the vapour. Indoors, the vapour condenses and gives up heat to the air circulating through the building. The fluid returns outside and the cycle begins again. Since the system moves heat rather than generating all of it directly, the amount of heat delivered can exceed the electrical energy used. Under very cold conditions, however, the equipment generally has to work harder to supply the same warmth.",
@@ -5221,6 +5255,7 @@
   {
     "id": "hiw-practice-20261125-35",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "How Mushrooms Spread",
     "minutes": 5,
     "text": "Most of a fungus may be hidden beneath the soil or inside a piece of wood. The mushroom we see is a structure that produces spores. These tiny particles can be carried by air to new places. If a spore lands where moisture, temperature and food are suitable, it can grow into fine threads. The threads branch and form a network that takes up nutrients from its surroundings. A mushroom only appears when the network has enough resources and the local conditions favour its growth. This explains why a patch of mushrooms can appear suddenly after a period of damp weather, even though the fungus itself may have been present much longer.",
@@ -5256,6 +5291,7 @@
   {
     "id": "hiw-practice-20261125-36",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Why Bridges Have Gaps",
     "minutes": 5,
     "text": "If you look closely at a long bridge, you may see a narrow gap where two parts of the road meet. That space gives the bridge room to move as the temperature changes. Most materials expand when they warm and shrink when they cool. On a short object the change is tiny, but even a small change per metre can become significant over a long span. The gap is usually covered by a joint that lets the road move while giving tyres a smooth surface to cross. Engineers also consider how the structure responds to traffic and wind. Leaving some room for movement can help prevent stresses from building up in the bridge.",
@@ -5290,6 +5326,7 @@
   {
     "id": "hiw-practice-20261125-37",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "What Makes Compost Work",
     "minutes": 5,
     "text": "A compost pile is home to organisms that break down organic material. They need both moisture and oxygen to work efficiently. Fresh vegetable scraps usually supply nitrogen, while dry leaves and shredded cardboard supply carbon and leave spaces for air. If the pile is packed too tightly, air has trouble reaching the centre. Turning the pile introduces more air and mixes wet material with drier material. A pile that is too dry may change slowly, while a soaked pile can develop an unpleasant smell. The completed compost looks more uniform than the original mixture. It can be added to soil, where it helps improve the soil's structure and ability to hold water.",
@@ -5326,6 +5363,7 @@
   {
     "id": "hiw-practice-20261125-38",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "How Fog Forms",
     "minutes": 5,
     "text": "Fog is essentially a cloud that forms near the ground. It consists of tiny droplets suspended in the air. One way it forms is when the ground cools at night, taking heat from the air above it. As the air cools, it can no longer keep as much water in the form of vapour. Some of that water condenses into droplets around small particles. Fog is especially likely on nights when light winds allow cold air to gather in low places. After sunrise, the ground warms and may warm the air enough for the droplets to evaporate. A foggy valley can therefore become clear quite quickly even when the surrounding hills have hardly changed.",
@@ -5361,6 +5399,7 @@
   {
     "id": "hiw-practice-20261125-39",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "How a Bicycle Stays Balanced",
     "minutes": 5,
     "text": "A bicycle does not stay upright simply because its wheels are spinning. The rider continually makes slight steering corrections. When the bicycle begins to lean, steering towards the lean moves the wheels back under the rider. At a moderate speed these corrections can be so small that they are difficult to see. Riding very slowly can feel harder because there is less distance in which to make each adjustment. The angle of the front fork and the position of the front wheel also affect how the bicycle responds. Different designs can feel stable at different speeds. A skilled rider learns to anticipate the response rather than waiting until the bicycle is already far off balance.",
@@ -5396,6 +5435,7 @@
   {
     "id": "hiw-practice-20261125-40",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Why Ice Floats",
     "minutes": 5,
     "text": "Most substances become denser as they freeze, but water behaves differently. As liquid water cools to its freezing point, the molecules arrange themselves into a more open structure. The same amount of water then occupies more space. That makes ice less dense than the surrounding liquid, so it floats. The difference has an important effect on lakes in cold weather. Ice forms at the top, where it separates the water beneath from the colder air. This layer slows further heat loss and can leave deeper water unfrozen. If ice sank instead, a lake could lose much more liquid water during winter, changing the conditions that aquatic organisms depend on.",
@@ -5430,6 +5470,7 @@
   {
     "id": "hiw-practice-20261125-41",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Recovering Energy from Braking",
     "minutes": 5,
     "text": "A moving electric vehicle has energy that would normally become heat during braking. Regenerative braking allows part of that energy to be saved. When the driver slows down, the wheels can turn the motor in a way that makes it act as a generator. This produces electricity and creates a force that resists the motion of the wheels. The vehicle sends some of the electricity to its battery, where it can be used later. Recovery is not complete because some energy is lost in the equipment. Conventional brakes are still needed, especially when the vehicle must stop quickly or when the battery is too full to accept more charge.",
@@ -5465,6 +5506,7 @@
   {
     "id": "hiw-practice-20261125-42",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "What Makes Soap Useful",
     "minutes": 5,
     "text": "Ordinary water can loosen some dirt, but it does not mix readily with oil. Soap helps because its molecules have two different ends. One end interacts well with water, while the other is attracted to oil. When soap is mixed with water, small groups of these molecules can surround oily material. Their water friendly ends face outward, allowing the group to be carried away during rinsing. Rubbing and moving the water help bring the soap into contact with more of the surface. A greasy pan becomes easier to clean for the same reason that soap helps remove oils from our hands. The oil is carried away rather than simply becoming invisible.",
@@ -5500,6 +5542,7 @@
   {
     "id": "hiw-practice-20261125-43",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Why Echoes Differ",
     "minutes": 5,
     "text": "An echo occurs when a sound returns to the listener after reflecting from a surface. The farther the surface is away, the longer the sound takes to travel there and back. In a small room, reflected sounds arrive very quickly and tend to blend with the original sound. In a large hall, the reflections can last long enough to make speech less clear. Hard walls reflect much of the sound, while thick curtains and carpet can absorb some of it. The shape of the room also matters because curved surfaces may concentrate reflections in certain places. Designers use these principles to control how music and speech are heard throughout a room.",
@@ -5535,6 +5578,7 @@
   {
     "id": "hiw-practice-20261125-44",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "How Plants Locate Light",
     "minutes": 5,
     "text": "A plant beside a window often grows towards the brightest part of the room. Young shoots can detect differences in the amount of light reaching each side. In many shoots these differences influence the distribution of a growth hormone. Cells on the shaded side then lengthen more rapidly, causing the shoot to curve towards the light. This movement takes place as the shoot grows. It does not mean that the whole plant can turn instantly like an animal. If a pot is rotated, the newest part of the stem may gradually point in a different direction. Older sections can retain their earlier shape, leaving a visible trace of changes in lighting.",
@@ -5569,6 +5613,7 @@
   {
     "id": "hiw-practice-20261125-45",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Why Rivers Curve",
     "minutes": 5,
     "text": "A river on nearly level ground often develops a series of bends. Water generally moves faster around the outside of a bend, where it can wear away the bank. On the inside the current is often slower, so sand and other material can settle. Over time these processes can make the bend grow wider and shift across the valley floor. Two parts of the channel may eventually come close together during this movement. A flood can open a shortcut between them, leaving the old bend partly separated from the main river. A lake in the shape of a crescent can remain. Its position provides a clue to how the river flowed in the past.",
@@ -5605,6 +5650,7 @@
   {
     "id": "hiw-practice-20261125-46",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Keeping Buildings Cool with Shade",
     "minutes": 5,
     "text": "In a warm climate, keeping sunlight out can be easier than removing heat after it has entered a building. An external shade stops some of the sunlight before it reaches the glass. An internal blind can still reduce glare, but sunlight that has already passed through the window can warm the blind and the room. The size and position of an external shade matter because the sun follows a different path across the sky at different times of year. A horizontal ledge may block high summer sunlight while allowing lower winter sunlight to enter. Designers also consider daylight and the view outside. The aim is to reduce unwanted heat while keeping the room usable.",
@@ -5639,6 +5685,7 @@
   {
     "id": "hiw-practice-20261125-47",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Reading Tree Rings",
     "minutes": 5,
     "text": "A tree growing in a place with distinct seasons may produce a ring of wood each year. The cells formed early in the growing season often look different from the cells formed later. Together these layers can create a visible boundary. Researchers compare patterns of wide and narrow rings from many trees. If the patterns match, the researchers can work out how different pieces of wood overlap in time. This can help estimate when old timbers were cut. Ring width can also provide clues about earlier conditions, although the amount of growth depends on more than climate alone. A tree growing in deep shade may produce narrow rings for a different reason than a tree experiencing a drought.",
@@ -5674,6 +5721,7 @@
   {
     "id": "hiw-practice-20261125-48",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "How Glass Fibre Carries a Signal",
     "minutes": 5,
     "text": "A fibre optic cable can carry information along a thread of glass thinner than a strand of hair. The signal travels as rapid changes in light. The central part of the fibre is surrounded by a layer with a different optical property. If the light meets the boundary at a suitable angle, it is reflected back into the centre rather than escaping. This allows a signal to travel along a cable that bends gently. Some energy is still lost over long distances, so equipment may be used to boost the signal. Dust or a poorly fitted connection can also weaken it. Careful installation is important even though the light itself is invisible in many systems.",
@@ -5709,6 +5757,7 @@
   {
     "id": "hiw-practice-20261125-49",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "What a Seed Needs to Start Growing",
     "minutes": 5,
     "text": "A seed can remain dormant for a long time before it starts growing. Many seeds first need to absorb water. The water softens some of the surrounding tissues and allows chemical reactions to resume. Most seeds also need oxygen and a suitable temperature, although the exact conditions vary between plants. Once growth begins, the seedling usually relies on food stored in the seed. The young root emerges and starts taking up water from its surroundings. Later the shoot reaches the light and develops leaves that can produce sugars. If two seeds have different requirements, they may start growing at different times even when they landed in the same patch of soil.",
@@ -5744,6 +5793,7 @@
   {
     "id": "hiw-practice-20261125-50",
     "type": "hiw",
+    "newInCatalogue": true,
     "title": "Why Clay Changes in a Kiln",
     "minutes": 5,
     "text": "A clay pot may feel dry after being left out for several days, but it can still be damaged by water. Firing it in a kiln causes changes that ordinary drying cannot achieve. At first, heat drives out any remaining moisture. As the temperature rises, minerals in the clay begin to react and the particles become more firmly bonded. Some types of clay also develop a partly glassy structure. The finished pot is much stronger and may absorb less water, depending on the clay and the firing temperature. The potter must also consider cooling, because a sudden difference in temperature can cause the pot to crack. Good results depend on controlling the entire process.",
