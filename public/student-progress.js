@@ -5,7 +5,7 @@ const stamp=v=>{const n=typeof v==='number'?v:Date.parse(v);return Number.isFini
 const date=v=>stamp(v)?new Date(stamp(v)).toLocaleDateString('en-AU',{day:'numeric',month:'short',year:'numeric'}):'Date unavailable';
 const avg=rows=>rows.length?rows.reduce((n,x)=>n+x,0)/rows.length:null;
 function readingRows(state){
- const all=[...(state?.history||[]),state?.session,...(state?.drafts||[])].filter(Boolean);
+ const all=[...(state?.history||[]),state?.session,...(state?.drafts||[])].filter(a=>a?.done);
  return [...new Map(all.map(a=>[a.id,a])).values()];
 }
 const numeric=value=>value===null||value===undefined||value===''?null:(Number.isFinite(Number(value))?Number(value):null);
@@ -40,26 +40,18 @@ function trend(series){
  return {label:delta>0?'Improving':'Needs attention',delta:Math.round(delta)};
 }
 function model(data,writing,speaking=[]){
- const reading=readingRows(data.reading),swt=Object.values(data.swt||{}).flat().filter(Boolean),essays=data.essays||[];
- const swtDrafts=Object.entries(data.swtDrafts||{}).flatMap(([passageId,draft])=>{
-  const text=String(draft?.text||'').trim(),draftAt=stamp(draft?.timestamp);
-  const latestScored=Math.max(0,...((data.swt||{})[passageId]||[]).map(a=>stamp(a?.timestamp)));
-  return text&&draftAt>latestScored?[{passageId,draft,text,at:draftAt}]:[];
- });
- const essayDraft=data.essayDraft&&data.essayDraft.deleted!==true&&(String(data.essayDraft.essayText||'').trim()||String(data.essayDraft.questionText||'').trim())
-  ? data.essayDraft:null;
+ const completedReading=readingRows(data.reading),swt=Object.values(data.swt||{}).flat().filter(Boolean),essays=data.essays||[];
  const submittedSpeaking=(Array.isArray(speaking)?speaking:[]).filter(a=>a?.status==='submitted'&&a.result);
- const writingMocks=writing.filter(a=>a.kind==='mock');
+ const writingMocks=writing.filter(a=>a.kind==='mock'&&a.status==='submitted');
  const mocks=[
-  ...reading.filter(a=>!a.practiceUid).map(a=>({id:a.id,engine:'reading',title:a.name||'Reading mock',at:a.startedAt,done:!!a.done,pending:!!a.pending,
-    score:a.done&&!a.pending&&Number.isFinite(a.percent)?Math.round(a.percent):null,unit:'%',detail:'Accuracy',estimate90:null,nativeTotal:null,nativeMaximum:null})),
-  ...writingMocks.map(a=>({id:a.id,engine:'writing',title:a.title,at:a.startedAt,done:a.status==='submitted',pending:a.status==='submitted'&&a.total==null,
+  ...completedReading.filter(a=>!a.practiceUid).map(a=>({id:a.id,engine:'reading',title:a.name||'Reading mock',at:a.startedAt,pending:!!a.pending,
+    score:!a.pending&&Number.isFinite(a.percent)?Math.round(a.percent):null,unit:'%',detail:'Accuracy',estimate90:null,nativeTotal:null,nativeMaximum:null})),
+  ...writingMocks.map(a=>({id:a.id,engine:'writing',title:a.title,at:a.startedAt,pending:a.total==null,
     score:a.weighting?.profile==='writing'?(Number.isFinite(a.score90)?a.score90:null):(Number.isFinite(a.total)?a.total:null),unit:a.weighting?.profile==='writing'?'/90':(Number.isFinite(a.maximum)?'/'+a.maximum:''),detail:a.weighting?.profile==='writing'?'Weighted Writing practice estimate · provisional':'Native practice marks',estimate90:a.weighting?.profile==='writing'?null:(Number.isFinite(a.score90)?a.score90:null),
     nativeTotal:a.total,nativeMaximum:a.maximum}))
  ].sort((a,b)=>stamp(b.at)-stamp(a.at));
 
- const practiceReading=reading.filter(a=>a.practiceUid&&a.done);
- const completedReading=reading.filter(a=>a.done);
+ const practiceReading=completedReading.filter(a=>a.practiceUid);
  const readingMeta={
   dropdown:{name:'Reading Blanks (Dropdown)',route:'reading-dropdown'},
   mcma:{name:'Reading Multiple Answers',route:'reading-mcma'},
@@ -77,29 +69,6 @@ function model(data,writing,speaking=[]){
   di:{name:'Describe Image',route:'speaking-di'},rl:{name:'Retell Lecture',route:'speaking-rl'},
   sgd:{name:'Summarise Group Discussion',route:'speaking-sgd'},rts:{name:'Respond to a Situation',route:'speaking-rts'}
  };
- const activePractice=[
-  ...swtDrafts.map(({passageId,text,at})=>({
-    engine:'swt',id:'swt-draft-'+passageId,passageId,draft:true,title:'Summarise Written Text',route:'swt',at,
-    detail:'Passage '+passageId+' · '+text.split(/\s+/).filter(Boolean).length+' words saved'
-  })),
-  ...(essayDraft?[{
-    engine:'essay',id:'essay-draft',draft:true,title:'Write Essay',route:'practice',at:essayDraft.updatedAt,
-    detail:(String(essayDraft.questionTitle||'').trim()||'Essay draft')+' · '+String(essayDraft.essayText||'').trim().split(/\s+/).filter(Boolean).length+' words saved'
-  }]:[]),
-  ...reading.filter(a=>a.practiceUid&&!a.done).map(a=>{const meta=readingMeta[a.questions?.[0]?.type];return {
-    engine:'reading',id:a.id,title:meta?.name||a.name||'Reading practice',route:meta?.route||'practice-hub',
-    at:a.updatedAt||a.startedAt,detail:'Question '+(Number(a.index||0)+1)+' of '+Math.max(1,a.questions?.length||1)
-  };}),
-  ...writing.filter(a=>a?.kind!=='mock'&&a?.status!=='submitted').map(a=>({
-    engine:'writing',id:a.id,title:a.title||(a.kind==='sst'?'Summarise Spoken Text':a.kind==='wfd'?'Write From Dictation':'Writing practice'),
-    route:a.kind==='sst'?'spoken-text':a.kind==='wfd'?'dictation':listeningMeta[a.kind]?.route||'practice-hub',at:a.startedAt,
-    detail:(Number.isFinite(a.completed)&&Number.isFinite(a.questions)?a.completed+' of '+a.questions+' completed':'Saved response in progress')
-  })),
-  ...(Array.isArray(speaking)?speaking:[]).filter(a=>a?.status!=='submitted').map(a=>({
-    engine:'speaking',id:a.id,title:speakingMeta[a.type]?.name||a.title||'Speaking practice',
-    route:speakingMeta[a.type]?.route||'practice-hub',at:a.startedAt,detail:'Saved response in progress'
-  }))
- ].sort((a,b)=>stamp(b.at)-stamp(a.at));
  const readingTaskPoints=type=>completedReading.flatMap(a=>{
   const row=Array.isArray(a.rows)?a.rows.find(r=>r?.type===type):null;
   let value=null;
@@ -108,7 +77,6 @@ function model(data,writing,speaking=[]){
   return Number.isFinite(value)?[{value,at:stamp(a.finishedAt||a.startedAt),source:a.practiceUid?'practice':'mock'}]:[];
  }).sort((a,b)=>a.at-b.at);
  const writingMockPoints=type=>writingMocks.flatMap(a=>{
-  if(a.status!=='submitted')return [];
   const group=Array.isArray(a.byType)?a.byType.find(g=>g?.type===type):null;
   if(!group || group.marked!==group.count)return [];
   const value=ratio(group.total,group.maximum);
@@ -151,7 +119,7 @@ function model(data,writing,speaking=[]){
   {name:'Write From Dictation',count:wfdRows.length,route:'dictation',dates:wfdRows.map(a=>a.startedAt)},
   {name:'Listening objective questions',count:listeningRows.length,route:'practice-hub',dates:listeningRows.map(a=>a.startedAt)}
  ];
- const days=new Set([...groups.flatMap(g=>g.dates),...mocks.filter(a=>a.done).map(a=>a.at)].map(stamp).filter(Boolean).map(n=>new Date(n).toLocaleDateString('en-CA')));
+ const days=new Set([...groups.flatMap(g=>g.dates),...mocks.map(a=>a.at)].map(stamp).filter(Boolean).map(n=>new Date(n).toLocaleDateString('en-CA')));
  const recentWriting=[
   ...essays.map(a=>({
     engine:'essay',title:a.questionTitle||'Write Essay',route:'practice',at:a.date||a.updatedAt,
@@ -163,7 +131,6 @@ function model(data,writing,speaking=[]){
   }))
  ].filter(a=>stamp(a.at)).sort((a,b)=>stamp(b.at)-stamp(a.at)).slice(0,6);
  const recent=[
-  ...activePractice.map(a=>({title:a.title,route:a.route,at:a.at,result:'In progress · '+a.detail})),
   ...essays.map(a=>({title:a.questionTitle||'Write Essay',route:'practice',at:a.date||a.updatedAt,result:Number.isFinite(a?.scores?.total)?a.scores.total+'/26':null})),
   ...practiceReading.map(a=>{const meta=readingMeta[a.questions?.[0]?.type];return {title:meta?.name||a.name||'Reading practice',route:meta?.route||'practice-hub',at:a.finishedAt||a.startedAt,result:Number.isFinite(a.earned)&&Number.isFinite(a.possible)?a.earned+'/'+a.possible:null};}),
   ...submittedSpeaking.map(a=>({title:speakingMeta[a.type]?.name||a.title||'Speaking practice',route:speakingMeta[a.type]?.route||'practice-hub',at:a.startedAt,result:Number.isFinite(a.result?.total)&&Number.isFinite(a.result?.maximum)?a.result.total+'/'+a.result.maximum:null})),
@@ -173,7 +140,6 @@ function model(data,writing,speaking=[]){
   ...swt.map(a=>({title:'Summarise Written Text',route:'swt',at:a.timestamp,result:Number.isFinite(a.overall_score)?a.overall_score+'/90 estimate':null}))
  ].sort((a,b)=>stamp(b.at)-stamp(a.at)).slice(0,8);
  const activity=[
-  ...activePractice.map(a=>({...a,scoreText:'Not scored',status:'Saved draft',action:'Continue response'})),
   ...essays.map(a=>({engine:'essay',id:a.id,scoreText:a.score_provisional||a.ai_feedback_degraded?'Pending':savedScore(a.scores?.total,26),title:a.questionTitle||'Write Essay',task:'Write Essay',route:'practice',at:a.date||a.updatedAt,status:'Feedback ready',action:'View response & feedback'})),
   ...Object.entries(data.swt||{}).flatMap(([passageId,attempts])=>(Array.isArray(attempts)?attempts:[]).filter(Boolean).map((a,index)=>({
    engine:'swt',id:passageId+':'+(a.timestamp||index),scoreText:swtScore(a),passageId,timestamp:a.timestamp,responseText:a.text,attemptIndex:index,
@@ -183,7 +149,7 @@ function model(data,writing,speaking=[]){
   ...(Array.isArray(speaking)?speaking:[]).filter(a=>a?.status==='submitted').map(a=>({engine:'speaking',id:a.id,scoreText:speakingScore(a),title:a.title||a.questionId||speakingMeta[a.type]?.name||'Speaking practice',task:speakingMeta[a.type]?.name||'Speaking practice',route:speakingMeta[a.type]?.route||'practice-hub',at:a.finishedAt||a.startedAt,status:a.result?'Feedback ready':'Assessment pending',action:'View response & feedback'})),
   ...writing.filter(a=>a?.kind!=='mock'&&a?.status==='submitted').map(a=>({engine:'writing',id:a.id,scoreText:a.total==null||a.score_provisional?'Pending':savedScore(a.total,a.maximum),title:a.title||'Saved practice',task:a.kind==='sst'?'Summarise Spoken Text':a.kind==='wfd'?'Write From Dictation':listeningMeta[a.kind]?.name||'Listening practice',route:a.kind==='sst'?'spoken-text':a.kind==='wfd'?'dictation':listeningMeta[a.kind]?.route||'writing-history',at:a.finishedAt||a.startedAt,status:a.total==null?'Assessment pending':'Feedback ready',action:'View response & feedback'}))
  ].sort((a,b)=>stamp(b.at)-stamp(a.at));
- return {activity,mocks,groups,areas,weakest,recent,recentWriting,activePractice,practice:groups.reduce((n,g)=>n+g.count,0),complete:mocks.filter(a=>a.done).length,active:mocks.filter(a=>!a.done).length,days:days.size};
+ return {activity,mocks,groups,areas,weakest,recent,recentWriting,practice:groups.reduce((n,g)=>n+g.count,0),complete:mocks.length,days:days.size};
 }
 function create({document:doc,identity,loadLocal,refreshLocal,navigate,review,fetch:get=fetch}){
  let serial=0,current=null,currentOwner=null,visibleCount=20,cache=null;
@@ -194,12 +160,12 @@ function create({document:doc,identity,loadLocal,refreshLocal,navigate,review,fe
   const m=model(local,writing,speaking);current=m;currentOwner=identity();
   const rows=m.activity.slice(0,visibleCount);
   const row=(a,index)=>'<button type="button" class="progress-attempt" data-progress-key="'+esc([a.engine,a.id,a.timestamp].join(':'))+'" data-progress-attempt="'+index+'"><span class="progress-attempt-copy"><strong>'+esc(a.title)+'</strong><span class="progress-caption">'+esc(a.task||a.title)+' · '+date(a.at)+' · '+esc(a.status)+'</span><span class="progress-attempt-score">Score: '+esc(a.scoreText)+'</span></span><span class="progress-attempt-action">'+esc(a.action)+' <span aria-hidden="true">→</span></span></button>';
-  host().innerHTML='<div class="progress-heading"><div><h2>My Progress</h2><p>Your latest questions first. Select a response to review your saved work and feedback.</p></div><button type="button" class="portal-button" data-progress-refresh>Refresh</button></div>'+
+  host().innerHTML='<div class="progress-heading"><div><h2>My Progress</h2><p>Your latest submissions first. Select a response to review your answer and feedback.</p></div><button type="button" class="portal-button" data-progress-refresh>Refresh</button></div>'+
    (error?'<p class="progress-notice" role="alert">'+esc(error)+' <button type="button" class="portal-button" data-progress-refresh>Retry</button></p>':'')+
    (pending?'<p class="progress-caption" role="status">Refreshing saved activity…</p>':'')+
-   '<section class="progress-section progress-recent"><h3>Recently attempted questions</h3>'+(rows.length?'<div class="progress-attempts">'+rows.map(row).join('')+'</div>':'<div class="progress-empty"><p>'+(pending?'Checking for newer saved activity.':'Your saved questions will appear here after you practise.')+'</p><button type="button" class="portal-button primary" data-progress-route="practice-hub">Go to Practice</button></div>')+
+   '<section class="progress-section progress-recent"><h3>Recently submitted answers</h3>'+(rows.length?'<div class="progress-attempts">'+rows.map(row).join('')+'</div>':'<div class="progress-empty"><p>'+(pending?'Checking for newer saved activity.':'Your answers will appear here after you submit them.')+'</p><button type="button" class="portal-button primary" data-progress-route="practice-hub">Go to Practice</button></div>')+
    (m.activity.length>rows.length?'<button type="button" class="portal-button progress-more" data-progress-more>Show more questions</button>':'')+'</section>'+
-   (m.mocks.length?'<details class="progress-section"><summary>Saved mock tests ('+m.mocks.length+')</summary><div class="progress-attempts">'+m.mocks.map((a,index)=>'<button type="button" class="progress-attempt" data-progress-review="'+index+'"><span class="progress-attempt-copy"><strong>'+esc(a.title)+'</strong><span class="progress-caption">'+date(a.at)+' · '+(!a.done?'In progress':a.pending?'Assessment pending':'Completed')+'</span></span><span class="progress-attempt-action">'+(a.done?'View result':'Continue')+' →</span></button>').join('')+'</div></details>':'');
+   (m.mocks.length?'<details class="progress-section"><summary>Submitted mock tests ('+m.mocks.length+')</summary><div class="progress-attempts">'+m.mocks.map((a,index)=>'<button type="button" class="progress-attempt" data-progress-review="'+index+'"><span class="progress-attempt-copy"><strong>'+esc(a.title)+'</strong><span class="progress-caption">'+date(a.at)+' · '+(a.pending?'Assessment pending':'Completed')+'</span></span><span class="progress-attempt-action">View result →</span></button>').join('')+'</div></details>':'');
   host().querySelector('[data-progress-more]')?.addEventListener('click',()=>{visibleCount+=20;paint(local,writing,speaking,error,pending);});
   if(!pending)root.PortalUx?.progress(host(),m.activity);
   const details=host().querySelector('details.progress-section');if(details&&mocksOpen)details.open=true;

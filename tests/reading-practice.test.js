@@ -1062,7 +1062,10 @@ test('All five Reading menus start fresh, offer explicit Resume draft and retain
 });
 test('A completed Reading answer keeps its confirmed result when a fresh attempt opens',async()=>{
  const h=client();await h.ctx.ReadingPractice.open({libraryId:'dropdown'});const item=h.ctx.PracticeCatalogue.readingLibraries(bank).find(l=>l.id==='dropdown').questions[0];await h.click({practiceUid:item.uid});
+ const draftId=snapshot(h).session.id;await h.click({action:'retry-question'});
  item.answers.forEach((value,i)=>h.host.onchange({target:{dataset:{answer:String(i)},value}}));await h.click({action:'submit'});const result=snapshot(h).history[0],original=JSON.stringify(result.answers);assert.equal(result.earned,result.possible);
+ assert.doesNotMatch(h.host.innerHTML,new RegExp('data-saved-practice-attempt="'+draftId+'"'));
+ assert(snapshot(h).drafts.some(a=>a.id===draftId));
  await h.click({action:'retry-question'});assert.notEqual(snapshot(h).session.id,result.id);assert.equal(JSON.stringify(snapshot(h).history.find(a=>a.id===result.id).answers),original);await h.click({savedPracticeAttempt:result.id});assert.equal(snapshot(h).session.id,result.id);assert.equal(snapshot(h).session.earned,result.earned);
 });
 

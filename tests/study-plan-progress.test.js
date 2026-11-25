@@ -145,7 +145,7 @@ test('My Progress surfaces recent completed SWT and Essay attempts near the top'
   assert.equal(model.activity[0].passageId,'3');
 });
 
-test('My Progress exposes saved in-progress practice from another device', () => {
+test('My Progress excludes saved drafts across practice engines and mocks', () => {
   const source = fs.readFileSync(require.resolve('../public/student-progress'), 'utf8');
   const ctx = { globalThis: {} };
   ctx.globalThis = ctx;
@@ -164,7 +164,8 @@ test('My Progress exposes saved in-progress practice from another device', () =>
         startedAt:100,
         updatedAt:200
       },
-      history:[]
+      history:[],
+      drafts:[{id:'reading-mock-draft',done:false,startedAt:300}]
     },
     swt:{},
     swtDrafts:{
@@ -176,17 +177,16 @@ test('My Progress exposes saved in-progress practice from another device', () =>
       questionTitle:'Essay draft topic',updatedAt:350
     }
   }, [
+    { id:'writing-mock-draft', kind:'mock', status:'active', startedAt:250 },
     { id:'sst-live', kind:'sst', status:'active', title:'SST live', startedAt:300, completed:0, questions:1 }
   ], [
     { id:'ra-live', type:'ra', status:'draft', startedAt:400, result:null }
   ]);
-  assert.equal(model.activePractice.length, 5);
-  assert.equal(model.activePractice[0].title, 'Read Aloud');
-  assert(model.activePractice.some(item => item.title === 'Summarise Written Text' && /words saved/.test(item.detail)));
-  assert(model.activePractice.some(item => item.title === 'Write Essay' && /Essay draft topic/.test(item.detail)));
-  assert(model.recent.some(item => item.result && item.result.startsWith('In progress')));
-  assert.equal(model.activity[0].id,'ra-live');
-  assert.equal(model.activity.find(a=>a.engine==='swt').passageId,'7');
+  assert.equal(model.activity.length, 0);
+  assert.equal(model.recent.length, 0);
+  assert.equal(model.mocks.length, 0);
+  assert.equal(model.practice, 0);
+  assert.equal(model.days, 0);
 });
 
 test('My Progress includes completed essay practice in recent writing', () => {
@@ -219,7 +219,8 @@ test('My Progress does not relabel an already-scored SWT answer as an unfinished
     swtDrafts:{4:{text:'The answer that was already scored',timestamp:'2026-09-30T10:00:00.000Z'}},
     essays:[]
   }, [], []);
-  assert.equal(model.activePractice.some(item => item.engine === 'swt'), false);
+  assert.equal(model.activity.length, 1);
+  assert.equal(model.activity[0].id, '4:2026-09-30T10:01:00.000Z');
 });
 
 test('My Progress forces a fresh cloud pull instead of relying on the background throttle', () => {

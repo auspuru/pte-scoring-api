@@ -26,7 +26,7 @@ test('Recent rows show exact saved marks and scales, retain zeros, and distingui
  const speaking=[{id:'confirmed',type:'di',status:'submitted',startedAt:11,result:{total:5,maximum:6,scoringMode:'ai'}},{id:'provisional',type:'di',status:'submitted',startedAt:12,result:{total:6,maximum:6,scoringMode:'local'}}];
  const before=JSON.stringify({data,writing,speaking}),rows=ctx.StudentProgress.model(data,writing,speaking).activity;
  const score=id=>rows.find(r=>r.id===id).scoreText;
- assert.equal(score('older'),'0 / 26');assert.equal(score('newer'),'21 / 26');assert.equal(score('missing'),'Score unavailable');assert.equal(score('essay-draft'),'Not scored');
+ assert.equal(score('older'),'0 / 26');assert.equal(score('newer'),'21 / 26');assert.equal(score('missing'),'Score unavailable');assert.equal(rows.some(row=>row.id==='essay-draft'),false);
  assert.equal(score('1:4'),'8 / 9');assert.equal(score('1:5'),'72 / 90 estimate');assert.equal(score('1:6'),'Pending');
  assert.equal(score('reading-zero'),'0 / 3');assert.equal(score('reading-pending'),'Pending');assert.equal(score('wfd'),'7 / 9');assert.equal(score('sst-pending'),'Pending');
  assert.equal(score('confirmed'),'5 / 6 content');assert.equal(score('provisional'),'Pending');
@@ -37,7 +37,7 @@ test('Simple progress rows open exact responses, retain older pages, and reject 
  const ctx=progressContext();const essays=Array.from({length:23},(_,i)=>({id:'essay-'+i,date:i+1,questionTitle:i===22?'<img src=x onerror=alert(1)>':'Essay '+i,scores:{total:20}}));
  const controller=ctx.StudentProgress.create({document:ctx.document,identity:()=>user,navigate:r=>routed.push(r),review:a=>opened.push(a),loadLocal:async()=>({essays}),fetch:async()=>({ok:true,json:async()=>[]})});
  await controller.open();const host=ctx.document.getElementById('progressPane');
- assert.equal(host.querySelector('h3').textContent,'Recently attempted questions');
+ assert.equal(host.querySelector('h3').textContent,'Recently submitted answers');
  assert.equal(host.querySelectorAll('[data-progress-attempt]').length,20);assert.equal(host.querySelector('.progress-attempt-score').textContent,'Score: 20 / 26');
  assert.equal(host.querySelectorAll('img').length,0);
  assert.doesNotMatch(host.textContent,/Task trends|Suggested focus|Cross-task percentages/);

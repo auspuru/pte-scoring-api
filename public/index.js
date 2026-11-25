@@ -12523,7 +12523,7 @@ function ensureReadingRuntimeLoaded() {
       ['reading-exam-player.js?v=sha256-855619510b75', 'reading exam player'],
       ['reading-session-timing.js?v=1', 'reading session timing'],
       ['reading-review.js?v=sha256-98e9c23a186f', 'reading review'],
-      ['reading-practice.js?v=sha256-e6dfb8f8b103', 'reading practice']
+      ['reading-practice.js?v=sha256-62693703fe32', 'reading practice']
     ];
     // async=false preserves insertion/execution order while the dependency
     // downloads overlap. Initialise the practice client only after all succeed.
@@ -12554,7 +12554,7 @@ function ensureSpeakingRuntimeLoaded() {
   if (window.SpeakingPractice) return Promise.resolve(window.SpeakingPractice);
   if (speakingRuntimeLoadPromise) return speakingRuntimeLoadPromise;
 
-  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-95057b0b433b', 'speaking practice'))
+  speakingRuntimeLoadPromise = ensureSpeakingCueLoaded().then(()=>loadDeferredScript('speaking-practice.js?v=sha256-9c0d6dd99fb7', 'speaking practice'))
     .then(() => {
       if (!window.SpeakingPractice) throw new Error('Speaking practice did not initialise.');
       return window.SpeakingPractice;
@@ -12593,7 +12593,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-fd498cc29ef9', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-cd077ac1da4a', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
@@ -12608,7 +12608,7 @@ function ensureWritingLabRuntimeLoaded() {
 function ensureStudentProgressRuntimeLoaded() {
   if (window.StudentProgress?.create) return Promise.resolve(window.StudentProgress);
   if (studentProgressRuntimeLoadPromise) return studentProgressRuntimeLoadPromise;
-  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=sha256-1b38fc995fa4', 'student progress')
+  studentProgressRuntimeLoadPromise = loadDeferredScript('/student-progress.js?v=sha256-8793007157ae', 'student progress')
     .then(() => {
       if (!window.StudentProgress?.create) throw new Error('Progress history did not initialise.');
       return window.StudentProgress;
@@ -12951,7 +12951,6 @@ function openSavedSwtResponse(entry) {
 
 function reviewSavedPractice(entry) {
   if (entry.engine === 'essay') {
-    if (entry.draft) return resumePortalEssay();
     return switchSection('practice', {essayRequest:{attemptId:entry.id},routeHash:PortalWorkspace.questionHash('practice',{attempt:entry.id})});
   }
   if (entry.engine === 'swt') return switchSection('swt', {swtRequest:entry,routeHash:PortalWorkspace.questionHash('swt',{question:entry.passageId,attempt:entry.timestamp})});
@@ -12977,10 +12976,8 @@ function readStudentProgressSnapshot() {
   return {
     reading,
     swt:progress.history||{},
-    swtDrafts:progress.summaries||{},
     passages:passages.map(p=>({id:p.id,title:p.title})),
-    essays:getPracticeHistory(),
-    essayDraft:progress.essayDraft||null
+    essays:getPracticeHistory()
   };
 }
 

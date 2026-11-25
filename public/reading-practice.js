@@ -475,8 +475,8 @@
     const items=practiceQueue(s),index=items.findIndex(q=>q.uid===s.practiceUid),q=s.questions[s.index]||s.questions[0];
     return studio.questionToolbar({title:taskLabels[q.type],position:index<0?'Open the question list to select a queue':'Question '+(index+1)+' of '+items.length,mode:timeModeText(s),status:s.done?'Completed':'In progress',className:'reading-actions reading-practice-dock',actions:'<button class="portal-button" data-action="home" aria-label="Question list">← Return to questions</button><button class="portal-button practice-reattempt" data-action="retry-question">↻ Reattempt</button><button class="portal-button" data-move="-1" '+(index<=0?'disabled':'')+'>← Back</button><button class="portal-button reading-next-action" data-move="1" '+(index<0||index>=items.length-1?'disabled':'')+'>Next →</button>'});
   }
-  function readingQuestionHistory(s) {
-    const unique=new Map();for(const a of [state.session,...state.history,...(state.drafts||[])])if(a?.practiceUid===s.practiceUid&&!unique.has(a.id))unique.set(a.id,a);
+  function readingQuestionHistory(s, submittedOnly) {
+    const unique=new Map();for(const a of [state.session,...state.history,...(state.drafts||[])])if(a?.practiceUid===s.practiceUid&&(!submittedOnly||a.done)&&!unique.has(a.id))unique.set(a.id,a);
     const ordered=[...unique.values()].sort((a,b)=>a.startedAt-b.startedAt);
     return studio.attemptHistory(ordered.map((a,i)=>({a,i})).filter(({a})=>a.id!==s.id).reverse().map(({a,i})=>({id:a.id,label:'Attempt '+(i+1),date:studio.brisbaneDate(a.finishedAt||a.startedAt),mode:timeModeText(a),status:a.done?'Completed':'Saved draft',actions:'<button class="portal-button" data-saved-practice-attempt="'+escape(a.id)+'">'+(a.done?'Answer &amp; feedback':'Open saved attempt')+'</button>'})));
   }
@@ -514,7 +514,7 @@
       ${mock.isAudio(q)?audioHTML(q):''}
       <fieldset ${review?'disabled':''}><legend class="sr-only">Your answer</legend>${questionHTML(q,a)}</fieldset>
       ${review?explanation(q,a):''}
-      ${s.practiceUid?'<div class="reading-practice-submit">'+(!review?'<button class="portal-button primary" data-action="check">Check answer</button>':'')+'<button class="portal-button" data-action="submit">Finish and review</button><span data-save-status role="status">'+escape(saveNotice)+'</span></div></article></div>'+readingQuestionHistory(s):`<div class="reading-actions">${s.practiceUid?'<button class="portal-button" data-action="home">Question list</button><span>Selection '+(navigationIndex+1)+' of '+libraryQuestions.length+'</span>':''}<button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done&&review&&s.practiceUid?'<button class="portal-button" data-action="retry-question">Retry this question</button>':''}${!s.done?'<button class="portal-button" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex<0||navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`}`;
+      ${s.practiceUid?'<div class="reading-practice-submit">'+(!review?'<button class="portal-button primary" data-action="check">Check answer</button>':'')+'<button class="portal-button" data-action="submit">Finish and review</button><span data-save-status role="status">'+escape(saveNotice)+'</span></div></article></div>'+readingQuestionHistory(s,review):`<div class="reading-actions">${s.practiceUid?'<button class="portal-button" data-action="home">Question list</button><span>Selection '+(navigationIndex+1)+' of '+libraryQuestions.length+'</span>':''}<button class="portal-button" data-move="-1" ${navigationIndex<=0?'disabled':''}>← Back</button>${!s.done&&s.mode==='practice'&&!review?'<button class="portal-button primary" data-action="check">Check answer</button>':''}${!s.done&&review&&s.practiceUid?'<button class="portal-button" data-action="retry-question">Retry this question</button>':''}${!s.done?'<button class="portal-button" data-action="submit">Finish and review</button>':''}<button class="portal-button reading-next-action" data-move="1" ${navigationIndex<0||navigationIndex>=libraryQuestions.length-1?'disabled':''}>Next <span aria-hidden="true">→</span></button></div></article></div>`}`;
     host.innerHTML=s.practiceUid?studio.wrap(practiceSkill(q.type),practiceRoute(q.type),content):content;
     questionChanged(s);
   }
@@ -656,7 +656,7 @@
         + '<div data-review-overview>'+summary(model)+'</div><div class="reading-review-intro"><div><h2>All answers &amp; feedback</h2><p>Read the full passages with your answers and corrections in context.</p></div><div data-review-retry>'+retry+'</div></div>'
         + review.controls(model,taskLabels,reviewView)
         + '<div class="reading-review-empty reading-card" data-review-empty hidden><h3>No answers match these filters.</h3><p>Choose another task or reset your filters to see every answer.</p><button class="portal-button" data-review-reset>Show all answers</button></div>'
-        + '<div class="reading-complete-review">'+model.map(question).join('')+'</div>'+(s.practiceUid?readingQuestionHistory(s):'')+'</section>';
+        + '<div class="reading-complete-review">'+model.map(question).join('')+'</div>'+(s.practiceUid?readingQuestionHistory(s,true):'')+'</section>';
       host.innerHTML=s.practiceUid?studio.wrap(practiceSkill(currentQuestion.type),practiceRoute(currentQuestion.type),content):content;
       questionChanged(s);
     }

@@ -166,7 +166,7 @@ for(const width of [1363,390,320])test('Progress opens exact saved responses and
  const older={text:'Older saved summary response for exact historical feedback.',timestamp:Date.parse('2026-10-01T10:00:00.000Z'),overall_score:65,trait_scores:{content:2,form:1,grammar:2,vocabulary:2},content_details:{},feedback:'Older saved feedback'};
  const latest={...older,text:'Latest saved summary response must not replace the older response.',timestamp:'2026-10-03T10:00:00.000Z',overall_score:80};
  const history={[passage.id]:[latest,older]};
- const synced=await f.request('/api/sync/'+username,{history,scores:{[passage.id]:{...latest,__text:latest.text,__timestamp:latest.timestamp}},practiceHistory:[{id:'saved-essay',date:Date.parse('2026-10-02T10:00:00.000Z'),questionTitle:'Saved essay question',questionText:'Discuss the topic.',essayText:'The exact saved essay response.',wordCount:220,scores:{total:20}}]},registration.body.token);
+ const synced=await f.request('/api/sync/'+username,{history,summaries:{[passage.id]:{text:'A newer draft should stay out of Progress.',timestamp:'2026-10-04T10:00:00.000Z'}},scores:{[passage.id]:{...latest,__text:latest.text,__timestamp:latest.timestamp}},practiceHistory:[{id:'saved-essay',date:Date.parse('2026-10-02T10:00:00.000Z'),questionTitle:'Saved essay question',questionText:'Discuss the topic.',essayText:'The exact saved essay response.',wordCount:220,scores:{total:20}}]},registration.body.token);
  assert.equal(synced.body.success,true);
  const assigned=await f.request('/api/admin/interventions/'+username,{title:'SWT navigation plan',items:[{id:'assigned-swt',kind:'question',title:'Assigned SWT',engine:'swt',route:'swt',questionId:String(passage.id),requireNewAttempt:true},{id:'lesson',kind:'video',title:'SWT resource',url:f.base+'/fixture-resource'}]},null,true);
  assert.equal(assigned.status,200);
@@ -197,7 +197,9 @@ for(const width of [1363,390,320])test('Progress opens exact saved responses and
  await page.waitForSelector('.portal-ux-history:not([hidden]) .tabulator-row');
  await page.locator('.portal-ux-history-tools button').click();
  await page.waitForFunction(()=>document.querySelector('.progress-recent>.progress-attempts')?.hidden===false);
- assert.equal(await page.$eval('#progressPane .progress-recent h3',e=>e.textContent),'Recently attempted questions');
+ assert.equal(await page.$eval('#progressPane .progress-recent h3',e=>e.textContent),'Recently submitted answers');
+ assert.equal(await page.$$eval('.progress-recent > .progress-attempts [data-progress-attempt]',rows=>rows.length),3);
+ assert.doesNotMatch(await page.$eval('#progressPane',e=>e.textContent),/Saved draft|Continue response/);
  assert.equal(await page.$eval('[data-progress-attempt="1"]',e=>e.textContent.includes('Saved essay question')),true);
  assert.equal(await page.$eval('#progressPane',e=>e.textContent.includes('Task trends')),false);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
@@ -232,6 +234,7 @@ for(const width of [1363,390,320])test('Progress opens exact saved responses and
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),false);
  assert.deepEqual(errors,[]);
  } catch(error) {
+  t.diagnostic(JSON.stringify({errors,progress:await page.$eval('#progressPane',e=>e.textContent.trim()).catch(()=>null)}));
   console.error('Progress browser state',JSON.stringify(await page.evaluate(()=>({section:document.body.dataset.section,hash:location.hash,menu:document.body.classList.contains('portal-menu-open'),targets:[...document.querySelectorAll('#nav-progress,#portalMenuToggle,a[data-step-start]')].map(e=>{const r=e.getBoundingClientRect(),style=getComputedStyle(e);return {tag:e.tagName,id:e.id,step:e.dataset.stepStart,x:r.x,y:r.y,width:r.width,height:r.height,display:style.display,visibility:style.visibility};})})).catch(()=>({unavailable:true}))));
   throw error;
  }

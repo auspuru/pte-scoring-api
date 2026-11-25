@@ -223,7 +223,7 @@
       const ticket=serial,user=owner,id=attempt.id,questionId=attempt.questionId;
       try{const rows=await loadHistory();if(!valid(ticket,user)||attempt?.id!==id||!visible)return;
         const node=doc.getElementById('speaking-question-history');if(!node)return;
-        const matching=rows.filter(a=>a.questionId===questionId).sort((a,b)=>new Date(a.startedAt)-new Date(b.startedAt));
+        const matching=rows.filter(a=>a.questionId===questionId&&(attempt.status!=='submitted'||a.status==='submitted')).sort((a,b)=>new Date(a.startedAt)-new Date(b.startedAt));
         node.innerHTML=studio.attemptHistory(matching.map((a,i)=>({a,i})).filter(({a})=>a.id!==id).reverse().map(({a,i})=>({id:a.id,label:'Attempt '+(i+1),date:studio.brisbaneDate(a.startedAt),mode:modeName(modeOf(a)),status:a.assessment?.status==='pending'?'Scoring':a.assessment?.status==='error'?'Saved — feedback needs retry':a.status==='submitted'?'Completed':'Saved draft',actions:'<button class="portal-button" data-speaking-attempt="'+esc(a.id)+'">'+(a.status==='submitted'?'Answer &amp; feedback':'Open saved attempt')+'</button>'})));
       }catch(error){const node=doc.getElementById('speaking-question-history');if(node&&attempt?.id===id)node.textContent='Previous attempts could not load. Return to questions and retry.';}
     }
