@@ -21,7 +21,9 @@ function validate() {
     assert(Number.isSafeInteger(seconds) && seconds > 0, id + ' source player duration');
     return [id, seconds];
   }));
+  const suppliedRepeatSentences = require('../content/user-rs-20261125.json');
   const expectedCounts = {
+    rs: 5 + suppliedRepeatSentences.length,
     ra: 5 + originalReadAloud.length,
     di: 5 + diPredictions.length,
     rts: 6 + rtsPrompts.length + suppliedRts.length,
@@ -29,7 +31,7 @@ function validate() {
     sgd: 5 + discussions.length,
   };
   assert.equal(bank.questions.length, 30 + diPredictions.length + rtsPrompts.length
-    + suppliedSpeaking.length + discussions.length + retellPredictions.length + suppliedRts.length + originalReadAloud.length);
+    + suppliedSpeaking.length + discussions.length + retellPredictions.length + suppliedRts.length + originalReadAloud.length + suppliedRepeatSentences.length);
   assert.equal(new Set(bank.questions.map(q => q.id)).size, bank.questions.length);
   for (const type of Object.keys(bank.types)) {
     assert.equal(bank.questions.filter(q => q.type === type).length, expectedCounts[type] ?? 5);

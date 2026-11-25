@@ -35,7 +35,8 @@ questions.push(...['ra-1','ra-2','ra-3','ra-4','ra-5'].map(pick));
 const archive=writing.spoken.find(q=>q.id==='sst-digital-archives');
 let passage='';for(const sentence of archive.text.split(/(?<=[.!?])\s+/u)){const candidate=(passage+' '+sentence).trim();if(candidate.split(/\s+/u).length>60)break;passage=candidate;}
 questions.push({id:'mock-ra-archives',type:'ra',...bank.types.ra,title:'Preserving accessible records',text:passage,sourceId:archive.id});
-questions.push(...bank.questions.filter(q=>q.type==='rs').map(q=>source(q,'speaking')));
+// Keep the first mock on its original Repeat Sentence selection.
+questions.push(...['rs-1','rs-2','rs-3','rs-4','rs-5'].map(id=>source(pick(id),'speaking')));
 for(const q of writing.dictation.slice(0,5))questions.push(source({id:'mock-rs-'+q.id,type:'rs',...bank.types.rs,title:'Repeat Sentence',text:q.text,sourceId:q.id},'writing',q.id));
 // Original prediction assets reviewed for readable labels and matching samples.
 // Saved attempts retain their own snapshots; new papers exclude photographs.
