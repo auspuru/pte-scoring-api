@@ -153,6 +153,8 @@ function previousRtsSnapshot(current) {
   return { ...current, scoringSources: sources };
 }
 function compatibleTransportUpgrade(saved, current) {
+  const beforeRtsPracticeRepair = previousPracticeIndexSnapshot(current, require('../content/full-mock/rts-practice-repair-compatible-pins.json'));
+  if (beforeRtsPracticeRepair && (digest(saved) === digest(beforeRtsPracticeRepair) || compatibleTransportUpgrade(saved, beforeRtsPracticeRepair))) return true;
   const beforePassageSearch = previousPracticeIndexSnapshot(current, passageSearchPins);
   if (beforePassageSearch && (digest(saved) === digest(beforePassageSearch) || compatibleTransportUpgrade(saved, beforePassageSearch))) return true;
   const beforeTranscriptSearch = previousPracticeIndexSnapshot(current, transcriptSearchPins);
