@@ -160,6 +160,7 @@ const newSituations = require('./user-rts-20261124.json').map(q => ({
 questions.splice(questions.findIndex(q => q.type === 'rts'), 0, ...newSituations);
 questions.push(...require('./ra-original-20261125.json').map(q => ({ ...types.ra, ...q })));
 questions.push(...require('./user-rs-20261125.json').map(q => ({ ...types.rs, ...q })));
+questions.push(...require('./user-ra-pte-nepal-20261122.json').map(q => ({ ...types.ra, ...q })));
 for (const q of questions) {
   if (q.turns) q.text = [...(q.narration ? ['Narration: ' + q.narration] : []), ...q.turns.map(([speaker, text]) => speaker + ': ' + text)].join('\n');
   if (['ra', 'rs'].includes(q.type)) q.sample = q.text;
