@@ -1,0 +1,704 @@
+[
+  {
+    "id": 951001,
+    "sourceNumber": 1,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Power of Mindfulness",
+    "category": "Psychology",
+    "text": "Mindfulness, the practice of being fully present and engaged in the moment, has gained significant traction in the field of psychology as a powerful tool for enhancing mental health. Rooted in ancient meditation practices, mindfulness involves a non-judgmental awareness of one's thoughts, feelings, bodily sensations, and surrounding environment. Research in psychology and neuroscience has shown that mindfulness can have a profound impact on mental well-being. Regular mindfulness practice has been associated with reductions in symptoms of anxiety and depression. It helps individuals break free from negative thought patterns, reducing the rumination and worry that often accompany these conditions. Mindfulness also plays a crucial role in stress reduction. By fostering a calm and attentive state of mind, mindfulness practices like meditation can lower stress hormones and promote relaxation. This state of mental calmness can improve sleep quality, enhance concentration, and boost overall emotional resilience. In therapy, mindfulness-based interventions such as Mindfulness-Based Stress Reduction (MBSR) and Mindfulness-Based Cognitive Therapy (MBCT) have been effective in treating various mental health issues. These therapeutic approaches combine mindfulness techniques with elements of cognitive therapy to help individuals understand and manage their thoughts and emotions more effectively. Furthermore, mindfulness can improve physical health, which is closely linked to mental health. Studies have shown that it can lower blood pressure, reduce chronic pain, and improve the immune system, further contributing to mental and emotional well-being. In conclusion, mindfulness offers a versatile and accessible approach to mental health, suitable for a wide range of individuals. Its benefits of reducing anxiety, depression, and stress, and enhancing overall well-being, make it an invaluable practice in the journey towards mental and emotional health.",
+    "keyElements": {
+      "what": "Present-moment mindfulness improves mental well-being",
+      "why": "Nonjudgmental awareness can interrupt rumination and promote relaxation",
+      "how": "Meditation and therapies such as MBSR and MBCT help people manage thoughts and feelings",
+      "result": "Mindfulness may reduce anxiety, depression and stress while supporting sleep and physical health"
+    },
+    "sampleResponse": "Mindfulness cultivates nonjudgmental awareness of the present, and regular practice or mindfulness-based therapy can reduce rumination, anxiety, depression and stress while improving sleep, emotional resilience and some measures of physical health.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q01",
+      "sourceTitle": "Power of Mindfulness",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 151,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951005,
+    "sourceNumber": 5,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Pre-service teachers",
+    "category": "Education",
+    "text": "Each individual content-area course has a separate syllabus that highlights the specific technologies and pedagogy that are relevant to the content area. The technology was selected after numerous meetings between methods and technology course instructors. After identifying the most appropriate technology, the methods and technology course instructors co-develop their syllabi with projects that span the two courses. Therefore, students learn about a specific technology on the technology course and they integrate it into their practice teaching experiences within their methods course. In a research collaboration with a methods area faculty member, the technology course instructor found that although pre-service teachers may know how to operate the technology, they do not know how to integrate it effectively within their daily lesson plans, mainly citing that they were not able to envision the type of projects their students could develop. These findings influenced the technology course instructor to develop exemplary models of technology projects and pedagogy for each of the technology course sections (i.e., content areas). For example, an Inspiration TM project was modeled that illustrated how students could construct an understanding of clouds using concept mapping within a science cohort. This project was supplemented by the instructor modeling effective teaching practices using concept mapping in the science classroom. The goal was to move the pre-service teachers from focusing not only on the development of a final technology project on the course, but by encouraging them to think about successful integration in their future classrooms. These examples were placed online so the pre-service teachers had access to them at all times in the development of their own projects for the technology course.",
+    "keyElements": {
+      "what": "Pre-service teachers need to integrate technology into their lessons",
+      "why": "Being able to operate a tool does not teach students how to design classroom projects",
+      "how": "Methods and technology instructors coordinate syllabi and provide discipline-specific examples such as science concept mapping",
+      "result": "Online models help future teachers use technology effectively in their own classrooms"
+    },
+    "sampleResponse": "Coordinated technology and teaching courses use discipline-specific projects, model lessons and online examples to help pre-service teachers move from operating digital tools to integrating them effectively into classroom instruction.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q05",
+      "sourceTitle": "Pre-service teachers",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 153,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951007,
+    "sourceNumber": 7,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Natural Resources",
+    "category": "Environment",
+    "text": "The rapid industrialization and urbanization of the past century have led to a significant increase in the consumption of natural resources. Of human origin, activities such as mining, deforestation, and fossil fuel extraction have caused a rapid depletion of raw materials, leading to concerns about the sustainability of our current consumption patterns. The extraction and use of these resources not only reduces their availability but also causes environmental degradation, including air and water pollution, soil erosion, and loss of biodiversity. Mining activities, for example, often involve the removal of vast amounts of soil and rock, resulting in the destruction of ecosystems and the displacement of wildlife. Deforestation, driven by the demand for timber, agricultural land, and urban development, leads to the loss of forests, which play a crucial role in regulating the Earth's climate and maintaining biodiversity. The burning of fossil fuels, such as coal, oil, and natural gas, contributes to greenhouse gas emissions, which drive climate change and result in extreme weather events, rising sea levels, and disruptions to ecosystems. Furthermore, the depletion of raw materials has economic implications. As resources become scarcer, their prices increase, leading to higher costs for industries and consumers. This could also drive geopolitical tensions as countries compete for access to remaining resources. To address these challenges, it is essential to adopt more sustainable practices, such as recycling, using renewable energy sources, and implementing efficient resource management strategies. By doing so, we can reduce our reliance on finite resources, minimize environmental impacts, and ensure the long-term sustainability of our planet. In conclusion, the depletion of raw materials due to human-origin activities poses significant environmental, economic, and social challenges. It is crucial to promote sustainable practices to mitigate these impacts and preserve natural resources for future generations.",
+    "keyElements": {
+      "what": "Industrialisation and urbanisation accelerate natural resource consumption",
+      "why": "Mining, deforestation and fossil fuel extraction deplete finite materials",
+      "how": "Extraction and combustion damage ecosystems, produce pollution and contribute to climate change",
+      "result": "Scarcity increases costs and tensions, while recycling, renewable energy and sound management can ease pressure"
+    },
+    "sampleResponse": "Mining, deforestation and fossil fuel use have depleted raw materials and damaged ecosystems, raising costs and tensions as resources become scarce, so recycling, renewable energy and efficient management are needed to preserve supplies.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q07",
+      "sourceTitle": "Natural Resources",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 154,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951008,
+    "sourceNumber": 8,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "LED Bulbs",
+    "category": "Technology",
+    "text": "LED bulbs, or light-emitting diode bulbs, have gained widespread popularity in recent years due to their energy efficiency and longevity. Unlike traditional incandescent bulbs, which produce light by heating a filament, LED bulbs generate light through the movement of electrons in a semiconductor material. This process not only consumes less energy but also produces less heat, making LED bulbs more environmentally friendly. Additionally, LED bulbs have a longer lifespan, often lasting up to 25,000 hours or more, compared to the 1,000hour lifespan of incandescent bulbs. This extended lifespan reduces the frequency of bulb replacements, contributing to lower maintenance costs and less waste. Moreover, LED bulbs are available in a variety of colors and brightness levels, providing consumers with more options for their lighting needs. They can be used in a wide range of applications, from residential lighting to commercial and industrial settings. The versatility of LED bulbs has also led to their adoption in innovative technologies, such as smart lighting systems that can be controlled remotely via smartphone apps. Despite their many advantages, LED bulbs have some limitations. The initial cost of LED bulbs is higher than that of traditional incandescent bulbs, which can be a barrier for some consumers. However, long-term energy savings and reduced replacement costs often offset this initial investment. Furthermore, some early models of LED bulbs experienced issues with color quality and light distribution, although advancements in technology have largely addressed these concerns. Overall, the transition to LED bulbs represents a significant step toward more sustainable and efficient lighting solutions, offering numerous benefits for both consumers and the environment.",
+    "keyElements": {
+      "what": "LEDs use less energy and last longer than incandescent bulbs",
+      "why": "Semiconductors emit light with less heat than a heated filament",
+      "how": "Different colours and brightness settings support many uses, including smart lighting",
+      "result": "Energy and replacement savings often offset higher purchase prices while reducing waste"
+    },
+    "sampleResponse": "LED bulbs use semiconductors to produce light with less energy and heat, and their long lifespan, versatility and lower maintenance costs can offset their higher purchase price while reducing waste.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q08",
+      "sourceTitle": "LED Bulbs",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 155,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951009,
+    "sourceNumber": 9,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Online Shopping Cards",
+    "category": "Business",
+    "text": "In recent years, online shopping has become increasingly popular, thanks to its convenience and the vast array of products available at consumers' fingertips. The rise of e-commerce platforms has transformed the retail landscape, allowing people to shop from the comfort of their homes. A crucial aspect of this shift has been the use of bank cards for transactions. Credit and debit cards have become the preferred method of payment for online shoppers due to their ease of use and the security features they offer. However, this widespread adoption has also raised concerns about the potential risks associated with online transactions. Cybersecurity threats, such as hacking and phishing, have put consumers' financial information at risk, leading to increased efforts by banks and e-commerce platforms to enhance security measures. Moreover, the use of bank cards for online shopping has implications for consumer behavior. Studies have shown that people are more likely to make impulsive purchases when using credit cards compared to cash. The ease of online transactions, coupled with targeted advertising and personalized recommendations, can lead to overspending and financial strain for some consumers. On the other hand, online shopping with bank cards can offer benefits such as reward points, cashback, and fraud protection, which can enhance the overall shopping experience. As online shopping continues to grow, it is essential for consumers to remain vigilant about their financial security and to make informed decisions about their purchases. Both consumers and financial institutions must work together to ensure a safe and enjoyable online shopping experience.",
+    "keyElements": {
+      "what": "Credit and debit cards are widely used for online shopping",
+      "why": "Convenient transactions and card benefits make the payment method attractive",
+      "how": "Hacking and phishing threaten financial data, and easy purchases can encourage overspending",
+      "result": "Financial institutions and shoppers can improve safety through stronger protections and informed spending"
+    },
+    "sampleResponse": "Bank cards make online shopping convenient and can provide rewards and fraud protection, but cybersecurity threats and impulsive spending call for stronger safeguards from financial institutions and informed decisions by shoppers.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q09",
+      "sourceTitle": "Online Shopping Cards",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 156,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951011,
+    "sourceNumber": 11,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Remote Inhabited Location",
+    "category": "Geography",
+    "text": "The most remote inhabited location on Earth is a place called Tristan da Cunha. As of Feb. 17, 2022, there were 257 people, mostly British citizens, living on this archipelago, which sees a ship carrying mail, cargo and passengers about once a month. Tristan da Cunha is located at 37 degrees south latitude and 12 degrees west longitude, 1,242 miles from St. Helena and 1,740 miles from the nearest mainland, the Cape of Good Hope, South Africa. It sits in the South Atlantic Ocean, between South America and Africa, west and slightly south of the Cape of Good Hope. Tristan is circular in shape and is about 6 miles in diameter with a total area of only about 30 square miles. The summer season falls between December and March. During the winter months, the central volcanic peak of Tristan, which rises to a height of 6,760 feet, is covered in snow. Tristan da Cunha, the main island, is the only inhabited island in the chain. The other islands that make up the archipelago are not populated by humans. Today, Tristan da Cunha is certainly off the beaten path and is considered the most remote inhabited island on the planet. However, in the 17th and 18th centuries, the archipelago was on the preferred maritime route to the Cape of Good Hope and the Indian Ocean.",
+    "keyElements": {
+      "what": "Tristan da Cunha is the most remote inhabited island",
+      "why": "It lies in the South Atlantic far from the nearest mainland",
+      "how": "A small population lives on the main volcanic island and receives ships about monthly",
+      "result": "The archipelago was once on a preferred route to the Cape of Good Hope and Indian Ocean"
+    },
+    "sampleResponse": "Tristan da Cunha, a small volcanic island with a monthly ship service in the remote South Atlantic, was once on a preferred sailing route to the Cape of Good Hope and the Indian Ocean.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q11",
+      "sourceTitle": "Remote Inhabited Location",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 158,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951013,
+    "sourceNumber": 13,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Hydrogen-powered Flight",
+    "category": "Technology",
+    "text": "Last month, Airbus announced plans to overhaul an A380 airliner by adding a hydrogen-combustion engine to the outside of the plane and installing monitoring equipment. With the changes, the company will be able to test hydrogen-powered flight in real-world conditions. The move is part of a broader industry goal to reach net-zero carbon emissions by 2050. Passenger air travel is a growing contributor to climate change, making up about three percent of carbon emissions worldwide in 2021. While flying less and investing in more efficient planes can help reduce emissions, new technologies will likely be needed to reach net-zero. Other solutions, like battery-powered air taxis and sustainable aviation fuels, may help cut emissions, but hydrogen in particular might be one of the major paths forward to net-zero because it could be used widely across the industry, from shorter regional hops to longer flights with larger planes. \"Understanding emissions from hydrogen combustion in real-air conditions is one of the major goals of this testing program, Simpson says. While burning liquid hydrogen doesn't produce CO2, the most abundant greenhouse gas, researchers are still eager to learn more about emissions from hydrogen-powered flight. Hydrogen engines will still produce some nitro-oxides, which are common pollutants, as well as water vapor, which acts as a greenhouse gas in the atmosphere. The test engine will also allow Airbus to learn more about how to run hydrogen combustion in flight. Researchers can change the operating conditions of the engine, like the fuel-to-air ratio it burns and the temperature it runs at, to learn more about how to most efficiently power a hydrogen-powered plane.",
+    "keyElements": {
+      "what": "Airbus intends to test a hydrogen-combustion engine on an A380",
+      "why": "Aviation needs new technologies to support its net-zero target",
+      "how": "Researchers will measure real-flight emissions and vary engine conditions to study efficiency",
+      "result": "Hydrogen emits no carbon dioxide when burned, but nitrogen oxides and water vapour remain relevant"
+    },
+    "sampleResponse": "Airbus plans to test hydrogen combustion on an A380 to help aviation pursue net-zero emissions, examining engine efficiency and measuring nitrogen oxides and water vapour in real flight conditions.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q13",
+      "sourceTitle": "Hydrogen-powered Flight",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 159,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951015,
+    "sourceNumber": 15,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Anti-inflammatory Food",
+    "category": "Health",
+    "text": "Research hasn't looked specifically at the anti-inflammatory benefits of eating foods that are in season. \"But it's generally accepted that eating what's in season is likely to be fresher, and there are obviously other benefits, including those for the environment,\" says Natalie McCormick, a research fellow in medicine at Harvard Medical School. Eating foods that are in season may also help your grocery bill. When it comes to anti-inflammatory foods, the goal should be to incorporate as many as you can into your overall diet. \"Our emphasis now is on eating patterns, because it seems that interactions between foods and their combinations have a greater effect than individual foods,\" says McCormick. Three diets in particular, she says, contain the right mix of elements: The Mediterranean diet, the DASH diet, and the Alternative Healthy Eating Index. These diets are similar in that they put an emphasis on foods that are also known to be anti-inflammatory. But just as importantly, these diets also eliminate foods that can decrease levels of inflammatory markers inside the body, including a substance called C-reactive protein. Mixing and matching different foods from these diets can help you tailor an anti-inflammatory approach that fits your personal tastes, as you can choose the freshest in-season offerings. Whole grains, legumes, and heart-healthy oils can be year-round staples, but mix and match your fruits and vegetables for more variety.",
+    "keyElements": {
+      "what": "The overall eating pattern matters for an anti-inflammatory diet",
+      "why": "Benefits result from combinations of foods, and seasonal produce may be fresher and cheaper",
+      "how": "Mediterranean, DASH and Alternative Healthy Eating Index patterns provide examples",
+      "result": "People can tailor a varied diet with fruits, vegetables, grains, legumes and heart-healthy oils"
+    },
+    "sampleResponse": "An anti-inflammatory approach emphasises overall dietary patterns such as the Mediterranean or DASH diet, combining seasonal produce with staples such as whole grains, legumes and healthy oils in ways that suit individual tastes.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q15",
+      "sourceTitle": "Anti-inflammatory Food",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 160,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951019,
+    "sourceNumber": 19,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Bank Overdraft",
+    "category": "Business",
+    "text": "Banks provide short-term finance to companies in the form of an overdraft on a current account. The advantage of an overdraft is its flexibility. When the cash needs of the company increase due to seasonal factors, the company can continue to write cheques and watch the overdraft increase. When the goods and services are sold and cash begins to flow in, the company should be able to see the overdraft decrease again. The most obvious example of a business which operates in this pattern is farming. The farmer uses the overdraft to finance the acquisition of seed for arable farming, or to feed through the winter for stock farming, and to cover the period when the crops or animals are growing and maturing. The overdraft is reduced when the crops or the animals are sold. The main disadvantage of an overdraft is that it is repayable on demand. The farmer whose crop fails because of bad weather knows the problem of being unable to repay the overdraft. Having overdraft financing increases the worries of those who manage the company. The other disadvantage is that the interest payable on overdrafts is variable. When interest rates increase, the cost of the overdraft increases. Furthermore, for small companies, there are often complaints that the rate of interest charged is high compared with that available to larger companies. The banks answer that the rates charged reflect relative risk and it is their experience that small companies are more risky.",
+    "keyElements": {
+      "what": "Bank overdrafts provide flexible short-term business finance",
+      "why": "Seasonal businesses need to cover expenses before revenue arrives",
+      "how": "The balance can rise during production and be reduced by later sales",
+      "result": "Repayment on demand and variable interest create financial risks, especially for smaller firms"
+    },
+    "sampleResponse": "An overdraft helps businesses such as farms cover expenses before sales bring in cash, but repayment on demand and variable interest rates can make this flexible financing costly and risky.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q19",
+      "sourceTitle": "Bank Overdraft",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 162,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951021,
+    "sourceNumber": 21,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Carbon Dioxide",
+    "category": "Environment",
+    "text": "Carbon dioxide, primarily emitted through human activities such as the burning of fossil fuels and deforestation, is the most significant of all greenhouse gases contributing to climate change. Its excessive presence in the atmosphere has led to a steady increase in global temperatures and rising sea levels, threatening ecosystems, communities, and economies worldwide. These changes pose serious long-term risks that demand urgent and coordinated action. Given their influential role in shaping consumption patterns, supply chains, and production methods, businesses are being urged to take responsibility for the environmental consequences embedded in their operational models. Traditional profit-driven approaches are increasingly being scrutinized for their environmental impact, prompting a shift toward more sustainable business practices. Companies are now expected not just to reduce emissions but to actively invest in climate-friendly innovation and promote sustainable resource use. To support this shift, organizations like the World Wildlife Fund (WWF) are forming strategic partnerships with businesses to help guide and implement sustainable practices. These collaborations aim to transform entire markets, ensuring that environmental responsibility becomes a core element of business decision-making. By working together, WWF and its corporate partners seek to achieve long-term sustainability that balances economic growth with ecological preservation. Such alliances highlight the growing recognition that addressing climate change is a shared responsibility, one that requires systemic change across sectors, industries, and markets to secure a livable planet for future generations.",
+    "keyElements": {
+      "what": "Carbon dioxide from human activities drives global warming",
+      "why": "Fossil fuel combustion and deforestation increase emissions and threaten ecosystems and communities",
+      "how": "Businesses can reduce emissions, invest in cleaner practices and work with groups such as WWF",
+      "result": "Cooperation can make environmental responsibility part of business decisions across entire markets"
+    },
+    "sampleResponse": "Carbon dioxide from fossil fuels and deforestation fuels climate change, prompting businesses to reduce emissions and collaborate with organisations such as WWF to make resource use and investment more sustainable.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q21",
+      "sourceTitle": "Carbon Dioxide",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 163,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951022,
+    "sourceNumber": 22,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Legumes",
+    "category": "Agriculture",
+    "text": "Gardeners can feed their families and enrich the soil by growing legumes, such as green beans, soybeans, lentils and peas. Legume roots produce their own nitrogen, which is a major fertilizer nutrient needed by all plants for growth. Nitrogen is produced in nodules that form on the roots of legumes, which contain Rhizobium bacteria. The bacteria take nitrogen from the air and convert it into a form the plants can use. When legumes are pulled up in the fall, the excess nitrogen from the nodules is left in the soil. The excess organic nitrogen can be used by other plants the following growing season. It's considered organic nitrogen because it was produced naturally, making green beans or peas great rotational crops in an organic crop production system. Organic growers prefer organic nitrogen because of its natural origins and because it breaks down slowly in the soil, thus slowly feeding plants throughout the growing season. Synthetic nitrogen fertilizers tend to release nitrogen quickly and are harsher on the environment. Synthetic nitrogen fertilizers are generally applied in split applications during the season to mimic the slow release of organic nitrogen sources. Each specific legume generally requires a specific type of Rhizobium bacteria to produce nodules on their roots. Gardeners who have never grown green beans before can purchase small bags of inoculum or bacteria from the most popular vegetable seed catalogs. Before planting beans, open the package and pour in the dust-like bacteria among the seed. Shake the package and then plant. Nodules will form on the roots as they develop. The bacteria will remain in the soil, making it unnecessary to inoculate the seed the next year. Do not apply extra nitrogen fertilizer to bean crops. Doing so makes bacteria in the nodules lazy, encouraging them to stop producing their own nitrogen.",
+    "keyElements": {
+      "what": "Legumes can enrich soil through nitrogen fixation",
+      "why": "Rhizobium bacteria in root nodules convert atmospheric nitrogen into a usable form",
+      "how": "Excess naturally produced nitrogen can support later crops and feeds plants more slowly than synthetic fertiliser",
+      "result": "Legumes are useful rotation crops, and excess nitrogen fertiliser can suppress fixation"
+    },
+    "sampleResponse": "Rhizobium bacteria in legume roots convert atmospheric nitrogen into a form plants can use, leaving excess nitrogen to benefit later crops and making legumes valuable in crop rotation.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q22",
+      "sourceTitle": "Legumes",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 164,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951026,
+    "sourceNumber": 26,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "House Mice",
+    "category": "Science",
+    "text": "According to new research, house mice (Mus musculus) are ideal biomarkers of human settlement, as they tend to stow away in crates or on ships that end up going where people go. Using mice as a proxy for human movement can add to what is already known through archaeological data and answer important questions in areas where there is a lack of artifacts, Searle said. Where people go, so do mice, often stowing away in carts of hay or on ships. Despite a natural range of just 100 meters (109 yards) and an evolutionary base near Pakistan, the house mouse has managed to colonize every continent, which makes it a useful tool for researchers like Searle. Previous research conducted by Searle at the University of York supported the theory that Australian mice originated in the British Isles and probably came over with convicts shipped there to colonize the continent in the late 18th and 19th centuries. In the Viking study, he and his fellow researchers in Iceland, Denmark and Sweden took it a step further, using ancient mouse DNA collected from archaeological sites dating from the 10th to 12th centuries, as well as modern mice. He hopes to do just that in his next project, which involves tracking the migration of mice and other species, including plants, across the Indian Ocean from South Asia to East Africa.",
+    "keyElements": {
+      "what": "House mice can trace the migration of humans",
+      "why": "They travel with people in cargo and ships beyond their normal range",
+      "how": "Genetic evidence and mouse distributions illuminate past settlement where artefacts are scarce",
+      "result": "Mouse populations can complement archaeological evidence and guide new migration studies"
+    },
+    "sampleResponse": "House mice stow away with people and travel far beyond their natural range, so their distribution and genetic history can help researchers reconstruct human migrations where archaeological evidence is limited.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q26",
+      "sourceTitle": "House Mice",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 166,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951028,
+    "sourceNumber": 28,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Solar Energy",
+    "category": "Environment",
+    "text": "The advantages and disadvantages of solar power compared to other forms of renewable energy have been greatly debated. While obviously superior to some forms of energy, solar power's high cost and efficiency dependence on geography have limited its appeal. However, numerous advantages also merit further development and even possible adaptation for residences. Advantages of Solar Power Solar energy remains popular because it is both a renewable and clean source of energy. These advantages, along with the hope that eventually nations can use solar power to decrease global warming, ensure its popularity. Renewable Solar energy is a truly renewable resource. All areas of the world have the ability to collect some amount of solar power, and solar power is available for collection each day. Clean Solar energy is non-polluting. It does not create greenhouse gases, such as oil-based energy does, nor does it create waste that must be stored, such as nuclear energy. It is also far quieter to create and harness, drastically reducing the noise pollution required to convert energy into a useful form. Residential-sized solar energy systems also have very little impact on the surrounding environment, in contrast with other renewable energy sources such as wind and hydroelectric power. Low Maintenance Solar panels have no moving parts and require very little maintenance beyond regular cleaning. With no moving parts to break or replace, after the initial cost of installing the panels, maintenance and repair costs are very reasonable.",
+    "keyElements": {
+      "what": "Solar energy has practical advantages and limitations",
+      "why": "Sunlight is renewable, but generation depends on when and where it is available",
+      "how": "Panels can be installed near users and need little routine maintenance",
+      "result": "High initial costs can be weighed against low repair and operating costs over time"
+    },
+    "sampleResponse": "Solar energy provides renewable power with low maintenance costs after installation, although variable sunlight and substantial upfront costs affect how useful it is relative to other energy sources.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q28",
+      "sourceTitle": "Solar Energy",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 167,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951030,
+    "sourceNumber": 30,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Tea and Coffee Drinkers",
+    "category": "History",
+    "text": "The English have the reputation of being a nation of tea drinkers, but this wasn't always the case. By the end of the 17th century, the English were the biggest coffee drinkers in the Western world, and coffee houses became the places to be seen. As well as gossip, you could pick up talk of the latest intellectual developments in science, politics, and so on, in this age of scientific discovery and progress. At first, coffee houses were very basic; a room with a bar at one end and a few plain tables and chairs. Customers paid a penny for a bowl, not a cup of coffee. A polite young woman was usually in charge of the bar because it was thought her presence would ensure that the customers didn't use bad language or cause any trouble. An added attraction was that coffee houses provided free newspapers and journals. But people didn't go to the coffee houses just to drink coffee. They went to talk. They soon developed from simple caffs, where anyone with a penny could go for a drink and a chat, into clubs. People started to go to coffee houses where they would find other people who had the same jobs or who shared their interests and ideas, to talk and conduct business. The great popularity of coffee houses lasted about a hundred years. In the late 18th century, increased trade with other countries made such luxuries as coffee cheaper and more easily available to the ordinary person. As a result, people started to drink it at home. Also, at this time, more tea was imported from abroad, and the century of the coffee house was replaced by the domestic tea-party as the typical English social occasion.",
+    "keyElements": {
+      "what": "England shifted from coffee-house culture to drinking tea",
+      "why": "Coffee houses had once been popular places to meet and socialise",
+      "how": "More tea was imported, and tea drinking increasingly took place in homes",
+      "result": "Domestic tea parties became a characteristic English social occasion"
+    },
+    "sampleResponse": "Although coffee houses were once central to English social life, rising tea imports helped shift drinking habits towards tea, and the domestic tea party eventually became a characteristic English gathering.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q30",
+      "sourceTitle": "Tea and Coffee Drinkers",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 168,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951032,
+    "sourceNumber": 32,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Dark Galaxies",
+    "category": "Science",
+    "text": "We see stars all around, so why don't their combined lights add up to make our night sky-and surrounding space, for that matter-bright? German physicist Heinrich Wilhelm Olbers put the same puzzle this way in 1823: If the universe is infinite in size, and stars (or galaxies) are distributed throughout this infinite universe, then we are certain to eventually see a star in any direction we look. As a result, the night sky should be aglow. Why isn't it? In fact, the answer is far more profound than it appears. There have been many attempts at explaining this puzzle, dubbed Olbers' Paradox, over the years. One version implicated dust between stars and perhaps between galaxies. The idea was that the dust would block the light from faraway objects, making the sky dark. In reality, however, the light falling on the dust would eventually heat it up so that it would glow as brightly as the original source of the light. Another proposed answer to the paradox held that the tremendous red shift of distant galaxies-the lengthening of the wavelength of light they emit due to the expansion of the universe-would move light out of the visible range into the invisible infrared. But if this explanation were true, shorter, wavelength ultraviolet light would also be shifted into the visible range-which doesn't happen.",
+    "keyElements": {
+      "what": "The darkness of the night sky poses a problem for models with innumerable stars",
+      "why": "Stars in every direction might be expected to illuminate the sky",
+      "how": "Dust would eventually glow, and redshift alone would also bring shorter ultraviolet wavelengths into the visible range",
+      "result": "Neither of those simple explanations satisfactorily explains a dark sky"
+    },
+    "sampleResponse": "The dark night sky is puzzling because stars shine in every direction, yet dust would eventually re-emit absorbed light and shifting distant visible light into the infrared would also shift ultraviolet light into view.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q32",
+      "sourceTitle": "Dark Galaxies",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 169,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951035,
+    "sourceNumber": 35,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "American English",
+    "category": "Language",
+    "text": "American English is, without a doubt, the most influential and powerful variety of English in the world today. There are many reasons for this. First, the United States is, at present, the most powerful nation on earth and such power always brings with it influence. Indeed, the distinction between a dialect and a language has frequently been made with reference to power. As has been said, a language is a dialect with an army. Second, America's political influence is extended through American popular culture, in particular through the international reach of American films (movies, of course) and music. As Kahane has pointed out, the internationally dominant position of culture results in a forceful expansion of its language, and the expansion of language contributes to the prestige of the culture behind it. Third, the international prominence of American English is closely associated with the extraordinarily quick development of communications technology. Microsoft is owned by an American, Bill Gates. This means a computer's default setting for language is American English, although, of course, this can be changed to suit one's own circumstances. In short, the increased influence of American English is caused by political power and the resultant diffusion of American culture and media, technological advances, and the rapid development of communications technology.",
+    "keyElements": {
+      "what": "American English gained international influence",
+      "why": "American political power increased its standing",
+      "how": "Popular films and music spread American culture, while communications technology reinforced use of the language",
+      "result": "Cultural reach and language prestige reinforce one another worldwide"
+    },
+    "sampleResponse": "American English has spread internationally through United States political power, the worldwide reach of films and music, and rapid advances in communications technology that have brought American usage to more people.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q35",
+      "sourceTitle": "American English",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 170,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951036,
+    "sourceNumber": 36,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Happiness",
+    "category": "Psychology",
+    "text": "Research shows that when people work with a positive mindset, performance on nearly every level of productivity, creativity, and engagement improves. Yet happiness is perhaps the most misunderstood driver of performance. For one, most people believe that success precedes happiness. \"Once I get a promotion, I'll be happy,\" they think. Or, \"Once I hit my sales target, I'll feel great.\" But because success is a moving target, as soon as you hit your target, you raise it again, the happiness that results from success is fleeting. In fact, it works the other way around: People who cultivate a positive mindset perform better in the face of challenge. I call this the \"happiness advantage\". Every business outcome shows improvement when the brain is positive. I've observed this effect in my role as a researcher and lecturer in 48 countries on the connection between employee happiness and success. And I'm not alone: In a meta-analysis of 225 academic studies, researchers Sonja Lyubomirsky, Laura King, and Ed Diener found strong evidence of directional causality between life satisfaction and successful business outcomes. Another common misconception is that our genetics, our environment, or a combination of the two determine how happy we are. To be sure, both factors have an impact. But one's general sense of well-being is surprisingly malleable. The habits you cultivate, the way you interact with coworkers, how you think about stress, all these can be managed to increase your happiness and your chances of success.",
+    "keyElements": {
+      "what": "A positive mindset can improve performance",
+      "why": "The lift from achieving a goal is short-lived as success targets move",
+      "how": "Evidence links well-being with productivity, creativity and business outcomes",
+      "result": "Habits, workplace relationships and approaches to stress can help cultivate happiness"
+    },
+    "sampleResponse": "A positive mindset can improve productivity, creativity and engagement, and people can develop this advantage by changing their habits, workplace interactions and responses to stress instead of relying on the brief satisfaction of achieving goals.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q36",
+      "sourceTitle": "Happiness",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 171,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951037,
+    "sourceNumber": 37,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Deep-sea Mineral Resources",
+    "category": "Environment",
+    "text": "The National Oceanography Center (NOC) is engaged in research into the potential risks and benefits of exploiting deep-sea mineral resources, some of which are essential for low-carbon technology, as well as using ocean robots to estimate the environmental impact of these potential deep-sea mining activities. Late last year the NOC led an expedition on the RRS James Cook that found enough of the scarce element tellurium present in the crust of a submerged volcano that, if it were all to be used in the production of solar PV panels, it could provide two-thirds of the UK's annual electricity supply. The NOC also recently led an international study demonstrating deep-sea nodule mining will cause long-lasting damage to deep-sea life, lasting for at least decades. These nodules are potato-sized rocks containing high levels of metals, including copper, manganese, and nickel. They grow very slowly on the sea-bed, over millions of years. Although no commercial operations exist to extract these resources, many are planned. Professor Edward Hill, Executive Director at the NOC commented, \"By 2050 there will be nine billion people on earth and attention is increasingly turning to the ocean, particularly the deep ocean, for food, clean supplies of energy, and strategic minerals. The NOC is undertaking research related to the many aspects and perspectives involved in exploiting ocean resources. This research is aimed at informing, with sound scientific evidence, about the decisions that will need to be made in the future as people increasingly turn to the oceans to address some of society's greatest challenges.\"",
+    "keyElements": {
+      "what": "Deep-sea minerals could support low-carbon technology",
+      "why": "Researchers found substantial tellurium deposits on a submerged volcano",
+      "how": "Studies and robotic exploration assess both valuable resources and potential long-lasting harm from nodule mining",
+      "result": "Scientific evidence can help inform future decisions about exploiting ocean resources"
+    },
+    "sampleResponse": "Deep-sea minerals such as tellurium could help supply low-carbon technologies, but evidence that nodule mining causes lasting ecological damage highlights the need for scientific research to guide future extraction decisions.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q37",
+      "sourceTitle": "Deep-sea Mineral Resources",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 172,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951041,
+    "sourceNumber": 41,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "The Khoikhoi",
+    "category": "History",
+    "text": "San are the people of Southern Africa, comprising several groups and numbering over 85,000 in all. They are generally short in stature; their skin is yellowish-brown in color, and they feature prominent cheekbones. The San have been called Bushmen by whites in South Africa, but the term is now considered derogatory. Although many now work for white settlers, about half are still nomadic hunters and gatherers of wild food in desolate areas like the Kalahari semidesert, which stretches between today's Nation States of Botswana, Namibia, and South Africa. Their social unit is the small hunting band; larger organizations are loose and temporary. Grass huts, caves, and rock shelters are used as dwellings. They possess only what they can carry, using poisoned arrowheads to kill game and transporting water in ostrich-egg shells. The San have a rich folklore, are skilled in drawing, and have a remarkably complex language characterized by the use of click sounds, related to that of the Khoikhoi. For thousands of years, the San lived in Southern and Central Africa, but by the time of the Portuguese arrival in the 15th cent., they had already been forced into the interior of Southern Africa. In the 18th and 19th centuries, they resisted the encroachment on their lands by Dutch settlers, but by 1862 that resistance had been crushed.",
+    "keyElements": {
+      "what": "The passage describes the San of Southern Africa",
+      "why": "Some San communities have traditionally hunted and gathered in small, mobile bands",
+      "how": "Their cultural traditions include folklore, art and languages with click sounds",
+      "result": "They were pushed into the interior and resisted encroachment by Dutch settlers"
+    },
+    "sampleResponse": "The passage describes the San of Southern Africa through their traditions of hunting, gathering, folklore and language, while tracing their displacement into the interior and later resistance to settler encroachment.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q41",
+      "sourceTitle": "The Khoikhoi",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 173,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951045,
+    "sourceNumber": 45,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Increasing Physical Activities",
+    "category": "Health",
+    "text": "Promoting active lifestyles can help us address some of the most important challenges facing the UK today. Increasing physical activity has the potential to improve the physical and mental health of the nation, reduce all-cause mortality and improve life expectancy. It could also save money by significantly easing the burden of chronic disease on health and social care services. Increasing cycling and walking will reduce transport costs, save money, and help the environment. Fewer car journeys can reduce traffic, congestion, and pollution, improving the health of communities. Other potential benefits linked to physical activity in children and young people include the acquisition of social skills through active play (leadership, teamwork, and co-operation), better concentration in school, and displacement of anti-social and criminal behaviour. The importance of physical activity for health was identified over 50 years ago. During the 1950s, comparisons of bus drivers with more physically active bus conductors and office-based telephonists with more physically active postmen demonstrated lower rates of coronary heart disease and smaller uniform sizes in the more physically active occupations. This research led the way for further investigation, and evidence now clearly shows the importance of physical activity in preventing ill health. It is important for us to be active throughout our lives. Physical activity is central to a baby's normal growth and development. This continues through school and into adulthood and older years. Being physically active can bring substantial benefits, and there is consistent evidence of a dose-response relationship, i.e., the greater the volume of physical activity undertaken, the greater the health benefits that are obtained.",
+    "keyElements": {
+      "what": "Physical activity benefits health and society throughout life",
+      "why": "Evidence links more active lifestyles with lower risks of disease and death",
+      "how": "Walking and cycling can reduce traffic and pollution, and active play supports children's development",
+      "result": "Increased activity can reduce healthcare burdens and brings greater health benefits"
+    },
+    "sampleResponse": "Increasing physical activity throughout life can improve physical and mental health and ease healthcare costs, while active play supports children's development and greater use of walking and cycling reduces pollution and congestion.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q45",
+      "sourceTitle": "Increasing Physical Activities",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 174,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951046,
+    "sourceNumber": 46,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Oral Storytelling Skills",
+    "category": "Education",
+    "text": "The oral storytelling skills of African American preschoolers make a difference in how quickly their reading skills develop, according to a new study from the Frank Porter Graham Child Development Institute (FPG) at the University of North Carolina at Chapel Hill. Researchers say the effect is much different for girls and boys. \"Knowing how to tell a clear and coherent story is an important skill for helping young children develop strong reading skills, which, in turn, can help them to be successful at a number of different subjects in school,\" said FPG advanced research scientist Nicole Gardner-Neblett. \"Prior research suggests that historical and cultural factors foster strong storytelling skills among African American children, which has implications for their development as readers.\" Two years ago, Gardner-Neblett's own research was the first to demonstrate a connection between African American preschoolers' storytelling abilities and their early reading skills in kindergarten. The study found a link between storytelling and reading only for African American children, from households across income levels, but not for any other demographic group. Stark differences in reading achievement exist between Black and White elementary school children, as does a gender gap in reading outcomes, with girls outperforming boys. Because of both disparities in achievement, Gardner-Neblett and FPG advanced research scientist John Sideris wanted to better understand if and how gender plays a role in the link between African American children's storytelling skills and reading development.",
+    "keyElements": {
+      "what": "Oral storytelling skills are associated with early reading among African American children",
+      "why": "Earlier research found the link across income groups",
+      "how": "Researchers investigated whether differences between girls and boys influence how storytelling predicts reading development",
+      "result": "A better understanding can help explain disparities in reading outcomes"
+    },
+    "sampleResponse": "Research links African American preschoolers' skill in telling coherent stories to early reading development across income levels, prompting further investigation into how gender affects this relationship and may contribute to differences in reading outcomes.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q46",
+      "sourceTitle": "Oral Storytelling Skills",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 175,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951047,
+    "sourceNumber": 47,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "English Dominance",
+    "category": "Language",
+    "text": "The formation of English dominance has gone over a long time. Just as Robert of Gloucester said before, English is a language that humble people spoke 1300 years ago. In the following 200 years, the development of English has undergone a period of Old English, the period of French-influenced English, and the period of medieval English. 1500 years later, modern English was taking shape, which mainly refers to stable spelling, pronunciation, and meaning. However, English emerged as the international language in the 19th century. The main reasons are as follows: Firstly, from the macroscopic view, the dominance of English is not precipitated by the language itself, so the arising of English dominance in international communication is not solely the dominance of language itself. Just as Professor Jean Aitchison in Oxford pointed out, the success of a language has much to do with the power of the people who use it, but has little to do with internal features of the language. It is very obvious in consideration to English. During the 18th and 19th centuries, the influence of the British Empire began to spread around the world for the sake of industrial revolution, so English began to become popular. English was used not only in the British colonies but also in the diplomatic negotiations of non-English-speaking countries. However, no matter how powerful the adaptability is and how large the area that the power of English covers, currently, the international status of English mainly springs from the status of America as a superpower after World War 2. Besides, with the development of economic globalization and a new political structure, there is a great need for an international language. As a result, English became my first choice. Secondly, from the view of language, the dominance of English in international communication has a close relationship with the vitality of the language itself.",
+    "keyElements": {
+      "what": "English became an international language over a long historical period",
+      "why": "British industrial and imperial expansion helped spread its use",
+      "how": "American influence after the Second World War and globalisation increased demand for a shared language",
+      "result": "Both the power of its speakers and the language's adaptability contribute to its current position"
+    },
+    "sampleResponse": "English became internationally dominant through British imperial and industrial expansion and later American power, while globalisation increased demand for a common language and the vitality of English helped sustain its use.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q47",
+      "sourceTitle": "English Dominance",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 176,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951049,
+    "sourceNumber": 49,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Wright brothers (V2)",
+    "category": "History",
+    "text": "After the 1905 flying season, the Wrights contacted the United States War Department, as well as governments and individuals in England, France, Germany, and Russia, offering to sell a flying machine. They were turned down time and time again -- government bureaucrats thought they were crackpots; others thought that if two bicycle mechanics could build a successful airplane, they could do it themselves. But the Wrights persisted, and in late 1907, the United States Army Signal Corps asked for an aircraft. Just a few months later, in early 1908, a French syndicate of businesspeople agreed to purchase another. Both the US Army and the French asked for an airplane capable of carrying a passenger. The Wright brothers hastily adapted their 1905 Flyer with two seats and a more powerful engine. They tested these modifications in secret, back in Kitty Hawk, North Carolina, for the first time in several years. Then the brothers parted temporarily -- Wilbur to France and Orville to Virginia. In 1908 and 1909, Wilbur Wright demonstrated aircraft in Europe, and Orville flew at Fort Meyer, Virginia. The flight went well until Orville lost a propeller and crashed, breaking his leg and killing his passenger, Lt. Thomas Selfridge. While Orville recuperated, Wilbur kept flying in France, breaking record after record. Orville and his sister Kate eventually joined Wilbur in France, and the three returned home to Dayton for an elaborate homecoming [celebration. T] ogether, Orville and Wilbur returned to Fort Meyer with the new Military Flyer and completed the US Army trials. A few months later, Wilbur flew before over a million spectators in New York Harbor -- his first public flight in his native land. All of these flights stunned and captivated the world. The Wright Brothers became the first great celebrities of the twentieth century.",
+    "keyElements": {
+      "what": "The Wright brothers built and promoted an aircraft capable of carrying a passenger",
+      "why": "Governments initially rejected their proposals before American and French buyers showed interest",
+      "how": "They added seats and a stronger engine and demonstrated the aircraft despite a fatal crash during trials",
+      "result": "Flying records and successful public demonstrations brought them global recognition"
+    },
+    "sampleResponse": "The Wright brothers persisted through rejection and a fatal test crash, adapting their aircraft to carry a passenger and gaining worldwide recognition through buyer trials, record flights and public demonstrations in Europe and America.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q49",
+      "sourceTitle": "Wright brothers (V2)",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 178,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951050,
+    "sourceNumber": 50,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Negotiation",
+    "category": "Business",
+    "text": "Negotiation is a common and essential process in the business world, primarily used to resolve disputes and reach mutual agreements between two or more parties. It plays a crucial role in maintaining effective communication, resolving conflicts, and fostering long-term business relationships. One of the most fundamental aspects of negotiation is the concept of compromise. In most negotiations, compromise occurs when both parties give up something they value in order to gain something they consider more important. It reflects a situation where the goal is not to win entirely, but to find a middle ground that is acceptable to everyone involved. Compromise is particularly important when the parties involved are unequal or when the resources or benefits to be shared are limited-often described as a \"fixed pie.\" In such cases, the more one party receives, the less is left for the other. Despite this, compromise can often lead to a win-win outcome, where both sides feel that they have gained something valuable from the agreement, even if they had to make concessions along the way. However, it is important to understand that not all disputes can be resolved through negotiation and compromise. If one party is unwilling to cooperate or refuses to address the issue openly, then negotiation loses its effectiveness. In such scenarios, alternative conflict resolution methods or legal action might be necessary. Nevertheless, when both sides are open to dialogue and flexibility, negotiation remains one of the most powerful tools for conflict resolution in business settings.",
+    "keyElements": {
+      "what": "Negotiation helps businesses resolve disputes and preserve relationships",
+      "why": "Parties can trade concessions to reach outcomes they both value",
+      "how": "Compromise is useful when resources are limited and both sides agree to cooperate",
+      "result": "Other methods may be needed when one side refuses to engage constructively"
+    },
+    "sampleResponse": "Business negotiation resolves disputes through dialogue and concessions that can leave both sides better off, particularly when resources are limited, although alternative processes may be needed when one party refuses to cooperate.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q50",
+      "sourceTitle": "Negotiation",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 179,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951051,
+    "sourceNumber": 51,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Malaysian Tourism",
+    "category": "Tourism",
+    "text": "Malaysia is one of the most pleasant, hassle-free countries to visit in Southeast Asia. Aside from its gleaming 21st-century glass towers, it boasts some of the most superb beaches, mountains and national parks in the region. Malaysia is also launching its biggest-ever tourism campaign in an effort to lure 20 million visitors here this year. Any tourist itinerary would have to begin in the capital, Kuala Lumpur, where you will find the Petronas [Twin T] owers, which once comprised the world's tallest buildings and now hold the title of second tallest. Both 88-story towers soar 1,480 feet high and are connected by a sky-bridge on the 41st floor. The limestone temple Batu Caves, located 9 miles north of the city, has a 328-foot-high ceiling and features ornate Hindu shrines, including a 141foot-tall gold-painted statue of a Hindu deity. To reach the caves, visitors have to climb a steep flight of 272 steps. In Sabah state on Borneo island (not to be confused with Indonesia's Borneo), you'll find the small mushroom-shaped Sipadan island, off the coast of Sabah, rated as one of the top five diving sites in the world. Sipadan is the only oceanic island in Malaysia, rising from a 2,300-foot abyss in the Celebes Sea. You can also climb Mount Kinabalu, the tallest peak in Southeast Asia, visit the Sepilok Orangutan Sanctuary, go white-water rafting and catch a glimpse of the bizarre Proboscis monkey, a primate found only in Borneo with a huge pendulous nose, a characteristic potbelly, and strange honking sounds.",
+    "keyElements": {
+      "what": "Malaysia launched a tourism campaign to attract 20 million visitors",
+      "why": "The country's appeal combines modern architecture and natural landscapes",
+      "how": "Kuala Lumpur has the Petronas Towers and nearby Batu Caves",
+      "result": "Visitors to Sabah can dive off Sipadan, climb Mount Kinabalu and see Borneo's distinctive wildlife"
+    },
+    "sampleResponse": "Malaysia's tourism campaign promotes urban attractions such as the Petronas Towers and Batu Caves alongside Sabah's diving, mountain and wildlife destinations, showing the country's mix of modern landmarks and natural landscapes.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q51",
+      "sourceTitle": "Malaysian Tourism",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 180,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951056,
+    "sourceNumber": 56,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Wright brothers (V1)",
+    "category": "History",
+    "text": "Orville and Wilbur Wright were brothers living in Dayton, Ohio. The two had started making bicycles during the 1890s and had a successful small business selling their Wright Specials for $18 each ($475 in today's green). This experience with building light, strong machines would prove valuable in the coming years after the brothers' interest turned to flight. Others in the United States were also developing aircraft at the time the Wright brothers started turning their curiosity skyward. Samuel Langley flew an unmanned steam-powered aircraft in 1896. Octave Chanute and others were flying gliders near Chicago late in the decade as well. But it wasn't until the Wright brothers started working on the matter that the \"flying problem\" would finally be solved. Beginning in 1899, the brothers designed and built a series of gliders to test their various ideas for a flying machine. They constructed a wind tunnel that allowed them to test designs without having to build a full-size model. They even built their own gasoline-powered motor for their aircraft. Although others in the United States were also developing aircraft in the 1890s, the \"flying problem\" would eventually be solved when the Wright brothers started working on the matter because they had the experience of fabricating light and strong machines from bicycles to design and build numbers of gliders to test their ideas on a flying machine, and they even made their own gasoline-powered motor for their aircraft.",
+    "keyElements": {
+      "what": "The Wright brothers used bicycle-building experience to develop aircraft",
+      "why": "Working with light, strong machines was useful in addressing flight",
+      "how": "They designed gliders and tested concepts in a wind tunnel",
+      "result": "Their experiments and self-built engine helped them solve the practical problem of powered flight"
+    },
+    "sampleResponse": "Drawing on their experience building light, strong bicycles, the Wright brothers used experimental gliders, a wind tunnel and a gasoline engine of their own design to advance powered flight.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q56",
+      "sourceTitle": "Wright brothers (V1)",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 182,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  },
+  {
+    "id": 951064,
+    "sourceNumber": 64,
+    "sourceWeek": "16–22 November 2026",
+    "standaloneOnly": true,
+    "title": "Human Remains",
+    "category": "Archaeology",
+    "text": "In April 2008, the British government introduced a regulation stating that all human remains excavated archaeologically in England and Wales must be reburied within two years of analysis. This policy raised serious concerns within the scientific and archaeological communities. One main issue was that it would permanently cut off access to important prehistoric remains, preventing future public display and limiting long-term scientific research. As scientific techniques continued to evolve, the inability to reanalyze these remains using new methods became a significant drawback. Unlike other archaeological materials such as animal bones, pottery fragments, artifacts, and environmental samples, which can be stored and revisited for future research, human remains would be excluded from this ongoing process. This undermines the broader objectives of archaeology and anthropology, which rely heavily on repeated, advanced analyses over time to extract new insights about human history and behavior. Additionally, the policy sparked fears that this might signal the beginning of a wider mandate requiring the reburial of all human remains currently housed in museums across England and Wales. This could potentially impact a wide range of remains, from the prehistoric era through the Roman, Saxon, Viking and Medieval periods, to more recent times. Scholars and museum professionals viewed this with concern, recognizing the broader implications for heritage preservation, education, and scientific advancement.",
+    "keyElements": {
+      "what": "A British rule required excavated human remains to be reburied after analysis",
+      "why": "Researchers feared that permanent reburial would limit access for future study and display",
+      "how": "Scientific techniques develop over time, making later reanalysis valuable",
+      "result": "Museum professionals feared a broader reburial mandate would also reduce collections and affect education"
+    },
+    "sampleResponse": "Archaeologists opposed a British requirement to rebury excavated human remains within two years of analysis, warning that loss of access and possible removal of museum collections would hinder future research, public education and heritage preservation.",
+    "predictionSource": {
+      "provider": "PTE Nepal",
+      "sourceId": "Q64",
+      "sourceTitle": "Human Remains",
+      "sourceFilename": "PTE_Master_Prediction_Booklet_November_2026.pdf",
+      "sourcePage": 187,
+      "week": "16–22 November 2026",
+      "contentStatus": "verbatim-user-provided",
+      "task": "swt"
+    }
+  }
+]

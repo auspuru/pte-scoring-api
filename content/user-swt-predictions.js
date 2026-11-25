@@ -12,7 +12,8 @@ const passages = Object.freeze([
   ...originalPassages.slice(0, 2),
   ...require('./user-swt-predictions-oct23'),
   ...originalPassages.slice(2),
-  ...require('./user-swt-practice-nov24')
+  ...require('./user-swt-practice-nov24'),
+  ...require('./user-swt-pte-nepal-november-2026.json')
 ].map(row => ({
   ...row,
   sampleNotes: 'Teacher-editable draft SWT reference; human review pending.',
