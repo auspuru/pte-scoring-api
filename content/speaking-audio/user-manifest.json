@@ -1890,5 +1890,2330 @@
     "voiceModelSha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6",
     "voiceConfigSha256": "7f85e6391ed0f7f46e4abd19345929a16be931a0c9945086f96692dce2087fa8",
     "voiceSource": "sgd-voice-source.json"
+  },
+  "rs-user-20261125-001": {
+    "textSha256": "058bee308dc0a70f626a4fef813e8778d7803962fd012c3d321d90f4bc5cae29",
+    "audioSha256": "1797e5c5c10d00c81303a0afe745592d41df5531f61df25e5a54a8c14d8ec805",
+    "bytes": 34220,
+    "seconds": 4.248,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-002": {
+    "textSha256": "10822cf965d535a949d69cdc39487d26b068baa3c2d6239bd83b4700cf07160a",
+    "audioSha256": "e1f2ffaa261d55822c277b688ea108d7bb4bdcc9675c142cc033a3170866196a",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-003": {
+    "textSha256": "dbe0cf1ad6b5c31f2a97b1c344f84159d40d6d961264b94e4316a9f63bb0858d",
+    "audioSha256": "ef8c51dc705a07eb3ce58d71cec1f8295227b2c5898ba8e351c537075914cc1f",
+    "bytes": 44780,
+    "seconds": 5.568,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-004": {
+    "textSha256": "0a3bcdfbed9eabbab3da6bdf99d97a4a6c09deede950307e492bb9e7230c5678",
+    "audioSha256": "a016cd33c4e27301991b1a44c06a9c3c33346803e9c7aa795f34dcf4e712a2e3",
+    "bytes": 36140,
+    "seconds": 4.488,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-005": {
+    "textSha256": "e32583870bbde489cefd001484d847959b8af06b634290caae1e182234b9494b",
+    "audioSha256": "a9b01ca6f8b24c5a9dcd0a5660f1cccb79822f0d47b309ffbee6c3dfcdefb330",
+    "bytes": 43820,
+    "seconds": 5.448,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-006": {
+    "textSha256": "756e4bf9a9a1ea03fb56e958a9402ab1881ed0bc185ea11bc75359f7f39acfa8",
+    "audioSha256": "e517dc6f08258f870a0a3ba9c33a5d7a9285187c1c3940a1be8841ca027b390b",
+    "bytes": 38828,
+    "seconds": 4.824,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-007": {
+    "textSha256": "dbb42c6011f40372889989de89b9fd302c4067f23f8d690d5e4dc99534d41cfb",
+    "audioSha256": "e6f6db96d37943e0bf8e096b1d350e3e940e8092257158427f8e8d066707f64c",
+    "bytes": 34028,
+    "seconds": 4.224,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-008": {
+    "textSha256": "79ef54d4f025506458b8c7826ce85125d408b9293f2f0c74d515216a74b67e2a",
+    "audioSha256": "669b1377267e1a2ae48907b392be827576e10d5210cef7382b2227621244b705",
+    "bytes": 41132,
+    "seconds": 5.112,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-009": {
+    "textSha256": "486acceb83f9162f337fd593743993142c32003b98884c6b39b6debbe4d4c036",
+    "audioSha256": "bac29f28f6d9f68d4ee57c9da28b7eebe8d77cc988141709580284496752045d",
+    "bytes": 27308,
+    "seconds": 3.384,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-010": {
+    "textSha256": "b423184078f2771e499522e1459c762e55c339e530edf75c5620791ef32c4ec6",
+    "audioSha256": "3b8fed01feb850d8e1cd87574de69ce047b3d9258a4d4a474fa3744272eed5fe",
+    "bytes": 49580,
+    "seconds": 6.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-011": {
+    "textSha256": "a4c0c3c4d575051808ea31cc9e9792de4f7f1de5cc18d48ba912ae1367204e8e",
+    "audioSha256": "e981d46f42f212a60df01fdbf9f7a8f300835b35b87e7548deb3925258c23fdc",
+    "bytes": 37868,
+    "seconds": 4.704,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-012": {
+    "textSha256": "1e01de37e5b7559c949a3c029b5c2c86b22df2fb5694e12c8ea4a4d27fdde585",
+    "audioSha256": "aadabe475027e11cd9998a52b3ec5a6a88b26c47847be972f1a088a9d1dae4a8",
+    "bytes": 25772,
+    "seconds": 3.192,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-013": {
+    "textSha256": "75574b833de3baa766c2f6bf6a3e214f2fc3d9f1db3fd352049d65c6703f6870",
+    "audioSha256": "611e51fa0321a7d04333115ccb96f6b6bb3306dbf34b6cfadd77149fee0a39a3",
+    "bytes": 46892,
+    "seconds": 5.832,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-014": {
+    "textSha256": "c16833ec8ffe2ab16b0e70946ba3dc595ba9adf2bb74a6d41b7f6a09d693ecf7",
+    "audioSha256": "14d6c2dcbdf72ac0e23069371a5b2594342a74a4e0b1803be7ffbc61410b7ba6",
+    "bytes": 34604,
+    "seconds": 4.296,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-015": {
+    "textSha256": "3acc83978179c0b0c71f99f70d28437821c9e7806001b9397e619023ed624e95",
+    "audioSha256": "8a6309292de68e0464ae8c6e76b5418c60532b1ce04b0a09c422cfec7c07982c",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-016": {
+    "textSha256": "db5fdb017669216914810601bede13504648c470a8655b56d09875ed48c4a562",
+    "audioSha256": "20203da42c0cf6b5ef5fae70f7065ae30a16e5c65dd6d8ddf957a29bfe7cc8aa",
+    "bytes": 38828,
+    "seconds": 4.824,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-017": {
+    "textSha256": "85e2961672deaa996de6a9a80df6473a634f90ec825f88b77ae2286378f4bab8",
+    "audioSha256": "3d6defc5e43865405d72487d7b12d02aac5a900f3b323bd4e325ac077eace1a4",
+    "bytes": 45356,
+    "seconds": 5.64,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-018": {
+    "textSha256": "5d1c9868c76877cd036eaf88be08ad6155de4167fe22fc33deba3f2beb4d0130",
+    "audioSha256": "b6a9ef51e3046a4557e64bb535375cb58023115a08dba9f0f431d8c0ebf5b363",
+    "bytes": 42476,
+    "seconds": 5.28,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-019": {
+    "textSha256": "ebd51c486e1786651b4c3c3f65988b03d22489eaae510a4aaab9aea45f22b8a2",
+    "audioSha256": "a7a70b4b5c057a5eb39cd9663373e9e776d506bdc02f929a2cda50475a81a82d",
+    "bytes": 42476,
+    "seconds": 5.28,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-020": {
+    "textSha256": "01da61231c3ae51844e10d51e8bb46bae49dcd22164b6d82fce609d4f3dfe285",
+    "audioSha256": "46aff9a9931a07248ea9cec0f3b925425776eb585564957b87e9224c1b41eb85",
+    "bytes": 43436,
+    "seconds": 5.4,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-021": {
+    "textSha256": "80c155ce789ef257ca879a2bd43e5dadd572be735ccf86aaecd632ec9d4dbb76",
+    "audioSha256": "f629de3690687de46431abff1214f44eb5a2393090533ba1d16dd8685f55cad5",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-022": {
+    "textSha256": "14efffd152619fde5d95652bebb82c6d97e63594658c0fd5b8289a4a1d5d2758",
+    "audioSha256": "350dbe2e08e4755ff3703f996ce5563b64c66eec5d36bb1ef5c3af31b90d40bf",
+    "bytes": 29996,
+    "seconds": 3.72,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-023": {
+    "textSha256": "765278a6397456bdb203a3cf58ca8fcb4958e8d1802a1270b19e7dc09cfb5e6b",
+    "audioSha256": "4d38f899ae0cd41f1e34be49165de8f189226b377d6b84bfebe2140f8f7fb6de",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-024": {
+    "textSha256": "a44c0c762431912037c615db10efb766f11a4c652b00ac62680f333141fa107d",
+    "audioSha256": "2a91f594bfacae37b41bcde345f3518a6d6ac0d0a716152a193f8493c139218f",
+    "bytes": 29036,
+    "seconds": 3.6,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-025": {
+    "textSha256": "1401126458aae486ceb54ed9ccdb655824ffa80b946c27255ad0888057fd9a4e",
+    "audioSha256": "e9fd758318da2220fe388c3575bf67c28d953628d8da50cf1cf038b8ea083d0f",
+    "bytes": 28268,
+    "seconds": 3.504,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-026": {
+    "textSha256": "f17025ef8e8ab190114e0c4b661166e67a8108bc6250d44103d07a0c0c4598bb",
+    "audioSha256": "7f3f376e8f51f1bae4569e57ea882767e223e499b505857a9f933b27abdc20ec",
+    "bytes": 30956,
+    "seconds": 3.84,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-027": {
+    "textSha256": "887628bf07eb73a4e270c2ce877afcfc157906c3ce5040d3abcec12a373c57c6",
+    "audioSha256": "ae8de29da35f39fc9e78f68d1fdc4404a8984cbaf4ac3bf7a27c2c708845c93c",
+    "bytes": 32300,
+    "seconds": 4.008,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-028": {
+    "textSha256": "db1061e47dd6bb7b5eebd70fb038e8a05435897c23bfd1f8b71346c3444d6945",
+    "audioSha256": "6413bb9fc2796fc52c04818c01b4b52374769bc20e647f00e9221edec284f444",
+    "bytes": 38060,
+    "seconds": 4.728,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-029": {
+    "textSha256": "27d715a901147a375429bbdaacb5560285c2f4102b6ea7447b384987e9e73b5b",
+    "audioSha256": "e679fdbf750da3d639cc2361cc1d39fc83275520b901883b09f1056e1f2234ca",
+    "bytes": 36140,
+    "seconds": 4.488,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-030": {
+    "textSha256": "118f30771e0bfc63674dfa080a2eabcf599c97ab36d2c67133287fada98f4aa5",
+    "audioSha256": "574702eb0f0407e04accc192b1cf2baa26b9816c003e3fb5a0a6e92b2a673601",
+    "bytes": 49964,
+    "seconds": 6.216,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-031": {
+    "textSha256": "eb53e625760e47f81b3737b5fd764bd02d2a81545b42f01b884cdab69719b845",
+    "audioSha256": "6ebbbc02b787b3b982cbb34771df8ae04432eb8d36722e2b85acfdada3dd0e05",
+    "bytes": 34220,
+    "seconds": 4.248,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-032": {
+    "textSha256": "d6e0fde132544ebab201abf6c0090dbd93750d6946521a9004b1390eba3d6605",
+    "audioSha256": "e8b2fad87e7f3e160378a889fd0a6840db5ce5011948ef0c326d15161e1ba055",
+    "bytes": 41900,
+    "seconds": 5.208,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-033": {
+    "textSha256": "2a21083b2ef4cad767a6eaee6bd07cbd2ad4159eeec0856cce8ee4874c58d5e3",
+    "audioSha256": "2e707cee9e3a1ea3d22b2c6848a6f6bd0d4b3cf13e7ebf03200f41e87d68dc16",
+    "bytes": 31724,
+    "seconds": 3.936,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-034": {
+    "textSha256": "f2321db0c2eb7a76405f675f097b7144c4b17fe4881821cfc446f020c2edb911",
+    "audioSha256": "8069ff03025c5b17b9c2719f8f53c14c97f4afc8c9262f6bfd53af5531e9d3b1",
+    "bytes": 41708,
+    "seconds": 5.184,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-035": {
+    "textSha256": "58b72af4fdb325d7709f69d8cf176f6558dd003d65e425b58c97ef4276172f06",
+    "audioSha256": "a63c6720764f3a17ae086e040dbeb1c54e6a225872cbcd27068f691ba7ebe5f5",
+    "bytes": 31532,
+    "seconds": 3.912,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-036": {
+    "textSha256": "bd7d001401e12d36d25be6660da7176494a04b7d51342e43cff3262a08ecd1c4",
+    "audioSha256": "2ae6be36ea702d6a1fbeb11893df4253da97b69aa566e1e457bf45183962c33c",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-037": {
+    "textSha256": "9257de131e79a0a50c9ac32a49c408b0ef60065b6c9e159b9311d801e378f133",
+    "audioSha256": "d6450d63bbafc71bc5abc93df04607834f3d8cf3ba04f842f2e3319fbfc1bcb0",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-038": {
+    "textSha256": "a772e89065267c8a371067f153f64fa7b1bb124e205335bd22eaf2c829cfb5a6",
+    "audioSha256": "aa7ce9e439d68d42291bcf6978b7bd5936060a6be471794b2c4cdc843413cf87",
+    "bytes": 43628,
+    "seconds": 5.424,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-039": {
+    "textSha256": "bf8023d12344c228e06eff18513d83c67cf60565025a23bceafaaa1777a98cfb",
+    "audioSha256": "bdd2dbfedbd92a17d56f81d13f1b03d965316a585c490c5f81a3a3ffa47e5757",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-040": {
+    "textSha256": "35e0677f8c85c57efdaa3baafe57e350ad1e071ae236e8e7031f9d0f27100202",
+    "audioSha256": "99f16372e24873f48448fc050e2a926d50cac7d7564ec08ecff89f0442f19778",
+    "bytes": 30188,
+    "seconds": 3.744,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-041": {
+    "textSha256": "cc9831d796a24634fe7393bdfc08452f9de94df8a0adaabe60c04d26350040f1",
+    "audioSha256": "e835399312a70900e743ba603b9dee4ad752dc7b9b3190d76de7dc9d81411fbd",
+    "bytes": 36140,
+    "seconds": 4.488,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-042": {
+    "textSha256": "fd2e6fb335f17563809329ce578b4d641268731e34d1cef75b228364b6354d4e",
+    "audioSha256": "dfb6189a653343c5ba0b9b22822a6166312d295872bfae924ed2e1ceb857343c",
+    "bytes": 51308,
+    "seconds": 6.384,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-043": {
+    "textSha256": "c1b01086978c5ab78f85d368518c85910a90ab1218021d416357166e3774b330",
+    "audioSha256": "c66d1a4daf73db2cf5b18d460261d48ebc6ff68e0a29fada456c340a8ad43359",
+    "bytes": 46892,
+    "seconds": 5.832,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-044": {
+    "textSha256": "5144ff10634462eb5651af4b592fbdaeda63cffe305129c2af8aa439d1fa099c",
+    "audioSha256": "3165db041f0843a704eb8f49e977d6abf4c07fd9b4d681fda8714f8aa1c050ee",
+    "bytes": 47852,
+    "seconds": 5.952,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-045": {
+    "textSha256": "609de62ac7f02d991b0654d2f4a4d142ca31b978816a8957585d0f1dea243e48",
+    "audioSha256": "b3f6afa3bdae8476ea17a049d39ca27f945bbf9454bf7c9c4f3daf16bc78ba29",
+    "bytes": 33644,
+    "seconds": 4.176,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-046": {
+    "textSha256": "efef60b47c7e32a24d7824453e55a166892ccc86001681f4f1e691c259c4e208",
+    "audioSha256": "dba06b5980b55faaa2ee0cea39022d2457847baa74093203dc0fad6e04284702",
+    "bytes": 35564,
+    "seconds": 4.416,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-047": {
+    "textSha256": "1b2445d6c8658c8d135d6ff32b22a2f82e898c18783ecb71ee9d61548e566ff7",
+    "audioSha256": "fdf6f30e838543f39c8eb39dd99759919a5c911b29f50832e92c4459123a45dc",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-048": {
+    "textSha256": "af8d01ff60f829f0f90c53e818a2bd9f30d33fbec7bb56983a2ca6cdcabbfaf2",
+    "audioSha256": "a95740579a0f6c629d0ac071d2066b3f5e5130885d5fd12b8f49cb4f95d3fda8",
+    "bytes": 33260,
+    "seconds": 4.128,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-049": {
+    "textSha256": "707aff06eb9f1e405163d30479834ed7e4a7e4218e8e8a4820e4b66e731eabf7",
+    "audioSha256": "7122d6fa59a6e85a6b3df17939a59d49ef5184bdce523bb1fcffdfe129fb7514",
+    "bytes": 39788,
+    "seconds": 4.944,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-050": {
+    "textSha256": "a2b6bcf550f09b8ad19f9a20c0d6388d2e955b886e07ac16cac0a3a5568db243",
+    "audioSha256": "7c919f167970ad56a5541dccde3bc3cdeb58950b54edc24a20ac67314728882d",
+    "bytes": 44012,
+    "seconds": 5.472,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-051": {
+    "textSha256": "e3c1d3334f8d0549c41120ab5c5cd2ea00d8989fabd37a9ce5a3b118a9d2a9c9",
+    "audioSha256": "9359a12e1c7694285d86189438ed84c1a257c530ee0cb970ca6d7dc98f593721",
+    "bytes": 37868,
+    "seconds": 4.704,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-052": {
+    "textSha256": "0f3487da0f9ef7c1532e108ba05c1ca8929ca93f0c6ee1d9e93be7959bcc4809",
+    "audioSha256": "ed6aace651ca5e39c9d50291b2a64881a4db3c8b44435afa6dd634be65849fd5",
+    "bytes": 51116,
+    "seconds": 6.36,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-053": {
+    "textSha256": "ab38805a69e795ba28e3fc4a1015f822058dc7985e54a622dd5947f50c22b937",
+    "audioSha256": "368accb20becdefe09167b587b6994dc7969a70183757be3f76729255b854532",
+    "bytes": 37868,
+    "seconds": 4.704,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-054": {
+    "textSha256": "350fc682048e9e301f9c7dc18c180fe218ef6515f5a8e3fe7ecda63da1a96257",
+    "audioSha256": "df0906168ba6c399ea07dff3417f0b9571a0c04e61e6ac23bc3411ac13556d64",
+    "bytes": 45740,
+    "seconds": 5.688,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-055": {
+    "textSha256": "3dbf96fc132fefb45b1c7bc19e2c80cdfedf8c273366679c863f3f5208bceeb6",
+    "audioSha256": "61aabad5a8ae41139a7814a866126e4d517d196b6634fd8f76d0a9e683eb78fd",
+    "bytes": 70700,
+    "seconds": 8.808,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-056": {
+    "textSha256": "ce756914646958a2573f6c525c1b56e43ae7a0798b6ba8f3384e1931796a5c5d",
+    "audioSha256": "f3af18d9805ddc011fbe181b13c4bfd046225a89a09e05578bf530f40d788e23",
+    "bytes": 42092,
+    "seconds": 5.232,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-057": {
+    "textSha256": "6658bf4fc78c368fc5e5645b9a088a351e8c7f91220485a305ec32c6b2500043",
+    "audioSha256": "28126c3b35e0b6bab4c8bcfd47eb90700fcbf2d4df15cc365aa60640d5e7c110",
+    "bytes": 31340,
+    "seconds": 3.888,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-058": {
+    "textSha256": "572d493f21b326d0043ffd1fa570254d8b3ef7328f0a2bbfbecbfe662bd46b21",
+    "audioSha256": "4bf66d309f5d633d4845676e80ef1307577a3bfa1915beb2a55a76be5228485a",
+    "bytes": 49580,
+    "seconds": 6.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-059": {
+    "textSha256": "1a05d1ecb7ec17de310edbd5f0de21a923b6c228f9a67047b2a245cfd317dfe7",
+    "audioSha256": "2e45fe0325a5a12093dc9515325adb64e95c68613296f5f023daa83fbfe5f2b7",
+    "bytes": 42476,
+    "seconds": 5.28,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-060": {
+    "textSha256": "bc25d7f0a6e83058ca3e1e19ffe90fbb95feea740ae137b049e42045ced11520",
+    "audioSha256": "8de6ddab83f0f2715cfb876f5ac2bdb92b96d04966fb96abec566a982ae6f292",
+    "bytes": 40748,
+    "seconds": 5.064,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-061": {
+    "textSha256": "128ba6f78939b6588638867b91a646c44032d74708268b1a7b8fd38debf143fb",
+    "audioSha256": "a68f259770695172ab3f94db63408ad82b218317ff170f784c6598e7974052bf",
+    "bytes": 29420,
+    "seconds": 3.648,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-062": {
+    "textSha256": "27c8897b5a97c6ede36c0393d8f897ec7100286e7191089e871a52b36a55579e",
+    "audioSha256": "711ef7cc78658370ca910029bc30d3f6309aa0cd76a7913814d819df47135eb1",
+    "bytes": 40172,
+    "seconds": 4.992,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-063": {
+    "textSha256": "03384f3eaaaa23501a86c6484536546d77e1da34167bd17fd9fdbd8f80013667",
+    "audioSha256": "c00b89feaf17968055d9b70cb5f337fe24e1c02bf711f2799a09000b6b75377a",
+    "bytes": 30764,
+    "seconds": 3.816,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-064": {
+    "textSha256": "b7d1df29796b05cfeb00a4b2158fd3527925e036ca10d925302fcbb2f691b34f",
+    "audioSha256": "185086dfba6d5344b4e6964eac257e58b67546a4824321292002fbed911d488b",
+    "bytes": 29228,
+    "seconds": 3.624,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-065": {
+    "textSha256": "c9f075d8d5d577a64f451f01715543b0c628b27028220df9677662783636d72c",
+    "audioSha256": "92d5cf622a942346b9fed1af202878ca5e518009442f7013ea9392d4494a940e",
+    "bytes": 29996,
+    "seconds": 3.72,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-066": {
+    "textSha256": "ec3fb9a3276a59894b419e5f630ca5b38bcfd1073ac2116b742baeedf40f9d20",
+    "audioSha256": "c5acdddea7a256d37b0cae7c8caec2fa6b4599ae96838c54224b178a0350c7bc",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-067": {
+    "textSha256": "381309f46e2c79d68cb0cb51ffa8f340a7d77954899753ac8ac26e11ee6c2b49",
+    "audioSha256": "004eb852b35e439970a6238cb79a4a3e930e6250a5b06149cb084c3bd8baf76f",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-068": {
+    "textSha256": "2f25e471257fbaaaebe70887a53b760181840e5cca22347269c66c4aa0cb3421",
+    "audioSha256": "6e01097fe618c5411a8dc0859eaa693384c5251519cca061a801b5a53371d0c2",
+    "bytes": 30764,
+    "seconds": 3.816,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-069": {
+    "textSha256": "a4a421ed825a705580bacfe74dd5daae98e79e5efbcaae09d3ce2730821d3a8f",
+    "audioSha256": "6222c5c82f7140cfd9f6758af0e6d0e0b4d68fdbc3188ed9009c7fe247fe7b8a",
+    "bytes": 44012,
+    "seconds": 5.472,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-070": {
+    "textSha256": "9e3d41500334497fce23993bd321a0afd9bf5d2cc11a5b4a68f9b8f02c1fd6c5",
+    "audioSha256": "825b8ecb0a813328a4ede18f98b28cf56966952bf806745cfd46cb83808cff89",
+    "bytes": 31916,
+    "seconds": 3.96,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-071": {
+    "textSha256": "8e85d1a8ba7a298bf238a9a26dfdb363010b9004f482445ce3ecf9289941443a",
+    "audioSha256": "3148622e13f96e9054fac2001ab07585986659b15bf9349fc57dd4195821334a",
+    "bytes": 38252,
+    "seconds": 4.752,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-072": {
+    "textSha256": "5e238e3ea3951e09fed3b5245a8328835d9419a1da80bb5cc483dacf44359d47",
+    "audioSha256": "cf1d3cc1a70fa4104f828f37e85555c0b25898c52f9842d319f58647424c6c16",
+    "bytes": 27116,
+    "seconds": 3.36,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-073": {
+    "textSha256": "680470e74cd714308c5b2ab08cec72f58cd224c92b8fb68f740a101319840f87",
+    "audioSha256": "71095f2e4fb4852721c75fc73a48191c34e01887f29d264cea95bbf353cd670d",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-074": {
+    "textSha256": "fdcef3860ac39b91d8e4a7b83dc455edc4d95f14dbb414d386eccb05ca30c8cd",
+    "audioSha256": "75b63ca44b22de6422dd9234d4e9dd64dec2b0b2124f90276c07a5a9b739fbcc",
+    "bytes": 26156,
+    "seconds": 3.24,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-075": {
+    "textSha256": "696c743376c6db7eeca0a9b549a0d04c65cc20521d586f5b365afbb98c437b15",
+    "audioSha256": "7468ef03d3c223283223011b2b7e0f520bbf346983306e696086fc0c3574a45f",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-076": {
+    "textSha256": "ce11199cb7fc3ab27c488f8baebbbab2e466d6e30fb5178464c7d6f53c2bf520",
+    "audioSha256": "920606791c2cd5702494d9ffc8b7aa34313eae3eaea59322b786b0c0d5e8fc85",
+    "bytes": 39212,
+    "seconds": 4.872,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-077": {
+    "textSha256": "494f4db5251bbe746a3795678825fb473d87ef286dc6b5219cebac1631b0bf63",
+    "audioSha256": "c78cfced5c5e9240d7229bee38c15f369f496c71ca525c53d19ab35db8a95f19",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-078": {
+    "textSha256": "1cec1d36de8db6af3b788e030676361b7128a2f2d80e830b1476094ce91315e6",
+    "audioSha256": "9d13ed8c75c440e8f265cdc1ac85a0dd2ba665aa37320eb20e0e397e7f765c1c",
+    "bytes": 37676,
+    "seconds": 4.68,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-079": {
+    "textSha256": "8867bf31b7ea0d17fadc7c33cb6b5d3ae0dbf0ef430482122dde6228a6721427",
+    "audioSha256": "15166ef69a4021ca2daf15f2c5658c886d09028d8bbafedc18f21df48703508e",
+    "bytes": 42860,
+    "seconds": 5.328,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-080": {
+    "textSha256": "665447c20a9c14bf8ccd63c4309067d87c56e7580f62acefd008befa7338dcc5",
+    "audioSha256": "0947dd7ea647a745d6d2102784375a328576cce315a39bcf047998a496a50610",
+    "bytes": 41324,
+    "seconds": 5.136,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-081": {
+    "textSha256": "e83c9d311b04c5c1c5488fc3fcb66718dcadd08aba3fc93bb6a3a9ccf6e8c740",
+    "audioSha256": "641d6a90fd182ec073f484b23c895e5a4fa776e169f6faddd86bb364b335561f",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-082": {
+    "textSha256": "420716fac5b9b80f4ee49433a295c75adc65e68afd537182eb11035fe198930b",
+    "audioSha256": "adab6643d0c31d3d07a3c6f92752f81bc12890ac62e43db9f10dfdd566d78803",
+    "bytes": 42476,
+    "seconds": 5.28,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-083": {
+    "textSha256": "5cd2328c81fae6480f21817f4a89798ab297cb69cc8641e779fdc1595047a75f",
+    "audioSha256": "0c5c0062acf24fb84ac7cb56dc251ba46be60ff4dd807e9ef1edd13c2601edc8",
+    "bytes": 44396,
+    "seconds": 5.52,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-084": {
+    "textSha256": "5d04fa66ae153a355ee8d098d713212f5bc6a66a57c6cce4d0956a9be6b57f42",
+    "audioSha256": "bc7a440c4ae4a44cf40b42e3e9cbf88064d675887933da41b71a5d525604c7bd",
+    "bytes": 46316,
+    "seconds": 5.76,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-085": {
+    "textSha256": "cc48d22e5fe3f681740189225683f2aef10c50a6eb1d9a241e14d157efd64b74",
+    "audioSha256": "0eed01008d192e392507fcfba97fb22be2f562fb37af8b05642aad4cf1e975d2",
+    "bytes": 41900,
+    "seconds": 5.208,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-086": {
+    "textSha256": "fbac5f2f5182d41348e4392455dce8f77952778d29ed00d43ebc7f4d1f35b733",
+    "audioSha256": "9d8cf37c40f71012dcf0a8082658a76c0be67476a91edb2d9781f959a8ec4e58",
+    "bytes": 50732,
+    "seconds": 6.312,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-087": {
+    "textSha256": "78432eed84d3b3d03255c92fed1b7b384ec6d1524adb4eaaba7b08442dd7871a",
+    "audioSha256": "99875e58baa31ec1b777492897b690239fe5cfd9aee03e71715ea799794d1edf",
+    "bytes": 30572,
+    "seconds": 3.792,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-088": {
+    "textSha256": "6b6974b744cb4620ac4ef21fe30897f24abf82f6fbe2d2e914b4bdeae16f84fc",
+    "audioSha256": "851d8d4ec04e8746bbe8047a81bb0c917ef1ca8705ce147ea4d1a2b71d4fefc6",
+    "bytes": 46316,
+    "seconds": 5.76,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-089": {
+    "textSha256": "e8770f6bdeefbe8e54c7e7ef0bee1574103f6bb77ec232c4a8c9abc91907010f",
+    "audioSha256": "4d752a8f2983a5daff0d1248359af1f192adf66a738eab481ec99a60fef5e516",
+    "bytes": 31532,
+    "seconds": 3.912,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-090": {
+    "textSha256": "396962e6637973ba7078da693d03f0509f3053d1ec84667a7b7ea8be4835e5a0",
+    "audioSha256": "9cdeb350c2c769a10fa4303e92c21e46c44d1549a8b769f790d331ad63941ab8",
+    "bytes": 38444,
+    "seconds": 4.776,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-091": {
+    "textSha256": "000fad8716d28cdcc03acae51c8221d9afad3b3faf0607dfbbc1422cabd7714d",
+    "audioSha256": "057a6d126b0829888e1b33b10f68365ea738602edacc58b8085d71416f6fb60f",
+    "bytes": 36908,
+    "seconds": 4.584,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-092": {
+    "textSha256": "fd06ca3f4dbd9b6548f4dbca7aa7417fbdb997cb2d7e9a27a7cf478139dacebd",
+    "audioSha256": "3b54489c5529c9fcc90fde8f6664697daea5371e62e775397574e811b1b0829b",
+    "bytes": 37868,
+    "seconds": 4.704,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-093": {
+    "textSha256": "0bd3a2a4dc8bf2671b715abf20ffd9e7d631b14d2a9d5c83902ac1cd129fb3df",
+    "audioSha256": "1198d76e969bc1377fa2146d4e41e055d5d570a1cfd30910f1af3cfde9477945",
+    "bytes": 45356,
+    "seconds": 5.64,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-094": {
+    "textSha256": "1efa273a7cf7d7a830e3b41a4d254c926c5209a117e4b681d28488e49768d272",
+    "audioSha256": "6e602343388c11ca4f8c1a7c48d01fc2941e5dc6a4bcfd4a540ce3a7821daec3",
+    "bytes": 33836,
+    "seconds": 4.2,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-095": {
+    "textSha256": "50e238b83bc839a868747eec6dcc4911a562ba8e29a4944889aa8d5b6e7f90ac",
+    "audioSha256": "62c3119c016e633654a20583557bb301a5fe4512b1201f59b449fb713bf254ff",
+    "bytes": 33836,
+    "seconds": 4.2,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-096": {
+    "textSha256": "e0fb31c4bcd5174ee7278687862e9b4a46fbfb74979e68e162e1b7603d0ccc78",
+    "audioSha256": "64e32cbe40a52cc49313129ce4942ab88efbfcc8ff23663b78942dda3126a346",
+    "bytes": 31532,
+    "seconds": 3.912,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-097": {
+    "textSha256": "05f377c736d613057537fe3e08741fb5214eba1365d0c277703c7bd094a878cc",
+    "audioSha256": "d6c8e21a0cc1680041fab56b0b1cd6ad16b642ed82eb66c4058699223edd36e7",
+    "bytes": 29228,
+    "seconds": 3.624,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-098": {
+    "textSha256": "c7be84270fc8a9f41cfa306a9a6ef55d45d6e3dd1591821305914349b09463e1",
+    "audioSha256": "9e42be0c5eaac42464dd17a2609ff3abcd9ca490c2f6a35410c3ca00fc4ddf80",
+    "bytes": 33260,
+    "seconds": 4.128,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-099": {
+    "textSha256": "7854c6b68cf2ae54c7faa85aa7e07d2773d64fa1026d100c08af05328097ed2f",
+    "audioSha256": "2e4ea3d8a9e0cfb45e126352551cf27ed1702b6c245716c3aa93cdb17bb31c3c",
+    "bytes": 39404,
+    "seconds": 4.896,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-100": {
+    "textSha256": "033942e7cd618ba38473c8c622bd68c9b34b204eae88c7068e14464cabf4a7fd",
+    "audioSha256": "14f8ba1fd05b194afd297200bcfffbd70ee480e9a35d986871f81754aa834e7c",
+    "bytes": 66284,
+    "seconds": 8.256,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-101": {
+    "textSha256": "beb1578653bfeea53e78b95824c08463661f08dfd27ecf6669009fc16064d966",
+    "audioSha256": "9d0efd75e7b93d0c4e8675658878451a1806038ca16be556563323b0bf62a745",
+    "bytes": 30572,
+    "seconds": 3.792,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-102": {
+    "textSha256": "34f662a567c76522c6aca0078c42c8f88f4ced67d2a87870054734b4948a4cb3",
+    "audioSha256": "c57ef7a5c08958fa072e5d7c84f5ac6f6ada3569812f97c28504aaa01448bb85",
+    "bytes": 32684,
+    "seconds": 4.056,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-103": {
+    "textSha256": "2e787abe7ad29ee2e28e31630a070ab9fe645c6dfaa76092630ef532bdddd3c4",
+    "audioSha256": "78f84d4b75c6c8f0539abcd387a6b64345beca4a440aacdc810ad03aa21113f6",
+    "bytes": 42092,
+    "seconds": 5.232,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-104": {
+    "textSha256": "4d7cf76010d6d61404ce4196207ad399259d9a31fb7f0c47a77ba5c84d27aa93",
+    "audioSha256": "d8300eba29e854e6cfe9c92ce2f54d7eaae9625dad9e71b6e8a3d2601380a050",
+    "bytes": 26156,
+    "seconds": 3.24,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-105": {
+    "textSha256": "23705d21160825f62c7637d15c4f1d0134a51042e9c8b29eedee03a76e0e6172",
+    "audioSha256": "12c376d11db1c964e258175f1a62b0a1ef533cfb56f556707d8690fa6da973f1",
+    "bytes": 44396,
+    "seconds": 5.52,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-106": {
+    "textSha256": "117d981a91fed945817d4f0bbab4bba64ac6f2e686a5c4da3d7c4a22edb58118",
+    "audioSha256": "030e983c259fd25092de38a343fe5da7c26e971815a4b45d9b9f4c7a1d181d7f",
+    "bytes": 33068,
+    "seconds": 4.104,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-107": {
+    "textSha256": "214a1bd70cf063b835d6785bb6d5d0523a5b5ce8982a18566b31c6e947c55a05",
+    "audioSha256": "709a4b08b805bda716fe80c29c3e4e57e162f65ec02f8e6018a80bfdbe637cf8",
+    "bytes": 46700,
+    "seconds": 5.808,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-108": {
+    "textSha256": "e62cbb749d31c1737352934f396b6e97607f9f2d410294dfd32326a14b44ed0b",
+    "audioSha256": "cdefa574e8fa6717184be7d67d4fc946b03afb5309af6584d3682893dfba2b40",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-109": {
+    "textSha256": "f4c6f005e1626e8894a92d0bc962da9be712bf36ef3fd7f4f791f93fbad76e12",
+    "audioSha256": "e452e51d25ecf89949fbd972433bd971c4b1b1af184697f19946bd4433638816",
+    "bytes": 30188,
+    "seconds": 3.744,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-110": {
+    "textSha256": "488830dd078ff14cace4e0bcee9d17b3c8aa2c585370cefe29012a2126b6cc2f",
+    "audioSha256": "92db9d276cd4d4a89fa284b6637cc84f29cd4c914bee6321fc70ee1cdd856f80",
+    "bytes": 32300,
+    "seconds": 4.008,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-111": {
+    "textSha256": "792049493d492e26968d86e1fd97fe5056bd14dc780f9fc2fa35bce11302a31b",
+    "audioSha256": "7b74ec75c76404630b3825db2734d6d7eae8c4aac63aa08028f905ecf54540d4",
+    "bytes": 45356,
+    "seconds": 5.64,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-112": {
+    "textSha256": "c7ebb1562a726d268562bbff03e8783dccef19558bad3308c650e32128e26494",
+    "audioSha256": "4c53ce64841f46f5e36b21cbf9f0b4fa0039df4460325905a0d8ef4eafc47f8f",
+    "bytes": 49964,
+    "seconds": 6.216,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-113": {
+    "textSha256": "4244678697c5ba0cca255e100f61a1f42372af7addf381e30ae6b2b8844c8eda",
+    "audioSha256": "a4f1cf44cbbbff71098b5d378dbba0d2705a7469e04e8fe24225735412f8d730",
+    "bytes": 40172,
+    "seconds": 4.992,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-114": {
+    "textSha256": "f3f085745bdae375e98122bb18d774cdd5fb630531bfd2054928de992bc788bc",
+    "audioSha256": "c5bb2ad8d442e5d4d6f353cc658cdc85494459e3378613ffd1789d0af6bec68f",
+    "bytes": 43820,
+    "seconds": 5.448,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-115": {
+    "textSha256": "75077442672314c977687437fcd0a3ef896d37bc16e9a5edd6ccd8238b7ca2e9",
+    "audioSha256": "ea280a74fdfc544ad321e37a5180ab18e35683540df16535c2d6641014fec5a7",
+    "bytes": 36140,
+    "seconds": 4.488,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-116": {
+    "textSha256": "0b824a4d985e63d435e14cb8c46120b7d612240ad16a6527031572308712d344",
+    "audioSha256": "6eb91d566bcac5b6db873b06222a88717edd1c974966f8bb9bb64ecb7bebadf4",
+    "bytes": 30572,
+    "seconds": 3.792,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-117": {
+    "textSha256": "6ddd8139ebe9aadd247fc1d2d6e74fdc7d9b62491d34c2f3d28d9ce568ba99d4",
+    "audioSha256": "d7c8aad636687fa6472988cb52d57e7890f3866834e12727b2d7b6cf8e1b0773",
+    "bytes": 28844,
+    "seconds": 3.576,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-118": {
+    "textSha256": "0fbb87b5e8f5fa2bea10175b273161a7414c5287bc561d3061e2ca8c0f110629",
+    "audioSha256": "fb31e7fba7127c42084e376a71ddebba7bcc21c375069a43ff2883c686117117",
+    "bytes": 27308,
+    "seconds": 3.384,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-119": {
+    "textSha256": "19a2f460024709ed50db8d18be6936b65d1ed039050faa71177ef88151a0e01a",
+    "audioSha256": "8e302ec75d82ac98281720dff239d662164718b09a787fcf53bcf2dcafc81fa0",
+    "bytes": 31724,
+    "seconds": 3.936,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-120": {
+    "textSha256": "bd77f1ee56ae5c7aa534fb7c7a3d78085a532be4db9c29df0b812bc78b62f0bc",
+    "audioSha256": "ab06f1f38fa428a39b34227722da37b69c7e2c03d63593ac11fb4360117299eb",
+    "bytes": 34796,
+    "seconds": 4.32,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-121": {
+    "textSha256": "5ca63470d64ec68f8f39ca5933c2273c6a21b2532c577dea5a37d90ab26c037e",
+    "audioSha256": "e850026cdf062295056bb929e5035f87ceb6cd162d35f910017b1d77cb41a8ef",
+    "bytes": 42860,
+    "seconds": 5.328,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-122": {
+    "textSha256": "318ed10715310f674979a05965f807f3f635e6b8fb6197c408ac68d75314e752",
+    "audioSha256": "c5beed3966c7f5945ab9868f50f90112c9778048a6e4809822825ad69fee67f3",
+    "bytes": 30764,
+    "seconds": 3.816,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-123": {
+    "textSha256": "1b8612fc93f2b82db4eee0ced317d2b2f3ad1807a8e29ae1edab316b25bb2d0c",
+    "audioSha256": "e7994a3bf7ee1280d409b1872ec0b297d4cb24eb7fb07eea8adb51b7b66fd0c6",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-124": {
+    "textSha256": "10ca159146bdbbc086a6b786013afb959a4be639ea15fdf3f616b5c5503b713e",
+    "audioSha256": "7a727dd977fe2f038d77cabba145fccd1488f12cf55fbd06af897b621e5495f0",
+    "bytes": 37484,
+    "seconds": 4.656,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-125": {
+    "textSha256": "5694ee560dc2ee332176dc40e37fce766ee2c51e7b4cdffd6b79b1c34026f254",
+    "audioSha256": "31b1a73b39f1e560bba0bfeef0862d856d1497f0133bf452f877d3b0ac0ffe7a",
+    "bytes": 29036,
+    "seconds": 3.6,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-126": {
+    "textSha256": "be54c9be56d18ade3c9f0ae0e9f888e1e1944376d9b977f4d6fcad1dd7ca995a",
+    "audioSha256": "b2c42cde24fbd336a3b67b31297c09c2a633e1ded5a06cc9e4daa528ce7ac682",
+    "bytes": 45740,
+    "seconds": 5.688,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-127": {
+    "textSha256": "681c6623d15036b62318f11cd4f20263dcd06a481782705a53f250fefa2b1f3a",
+    "audioSha256": "fb560ec812b177d98865e0ff7025f6c06996764523b0d16c906a887533bef2cf",
+    "bytes": 40364,
+    "seconds": 5.016,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-128": {
+    "textSha256": "cee9fe0dbb2a95a894b25ff277bb259c5d11552aeaa8bd0c2a516129dfe84d7d",
+    "audioSha256": "009e32f6e29bf7eeb467c2c5a65a9958a5ec3390882dbfbbaf51f2b61328cbf4",
+    "bytes": 28460,
+    "seconds": 3.528,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-129": {
+    "textSha256": "a975a8bf7ac19a64d3c7f998c38c8d5fbbd8cbb6918ea3b47c33cd7d45c2dfd1",
+    "audioSha256": "15a933685816de7f64318268057333ac1cbc511a59dd4f4d750b2eaed237571c",
+    "bytes": 43436,
+    "seconds": 5.4,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-130": {
+    "textSha256": "d4fab5c7f8ed5cf2aeca97a1ea74df1ba08dea0c0cf1770c3a4e5ac3d824fe3c",
+    "audioSha256": "371174fd00bebaed1826e37586c4763da44c6e798ad807089af860575270291f",
+    "bytes": 34988,
+    "seconds": 4.344,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-131": {
+    "textSha256": "2a0bead9320bdfe66042d7552721841d2a198cc6b443ae1e0c6d9b35267f5c92",
+    "audioSha256": "4d185cfd022928d41dc8aa159af44443d78bb20d262b44983ed14f11cea2e26b",
+    "bytes": 42476,
+    "seconds": 5.28,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-132": {
+    "textSha256": "c84a7a5f86789b8870c93f6d5064e95fa429004f2a52adee7143db2bdbc72abc",
+    "audioSha256": "b696f54a7160a658ca277cd6fb9e6f04847426d684820f08e1851251fc528762",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-133": {
+    "textSha256": "dd6ec4b1f2b4dd07524910c1c64075997852902f158d1c8ee2e68051946fc156",
+    "audioSha256": "ab2d7b5788704cac91488bc9ad28bf11d7e145ecd44fe58193be50dbe9abdebb",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-134": {
+    "textSha256": "46020eac3d5d46630709d1858755878b2f415b5b5465a9e37e621cbd7c2fb74e",
+    "audioSha256": "3f5b609627418142c6977da7cad103628600ef58d2913d60a11d6bb8f322b213",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-135": {
+    "textSha256": "ab33ac2c4c6bf41c41004cff2cb4633ecaf5810be08d9844213778f2d4f7dfcc",
+    "audioSha256": "71aab751574e3742fba7715c1ab476a6d6e951fc07391acdb2560b81b216c56a",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-136": {
+    "textSha256": "61d6d92b53f47d798dca6b28ab76bd8260ea7d40926f9a628925310d0c54298f",
+    "audioSha256": "8039c3a4241b9ce951095882082bbabcc315dc90d7fc4f52e6907bdfc55e2df4",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-137": {
+    "textSha256": "6d2a534f3ff3ea9002f4466cadb098ee6f3a0609e8e4e46059188154c0f074af",
+    "audioSha256": "d045aec4bbbb25abaae13d6e6a810cb59fd37b8a9bcc43eb93be4f5e4127769e",
+    "bytes": 33836,
+    "seconds": 4.2,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-138": {
+    "textSha256": "62e8c8cbb90488b63ef9d55f7212dab2da0e47ff2952dbc31e4304f49c415541",
+    "audioSha256": "9d4496349f134da82ee18c8df72bb78afd29cc2ebde086b973508588824d3097",
+    "bytes": 34412,
+    "seconds": 4.272,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-139": {
+    "textSha256": "aec490710763690c5fb56ac799df22fc3dc4be6f4aa1640acb7edaa2e1c8dcf2",
+    "audioSha256": "a39bc19ee66b7526cddaa6e68c9ad31c30e870b31bc6e8630a921346c278fb72",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-140": {
+    "textSha256": "bf9a37baa7be07a5c255d3d6e5fd0df24f1d161f507d536014004f88f45295fb",
+    "audioSha256": "5c23a64f6f1f20f6dd1504e6cbcca3c38fd1bd9e0b128525c081f97856a2bddb",
+    "bytes": 26540,
+    "seconds": 3.288,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-141": {
+    "textSha256": "124b6d3890c5dcc841272765d538ac17054eb8a2828be77616f8e868da38788c",
+    "audioSha256": "6010c54ba9a55fb05a9d0376877d738ca005ea3ca589ceefdc2fde3e57bd9806",
+    "bytes": 41516,
+    "seconds": 5.16,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-142": {
+    "textSha256": "3abd9cadd8aa63bb546cc2d63fe9af1a493b1a7e2c54d398483c7bdcdf27dc50",
+    "audioSha256": "f1b72a360ee739083d1e92194731ca26854fabc16dda85b89fa4ee10a422860b",
+    "bytes": 33452,
+    "seconds": 4.152,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-143": {
+    "textSha256": "08292aa0643ab5d535327d65ad554d6835f032274f01abd2e7b446d3e9974508",
+    "audioSha256": "7f5ce3aafff383c40584f047439d82f507d403e11fe2a0ee4a93b1ccb9ddba03",
+    "bytes": 41900,
+    "seconds": 5.208,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-144": {
+    "textSha256": "2cc49da3561f556a734e812f607c614d17ca1c0ba31e3c5b88893b9211faea95",
+    "audioSha256": "2532547d37f9bc419a5825a862e45c048652e8000908da44f4a3bc6dac3ffbe7",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-145": {
+    "textSha256": "76ca9644e5e35efe19a2c11f22b709c13e37c753a17f6c7e55b2f52ee607dff6",
+    "audioSha256": "d62ea737bdade5ea80e24d26281c31f4232b69d1122fa763ade2af279e8f4164",
+    "bytes": 36332,
+    "seconds": 4.512,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-146": {
+    "textSha256": "efa4816ce7647c1ddecb3492beca8cb485a93765e54c3d33764e5babf1c08837",
+    "audioSha256": "43f81f41d97132507ef14bf60035fac8fa58adee4c52b1c92558e7da929dd19c",
+    "bytes": 46124,
+    "seconds": 5.736,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-147": {
+    "textSha256": "60eb2dc2245e96166081aac708a1a08b9b28650341245af2391638b2072a33ad",
+    "audioSha256": "df546e87af386cf5d187458f5a2fa0ddb080d828d5487b1abcd1100605b5ac8d",
+    "bytes": 37676,
+    "seconds": 4.68,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-148": {
+    "textSha256": "40ff45eea848c827f02ec9052b7b13e5b030e074a12e2bff360bb947e1cbc94a",
+    "audioSha256": "da506b8b6c8509264d3569c4a0acf5a83b6db46d444d68012aa96c5f055d7f25",
+    "bytes": 28076,
+    "seconds": 3.48,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-149": {
+    "textSha256": "f860323c1856ef8584c480ba86aeb4e4642fa7beee8fdc49892fde1282c0ffd3",
+    "audioSha256": "19d26e098253046644c983b11690683d6f4c01577e65b6567fa06a0e2894524b",
+    "bytes": 31532,
+    "seconds": 3.912,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-150": {
+    "textSha256": "47fdcd040d3cd24d12956abd4aafbbd6cd92246fd5cf5971d546a64b06567521",
+    "audioSha256": "893798fb4ea1903c1b5d4e9430bffc79bcf788f7186df0cf641fe8cf6e6b53b6",
+    "bytes": 41708,
+    "seconds": 5.184,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-151": {
+    "textSha256": "e4b28631d98ddd753a5f5659a9bb16e3d57c3a6bda41c25eb016922ffb20a189",
+    "audioSha256": "cf476754174d24e4d2f1d47c9b15eacf6b06e340527aef9ff96dd91c89fc3cb5",
+    "bytes": 27308,
+    "seconds": 3.384,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-152": {
+    "textSha256": "a6f8259ee1e34171323bbbe72eeeb8869c85392b93ffa04c24fd38c4d9d01706",
+    "audioSha256": "8edf7dc556798d4ae11ba80c55c17105f3790fe9685384ca3b7d982357a7d641",
+    "bytes": 43628,
+    "seconds": 5.424,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-153": {
+    "textSha256": "d677a056c3dd85795301ec7ceede5fbc4c1499eab817b8156e95f4ee0bf6843d",
+    "audioSha256": "0e6b491774b407d17c8951ec12b21529c33a8e8f76fecd737efcce8c7b86a1db",
+    "bytes": 36908,
+    "seconds": 4.584,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-154": {
+    "textSha256": "2f9d1c071933b79956f324005a639c1c105fd602dcd4ea312d37dc44b78f5141",
+    "audioSha256": "3244de6249e795051d444f7325abd979738d7a1cf12f561b65a8c91e1566445d",
+    "bytes": 34220,
+    "seconds": 4.248,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
+  },
+  "rs-user-20261125-155": {
+    "textSha256": "237bae8cff355763228e70e2eb9fdee2d4ebb21b70b048bae08ef3abb78c029b",
+    "audioSha256": "f4c9fd96b10e2954540f48d7ec4e23136348d87842ccc2ebe1524b6d2af2b2a6",
+    "bytes": 25580,
+    "seconds": 3.168,
+    "voices": [
+      "piper:en_US-ljspeech-medium"
+    ],
+    "voiceSource": {
+      "dataset": "LJ Speech Dataset",
+      "url": "https://keithito.com/LJ-Speech-Dataset/",
+      "license": "public domain",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
+    }
   }
 }
