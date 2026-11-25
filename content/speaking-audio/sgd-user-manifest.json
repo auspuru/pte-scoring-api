@@ -1540,5 +1540,1197 @@
     "targetWordsPerMinute": 180,
     "generator": "piper-tts 1.3.0",
     "source": "sgd-voice-source.json"
+  },
+  "sgd-user-20261125-booklet-001": {
+    "textSha256": "b23f9cfb0abca421e187a8c9700b9d3d4fd4378cb7896416843b2b4eb573f938",
+    "audioSha256": "5c23c1cfb1d47a3f110f90cb2fb1e56487a3466ecb4dc89aa123dcf41eb22b8d",
+    "bytes": 678476,
+    "seconds": 113.04,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Teacher": "piper:en_GB-vctk-medium.onnx:p225",
+      "Student 1": "piper:en_GB-vctk-medium.onnx:p237",
+      "Student 2": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Teacher",
+      "Student 1",
+      "Student 2",
+      "Teacher",
+      "Student 1",
+      "Student 2",
+      "Teacher",
+      "Student 1",
+      "Student 2"
+    ],
+    "speakerAccents": {
+      "Teacher": "English",
+      "Student 1": "Scottish",
+      "Student 2": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "ea39af17472ece6f7686f721f47609ba8567766544ca2b7da93a2db4724cc96b",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-002": {
+    "textSha256": "312e6a001b876b9c69db9132ced1bdb22bd8be2af081d48b4a4646a8f8c7cdd6",
+    "audioSha256": "035f29ba71440568ee0253c7c8f2d0a79fac6d2eae23f125057aa3075b19ea7e",
+    "bytes": 720380,
+    "seconds": 120.024,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "784ab932561645e4d94138e392f4afc4e5d93921d0e9d02274e056ca6f94fb35",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-003": {
+    "textSha256": "3363a4c02c831dd2975312e796aa6699f6ef109ddf3ca17361a45e80ddc899b1",
+    "audioSha256": "6889e986f07cd5096e000605352790b3bf66abbb2c913c9f372088cf2fd0972e",
+    "bytes": 786476,
+    "seconds": 131.04,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "10787a1ec58b35d870463823de54476b9e6048fd926a566806748016d41dfad1",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-004": {
+    "textSha256": "39680ef2f083d3ca8ac3d5f18b719ae226ccc7839a6084b13419a865aa0877d2",
+    "audioSha256": "13ff473cd647f199519a103c15dba8a8183923b4c2d4e87e8d81056d95985cda",
+    "bytes": 856460,
+    "seconds": 142.704,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "17268ca431d30665b619e18360686f375ceb0b566819ebd57bcc2c0f175e3eb3",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-010": {
+    "textSha256": "256f6522e0475c168256f28644b7d689c51cc2dc7cf5ac1904f7e7b2000697fe",
+    "audioSha256": "1c2ead6b66a94291ca187aa44ad20d7db6fa30d15ebdcf2a9983e66577744e93",
+    "bytes": 1024364,
+    "seconds": 170.688,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "1110005661efd6087882466869da39871f194de0198daedcbf7e8e8a14e2b41f",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-011": {
+    "textSha256": "9330cf4ae29b7d1be568cd9a71be03e95beae10d7f85e2f8a89e752700fcdcf1",
+    "audioSha256": "cd7e45ca8b7cb0d7a6045a1c7b720e8958949dd764349c8cd43854cdf01b42f4",
+    "bytes": 1028396,
+    "seconds": 171.36,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "247068ba60d266db59dcc17317134f9f13410e49bb651c7322e485b2522c9094",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-014": {
+    "textSha256": "4e1fa3d0502ca43c27f0e64e7e1ba0dbda7bd7c9e3aa5660990374fc6aa7323c",
+    "audioSha256": "2063a77f118a78c3f7086a52c90a41c8ba7bc9617851bb658abd5c3ba79b7472",
+    "bytes": 956396,
+    "seconds": 159.36,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker1",
+      "Speaker2",
+      "Speaker3",
+      "Speaker1",
+      "Speaker2",
+      "Speaker3",
+      "Speaker1",
+      "Speaker2",
+      "Speaker3"
+    ],
+    "speakerAccents": {
+      "Speaker1": "English",
+      "Speaker2": "Scottish",
+      "Speaker3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "826ea62cb65ac5c43bfef80cdc3f90be8d86ad580864766382138ad78bbb1c2d",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-015": {
+    "textSha256": "7c71cf11285eadb64369b33849eee1360bfd97a800aa4b89d135b1e14217686c",
+    "audioSha256": "8fde4834fda8b10717f43c0e2974a65b4201e2bd0f789f54d2396686facd6bae",
+    "bytes": 828956,
+    "seconds": 138.12,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Student 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Student 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Staff": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Student 1",
+      "Student 2",
+      "Staff",
+      "Student 1",
+      "Student 2",
+      "Staff",
+      "Student 1",
+      "Staff",
+      "Student 1",
+      "Student 2",
+      "Staff"
+    ],
+    "speakerAccents": {
+      "Student 1": "English",
+      "Student 2": "Scottish",
+      "Staff": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "e0099180315278da5fb8039dbb5f86350f09cfc7dc20a3419e379630935fe4bd",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-016": {
+    "textSha256": "e2cf9c06a2eb199d9a625c80c8453df5128741da88a930babdde5c814160e488",
+    "audioSha256": "c29a5bb3394a4e635dbee6c5c2431fb8a73e92cc6bf13c6a2387361e9dd90668",
+    "bytes": 852428,
+    "seconds": 142.032,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Student 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Student 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Professor": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Student 1",
+      "Student 2",
+      "Professor",
+      "Student 1",
+      "Student 2",
+      "Professor",
+      "Student 1",
+      "Student 2",
+      "Professor",
+      "Student 1",
+      "Student 2",
+      "Professor"
+    ],
+    "speakerAccents": {
+      "Student 1": "English",
+      "Student 2": "Scottish",
+      "Professor": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "6faafba91226bf8c95c3a3901f43684f86848e4b3bfdc7540fb0359428d8d947",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-017": {
+    "textSha256": "2948694b23a0b6e59c29ee2acd05115b623963978540e9fe239dc893527d7cfb",
+    "audioSha256": "7357177254efb59bf9c68d0425c0c66dd0b6a407f05aa87563617ca8de4af5d5",
+    "bytes": 784460,
+    "seconds": 130.704,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Student": "piper:en_GB-vctk-medium.onnx:p225",
+      "Professor": "piper:en_GB-vctk-medium.onnx:p237",
+      "Staff": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Student",
+      "Professor",
+      "Staff",
+      "Student",
+      "Professor",
+      "Student",
+      "Professor",
+      "Staff",
+      "Student",
+      "Professor"
+    ],
+    "speakerAccents": {
+      "Student": "English",
+      "Professor": "Scottish",
+      "Staff": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "fa572512ee4cc7274b4a1fa58d1d27364fbd6c563405b74303be2b7bcf44426d",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-018": {
+    "textSha256": "86226e615f0d58655715810620cea9f5ac1609f175a9d50d4446e075d685b4a5",
+    "audioSha256": "1b46737f121536853723437610f49b963548177a1e8bfd94028cc4309e8bd0a5",
+    "bytes": 808508,
+    "seconds": 134.712,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Jason": "piper:en_GB-vctk-medium.onnx:p225",
+      "Maya": "piper:en_GB-vctk-medium.onnx:p237",
+      "Liam": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Jason",
+      "Maya",
+      "Liam",
+      "Jason",
+      "Maya",
+      "Liam",
+      "Jason",
+      "Maya",
+      "Liam",
+      "Jason"
+    ],
+    "speakerAccents": {
+      "Jason": "English",
+      "Maya": "Scottish",
+      "Liam": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "4ccf31771049ff5ecc27388fc46bd4aafd77a012ee104eb99e03067c1b8330d7",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-019": {
+    "textSha256": "6dd699248234a182fea6d564b477d0bd2c5f52b14b6b11ae0626b79aa74b2ac8",
+    "audioSha256": "deb8a2d6a17ecafa3c8586d8f4e054e914e84ca3c865b286ec5a65465b45a048",
+    "bytes": 828380,
+    "seconds": 138.024,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "f30b56a8009117333e2419c475c036b6a3220bce8d590a4ede6452798a068540",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-021": {
+    "textSha256": "021c10465d00feda1573f8fdfb4c79e3c77d68e1a2370ae1d8be3176cbbab94b",
+    "audioSha256": "e4862fd0842da6c072ec189e48e6e130e75db6ae76bd7b35213b32f95a316fa8",
+    "bytes": 858476,
+    "seconds": 143.04,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "a57c78601aab73c95c8f466ab99205a75321fa06cbdce8558ffd2be1717c5e57",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-022": {
+    "textSha256": "fb575a11dae9f8c8d02559658ef38fcb73ad6c64e897deef9d66ae4dccea3732",
+    "audioSha256": "03e39a00afc01f49f78caeb84caa75c08ea15a1b8c25d6084d10c6d7ceb3a460",
+    "bytes": 892460,
+    "seconds": 148.704,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "d45104fb6c57bfd66f5294dd673adb4cbf4dc09001203371a165da4a232d6274",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-024": {
+    "textSha256": "93441262ff4c0b5bcd47bd4892c954a98e5f9e1fcec3572576434b70cabb5dde",
+    "audioSha256": "9caed9cfcff7e2d55934bee2bd8c29f642444b611c26a4677f5a1f551b154e29",
+    "bytes": 1004348,
+    "seconds": 167.352,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 2",
+      "Speaker 1",
+      "Speaker 3",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 2"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "e9912f505f92c369275be9540b178d286ed98f990d97052cea940e945b27c189",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-026": {
+    "textSha256": "53baffd4d8a3f7c8fc4983c46555b17b9b306df64d6771d426ca0288d83c2815",
+    "audioSha256": "51d245316eb6ee0437ee2873773e27bfcb1dcfdf46ceedfbe71cba9029dd1d66",
+    "bytes": 714476,
+    "seconds": 119.04,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Barista": "piper:en_GB-vctk-medium.onnx:p225",
+      "Joe": "piper:en_GB-vctk-medium.onnx:p237",
+      "Emily": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Barista",
+      "Joe",
+      "Emily",
+      "Joe",
+      "Emily",
+      "Barista",
+      "Joe",
+      "Emily",
+      "Barista",
+      "Joe",
+      "Emily",
+      "Barista",
+      "Joe",
+      "Emily"
+    ],
+    "speakerAccents": {
+      "Barista": "English",
+      "Joe": "Scottish",
+      "Emily": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "f991524182071147ecc04c9acf9ef40eefad9e4bdf7e8da9213fe2e057cf400b",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-030": {
+    "textSha256": "33106bbd4d0ff9ca9e1022780f34d8ed19e83f795b2dd528f008e19214813a76",
+    "audioSha256": "ce6c22a084897c8a3a0c9c7644d7cd3e994157c6292d2436f2bf134b7552e4c4",
+    "bytes": 962444,
+    "seconds": 160.368,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "855b8b6d06166fce33f31524e485b3a774ed86c2daa31fcc079987fa4fbe0289",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-031": {
+    "textSha256": "38236fbebdd46e2eb3ee052830b78b0c5c04ec413fd25c7fb67424a31297cc6d",
+    "audioSha256": "04558abcea297ca669d400a5bbd44700edeb01cef5b320fa978f4f02c02debd2",
+    "bytes": 1074476,
+    "seconds": 179.04,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 2",
+      "Speaker 1",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "e7964e846d1bf6453cdccc9a710d8ba0a3e8e17c3366e9b9fabdcbf975840c93",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-032": {
+    "textSha256": "746ccbdba3fd0defa6d4e29e040170bfa055d5b60987645feafa42005b3a5e32",
+    "audioSha256": "7eacf967ade5026f32444fd5625d222a80f378fbb9af7c7c7b72d469b39d3a72",
+    "bytes": 1032428,
+    "seconds": 172.032,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "0ae79fafdbf976574e960641c9d641a6096cc2f1dafe9948f7394216185d48a3",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-033": {
+    "textSha256": "67d5a355559b34c959e62bc9af799f502f93008d06cd0327e6f4a6eb4d20435b",
+    "audioSha256": "4bbde3ca57f165579178d90e73ffa2b5a8ed057b29b36d9b3f5aeaef4197344b",
+    "bytes": 1008380,
+    "seconds": 168.024,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "89832051820e29cce02c6164ba06f6d0dc6139bef7b2bbf9519e35faf94b9780",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-034": {
+    "textSha256": "6ba59f035c53be6e153ad51e2de2a132617d38c3563b2ad7242897f196be5adb",
+    "audioSha256": "746375c54f7519af04ca77491ba342b7c2bf899daba1a8d16c86e6b7383e0926",
+    "bytes": 1074332,
+    "seconds": 179.016,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 2",
+      "Speaker 1",
+      "Speaker 3",
+      "Speaker 2",
+      "Speaker 1",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "ee4a354bc604efadc9eb3b431e0d915fc91ed151db6ff754afe8cdb12054c627",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-035": {
+    "textSha256": "2d6cca8f9a1cac578e0e999837188bf9fb44529d031131db18581d43486528aa",
+    "audioSha256": "2d31b40b5c0e963fa706761293da92ea301c06f887ad528e77eaee34bd155073",
+    "bytes": 1074476,
+    "seconds": 179.04,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 3",
+      "Speaker 2",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "2c593fbd44b929d9da1b1faebf7547993852313487fc83609d96005c672ee71c",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-036": {
+    "textSha256": "fc2ba419697e65a3fea9d8b1cdb2a0fdd787e52fe0fbc88ca823b0c34a8c6d70",
+    "audioSha256": "6f67048413b0c0bbaac0285b87cfd70c4f970190f33f41cda1e0a66f0d4bf33e",
+    "bytes": 1068428,
+    "seconds": 178.032,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "b69971433adae9ee9b7c1ee3fe99e69869c636cc87c6e0bbd4002d31965c9cc6",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-038": {
+    "textSha256": "159a747da4a6fa85e19b2e6387992163a6a4e7eaa1582cbacb08e3bf28704bee",
+    "audioSha256": "974e596e00b18dd07e254d684161208e5339bbb23cab852766efc471d0a9b884",
+    "bytes": 1074332,
+    "seconds": 179.016,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Speaker 1": "piper:en_GB-vctk-medium.onnx:p225",
+      "Speaker 2": "piper:en_GB-vctk-medium.onnx:p237",
+      "Speaker 3": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3",
+      "Speaker 1",
+      "Speaker 2",
+      "Speaker 3"
+    ],
+    "speakerAccents": {
+      "Speaker 1": "English",
+      "Speaker 2": "Scottish",
+      "Speaker 3": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "5c29095b5595b7048f7001f9834cbdc7e72745c85d917997ff821cd05f8cffb5",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-040": {
+    "textSha256": "c27816eb28f08419ba89aae5d69470fd69a0fc2a036eefbd575fc61d0361bb1a",
+    "audioSha256": "4d55f8cbb9abc2057acdfe85ae5762fc1c6edd73b617562dc478ec378dee28d4",
+    "bytes": 614396,
+    "seconds": 102.36,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Leo": "piper:en_GB-vctk-medium.onnx:p225",
+      "Nina": "piper:en_GB-vctk-medium.onnx:p237",
+      "Jaya": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Leo",
+      "Nina",
+      "Jaya",
+      "Leo",
+      "Nina",
+      "Jaya",
+      "Leo",
+      "Nina",
+      "Jaya"
+    ],
+    "speakerAccents": {
+      "Leo": "English",
+      "Nina": "Scottish",
+      "Jaya": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "209d5858cb702b069a48cc33e0f1c0d18b9442f6bf2df57c41219a8e3e1adbc7",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-041": {
+    "textSha256": "cdfd9de72d1849b6b9dc534d58b68b35436a9008102bf1a0ab4610713088d2ef",
+    "audioSha256": "3e4cb17e19afb0182a137c95b783d109ef5212f8b94d0d4a2c131b9c0b4c899a",
+    "bytes": 1028396,
+    "seconds": 171.36,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Sarah": "piper:en_GB-vctk-medium.onnx:p225",
+      "Emma": "piper:en_GB-vctk-medium.onnx:p237",
+      "Jay": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Sarah",
+      "Emma",
+      "Jay",
+      "Sarah",
+      "Emma",
+      "Jay",
+      "Sarah",
+      "Emma",
+      "Jay",
+      "Sarah",
+      "Emma",
+      "Jay",
+      "Sarah",
+      "Emma",
+      "Jay",
+      "Sarah",
+      "Emma",
+      "Jay",
+      "Sarah",
+      "Emma"
+    ],
+    "speakerAccents": {
+      "Sarah": "English",
+      "Emma": "Scottish",
+      "Jay": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "b57c89eada44a8b222140714af0999917645c5c6c24283f5f6db4a7995368d76",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-043": {
+    "textSha256": "e6aa229738ffcfdfd9494adca6f5abba2827b0454e2ef8e8c013f5e2ea9ac864",
+    "audioSha256": "d32c1fc209e719c8a01ceda9d37554e5800478a4314ae9dadfc11ae108df5939",
+    "bytes": 582428,
+    "seconds": 97.032,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Liam": "piper:en_GB-vctk-medium.onnx:p225",
+      "Ava": "piper:en_GB-vctk-medium.onnx:p237",
+      "Noah": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Liam",
+      "Ava",
+      "Noah",
+      "Liam",
+      "Ava",
+      "Noah",
+      "Liam",
+      "Ava",
+      "Noah"
+    ],
+    "speakerAccents": {
+      "Liam": "English",
+      "Ava": "Scottish",
+      "Noah": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "82e41377bb2d041a09e0e30aa5e59c7d8df61db68df41c59eb293c6e455b44fc",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-044": {
+    "textSha256": "09d41f21d265bd5f3e3556d7e6af0c6d47c4b63591d23831e8ea78ba8850f7a1",
+    "audioSha256": "365151632815e86c254cf081f64a1c41f2d69b47320293b015c6c2ea0f9329f0",
+    "bytes": 896348,
+    "seconds": 149.352,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Alex": "piper:en_GB-vctk-medium.onnx:p225",
+      "Sam": "piper:en_GB-vctk-medium.onnx:p237",
+      "Lena": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Alex",
+      "Sam",
+      "Lena",
+      "Alex",
+      "Lena",
+      "Sam",
+      "Alex",
+      "Lena",
+      "Sam"
+    ],
+    "speakerAccents": {
+      "Alex": "English",
+      "Sam": "Scottish",
+      "Lena": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "78257c7ecfa0725a76a947e4e8a61e507ff66b793ab807c685515435ede73d46",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-045": {
+    "textSha256": "74f84249aa0c72cc049462c05ef9d93ab5d3ff930fa7dcd2aff17c800ceae107",
+    "audioSha256": "c251e264336a420ee2527288989eda53b58b0ef02895450c872a4dcb55d7c344",
+    "bytes": 970364,
+    "seconds": 161.688,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Peter": "piper:en_GB-vctk-medium.onnx:p225",
+      "Bella": "piper:en_GB-vctk-medium.onnx:p237",
+      "Chris": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Peter",
+      "Bella",
+      "Chris",
+      "Peter",
+      "Bella",
+      "Chris",
+      "Bella",
+      "Chris",
+      "Peter"
+    ],
+    "speakerAccents": {
+      "Peter": "English",
+      "Bella": "Scottish",
+      "Chris": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "c913476d91d571c0433305756ac6cd5ef1cb4139c8e7dece6665720651405979",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
+  },
+  "sgd-user-20261125-booklet-047": {
+    "textSha256": "c72e9de78a62b9007a23195ecd7525566510bb190f75a1d1c09357471d443a2c",
+    "audioSha256": "dc95c69b2c48109d71f2f290730a78de4bb20047ff2510ce2326d194b4b03a13",
+    "bytes": 742412,
+    "seconds": 123.696,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225",
+      "piper:en_GB-vctk-medium.onnx:p237",
+      "piper:en_GB-vctk-medium.onnx:p238"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json",
+    "speakerVoices": {
+      "Barista": "piper:en_GB-vctk-medium.onnx:p225",
+      "Joe": "piper:en_GB-vctk-medium.onnx:p237",
+      "Emily": "piper:en_GB-vctk-medium.onnx:p238"
+    },
+    "turnSpeakers": [
+      "Barista",
+      "Joe",
+      "Emily",
+      "Joe",
+      "Emily",
+      "Barista",
+      "Joe",
+      "Emily",
+      "Barista"
+    ],
+    "speakerAccents": {
+      "Barista": "English",
+      "Joe": "Scottish",
+      "Emily": "NorthernIrish"
+    },
+    "narrationIncluded": true,
+    "narrationSha256": "4216d1b4e89a4c5d23d222cd8b3f58d69f9ec918f815b83a8858276f0f14b561",
+    "profileVersion": "sgd-contrasting-voices-20261030-1",
+    "rate": "0%",
+    "targetWordsPerMinute": 200
   }
 }

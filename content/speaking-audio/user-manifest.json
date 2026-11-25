@@ -4215,5 +4215,159 @@
       "license": "public domain",
       "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD"
     }
+  },
+  "rl-user-20261125-booklet-001": {
+    "textSha256": "bbfd31d16c6e91d4aeef24ddcda21a1abe29039ebcc0df31a8766d868c58425b",
+    "audioSha256": "e0834bceafd7b518b7478fece7d808d6d6a066411e5b2250818ac10934bea817",
+    "bytes": 350588,
+    "seconds": 58.392,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-004": {
+    "textSha256": "8350e085363d2980cfe754d5d973d16cf1321d14ca2f1c2b0854e8fffb3d9bd9",
+    "audioSha256": "6307224a66511fd1f1e300db7a9e2602597111c830096b79ab251e5bd23cb5f7",
+    "bytes": 372476,
+    "seconds": 62.04,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-006": {
+    "textSha256": "f47120d5619f6caac54aa1a2cd75ffe31cfd0db906515bfbf26568640dbe75f0",
+    "audioSha256": "de078f7e908a22b47f5f327fc58b0ff325364b584952a1b91b1a222219b2c675",
+    "bytes": 322508,
+    "seconds": 53.712,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-012": {
+    "textSha256": "2fab7ee32ee6bf720acce0e6075edc61f63e6f82e40d2c301689df5bbed14a89",
+    "audioSha256": "29f6b3838fbc544651729e0e692cc43b8241263c4a382f28ee9700b41d165215",
+    "bytes": 372476,
+    "seconds": 62.04,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-021": {
+    "textSha256": "e33804491824b1ab830595ee6656c33f243b2dc0ef7749c576ac9164a33e97a2",
+    "audioSha256": "f08a4d1ba3c086bbae1bbdc9fc4d08d46bbe61ef440060bf99df27589a320179",
+    "bytes": 292556,
+    "seconds": 48.72,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-024": {
+    "textSha256": "804e5f70b5a2d27c86d7e1cdc8555e90671fbf7fa3f39e76091a89af2d6a9345",
+    "audioSha256": "c98c0526c391a96285963f0bfa4e7b2d8e55a67d3c9452205367263e097b2403",
+    "bytes": 273404,
+    "seconds": 45.528,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-026": {
+    "textSha256": "92518aecc79a2eba5dfaf7c516fd05c3a1bdb528d4cf30deb7bce3e68f2f98a8",
+    "audioSha256": "a96c6a46e9f1713ae8bc887c358f7e547acc71db828cb6b0635b60decea30ae2",
+    "bytes": 534620,
+    "seconds": 89.064,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-029": {
+    "textSha256": "7b2457ed5fd901073324972ad2fbe4020aeb9cbdc7df5e01eccfa2d9609189c1",
+    "audioSha256": "4c8bd13e59af3449c910fe19fd9626a102f19caed5127547382af62c11bcd638",
+    "bytes": 508412,
+    "seconds": 84.696,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-030": {
+    "textSha256": "4a17cc6b002b611a8e762ac8cd1f7097283e6758352c72222f94a93072170f55",
+    "audioSha256": "ab0893b47d7e638d29e85c4f04341050438794c7e5846e3ff116024bfc4085b2",
+    "bytes": 414524,
+    "seconds": 69.048,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-036": {
+    "textSha256": "4daee7fd01c330918400ba99d2bdbb63fa5ae200d1cee0f88c6bb045479fc5cc",
+    "audioSha256": "5aff8547df2f9a3d59ac5b2d4fa58cdfb9e6e15fa011800942216734e4b4a766",
+    "bytes": 534476,
+    "seconds": 89.04,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-039": {
+    "textSha256": "16455fcbb60d8c7f646efd9c9e73e5d795ab823ed196f1cddef2b58ee11cb9a8",
+    "audioSha256": "8a25077f25107c61a14b1b9ece8c6a52a0501e9d7fa69878ac45b50ae4020fa4",
+    "bytes": 436412,
+    "seconds": 72.696,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-052": {
+    "textSha256": "dd266822ed8b5df74b528318b59863fa970ee3328e3ab35edf73ed3faa00c2db",
+    "audioSha256": "7eeea8c1829ac4936fb2934f27bd2b1084e4881e53a293621fc1aa648513469c",
+    "bytes": 496460,
+    "seconds": 82.704,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-053": {
+    "textSha256": "a4103b0230c7abaac65b049f453861acc6c44810c5fff534022e052e959adc57",
+    "audioSha256": "dd8da8228edbd767d969a32676ba0f765dd34d2dfbd495b982c2bf135d125d9c",
+    "bytes": 418556,
+    "seconds": 69.72,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
+  },
+  "rl-user-20261125-booklet-054": {
+    "textSha256": "7ac4e35639a756c5611b6b2177c2e4b03ccb31317ed0fe9a177b94fd00d981bc",
+    "audioSha256": "375a55b4ad8d4aa09c03aac4a12af5c0112f575fee24ef105b1cb90c0005d96c",
+    "bytes": 494444,
+    "seconds": 82.368,
+    "voices": [
+      "piper:en_GB-vctk-medium.onnx:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "source": "sgd-voice-source.json"
   }
 }

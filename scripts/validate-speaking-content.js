@@ -8,9 +8,11 @@ function validate() {
     ...require('../content/user-sgd-oct30.json'),
     ...require('../content/user-sgd-20261123.json'),
     ...require('../content/user-sgd-20261124.json'),
+    ...require('../content/user-sgd-pte-nepal-20261122.json'),
   ];
   const suppliedSpeaking = require('../content/user-speaking-oct24.json');
   const retellPredictions = require('../content/user-rl-20261123.json');
+  const bookletLectures = require('../content/user-rl-pte-nepal-20261122.json');
   const diPredictions = require('../content/di-user-predictions.json');
   const rtsPrompts = require('../content/rts-original-practice.json');
   const suppliedRts = require('../content/user-rts-20261124.json');
@@ -32,11 +34,11 @@ function validate() {
     ra: 5 + originalReadAloud.length + bookletReadAloud.length,
     di: 5 + diPredictions.length,
     rts: 6 + rtsPrompts.length + suppliedRts.length + bookletRts.length,
-    rl: 5 + suppliedSpeaking.filter(q => q.type === 'rl').length + retellPredictions.length,
+    rl: 5 + suppliedSpeaking.filter(q => q.type === 'rl').length + retellPredictions.length + bookletLectures.length,
     sgd: 5 + discussions.length,
   };
   assert.equal(bank.questions.length, 30 + diPredictions.length + rtsPrompts.length
-    + suppliedSpeaking.length + discussions.length + retellPredictions.length + suppliedRts.length + bookletRts.length + originalReadAloud.length + suppliedRepeatSentences.length + bookletReadAloud.length + bookletRepeatSentences.length);
+    + suppliedSpeaking.length + discussions.length + retellPredictions.length + bookletLectures.length + suppliedRts.length + bookletRts.length + originalReadAloud.length + suppliedRepeatSentences.length + bookletReadAloud.length + bookletRepeatSentences.length);
   assert.equal(new Set(bank.questions.map(q => q.id)).size, bank.questions.length);
   for (const type of Object.keys(bank.types)) {
     assert.equal(bank.questions.filter(q => q.type === type).length, expectedCounts[type] ?? 5);

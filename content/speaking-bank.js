@@ -162,7 +162,9 @@ questions.push(...require('./ra-original-20261125.json').map(q => ({ ...types.ra
 questions.push(...require('./user-rs-20261125.json').map(q => ({ ...types.rs, ...q })));
 questions.push(...require('./user-ra-pte-nepal-20261122.json').map(q => ({ ...types.ra, ...q })));
 questions.push(...require('./user-rs-pte-nepal-20261122.json').map(q => ({ ...types.rs, ...q, title: q.title + ' · AI practice narration' })));
-questions.push(...require('./user-rts-pte-nepal-20261122.json').map(q => ({ ...types.rts, ...q })));
+questions.push(...require('./user-rts-pte-nepal-20261122.json').map(q => ({ ...types.rts, ...q, title: q.title + ' · AI practice narration' })));
+questions.push(...require('./user-rl-pte-nepal-20261122.json').map(q => ({ ...types.rl, ...q, title: q.title + ' · AI practice narration' })));
+questions.push(...require('./user-sgd-pte-nepal-20261122.json').map(q => ({ ...types.sgd, ...q, title: q.title + ' · AI practice narration' })));
 for (const q of questions) {
   if (q.turns) q.text = [...(q.narration ? ['Narration: ' + q.narration] : []), ...q.turns.map(([speaker, text]) => speaker + ': ' + text)].join('\n');
   if (['ra', 'rs'].includes(q.type)) q.sample = q.text;
