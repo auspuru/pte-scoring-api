@@ -260,11 +260,11 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     spoken:spokenPractice.map(q => ({
       id:q.id, title:q.title, topic:q.topic, minutes:q.minutes,
       ...((q.newInCatalogue || existingNewSstIds.has(q.id)) ? {newInCatalogue:true} : {}),
-      audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION
+      audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || q.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION
     })),
     dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,numberOnly:true,
       ...((q.newInCatalogue || existingNewWfdIds.has(q.id)) ? {newInCatalogue:true} : {}),
-      audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION
+      audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || q.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION
     })),
     listeningPractice:listeningPractice.map(q=>({id:q.id,type:q.type,title:q.title,minutes:q.minutes,
       ...(q.newInCatalogue ? {newInCatalogue:true} : {})})),
