@@ -13,6 +13,10 @@ const fail=(message,status=400)=>Object.assign(Error(message),{status});
 // Practice-only format/evidence repair. Full Mock keeps its frozen one-call
 // grader. Never retry an uncertain/failed provider request or a valid abstention.
 async function gradePracticeContent(q,text,callModel){
+  if (rtsContent.forQuestion(q) === rtsContent) {
+    const { withRtsPracticeRepair } = require('./rts-practice-repair');
+    return scoring.grade(q, text, withRtsPracticeRepair(callModel));
+  }
   let completed=false,previousReview;
   const first=await scoring.grade(q,text,async(prompt,context)=>{
     const raw=await callModel(prompt,context);completed=true;previousReview=raw;return raw;
