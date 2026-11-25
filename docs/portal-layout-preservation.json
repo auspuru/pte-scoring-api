@@ -33,7 +33,7 @@
     "public/full-mock-report.js": "c93ffe6fce4fb88059dfa164f3c651f7b1792b44527924c9f00a1f2067b9d250",
     "public/mock-impact-feedback.js": "0db0538a9d8d7f948135d0dc282ebe02a8721afe1936920fbb0e6214c958beee",
     "public/writing-lab-report.js": "1aea3df348c26c8c9f8fc7448d7040d68e5b96be3e93b1d8bf4915ab0bbbc3ab",
-    "public/writing-lab-client.js": "29ba6c4162c2e351f5e2b353be7a63b3c47dd7825dd3ad5acf83e09c73c6ac97",
+    "public/writing-lab-client.js": "fd498cc29ef905d6d76e01256382865abdf006365e644969d173bc968b5341bd",
     "public/speaking-practice.js": "95057b0b433b5481e8dc59957e7811d1d951c3e39e932e1f4d89a595bb22b8ec",
     "public/speaking-mock-client.js": "4c29e5c080bbca1094846df2b4e7e92fc11438b914b75485b61dfcca7f079362",
     "public/reading-practice.js": "e6dfb8f8b10321c6bc5e73352d368b9f353adf4fe70b0df7de88a2c56c3e146f",
@@ -143,7 +143,7 @@
       "refreshOverall": "eb1872238220a1a8673dccadb17a3a13fec0dffa40ca6dfe6b6a0cd208dc6c2f",
       "recordInterruption": "8529c1e23c4fd91dfef749813a41497b08b9fcc4d00957352300792be0b71d3d",
       "flushIntegrity": "3ea28f133ea4ba509675349f6c0e4d5051b6e2fc099a7196d05fb2f53b96e916",
-      "setMockMode": "726e9da5f2fcf6fba62c51ba5a0fa7eda5470e193a072159c6e7105f5c5c095d",
+      "setMockMode": "47298ed331c96973718ee1934e26bd87e3f298af5d387271d64e4769bb09084e",
       "api": "977b6f5c5b464fbaff895613027cc6d677f01476f98e7b09aa5a0d5bc52a1d3f"
     },
     "reviewedControllerSha256": "4671e105b36973146ce0899e528519834fb938026368096b5050d5af6933faed"

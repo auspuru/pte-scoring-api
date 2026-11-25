@@ -176,13 +176,14 @@
     }
     function copy(target, cut) {
       const input = editor(target);
+      if (!input && active.options.clipboardFromEditorsOnly) return;
       const text = input ? input.value.slice(input.selectionStart,input.selectionEnd) : doc.getSelection?.()?.toString();
       if (text) clipboard = text;
       if (cut && input && text) insert(input,'');
     }
     function edit(command, target) {
       if (!active?.options) return false;
-      if (active.locked || active.options.blockClipboard) return true;
+      if (active.locked) return true;
       if (command === 'paste') { if (clipboard != null) insert(target,clipboard); else lock('external-paste-blocked'); }
       else copy(target,command === 'cut');
       return true;
@@ -202,12 +203,6 @@
       // Route native clipboard actions through the same private clipboard policy as the editor buttons.
       edit(type, event.target);
     }, true);
-    doc.addEventListener?.('beforeinput', event => {
-      if (active?.options?.blockClipboard && ['insertFromPaste','insertFromPasteAsQuotation','deleteByCut'].includes(event.inputType)) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-      }
-    }, true);
     doc.addEventListener?.('contextmenu', event => { if (active?.options) { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
     doc.addEventListener?.('keydown', event => {
       if (!active?.options) return;
@@ -222,7 +217,14 @@
         event.preventDefault(); event.stopImmediatePropagation();
       }
     }, true);
-    doc.addEventListener?.('dragstart', event => { internalDrag = !!active?.pane.contains(event.target); }, true);
+    doc.addEventListener?.('dragstart', event => {
+      internalDrag = !!active?.pane.contains(event.target);
+      if (internalDrag && active.options?.clipboardFromEditorsOnly && !editor(event.target)) {
+        internalDrag = false;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }, true);
     doc.addEventListener?.('dragend', () => { internalDrag = false; }, true);
     doc.addEventListener?.('drop', event => {
       if (active?.options && !internalDrag) { event.preventDefault(); event.stopImmediatePropagation(); lock('external-drop-blocked'); }

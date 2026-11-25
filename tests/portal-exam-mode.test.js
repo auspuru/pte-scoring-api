@@ -150,6 +150,37 @@ test('Protected copy, cut and paste use only a private clipboard while internal 
   h.fire('paste',{target:answer});assert.equal(records[1].reason,'external-paste-blocked');assert(h.mode.isLocked());
 });
 
+test('Writing mocks only copy or cut from editable fields, and paste from the private clipboard', () => {
+  const h=harness(),records=[];
+  h.doc.fullscreenElement=h.doc.documentElement;
+  const passage=h.node('passage',h.writing);
+  const answer=h.node('answer',h.writing,'TEXTAREA');
+  h.doc.getSelection=()=>({toString:()=>'Text from the passage'});
+  h.mode.set('writing',true,h.writing,{clipboardFromEditorsOnly:true,onEvent:event=>records.push(event)});
+
+  answer.value='My response';answer.selectionStart=0;answer.selectionEnd=2;
+  assert(h.fire('copy',{target:answer}).prevented);
+  assert(h.fire('copy',{target:passage}).prevented);
+  assert(h.fire('cut',{target:passage}).prevented);
+  assert(h.fire('dragstart',{target:passage}).prevented);
+  answer.selectionStart=answer.selectionEnd=answer.value.length;
+  assert(h.fire('paste',{target:answer}).prevented);
+  assert.equal(answer.value,'My responseMy');
+
+  answer.selectionStart=11;answer.selectionEnd=13;
+  assert(h.mode.edit('cut',answer));
+  assert.equal(answer.value,'My response');
+  assert(h.mode.edit('paste',answer));
+  assert.equal(answer.value,'My responseMy');
+
+  h.mode.reset();h.doc.fullscreenElement=h.doc.documentElement;
+  h.mode.set('writing',true,h.writing,{clipboardFromEditorsOnly:true,onEvent:event=>records.push(event)});
+  assert(h.fire('copy',{target:passage}).prevented);
+  assert(h.fire('paste',{target:answer}).prevented);
+  assert.equal(answer.value,'My responseMy');
+  assert.equal(records.at(-1).reason,'external-paste-blocked');
+});
+
 test('Interruption reports escape text and retain neutral language without changing scoring', () => {
   assert.equal(reportHTML(null),'');
   const html=reportHTML({protected:true,events:[{reason:'<script>',at:1000}]});

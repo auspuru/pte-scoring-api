@@ -117,14 +117,6 @@ test('The real protected controller allows typing and saving in every Writing mo
       editor.focus();assert.equal(h.document.activeElement,editor);assert(!editor.disabled);assert(!editor.readOnly);
       let blocked=false;h.document.events.keydown({key:'a',target:editor,preventDefault(){blocked=true;},stopImmediatePropagation(){}});assert(!blocked);
       editor.value=text;editor.events.input();typed.add(question.type);
-      assert.doesNotMatch(h.nodes.get('lab').innerHTML,/data-edit=/);
-      editor.selectionStart=0;editor.selectionEnd=text.length;
-      for(const type of ['copy','cut','paste','beforeinput']) {
-        let prevented=false;
-        h.document.events[type]({target:editor,inputType:'insertFromPaste',preventDefault(){prevented=true;},stopImmediatePropagation(){}});
-        assert(prevented,type);
-        assert.equal(editor.value,text);
-      }
       if(question.type==='sst') {
         h.document.focused=false;h.context.window.events.blur({});assert(mode.isLocked());assert(!guard.hidden);
         h.document.focused=true;await enter.onclick();
@@ -177,22 +169,18 @@ test('Writing interruption records retry after offline recovery and survive stal
   h.hooks.recordInterruption({id:'practice',reason:'tab-hidden',at:100000});await flush();assert.equal(h.requests.length,count);
 });
 
-test('Writing editor commands are disabled while Listening mocks retain the private clipboard',async()=>{
+test('Protected Writing clipboard controls delegate to the internal clipboard and do not access the system clipboard',async()=>{
   const h=harness(),calls=[];open(h,attempt(0));
-  h.context.window.PortalExamMode={set(){},edit:(command,editor)=>{calls.push({command,id:editor.id});return true;}};
+  h.context.window.PortalExamMode={edit:(command,editor)=>{calls.push({command,id:editor.id});return true;}};
   h.context.navigator.clipboard={readText(){throw Error('System clipboard must not be read');},writeText(){throw Error('System clipboard must not be written');}};
-  for(const command of ['cut','copy','paste']) await h.hooks.edit(command);
-  assert.deepEqual(calls,[]);
-  open(h,{...attempt(0),module:'listening'});
-  assert.match(h.nodes.get('lab').innerHTML,/data-edit="paste"/);
   await h.hooks.edit('paste');assert.deepEqual(calls,[{command:'paste',id:'answer'}]);
 });
 
 test('Writing mocks show only forward navigation and release exam mode after submission or suspension', async () => {
   const h=harness(),calls=[];
-  h.context.window.PortalExamMode={set:(owner,enabled)=>calls.push({owner,enabled})};
+  h.context.window.PortalExamMode={set:(owner,enabled,pane,options)=>calls.push({owner,enabled,clipboardFromEditorsOnly:options?.clipboardFromEditorsOnly})};
   open(h,attempt(0));
-  assert.deepEqual(calls.at(-1),{owner:'writing',enabled:true});
+  assert.deepEqual(calls.at(-1),{owner:'writing',enabled:true,clipboardFromEditorsOnly:true});
   assert.doesNotMatch(h.nodes.get('lab').innerHTML,/data-leave=|data-portal=|data-tab=|data-practice-move=/);
   assert.match(h.nodes.get('lab').innerHTML,/id="next"/);
   await h.hooks.suspend(); assert.equal(calls.at(-1).enabled,false);
