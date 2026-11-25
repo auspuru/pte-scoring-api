@@ -1,6 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
 const {createController,time}=require('../public/speaking-practice'),bank=require('../content/speaking-bank'),{present}=require('../speaking-lab');
+const readAloudCount=bank.questions.filter(q=>q.type==='ra'&&!q.predictionSource).length;
 function harness({includePredictions=false,audioCue=false}={}) {
   const nodes=new Map(),events={},intervals=new Map(),attempts=new Map(),requests=[],recorders=[],audio=[],storage=new Map();let seq=0,now=1000,stops=0,uid='alice';
   class Element {
@@ -136,7 +137,7 @@ test('Describe Image renders quoted Keep/Change/Try coaching safely and refreshe
 });
 
 test('Read Aloud opens directly in timed preparation with Skip preparation as the only normal control',async()=>{
-  const h=harness();await h.controller.open('ra');assert.equal((h.nodes.get('speaking-library-list').innerHTML.match(/data-speaking-question=/g)||[]).length,5);
+  const h=harness();await h.controller.open('ra');assert.equal((h.nodes.get('speaking-library-list').innerHTML.match(/data-speaking-question=/g)||[]).length,readAloudCount);
   await h.click({speakingQuestion:'ra-1'});
   assert.equal(h.nodes.get('speaking-phase').textContent,'Preparation');
   assert.equal(h.nodes.get('speaking-skip').hidden,false);
@@ -217,9 +218,9 @@ test('Countdown labels round up consistently at minute boundaries',()=>{assert.e
 
 test('Question navigation is available during preparation and after submission',async()=>{
   const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});
-  assert.match(h.host.innerHTML,/Question 1 of 5/);assert.match(h.host.innerHTML,/Next →/);
+  assert.match(h.host.innerHTML,new RegExp('Question 1 of '+readAloudCount+'\\b'));assert.match(h.host.innerHTML,/Next →/);
   await h.click({speakingAction:'skip'});h.tick(40001);await flush();
-  assert.match(h.host.innerHTML,/Question 1 of 5/);assert.match(h.host.innerHTML,/Next →/);
+  assert.match(h.host.innerHTML,new RegExp('Question 1 of '+readAloudCount+'\\b'));assert.match(h.host.innerHTML,/Next →/);
 });
 
 test('Recorder retries a supported MP4 format when the advertised WebM encoder fails',async()=>{
@@ -461,7 +462,7 @@ test('NAV-08: Adjacent Speaking moves reuse one account-scoped history index',as
  const h=harness();await h.controller.open('ra');await h.click({speakingQuestion:'ra-1'});
  const reads=()=>h.requests.filter(r=>r.url==='/api/speaking/attempts'&&!r.body).length,before=reads();
  await h.click({speakingMove:'1'});await h.click({speakingMove:'1'});assert.equal(reads(),before);
- const count=h.attempts.size;await h.click({speakingMove:'-1'});assert.equal(h.attempts.size,count);assert.match(h.host.innerHTML,/Question 2 of 5/);assert.match(h.host.innerHTML,/<h2>Learning through retrieval<\/h2>/);
+ const count=h.attempts.size;await h.click({speakingMove:'-1'});assert.equal(h.attempts.size,count);assert.match(h.host.innerHTML,new RegExp('Question 2 of '+readAloudCount+'\\b'));assert.match(h.host.innerHTML,/<h2>Learning through retrieval<\/h2>/);
  h.controller.reset();
 });
 test('NAV-09: Opening a copied Speaking question link never creates an attempt or opens the microphone',async()=>{
