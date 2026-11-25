@@ -3995,5 +3995,1785 @@
       "contentStatus": "transcribed-user-provided",
       "filename": "Screenshot 2026-11-25 110157.png"
     }
+  },
+  {
+    "id": "hiw-practice-20261125-01",
+    "type": "hiw",
+    "title": "The Dawn Chorus",
+    "minutes": 5,
+    "text": "If you walk through a city park before sunrise, it may be hard to believe how many birds are already awake. Listen closely and you can hear the chirping of birds. Researchers call this morning performance the dawn chorus. One explanation is that sound travels well when the air is still and there is little traffic. Another is that the early light is too dim for some birds to search for food. Singing may be a better use of that short window. Researchers who place recorders near busy roads find that some birds begin singing earlier than birds in quiet areas. The extra time may help them communicate before the first rush of vehicles.",
+    "passage": "If you walk through a city park before sunrise, it may be hard to believe how many birds are already asleep. Listen closely and you can hear the chirping of birds. Researchers call this morning procession the dawn chorus. One explanation is that sound travels well when the air is warm and there is little traffic. Another is that the early light is too bright for some birds to search for food. Singing may be a better use of that short window. Researchers who place recorders near busy roads find that some birds begin singing later than birds in quiet areas. The extra time may help them concentrate before the first rush of vehicles.",
+    "answers": [
+      20,
+      35,
+      50,
+      64,
+      95,
+      107
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-01-369c6ce51e76.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "adapted",
+      "sourceTitle": "The Dawn Chorus",
+      "revision": "Music and sound-cue remix of earlier practice sample"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "f30b03da8dde5cca64fea50c586c414880315feef0dfd591af0fc5276ca5212a",
+      "sha256": "369c6ce51e769d175ce910512fee71a136946653bb4d38663c99dbdb986d3029",
+      "bytes": 301600,
+      "seconds": 37.669,
+      "soundCue": "birds",
+      "soundStartsAt": 10.0,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-02",
+    "type": "hiw",
+    "title": "Rain in the Courtyard",
+    "minutes": 5,
+    "text": "Rainwater often disappears into a drain within minutes of hitting a city street. A rain garden is designed to slow that journey down. The first sign of a shower might be the sound of rain tapping on glass. Outside, a shallow hollow collects water from roofs and paths. The plants and soil help the water soak into the ground, giving the drainage system less to deal with at once. A good design uses plants that can tolerate both wet and dry conditions. The garden also needs a clear overflow route for unusually heavy storms. When several of these gardens are installed in one neighbourhood, even small reductions in runoff can make a noticeable difference.",
+    "passage": "Rainwater often disappears into a ditch within minutes of hitting a city street. A rain garden is designed to slow that journey down. The first sign of a shower might be the sound of rain tapping on glass. Outside, a shallow hillock collects water from roofs and paths. The plants and soil help the water slip into the ground, giving the drainage system less to deal with at once. A good design uses plants that can regulate both wet and dry conditions. The garden also needs a clear underflow route for unusually heavy storms. When several of these gardens are installed in one neighbourhood, even small reductions in runoff can make a temporary difference.",
+    "answers": [
+      5,
+      41,
+      55,
+      76,
+      88,
+      112
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-02-1df614ce3b81.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "adapted",
+      "sourceTitle": "Rain in the Courtyard",
+      "revision": "Music and sound-cue remix of earlier practice sample"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "8e18ed6d9c1355db468267ae3535dc8a5ed6da38b7414c2aeadc70aef5ece00a",
+      "sha256": "1df614ce3b81867381013b1c75bc9b801d1b714347f28cc0138d5d2b082c759e",
+      "bytes": 327096,
+      "seconds": 40.856,
+      "soundCue": "rain",
+      "soundStartsAt": 13.21,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-03",
+    "type": "hiw",
+    "title": "The Railway Crossing",
+    "minutes": 5,
+    "text": "At a railway crossing, warning systems give drivers and pedestrians time to clear the tracks. Depending on the crossing, the first warning may be the steady ring of a crossing bell. Sensors detect an approaching train and send a signal to the crossing equipment. As the lights flash, barriers lower across the road. The timing must account for the train's speed and for the amount of time people need to move clear of the rails. At some crossings, the warning is deliberately long enough for slower vehicles to get through safely. If a second train is approaching from the other direction, the warning can continue after the first train has passed.",
+    "passage": "At a railway crossing, warning systems give drivers and passengers time to clear the tracks. Depending on the crossing, the first warning may be the steady ring of a crossing bell. Sensors detect an approaching train and send a symbol to the crossing equipment. As the lights flash, barriers loosen across the road. The timing must account for the train's speed and for the amount of time people need to move close of the rails. At some crossings, the warning is deliberately long enough for shorter vehicles to get through safely. If a second train is approaching from the other direction, the warning can conclude after the first train has passed.",
+    "answers": [
+      9,
+      39,
+      49,
+      71,
+      85,
+      104
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-03-7e0d0099d4bc.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "adapted",
+      "sourceTitle": "The Railway Crossing",
+      "revision": "Music and sound-cue remix of earlier practice sample"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "4ac404355ec8a011e893724b182bc8d4041568a6e09ef58dbef8dbbcd3d52356",
+      "sha256": "7e0d0099d4bcbd52ae290c6fe464fa765f89fc401e38a86fc50fa204860759e2",
+      "bytes": 290733,
+      "seconds": 36.31,
+      "soundCue": "bell",
+      "soundStartsAt": 10.14,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-04",
+    "type": "hiw",
+    "title": "Waves and the Beach",
+    "minutes": 5,
+    "text": "Beaches can look permanent when we visit them on a calm day. In fact, each incoming wave moves small amounts of material. At the water's edge, you can hear the waves washing ashore. Water rushing up the beach carries sand and small shells. The water then retreats, taking some material back with it. When waves arrive at an angle, this repeated motion can move sand sideways along the coast. A storm may remove a large amount of sand in a single night, while gentler waves can gradually build the beach up again. That is why researchers often measure the same beach more than once before drawing conclusions about how it is changing.",
+    "passage": "Beaches can look perfect when we visit them on a calm day. In fact, each incoming wave moves small amounts of material. At the water's edge, you can hear the waves washing ashore. Water rushing up the beach carries sand and small stones. The water then returns, taking some material back with it. When waves arrive at an angle, this repeated motion can move sand upwards along the coast. A storm may remove a large amount of sand in a single night, while gentler waves can suddenly build the beach up again. That is why researchers often measure the same beach more than once before drawing comparisons about how it is changing.",
+    "answers": [
+      3,
+      42,
+      46,
+      65,
+      86,
+      106
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-04-9fcdd9757138.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "adapted",
+      "sourceTitle": "Waves and the Beach",
+      "revision": "Music and sound-cue remix of earlier practice sample"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "83bb4f6af7436b043fcc5c2186245fb40db50271c0349a86a6efb30a8ff58091",
+      "sha256": "9fcdd975713880fa368d23d6ea9308b5021c051adad970f7719d6ed84f0b0a19",
+      "bytes": 303272,
+      "seconds": 37.878,
+      "soundCue": "waves",
+      "soundStartsAt": 10.28,
+      "musicCueStartsAt": 10.3,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-05",
+    "type": "hiw",
+    "title": "The Clockmaker’s Workshop",
+    "minutes": 5,
+    "text": "A mechanical clock needs more than a source of power. It also needs a way to release that energy in regular amounts. In a quiet workshop, the first thing you may notice is the ticking of the clock. That sound comes from a mechanism which locks and releases a toothed wheel. In a pendulum clock, the length of the pendulum helps determine the interval between ticks. Because heat can cause some materials to expand, changes in temperature may affect how fast the clock runs. Clockmakers have used different materials to reduce this variation. Even with careful construction, a mechanical clock usually needs an occasional adjustment to stay accurate.",
+    "passage": "A mechanical clock needs more than a source of pressure. It also needs a way to release that energy in regular amounts. In a quiet workshop, the first thing you may notice is the ticking of the clock. That sound comes from a mechanism which locks and replaces a toothed wheel. In a pendulum clock, the length of the pendulum helps determine the intensity between ticks. Because heat can cause some materials to contract, changes in temperature may affect how fast the clock runs. Clockmakers have used different materials to reduce this vibration. Even with careful construction, a mechanical clock usually needs an occasional assessment to stay accurate.",
+    "answers": [
+      9,
+      47,
+      63,
+      73,
+      92,
+      104
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-05-b4e85784f4a2.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "adapted",
+      "sourceTitle": "The Clockmaker’s Workshop",
+      "revision": "Music and sound-cue remix of earlier practice sample"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "91684579f64f6565e03faff1809f0a27a676a15ad5a1aa29697a4bd80dbf2711",
+      "sha256": "b4e85784f4a2af0a950994f8911dab324f55b6089a14335dca8fbe516d35679b",
+      "bytes": 309750,
+      "seconds": 38.687,
+      "soundCue": "clock",
+      "soundStartsAt": 11.9,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-06",
+    "type": "hiw",
+    "title": "How Bats Find Flies",
+    "minutes": 5,
+    "text": "Here's one way bats might get their next meal: by eavesdropping on flies having sex. Bats eat a lot of seemingly undetectable flies. To find out how the winged mammals find the insects, researchers set up a video camera inside a cowshed that was home to a bat colony and lots of bugs. The video showed that bats rely on their echolocation skills to detect flies at a specific time: when they're engaged in rather noisy sex. Flies are usually quiet in bat territory and sit on cluttered ceilings in caves where background noise masks the echoes from their movement. But when flies are feeling frisky, males can't help but flutter their wings, emitting a burst of click sounds that the bats pick up on. During more than one thousand sexual encounters caught in the act on video, five percent of the insects were caught in the act by bats. The research is published in the journal Current Biology. The study shows that ignorance can be safer than carnal knowledge when predators are on the prowl.",
+    "passage": "Here's one way bats might get their next meal: by eavesdropping on flies having sex. Bats eat a lot of seemingly undetectable flies. To find out how the winged mammals find the insects, researchers set up a video camera inside a cowshed that was home to a bat colony and lots of bugs. The video showed that bats rely on their echolocation skills to detect flies at a specific time: when they're engaged in rather noisy sex. Flies are usually quiet in bat vibratory and sit on muscled ceilings in caves where compound noise masks the echoes from their movement. But when flies are feeling frisky, males can't help but flutter their wings, multiplexing a burst of click sounds that the bats pick up on. During more than one thousand sexual slouchers caught in the act on video, five percent of the insects were caught in the act by bats. The clap is published in the journal Current Biology. The study shows that ignorance can be safer than carnal knowledge when predators are on the prowl.",
+    "answers": [
+      83,
+      87,
+      92,
+      113,
+      131,
+      151
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-06-599a5906493f.mp3",
+    "source": {
+      "kind": "user-supplied-hiw",
+      "contentStatus": "adapted",
+      "suppliedFilename": "14-14-33.mp3",
+      "notes": "Clean rerecord adapted from the supplied recording and screenshot. Validated screenshot substitutions retained after local audio transcription; formatting standardized."
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "d6a046d69eb4e551afbfbbbd63616dd58f905fca78727f0bcb104a5ea94865a4",
+      "sha256": "599a5906493f9ad7fdf92eca285269730348485f5449fa70ad7ff7b55be4b321",
+      "bytes": 493861,
+      "seconds": 61.701,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-07",
+    "type": "hiw",
+    "title": "The Silent Revolution",
+    "minutes": 5,
+    "text": "What drives what's going on right now in Europe? Obviously, it could be the economic recession, or it could be patterns of immigration. We think what's driving it is really long-term change, which is generational and educational. There are transformations in our values that have been happening over time. This goes right back to Ron Inglehart's earliest work, which he wrote in nineteen seventy-seven on the Silent Revolution. He said that new values are emerging, values which are very socially tolerant, both of minorities and of sexual diversity. These values are pro-environmentalism and pro-cosmopolitanism, being part of an international community, and are very secular versus religious. Those values he called the Silent Revolution. Everybody has probably read about them in sociology or cultural studies. The new aspect is the backlash against those ideas. And why does it come about?",
+    "passage": "What drives what's going on right now in Europe? Obviously, it could be the economic recession, or it could be painted of immigration. We think what's driving it is really long-term change, which is generational and educational. There are transactions in our values that have been happening over time. This goes right back to Ron Inglehart's earliest work, which he wrote in nineteen seventy-seven on the Silent Revolution. He said that new values are emerging, vibes which are very similarly tolerant, both of minorities and of sexual diversity. These values are pro-environmentalism and pro-cosmopolitanism, being part of an international community, and are very secular as religious. Those values he called the Silent Revolution. Everybody has probably read about them in sociology or cultural studies. The new aspect is the backing against those ideas. And why does it come about?",
+    "answers": [
+      20,
+      39,
+      75,
+      79,
+      104,
+      129
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-07-e9d58c8724ba.mp3",
+    "source": {
+      "kind": "user-supplied-hiw",
+      "contentStatus": "adapted",
+      "suppliedFilename": "14-17-32.mp3",
+      "notes": "Clean rerecord adapted from the supplied recording and screenshot. Validated screenshot substitutions retained after local audio transcription; formatting standardized."
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "0adbd4385f49a73d031024934b3d830542d69d687549fdab414e746505cb9dd8",
+      "sha256": "e9d58c8724badff3f742ddbc7b13b14e6d64e47e5d4ec5c910980033320128af",
+      "bytes": 438482,
+      "seconds": 54.779,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-08",
+    "type": "hiw",
+    "title": "Household Debt",
+    "minutes": 5,
+    "text": "Household debt is the amount of money that households have borrowed and need to repay. Their most recent data indicate that households are in debt somewhere around fourteen trillion dollars. Most of that fourteen trillion, nine trillion or so, is debt that's due from mortgages. And the rest of the debt are things like cars, college debt, which is growing and becoming a problem, and credit card debt. I think it's not just the bottom end. It's certainly greater at the bottom end since they have less income and less ability to get out of debt, but it also is becoming a problem for the middle class.",
+    "passage": "Household debt is the amount of money that housing have borrowed and need to repay. Their most recent date indicate that households are in debt somewhere around fourteen trillion dollars. Most of that fourteen trillion, nine trillion or so, is debt that's due from mortgages. And the rest of the debt are things like houses, college debt, which is large and becoming a problem, and credit card loans. I think it's not just the bottom end. It's certainly greater at the bottom end since they have less income and less ability to get out of debt, but it also is becoming a solution for the middle class.",
+    "answers": [
+      8,
+      18,
+      54,
+      59,
+      67,
+      102
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-08-fedbb6a74654.mp3",
+    "source": {
+      "kind": "user-supplied-hiw",
+      "contentStatus": "adapted",
+      "suppliedFilename": "14-21-41.mp3",
+      "notes": "Clean rerecord adapted from the supplied recording and screenshot. Validated screenshot substitutions retained after local audio transcription; formatting standardized."
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "742bf8771a1dae73ad0b08943c246220f16143564570ffd416b1dae374f1a607",
+      "sha256": "fedbb6a746542aaaaafeb72febeffe70036f28f93d92e090dfebc23e6fbfad1b",
+      "bytes": 310795,
+      "seconds": 38.818,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-09",
+    "type": "hiw",
+    "title": "How Whales Turn Down the Volume",
+    "minutes": 5,
+    "text": "Have you ever wanted to turn down the volume at a deafening concert or noisy bar? Envy the whale: a new study finds that toothed whales can reduce their own auditory sensitivity when they expect a loud sound. The work is presented at this week's Acoustics 2012 meeting. Whales and dolphins rely on their responsive hearing to interpret returning echolocation clicks. Previous research suggested that these marine mammals could dull their hearing before uttering outgoing echolocation clicks, which are very loud. Could they use the same coping mechanism for external noises? To find out, researchers trained a false killer whale that a loud noise would always follow a brief warning signal. Then, they attached suction cup sensors to the outside of the whale's head and played the signal. The sensors measured brainwaves that indicated the whale did reduce its hearing sensitivity in expectation of a clamor. The researchers hope to test other species as well. Loud noises from ships can disturb whales. To accommodate marine life, perhaps vessels could emit signals before making a ruckus, warning whales to tune out.",
+    "passage": "Have you ever wanted to turn down the volume at a deafening concert or noisy bar? Envy the whale: a new study finds that toothed whales can reduce their own soli sensitivity when they expect a loud sound. The work is presented at this week's Acoustics 2012 meeting. Whales and dolphins rely on their responsive hearing to interpret returning installation clicks. Previous research suggested that these marine mammals could dull their hearing before uttering outgoing echolocation clicks, which are very loud. Could they use the same coping hidden for external noises? To find out, easterners trained a false killer whale that a loud noise would always follow a brief warning signal. Then, they want obstructionist cup sensors to the outside of the whale's head and played the signal. The sensors measured refrains that indicated the whale did reduce its hearing sensitivity in expectation of a clamor. The researchers hope to test other species as well. Loud noises from ships can disturb whales. To accommodate marine life, perhaps vessels could emit signals before making a ruckus, warning whales to tune out.",
+    "answers": [
+      30,
+      59,
+      87,
+      94,
+      113,
+      114,
+      131
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-09-ec91abeb1916.mp3",
+    "source": {
+      "kind": "user-supplied-hiw",
+      "contentStatus": "adapted",
+      "suppliedFilename": "12-31-43.mp3",
+      "notes": "Clean rerecord adapted from the supplied recording and screenshot. Validated screenshot substitutions retained after local audio transcription; formatting standardized."
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "42bd511b64767bf77346d017a14f6b8ed1c49730e58e673d5a40d5aef3336ee0",
+      "sha256": "ec91abeb1916dd543e2da0c2074bc76ce7625ca03f1010c1a8e92bcb4d367e11",
+      "bytes": 516431,
+      "seconds": 64.522,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-10",
+    "type": "hiw",
+    "title": "Measuring Change in Popular Music",
+    "minutes": 5,
+    "text": "Flip through Rolling Stone, and you'll read about a lot of revolutions in popular music: rock and roll and punk, disco and new wave. But for Matthias Mauch, an engineer at Queen Mary University of London, the qualitative analysis of musical evolution, the music critic's take, left him wondering: Is there some way in which we can take this kind of pub conversation and make it more quantifiable? So he and his colleagues analyzed fragments from more than seventeen thousand songs on the Billboard Hot One Hundred, from nineteen sixty to twenty ten. They processed the audio to extract information about timbral and harmonic qualities, tagging the files for attributes like orchestra, harmonic, or calm, quiet, mellow. Then they used those tags, which they compared to a musical fossil record, to tease out trends about musical evolution.",
+    "passage": "Flip through Rolling Stone, and you'll read about a lot of revolutions in popular music: rock and roll and punk, disco and new wave. But for Matthias Mauch, an engineer at Queen Mary University of London, the qualitative analysis of musical revolution, the music critic's take, left him wondering: Is there some way in which we can take this kind of pub conversation and make it more quantifiable? So he and his colleagues analyzed fragments from more than seventeen thousand songs on the Billboard Hot One Hundred, from nineteen sixty to twenty ten. They fussbudget the audio to extract information about temporal and harmonic qualities, tagging the files for attributes like orchestra, harmonic, or calm, quiet, mellow. Then they used those tags, which they compare to a musical fossil rap, to tease out trends about musical evolution.",
+    "answers": [
+      41,
+      94,
+      101,
+      124,
+      129
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-10-dbfe411aa124.mp3",
+    "source": {
+      "kind": "user-supplied-hiw",
+      "contentStatus": "adapted",
+      "suppliedFilename": "13-48-18.mp3",
+      "notes": "Clean rerecord adapted from the supplied recording and screenshot. Validated screenshot substitutions retained after local audio transcription; formatting standardized. The screen spelling timbrel was replaced with the audible distractor temporal for spoken timbral."
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "13b44a72d3e9243f7abba1378e602fd89e745537050d049e228250feaf3c5fcd",
+      "sha256": "dbfe411aa1246e6df8bc69abaeb49cb7a27748f59b4e96e5b3ee926944e653a3",
+      "bytes": 434302,
+      "seconds": 54.256,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-11",
+    "type": "hiw",
+    "title": "Reading a Building",
+    "minutes": 5,
+    "text": "When you walk into a familiar building, you probably notice the people before you notice the structure. Try looking up next time. The height of a ceiling, the distance between doors, and the position of the windows all affect how a space feels. A low entrance can make the room beyond it seem surprisingly large. A bright window may draw you toward a seat even when other chairs are empty. These effects are often deliberate. Architects can guide people through a room using light and proportion, with very little help from signs or instructions.",
+    "passage": "When you walk into a familiar building, you probably name the people before you notice the structure. Try looking up next time. The width of a ceiling, the distance between doors, and the position of the windows all affect how a space feels. A low corridor can make the room beyond it seem surprisingly large. A bright window may drive you toward a seat even when other chairs are empty. These effects are often decorative. Architects can guide people through a room using light and protection, with very little help from signs or instructions.",
+    "answers": [
+      9,
+      23,
+      45,
+      59,
+      74,
+      85
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-11-dcc429bd8594.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "26c1b427d3fda3c4fc10a56f4f3d11a6f753d9dad3b75561ea979349b693b430",
+      "sha256": "dcc429bd8594021d0a386bc8fb915328f1f1e9342d0735b3a72be4cee8e8d3e9",
+      "bytes": 247265,
+      "seconds": 30.877,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-12",
+    "type": "hiw",
+    "title": "Keeping an Oral History",
+    "minutes": 5,
+    "text": "An oral historian often begins with a simple question: what do you remember about this place? The answer may start somewhere entirely different, perhaps with a journey to work or a meal at a neighbour's house. These details are useful because they show what a routine felt like to someone who lived it. The interviewer should leave room for pauses and avoid supplying words when the speaker hesitates. Later, a recording can be compared with letters and photographs. If two accounts disagree, the disagreement itself may reveal how memory changes when people tell the same story from different positions.",
+    "passage": "An oral historian often begins with a simple request: what do you remember about this place? The answer may start somewhere entirely distant, perhaps with a journey to work or a meal at a neighbour's house. These details are useful because they show what a resource felt like to someone who lived it. The interviewer should leave room for answers and avoid supplying words when the speaker hesitates. Later, a recording can be compared with ledgers and photographs. If two accounts disagree, the disagreement itself may reveal how motive changes when people tell the same story from different positions.",
+    "answers": [
+      8,
+      22,
+      45,
+      59,
+      75,
+      88
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-12-412811d89952.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "a45c86a34f1304434bb937a4313101f4ae14482c0b6e6311751005327724fa91",
+      "sha256": "412811d89952ddcbb2184a6d861b56a01e09347500b33e904039b3bb977eed5c",
+      "bytes": 305571,
+      "seconds": 38.165,
+      "musicCueStartsAt": 18.4,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-13",
+    "type": "hiw",
+    "title": "How a Puppet Comes to Life",
+    "minutes": 5,
+    "text": "A puppet on a table is just an object until someone moves it. What gives it a sense of life is not constant motion but a clear reason for each gesture. A puppeteer might turn the head toward an imagined sound, wait a moment, and then lift the whole body. That short delay helps the audience read the action as a decision. The eyes of the person operating the puppet can direct attention, too. When the performer watches the puppet instead of looking out at the crowd, viewers are more likely to follow the same line of sight.",
+    "passage": "A puppet on a table is just an object until someone makes it. What gives it a sense of life is not constant motion but a clear rhythm for each gesture. A puppeteer might turn the head toward an imagined sound, wait a moment, and then shift the whole body. That short delay helps the audience read the action as a division. The eyes of the person operating the puppet can direct affection, too. When the performer watches the puppet instead of looking out at the crowd, viewers are more likely to favour the same line of sight.",
+    "answers": [
+      11,
+      27,
+      46,
+      61,
+      72,
+      92
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-13-4d237dcbe209.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "a1af0ca78ea309fa474582f0fc9932d4eb333937299f4d91c8f3e82d733a38d2",
+      "sha256": "4d237dcbe2099d4905cefca0175798cba4c7a60d8438f08e45eed8ad4d3d3868",
+      "bytes": 262103,
+      "seconds": 32.731,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-14",
+    "type": "hiw",
+    "title": "Designing for Repair",
+    "minutes": 5,
+    "text": "When a household device breaks, a repairer first needs to reach the part that failed. That can be easy if the case opens with ordinary screws, or difficult if the panels have been glued together. Designers who plan for repair think about access early. They might leave enough space around a connector for fingers to grip it, or use markings that show which way a part goes back in. A clear set of diagrams is also useful because it reduces the risk of damaging something nearby. A repairable product can cost less to keep in use, even when its original price stays the same.",
+    "passage": "When a household device breaks, a repairer first needs to replace the part that failed. That can be easy if the case opens with ordinary screws, or difficult if the pieces have been glued together. Designers who plan for repair think about access early. They might leave enough space around a collector for fingers to grip it, or use markings that show which way a part goes back in. A clear set of directions is also useful because it reduces the risk of damaging something unused. A repairable product can cost less to keep in use, even when its original weight stays the same.",
+    "answers": [
+      10,
+      30,
+      51,
+      73,
+      85,
+      100
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-14-7f4e9f7071eb.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "56791b5da1468e4b82bdbd801b83b4befdd4db92817621806fe227c5113e4a80",
+      "sha256": "7f4e9f7071ebfc74617ab8406667c9029cd94e5a49a80e4b3798a73507d1a9aa",
+      "bytes": 297838,
+      "seconds": 37.198,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-15",
+    "type": "hiw",
+    "title": "A Garden Shared by Tenants",
+    "minutes": 5,
+    "text": "A shared garden can be a good way for people in the same building to meet, but the work has to be organised. The first issue is often water. If the hose is kept behind a locked gate, someone needs to make sure the key is available. The group may also decide which beds are for individual use and which plants anybody may pick. Written notes can prevent small disputes when people come at different times. Over a season, the plan will usually change. A bed that looks ideal in spring might sit in deep shade after the trees nearby have grown their leaves.",
+    "passage": "A shared garden can be a good way for people in the same building to move, but the work has to be organised. The first issue is often water. If the hose is kept behind a painted gate, someone needs to make sure the key is available. The group may also decide which beds are for informal use and which plants anybody may pick. Written notes can prevent small displays when people come at different times. Over a season, the plan will usually charge. A bed that looks ideal in spring might sit in deep soil after the trees nearby have grown their leaves.",
+    "answers": [
+      15,
+      36,
+      56,
+      69,
+      83,
+      95
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-15-1c49397a0a0a.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "b5617897bc19b0621ccc342059110e2b8536f1a1522cd034e47dfa894afe25e8",
+      "sha256": "1c49397a0a0a1d75a7559588cbc9c25cd9270adb930154b23da6ba745107f8e5",
+      "bytes": 256460,
+      "seconds": 32.026,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-16",
+    "type": "hiw",
+    "title": "Why Libraries Keep Multiple Editions",
+    "minutes": 5,
+    "text": "Two editions of the same book can seem identical until you compare the extra material. An earlier copy might have a preface that was removed from a later version, while the newer one might have corrections or an updated index. Libraries keep several editions when the differences matter to readers. A student investigating how a novel was first received may want to see its original cover and the wording of its introduction. Someone looking up a term may find the latest index more helpful. Keeping both versions gives readers a choice, and the catalogue should make it easy to tell the copies apart.",
+    "passage": "Two editions of the same book can seem irrelevant until you compare the extra material. An earlier copy might have a preface that was renewed from a later version, while the newer one might have corrections or an updated index. Libraries keep several editions when the deficiencies matter to readers. A student investigating how a novel was first received may want to see its original chapter and the wording of its introduction. Someone looking up a term may find the largest index more helpful. Keeping both versions gives readers a choice, and the catalogue should make it easy to tell the copies aside.",
+    "answers": [
+      8,
+      24,
+      46,
+      65,
+      80,
+      102
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-16-cfae0467b952.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "2f0fa0fe27bc159683b1aa77ca39784b4a4cfbff8e5120aa3d576971e81d8804",
+      "sha256": "cfae0467b952f6f1f2a3aeffd0592c24779aaec3db6070aae5dd4b4a885a33ea",
+      "bytes": 302227,
+      "seconds": 37.747,
+      "musicCueStartsAt": 18.29,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-17",
+    "type": "hiw",
+    "title": "Learning with Worked Examples",
+    "minutes": 5,
+    "text": "Imagine being shown a solved problem before trying one on your own. It might feel like the teacher is giving the answer away, but the real value is seeing how the steps fit together. A well written example marks the points where a learner must make a choice. It also explains why the solution uses one method rather than another. Once pupils understand that pattern, the teacher can remove some steps and ask them to fill the gaps. The final task should have a slightly different structure. That makes it easier to find out whether learners can adapt the method instead of simply copying it.",
+    "passage": "Imagine being shown a solved problem before trying one on your team. It might feel like the teacher is giving the answer away, but the real value is seeing how the scores fit together. A well written example marks the points where a learner must make a change. It also explains why the solution uses one method rather than another. Once pupils understand that process, the teacher can remove some steps and ask them to fill the gaps. The final task should have a clearly different structure. That makes it easier to find out whether learners can adapt the method instead of simply counting it.",
+    "answers": [
+      11,
+      31,
+      47,
+      64,
+      84,
+      103
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-17-2e0f0eada41e.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "b3fbc2f7873d8440675f0c4da71b84642103bfd8e8dd2de04b55c6b70974d5e1",
+      "sha256": "2e0f0eada41ea185feb467ad68ef517e28853e1154f5d545b2b4eb14cd202b67",
+      "bytes": 267327,
+      "seconds": 33.384,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-18",
+    "type": "hiw",
+    "title": "Why a Market Moves Indoors",
+    "minutes": 5,
+    "text": "An outdoor market can attract people walking past, but it depends heavily on the weather. When traders move inside, the roof protects goods from rain and wind. The building may also let them stay open on days when they would otherwise cancel. However, a permanent hall has costs of its own, including lighting, cleaning, and maintenance. The building has to be easy to enter if the market is to retain its casual visitors. An entrance that looks closed from the street may discourage people from exploring. Market planners therefore consider both shelter and the way shoppers approach the site.",
+    "passage": "An outdoor market can attract people walking fast, but it depends heavily on the weather. When traders move inside, the roof protects goods from rain and heat. The building may also let them stay open on days when they would otherwise cancel. However, a permanent hall has rules of its own, including lighting, cleaning, and maintenance. The building has to be easy to enter if the market is to retain its regular visitors. An entrance that looks closed from the street may discourage people from ordering. Market planners therefore consider both shelter and the way shoppers approve the site.",
+    "answers": [
+      7,
+      26,
+      47,
+      71,
+      85,
+      96
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-18-b885c473efaa.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "49a397fdb72c881870b036d9ca722e718604a1596217070c181e8bc16b5afbab",
+      "sha256": "b885c473efaae2673f074b6a146c3191765dacfc5652910a3553b46429845657",
+      "bytes": 293241,
+      "seconds": 36.624,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-19",
+    "type": "hiw",
+    "title": "Crossing a Language Boundary",
+    "minutes": 5,
+    "text": "Translators sometimes meet an expression that cannot be translated word for word. A phrase that sounds playful in one language may seem rude in another. Translating it accurately means deciding which part of the meaning is most important. Is the speaker teasing a close friend, or trying to make a stranger feel comfortable? The translator may choose a different expression that preserves the tone of the exchange. Sometimes a short note is useful, especially if the original wording matters to the story. In dialogue, however, an explanation can slow the scene down, so the translation has to balance clarity and pace.",
+    "passage": "Translators sometimes meet an expression that cannot be translated word for work. A phrase that sounds playful in one language may seem rare in another. Translating it accurately means deciding which part of the meaning is most important. Is the speaker teasing a close relative, or trying to make a stranger feel comfortable? The translator may choose a different expression that preserves the term of the exchange. Sometimes a short note is useful, especially if the original wording matters to the study. In dialogue, however, an explanation can slow the scene down, so the translation has to balance clarity and space.",
+    "answers": [
+      11,
+      22,
+      44,
+      63,
+      81,
+      100
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-19-a49b6d02a828.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "a3df3c6c8049edf5cf7f9f648ae75bd18a3f14f9fc46b13ff5acfc2dfeda12af",
+      "sha256": "a49b6d02a8289c8a99b762a4eb90c5e255d47f41ede62f77ef135a18d773dcf2",
+      "bytes": 296794,
+      "seconds": 37.068,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-20",
+    "type": "hiw",
+    "title": "Facilitating a Public Workshop",
+    "minutes": 5,
+    "text": "A public workshop can be more productive if people do some thinking alone before the group discussion starts. Otherwise, participants may concentrate on the first proposal they hear and overlook their own ideas. One useful approach is to give everybody two minutes to write a note. The facilitator can put the notes up, read them briefly, and group suggestions that deal with the same issue. This does not make all ideas equally practical, but it does show how widely they differ. When it is time to choose a proposal, the group can discuss the main tradeoffs and record why one option was chosen.",
+    "passage": "A public workshop can be more productive if people do some thinking aloud before the group discussion starts. Otherwise, participants may concentrate on the first proposal they hear and overlook their own ideals. One useful approach is to give everybody two minutes to write a note. The facilitator can put the notes up, read them brightly, and group suggestions that deal with the same issue. This does not make all ideas equally popular, but it does show how widely they differ. When it is time to choose a proposal, the group can discuss the main takeaways and record why one option was closed.",
+    "answers": [
+      12,
+      32,
+      55,
+      72,
+      95,
+      102
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-20-b4f10146c9d6.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "ad1eb945e7ddb0b28e38db088a75eb5fb2ae7cb5bcdbe4b7f883739c9c7955e4",
+      "sha256": "b4f10146c9d656e155425afb1eb69cd7ab4c9c6b9a1ef9fcfa57080518ba9c20",
+      "bytes": 310795,
+      "seconds": 38.818,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-21",
+    "type": "hiw",
+    "title": "Taking Notes from Objects",
+    "minutes": 5,
+    "text": "In a museum storeroom, the most informative detail may be on the back of an object. A handwritten number can link a painting to a sales record. A label may show who lent it to an exhibition. Even small repairs can reveal how an object was used or how an owner tried to protect it. Researchers take photographs and write notes so they can check these observations later. They also distinguish what they can see from what they have inferred. A faded label, for example, might identify a workshop, but its presence alone does not prove that the entire object was made there.",
+    "passage": "In a museum storeroom, the most informative detail may be on the bank of an object. A handwritten number can link a painting to a sales report. A label may show who lent it to an exhibition. Even small repairs can reveal how an object was used or how an owner tried to prolong it. Researchers take photographs and write notes so they can check these observations faster. They also distinguish what they can see from what they have inserted. A faded label, for example, might identify a workshop, but its presence alone does not prove that the entire object was made then.",
+    "answers": [
+      12,
+      26,
+      53,
+      67,
+      79,
+      102
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-21-af99e5907b26.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "a1ae3ca58eb4f1227832608dfdec7916702fa765655153ad68ac4ddb11b3cb4f",
+      "sha256": "af99e5907b26ef8753e50ac6b5489ef1a0e064e9a18fd1aa9a429436d4a3872f",
+      "bytes": 271298,
+      "seconds": 33.881,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-22",
+    "type": "hiw",
+    "title": "What Makes a Queue Feel Long",
+    "minutes": 5,
+    "text": "Two people can wait for the same amount of time and remember the experience quite differently. If one has to stand without any indication of progress, a few minutes may feel endless. If the other can see the line moving or read an estimate of the wait, the delay may seem more manageable. Businesses sometimes change the layout so it is easier to see where a queue starts. They may also provide a single line for several counters, which can make the service order feel fairer. These changes cannot remove every delay, but they help people understand what will happen next.",
+    "passage": "Two people can wait for the same amount of space and remember the experience quite differently. If one has to stand without any indication of progress, a few minutes may feel effortless. If the other can see the line moving or read an estimate of the wait, the delay may seem more measurable. Businesses sometimes change the layout so it is easier to see where a queue stops. They may also provide a single line for several counters, which can make the service order feel faster. These changes cannot remove every delay, but they help people understand what will happen first.",
+    "answers": [
+      9,
+      31,
+      52,
+      67,
+      85,
+      100
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-22-58b064ec5812.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "fd433a7216839958182606d2b4eff0c5adc68f602149f0100fb529eae3f2258e",
+      "sha256": "58b064ec58124bf4a77215ce63bbd3b3d80f900a971b2cee6f14d644b18c5a9f",
+      "bytes": 290315,
+      "seconds": 36.258,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-23",
+    "type": "hiw",
+    "title": "Designing a Public Notice",
+    "minutes": 5,
+    "text": "A public notice has to work for readers who are already doing something else. A person walking toward a lift may have only a moment to find the message on a poster. The heading should say what the notice is about, and the most important action should come early. A designer can improve readability by leaving enough space around the text and by using a clear contrast between letters and background. It also helps to test the notice at the distance where people will encounter it. Something that looks obvious on a computer screen can be hard to read from the other side of a hallway.",
+    "passage": "A public notice has to work for readers who are already doing something more. A person walking toward a lift may have only a moment to find the method on a poster. The heading should say what the notice is about, and the most important option should come early. A designer can improve readability by leaving enough space around the text and by using a clear contrast between letters and foreground. It also helps to test the notice at the entrance where people will encounter it. Something that looks obvious on a computer screen can be hard to read from the other side of a doorway.",
+    "answers": [
+      13,
+      28,
+      45,
+      70,
+      80,
+      105
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-23-3a6c8d1f7ce4.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "180a9b268c8162b057fc93001da136294b350148df500007b4f321b904850d03",
+      "sha256": "3a6c8d1f7ce4cf72e64e11213aa0c6e760c9a8d2e64192ea0e4d785da186a48e",
+      "bytes": 268999,
+      "seconds": 33.593,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-24",
+    "type": "hiw",
+    "title": "The Value of an Open Rehearsal",
+    "minutes": 5,
+    "text": "At an open rehearsal, an audience is allowed to watch performers while their work is still in progress. The experience can be quite different from attending a finished show. A band might stop halfway through a piece to discuss a transition, or repeat the same section with different timing. Watching those decisions makes the structure of the music easier to hear. However, the rehearsal still needs to serve the performers. Visitors should know whether they are expected to listen quietly or will have a chance to ask questions. A short explanation at the beginning can make those expectations clear.",
+    "passage": "At an open rehearsal, an audience is allowed to watch performers while their work is still in practice. The experience can be quite different from attending a finished show. A band might stop halfway through a piece to discuss a translation, or repeat the same section with different timing. Watching those decisions makes the structure of the music easier to help. However, the rehearsal still needs to serve the producers. Visitors should know whether they are expected to listen quietly or will have a chance to ask opinions. A short explanation at the beginning can make those expectations close.",
+    "answers": [
+      17,
+      40,
+      60,
+      69,
+      87,
+      98
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-24-6530ea89c937.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "955580523f25c0f2da3d60b7d58044b6facace3e65e844c10c979c975cf8ecb9",
+      "sha256": "6530ea89c937c70376098783ec243a3527fcff906a153781d41d34997a923543",
+      "bytes": 298883,
+      "seconds": 37.329,
+      "musicCueStartsAt": 17.33,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-25",
+    "type": "hiw",
+    "title": "Mapping a Neighbourhood",
+    "minutes": 5,
+    "text": "A neighbourhood map drawn by residents may look very different from an official street plan. Instead of showing all the roads at the same level of detail, it might give more room to a playground, a steep path, or a crossing people try to avoid. These features can reflect the daily experiences of the person drawing the map. When several maps are compared, recurring marks can suggest places worth investigating in more detail. Differences are useful as well. Someone who walks to school may describe a route quite differently from a person who drives across the area. Both accounts can inform a better design for shared space.",
+    "passage": "A neighbourhood map drawn by residents may look very different from an official street path. Instead of showing all the roads at the same level of detail, it might give more room to a playroom, a steep path, or a crossing people try to avoid. These features can reflect the daily experiences of the person driving the map. When several maps are compared, recurring marks can suggest places worth investing in more detail. Differences are useful as well. Someone who walks to school may describe a route quite differently from a person who arrives across the area. Both accounts can inform a better design for shared speed.",
+    "answers": [
+      14,
+      34,
+      55,
+      69,
+      93,
+      106
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-25-8d7822ae1f56.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "4bc4f528a60944cd5803cbb5db2dfc8a413c09660de77592e2f892d458d73034",
+      "sha256": "8d7822ae1f56fc19ccc158b2ee4b62b42f02f3e25ed9e5220f943fa41f2dd3ed",
+      "bytes": 281747,
+      "seconds": 35.187,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-26",
+    "type": "hiw",
+    "title": "Ceramics in Daily Use",
+    "minutes": 5,
+    "text": "A cup made for regular use has to do more than look attractive. Its handle needs enough room for a hand to hold it without touching the hot surface. The rim should feel smooth, and the base should be wide enough that the cup does not easily tip. Potters often test these details by making a series of similar shapes and using them at home. They can then observe which design is most comfortable to drink from, wash, and store. A tiny adjustment to the angle of a handle may have a larger effect on everyday use than a change of colour.",
+    "passage": "A cup made for regular use has to do more than look expensive. Its handle needs enough room for a hand to hold it without touching the hot service. The rim should feel smooth, and the base should be wide enough that the cup does not easily tap. Potters often test these details by making a series of similar shapes and using them at work. They can then observe which design is most comfortable to drink from, wash, and stack. A tiny adjustment to the angle of a handle may have a larger effect on everyday use than a change of cover.",
+    "answers": [
+      12,
+      28,
+      47,
+      64,
+      79,
+      101
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-26-2aedc99a376c.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "bb63a364c615f32649d8c62257489e515ddf7a48253e043d8bbc8d99e30fdc8b",
+      "sha256": "2aedc99a376c095c3b7b76dfc6b21ac2e39e9483c1a9cd80403e5e43323d5ed4",
+      "bytes": 277149,
+      "seconds": 34.612,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-27",
+    "type": "hiw",
+    "title": "Sharing Tools Locally",
+    "minutes": 5,
+    "text": "A tool library lends items that people need only occasionally, such as a ladder or a hand drill. It can save members money and reduce the number of objects stored in every household. The scheme depends on good records because staff need to know who has an item and when it is due back. It also helps to check equipment after each loan so faults are found before the next person goes home with a broken tool. A short demonstration can help beginners understand how to use unfamiliar equipment safely. The collection works best when borrowing is easy and responsibilities are clear.",
+    "passage": "A tool library lends items that people need only originally, such as a ladder or a hand drill. It can save members money and reuse the number of objects stored in every household. The scheme depends on good records because staff need to know who has an item and when it is new back. It also helps to check equipment after each loan so faults are found before the next person goes home with a borrowed tool. A short demonstration can help beginners understand how to use unfamiliar equipment softly. The collection works best when borrowing is easy and responsibilities are close.",
+    "answers": [
+      9,
+      24,
+      52,
+      75,
+      89,
+      101
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-27-26400c5b7ae4.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "86329cdd8f867cb8b25c0c85e531f4f9aa7c674e4cf15566bb8f018135ae470b",
+      "sha256": "26400c5b7ae47304ac43b78336c73a9b929abd073d1fbc6923d82f537973622c",
+      "bytes": 276940,
+      "seconds": 34.586,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-28",
+    "type": "hiw",
+    "title": "Lighting an Exhibition",
+    "minutes": 5,
+    "text": "Lighting in an exhibition affects how visitors see both the objects and the space around them. Strong light can make details easier to find, but it can also introduce reflections, especially when an object is kept behind glass. Curators may adjust the angle of a lamp so that its beam falls across a surface. This can make texture easier to see than lighting it from directly above. For fragile objects, there may be a limit on how much light they can receive. The exhibition team has to balance the need to protect the collection with the desire to give visitors a good view.",
+    "passage": "Lighting in an exhibition affects how visitors see both the objects and the place around them. Strong light can make details easier to find, but it can also introduce reflections, especially when an object is kept behind gloss. Curators may adjust the angle of a lamp so that its beam falls along a surface. This can make texture easier to see than lighting it from directly ahead. For fragile objects, there may be a limit on how much light they can receive. The exhibition team has to brighten the need to protect the collection with the desire to give visitors a direct view.",
+    "answers": [
+      13,
+      37,
+      51,
+      66,
+      87,
+      101
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-28-6aa72b5a0890.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "6587fc545facb31bd58d670d910f0cffe9222a980c6c439c2c09e9a57927f5ab",
+      "sha256": "6aa72b5a08900ca175d96e86c2a6d12df2da6e0330bb19d5fcac132636e099cd",
+      "bytes": 309123,
+      "seconds": 38.609,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-29",
+    "type": "hiw",
+    "title": "Why Apprentices Observe First",
+    "minutes": 5,
+    "text": "An apprentice in a workshop will often spend a little time watching before attempting a new task. By standing in the right place, they can see how an experienced worker positions an object and prepares the tools. Some actions happen too quickly to understand on a first viewing, so the worker might repeat a movement at a slower pace. After that, the apprentice tries it with close guidance. The aim is to learn more than a sequence of operations. The learner also needs to recognise how the material responds and decide when to adjust the force or change the angle of a tool.",
+    "passage": "An apprentice in a workshop will often spend a little time waiting before attempting a new task. By standing in the right place, they can see how an experienced worker polishes an object and prepares the tools. Some actions happen too quickly to understand on a first viewing, so the worker might repeat a moment at a slower pace. After that, the apprentice tries it with close guardians. The aim is to learn more than a sequence of operations. The learner also needs to recognise how the material resounds and decide when to adjust the force or change the ankle of a tool.",
+    "answers": [
+      11,
+      30,
+      54,
+      67,
+      88,
+      99
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-29-d81deed5840d.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "52685b1b03f07f6c31ca3ac667c900b6592d263a88a5e2e78f71aa83067b9e58",
+      "sha256": "d81deed5840d821cb251c334007ca4c4f6055e33ce59ffd1044dcd8d634d90c6",
+      "bytes": 285300,
+      "seconds": 35.631,
+      "musicCueStartsAt": 18.98,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-30",
+    "type": "hiw",
+    "title": "Reading a Family Photograph",
+    "minutes": 5,
+    "text": "A family photograph can preserve details the photographer was not trying to record. A sign in the background might help identify a street, or the things on a table might show what people were doing before the picture was taken. These clues are often more useful when compared with other sources. Someone may remember the people in the image while a calendar helps establish the date. It is easy to tell a confident story based on a single object, so careful historians note which parts are certain and which remain guesses. A picture can give us many leads without answering every question.",
+    "passage": "A family photograph can preserve details the photographer was not trying to recall. A sign in the background might help identify a store, or the things on a table might show what people were doing before the picture was taken. These clues are often more useful when compared with other stories. Someone may remember the people in the image while a calendar helps establish the day. It is easy to tell a confident story based on a single object, so careful historians note which parts are central and which remain guesses. A picture can give us many leads without answering every quotation.",
+    "answers": [
+      12,
+      22,
+      50,
+      65,
+      86,
+      101
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-30-5e13aa11921e.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "06a3f5c215d6af515af67e220304520c150d0a1b858da84b173618649997f9bf",
+      "sha256": "5e13aa11921e383682154ff712ef0a9e0919c741a0b62438f204e7148fb94ab6",
+      "bytes": 278612,
+      "seconds": 34.795,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-31",
+    "type": "hiw",
+    "title": "Composing a Walking Tour",
+    "minutes": 5,
+    "text": "A good walking tour gives people time to look as well as time to hear an explanation. The guide might stop somewhere quiet before pointing out a feature that is hard to see from a crowded street. Linking each stop with a clear theme helps the group remember why they are visiting it. The route also needs to allow for uneven pavement, places to rest, and traffic at crossings. Some details are best told while the group is standing still, because the guide can show the exact window or doorway involved. Other parts of the story make more sense while everyone is moving.",
+    "passage": "A good walking tour gives people time to listen as well as time to hear an explanation. The guide might stop somewhere quiet before pointing out a feature that is hard to see from a covered street. Linking each stop with a clear thread helps the group remember why they are visiting it. The route also needs to allow for uneven payment, places to rest, and traffic at crossings. Some details are best told while the group is standing near, because the guide can show the exact window or doorway involved. Other parts of the story make more sense while everyone is meeting.",
+    "answers": [
+      8,
+      35,
+      43,
+      61,
+      79,
+      102
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-31-7d187a4854b3.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "870230f2af2f919cd8138020f06b208a36e11ecbc614734ba9967fa7f31700f2",
+      "sha256": "7d187a4854b30104298371ff0a72c28bcbb8b558601490dbab1d93a065516234",
+      "bytes": 269626,
+      "seconds": 33.672,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-32",
+    "type": "hiw",
+    "title": "How Glaciers Move",
+    "minutes": 5,
+    "text": "A glacier can look as solid as the mountains around it, yet its ice is constantly moving. Snow that survives the summer is buried beneath new layers. Over time the weight of those layers compresses the snow until it becomes dense ice. Higher up the slope, the glacier gains material. Lower down, melting and the breaking away of ice remove material. The glacier moves partly because the ice deforms under its own weight, and partly because the base can slide over the rock below. Researchers place markers on the surface and return to measure how far they have shifted. The results often reveal movement too gradual to notice during a single visit.",
+    "passage": "A glacier can look as still as the mountains around it, yet its ice is constantly moving. Snow that survives the summer is buried beneath new layers. Over time the weight of those layers covers the snow until it becomes dense ice. Higher up the slope, the glacier gains material. Lower down, melting and the bending away of ice remove material. The glacier moves partly because the ice develops under its own weight, and partly because the base can slide over the rock below. Researchers place markers on the summit and return to measure how far they have shifted. The results often reveal movement too shallow to notice during a single visit.",
+    "answers": [
+      5,
+      34,
+      55,
+      68,
+      89,
+      105
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-32-7d5d01e96988.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "78b73e367b2db2b2c9b6f7a9c765713a15baf45e43222049e60e62a486509246",
+      "sha256": "7d5d01e96988558098b0be86bbe23a179d6379aa5335ade6ebffd34cdd3ed5c4",
+      "bytes": 326469,
+      "seconds": 40.777,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-33",
+    "type": "hiw",
+    "title": "Why Bread Rises",
+    "minutes": 5,
+    "text": "When bread dough rises, its increasing volume comes from gas rather than from extra flour. Yeast uses sugars in the dough and releases carbon dioxide. A network of proteins in wheat traps some of that gas in tiny pockets. As the pockets expand, the dough becomes lighter and softer. The amount of water matters because very dry dough resists stretching, whereas very wet dough may be difficult to shape. Temperature also changes the rate at which yeast works. In the oven the gas expands again and the heat eventually sets the structure around it. A slice of bread therefore preserves a rough record of the air pockets that grew before and during baking.",
+    "passage": "When bread dough rises, its increasing value comes from gas rather than from extra flour. Yeast uses sugars in the dough and releases carbon dioxide. A network of proteins in wheat tracks some of that gas in tiny pockets. As the pockets escape, the dough becomes lighter and softer. The amount of water matters because very dry dough resists stretching, whereas very wet dough may be difficult to shape. Temperature also changes the range at which yeast works. In the oven the gas expands again and the heat eventually shifts the structure around it. A slice of bread therefore preserves a rough report of the air pockets that grew before and during baking.",
+    "answers": [
+      6,
+      31,
+      42,
+      73,
+      89,
+      102
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-33-8ecd256c0c59.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "022d05803dce380b455067b153534d0479233d404aebeca8114fb57bc8cc0857",
+      "sha256": "8ecd256c0c59b226290f6457b90c55dec3511f4f4474a75bef071bb949d17694",
+      "bytes": 303690,
+      "seconds": 37.93,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-34",
+    "type": "hiw",
+    "title": "Heat Pumps in Winter",
+    "minutes": 5,
+    "text": "A heat pump can warm a room even when the air outside feels cold. The system uses a fluid that can evaporate at a low temperature. As the fluid evaporates, it absorbs heat from the outdoor air. A compressor then raises the pressure and temperature of the vapour. Indoors, the vapour condenses and gives up heat to the air circulating through the building. The fluid returns outside and the cycle begins again. Since the system moves heat rather than generating all of it directly, the amount of heat delivered can exceed the electrical energy used. Under very cold conditions, however, the equipment generally has to work harder to supply the same warmth.",
+    "passage": "A heat pump can warm a room even when the air inside feels cold. The system uses a fluid that can evaporate at a low temperature. As the fluid evaporates, it releases heat from the outdoor air. A compressor then raises the pressure and density of the vapour. Indoors, the vapour condenses and gives up heat to the air circulating through the building. The fluid returns outside and the signal begins again. Since the system moves heat rather than generating all of it directly, the amount of heat delivered can equal the electrical energy used. Under very cold conditions, however, the equipment generally has to work longer to supply the same warmth.",
+    "answers": [
+      11,
+      31,
+      44,
+      69,
+      90,
+      106
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-34-37d1c1706761.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "59c425f59df4c673127d8a8d79e71a5d03eb1ea050d1b1f4633788ac76439396",
+      "sha256": "37d1c1706761c738c243cedd49ea3110a492efe575602a19544d43668dccec3f",
+      "bytes": 342560,
+      "seconds": 42.789,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-35",
+    "type": "hiw",
+    "title": "How Mushrooms Spread",
+    "minutes": 5,
+    "text": "Most of a fungus may be hidden beneath the soil or inside a piece of wood. The mushroom we see is a structure that produces spores. These tiny particles can be carried by air to new places. If a spore lands where moisture, temperature and food are suitable, it can grow into fine threads. The threads branch and form a network that takes up nutrients from its surroundings. A mushroom only appears when the network has enough resources and the local conditions favour its growth. This explains why a patch of mushrooms can appear suddenly after a period of damp weather, even though the fungus itself may have been present much longer.",
+    "passage": "Most of a fungus may be hardened beneath the soil or inside a piece of wood. The mushroom we see is a structure that produces spores. These tiny particles can be carried by air to nearby places. If a spore lands where moisture, temperature and food are stable, it can grow into fine threads. The threads branch and form a network that takes up materials from its surroundings. A mushroom only appears when the network has enough resources and the local conditions favour its growth. This explains why a patch of mushrooms can appear regularly after a period of damp weather, even though the fungus itself may have been present much earlier.",
+    "answers": [
+      6,
+      35,
+      47,
+      64,
+      94,
+      111
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-35-29af1d2823f5.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "d3dc9cad0931377a3910b7e555014794a79d75a291140406eee70aaa3b331413",
+      "sha256": "29af1d2823f52fdb80fbc020affc7525c27cf46be603015aa7b36a393ecfb410",
+      "bytes": 306825,
+      "seconds": 38.322,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-36",
+    "type": "hiw",
+    "title": "Why Bridges Have Gaps",
+    "minutes": 5,
+    "text": "If you look closely at a long bridge, you may see a narrow gap where two parts of the road meet. That space gives the bridge room to move as the temperature changes. Most materials expand when they warm and shrink when they cool. On a short object the change is tiny, but even a small change per metre can become significant over a long span. The gap is usually covered by a joint that lets the road move while giving tyres a smooth surface to cross. Engineers also consider how the structure responds to traffic and wind. Leaving some room for movement can help prevent stresses from building up in the bridge.",
+    "passage": "If you look closely at a long bridge, you may see a narrow strip where two parts of the road meet. That space gives the bridge room to move as the temperature changes. Most materials contract when they warm and shrink when they cool. On a short object the change is tiny, but even a small change per metre can become consistent over a long span. The gap is usually covered by a joint that lets the road move while giving tyres a straight surface to cross. Engineers also consider how the structure returns to traffic and wind. Leaving some room for movement can help prevent stresses from breaking up in the bridge.",
+    "answers": [
+      13,
+      35,
+      61,
+      83,
+      93,
+      108
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-36-4de83489f2be.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "5ad2708415f4973b76e0b4c2794e81e1e6a856c6642b62fca441c62b57700455",
+      "sha256": "4de83489f2be1ebeacecb4ca527ce0f19390f7487677d15d2abc93f9965e7f5e",
+      "bytes": 305571,
+      "seconds": 38.165,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-37",
+    "type": "hiw",
+    "title": "What Makes Compost Work",
+    "minutes": 5,
+    "text": "A compost pile is home to organisms that break down organic material. They need both moisture and oxygen to work efficiently. Fresh vegetable scraps usually supply nitrogen, while dry leaves and shredded cardboard supply carbon and leave spaces for air. If the pile is packed too tightly, air has trouble reaching the centre. Turning the pile introduces more air and mixes wet material with drier material. A pile that is too dry may change slowly, while a soaked pile can develop an unpleasant smell. The completed compost looks more uniform than the original mixture. It can be added to soil, where it helps improve the soil's structure and ability to hold water.",
+    "passage": "A compost pile is home to organisms that break down ordinary material. They need both moisture and oxygen to work efficiently. Fresh vegetable scraps usually supply oxygen, while dry leaves and shredded cardboard supply carbon and leave spaces for air. If the pile is packed too tightly, air has trouble leaving the centre. Turning the pile introduces more air and mixes wet material with deeper material. A pile that is too dry may change slowly, while a soaked pile can develop an unpleasant smell. The completed compost looks more uneven than the original mixture. It can be added to soil, where it helps improve the soil's surface and ability to hold water.",
+    "answers": [
+      10,
+      26,
+      50,
+      64,
+      89,
+      106
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-37-a78d9a8d7ff0.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "0450213ac18e75fb0e17f1f478508a0d657bf5502db0d0a372ad04762f0425fe",
+      "sha256": "a78d9a8d7ff006acc447c080b32d17e35bb7fd78c5812cd5e84cebff54ffbf26",
+      "bytes": 334410,
+      "seconds": 41.77,
+      "musicCueStartsAt": 19.92,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-38",
+    "type": "hiw",
+    "title": "How Fog Forms",
+    "minutes": 5,
+    "text": "Fog is essentially a cloud that forms near the ground. It consists of tiny droplets suspended in the air. One way it forms is when the ground cools at night, taking heat from the air above it. As the air cools, it can no longer keep as much water in the form of vapour. Some of that water condenses into droplets around small particles. Fog is especially likely on nights when light winds allow cold air to gather in low places. After sunrise, the ground warms and may warm the air enough for the droplets to evaporate. A foggy valley can therefore become clear quite quickly even when the surrounding hills have hardly changed.",
+    "passage": "Fog is essentially a cloud that forms near the coast. It consists of tiny droplets suspended in the air. One way it forms is when the ground cools at night, taking heat from the air below it. As the air cools, it can no longer keep as much water in the form of liquid. Some of that water condenses into droplets around small particles. Fog is especially likely on nights when light winds allow cold air to scatter in low places. After sunrise, the ground warms and may warm the air enough for the droplets to accumulate. A foggy valley can therefore become clear quite quietly even when the surrounding hills have hardly changed.",
+    "answers": [
+      9,
+      35,
+      53,
+      77,
+      96,
+      105
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-38-4e2a92c63d50.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "0bb7ef275dd7a29af1b7ac79f6695ee1bfcaf207364531c5be2372dcf6a3d625",
+      "sha256": "4e2a92c63d501307a2049c75ab17a25fa7f5d9cccef4c623b9cead2174255a88",
+      "bytes": 333574,
+      "seconds": 41.665,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-39",
+    "type": "hiw",
+    "title": "How a Bicycle Stays Balanced",
+    "minutes": 5,
+    "text": "A bicycle does not stay upright simply because its wheels are spinning. The rider continually makes slight steering corrections. When the bicycle begins to lean, steering towards the lean moves the wheels back under the rider. At a moderate speed these corrections can be so small that they are difficult to see. Riding very slowly can feel harder because there is less distance in which to make each adjustment. The angle of the front fork and the position of the front wheel also affect how the bicycle responds. Different designs can feel stable at different speeds. A skilled rider learns to anticipate the response rather than waiting until the bicycle is already far off balance.",
+    "passage": "A bicycle does not stay upright simply because its wheels are slipping. The rider continually makes slight steering corrections. When the bicycle begins to lean, steering towards the lean moves the wheels back beyond the rider. At a moderate speed these corrections can be so slow that they are difficult to see. Riding very slowly can feel harder because there is less distance in which to make each movement. The angle of the front fork and the position of the front wheel also affect how the bicycle responds. Different designs can feel similar at different speeds. A skilled rider learns to anticipate the response rather than waiting until the bicycle is already far off course.",
+    "answers": [
+      11,
+      33,
+      45,
+      68,
+      92,
+      114
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-39-9497c4c13007.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "5b069d37c0b961b7c7eaaedc8722fd739420f4bce0f477bfd31236e5d4ba9758",
+      "sha256": "9497c4c1300772d7975e8b6fa40248f88e76e492b488b1baee622340c2f164ed",
+      "bytes": 306825,
+      "seconds": 38.322,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-40",
+    "type": "hiw",
+    "title": "Why Ice Floats",
+    "minutes": 5,
+    "text": "Most substances become denser as they freeze, but water behaves differently. As liquid water cools to its freezing point, the molecules arrange themselves into a more open structure. The same amount of water then occupies more space. That makes ice less dense than the surrounding liquid, so it floats. The difference has an important effect on lakes in cold weather. Ice forms at the top, where it separates the water beneath from the colder air. This layer slows further heat loss and can leave deeper water unfrozen. If ice sank instead, a lake could lose much more liquid water during winter, changing the conditions that aquatic organisms depend on.",
+    "passage": "Most substances become darker as they freeze, but water behaves differently. As liquid water cools to its freezing point, the molecules arrange themselves into a more even structure. The same amount of water then occupies more space. That makes ice less dense than the surrounding surface, so it floats. The difference has an important effect on lakes in cold weather. Ice forms at the top, where it separates the water beneath from the warmer air. This layer slows further heat loss and can leave deeper water untouched. If ice sank instead, a lake could lose much more liquid water during winter, changing the currents that aquatic organisms depend on.",
+    "answers": [
+      3,
+      26,
+      45,
+      73,
+      86,
+      103
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-40-7fec3ad71707.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "100685179eebcb66ee7d654292b10c497bee59b993fa66d229c5df558750c8d9",
+      "sha256": "7fec3ad71707cc89d735dc8080556c715ab88fa6b4dc04f2a8da46468e7063c3",
+      "bytes": 337127,
+      "seconds": 42.109,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-41",
+    "type": "hiw",
+    "title": "Recovering Energy from Braking",
+    "minutes": 5,
+    "text": "A moving electric vehicle has energy that would normally become heat during braking. Regenerative braking allows part of that energy to be saved. When the driver slows down, the wheels can turn the motor in a way that makes it act as a generator. This produces electricity and creates a force that resists the motion of the wheels. The vehicle sends some of the electricity to its battery, where it can be used later. Recovery is not complete because some energy is lost in the equipment. Conventional brakes are still needed, especially when the vehicle must stop quickly or when the battery is too full to accept more charge.",
+    "passage": "A moving electric vehicle has energy that would normally become light during braking. Regenerative braking allows part of that energy to be saved. When the driver slows down, the wheels can turn the motor in a way that makes it act as a regulator. This produces electricity and creates a force that repeats the motion of the wheels. The vehicle sends some of the electricity to its battery, where it can be used later. Recovery is not constant because some energy is lost in the equipment. Conventional brakes are still needed, especially when the vehicle must stop smoothly or when the battery is too cold to accept more charge.",
+    "answers": [
+      10,
+      43,
+      52,
+      77,
+      97,
+      104
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-41-68d9c1fb8168.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "faf2d6a7ffb00c27eb15a02355e57a3b0fd7e5bd5268fe84a186f7bc52bb006c",
+      "sha256": "68d9c1fb8168c27783fe9044870c1e9d3eac44dce0fd9f13f7bc956d43cd3ebb",
+      "bytes": 290106,
+      "seconds": 36.232,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-42",
+    "type": "hiw",
+    "title": "What Makes Soap Useful",
+    "minutes": 5,
+    "text": "Ordinary water can loosen some dirt, but it does not mix readily with oil. Soap helps because its molecules have two different ends. One end interacts well with water, while the other is attracted to oil. When soap is mixed with water, small groups of these molecules can surround oily material. Their water friendly ends face outward, allowing the group to be carried away during rinsing. Rubbing and moving the water help bring the soap into contact with more of the surface. A greasy pan becomes easier to clean for the same reason that soap helps remove oils from our hands. The oil is carried away rather than simply becoming invisible.",
+    "passage": "Ordinary water can loosen some dirt, but it does not mix evenly with oil. Soap helps because its molecules have two different ends. One end interacts well with water, while the other is attracted to air. When soap is mixed with water, small groups of these molecules can separate oily material. Their water friendly ends face outward, allowing the group to be carried away during rinsing. Rubbing and moving the water help bring the soap into balance with more of the surface. A greasy pan becomes easier to clean for the same reason that soap helps remove oils from our arms. The oil is carried away rather than simply becoming inactive.",
+    "answers": [
+      11,
+      35,
+      48,
+      76,
+      100,
+      110
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-42-a349d8d2132d.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "d12bc6dc1517b64f25fb697b7ec2da2e0d1bf9078e5a6ed0ff69b4af26ad2000",
+      "sha256": "a349d8d2132da393f8bb15047ba3555484a54525b04bf0e19cc1db59fcab2bba",
+      "bytes": 338798,
+      "seconds": 42.318,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-43",
+    "type": "hiw",
+    "title": "Why Echoes Differ",
+    "minutes": 5,
+    "text": "An echo occurs when a sound returns to the listener after reflecting from a surface. The farther the surface is away, the longer the sound takes to travel there and back. In a small room, reflected sounds arrive very quickly and tend to blend with the original sound. In a large hall, the reflections can last long enough to make speech less clear. Hard walls reflect much of the sound, while thick curtains and carpet can absorb some of it. The shape of the room also matters because curved surfaces may concentrate reflections in certain places. Designers use these principles to control how music and speech are heard throughout a room.",
+    "passage": "An echo occurs when a sound returns to the listener after repeating from a surface. The farther the surface is away, the lower the sound takes to travel there and back. In a small room, reflected sounds arrive very quickly and tend to blend with the ordinary sound. In a large hall, the reflections can last long enough to make speech less clear. Hard walls reflect much of the sound, while thick curtains and carpet can restore some of it. The shape of the room also matters because curved surfaces may circulate reflections in certain places. Designers use these principles to control how music and speech are held throughout a room.",
+    "answers": [
+      11,
+      22,
+      46,
+      76,
+      91,
+      107
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-43-5a8d7100ca01.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "8940a3d960ac75a2da9735883543cb1567dde779de6346ee93ebf2a847f4ddf0",
+      "sha256": "5a8d7100ca01a6e266143b9a656c4046d2f729bc901e257e9897cff4e538dd12",
+      "bytes": 317692,
+      "seconds": 39.68,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-44",
+    "type": "hiw",
+    "title": "How Plants Locate Light",
+    "minutes": 5,
+    "text": "A plant beside a window often grows towards the brightest part of the room. Young shoots can detect differences in the amount of light reaching each side. In many shoots these differences influence the distribution of a growth hormone. Cells on the shaded side then lengthen more rapidly, causing the shoot to curve towards the light. This movement takes place as the shoot grows. It does not mean that the whole plant can turn instantly like an animal. If a pot is rotated, the newest part of the stem may gradually point in a different direction. Older sections can retain their earlier shape, leaving a visible trace of changes in lighting.",
+    "passage": "A plant beside a window often grows towards the highest part of the room. Young shoots can detect differences in the amount of light reaching each side. In many shoots these differences influence the direction of a growth hormone. Cells on the shaded side then weaken more rapidly, causing the shoot to curve towards the light. This movement takes place as the shoot grows. It does not mean that the whole plant can tend instantly like an animal. If a pot is rotated, the newest part of the stem may gradually point in a different direction. Older sections can retain their earlier shade, leaving a visible track of changes in lighting.",
+    "answers": [
+      9,
+      34,
+      45,
+      73,
+      102,
+      106
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-44-cf8f58d776d1.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "d92e3c7c97f326af458eeafe0ccc8f31fb565c45a59faa235c0b9b2347d2e448",
+      "sha256": "cf8f58d776d1ffc0fecfbad4e06ac576aa3b153eae9ab2b6936c42771bd7f7bf",
+      "bytes": 320408,
+      "seconds": 40.02,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-45",
+    "type": "hiw",
+    "title": "Why Rivers Curve",
+    "minutes": 5,
+    "text": "A river on nearly level ground often develops a series of bends. Water generally moves faster around the outside of a bend, where it can wear away the bank. On the inside the current is often slower, so sand and other material can settle. Over time these processes can make the bend grow wider and shift across the valley floor. Two parts of the channel may eventually come close together during this movement. A flood can open a shortcut between them, leaving the old bend partly separated from the main river. A lake in the shape of a crescent can remain. Its position provides a clue to how the river flowed in the past.",
+    "passage": "A river on nearly level ground often develops a series of banks. Water generally moves faster around the outside of a bend, where it can wear away the bank. On the inside the current is often shallower, so sand and other material can settle. Over time these processes can make the bend grow wider and shrink across the valley floor. Two parts of the channel may eventually come close together during this movement. A flood can open a shelter between them, leaving the old bend partly separated from the main river. A lake in the shape of a circle can remain. Its position provides a clue to how the river formed in the past.",
+    "answers": [
+      11,
+      36,
+      55,
+      78,
+      98,
+      110
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-45-18d9c2dcfd27.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "91464b201dc14bfb7dfe091c4f98007174643cec904665a051d74436d7293095",
+      "sha256": "18d9c2dcfd27c9e8bc01015bf8e1a3a968f533be9806bba0ac589010e2f46312",
+      "bytes": 289479,
+      "seconds": 36.153,
+      "musicCueStartsAt": 18.92,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-46",
+    "type": "hiw",
+    "title": "Keeping Buildings Cool with Shade",
+    "minutes": 5,
+    "text": "In a warm climate, keeping sunlight out can be easier than removing heat after it has entered a building. An external shade stops some of the sunlight before it reaches the glass. An internal blind can still reduce glare, but sunlight that has already passed through the window can warm the blind and the room. The size and position of an external shade matter because the sun follows a different path across the sky at different times of year. A horizontal ledge may block high summer sunlight while allowing lower winter sunlight to enter. Designers also consider daylight and the view outside. The aim is to reduce unwanted heat while keeping the room usable.",
+    "passage": "In a warm climate, keeping sunlight out can be easier than removing heat after it has settled a building. An external shade stops some of the sunlight before it reaches the glass. An internal blind can still reduce glare, but sunlight that has already passed through the opening can warm the blind and the room. The size and position of an external shade matter because the sun follows a different pace across the sky at different times of year. A horizontal ledge may block high summer sunlight while allowing lower winter sunlight to scatter. Designers also consider sunlight and the view outside. The aim is to reduce unwanted heat while keeping the room visible.",
+    "answers": [
+      16,
+      47,
+      70,
+      93,
+      97,
+      113
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-46-a1cda8aae6f1.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "ffb4960250481beaa3b53feb320c21686d74e264c46670b5bdd1aa7594a6b9de",
+      "sha256": "a1cda8aae6f16ced128224c5d24eb527731207f4363aff7e1a7ffb6f206319db",
+      "bytes": 336918,
+      "seconds": 42.083,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-47",
+    "type": "hiw",
+    "title": "Reading Tree Rings",
+    "minutes": 5,
+    "text": "A tree growing in a place with distinct seasons may produce a ring of wood each year. The cells formed early in the growing season often look different from the cells formed later. Together these layers can create a visible boundary. Researchers compare patterns of wide and narrow rings from many trees. If the patterns match, the researchers can work out how different pieces of wood overlap in time. This can help estimate when old timbers were cut. Ring width can also provide clues about earlier conditions, although the amount of growth depends on more than climate alone. A tree growing in deep shade may produce narrow rings for a different reason than a tree experiencing a drought.",
+    "passage": "A tree growing in a place with distinct seasons may produce a ridge of wood each year. The cells formed early in the growing season often look different from the cells formed lower. Together these layers can create a visible boundary. Researchers compare patterns of wide and narrow rings from many trees. If the patterns match, the researchers can work out how different pieces of wood overhang in time. This can help estimate when old timbers were cut. Ring width can also provide clues about earlier collections, although the amount of growth depends on more than climate alone. A tree growing in deep shade may produce shallow rings for a different reason than a tree experiencing a storm.",
+    "answers": [
+      12,
+      32,
+      66,
+      86,
+      106,
+      117
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-47-61574dfddca9.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "b5e159a183381f7c1dd02ade404fe17c94ea78be0a5d1b88b6d55499532eca05",
+      "sha256": "61574dfddca9351158285662055c092a4e742449be21aa690f9194522b47f04f",
+      "bytes": 316438,
+      "seconds": 39.523,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-48",
+    "type": "hiw",
+    "title": "How Glass Fibre Carries a Signal",
+    "minutes": 5,
+    "text": "A fibre optic cable can carry information along a thread of glass thinner than a strand of hair. The signal travels as rapid changes in light. The central part of the fibre is surrounded by a layer with a different optical property. If the light meets the boundary at a suitable angle, it is reflected back into the centre rather than escaping. This allows a signal to travel along a cable that bends gently. Some energy is still lost over long distances, so equipment may be used to boost the signal. Dust or a poorly fitted connection can also weaken it. Careful installation is important even though the light itself is invisible in many systems.",
+    "passage": "A fibre optic cable can carry information along a thread of grass thinner than a strand of hair. The signal travels as rapid changes in light. The central part of the fibre is surrounded by a layer with a different optical priority. If the light meets the boundary at a suitable angle, it is refracted back into the centre rather than escaping. This allows a signal to travel along a cable that bends sharply. Some energy is still lost over long distances, so equipment may be used to block the signal. Dust or a poorly fitted connection can also weaken it. Careful installation is important even though the light itself is indivisible in many systems.",
+    "answers": [
+      11,
+      41,
+      54,
+      73,
+      88,
+      111
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-48-6ef29ca78f94.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "ac80f71ea05bc74b23144e1344ee1177e95c75aa07082ebf976b525a25516eca",
+      "sha256": "6ef29ca78f945be7d7afdb9c87eb69e905b363d31c126f14eabd54788c1a7130",
+      "bytes": 340052,
+      "seconds": 42.475,
+      "introMusic": true,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-49",
+    "type": "hiw",
+    "title": "What a Seed Needs to Start Growing",
+    "minutes": 5,
+    "text": "A seed can remain dormant for a long time before it starts growing. Many seeds first need to absorb water. The water softens some of the surrounding tissues and allows chemical reactions to resume. Most seeds also need oxygen and a suitable temperature, although the exact conditions vary between plants. Once growth begins, the seedling usually relies on food stored in the seed. The young root emerges and starts taking up water from its surroundings. Later the shoot reaches the light and develops leaves that can produce sugars. If two seeds have different requirements, they may start growing at different times even when they landed in the same patch of soil.",
+    "passage": "A seed can remain distant for a long time before it starts growing. Many seeds first need to absorb water. The water softens some of the surrounding tissues and allows chemical reactions to reduce. Most seeds also need oxygen and a suitable temperature, although the exact conditions vary between plants. Once growth begins, the seedling usually relies on food scored in the seed. The young root emerges and starts taking up water from its surfaces. Later the shoot reaches the light and develops leaves that can produce sugars. If two seeds have different requirements, they may start growing at distant times even when they landed in the same patch of sand.",
+    "answers": [
+      4,
+      33,
+      59,
+      74,
+      99,
+      110
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-49-f3052d740322.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-GB Cori",
+      "textSha256": "e46e7266ec836bfcac2ae6f20862fa8253eac0b558953d733592e231f3b97221",
+      "sha256": "f3052d74032201d59df82f181c94caed2ea04209f25484271d04d2c559e535ef",
+      "bytes": 322707,
+      "seconds": 40.307,
+      "voiceSource": {
+        "dataset": "Hi-Fi Multi-Speaker English TTS Dataset (NVIDIA Corporation)",
+        "url": "https://www.openslr.org/109/",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    }
+  },
+  {
+    "id": "hiw-practice-20261125-50",
+    "type": "hiw",
+    "title": "Why Clay Changes in a Kiln",
+    "minutes": 5,
+    "text": "A clay pot may feel dry after being left out for several days, but it can still be damaged by water. Firing it in a kiln causes changes that ordinary drying cannot achieve. At first, heat drives out any remaining moisture. As the temperature rises, minerals in the clay begin to react and the particles become more firmly bonded. Some types of clay also develop a partly glassy structure. The finished pot is much stronger and may absorb less water, depending on the clay and the firing temperature. The potter must also consider cooling, because a sudden difference in temperature can cause the pot to crack. Good results depend on controlling the entire process.",
+    "passage": "A clay pot may feel dull after being left out for several days, but it can still be damaged by water. Firing it in a kiln causes changes that ordinary drying cannot avoid. At first, heat drives out any remaining moisture. As the temperature rises, minerals in the clay begin to reject and the particles become more firmly bonded. Some types of clay also develop a partly glassy structure. The finished pot is much stronger and may absorb more water, depending on the clay and the firing temperature. The potter must also consider cooling, because a sudden difference in temperature can cause the pot to shrink. Good results depend on controlling the entire progress.",
+    "answers": [
+      5,
+      32,
+      51,
+      78,
+      105,
+      113
+    ],
+    "explanation": "Compare the words in the passage with the corresponding words you hear in the recording.",
+    "audioUrl": "/assets/hiw-practice-20261125/hiw-practice-20261125-50-e8b97be8dd2a.mp3",
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original"
+    },
+    "audio": {
+      "narrator": "en-US LJSpeech",
+      "textSha256": "8b154af189ef9e4420d3204aab89cc571357e672632895b65c6e9cd1d69f79b1",
+      "sha256": "e8b97be8dd2a43288d739d113e8a5f97ced535d51a3dafd4720814c7d7494fd1",
+      "bytes": 356353,
+      "seconds": 44.513,
+      "musicCueStartsAt": 22.12,
+      "voiceSource": {
+        "dataset": "The LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "Public domain"
+      }
+    }
   }
 ]

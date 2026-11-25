@@ -4,7 +4,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs/promises');
 const os=require('node:os');
 const path=require('node:path');
-const {randomUUID}=require('node:crypto');
+const {createHash,randomUUID}=require('node:crypto');
 const express=require('express');
 const policy=require('../writing-lab-scoring');
 const {installWritingLab,reconcile,present,advance,predictionMocks,individualQuestions}=require('../writing-lab');
@@ -375,7 +375,7 @@ test('Prediction and standalone practice IDs are accepted by the narration resol
   const audio=createNarration(dir,async input=>{seen.push(input);return Buffer.alloc(2000,7);});
   await audio.get(predictions.sst[0].id);
   await audio.get(predictions.wfd[0].id);
-  const standalone = require('../content/additional-practice-questions.json');
+  const standalone = require('../content/additional-practice-questions.json').filter(question => !question.audioUrl);
   for(const question of standalone) await audio.get(question.id);
   assert.deepEqual(seen.map(item=>item.input),[predictions.sst[0].narrationText,predictions.wfd[0].text,...standalone.map(q=>q.narrationText||q.text)]);
   const voices=['coral','ash','sage','echo','nova'];
@@ -383,6 +383,80 @@ test('Prediction and standalone practice IDs are accepted by the narration resol
   assert.equal(newDictationInputs.length,139);
   assert.deepEqual(newDictationInputs.map(input=>input.voice),Array.from({length:139},(_,i)=>voices[i%voices.length]));
   assert(newDictationInputs.every(input=>input.speed===1&&input.requireNeural&&input.ambience.length===0));
+});
+
+test('The new HIW practice questions have exact keys and fixed audio on the Listening route', async t => {
+  const publicDirectory = path.join(__dirname, '..', 'public');
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'hiw-practice-'));
+  const app = express();
+  app.use(express.json(), express.static(publicDirectory));
+  const service = installWritingLab(app, {
+    directory:dir, verifyToken:token => token === 'hiw-tester' ? token : null,
+    getAccount:async () => ({}), callModel:async () => {throw Error('HIW scores locally');}
+  });
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise(resolve => server.once('listening', resolve));
+  t.after(async () => {
+    await service.waitForJobs();
+    await new Promise(resolve => server.close(resolve));
+    await fs.rm(dir, {recursive:true, force:true});
+  });
+  const base = 'http://127.0.0.1:' + server.address().port;
+  const request = async (route, body) => {
+    const response = await fetch(base + '/api/writing-lab' + route, {
+      method:body === undefined ? 'GET' : 'POST',
+      headers:{'Content-Type':'application/json', 'x-session-token':'hiw-tester'},
+      body:body === undefined ? undefined : JSON.stringify(body)
+    });
+    assert.equal(response.status, 200);
+    return response.json();
+  };
+  const batch = require('../content/additional-practice-questions.json')
+    .filter(q => q.id.startsWith('hiw-practice-20261125-'));
+  const existing = require('../content/listening-mocks').mocks.flatMap(mock => mock.questions)
+    .filter(q => q.type === 'hiw').map(q => q.id);
+  const catalogue = (await request('/catalog')).listeningPractice.filter(q => q.type === 'hiw');
+  assert.equal(batch.length, 50);
+  assert.deepEqual(catalogue.map(q => q.id), [...new Set(existing), ...batch.map(q => q.id)]);
+  const hashes = new Set();
+  const hash = bytes => createHash('sha256').update(bytes).digest('hex');
+  const {inspectMp3} = require('../scripts/validate-writing-audio');
+  for (const q of batch) {
+    const spoken = q.text.split(/\s+/), displayed = q.passage.split(/\s+/);
+    assert.equal(spoken.length, displayed.length, q.id);
+    assert.deepEqual(q.answers, spoken.flatMap((word, index) => word === displayed[index] ? [] : [index]), q.id);
+    assert(q.answers.length >= 3 && q.answers.length <= 9, q.id);
+    assert.equal(q.audio.textSha256, hash(q.text), q.id);
+    assert(!hashes.has(q.audio.sha256), q.id);
+    hashes.add(q.audio.sha256);
+    assert(q.audioUrl.endsWith(q.id + '-' + q.audio.sha256.slice(0,12) + '.mp3'), q.id);
+    const audio = await fs.readFile(path.join(publicDirectory, q.audioUrl.slice(1)));
+    assert.equal(q.audio.bytes, audio.length, q.id);
+    assert.equal(q.audio.sha256, hash(audio), q.id);
+    const frames = inspectMp3(audio);
+    assert(frames.valid && Math.abs(frames.seconds - q.audio.seconds) < .15, q.id);
+  }
+  for (const q of batch) {
+    const id = randomUUID();
+    const attempt = await request('/attempts', {id, testId:q.id, mode:'practice'});
+    const route = '/attempts/' + id;
+    const audio = await fetch(base + attempt.questions[0].audioUrl, {headers:{Range:'bytes=0-199'}});
+    assert.equal(audio.status, 206);
+    assert.match(audio.headers.get('content-type'), /^audio\/mpeg/);
+    assert.equal((await audio.arrayBuffer()).byteLength, 200);
+    assert.equal(attempt.kind, 'hiw');
+    assert.equal(attempt.questions[0].audioUrl, q.audioUrl);
+    assert.equal(attempt.questions[0].text, '');
+    assert.equal(attempt.questions[0].answers, undefined);
+    await request(route + '/begin', {});
+    const done = await request(route + '/answer', {index:0, revision:1, text:JSON.stringify(q.answers),
+      next:true, playback:{position:q.audio.seconds, finished:true}});
+    assert.equal(done.status, 'submitted');
+    assert.equal(done.questions[0].text, q.text);
+    assert.deepEqual(done.questions[0].answers, q.answers);
+    await service.waitForJobs();
+    assert.equal((await request(route)).results[0].total, q.answers.length);
+  }
 });
 
 test('Narration accepts only bank IDs, shares concurrent generation and survives restart',async t=>{
