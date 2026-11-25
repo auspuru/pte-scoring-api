@@ -102,8 +102,10 @@
     if(leadDeadline&&leadStorageKey)storage.put(leadStorageKey,String(Math.max(0,Math.ceil((leadDeadline-Date.now())/1000))));
     leadDeadline=0;clearInterval(audioCountdown);if(audio)audio.pause();
   }
+  const writingMock = () => attempt?.kind === 'mock' && attempt.module !== 'listening' && !attempt.practiceSet;
   function setMockMode(enabled) {
     window.PortalExamMode?.set('writing', enabled && workspaceVisible, portalShell || root, enabled ? {
+      clipboardFromEditorsOnly:writingMock(),
       onEvent:recordInterruption,
       onLock() { stopAudio(); writeDraft(); saveAnswer(false); },
       onResume() { if(attempt?.status==='active')showAttempt(); }
@@ -838,6 +840,7 @@
   async function edit(command) {
     const editor=document.getElementById('answer');if(!editor || editor.disabled || editor.readOnly) return;
     if(attempt?.kind==='mock' && window.PortalExamMode?.edit?.(command,editor))return;
+    if (writingMock()) return;
     const start=editor.selectionStart,end=editor.selectionEnd;
     try {
       if(command==='paste') { const text=await navigator.clipboard.readText();editor.setRangeText(text,start,end,'end');onInput(); }

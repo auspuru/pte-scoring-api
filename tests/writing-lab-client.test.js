@@ -178,9 +178,9 @@ test('Protected Writing clipboard controls delegate to the internal clipboard an
 
 test('Writing mocks show only forward navigation and release exam mode after submission or suspension', async () => {
   const h=harness(),calls=[];
-  h.context.window.PortalExamMode={set:(owner,enabled)=>calls.push({owner,enabled})};
+  h.context.window.PortalExamMode={set:(owner,enabled,pane,options)=>calls.push({owner,enabled,clipboardFromEditorsOnly:options?.clipboardFromEditorsOnly})};
   open(h,attempt(0));
-  assert.deepEqual(calls.at(-1),{owner:'writing',enabled:true});
+  assert.deepEqual(calls.at(-1),{owner:'writing',enabled:true,clipboardFromEditorsOnly:true});
   assert.doesNotMatch(h.nodes.get('lab').innerHTML,/data-leave=|data-portal=|data-tab=|data-practice-move=/);
   assert.match(h.nodes.get('lab').innerHTML,/id="next"/);
   await h.hooks.suspend(); assert.equal(calls.at(-1).enabled,false);

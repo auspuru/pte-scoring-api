@@ -176,6 +176,7 @@
     }
     function copy(target, cut) {
       const input = editor(target);
+      if (!input && active.options.clipboardFromEditorsOnly) return;
       const text = input ? input.value.slice(input.selectionStart,input.selectionEnd) : doc.getSelection?.()?.toString();
       if (text) clipboard = text;
       if (cut && input && text) insert(input,'');
@@ -199,12 +200,8 @@
     for (const type of ['copy','cut','paste']) doc.addEventListener?.(type, event => {
       if (!active?.options) return;
       event.preventDefault(); event.stopImmediatePropagation();
-      if (active.locked) return;
-      if (type === 'paste') {
-        // Never read the system clipboard: only text copied inside this mock
-        // can enter a response, including through the native paste shortcut.
-        if (clipboard != null) insert(event.target,clipboard); else lock('external-paste-blocked');
-      } else copy(event.target,type === 'cut');
+      // Route native clipboard actions through the same private clipboard policy as the editor buttons.
+      edit(type, event.target);
     }, true);
     doc.addEventListener?.('contextmenu', event => { if (active?.options) { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
     doc.addEventListener?.('keydown', event => {
@@ -220,7 +217,14 @@
         event.preventDefault(); event.stopImmediatePropagation();
       }
     }, true);
-    doc.addEventListener?.('dragstart', event => { internalDrag = !!active?.pane.contains(event.target); }, true);
+    doc.addEventListener?.('dragstart', event => {
+      internalDrag = !!active?.pane.contains(event.target);
+      if (internalDrag && active.options?.clipboardFromEditorsOnly && !editor(event.target)) {
+        internalDrag = false;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }, true);
     doc.addEventListener?.('dragend', () => { internalDrag = false; }, true);
     doc.addEventListener?.('drop', event => {
       if (active?.options && !internalDrag) { event.preventDefault(); event.stopImmediatePropagation(); lock('external-drop-blocked'); }
