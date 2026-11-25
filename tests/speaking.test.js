@@ -2,9 +2,11 @@
 const newReadAloud = require('../content/ra-original-20261125.json');
 const newRepeatSentences = require('../content/user-rs-20261125.json');
 const bookletReadAloud = require('../content/user-ra-pte-nepal-20261122.json');
+const bookletLectures = require('../content/user-rl-pte-nepal-20261122.json');
+const bookletDiscussions = require('../content/user-sgd-pte-nepal-20261122.json');
 const bookletImages = require('../content/di-user-predictions.json').filter(q=>q.id.startsWith('di-user-20261125'));
 const addedPracticeCount = require('../content/user-rts-20261124.json').length
-  + require('../content/user-sgd-20261124.json').length;
+  + require('../content/user-sgd-20261124.json').length + bookletLectures.length + bookletDiscussions.length;
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path'),crypto=require('node:crypto');
 const bank=require('../content/speaking-bank'),scoring=require('../speaking-scoring'),delivery=require('../speaking-delivery'),{installSpeakingLab,transcribeRecording,question}=require('../speaking-lab');
 const {createStore}=require('../writing-lab-store'),localEngine=require('../local-scoring-engine');
@@ -190,6 +192,29 @@ test('Speaking API preserves private recordings, transcript revisions, samples, 
   for(const id of ['di-pred-3001061','di-pred-3001369'])assert(!catalog.body.questions.some(q=>q.id===id));
   assert.deepEqual(catalog.body.questions.filter(q=>q.type==='di'&&!q.predictionSource).map(q=>q.imageCategory),['bar','pie','line','table','process']);
   assert(catalog.body.questions.every(q=>!q.visual&&!q.facts&&!q.sample));
+  const {isNewQuestion}=require('../public/practice-studio');
+  for (const q of [...bookletLectures, ...bookletDiscussions]) {
+    const row=catalog.body.questions.find(item=>item.id===q.id);
+    assert(row,q.id);
+    assert(isNewQuestion(row,Date.parse('2026-11-25T12:00:00Z')),q.id+' New badge');
+  }
+  for (const q of [bookletLectures[0],bookletDiscussions[0]]) {
+    const testUser=q.type==='rl'?'import-2026112503':'import-2026112504';
+    const started=await request('/attempts',{id:crypto.randomUUID(),questionId:q.id},testUser);
+    assert.equal(started.status,200);
+    assert.equal(started.body.question.preparation,10);
+    assert.equal(started.body.question.seconds,q.type==='rl'?40:120);
+    const recording=await fetch(base+started.body.question.audioUrl,{headers:{Range:'bytes=0-1023'}});
+    assert.equal(recording.status,206);
+    const expected=await fs.readFile(path.join(__dirname,'../content/speaking-audio',q.id+'.mp3'));
+    assert.deepEqual(Buffer.from(await recording.arrayBuffer()),expected.subarray(0,1024));
+    const route='/attempts/'+started.body.id;
+    assert.equal((await request(route+'/transcript',{text:q.sample,revision:0},testUser)).status,200);
+    const submitted=await request(route+'/submit',{},testUser);
+    assert.equal(submitted.status,200);
+    assert.equal(submitted.body.question.sample,q.sample);
+    assert.deepEqual(submitted.body.question.facts,q.facts);
+  }
   for (const q of [bookletReadAloud[0],bookletImages[0]]) {
     const testUser=q.type==='ra'?'import-2026112501':'import-2026112502';
     const visible=catalog.body.questions.find(row=>row.id===q.id);
