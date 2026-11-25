@@ -181,7 +181,26 @@ test('Reading FIB choices test grammar plus contextual vocabulary rather than sy
     tools.compose(bank,'reading-practice-mock-'+number).questions.filter(q=>['dropdown','wordbank'].includes(q.type)).forEach(check);
   }
   for(const library of catalogue.readingLibraries(bank).filter(l=>['dropdown','wordbank'].includes(l.id))){
-    library.questions.forEach(check);
+    const booklet = new Map(require('../public/reading-prediction-practice-nov-2026')[library.id].map(q => [q.uid, q]));
+    for (const q of library.questions) {
+      const source = booklet.get(q.uid);
+      if (!source) {
+        check(q);
+        continue;
+      }
+      assert.deepEqual(q, source, q.id + ' retains booklet choices and keys');
+      assert.deepEqual([...q.passage.matchAll(/\[\[(\d+)\]\]/g)].map(match => Number(match[1])),
+        q.answers.map((_, i) => i + 1), q.id);
+      if (q.type === 'dropdown') {
+        q.answers.forEach((answer, i) => assert(q.options[i].includes(answer), q.id));
+      } else {
+        for (const answer of new Set(q.answers)) {
+          assert(q.bank.filter(word => word === answer).length >= q.answers.filter(word => word === answer).length, q.id);
+        }
+      }
+      booklet.delete(q.uid);
+    }
+    assert.equal(booklet.size, 0, library.id + ' includes every approved booklet question');
   }
   for(const set of bank.sets){
     tools.compose(bank,'mock',set.id).questions.filter(q=>['dropdown','wordbank'].includes(q.type)).forEach(check);

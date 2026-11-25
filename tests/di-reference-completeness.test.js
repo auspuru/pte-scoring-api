@@ -31,7 +31,9 @@ test('practice catalogue and direct starts hold unclear images while existing at
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(async()=>{await service.waitForAssessments();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
  const base='http://127.0.0.1:'+server.address().port+'/api/speaking';
  const request=async(route,body)=>{const r=await fetch(base+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':'alice','Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});return{status:r.status,data:await r.json()};};
- const catalogue=await request('/catalog');assert.equal(catalogue.status,200);assert.equal(catalogue.data.questions.filter(q=>q.type==='di').length,207);
+ const catalogue=await request('/catalog');assert.equal(catalogue.status,200);const booklet=require('../content/di-user-predictions.json').filter(q=>q.id.startsWith('di-user-20261125'));
+ const images=catalogue.data.questions.filter(q=>q.type==='di');assert.equal(images.length,207+booklet.length);
+ assert.deepEqual(images.filter(q=>q.id.startsWith('di-user-20261125')).map(q=>q.id),booklet.map(q=>q.id));
  for(const id of ['3001061','3001369']){
   const qid='di-pred-'+id;assert(!catalogue.data.questions.some(q=>q.id===qid));
   const blocked=await request('/attempts',{id:randomUUID(),questionId:qid});assert.equal(blocked.status,422);assert.match(blocked.data.error,/clearer source/);

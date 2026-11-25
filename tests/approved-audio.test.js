@@ -10,7 +10,7 @@ test('all 55 approved recordings resolve exact source and byte hashes, with six 
 });
 test('Speaking and Writing attempts preserve keyed media and serve newly imported recordings',async t=>{
  const directory=await fs.mkdtemp(path.join(os.tmpdir(),'approved-audio-')),app=express();app.use(express.json());
- const auth={directory,verifyToken:token=>['fixture','retell-fixture'].includes(token)?token:null,getAccount:async()=>({}),transcriptionAvailable:false,deliveryAssessmentAvailable:false,azureComparisonAvailable:false};
+ const auth={directory,verifyToken:token=>['fixture','retell-fixture','booklet-discussion-fixture'].includes(token)?token:null,getAccount:async()=>({}),transcriptionAvailable:false,deliveryAssessmentAvailable:false,azureComparisonAvailable:false};
  const speaking=require('../speaking-lab').installSpeakingLab(app,auth),writing=require('../writing-lab').installWritingLab(app,{...auth,directory:path.join(directory,'writing'),speakingAllowed:async()=>true});
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));t.after(async()=>{await speaking.waitForAssessments();await writing.stop();server.closeAllConnections();await new Promise(r=>server.close(r));await fs.rm(directory,{recursive:true,force:true});});
  const base='http://127.0.0.1:'+server.address().port;
@@ -18,7 +18,9 @@ test('Speaking and Writing attempts preserve keyed media and serve newly importe
  const catalogSpeaking=await request('/api/speaking/catalog');
  const retellPredictions = require('../content/user-rl-20261123.json');
  const retellCatalogue = catalogSpeaking.questions.filter(q => q.type === 'rl');
- assert.equal(retellCatalogue.length, 66);
+ const bookletRetells = require('../content/user-rl-pte-nepal-20261122.json');
+ assert.equal(retellCatalogue.length, 66 + bookletRetells.length);
+ assert.deepEqual(retellCatalogue.filter(q => q.id.startsWith('rl-user-20261125-booklet-')).map(q => q.id), bookletRetells.map(q => q.id));
  const labeledRetells = retellCatalogue.filter(q => q.title.startsWith('New Questions · '));
  assert.deepEqual(labeledRetells.map(q => q.id), retellPredictions.map(q => q.id));
  const pavlov = retellPredictions.find(q => q.source.sourceId === 165);
@@ -53,10 +55,12 @@ test('Speaking and Writing attempts preserve keyed media and serve newly importe
  const labeled=catalogSpeaking.questions.filter(q=>q.type==='sgd'&&q.title.startsWith('New Questions · '));
  assert.deepEqual(labeled.map(q=>q.id),['sgd-user-20261030-06','sgd-user-20261030-08','sgd-user-20261030-09',...imported.map(q=>q.id)]);
  for(const source of bank.questions.filter(q=>q.type==='sgd')){
-   const id=crypto.randomUUID(),created=await request('/api/speaking/attempts',{id,questionId:source.id});
-   const updated=audio.current(source),stored=await speaking.store.update('fixture',id,a=>a);
+   const booklet=source.id.startsWith('sgd-user-20261125-booklet-');
+   const token=booklet?'booklet-discussion-fixture':'fixture';
+   const id=crypto.randomUUID(),created=await request('/api/speaking/attempts',{id,questionId:source.id},token);
+   const updated=audio.current(source),stored=await speaking.store.update(token,id,a=>a);
    assert.equal(created.question.title,catalogSpeaking.questions.find(q=>q.id===source.id).title);
-   assert.match(created.question.audioUrl,imported.some(q=>q.id===source.id)?/^\/speaking-audio\//:/^\/practice-audio\//);
+   assert.match(created.question.audioUrl,booklet||imported.some(q=>q.id===source.id)?/^\/speaking-audio\//:/^\/practice-audio\//);
    assert.equal(stored.questionSnapshot.audioKey,updated.audioKey);
    assert.equal(stored.questionSnapshot.text,source.text);
    const r=await fetch(base+created.question.audioUrl,{headers:{Range:'bytes=0-255'}});
