@@ -136,7 +136,9 @@ function previousPracticeIndexSnapshot(current, pins = require('../content/full-
 }
 const transcriptSearchPins = require('../content/full-mock/practice-transcript-search-compatible-pins.json');
 const passageSearchPins = require('../content/full-mock/practice-passage-search-compatible-pins.json');
+const rtsPracticeRepairPins = require('../content/full-mock/rts-practice-repair-compatible-pins.json');
 function previousRtsSnapshot(current) {
+  current = previousPracticeIndexSnapshot(current, rtsPracticeRepairPins) ?? current;
   current = previousPracticeIndexSnapshot(current, passageSearchPins) ?? current;
   current = previousPracticeIndexSnapshot(current, transcriptSearchPins) ?? current;
   current = previousPracticeIndexSnapshot(current) ?? current;
@@ -153,7 +155,7 @@ function previousRtsSnapshot(current) {
   return { ...current, scoringSources: sources };
 }
 function compatibleTransportUpgrade(saved, current) {
-  const beforeRtsPracticeRepair = previousPracticeIndexSnapshot(current, require('../content/full-mock/rts-practice-repair-compatible-pins.json'));
+  const beforeRtsPracticeRepair = previousPracticeIndexSnapshot(current, rtsPracticeRepairPins);
   if (beforeRtsPracticeRepair && (digest(saved) === digest(beforeRtsPracticeRepair) || compatibleTransportUpgrade(saved, beforeRtsPracticeRepair))) return true;
   const beforePassageSearch = previousPracticeIndexSnapshot(current, passageSearchPins);
   if (beforePassageSearch && (digest(saved) === digest(beforePassageSearch) || compatibleTransportUpgrade(saved, beforePassageSearch))) return true;
