@@ -309,6 +309,7 @@ test('Standalone dictation reuses recordings, hides answers, starts on play and 
   assert.deepEqual(catalog.dictation.slice(92).map(q=>q.id),addedDictations.map(q=>q.id));
   assert(catalog.dictation.some(q=>q.id==='pred26-user-wfd-11'));
   assert.deepEqual(catalog.dictation.slice(0,33).map(q=>q.id),predictions.wfd.slice(0,33).map(q=>q.id));
+  assert.deepEqual(catalog.dictation.flatMap((q,i)=>q.newInCatalogue?[i+1]:[]),[1,3,4,8,11,19,31,32,33]);
   assert(catalog.dictation.slice(0,33).every(q=>q.prediction===true));
   assert.equal(catalog.dictation[33].id,previous[0].id);
   assert.equal(catalog.dictation[33].prediction,false);

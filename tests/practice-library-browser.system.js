@@ -192,6 +192,16 @@ for(const width of [1366,1920])test('Unified practice library '+width+'px: all 2
  await page.evaluate(()=>switchSection('dictation'));
  const listeningTimed='#listeningTimed', listeningOpen='[data-listening-open]';
  await page.waitForSelector(listeningOpen,{visible:true});
+ const dictationLibrary='[data-practice-library-task="dictation"]';
+ const dictationRows=dictationLibrary+' .practice-library-row';
+ const newOnly=dictationLibrary+' [data-library-new-only]';
+ const featured=[1,3,4,8,11,19,31,32,33];
+ assert.deepEqual(await page.$$eval(dictationRows,rows=>rows.filter(row=>Number(row.dataset.questionNumber)<=33&&row.querySelector('.practice-library-label')?.textContent==='NEW').map(row=>Number(row.dataset.questionNumber))),featured);
+ await page.locator(newOnly).click();
+ assert.equal(await page.$eval(newOnly,node=>node.getAttribute('aria-checked')),'true');
+ assert.deepEqual(await page.$$eval(dictationRows+':not([hidden])',rows=>rows.map(row=>Number(row.dataset.questionNumber)).filter(number=>number<=33)),featured);
+ await page.locator(newOnly).click();
+ assert.equal(await page.$eval(dictationRows+'[data-question-number="2"]',row=>row.hidden),false);
  assert.equal(await page.$eval(listeningTimed,node=>node.checked),false);
  await page.locator(listeningTimed).click();
  const created=page.waitForResponse(response=>response.url().endsWith('/api/writing-lab/attempts')&&response.request().method()==='POST');

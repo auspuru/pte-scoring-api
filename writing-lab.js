@@ -88,6 +88,12 @@ const existingNewSstIds = new Set([
   'pred26-user-sst-12',
   'sst-user-20261124-01'
 ]);
+// Existing WFD sentences featured in the 25 November screenshot batch.
+const existingNewWfdIds = new Set([
+  'pred26-user-wfd-01', 'pred26-user-wfd-03', 'pred26-user-wfd-04',
+  'pred26-user-wfd-08', 'pred26-user-wfd-11', 'pred26-user-wfd-19',
+  'pred26-user-wfd-31', 'pred26-user-wfd-32', 'pred26-user-wfd-33'
+]);
 const individualQuestions = [...spokenPractice, ...dictation, ...listeningPractice];
 const bad = (message, status = 400) => Object.assign(Error(message), { status });
 function advance(a, at, reason) {
@@ -254,7 +260,10 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       ...((q.newInCatalogue || existingNewSstIds.has(q.id)) ? {newInCatalogue:true} : {}),
       audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION
     })),
-    dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION })),
+    dictation:dictation.map(q => ({ id:q.id,title:q.title,minutes:q.minutes,prediction:!!q.predictionSource,
+      ...(existingNewWfdIds.has(q.id) ? {newInCatalogue:true} : {}),
+      audioUrl:approvedAudio.publicAudio(approvedAudio.current(q))?.audioUrl || '/writing-audio/'+q.id+'.mp3?v='+AUDIO_VERSION
+    })),
     listeningPractice:listeningPractice.map(q=>({id:q.id,type:q.type,title:q.title,minutes:q.minutes})),
     listeningMocks:require('./listening-mock/papers').catalogue(),
     mocks:allMocks.filter(m=>m.module!=='listening').map(m => ({ id:m.id,title:m.title,category:m.category || 'special',predictionNumber:m.predictionNumber || null,predictionSource:m.predictionSource || null,minutes:report.minutesFor(m.questions),questionCount:m.questions.length,
