@@ -55,12 +55,12 @@ test('UX history keeps a focused saved response usable when the optional table f
  await page.keyboard.press('Enter');await page.waitForFunction(text=>document.getElementById('swtResultsScreen')?.textContent.includes(text),{},history[0].text);assert.deepEqual(errors,[]);
 });
 
-test('Recent essay scores are visible in table and list views, including zero and draft states',{timeout:90000},async t=>{
+test('Progress table and list show submitted essay scores and exclude the unfinished draft',{timeout:90000},async t=>{
  const stamp=Date.now(),{page,errors}=await setup(t,{practiceHistory:[{id:'essay-new',date:stamp+2,questionTitle:'Newest essay score',questionText:'Discuss the topic.',essayText:'A saved synthetic essay.',scores:{total:21}},{id:'essay-old',date:stamp+1,questionTitle:'Earlier zero score',questionText:'Discuss the topic.',essayText:'Another saved synthetic essay.',scores:{total:0}}],essayDraft:{essayText:'A synthetic unfinished response.',updatedAt:stamp+3}});
  await page.locator('#nav-progress').click();await page.waitForSelector('.portal-ux-history:not([hidden]) .tabulator-row');
  const entries=await page.$$eval('.portal-ux-grid .tabulator-row',rows=>rows.map(row=>({title:row.querySelector('[tabulator-field=title]').textContent.trim(),score:row.querySelector('[tabulator-field=scoreText]').textContent.trim()})));
- assert.equal(entries.find(r=>r.title==='Newest essay score').score,'21 / 26');assert.equal(entries.find(r=>r.title==='Earlier zero score').score,'0 / 26');assert.equal(entries.find(r=>r.title==='Write Essay').score,'Not scored');
+ assert.equal(entries.find(r=>r.title==='Newest essay score').score,'21 / 26');assert.equal(entries.find(r=>r.title==='Earlier zero score').score,'0 / 26');assert.equal(entries.some(r=>r.title==='Write Essay'||r.score==='Not scored'),false);
  await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.$eval('.progress-recent',node=>node.scrollIntoView({block:'start'}));await page.screenshot({path:path.join(root,'.cache/portal-layout-ux-scores.png')});
  await page.locator('.portal-ux-history-tools button').click();await page.waitForFunction(()=>document.querySelector('.progress-recent>.progress-attempts')?.hidden===false);
- const text=await page.$eval('.progress-recent>.progress-attempts',node=>node.textContent);assert.match(text,/Score: 21 \/ 26/);assert.match(text,/Score: 0 \/ 26/);assert.match(text,/Score: Not scored/);assert.deepEqual(errors,[]);
+ const text=await page.$eval('.progress-recent>.progress-attempts',node=>node.textContent);assert.match(text,/Score: 21 \/ 26/);assert.match(text,/Score: 0 \/ 26/);assert.doesNotMatch(text,/Saved draft|Not scored|Continue response/);assert.deepEqual(errors,[]);
 });
