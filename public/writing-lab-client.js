@@ -667,7 +667,7 @@
   }
   function practiceHistory() {
     if(!attempt||attempt.kind==='mock'||!practiceTypes.includes(attempt.kind))return '';
-    const rows=listeningHistory.filter(a=>a.testId===attempt.testId&&a.id!==attempt.id).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));
+    const rows=listeningHistory.filter(a=>a.testId===attempt.testId&&a.id!==attempt.id&&(attempt.status!=='submitted'||a.status==='submitted')).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));
     return window.PracticeStudio.attemptHistory(rows.map((a,i)=>({id:a.id,label:'Attempt '+(rows.length-i),date:window.PracticeStudio.brisbaneDate(a.startedAt),mode:practiceModeLabel(a),status:a.status==='submitted'?(a.total==null?'Feedback pending':a.total+'/'+a.maximum+' marks'):'In progress',actions:'<button type="button" class="secondary" data-listening-attempt="'+esc(a.id)+'">'+(a.status==='submitted'?'Answer &amp; feedback':'Resume saved attempt')+'</button>'})));
   }
   async function movePractice(direction,button) {
