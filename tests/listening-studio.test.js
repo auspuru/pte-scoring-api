@@ -52,7 +52,13 @@ test('Individual listening API supports all six objective types, saves mode/play
  const server=app.listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));t.after(async()=>{await new Promise(r=>server.close(r));await fs.rm(directory,{recursive:true,force:true});});
  const base='http://127.0.0.1:'+server.address().port+'/api/writing-lab';
  async function request(url,body,expected=200,token='tester'){const r=await fetch(base+url,{headers:{'Content-Type':'application/json','x-session-token':token},...(body?{method:'POST',body:JSON.stringify(body)}:{})});assert.equal(r.status,expected,url);return r.json();}
- const catalog=await request('/catalog');assert.equal(catalog.listeningPractice.length,33);assert.equal(new Set(catalog.listeningPractice.map(q=>q.type)).size,6);assert(catalog.listeningPractice.every(q=>!q.answers&&!q.text&&!q.passage));
+ const catalog=await request('/catalog');
+ const objectiveTypes=new Set(['lmcma','lfi','hcs','lmcsa','smw','hiw']);
+ const expectedIds=[...mocks.flatMap(m=>m.questions),...require('../content/additional-practice-questions.json')]
+  .filter(q=>objectiveTypes.has(q.type)).map(q=>q.id);
+ assert.deepEqual(catalog.listeningPractice.map(q=>q.id),[...new Set(expectedIds)]);
+ assert.deepEqual(new Set(catalog.listeningPractice.map(q=>q.type)),objectiveTypes);
+ assert(catalog.listeningPractice.every(q=>!q.answers&&!q.text&&!q.passage));
  for(const type of ['lmcma','lfi','hcs','lmcsa','smw','hiw']){
   const item=catalog.listeningPractice.find(q=>q.type===type),source=mocks.flatMap(m=>m.questions).find(q=>q.id===item.id),id=randomUUID();
   let a=await request('/attempts',{id,testId:item.id,mode:'practice'});assert.equal(a.kind,type);assert.equal(a.mode,'practice');assert.equal(a.deadline,null);assert.equal(a.questions[0].answers,undefined);
