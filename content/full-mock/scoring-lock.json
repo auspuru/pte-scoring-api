@@ -120,7 +120,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "164abf3782b51042b65f1b921e270939c388a626220e1ead8d04b67ac3b3cf01",
+        "sha256": "486924ebb60c06a7075fffccf169617feb57c468c6300eca8027a2108a487c60",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {

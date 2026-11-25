@@ -186,6 +186,9 @@ async function fixture(t, options = {}) {
 
 function snapshotBeforePassageSearch(current) {
   const snapshot = structuredClone(current);
+  const repair = require('../content/full-mock/rts-practice-repair-compatible-pins.json');
+  for (const [name, sha] of Object.entries(repair.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
+  assert.equal(digest(snapshot.scoringSources), repair.previousDigest);
   const pins = require('../content/full-mock/practice-passage-search-compatible-pins.json');
   for (const [name, sha] of Object.entries(pins.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
   assert.equal(digest(snapshot.scoringSources), pins.previousDigest);
