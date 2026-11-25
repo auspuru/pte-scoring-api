@@ -182,7 +182,7 @@
     }
     function edit(command, target) {
       if (!active?.options) return false;
-      if (active.locked) return true;
+      if (active.locked || active.options.blockClipboard) return true;
       if (command === 'paste') { if (clipboard != null) insert(target,clipboard); else lock('external-paste-blocked'); }
       else copy(target,command === 'cut');
       return true;
@@ -199,12 +199,14 @@
     for (const type of ['copy','cut','paste']) doc.addEventListener?.(type, event => {
       if (!active?.options) return;
       event.preventDefault(); event.stopImmediatePropagation();
-      if (active.locked) return;
-      if (type === 'paste') {
-        // Never read the system clipboard: only text copied inside this mock
-        // can enter a response, including through the native paste shortcut.
-        if (clipboard != null) insert(event.target,clipboard); else lock('external-paste-blocked');
-      } else copy(event.target,type === 'cut');
+      // Route native clipboard actions through the same private clipboard policy as the editor buttons.
+      edit(type, event.target);
+    }, true);
+    doc.addEventListener?.('beforeinput', event => {
+      if (active?.options?.blockClipboard && ['insertFromPaste','insertFromPasteAsQuotation','deleteByCut'].includes(event.inputType)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
     }, true);
     doc.addEventListener?.('contextmenu', event => { if (active?.options) { event.preventDefault(); event.stopImmediatePropagation(); } }, true);
     doc.addEventListener?.('keydown', event => {
