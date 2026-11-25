@@ -14,6 +14,7 @@ function validate() {
   const diPredictions = require('../content/di-user-predictions.json');
   const rtsPrompts = require('../content/rts-original-practice.json');
   const suppliedRts = require('../content/user-rts-20261124.json');
+  const originalReadAloud = require('../content/ra-original-20261125.json');
   const suppliedRtsById = new Map(suppliedRts.map(q => [q.id, q]));
   const picturedDurations = new Map(retellPredictions.map(({ id, source }) => {
     const seconds = source.playerDurationSeconds;
@@ -21,13 +22,14 @@ function validate() {
     return [id, seconds];
   }));
   const expectedCounts = {
+    ra: 5 + originalReadAloud.length,
     di: 5 + diPredictions.length,
     rts: 6 + rtsPrompts.length + suppliedRts.length,
     rl: 5 + suppliedSpeaking.filter(q => q.type === 'rl').length + retellPredictions.length,
     sgd: 5 + discussions.length,
   };
   assert.equal(bank.questions.length, 30 + diPredictions.length + rtsPrompts.length
-    + suppliedSpeaking.length + discussions.length + retellPredictions.length + suppliedRts.length);
+    + suppliedSpeaking.length + discussions.length + retellPredictions.length + suppliedRts.length + originalReadAloud.length);
   assert.equal(new Set(bank.questions.map(q => q.id)).size, bank.questions.length);
   for (const type of Object.keys(bank.types)) {
     assert.equal(bank.questions.filter(q => q.type === type).length, expectedCounts[type] ?? 5);

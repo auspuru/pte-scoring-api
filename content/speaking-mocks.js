@@ -30,7 +30,8 @@ function source(q,folder,id=q.id){
 const questions=[{id:'mock-introduction',type:'intro',name:'Personal Introduction',title:'Personal Introduction',preparation:25,seconds:30,
   instruction:'Read the introduction prompt. You will have 25 seconds to prepare and 30 seconds to speak. This introduction is not scored.',
   text:'Please introduce yourself. You could talk about your studies, interests and reasons for preparing for this test.'}];
-questions.push(...bank.questions.filter(q=>q.type==='ra'));
+// Keep the first mock on its original Read Aloud selection.
+questions.push(...['ra-1','ra-2','ra-3','ra-4','ra-5'].map(pick));
 const archive=writing.spoken.find(q=>q.id==='sst-digital-archives');
 let passage='';for(const sentence of archive.text.split(/(?<=[.!?])\s+/u)){const candidate=(passage+' '+sentence).trim();if(candidate.split(/\s+/u).length>60)break;passage=candidate;}
 questions.push({id:'mock-ra-archives',type:'ra',...bank.types.ra,title:'Preserving accessible records',text:passage,sourceId:archive.id});

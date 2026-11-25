@@ -5825,5 +5825,2124 @@
         "license": "Public domain"
       }
     }
+  },
+  {
+    "id": "lfi-original-20261125-01",
+    "type": "lfi",
+    "title": "New Questions · Tidal pools",
+    "difficulty": "easy",
+    "text": "If you walk along a rocky shore at low tide, you'll notice that some of the water remains in shallow pools. For the animals living there, conditions can change very quickly. On a hot afternoon, water evaporates and the pool becomes saltier. A sudden shower can have the opposite effect. Researchers compare pools at different heights on the shore to see which species can cope with the widest range of conditions.",
+    "passage": "If you walk along a rocky shore at low tide, you'll notice that some of the water remains in shallow [[1]]. For the animals living there, conditions can change very quickly. On a hot afternoon, water [[2]] and the pool becomes saltier. A sudden shower can have the [[3]] effect. Researchers compare pools at different heights on the shore to see which [[4]] can cope with the widest range of conditions.",
+    "answers": [
+      "pools",
+      "evaporates",
+      "opposite",
+      "species"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are pools, evaporates, opposite, species.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-01-f310f24c6a38.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "88330c7c7d41c44bec3767c246ed196433c72baa6142b26fdf2a0a59d26a55cd",
+      "sha256": "f310f24c6a383e459054b15dcd0c4126fd18e3e05bf28a9a462b6f6f97bae1e3",
+      "seconds": 27.432,
+      "bytes": 219692,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-02",
+    "type": "lfi",
+    "title": "New Questions · Dating radio recordings",
+    "difficulty": "medium",
+    "text": "What surprised us about the community station was the size of its archive. Volunteers had recorded local interviews for decades, but many of the tapes had handwritten labels and no reliable dates. We started by asking former presenters to identify familiar voices. Some remembered the subjects of whole programmes from just a few seconds of sound. Their memories gave us a starting point, and newspaper listings later helped us confirm when particular interviews had been broadcast.",
+    "passage": "What surprised us about the community station was the size of its [[1]]. Volunteers had recorded local interviews for decades, but many of the tapes had handwritten labels and no reliable [[2]]. We started by asking former presenters to identify familiar [[3]]. Some remembered the subjects of whole programmes from just a few seconds of sound. Their [[4]] gave us a starting point, and newspaper listings later helped us [[5]] when particular interviews had been broadcast.",
+    "answers": [
+      "archive",
+      "dates",
+      "voices",
+      "memories",
+      "confirm"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are archive, dates, voices, memories, confirm.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-02-72321177207f.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "afef95a02fa0fa38d08e473f210194b732a2c4fdfadf63cfc21eedbfc260feff",
+      "sha256": "72321177207fff19dc6a1fc5ff78d00d15b9b6fe72775bb5cccc12a38165b6de",
+      "seconds": 30.528,
+      "bytes": 244460,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-03",
+    "type": "lfi",
+    "title": "New Questions · The colour of glaciers",
+    "difficulty": "hard",
+    "text": "People sometimes assume that very blue ice is simply reflecting the sky. In a glacier, though, the effect also depends on what happens to light as it travels through the ice. Older ice is often quite dense because pressure has squeezed out many of the air bubbles. Over a long enough path, the ice absorbs more of the red light than the blue. That's why a deep crevice can look intensely blue even on an overcast day.",
+    "passage": "People sometimes assume that very blue ice is simply [[1]] the sky. In a glacier, though, the effect also depends on what happens to light as it travels through the ice. Older ice is often quite [[2]] because pressure has squeezed out many of the air [[3]]. Over a long enough path, the ice [[4]] more of the red light than the blue. That's why a deep [[5]] can look intensely blue even on an [[6]] day.",
+    "answers": [
+      "reflecting",
+      "dense",
+      "bubbles",
+      "absorbs",
+      "crevice",
+      "overcast"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are reflecting, dense, bubbles, absorbs, crevice, overcast.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-03-811a5ba52445.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "694e3aab9aa45dac233ab211706bd2a664dae8665966738253224d3cd252c238",
+      "sha256": "811a5ba52445d2b98bd9a5cb239f30d98595eb87ba60220bd8068a0131d88b48",
+      "seconds": 35.064,
+      "bytes": 280748,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-04",
+    "type": "lfi",
+    "title": "New Questions · A shared workshop",
+    "difficulty": "easy",
+    "text": "When we opened the neighbourhood workshop, the first people through the door wanted to make shelves and repair furniture. Then we began to see a different group. They already had a whole set of tools at home, but they came because they could ask a more experienced person for advice. The workshop now runs a short session every Saturday where people bring unfinished projects and help each other decide what to do next.",
+    "passage": "When we opened the neighbourhood workshop, the first people through the door wanted to make shelves and repair [[1]]. Then we began to see a different group. They already had a whole set of [[2]] at home, but they came because they could ask a more experienced person for [[3]]. The workshop now runs a short session every Saturday where people bring unfinished [[4]] and help each other decide what to do next.",
+    "answers": [
+      "furniture",
+      "tools",
+      "advice",
+      "projects"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are furniture, tools, advice, projects.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-04-197aea9b1a90.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "5b9ed0c560b7e9126ecac9f6518d88278647ffa8027d4ead617c2f1b08685e75",
+      "sha256": "197aea9b1a90915123f84861ab83ad9bc69812ec9ace4cdf8f6a866b6e65c7f7",
+      "seconds": 27.432,
+      "bytes": 219692,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-05",
+    "type": "lfi",
+    "title": "New Questions · Night trains",
+    "difficulty": "medium",
+    "text": "A comfortable night train depends on more than the quality of the beds. Passengers need clear information about boarding, because arrival times at intermediate stations may fall well after midnight. Staff also have to find a practical way to check tickets without repeatedly disturbing people who are sleeping. Some operators send a message before the train reaches each passenger's stop. That makes it possible to rest without setting an early alarm for the entire compartment.",
+    "passage": "A comfortable night train depends on more than the quality of the [[1]]. Passengers need clear information about boarding, because arrival times at intermediate [[2]] may fall well after midnight. Staff also have to find a practical way to [[3]] tickets without repeatedly disturbing people who are sleeping. Some operators send a [[4]] before the train reaches each passenger's stop. That makes it possible to rest without setting an early [[5]] for the entire compartment.",
+    "answers": [
+      "beds",
+      "stations",
+      "check",
+      "message",
+      "alarm"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are beds, stations, check, message, alarm.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-05-965a1d8c678c.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "784f43a07b5c0f790b055d946d98a37c6f69f1ccb424ea9832612c09c3021d2e",
+      "sha256": "965a1d8c678c57638a3bb42cde367d12d40f040a36a7023cc93f2d4d4c754c36",
+      "seconds": 30.552,
+      "bytes": 244652,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-06",
+    "type": "lfi",
+    "title": "New Questions · Preserving a mural",
+    "difficulty": "hard",
+    "text": "Before treating the mural, conservators made a detailed record of the areas where paint had begun to lift. They also took tiny samples to distinguish the artist's original pigments from later repairs. That distinction mattered because a surface coating added years afterwards had changed the appearance of several colours. The team tested a series of mild solvents on small sections along the edge. Only then did they choose a method that would remove the coating while leaving the underlying paint intact.",
+    "passage": "Before treating the mural, conservators made a detailed record of the areas where paint had begun to [[1]]. They also took tiny samples to distinguish the artist's original [[2]] from later repairs. That distinction mattered because a surface [[3]] added years afterwards had changed the appearance of several colours. The team tested a series of mild [[4]] on small sections along the edge. Only then did they choose a method that would remove the coating while leaving the [[5]] paint [[6]].",
+    "answers": [
+      "lift",
+      "pigments",
+      "coating",
+      "solvents",
+      "underlying",
+      "intact"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are lift, pigments, coating, solvents, underlying, intact.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-06-f003900341e8.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "9662ae6bf3698b1e2a21fd79ea28d2675b538e8d6f807e9c4be3dbf4429e1feb",
+      "sha256": "f003900341e86f986ea0768ec9ae62b35e9d15c7c0ea869f54adc0b48f8a00bd",
+      "seconds": 35.04,
+      "bytes": 280556,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-07",
+    "type": "lfi",
+    "title": "New Questions · Farmers' markets",
+    "difficulty": "easy",
+    "text": "I used to think people visited the market mainly to buy vegetables at a lower price. When we interviewed customers, a different pattern emerged. Many people said they wanted to know when the food had been picked and how long it would keep. Some also asked growers for tips on cooking an unfamiliar ingredient. For a small farm, those conversations can explain what customers enjoy and help shape the following season's planting.",
+    "passage": "I used to think people visited the market mainly to buy vegetables at a lower [[1]]. When we interviewed customers, a different pattern emerged. Many people said they wanted to know when the food had been [[2]] and how long it would keep. Some also asked growers for tips on cooking an unfamiliar [[3]]. For a small farm, those conversations can explain what customers enjoy and help shape the following season's [[4]].",
+    "answers": [
+      "price",
+      "picked",
+      "ingredient",
+      "planting"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are price, picked, ingredient, planting.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-07-18c947498322.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "601b59cb295adc461d5bd32f589c374cdf891e646793050ca589b515418ee498",
+      "sha256": "18c9474983221be894699eb817f10b4c30ec9a6e1e70d9220e549895ccdb5fe3",
+      "seconds": 28.608,
+      "bytes": 229100,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-08",
+    "type": "lfi",
+    "title": "New Questions · Telescope mirrors",
+    "difficulty": "medium",
+    "text": "Even a large telescope can produce a blurred image when warm air moves across the mirror. The air bends light slightly, and these small changes are enough to distort the picture. One way to reduce the problem is to open the dome well before observations begin. Fans can help the telescope reach the same temperature as the outside air. Once conditions settle, astronomers can take a reliable series of measurements rather than depending on a single sharp image.",
+    "passage": "Even a large telescope can produce a blurred image when warm air moves across the [[1]]. The air bends light slightly, and these small changes are enough to [[2]] the picture. One way to reduce the problem is to open the dome well before observations [[3]]. Fans can help the telescope reach the same [[4]] as the outside air. Once conditions settle, astronomers can take a reliable series of [[5]] rather than depending on a single sharp image.",
+    "answers": [
+      "mirror",
+      "distort",
+      "begin",
+      "temperature",
+      "measurements"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are mirror, distort, begin, temperature, measurements.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-08-9a5e9cafe3e1.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "d6d0a53aa69c3ef850f026f1780f0f69f44f65988b543fd14199a2910c3e3b15",
+      "sha256": "9a5e9cafe3e14deef5884c671dee8c4ef6a6eabecdaae9e0f27d0a0cbc2a4b03",
+      "seconds": 30.528,
+      "bytes": 244460,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-09",
+    "type": "lfi",
+    "title": "New Questions · Book paper",
+    "difficulty": "hard",
+    "text": "The pages in some nineteenth century books have become so brittle that they break when turned. Part of the problem lies in the composition of the paper itself. Manufacturing methods introduced substances that made the paper increasingly acidic as it aged. Cool storage can slow this deterioration, while a suitable chemical treatment can sometimes reduce acidity. The condition of each volume still determines whether staff digitise it immediately or first take steps to stabilise the damaged pages.",
+    "passage": "The pages in some nineteenth century books have become so [[1]] that they break when turned. Part of the problem lies in the [[2]] of the paper itself. Manufacturing methods introduced substances that made the paper increasingly [[3]] as it aged. Cool storage can slow this [[4]], while a suitable chemical treatment can sometimes reduce [[5]]. The condition of each [[6]] still determines whether staff digitise it immediately or first take steps to stabilise the damaged pages.",
+    "answers": [
+      "brittle",
+      "composition",
+      "acidic",
+      "deterioration",
+      "acidity",
+      "volume"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are brittle, composition, acidic, deterioration, acidity, volume.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-09-c4baccabb2f2.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "f4d45a78bfb37765b1ed2d3cdad0e9d2058b8a8bdee9e3cc997eb738d9e897c1",
+      "sha256": "c4baccabb2f2c9a2c6a29fee41a507b464b616a782d0d2f89aae9975fd70f303",
+      "seconds": 35.064,
+      "bytes": 280748,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-10",
+    "type": "lfi",
+    "title": "New Questions · Beach access",
+    "difficulty": "easy",
+    "text": "Visitors told us that the new path to the beach was easy to find, but using it was another matter. At high tide, the final stretch of sand became too soft for some wheelchairs. We brought several local residents to the site and asked them to try different routes. That experience changed the plan. Instead of extending the path in a straight line, we're moving the entrance towards a firmer area farther up the beach.",
+    "passage": "Visitors told us that the new path to the beach was easy to [[1]], but using it was another matter. At high tide, the final stretch of sand became too [[2]] for some wheelchairs. We brought several local residents to the site and asked them to [[3]] different routes. That experience changed the plan. Instead of extending the path in a straight line, we're moving the [[4]] towards a firmer area farther up the beach.",
+    "answers": [
+      "find",
+      "soft",
+      "try",
+      "entrance"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are find, soft, try, entrance.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-10-6a6d7a9d7b13.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "3fbb7d3fd5cf19190e4cafa710b87635b4909573b195c4e7a5eb2b0f0fe88da2",
+      "sha256": "6a6d7a9d7b138ffc8eda80876f15d2f795c41e12de2d2cc83a581bf015264a5a",
+      "seconds": 27.456,
+      "bytes": 219884,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-11",
+    "type": "lfi",
+    "title": "New Questions · Musical rehearsals",
+    "difficulty": "medium",
+    "text": "When a group rehearses in a small room, everyone's sound reaches the players fairly quickly. On a wide stage, performers on opposite sides may hear each other a fraction of a second later. That slight delay can make a lively piece feel uneven. The conductor gives movements that establish a common pulse, and the musicians practise watching those signals while reading their own parts. For particularly complex passages, moving the chairs closer can improve coordination straight away.",
+    "passage": "When a group rehearses in a small room, everyone's sound reaches the players fairly [[1]]. On a wide stage, performers on opposite sides may hear each other a fraction of a second later. That slight [[2]] can make a lively piece feel uneven. The conductor gives movements that establish a common [[3]], and the musicians practise watching those signals while reading their own [[4]]. For particularly complex passages, moving the chairs closer can [[5]] coordination straight away.",
+    "answers": [
+      "quickly",
+      "delay",
+      "pulse",
+      "parts",
+      "improve"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are quickly, delay, pulse, parts, improve.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-11-316add6062bb.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "d65d4d94433a2c749de74f942ade70002f8cefca7dbc89943f617cdae951d65d",
+      "sha256": "316add6062bbd512ed3f858f1cbe8fb0864632298c6dd2f66d40f9d325ea99a5",
+      "seconds": 31.08,
+      "bytes": 248876,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-12",
+    "type": "lfi",
+    "title": "New Questions · Carbon in peatlands",
+    "difficulty": "hard",
+    "text": "The soil in a healthy peatland stays wet for much of the year. That limits the oxygen available to organisms that break down plant material, so partly decomposed remains accumulate over long periods. When a peatland is drained, air can move into deeper layers and the stored carbon begins to escape. Researchers tracking a restoration project install equipment to monitor both water levels and gas exchange. The results help them distinguish short term fluctuations from lasting changes in the site's carbon balance.",
+    "passage": "The soil in a healthy peatland stays wet for much of the year. That limits the [[1]] available to organisms that break down plant material, so partly [[2]] remains accumulate over long periods. When a peatland is drained, air can move into deeper [[3]] and the stored carbon begins to escape. Researchers tracking a restoration project install equipment to [[4]] both water levels and gas exchange. The results help them distinguish short term [[5]] from lasting changes in the site's carbon [[6]].",
+    "answers": [
+      "oxygen",
+      "decomposed",
+      "layers",
+      "monitor",
+      "fluctuations",
+      "balance"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are oxygen, decomposed, layers, monitor, fluctuations, balance.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-12-7b25ca5a3f59.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "b7a57d969885c8b550456212407c969a9916cefe4040a59380ea0393974a298c",
+      "sha256": "7b25ca5a3f5930ef0d7480f8de84e6b2c95e6abfd865b733a137be6ff4adbb81",
+      "seconds": 36.816,
+      "bytes": 294764,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-13",
+    "type": "lfi",
+    "title": "New Questions · Sports commentary",
+    "difficulty": "easy",
+    "text": "One challenge for a commentator is knowing when to stop talking. There are moments when the sound of the crowd provides all the information a listener needs about the atmosphere. At other times, especially when play moves quickly, the listener needs clear details about where the ball went and who has it now. New commentators improve by recording a short stretch of a match and listening back without looking at the screen.",
+    "passage": "One challenge for a commentator is knowing when to stop [[1]]. There are moments when the sound of the crowd provides all the information a listener needs about the atmosphere. At other times, especially when play moves [[2]], the listener needs clear details about where the ball went and who has it [[3]]. New commentators improve by recording a short stretch of a match and listening back without looking at the [[4]].",
+    "answers": [
+      "talking",
+      "quickly",
+      "now",
+      "screen"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are talking, quickly, now, screen.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-13-5c0ec61530cb.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "f17df271d337d8ed9ac6b833c9422f7bd956e1b8384f1f7066afb1c15237b3bd",
+      "sha256": "5c0ec61530cb490b3d4750038d476169f7de7ed4d6f47464feb595de246da0c7",
+      "seconds": 27.432,
+      "bytes": 219692,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-14",
+    "type": "lfi",
+    "title": "New Questions · The price of repairs",
+    "difficulty": "medium",
+    "text": "The cheapest appliance can turn out to be expensive if a minor fault is difficult to repair. We asked technicians which design choices made their work easier. They mentioned ordinary screws, accessible panels and clear information about replacement parts. Of course, keeping parts in stock represents a cost for the manufacturer. Still, shoppers can compare that commitment with the purchase price before making a decision. A product that stays useful longer may be better value over several years.",
+    "passage": "The cheapest appliance can turn out to be expensive if a minor fault is difficult to [[1]]. We asked technicians which design choices made their work easier. They mentioned ordinary screws, accessible [[2]] and clear information about replacement parts. Of course, keeping parts in stock represents a cost for the [[3]]. Still, shoppers can compare that commitment with the purchase price before making a [[4]]. A product that stays useful longer may be better [[5]] over several years.",
+    "answers": [
+      "repair",
+      "panels",
+      "manufacturer",
+      "decision",
+      "value"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are repair, panels, manufacturer, decision, value.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-14-6f01abbc2fb7.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "686102ef43a2fc8026a21b8bc64fca32dd75205a05f279247ada83975d282090",
+      "sha256": "6f01abbc2fb7a6c6087d7f1b2c10b0c1cc0e972ef12ebdc1ece92f171b453ff3",
+      "seconds": 30.528,
+      "bytes": 244460,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-15",
+    "type": "lfi",
+    "title": "New Questions · Historic road maps",
+    "difficulty": "hard",
+    "text": "Older maps can tell us where travellers expected to find essentials such as wells, inns and river crossings. Yet the scale was often inconsistent, especially in areas the mapmaker knew less well. We compare several editions to see whether a route was identified independently or simply copied from an earlier work. When the maps disagree, we consult land records to find out which road actually existed. Those discrepancies are valuable evidence about how geographical information was collected and circulated.",
+    "passage": "Older maps can tell us where travellers expected to find essentials such as wells, inns and river [[1]]. Yet the scale was often [[2]], especially in areas the mapmaker knew less well. We compare several editions to see whether a route was identified [[3]] or simply copied from an earlier work. When the maps [[4]], we consult land records to find out which road actually existed. Those discrepancies are valuable evidence about how geographical [[5]] was collected and [[6]].",
+    "answers": [
+      "crossings",
+      "inconsistent",
+      "independently",
+      "disagree",
+      "information",
+      "circulated"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are crossings, inconsistent, independently, disagree, information, circulated.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-15-cdf8b435f08b.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "67fbb4ebbdbbb9fd8020c509802a40a549183eb253241c6ff63e82d91cc5c634",
+      "sha256": "cdf8b435f08b3f707e6a1333aa22976ec9e2bfe61460717905877f6ab84f8f7b",
+      "seconds": 36.384,
+      "bytes": 291308,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-16",
+    "type": "lfi",
+    "title": "New Questions · Local weather forecasts",
+    "difficulty": "easy",
+    "text": "A temperature forecast usually describes the air at a standard height above the ground. It can feel quite different where people are waiting on a platform or walking beside a river. Our students measured several places within a single park and found noticeable differences between sunny and shaded areas. We asked them to repeat the measurements the next morning. That way, they could check whether the differences were typical or just a result of the previous afternoon's weather.",
+    "passage": "A temperature forecast usually describes the air at a standard height above the [[1]]. It can feel quite different where people are waiting on a platform or walking beside a river. Our students measured several places within a single park and found noticeable differences between sunny and [[2]] areas. We asked them to repeat the measurements the next morning. That way, they could check whether the differences were [[3]] or just a result of the previous afternoon's [[4]].",
+    "answers": [
+      "ground",
+      "shaded",
+      "typical",
+      "weather"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are ground, shaded, typical, weather.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-16-c345683f6117.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "66a440c9bc75a49e6f379c148b77c24be2597b5234ebb9d49b51aeda129cf10c",
+      "sha256": "c345683f6117a038f4eb1648c7f995f802f63d36943732d5609c0b45c2485c35",
+      "seconds": 28.992,
+      "bytes": 232172,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-17",
+    "type": "lfi",
+    "title": "New Questions · Textile recycling",
+    "difficulty": "medium",
+    "text": "When old clothes reach a sorting centre, the first question is whether someone can still wear them. Garments in good condition are set aside for reuse. The remaining items must be separated by their fibres, which is harder when labels are missing or several materials are woven together. Some centres use equipment that identifies fabrics by how they reflect light. A more accurate system can reduce the amount sent to landfill and make the recycled material more consistent.",
+    "passage": "When old clothes reach a sorting centre, the first question is whether someone can still [[1]] them. Garments in good condition are set aside for reuse. The remaining items must be separated by their fibres, which is harder when labels are missing or several materials are [[2]] together. Some centres use equipment that identifies fabrics by how they [[3]] light. A more accurate system can reduce the amount sent to [[4]] and make the recycled material more [[5]].",
+    "answers": [
+      "wear",
+      "woven",
+      "reflect",
+      "landfill",
+      "consistent"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are wear, woven, reflect, landfill, consistent.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-17-a6b735797bca.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "10a302e1b87be691bcfb6b8e1b7425d317ec8b7b6559313b819a10e80ac9c676",
+      "sha256": "a6b735797bcac246dcf493a0f39d9d7ed8ed46e52e8fb7d8385dcdf6316e917e",
+      "seconds": 30.552,
+      "bytes": 244652,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-18",
+    "type": "lfi",
+    "title": "New Questions · Experiments in taste",
+    "difficulty": "hard",
+    "text": "To study how the names of foods influence what people taste, we served identical samples under different descriptions. We kept the order random so that fatigue or familiarity would affect the groups in roughly the same way. Participants rated sweetness and texture separately, which allowed us to see where their judgements diverged. In our pilot, the label changed what people expected by a noticeable amount. The effect on their final ratings was smaller, so we plan to replicate the study with a more diverse group.",
+    "passage": "To study how the names of foods influence what people taste, we served identical samples under different [[1]]. We kept the order random so that [[2]] or familiarity would affect the groups in roughly the same way. Participants rated sweetness and [[3]] separately, which allowed us to see where their judgements diverged. In our pilot, the label changed what people expected by a [[4]] amount. The effect on their final ratings was smaller, so we plan to [[5]] the study with a more [[6]] group.",
+    "answers": [
+      "descriptions",
+      "fatigue",
+      "texture",
+      "noticeable",
+      "replicate",
+      "diverse"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are descriptions, fatigue, texture, noticeable, replicate, diverse.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-18-aae34595ccb8.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "6b9ca78a4bb04735289639c97864cc684bd8a2e59806f93926f5f425cc3c8dca",
+      "sha256": "aae34595ccb89bb748c66ce93d17ddeff517242491e5e9c14713748fb8ba6201",
+      "seconds": 35.064,
+      "bytes": 280748,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-19",
+    "type": "lfi",
+    "title": "New Questions · Handling meeting notes",
+    "difficulty": "easy",
+    "text": "A useful set of meeting notes should tell people which tasks were agreed and who is responsible for them. Writing down every comment can make those decisions surprisingly difficult to locate. Our team now sets aside the last few minutes to read back the main actions. This gives people a chance to correct any mistakes while everyone is still in the room. We send the notes the same afternoon, before the details begin to fade.",
+    "passage": "A useful set of meeting notes should tell people which tasks were [[1]] and who is responsible for them. Writing down every comment can make those decisions surprisingly difficult to [[2]]. Our team now sets aside the last few minutes to read back the main actions. This gives people a chance to correct any [[3]] while everyone is still in the room. We send the notes the same afternoon, before the details begin to [[4]].",
+    "answers": [
+      "agreed",
+      "locate",
+      "mistakes",
+      "fade"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are agreed, locate, mistakes, fade.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-19-e431b7016ea2.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "8226f989efd5605dce06495f7bf306537daeb148d4b70e20638de1acf03a68df",
+      "sha256": "e431b7016ea2208ec064a5c1aaa726d66ec7ca0206324957016db2db7d5f3897",
+      "seconds": 27.456,
+      "bytes": 219884,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-20",
+    "type": "lfi",
+    "title": "New Questions · Sand dunes",
+    "difficulty": "medium",
+    "text": "A dune can move across a beach even when the individual grains travel only a small distance at a time. Wind pushes sand up the side facing it. Near the top, the sand may fall down the steeper side, where the slope offers some shelter from the wind. Over time this repeated movement shifts the whole dune. Certain grasses can slow the process by trapping sand near their stems and holding parts of the surface together with their roots.",
+    "passage": "A dune can move across a beach even when the individual [[1]] travel only a small distance at a time. Wind pushes sand up the side facing it. Near the top, the sand may fall down the steeper side, where the [[2]] offers some shelter from the wind. Over time this repeated movement shifts the whole [[3]]. Certain grasses can slow the process by [[4]] sand near their stems and holding parts of the surface together with their [[5]].",
+    "answers": [
+      "grains",
+      "slope",
+      "dune",
+      "trapping",
+      "roots"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are grains, slope, dune, trapping, roots.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-20-24aeb1531f96.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "c7fa962dccb818c2391daa98acb1e6cafc63b84b0d252d89eb0fd3d865e155c2",
+      "sha256": "24aeb1531f96dfd6c0d28bd5bcc3d2413879f208289e735ae9c8b240d25e3858",
+      "seconds": 30.552,
+      "bytes": 244652,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-21",
+    "type": "lfi",
+    "title": "New Questions · A quiet recording room",
+    "difficulty": "hard",
+    "text": "The most effective sound recording rooms deal with two different problems. They stop outside noise from entering, and they control the sound that reflects inside. A heavy door may help with the first problem, while soft or uneven surfaces reduce some internal echoes. It is possible to achieve a clear recording without making a room completely silent. For interviews, engineers often leave a little natural reverberation, so speech sounds like it belongs in a real space instead of feeling artificially flat.",
+    "passage": "The most effective sound recording rooms deal with two different problems. They stop outside noise from [[1]], and they control the sound that [[2]] inside. A heavy door may help with the first problem, while soft or uneven surfaces reduce some internal [[3]]. It is possible to achieve a clear recording without making a room completely [[4]]. For interviews, engineers often leave a little natural [[5]], so speech sounds like it belongs in a real space instead of feeling [[6]] flat.",
+    "answers": [
+      "entering",
+      "reflects",
+      "echoes",
+      "silent",
+      "reverberation",
+      "artificially"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are entering, reflects, echoes, silent, reverberation, artificially.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-21-8deb2b4e56d9.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "893d4ee85247e1977d1422c0e8884c8f5d13127eea2ac450181973c25ae9961a",
+      "sha256": "8deb2b4e56d96eee1e50bfe1cb22641c2e7fb5cbe4d312af1226c988eab65b39",
+      "seconds": 36.24,
+      "bytes": 290156,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-22",
+    "type": "lfi",
+    "title": "New Questions · Food sharing shelves",
+    "difficulty": "easy",
+    "text": "At our college, there was one shelf where students could leave unopened food for other people to take. The original sign was long and confusing, so some students were unsure whether they had to ask for permission. We replaced the sign with a short explanation and put it at eye level. We also started checking the shelf every day to remove anything beyond its use by date. Within a month, more people were using it.",
+    "passage": "At our college, there was one shelf where students could leave unopened food for other people to [[1]]. The original sign was long and confusing, so some students were unsure whether they had to [[2]] for permission. We replaced the sign with a short explanation and put it at eye [[3]]. We also started checking the shelf every day to remove anything beyond its use by [[4]]. Within a month, more people were using it.",
+    "answers": [
+      "take",
+      "ask",
+      "level",
+      "date"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are take, ask, level, date.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-22-70db01c1a345.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "4191bb054c0a170fa2a27dc39711d1ec52c5e92061ae6825e4e3cca16c319d12",
+      "sha256": "70db01c1a3453bfe15e4e0b15db22daff69609bed312bd53470319245cd6ef5d",
+      "seconds": 27.456,
+      "bytes": 219884,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-23",
+    "type": "lfi",
+    "title": "New Questions · Early photography",
+    "difficulty": "medium",
+    "text": "In early photography, a long exposure made it difficult to record movement. Portrait subjects were asked to sit still and sometimes rested against supports placed behind their chairs. You can see the effect in photographs of busy streets, where buildings are sharp but people may appear as faint shapes or disappear entirely. As materials became more sensitive to light, photographers could work with shorter exposures. That change made it easier to record gestures and other details of daily life.",
+    "passage": "In early photography, a long exposure made it difficult to record [[1]]. Portrait subjects were asked to sit still and sometimes rested against supports placed behind their [[2]]. You can see the effect in photographs of busy streets, where buildings are sharp but people may appear as faint [[3]] or disappear entirely. As materials became more sensitive to light, photographers could work with [[4]] exposures. That change made it easier to record gestures and other [[5]] of daily life.",
+    "answers": [
+      "movement",
+      "chairs",
+      "shapes",
+      "shorter",
+      "details"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are movement, chairs, shapes, shorter, details.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-23-37a254bb01fc.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "cbb04fe340d8b068f0821748c18113b3edcf842a712904a50ed3f783f9318c23",
+      "sha256": "37a254bb01fc2534d13ad79d0a32d5925a8cc75c333f469e8f1beed148aed144",
+      "seconds": 30.552,
+      "bytes": 244652,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-24",
+    "type": "lfi",
+    "title": "New Questions · Listening in two languages",
+    "difficulty": "hard",
+    "text": "A listener who understands two languages may recognise words in both, even when the conversation uses only one. Experiments suggest that the unused language remains partly active. The effect can be stronger when a word in one language starts with sounds that resemble a word in the other. Researchers measure how quickly people select a picture while they hear a sequence of instructions. A brief hesitation can reveal that several interpretations were available before the listener found the one that fitted the context.",
+    "passage": "A listener who understands two languages may recognise words in both, even when the conversation uses only one. Experiments suggest that the unused language remains partly [[1]]. The effect can be stronger when a word in one language starts with sounds that [[2]] a word in the other. Researchers measure how quickly people select a picture while they hear a sequence of [[3]]. A brief [[4]] can reveal that several [[5]] were available before the listener found the one that fitted the [[6]].",
+    "answers": [
+      "active",
+      "resemble",
+      "instructions",
+      "hesitation",
+      "interpretations",
+      "context"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are active, resemble, instructions, hesitation, interpretations, context.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-24-4f49f3fe6d21.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "391f08d4aef3f97d98ae83212807bbc7d35be5d2aa0eef1141e3ac0bed0c9ed0",
+      "sha256": "4f49f3fe6d21894a2c0c41cfa010b465e55328d22b02c961ba0d2f69918b0484",
+      "seconds": 36.456,
+      "bytes": 291884,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-25",
+    "type": "lfi",
+    "title": "New Questions · Paths through a museum",
+    "difficulty": "easy",
+    "text": "People decide where to go in a museum using more than the written signs. They look for light, open doors and places where other visitors are already gathering. When we studied our building, we found that almost everyone passed the entrance to a major exhibition without noticing it. The route felt like a corridor to somewhere else. Opening up the entrance and adding a bench nearby gave visitors a reason to slow down and look inside.",
+    "passage": "People decide where to go in a museum using more than the written [[1]]. They look for light, open doors and places where other visitors are already [[2]]. When we studied our building, we found that almost everyone passed the entrance to a major exhibition without noticing it. The route felt like a [[3]] to somewhere else. Opening up the entrance and adding a bench nearby gave visitors a reason to slow [[4]] and look inside.",
+    "answers": [
+      "signs",
+      "gathering",
+      "corridor",
+      "down"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are signs, gathering, corridor, down.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-25-06da80c2cb48.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "09524bef1943d33774190201330e72d8190f82ee6627225aefef3433bb28815f",
+      "sha256": "06da80c2cb48530164bbc0452a048a04a482020fd0704f2afa48db280ccf7a84",
+      "seconds": 27.432,
+      "bytes": 219692,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-26",
+    "type": "lfi",
+    "title": "New Questions · Bicycle gears",
+    "difficulty": "medium",
+    "text": "A lower gear makes it easier to push the pedals up a hill, but it also means the bicycle travels a shorter distance each time the pedals go round. A higher gear is useful when the route is flat and the cyclist can already hold a steady speed. When teaching new riders, I ask them to change gears before the hill becomes steep. That helps them avoid putting too much pressure on the chain and keeps their pedalling smooth.",
+    "passage": "A lower gear makes it easier to push the pedals up a [[1]], but it also means the bicycle travels a shorter distance each time the pedals go round. A higher gear is useful when the route is flat and the cyclist can already hold a steady [[2]]. When teaching new riders, I ask them to [[3]] gears before the hill becomes steep. That helps them avoid putting too much [[4]] on the chain and keeps their pedalling [[5]].",
+    "answers": [
+      "hill",
+      "speed",
+      "change",
+      "pressure",
+      "smooth"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are hill, speed, change, pressure, smooth.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-26-c76e7f84a6b6.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "4701ef035b7397778fac2cc639c492d36b925e3dc0ea33d6ee42b7cad6ec3462",
+      "sha256": "c76e7f84a6b6adfa1fc5787f7fb1e6cb1b507456c001c9e1802efb919c339474",
+      "seconds": 30.528,
+      "bytes": 244460,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-27",
+    "type": "lfi",
+    "title": "New Questions · A building's concrete",
+    "difficulty": "hard",
+    "text": "Concrete can continue to gain strength after it looks dry from the outside. Its cement reacts with water through a process called hydration, and this reaction depends in part on how much moisture remains available. On a hot, windy site, the exposed surface can lose water too rapidly. Builders may use covers or other methods to limit evaporation during the early stages. The appropriate precaution depends on the mix, the shape of the structure and the expected weather conditions.",
+    "passage": "Concrete can continue to gain strength after it looks dry from the outside. Its cement reacts with water through a process called [[1]], and this reaction depends in part on how much moisture remains [[2]]. On a hot, windy site, the exposed surface can lose water too [[3]]. Builders may use covers or other methods to limit [[4]] during the early stages. The appropriate [[5]] depends on the mix, the shape of the structure and the expected weather [[6]].",
+    "answers": [
+      "hydration",
+      "available",
+      "rapidly",
+      "evaporation",
+      "precaution",
+      "conditions"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are hydration, available, rapidly, evaporation, precaution, conditions.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-27-8d1441657e34.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "e097c91ef919f3aa8c8960005cd2da72c6928ea547c49086ca3fb73bac31d87a",
+      "sha256": "8d1441657e343731e4f2c4862e43c25663ee37e701a7342c1ee9d60e2356dc99",
+      "seconds": 35.04,
+      "bytes": 280556,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-28",
+    "type": "lfi",
+    "title": "New Questions · Reading a bus timetable",
+    "difficulty": "easy",
+    "text": "We noticed that new students were reading the bus timetable from left to right, as they would read a paragraph. To plan a journey, though, they often needed to follow one column down the page. We changed the design to give each route a clear heading and a little more space. When we tested the new version, students found the next departure more quickly and were less likely to copy a time from the wrong route.",
+    "passage": "We noticed that new students were reading the bus timetable from left to [[1]], as they would read a paragraph. To plan a journey, though, they often needed to follow one [[2]] down the page. We changed the design to give each route a clear heading and a little more [[3]]. When we tested the new version, students found the next departure more [[4]] and were less likely to copy a time from the wrong route.",
+    "answers": [
+      "right",
+      "column",
+      "space",
+      "quickly"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are right, column, space, quickly.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-28-312f1962394a.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "38a645a3dfe8929210225cf91e7e63c8ea31155db9d66c807e51615d78a02b2c",
+      "sha256": "312f1962394a757472b0596a72a684c4c88b17d1a872372e03302dc0f51ee406",
+      "seconds": 27.432,
+      "bytes": 219692,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-29",
+    "type": "lfi",
+    "title": "New Questions · The hidden costs of returns",
+    "difficulty": "medium",
+    "text": "When a product is sent back to an online retailer, someone has to inspect it before it can be sold again. Even if the item is unused, damaged packaging may prevent it from going back into regular stock. Retailers can reduce avoidable returns by providing accurate dimensions and useful photographs. One clothing company also added comments from shoppers about how different sizes fit. That information helped buyers choose more confidently and made the number of parcels returned less variable from week to week.",
+    "passage": "When a product is sent back to an online retailer, someone has to [[1]] it before it can be sold again. Even if the item is unused, damaged [[2]] may prevent it from going back into regular stock. Retailers can reduce avoidable returns by providing accurate [[3]] and useful photographs. One clothing company also added comments from shoppers about how different sizes [[4]]. That information helped buyers choose more confidently and made the number of parcels returned less [[5]] from week to week.",
+    "answers": [
+      "inspect",
+      "packaging",
+      "dimensions",
+      "fit",
+      "variable"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are inspect, packaging, dimensions, fit, variable.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-29-e2b30695958e.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "9cf8f0ed84500e0051665919197a087d384ed54c985e184f9fbd36209f64bbe1",
+      "sha256": "e2b30695958e8cc99e9aee70e7ff497c488222bf8ec0033659162b2a6b1e7946",
+      "seconds": 30.552,
+      "bytes": 244652,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-30",
+    "type": "lfi",
+    "title": "New Questions · Understanding an old poem",
+    "difficulty": "hard",
+    "text": "The question is whether a word in an old poem carried the same connotations for early readers as it does for us. A historical dictionary can help, but we also need evidence from contemporary letters and newspapers. Occasionally, a common meaning fits the line perfectly while a less obvious meaning explains what comes next. The reader has to weigh both possibilities against the wider structure of the poem. An edition with detailed notes should make that ambiguity clear and show the evidence for each interpretation.",
+    "passage": "The question is whether a word in an old poem carried the same [[1]] for early readers as it does for us. A historical dictionary can help, but we also need evidence from [[2]] letters and newspapers. Occasionally, a common meaning fits the line perfectly while a less obvious meaning explains what comes next. The reader has to [[3]] both possibilities against the wider [[4]] of the poem. An edition with detailed notes should make that [[5]] clear and show the evidence for each [[6]].",
+    "answers": [
+      "connotations",
+      "contemporary",
+      "weigh",
+      "structure",
+      "ambiguity",
+      "interpretation"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are connotations, contemporary, weigh, structure, ambiguity, interpretation.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-30-d152d457cbaa.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "074720338cd52cfe790e402b26b90165e55999e8a7f203ed7a4a2be230403795",
+      "sha256": "d152d457cbaa68d197493b27f57402592200c7718d3778344e64931229183deb",
+      "seconds": 36.144,
+      "bytes": 289388,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-31",
+    "type": "lfi",
+    "title": "New Questions · A school garden schedule",
+    "difficulty": "easy",
+    "text": "At the start of the term, the students watered every bed on the same day. Then a student noticed that the soil under the climbing plants stayed wet much longer than the soil beside the path. We talked about shade, wind and the way water runs off sloping ground. Now the students check each bed before deciding which plants need water. Their observations go into a notebook that the next group can use as a guide.",
+    "passage": "At the start of the term, the students watered every bed on the same [[1]]. Then a student noticed that the soil under the climbing plants stayed wet much [[2]] than the soil beside the path. We talked about shade, wind and the way water runs off sloping [[3]]. Now the students check each bed before deciding which plants need water. Their observations go into a notebook that the next group can use as a [[4]].",
+    "answers": [
+      "day",
+      "longer",
+      "ground",
+      "guide"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are day, longer, ground, guide.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-31-78bde5813f20.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "b6fc068ccff107980bc83f46ed6f1aef9c402dcade58babcbd7af76bb09fa8c6",
+      "sha256": "78bde5813f20ad3f89f47ea72002ec383497da77ef427533c3868b4614cfa419",
+      "seconds": 27.456,
+      "bytes": 219884,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-32",
+    "type": "lfi",
+    "title": "New Questions · Cooling drinks with ice",
+    "difficulty": "medium",
+    "text": "When two glasses contain the same amount of ice, the drink with crushed pieces usually cools faster at first. The smaller pieces expose more surface area, so more ice is in direct contact with the liquid. This gives energy more places to move from the drink into the ice. However, the final temperature depends on several factors, including the amount of liquid and how warm it was at the start. Stirring both glasses in the same way makes the comparison more reliable.",
+    "passage": "When two glasses contain the same amount of ice, the drink with crushed pieces usually cools [[1]] at first. The smaller pieces expose more surface [[2]], so more ice is in direct contact with the liquid. This gives energy more places to move from the drink into the ice. However, the final [[3]] depends on several factors, including the amount of liquid and how warm it was at the [[4]]. Stirring both glasses in the same way makes the comparison more [[5]].",
+    "answers": [
+      "faster",
+      "area",
+      "temperature",
+      "start",
+      "reliable"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are faster, area, temperature, start, reliable.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-32-793ba317fa10.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "6596ac0f5e52e5143d93e9722ae8253cde4d15f199497591c6f6cbd3e3c87ee0",
+      "sha256": "793ba317fa10aee148d49f55c431a9d9aecfcab7d9d1ff8743207eb4e85909ce",
+      "seconds": 30.552,
+      "bytes": 244652,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-33",
+    "type": "lfi",
+    "title": "New Questions · Older timber buildings",
+    "difficulty": "hard",
+    "text": "A timber beam that looks uneven may contain clues about the building's history. Carpenters once left tool marks that reveal how a log was shaped. Later builders sometimes reused a beam elsewhere, leaving empty joints that serve no purpose in its current position. To date a building, researchers may compare the pattern of growth rings in several pieces of wood. They still need to check which pieces are original, because a later repair can introduce younger timber and produce a misleading date for the main structure.",
+    "passage": "A timber beam that looks uneven may contain clues about the building's history. Carpenters once left tool marks that reveal how a log was [[1]]. Later builders sometimes reused a beam elsewhere, leaving empty [[2]] that serve no purpose in its current position. To date a building, researchers may compare the pattern of growth [[3]] in several pieces of wood. They still need to check which pieces are [[4]], because a later repair can introduce younger timber and produce a [[5]] date for the main [[6]].",
+    "answers": [
+      "shaped",
+      "joints",
+      "rings",
+      "original",
+      "misleading",
+      "structure"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are shaped, joints, rings, original, misleading, structure.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-33-bbd98603db83.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "ac742099b5727489d0e5efc89c72b7cd800b9aadef28395c8a564327b45bf5e9",
+      "sha256": "bbd98603db83db1b68e18cf0a11c32841c401d4edd6c97e9780b9ebe8014e8a4",
+      "seconds": 35.04,
+      "bytes": 280556,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-34",
+    "type": "lfi",
+    "title": "New Questions · Booking a study room",
+    "difficulty": "easy",
+    "text": "The room booking system used to show a red block whenever a room was unavailable. Nobody could tell whether the block represented a student booking, a class or a room that was closed for repairs. We kept the calendar layout but added short descriptions beside each colour. Students could then choose a different room without having to call the library. We also made sure the same information could be read on a small screen.",
+    "passage": "The room booking system used to show a red block whenever a room was [[1]]. Nobody could tell whether the block represented a student booking, a class or a room that was closed for [[2]]. We kept the calendar layout but added short descriptions beside each colour. Students could then choose a different room without having to [[3]] the library. We also made sure the same information could be read on a small [[4]].",
+    "answers": [
+      "unavailable",
+      "repairs",
+      "call",
+      "screen"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are unavailable, repairs, call, screen.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-34-c5d9ccd820a6.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "da975e68ac4f8ee652e58337ee1e732c0a2d52ddd135781f5a39f5b593acac35",
+      "sha256": "c5d9ccd820a61ef9f915c78d70d983e570f9c019da4a974bfbbb6309798078c4",
+      "seconds": 27.432,
+      "bytes": 219692,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-35",
+    "type": "lfi",
+    "title": "New Questions · Shadows in winter",
+    "difficulty": "medium",
+    "text": "The length of a shadow depends on how high the sun appears above the horizon. During winter the midday sun is lower in many parts of the world, so a fixed object casts a longer shadow than it does in summer. Architects use that difference when deciding how far a roof should extend past a window. A carefully sized overhang may block strong summer light while letting winter sun reach the interior. The exact dimensions depend on the building's orientation.",
+    "passage": "The length of a shadow depends on how high the sun appears above the [[1]]. During winter the midday sun is lower in many parts of the world, so a fixed object casts a [[2]] shadow than it does in summer. Architects use that difference when deciding how far a roof should [[3]] past a window. A carefully sized overhang may block strong summer light while letting winter sun reach the [[4]]. The exact dimensions depend on the building's [[5]].",
+    "answers": [
+      "horizon",
+      "longer",
+      "extend",
+      "interior",
+      "orientation"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are horizon, longer, extend, interior, orientation.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-35-46a1f2a21916.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "fcd8646572ac1a56723069c8b7d4a1b5e28de64df4abcd01c0054cb6ea4e4157",
+      "sha256": "46a1f2a219161c8f20700b9f4bfc78fc1d9ea8f52c380b3ad687f0b2603febc5",
+      "seconds": 30.528,
+      "bytes": 244460,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-36",
+    "type": "lfi",
+    "title": "New Questions · Judging olive oil",
+    "difficulty": "hard",
+    "text": "In a tasting session, samples of olive oil are sometimes served in coloured glasses so their appearance does not influence the results. A taster first warms a sample and notes its aroma, then takes a small sip. The aim is to record qualities that can be recognised consistently rather than simply expressing a personal preference. Panellists work separately before discussing their observations. Repeating some samples without warning also lets organisers check whether individual assessments remain consistent over the course of the session.",
+    "passage": "In a tasting session, samples of olive oil are sometimes served in coloured glasses so their [[1]] does not influence the results. A taster first warms a sample and notes its [[2]], then takes a small sip. The aim is to record qualities that can be recognised consistently rather than simply expressing a personal [[3]]. Panellists work separately before discussing their [[4]]. Repeating some samples without warning also lets organisers check whether individual [[5]] remain [[6]] over the course of the session.",
+    "answers": [
+      "appearance",
+      "aroma",
+      "preference",
+      "observations",
+      "assessments",
+      "consistent"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are appearance, aroma, preference, observations, assessments, consistent.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-36-bcf15fcf95a6.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "87dbbbff863c9c9a2fd73c612d63cd76fa18ee06b5e08874fa5b5bc903af4468",
+      "sha256": "bcf15fcf95a6ab02674ce3786200aef8e15fe063a1be5da99840b4e8f5b010e1",
+      "seconds": 39.84,
+      "bytes": 318956,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-37",
+    "type": "lfi",
+    "title": "New Questions · A university book exchange",
+    "difficulty": "easy",
+    "text": "We put a book exchange in the foyer because students kept asking where they could find a used copy of a textbook. At first, anyone could leave books in any order. That worked for a while, but once the shelves began to fill, it became hard to browse. Now a volunteer sorts the shelves by subject each Friday. Books that are no longer on course lists go to a separate section for general reading.",
+    "passage": "We put a book exchange in the foyer because students kept asking where they could find a used copy of a [[1]]. At first, anyone could leave books in any order. That worked for a while, but once the shelves began to fill, it became hard to [[2]]. Now a volunteer sorts the shelves by [[3]] each Friday. Books that are no longer on course lists go to a separate [[4]] for general reading.",
+    "answers": [
+      "textbook",
+      "browse",
+      "subject",
+      "section"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are textbook, browse, subject, section.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-37-6ef64f6e85aa.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "e473bcf22f081cc268b1df3f39e6e05b461787a5f154e257bc864a7889ce3269",
+      "sha256": "6ef64f6e85aa66197dda92ddcf80e20919bca129d95a416fc6e0ad26d253f724",
+      "seconds": 27.456,
+      "bytes": 219884,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-38",
+    "type": "lfi",
+    "title": "New Questions · Rain gauges on the coast",
+    "difficulty": "medium",
+    "text": "Measuring rainfall sounds simple, but the instrument's position can influence the reading. Wind moving around a tall building may push drops away from the gauge. A nearby tree can intercept rain and release it slowly after the shower has ended. To compare several sites, we first record the distance to features that might cause interference. Then we visit each station regularly to make sure the openings are clear. That basic maintenance prevents avoidable errors in the long record.",
+    "passage": "Measuring rainfall sounds simple, but the instrument's position can influence the [[1]]. Wind moving around a tall building may push drops away from the gauge. A nearby tree can [[2]] rain and release it slowly after the shower has ended. To compare several sites, we first record the distance to features that might cause [[3]]. Then we visit each station regularly to make sure the openings are [[4]]. That basic maintenance prevents avoidable [[5]] in the long record.",
+    "answers": [
+      "reading",
+      "intercept",
+      "interference",
+      "clear",
+      "errors"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are reading, intercept, interference, clear, errors.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-38-3ce1215f2f8b.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "c765313046b8d16e945a55a416003bcc893c75058a6d44b1f5a88a6b60c17be9",
+      "sha256": "3ce1215f2f8b21042c7c24ed6acf7f750cb4eb8b8dd827968bf2868bd7b92b0d",
+      "seconds": 30.552,
+      "bytes": 244652,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-39",
+    "type": "lfi",
+    "title": "New Questions · Witnessing a meteor shower",
+    "difficulty": "hard",
+    "text": "The meteors in a shower seem to emerge from one region of the sky, although the particles are actually moving along nearly parallel paths. The apparent convergence is a perspective effect, like railway tracks that seem to meet in the distance. Sky watchers often choose a dark location away from the glare of streetlights and allow their eyes time to adjust. A telescope would restrict the view to a small area, so a wide field of vision is more effective for watching the shower.",
+    "passage": "The meteors in a shower seem to emerge from one [[1]] of the sky, although the particles are actually moving along nearly parallel paths. The apparent convergence is a [[2]] effect, like railway tracks that seem to meet in the distance. Sky watchers often choose a dark location away from the [[3]] of streetlights and allow their eyes time to adjust. A telescope would [[4]] the view to a small area, so a wide [[5]] of vision is more [[6]] for watching the shower.",
+    "answers": [
+      "region",
+      "perspective",
+      "glare",
+      "restrict",
+      "field",
+      "effective"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are region, perspective, glare, restrict, field, effective.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-39-ef2d276c4dd4.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "4c9594b814b16c12d6477a077034d9d931837019e63b3d5f207412e8d5ffc562",
+      "sha256": "ef2d276c4dd42b2bf9f686a146f5b287ede6f0e8396bcbbb55eec8a7e2a196de",
+      "seconds": 35.04,
+      "bytes": 280556,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-40",
+    "type": "lfi",
+    "title": "New Questions · Seating at the theatre",
+    "difficulty": "easy",
+    "text": "On opening night, several people asked whether there was a better way to reach the upper seats. The route on their tickets took them past two doors, neither of which looked like a public entrance. We walked the route with a few visitors and noted where they stopped to look around. After that, we moved one sign and gave the ushers a simple map to hand out on busy evenings.",
+    "passage": "On opening night, several people asked whether there was a better way to reach the upper [[1]]. The route on their tickets took them past two doors, neither of which looked like a public [[2]]. We walked the route with a few visitors and noted where they stopped to [[3]] around. After that, we moved one sign and gave the ushers a simple [[4]] to hand out on busy evenings.",
+    "answers": [
+      "seats",
+      "entrance",
+      "look",
+      "map"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are seats, entrance, look, map.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-40-ece8876a406a.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p225",
+      "textSha256": "f8738b1477bea3bffb689f2a0bbc1a6c293ac75a4dcac12a661b8cc2dde9e00e",
+      "sha256": "ece8876a406a889dddbaaac9405ad207780b26bba7e236b69846d6d15b74e337",
+      "seconds": 27.432,
+      "bytes": 219692,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-41",
+    "type": "lfi",
+    "title": "New Questions · Shared instruments",
+    "difficulty": "medium",
+    "text": "A shared instrument can save a department money, but it introduces a practical problem when several researchers need it on the same day. We reserve time for maintenance, because a missed check can affect a whole sequence of experiments. We also ask users to describe how long their samples can safely wait. If one test must run as soon as a sample is prepared, the staff can give it priority and move more flexible work into a later slot.",
+    "passage": "A shared instrument can save a department money, but it introduces a practical problem when several researchers need it on the same [[1]]. We reserve time for maintenance, because a missed check can affect a whole sequence of [[2]]. We also ask users to describe how long their samples can safely [[3]]. If one test must run as soon as a sample is prepared, the staff can give it [[4]] and move more [[5]] work into a later slot.",
+    "answers": [
+      "day",
+      "experiments",
+      "wait",
+      "priority",
+      "flexible"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are day, experiments, wait, priority, flexible.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-41-3f887d3d0db7.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "fb78127e9062cca1fcb22e39a16d9189305d0a514b544aab21b2453f60866e0a",
+      "sha256": "3f887d3d0db7d0f1a067cf794750f87d23de9bb9916f4337f39403128786aec9",
+      "seconds": 30.816,
+      "bytes": 246764,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-42",
+    "type": "lfi",
+    "title": "New Questions · Measuring a river bend",
+    "difficulty": "hard",
+    "text": "A river bend changes shape as fast water removes material from some parts of the bank and quieter water deposits sediment in others. Engineers can compare surveys from different years, but they need to account for changes in water level before deciding whether the channel has moved. On our site, we placed permanent markers well back from the bend. These provide a common point of reference for each visit, making it easier to separate real erosion from differences in the way the measurements were taken.",
+    "passage": "A river bend changes shape as fast water removes material from some parts of the [[1]] and quieter water deposits sediment in others. Engineers can compare surveys from different years, but they need to account for changes in water [[2]] before deciding whether the channel has moved. On our site, we placed permanent [[3]] well back from the bend. These provide a common point of [[4]] for each visit, making it easier to separate real [[5]] from differences in the way the measurements were [[6]].",
+    "answers": [
+      "bank",
+      "level",
+      "markers",
+      "reference",
+      "erosion",
+      "taken"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are bank, level, markers, reference, erosion, taken.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-42-60fae308c502.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "d2502ce6c06c5dfdec0ccd3f6b1e8098b886aeb27a7e2aae68583842a742f69e",
+      "sha256": "60fae308c5029fbf664323f9b01203d55e46577db17729f6fd33e5314119c780",
+      "seconds": 35.04,
+      "bytes": 280556,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-43",
+    "type": "lfi",
+    "title": "New Questions · How bread rises",
+    "difficulty": "easy",
+    "text": "When the dough is left somewhere warm, yeast produces gas that forms small bubbles. The dough can expand because its structure stretches around those bubbles. It takes longer to rise in a cool kitchen, even when the recipe is exactly the same. That's why we ask students to pay attention to the size and feel of the dough before shaping it. The time printed in a recipe is a useful guide, and a close look helps you decide when the dough is ready.",
+    "passage": "When the dough is left somewhere warm, yeast produces gas that forms small [[1]]. The dough can expand because its structure stretches around those bubbles. It takes longer to [[2]] in a cool kitchen, even when the recipe is exactly the same. That's why we ask students to pay attention to the size and [[3]] of the dough before shaping it. The time printed in a recipe is a useful guide, and a close [[4]] helps you decide when the dough is ready.",
+    "answers": [
+      "bubbles",
+      "rise",
+      "feel",
+      "look"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are bubbles, rise, feel, look.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-43-bfa51649fb7a.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "dae1ab97cf640b073da21c83600bd72d508b733cdcfdb9d0db293775edbc2a43",
+      "sha256": "bfa51649fb7a33f0d18d9f6e5cf38b0be5d7400e9ba9426b5118ce746286e835",
+      "seconds": 28.032,
+      "bytes": 224492,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-44",
+    "type": "lfi",
+    "title": "New Questions · The origins of street names",
+    "difficulty": "medium",
+    "text": "We expected the oldest residents to remember why a certain lane had changed its name. They agreed that the change had happened, but their accounts put it in different decades. A local map gave us a date by which the new name was in use. Then we found a notice in the council minutes explaining that two streets had once shared a name, which confused postal deliveries. By combining the interviews with written records, we were able to resolve the difference.",
+    "passage": "We expected the oldest residents to remember why a certain lane had changed its [[1]]. They agreed that the change had happened, but their accounts put it in different [[2]]. A local map gave us a date by which the new name was in use. Then we found a [[3]] in the council minutes explaining that two streets had once shared a name, which confused postal [[4]]. By combining the interviews with written records, we were able to [[5]] the difference.",
+    "answers": [
+      "name",
+      "decades",
+      "notice",
+      "deliveries",
+      "resolve"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are name, decades, notice, deliveries, resolve.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-44-fbb858f530f3.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "fd821ceaed98e8471674ab065b449eb6e51a4a9e9ee1795ead113bc2895a9a2e",
+      "sha256": "fbb858f530f3f629db108a95ec4bf3db088b7b10ea393dfaf8aee425e486fbb9",
+      "seconds": 30.552,
+      "bytes": 244652,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-45",
+    "type": "lfi",
+    "title": "New Questions · Testing a waterproof jacket",
+    "difficulty": "hard",
+    "text": "Waterproof fabric is usually tested by applying increasing water pressure to a small sample. That test tells us something about the material, but a whole jacket may behave differently once it has been cut and sewn. Water can enter through tiny openings along a seam, particularly after repeated use. To evaluate jackets more realistically, we examine the fabric and then test complete garments under controlled spray. The combined results help us distinguish material failure from weaknesses introduced during assembly.",
+    "passage": "Waterproof fabric is usually tested by applying increasing water pressure to a small [[1]]. That test tells us something about the material, but a whole jacket may behave differently once it has been cut and [[2]]. Water can enter through tiny openings along a [[3]], particularly after repeated use. To evaluate jackets more realistically, we examine the fabric and then test complete [[4]] under controlled spray. The combined results help us [[5]] material failure from weaknesses introduced during [[6]].",
+    "answers": [
+      "sample",
+      "sewn",
+      "seam",
+      "garments",
+      "distinguish",
+      "assembly"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are sample, sewn, seam, garments, distinguish, assembly.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-45-2c264c03c396.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "c6b3c0c374e0ab12e25fd5d4ae2a8d074e3419f308bea613dfcd380b7ae244dc",
+      "sha256": "2c264c03c3963c634ca596f898bb0b121e253537064ffee27450b337c45dbf7d",
+      "seconds": 35.592,
+      "bytes": 284972,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-46",
+    "type": "lfi",
+    "title": "New Questions · An oral history interview",
+    "difficulty": "easy",
+    "text": "I start most interviews by asking about a familiar place, such as the house or street where someone grew up. People often find it easier to remember a particular room than to give a general account of their childhood. Occasionally they mention a sound or a smell and then recall details they hadn't thought about for years. I leave a little time after an answer, because the next memory sometimes arrives during that pause.",
+    "passage": "I start most interviews by asking about a familiar [[1]], such as the house or street where someone grew up. People often find it easier to remember a particular room than to give a general account of their [[2]]. Occasionally they mention a sound or a [[3]] and then recall details they hadn't thought about for years. I leave a little [[4]] after an answer, because the next memory sometimes arrives during that pause.",
+    "answers": [
+      "place",
+      "childhood",
+      "smell",
+      "time"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are place, childhood, smell, time.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-46-1971b8225266.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "983b6d6a543063f7dbc0d66e1859e7e3e23af7cd2300e691ee21cbcfc159b450",
+      "sha256": "1971b8225266677c8e1242510fd7c49595b4bec70634db9498feeda82e9dd509",
+      "seconds": 27.432,
+      "bytes": 219692,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-47",
+    "type": "lfi",
+    "title": "New Questions · Casting a bell",
+    "difficulty": "medium",
+    "text": "Before a bell is cast, the foundry makes a mould using a carefully measured profile. The shape matters because different parts of the bell vibrate at different frequencies. Once the metal has cooled, the bell is tested and its sound is recorded. In some cases, workers remove a little metal from selected areas inside it to make small adjustments. It takes experience to decide where to work, since a change in one region can affect more than one part of the final sound.",
+    "passage": "Before a bell is cast, the foundry makes a mould using a carefully measured [[1]]. The shape matters because different parts of the bell vibrate at different [[2]]. Once the metal has cooled, the bell is tested and its sound is recorded. In some cases, workers [[3]] a little metal from selected areas inside it to make small adjustments. It takes experience to decide where to work, since a change in one [[4]] can affect more than one part of the final [[5]].",
+    "answers": [
+      "profile",
+      "frequencies",
+      "remove",
+      "region",
+      "sound"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are profile, frequencies, remove, region, sound.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-47-ba90bd985600.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "c6fc2ab5701da32eadc0a9795bfb545c55e79ef79cb3047a0c320c358f111651",
+      "sha256": "ba90bd9856009c9c176449dd1bb1e06b61381c1c11e7478a5aa70b174b1c7eec",
+      "seconds": 30.624,
+      "bytes": 245228,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-48",
+    "type": "lfi",
+    "title": "New Questions · Identifying minerals",
+    "difficulty": "hard",
+    "text": "When geologists find an unfamiliar mineral, colour offers one clue, but it can be affected by small amounts of impurities. A more dependable observation in some cases is the colour of the mineral when powdered, known as its streak. Other useful features include how easily the mineral can be scratched and the angles at which it tends to break. We compare these properties before naming an unknown sample. That way, an unusual surface appearance is less likely to produce a mistaken identification.",
+    "passage": "When geologists find an unfamiliar mineral, colour offers one clue, but it can be affected by small amounts of [[1]]. A more dependable observation in some cases is the colour of the mineral when powdered, known as its [[2]]. Other useful features include how easily the mineral can be [[3]] and the angles at which it tends to break. We compare these [[4]] before naming an unknown sample. That way, an unusual surface [[5]] is less likely to produce a mistaken [[6]].",
+    "answers": [
+      "impurities",
+      "streak",
+      "scratched",
+      "properties",
+      "appearance",
+      "identification"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are impurities, streak, scratched, properties, appearance, identification.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-48-5a24ca52fe09.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p238",
+      "textSha256": "c6b26f50c4e1d86c21fc622963511f12159d8e3fa014688632f265d903a1ac34",
+      "sha256": "5a24ca52fe09fa6781b7e6ffe581b8591f9b0047333795cfef8efee9f2fa8a75",
+      "seconds": 35.184,
+      "bytes": 281708,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-49",
+    "type": "lfi",
+    "title": "New Questions · Keeping a queue moving",
+    "difficulty": "easy",
+    "text": "At busy times, the wait at the campus café seemed longer than it really was because the queue did not move for several minutes. Watching the counter, we saw that many people decided what to order only when they reached the till. The café moved a copy of the menu to the start of the line. Customers could then choose while they waited, and the person taking orders had fewer questions to answer at the till.",
+    "passage": "At busy times, the wait at the campus café seemed longer than it really was because the queue did not move for several [[1]]. Watching the counter, we saw that many people decided what to [[2]] only when they reached the till. The café moved a copy of the menu to the start of the [[3]]. Customers could then choose while they waited, and the person taking orders had fewer [[4]] to answer at the till.",
+    "answers": [
+      "minutes",
+      "order",
+      "line",
+      "questions"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are minutes, order, line, questions.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-49-dea349068bb9.mp3",
+    "audio": {
+      "narrator": "Piper en_US-ljspeech-medium",
+      "textSha256": "3baa04a2acf298c0c97e7bfa9b8045da00e5329a9f7953ba5537ae5096a7b6a3",
+      "sha256": "dea349068bb97c883c65f83b5ae483088b1fc1519a580ea8de51e47fd8530afd",
+      "seconds": 27.456,
+      "bytes": 219884,
+      "voiceSource": {
+        "model": "en_US-ljspeech-medium",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_US/ljspeech/medium/MODEL_CARD",
+        "modelSha256": "6f52a751e2349abe7a76735eb09dc1875298c77ea2342ffd2fef79ff81b87f22",
+        "dataset": "LJ Speech Dataset",
+        "url": "https://keithito.com/LJ-Speech-Dataset/",
+        "license": "public domain"
+      }
+    }
+  },
+  {
+    "id": "lfi-original-20261125-50",
+    "type": "lfi",
+    "title": "New Questions · Reviewing a research article",
+    "difficulty": "medium",
+    "text": "When I read a research article for the first time, I check what question the authors set out to answer. Then I look at how they chose the people or places they studied. A carefully recorded result can still apply to a very limited group. Before citing the article, I check whether the authors discuss these limits and whether their conclusions match the evidence. That quick review helps me decide which claims I can use with confidence.",
+    "passage": "When I read a research article for the first time, I check what question the authors set out to [[1]]. Then I look at how they [[2]] the people or places they studied. A carefully recorded result can still apply to a very limited group. Before citing the article, I check whether the authors discuss these [[3]] and whether their conclusions match the [[4]]. That quick review helps me decide which claims I can use with [[5]].",
+    "answers": [
+      "answer",
+      "chose",
+      "limits",
+      "evidence",
+      "confidence"
+    ],
+    "source": {
+      "kind": "original-teaching-material",
+      "contentStatus": "original",
+      "date": "2026-11-25"
+    },
+    "explanation": "The missing words, in order, are answer, chose, limits, evidence, confidence.",
+    "prompt": "Listen and type the missing words in the transcript.",
+    "newInCatalogue": true,
+    "minutes": 5,
+    "audioUrl": "/assets/lfi-original-20261125/lfi-original-20261125-50-19b09652da32.mp3",
+    "audio": {
+      "narrator": "Piper VCTK p237",
+      "textSha256": "08a59c337cfe548a90e4a5ae0e10c3534c85219ecc629ee460e8716c6aac24af",
+      "sha256": "19b09652da3260cff0d3bff7cb5a6f9fefd37df5262a1780cbbf17a3d17977b8",
+      "seconds": 30.528,
+      "bytes": 244460,
+      "voiceSource": {
+        "dataset": "CSTR VCTK Corpus",
+        "creators": [
+          "Junichi Yamagishi",
+          "Christophe Veaux",
+          "Kirsten MacDonald"
+        ],
+        "url": "https://datashare.ed.ac.uk/handle/10283/3443",
+        "license": "CC BY 4.0",
+        "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+        "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/42301ec547bc2939386cf0ae9f9050ca05b1d3af/en/en_GB/vctk/medium/MODEL_CARD"
+      }
+    }
   }
 ]
