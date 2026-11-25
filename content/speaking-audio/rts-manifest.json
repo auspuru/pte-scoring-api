@@ -1396,5 +1396,1930 @@
       "text": "You need to print out the assignment you finished and hand it in, but your printer is broken. You want to borrow a printer from your friend Carl. What would you say?",
       "sourcePromptProvided": false
     }
+  },
+  "rts-user-20261125-booklet-001-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-001",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "28308300c441e12e15a40ef38ebf31f5bfbcd81c65a458664b758b26289cbebf",
+    "audioSha256": "106b4a835caa892e40cc7eb55612856f27b8677eaf129edaed72fcacc0f358e2",
+    "bytes": 61868,
+    "seconds": 10.272,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-002-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-002",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "514134ce4e95651e7b0b996b22fc80522e93f831dcd9afbcc6c947cec5b3cd84",
+    "audioSha256": "f85b4a32f1267011affa79635454c4c5f5956963d3989ed2fd18e8c3f6686e3c",
+    "bytes": 59420,
+    "seconds": 9.864,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-003-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-003",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "c5bea11a74c512ed9df8885ac9022b01cef5c536a6579dcb588e63da8d8b7ea3",
+    "audioSha256": "ecbfc5b0c90d84a9225d4763d1f32c73fe14d7c130c99cdc5c740bf43d0471d9",
+    "bytes": 64316,
+    "seconds": 10.68,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-005-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-005",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "a17c0331243df68ddc3cb523d602ba6639c1525572c0acd72020dbc9443d9ae6",
+    "audioSha256": "50ea330f49df5c2e4eeb25c19c9404e987de54896bc5c97356007d7c8260bc24",
+    "bytes": 56252,
+    "seconds": 9.336,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-006-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-006",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "71bc52d2c89f94da09afc2e6bedf7c09d2a582ac37d7386df82f28fe0afd87f4",
+    "audioSha256": "94e3a40e90025299737318c67c6daf6e802a19c45fee59e2d58233d02e52297f",
+    "bytes": 71084,
+    "seconds": 11.808,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-007-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-007",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "57b18edad4a2965491437a20cfcc27cf79c9860d4ce5a97e6a3f8212fdd04364",
+    "audioSha256": "e14f4e87f974a61a3f5cdec2e9bdb26652664612c908fa4a85c1ae8d90298e46",
+    "bytes": 59708,
+    "seconds": 9.912,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-008-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-008",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "6069cc94d7b4c65972f384578ba8b7bec890bce9f22fbd3359e6812323cb3296",
+    "audioSha256": "e025cae9c6c664dfc31d09939b4c3450b1cfd68014c317fe01f958cfaceca0f2",
+    "bytes": 75548,
+    "seconds": 12.552,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-009-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-009",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "b1c6795b09348b7614fe883d446985db21373ec4b1b04464c11f9de3a3571193",
+    "audioSha256": "8da3f09b7a9444f1b13f2d328ca782ff7ac456dbe39a66167bcb049eb4ce3298",
+    "bytes": 92972,
+    "seconds": 15.456,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-010-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-010",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "3c1b9066ac6046cec2c7d48733f33d787347844a8d912f14f86ca1c49977a017",
+    "audioSha256": "1bb9b7f1bc06077efc4a3e2de4bcf98fb0d14caaf2e5362117573c7c185b4c1c",
+    "bytes": 63452,
+    "seconds": 10.536,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-011-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-011",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "f80e3c225aa977386d88512fc302bdd9c75f879de1b90943e7ff1b57f96ae4d6",
+    "audioSha256": "a2c6d8ec50be26c10a40a80b94ba275fc29b247c3faaf7068e882cee6fa8b09f",
+    "bytes": 63308,
+    "seconds": 10.512,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-012-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-012",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "2bd02274ed0533c8b158d26cf16d2cd4ee6aa98cf631929056bea8c09f9324f4",
+    "audioSha256": "bb4fbafe67fe9b66e392a8c34896c4f2ff737eae872a3fc47148004e067a5ee9",
+    "bytes": 42428,
+    "seconds": 7.032,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-013-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-013",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "01ca5f96235ad5f0b0d34f366b281db2a296932acd16723d779f0b47338bbbe6",
+    "audioSha256": "747b309bebafd037dcbb3b6e70bbeacae2b2f51b7e8e62d4094f7853499e4960",
+    "bytes": 39980,
+    "seconds": 6.624,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-014-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-014",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "bdac2a906f1d925c3b091abba8130f74f2c5955a347945c16e1ac17c59c212a2",
+    "audioSha256": "26c8912f195072e1ff6b4c88ec60c88a24620f2d919c6eb9fe2a3cb02c6a097a",
+    "bytes": 41420,
+    "seconds": 6.864,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-015-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-015",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "c30981087af8988fea2ccd8d830ccfb2aa0a545280b0583dc636046af8b1aaea",
+    "audioSha256": "f664f3d137265fbee369d080ebb87d6b3263a9b64cf16baa6aa6c3cdb398b4a8",
+    "bytes": 37244,
+    "seconds": 6.168,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-016-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-016",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "57fbd6a0e54ac81f825878386761888583ad1c060031c558c8da0c001a22c7f0",
+    "audioSha256": "1d7d84aab758b0c3088d997d14dcfcb4a5226e9eaa368d142c0b94ab19595380",
+    "bytes": 49484,
+    "seconds": 8.208,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-020-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-020",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "8d379deac9d14f8f015590523f1c6bdef694dedd77e120bfc9866c6db7c67662",
+    "audioSha256": "548fcd8daa1baaa285aadd70a3cb91ada542f6df866323783f68ca9bcd254b48",
+    "bytes": 48764,
+    "seconds": 8.088,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-021-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-021",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "e6d39af6289f1d002ecea19e7a7a3baa6f34bef11a5283f18471f1816a9c56da",
+    "audioSha256": "45b9fcc7e03e0283f64517938b946682aff97e8654387e9860513bf6ea24a7fc",
+    "bytes": 47324,
+    "seconds": 7.848,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-022-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-022",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "d92429012ecf9a7ad0822c54009b428944fa7c1c6e7269abe8ccc95e9f1b10d2",
+    "audioSha256": "0e31720eda7c3ab1f9aded4977f5a9bec54cec4aafcb70eb6a7c43a66a3c42f4",
+    "bytes": 54812,
+    "seconds": 9.096,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-024-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-024",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "98556be11e567381fd73bcbb468a96cfafee97fd00a729c469155c5329159e1d",
+    "audioSha256": "3951ca81a5cb2fe7f61d9fe62b263c6270edf3d2c6fc5bc219a2b06bdbad78d9",
+    "bytes": 65900,
+    "seconds": 10.944,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-027-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-027",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "49533212d4edfe126fcdd886f4a7d6708b0748fdd474dd95e9788e5d65114ce2",
+    "audioSha256": "203f4a72246811d72d0969978245b3e5af46d288b5eec2015228b1b167d738dc",
+    "bytes": 37532,
+    "seconds": 6.216,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-028-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-028",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "ea1bad93fb7da294a5436f0e41d6bd897a9fff01da487907e3341f0a6c2c75ab",
+    "audioSha256": "d0855ea44c77cd0432cee28722db69d5016f9d6f6fe4b34193b998690df30310",
+    "bytes": 41564,
+    "seconds": 6.888,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-029-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-029",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "a6da6e0336a0607b7d70b50908fadb2fc1e3851f84ed171de44cdc6ea9ceed2e",
+    "audioSha256": "6a76bf454cabfa5b36bcd88d8f0004aa9bfbb8d27c69528504e521e2b4ef9f58",
+    "bytes": 43436,
+    "seconds": 7.2,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-033-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-033",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "b439a5d961c780bb2c72189fac1194fcef188bb2fcc278382ca293d19737b72e",
+    "audioSha256": "e329ebbb7d4ecf50f7e802d0d62d4f9d7d2832bbbf079e5e284d736dfcb688d2",
+    "bytes": 30620,
+    "seconds": 5.064,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-034-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-034",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "63b46f09ec86afeed994d6b05a319fc0f7accba7131d2072f37a286a8e2f5350",
+    "audioSha256": "213db62d6230b3657d4a1a8510b381663f044c76b3d5591e1abfc2094e902579",
+    "bytes": 61436,
+    "seconds": 10.2,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-036-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-036",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "45d42ade18b9a65bc889d1cb30f0e3fddfbfa7f1d474b5762ae2bd0ac52301e5",
+    "audioSha256": "d6c7c398de6b835c6889e1b8c45805bf8beb81609db90bcfa474b7077cc87ffd",
+    "bytes": 51068,
+    "seconds": 8.472,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-037-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-037",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "a593bf4419651de226c31c6f0a4f0b1365f7ae92dea7892ed27d71e89a127819",
+    "audioSha256": "c90793db59eeb6a621334f141d240b06e42b548386f4659268b47c3c2ad55e97",
+    "bytes": 45164,
+    "seconds": 7.488,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-038-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-038",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "7a6f93beb89f93d6ef43819a2a1a66004b3195d70164a1e32d7130872cfa362c",
+    "audioSha256": "854c0073f7ebe015a4f93f4c97641b36557e4c7c8f5078e2daea5068d4292fd8",
+    "bytes": 96140,
+    "seconds": 15.984,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-039-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-039",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "672f2f86672ff54ac5683689512e6cbfea0b0e75188f6132a92115bb1d7ac053",
+    "audioSha256": "54b0ab57e6e69540e5c5307148dba5deb672a3aeed46c1ec9427095b8f7bf80b",
+    "bytes": 86924,
+    "seconds": 14.448,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-040-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-040",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "a3dce7a776704ea5c121139667a24ca02a8ded6af3bb86823b8b83feacaf6bf3",
+    "audioSha256": "2f6643e164dc2d710ac9bf27bed04b0cd77e28168bfabd7350feee36bae189a0",
+    "bytes": 66620,
+    "seconds": 11.064,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-041-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-041",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "c91c5dfe6b8950ff2a553d583489602a2f58dc540c7eca25bbf8d9a5a2168b82",
+    "audioSha256": "769ef7404cc58f12f103b2a061e2ca13b0fe91805e1648e2582e66a06a4c1432",
+    "bytes": 79148,
+    "seconds": 13.152,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-042-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-042",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "2bbd1f9ad107103078f1db763a50ad371d4425223d5c1b203afe51b477eb5226",
+    "audioSha256": "2495d5e0c9b71263ad2e2bb4bd024adc1e50d26b40ef52eeeefd168293595671",
+    "bytes": 47324,
+    "seconds": 7.848,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-043-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-043",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "694ed1e96f8328b119f93cdf3e34a1008cb4b541b9f4357c5341395b52146320",
+    "audioSha256": "78587a96809f2ad540f45c429cfabb4c3d04db237b57a31accced0f817d93963",
+    "bytes": 73388,
+    "seconds": 12.192,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-044-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-044",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "7a19c31ee8925f734debbf57d583f7b16bd27467f048660028bb54d51c0e2218",
+    "audioSha256": "8a7ce622dfcbebf6d6c501645f510935e85948d49a52430aec48f633bff02c52",
+    "bytes": 86636,
+    "seconds": 14.4,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-045-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-045",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "4a5dc686cba483d78787a99e42297f564d436c5c8873118b0856aa9b3b07f250",
+    "audioSha256": "48845043e849906c05f2d428ed1b5dada6bc6b6851c2f40412044fc6c8c00e1b",
+    "bytes": 87500,
+    "seconds": 14.544,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-046-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-046",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "3adf96c484712619b6faa43f69e06b0a9e9318b82e7fd9cbbf49156da56f0478",
+    "audioSha256": "09d352cca296a082771c7a51dda985f8dd5e8479a250f084ad84c5eb65c83b7c",
+    "bytes": 71948,
+    "seconds": 11.952,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-047-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-047",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "afdeebd256daaf59b30f257100b1ad45cd1ee179cb1fab7f20bd1c4ec7896122",
+    "audioSha256": "0f3845a082c009f75317f589a58da48bbef307d5b7b0451876f9f21366ae4ba8",
+    "bytes": 73388,
+    "seconds": 12.192,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-048-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-048",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "bdd64dfd14ba443c595fd816dc1b30c77f9bc713eaf6cbb1688b9da9bc059946",
+    "audioSha256": "20f43a659b3c9163cf9b55657d5596b97ab872f732dc59b81d9a2613210103d0",
+    "bytes": 65612,
+    "seconds": 10.896,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-051-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-051",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "b7c3aaa8c062d2a9d2ee6c040fe034cf2d2dd43d9ab9922959428e1c68b4382e",
+    "audioSha256": "a710504b040537b206091a6b11a099f448db0a3e331aefe2dc4e003763ea96b5",
+    "bytes": 40556,
+    "seconds": 6.72,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-052-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-052",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "cd946aa3795c019046a70e306fd5a2bfde737109d80e771bc086a755a8b2c91c",
+    "audioSha256": "478af934744526e33f9b484514b893f37887cf22f27485fec902a557cc177b97",
+    "bytes": 69500,
+    "seconds": 11.544,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-053-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-053",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "0fec06306be504b4b00dc8b421254a4ee24ddf6825862417a1b09454a6f6327b",
+    "audioSha256": "194616e3139d9a7b9d7808d8a24ac151b1e69cd8a47bcd0f87cfac1737322f48",
+    "bytes": 51068,
+    "seconds": 8.472,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-054-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-054",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "b2a52a1c754ace7a8a3460219019a67e9ead0d8f44e147381472d41acb31f072",
+    "audioSha256": "e4d002d5c55a3c340839b5bdbab9743270f0e357c25d643dc08908e17b200079",
+    "bytes": 53372,
+    "seconds": 8.856,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-056-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-056",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "ad99f52e82fd3da818d35c3b4a09046752f71bec39ad0a95cb889612b68b2ef8",
+    "audioSha256": "855960cc826b4c16d11e941d3c82a06540f3a13f032deb78e058c92eccb8437c",
+    "bytes": 49484,
+    "seconds": 8.208,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-058-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-058",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "fd1d9416857989ea12672fa35baf4296ea25256472750f0e7a60d2e45cfc344b",
+    "audioSha256": "63e6ec2617a03b8f85bd6be4f2f3e37cff419ce2a8ef5f082acf566a5ca35e49",
+    "bytes": 82460,
+    "seconds": 13.704,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-059-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-059",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "abfcd4cc75d5ebaa787fb6b5c8a439195375abd9e5b3033a6a19f51a38b1bb29",
+    "audioSha256": "b64dd5e62890cb2c83f382cdb76f99cea3ace29ea0e24f7302898a9a2b18eb0a",
+    "bytes": 72092,
+    "seconds": 11.976,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-060-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-060",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "1878c4610d26f3e372299387d2982262e1ab861617ee720f6502e5c2da02652b",
+    "audioSha256": "51b97980ff6022a11ba97bef5d4f76e4765cf485c3fddb8ca4539d3ae34f8a97",
+    "bytes": 63308,
+    "seconds": 10.512,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-061-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-061",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "b94ccad09694a3ba924e388f6ae5ffd99d96dd0b491810bd9b0b90f693b184fa",
+    "audioSha256": "3a763e125ac484b289a04bf756b29bea732f9980b32c77f1e42479c31878697e",
+    "bytes": 48332,
+    "seconds": 8.016,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-062-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-062",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "b9a4d801254b277247efd6f32f816069221964d9daeacb711ce3c9f7b13d5cdb",
+    "audioSha256": "3334a16c81a72aadd7685428677a9910e33e762fc93d6e1377c38755a1433146",
+    "bytes": 47612,
+    "seconds": 7.896,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-063-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-063",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "5ccbb5356dbd07b7c8f90936892e281b11ffa073b6d636d65f5bbfd0592c0fc9",
+    "audioSha256": "a44a3f5ac6f9ce55cccff5a0394ee6d9f6c7f0a42f294b343a29da1b61f7cc05",
+    "bytes": 49916,
+    "seconds": 8.28,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-064-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-064",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "ceb134f572eaddc38fe43fba8c991977a252ff8f726d4f9268cf401caff34ddd",
+    "audioSha256": "f1a3ec23984c1ba574758bf2bdcc05196033ac7c3627f1bc0f66e83b14842ba8",
+    "bytes": 65756,
+    "seconds": 10.92,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-065-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-065",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "4b0557dd72fb1985cd6b9465b3733776060f9f58ea3afb290480ffd5587b34ad",
+    "audioSha256": "9a8e0f05643272a39f52e5640b34b70ea2288e3b17271e7f362c0527706a6a42",
+    "bytes": 72524,
+    "seconds": 12.048,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-066-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-066",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "6b1de5d080352403dcb4af1d07ce3c2af5cce6066652e35e4da825de270b8b67",
+    "audioSha256": "395ffde366aa856a1b125be2407be4fcd01e43915c283789abb4f43fe90896ab",
+    "bytes": 62876,
+    "seconds": 10.44,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-067-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-067",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "04c1dfd79677b0bd998f3dade177edec95260acba36fc38ccf1d2bba4c8e6860",
+    "audioSha256": "51daa30082ce1d761599040c7c93b08ffa746af09a041a4e3c2a4d302b2d22eb",
+    "bytes": 69212,
+    "seconds": 11.496,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-068-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-068",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "199a50d9d70602155bd758e891ba0798c4952a21676994ac7dd6386e6fc57916",
+    "audioSha256": "d9e93e9ed72266fa09566eaef65bf7a7b8c1126d8365c5ea281bbc2bb1c8ff21",
+    "bytes": 81596,
+    "seconds": 13.56,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-069-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-069",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "782f3c3ad35e62a913478986f5bb0845cf41bf5f8bc14081c6e77649d99bb9c1",
+    "audioSha256": "59ea315ac93b21665e88d151c68933821575d186f9951973021046971d8c83d5",
+    "bytes": 102476,
+    "seconds": 17.04,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-070-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-070",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "659c3103f1c94a507582b92502430e248b9d45017d83f432ecf292f0daf6682c",
+    "audioSha256": "4119c27e90236bf700e7761166977f7d04fd328a88e5c63e65d91f8c8d3db840",
+    "bytes": 94268,
+    "seconds": 15.672,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-071-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-071",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "7e0302b798bcfd2d0bf46e729da52021387a4db2b6af8e0d6889d5a33834d02a",
+    "audioSha256": "d49e16765cbc33c33d739b3cebe603cea970bf1dab80cb3c6768b1a7f9d6e9a0",
+    "bytes": 66332,
+    "seconds": 11.016,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-072-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-072",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "0869e4616a290e1be7ba64f30fdf1811623f1012112ce3073436b21fbf5bd5d9",
+    "audioSha256": "260d52506943d3334f9450ec18e9a4126ab6702895adf13a0e64cf722e7e5c52",
+    "bytes": 51932,
+    "seconds": 8.616,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-073-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-073",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "99a128523671322eaca30961c62076e05c27e4b59b675ecc73b4c5a4383fed46",
+    "audioSha256": "54d874135b169684b52773795bad0091170bbf77df1c0344ab406c813c57bbd2",
+    "bytes": 67052,
+    "seconds": 11.136,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-074-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-074",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "1b8ac1b49688fa6ff315b56e0db897dd20fe3ad5e581aba29470bfb652e8f0c4",
+    "audioSha256": "2f4dc1c793f5f3457c6910d12d97e9dda036f1267767da022fcac37d35077a64",
+    "bytes": 62876,
+    "seconds": 10.44,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-075-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-075",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "38afa25c5245319588456647c9db0ced108e5a6a1f4918bbc9bd1bec86139a65",
+    "audioSha256": "a3f91505916eece3571bb0104607a7303f57e510c8ba7a7aff2530b76e47a82f",
+    "bytes": 94700,
+    "seconds": 15.744,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-076-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-076",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "0d96441e119c31a6a0c0b687aa47c18427a414f2f179dad2c0a4494d33558171",
+    "audioSha256": "8275b8990464ed7c9e393d2ea3035721bcca0eb1857893d7d79a87b9c94e5ccd",
+    "bytes": 86780,
+    "seconds": 14.424,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-077-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-077",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "aa11e2e078cebc23a55d75947d745e8fc36407c33d5c223c61953d2af99c0888",
+    "audioSha256": "0a9e3f1c4136e2d743f4e716bb8adef3260eecda7d9de6367c66e7c4953727c1",
+    "bytes": 101900,
+    "seconds": 16.944,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-078-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-078",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "2fc5928fdfbbb823e3f5924bb0b3229909138bfd4117bd10069d0a1da8ca57bc",
+    "audioSha256": "1774daa24347a886ef06713091cb47a88f558101f0ae778f168480d8a461aa58",
+    "bytes": 43292,
+    "seconds": 7.176,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-079-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-079",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "8d62c6113c9c76b05dd7ce5dd07f19f348339096139fde160937604b94cce995",
+    "audioSha256": "67c4023a1b7af8ca8f87a6dbae4c6fd0d725d9cde3e7fdb9a9fc4c407080c756",
+    "bytes": 68924,
+    "seconds": 11.448,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-080-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-080",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "0e6278f2fdb4590b0e556ba40b1a8aa6b7bc87543675fce6ec244ab963ebcbc2",
+    "audioSha256": "9833ec9bbc3df61f2a4bf061e3eba572c25b2795f13bb34684f78a58d4144e4c",
+    "bytes": 77276,
+    "seconds": 12.84,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-081-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-081",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "fe85125999bbec7e4f20e0efc7f4fd2dcb15de8a219a48a15dbccbb8becff48b",
+    "audioSha256": "cddac13d325f99f15ef236c2eb35dff51a52f4ec101ccb1f217ad5d787c5834e",
+    "bytes": 87212,
+    "seconds": 14.496,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-082-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-082",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "848c4e2d20029f2cae1edd2af987cd5f63db58ba8bd58e644e73ac796a52c2fc",
+    "audioSha256": "a075863d439becf92fbe8c6828fd9a14ad96cb1ded00b4759635327064fcc144",
+    "bytes": 60428,
+    "seconds": 10.032,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-083-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-083",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "f4c8aad044251f27165a5a0e55fd995038d9e911a7ca7485bfbe9aa10fff68ce",
+    "audioSha256": "20819ec0daa57a06ab7fb16d41f5f50801089fee2dfe23c192ae52d49dd6f2d6",
+    "bytes": 71804,
+    "seconds": 11.928,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-084-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-084",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "0cf09ea9c93e9cbfebbbd724337013d6061e4d828acfd35971831003c326cd57",
+    "audioSha256": "31a76d26e25758af3e3123e485c6cd1b16562bca760ccc3c0a16e0877b3c8436",
+    "bytes": 69788,
+    "seconds": 11.592,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-085-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-085",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "4ac8c7070ccc064aeb91d92df014a1a8789a83c55b76fde1319c8e1614d4fc21",
+    "audioSha256": "ff84409f3a51aa6f4ffe333497c0ac9475882ab78376ebddfb7d889396f1e674",
+    "bytes": 80732,
+    "seconds": 13.416,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-086-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-086",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "a869225c56c1af57e5a0f945b17f460b500c1679a896a0fe0abfb34ab75d2d4c",
+    "audioSha256": "edb49d6d16834267f0caa94977f0057efe443432bcb04f6e37063170cf86a014",
+    "bytes": 90236,
+    "seconds": 15.0,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-087-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-087",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "c2d14d42b61fb96c4d1a67fe26951474b9d60147f37fe91bfdd2f7404ce7f3d5",
+    "audioSha256": "6c08b1db74f4430c9e2d132c95c59e320a5ac3426c9d3bfd56adcc5058b895a5",
+    "bytes": 98444,
+    "seconds": 16.368,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-089-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-089",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "214f9e84e52673020eed822b58ae38a813f127369b106b59942889ca35c1d555",
+    "audioSha256": "a52c9fd39d13aa9164ceacbced39cdce42fe4b4459aa296e770fe62954b2f5bc",
+    "bytes": 71084,
+    "seconds": 11.808,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-090-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-090",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "7271a4eaf94f483b3c2e91073c2f5936d0bd6b7bbaac1e3f899cb4d612ccf5c8",
+    "audioSha256": "74823fcf21deede4dd9b6a1ffe94f9d18c41e21a8000b3a18c7fe4a6ea930dac",
+    "bytes": 87356,
+    "seconds": 14.52,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-091-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-091",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "6781cf4389dadb1f348e631bceb9335c9c859e62ad175c39b7770a40950deab3",
+    "audioSha256": "c0d0a8a315ddf86a5ccf280ea5b0b4c3fe214a314b8011a4365489796a2c12cd",
+    "bytes": 49484,
+    "seconds": 8.208,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-092-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-092",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "92b4f8f98e2ceb485afc8237b334d71ee187e9bc55674769a50cadf89f00b464",
+    "audioSha256": "fae35a1ae41fc711a7f36b9504d1715392d6b3397d955a0f603a7b0d6c531ade",
+    "bytes": 58700,
+    "seconds": 9.744,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
+  },
+  "rts-user-20261125-booklet-093-prompt-20261028-1": {
+    "questionId": "rts-user-20261125-booklet-093",
+    "promptVersion": "rts-prompt-2026-10-28.1",
+    "textSha256": "078ae9384845d9cd8722ebab4b65405fe98e354e762c2f572c98b3b3cc411efe",
+    "audioSha256": "e64a2db4e508c5523f518290f72e50e613ca5b9ef42d512103fb3879f139714e",
+    "bytes": 73244,
+    "seconds": 12.168,
+    "voices": [
+      "piper:en_GB-vctk-medium:p225"
+    ],
+    "generator": "piper-tts 1.3.0",
+    "voiceSource": {
+      "dataset": "CSTR VCTK Corpus",
+      "license": "CC BY 4.0",
+      "modelCard": "https://huggingface.co/rhasspy/piper-voices/blob/main/en/en_GB/vctk/medium/MODEL_CARD",
+      "datasetSource": "https://datashare.ed.ac.uk/handle/10283/3443",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "datasetCreators": [
+        "Junichi Yamagishi",
+        "Christophe Veaux",
+        "Kirsten MacDonald"
+      ],
+      "changes": "Synthetic narration converted to mono 24 kHz MP3; no original recording redistributed."
+    }
   }
 }
