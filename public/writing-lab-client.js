@@ -279,7 +279,7 @@
         const all=await api('/attempts');listeningHistory=all;
         if(!target.isConnected) return;
         const history=all.filter(a=>a.kind===historyKind && (historyKind!=='mock'||(a.module||'writing')===mockModule));
-        target.innerHTML=history.length?history.map(a=>'<article class="history-row"><div><b>'+esc(a.title)+'</b><p class="muted">'+new Date(a.startedAt).toLocaleString()+' · '+(a.mode==='practice'?'Supported practice':a.mode==='exam'?'Exam-style':'')+' · '+(a.status==='submitted'?(a.total==null?(a.kind==='sst'?'Practice feedback ready':'Submitted · feedback pending'):a.total+'/'+a.maximum+' marks'+(a.score90==null?'':' · '+a.score90+'/90 practice result')):'In progress · '+a.completed+'/'+a.questions+' submitted')+'</p></div><button class="secondary" data-resume="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join(''):'<p class="empty">Your attempts will appear here after you start.</p>';
+        target.innerHTML=history.length?history.map(a=>'<article class="history-row"><div><b>'+esc(a.title)+'</b><p class="muted">'+new Date(a.startedAt).toLocaleString()+' · '+(a.mode==='practice'?'Supported practice':a.mode==='exam'?'Exam-style':'')+' · '+(a.status==='submitted'?(a.total==null?(a.kind==='sst'?(a.assessmentStatus==='unavailable'?'Practice feedback ready':'Awaiting feedback'):'Submitted · feedback pending'):a.total+'/'+a.maximum+' marks'+(a.score90==null?'':' · '+a.score90+'/90 practice result')):'In progress · '+a.completed+'/'+a.questions+' submitted')+'</p></div><button class="secondary" data-resume="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join(''):'<p class="empty">Your attempts will appear here after you start.</p>';
         if(window.MockReportUI&&historyKind==='mock'&&history.length)target.innerHTML='<div class="ipr-history-grid">'+history.map(a=>window.MockReportUI.historyCard({title:a.title,at:a.startedAt,status:a.status==='submitted'?'Completed':'In progress',score:a.score90,detail:a.status==='submitted'?a.questions+' questions':a.completed+'/'+a.questions+' submitted',actions:'<button class="secondary" data-resume="'+esc(a.id)+'">'+(a.status==='submitted'?'Score report':'Continue')+'</button>'+(a.status==='submitted'?'<button class="secondary" data-resume="'+esc(a.id)+'" data-mock-target="lab-'+esc(a.id)+'" data-mock-open="answers">Answers</button>':'')})).join('')+'</div>';
       } catch(e) { if(target.isConnected) target.innerHTML='<p class="error">'+esc(e.message)+'</p><button class="secondary" data-tab="history">Retry</button>'; }
     }
@@ -668,7 +668,7 @@
   function practiceHistory() {
     if(!attempt||attempt.kind==='mock'||!practiceTypes.includes(attempt.kind))return '';
     const rows=listeningHistory.filter(a=>a.testId===attempt.testId&&a.id!==attempt.id&&(attempt.status!=='submitted'||a.status==='submitted')).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));
-    return window.PracticeStudio.attemptHistory(rows.map((a,i)=>({id:a.id,label:'Attempt '+(rows.length-i),date:window.PracticeStudio.brisbaneDate(a.startedAt),mode:practiceModeLabel(a),status:a.status==='submitted'?(a.total==null?(a.kind==='sst'?'Practice feedback ready':'Feedback pending'):a.total+'/'+a.maximum+' marks'):'In progress',actions:'<button type="button" class="secondary" data-listening-attempt="'+esc(a.id)+'">'+(a.status==='submitted'?'Answer &amp; feedback':'Resume saved attempt')+'</button>'})));
+    return window.PracticeStudio.attemptHistory(rows.map((a,i)=>({id:a.id,label:'Attempt '+(rows.length-i),date:window.PracticeStudio.brisbaneDate(a.startedAt),mode:practiceModeLabel(a),status:a.status==='submitted'?(a.total==null?(a.kind==='sst'?(a.assessmentStatus==='unavailable'?'Practice feedback ready':'Awaiting feedback'):'Feedback pending'):a.total+'/'+a.maximum+' marks'):'In progress',actions:'<button type="button" class="secondary" data-listening-attempt="'+esc(a.id)+'">'+(a.status==='submitted'?'Answer &amp; feedback':'Resume saved attempt')+'</button>'})));
   }
   async function movePractice(direction,button) {
     if(moving||saveConflict||!attempt)return;
@@ -779,7 +779,7 @@
       status.textContent='The AI estimate is currently unavailable. Your practice feedback is ready.';
       return;
     }
-    status.textContent='Preparing your assessment automatically. You can leave and return later.';
+    status.textContent='Awaiting feedback. Your summary is saved. You can leave and check this attempt later.';
     const current=attempt, serial=navigationSerial, ownerToken=token();
     let checks=0;
     const stillViewing=()=>attempt===current && navigationSerial===serial && token()===ownerToken && workspaceVisible && status.isConnected;

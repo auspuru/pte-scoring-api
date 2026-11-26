@@ -366,7 +366,7 @@ test('Submitted SST polls saved assessment and shows reviewed feedback without a
     completed:[{at:100100,reason:'Submitted'}],results:[null],playback:[null],assessmentStatus:'pending',
     practiceFeedback:{wordCount:55,form:{score:2,maximum:2,reasons:[]},transcriptIdeas:['<img src=x onerror=alert(1)>']}};
   open(h,submitted);
-  assert.match(h.nodes.get('scoring-status').textContent,/Preparing your assessment/);
+  assert.match(h.nodes.get('scoring-status').textContent,/Awaiting feedback.*summary is saved/);
   assert.match(h.nodes.get('lab').innerHTML,/Form check 2\/2 · 55 words/);
   assert.match(h.nodes.get('lab').innerHTML,/&lt;img src=x onerror=alert\(1\)&gt;/);
   const unavailable=harness();
