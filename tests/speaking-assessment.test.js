@@ -42,3 +42,66 @@ test('Speaking API returns 202 for background review and keeps private playback 
  assert.equal((await request('/attempts/'+id+'/recording',undefined,'bob')).status,404);
  release();await lab.waitForAssessments();const done=await (await request('/attempts/'+id)).json();assert.equal(done.assessment.status,'complete');assert.equal(done.status,'submitted');assert.equal(calls,1);
 });
+
+test('Speaking Practice submits an RTS transcript to the OpenAI content grader and saves its confirmed result', async t => {
+ const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'speaking-openai-'));
+ const express = require('express'), app = express();
+ app.use(express.json());
+ const transcript = 'Some pages are missing. Could I have a replacement please?';
+ const providerRequests = [];
+ const grader = require('../mock-content-assessment').createMockContentAssessment({
+  apiKey:'test-key',
+  fetch:async (url, options) => {
+   const body = JSON.parse(options.body);
+   providerRequests.push({url, body});
+   return {ok:true, json:async () => ({status:'completed', output:[{
+    type:'function_call', name:body.tool_choice.name, status:'completed',
+    arguments:JSON.stringify({
+     total:6, overview:'The problem and request are clear.', strengths:['A clear request.'], improvements:[],
+     communicationAssessment:{
+      level:'developed', form:'substantive', goalEvidence_span:[5,10], contextEvidence_span:[1,4],
+      developmentEvidence_span:[5,10], ownWordingEvidence_span:[5,10], deductionEvidence_span:[],
+      reason:'The problem and requested action are clear and relevant.'
+     }
+    })
+   }]})};
+  }
+ });
+ const lab = require('../speaking-lab').installSpeakingLab(app, {
+  directory, verifyToken:token => token === 'alice' ? token : null, getAccount:async () => ({}),
+  callModel:grader.speaking, deliveryAssessmentAvailable:false, azureComparisonAvailable:false
+ });
+ const server = app.listen(0, '127.0.0.1');
+ await new Promise(resolve => server.once('listening', resolve));
+ t.after(async () => {
+  await lab.waitForAssessments();
+  server.closeAllConnections();
+  await new Promise(resolve => server.close(resolve));
+  await fs.rm(directory, {recursive:true, force:true});
+ });
+ const base = 'http://127.0.0.1:' + server.address().port + '/api/speaking/attempts';
+ const id = randomUUID();
+ async function post(route, body, expectedStatus = 200) {
+  const response = await fetch(base + route, {
+   method:'POST', headers:{'x-session-token':'alice', 'Content-Type':'application/json'},
+   body:JSON.stringify(body), signal:AbortSignal.timeout(2000)
+  });
+  assert.equal(response.status, expectedStatus);
+  return response.json();
+ }
+ await post('', {id, questionId:'rts-user-20261124-65'});
+ await post('/' + id + '/transcript', {text:transcript, revision:0});
+ const submitted = await post('/' + id + '/submit', {background:true}, 202);
+ assert.equal(submitted.assessment.status, 'pending');
+ await lab.waitForAssessments();
+ const saved = await lab.store.get('alice', id);
+ assert.equal(saved.assessment.status, 'complete');
+ assert.equal(saved.result.contentStatus, 'assessed');
+ assert.equal(saved.result.total, 6);
+ assert.equal(saved.result.communicationAssessment.ownWordingEvidence, 'Could I have a replacement please?');
+ assert.equal(saved.result.pronunciation, null);
+ assert.equal(providerRequests.length, 1);
+ assert.equal(providerRequests[0].url, 'https://api.openai.com/v1/responses');
+ assert.equal(providerRequests[0].body.model, 'gpt-6.1-sol');
+ assert.match(providerRequests[0].body.input[0].content, /Some pages are missing/);
+});

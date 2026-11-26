@@ -6543,10 +6543,10 @@ async function checkAIStatus(){
   try {
     const r = await fetch(API_URL+'/api/health');
     const d = await r.json();
-    const live = !!d.anthropicConfigured;
+    const live = !!(d.aiConfigured ?? d.anthropicConfigured);
     ['aiStatusTag','aiStatusTag2'].forEach(id => {
       const el = document.getElementById(id);
-      if(el) el.innerHTML = '<span class="dot"></span>' + (live ? 'Claude Live' : 'Local Mode');
+      if(el) el.innerHTML = '<span class="dot"></span>' + (live ? 'OpenAI Live' : 'Local Mode');
     });
   } catch(e){ /* leave default */ }
 }
@@ -8165,11 +8165,10 @@ Format:
 }`;
 
   try {
-    const res = await fetch(API_URL + '/api/claude', {
+    const res = await fetch(API_URL + '/api/openai-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
         max_tokens: 3500,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -9351,11 +9350,10 @@ Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE t
 }`;
 
   try {
-    const res = await fetch(API_URL + '/api/claude', {
+    const res = await fetch(API_URL + '/api/openai-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
         max_tokens: 1000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -9371,7 +9369,7 @@ Format for THREE-column types (opinion_alternatives, single_focus) — INCLUDE t
     try {
       parsed = cleanAndParseJSON(text);
     } catch (e) {
-      console.error('Failed to parse Claude ideas JSON:', text);
+      console.error('Failed to parse OpenAI ideas JSON:', text);
       throw new Error('Could not parse the suggested ideas. Please try again.');
     }
 
@@ -10228,11 +10226,10 @@ ${which === 'bp2' ? '- Do NOT add a "Therefore" line at the end of BP2.' : ''}
 - Output ONLY the rewritten paragraph text. No preamble, no labels, no markdown headers.`;
 
   try {
-    const res = await fetch(API_URL + '/api/claude', {
+    const res = await fetch(API_URL + '/api/openai-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
         max_tokens: 800,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -10316,11 +10313,10 @@ INSTRUCTIONS:
 - Output ONLY the rewritten sentence. No preamble, no quotes, no labels.`;
 
   try {
-    const res = await fetch(API_URL + '/api/claude', {
+    const res = await fetch(API_URL + '/api/openai-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
         max_tokens: 300,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -10475,11 +10471,10 @@ APPROACH_TIP: ...`;
   }
 
   try {
-    const res = await fetch(API_URL + '/api/claude', {
+    const res = await fetch(API_URL + '/api/openai-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
         max_tokens: 800,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -11203,11 +11198,11 @@ function renderMaster1000Vocab() {
           <div style="font-size: 40px; margin-bottom: 12px;">🔍</div>
           <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">"${escapeHtml(qClean)}" not found in Exam Essentials</h4>
           <p style="color: var(--ink-soft); font-size: 13.5px; margin-bottom: 16px; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.5;">
-            We couldn't find this exact word in our 1,000 IELTS/PTE database. You can query Claude AI to generate layman-friendly definition contexts and examples, or suggest spell-checks if it was mistyped.
+            We couldn't find this exact word in our 1,000 IELTS/PTE database. You can query OpenAI AI to generate layman-friendly definition contexts and examples, or suggest spell-checks if it was mistyped.
           </p>
           <button class="vocab-action-btn coach" onclick="queryExternalWord('${escapeHtml(qClean.replace(/'/g, "\\'"))}')" style="padding: 10px 24px; border-radius: 30px; margin: 0 auto; display: inline-flex; gap: 8px;">
             <span class="material-symbols-outlined">psychology</span>
-            <span>Ask Claude AI for Definitions &amp; Options</span>
+            <span>Ask OpenAI AI for Definitions &amp; Options</span>
           </button>
           <div id="externalWordResult" style="margin-top: 20px; text-align: left; width: 100%;"></div>
         </div>
@@ -11401,11 +11396,10 @@ Return ONLY a valid JSON object matching this structure (do not include markdown
 }`;
 
   try {
-    const res = await fetch(API_URL + '/api/claude', {
+    const res = await fetch(API_URL + '/api/openai-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
         max_tokens: 800,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -11531,11 +11525,10 @@ Evaluate it in 2-3 short bullet points, written in very simple, clear, layman-fr
 Keep total response under 80 words. Be encouraging, simple, and accurate. Plain text, no markdown.`;
 
   try {
-    const res = await fetch(API_URL + '/api/claude', {
+    const res = await fetch(API_URL + '/api/openai-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
         max_tokens: 250,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -11979,18 +11972,17 @@ Return ONLY a JSON array — no preamble, no markdown fences. Format:
 ]`;
 
   try {
-    const res = await fetch(API_URL + '/api/claude', {
+    const res = await fetch(API_URL + '/api/openai-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
         max_tokens: 1500,
         messages: [{ role: 'user', content: prompt }]
       })
     });
     if (!res.ok) {
       const errText = await res.text().catch(() => '');
-      console.error('Suggest: /api/claude error body:', errText);
+      console.error('Suggest: /api/openai-text error body:', errText);
       throw new Error(`Server returned ${res.status} — see console for details`);
     }
     const data = await res.json();
@@ -12104,11 +12096,10 @@ Return ONLY a JSON array — no preamble, no markdown fences. Format:
 ]`;
 
   try {
-    const res = await fetch(API_URL + '/api/claude', {
+    const res = await fetch(API_URL + '/api/openai-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
         max_tokens: 8000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -14595,7 +14586,7 @@ function stopLoadingMessages() {
   if (practiceLoadingTimer) { clearInterval(practiceLoadingTimer); practiceLoadingTimer = null; }
 }
 
-// ---------- Submit & score with Claude ----------
+// ---------- Submit & score with OpenAI ----------
 
 async function submitPracticeEssay() {
   const jobs = submitPracticeEssay.jobs ||= new Map();
@@ -17074,7 +17065,7 @@ async function runExtraction() {
   btn.disabled = true;
   btn.textContent = '✨ Extracting…';
   draftBox.style.display = 'block';
-  draftBox.innerHTML = '<div class="draft-reason">Claude is reading the passage and drafting key elements…</div>';
+  draftBox.innerHTML = '<div class="draft-reason">OpenAI is reading the passage and drafting key elements…</div>';
 
   try {
     const r = await fetch(API_URL + '/api/admin/passages/extract', {
@@ -18197,14 +18188,14 @@ async function queryExternalWord(word) {
   resultContainer.innerHTML = `
     <div style="margin-top: 14px; display: flex; align-items: center; justify-content: center; padding: 20px; background: var(--bg); border: 1px dashed var(--line-soft); border-radius: 12px;">
       <span class="spinner-dark" style="border-color: var(--accent); border-top-color: transparent; width: 18px; height: 18px; margin-right: 8px;"></span>
-      <span style="font-size: 13.5px; color: var(--ink-soft);">Claude AI is analyzing "${escapeHtml(word)}"...</span>
+      <span style="font-size: 13.5px; color: var(--ink-soft);">OpenAI AI is analyzing "${escapeHtml(word)}"...</span>
     </div>
   `;
   
   if (offlineMode) {
     resultContainer.innerHTML = `
       <div style="margin-top: 14px; padding: 14px; background: var(--bg); border: 1px solid var(--line-soft); border-radius: 8px; color: var(--ink-soft); font-size: 13px;">
-        Offline mode enabled. Connect to the internet to query Claude AI.
+        Offline mode enabled. Connect to the internet to query OpenAI AI.
       </div>
     `;
     return;
@@ -18251,11 +18242,10 @@ For Case 2 (Typo/Suggestions):
 `;
 
   try {
-    const res = await fetch(API_URL + '/api/claude', {
+    const res = await fetch(API_URL + '/api/openai-text', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
         max_tokens: 1200,
         messages: [{ role: 'user', content: prompt }]
       })

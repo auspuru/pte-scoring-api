@@ -140,7 +140,9 @@ const rtsPracticeRepairPins = require('../content/full-mock/rts-practice-repair-
 const sstPracticeRecoveryPins = require('../content/full-mock/sst-practice-recovery-compatible-pins.json');
 const submittedAnswerHistoryPins = require('../content/full-mock/submitted-answer-history-compatible-pins.json');
 const summaryProviderPins = require('../content/full-mock/summary-provider-compatible-pins.json');
+const practiceProviderPins = require('../content/full-mock/practice-provider-compatible-pins.json');
 function previousRtsSnapshot(current) {
+  current = previousPracticeIndexSnapshot(current, practiceProviderPins) ?? current;
   current = previousPracticeIndexSnapshot(current, summaryProviderPins) ?? current;
   current = previousPracticeIndexSnapshot(current, sstPracticeRecoveryPins) ?? current;
   current = previousPracticeIndexSnapshot(current, submittedAnswerHistoryPins) ?? current;
@@ -164,6 +166,8 @@ function compatibleTransportUpgrade(saved, current) {
   // Source projections preserve the frozen provider and model for each task.
   if (saved.configuration?.sst?.provider !== current.configuration.sst.provider
     || saved.configuration?.sst?.model !== current.configuration.sst.model) return false;
+  const beforePracticeProvider = previousPracticeIndexSnapshot(current, practiceProviderPins);
+  if (beforePracticeProvider && (digest(saved) === digest(beforePracticeProvider) || compatibleTransportUpgrade(saved, beforePracticeProvider))) return true;
   const beforeSummaryProvider = previousPracticeIndexSnapshot(current, summaryProviderPins);
   if (beforeSummaryProvider && (digest(saved) === digest(beforeSummaryProvider) || compatibleTransportUpgrade(saved, beforeSummaryProvider))) return true;
   const beforeSstPracticeRecovery = previousPracticeIndexSnapshot(current, sstPracticeRecoveryPins);

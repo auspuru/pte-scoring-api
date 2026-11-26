@@ -586,7 +586,7 @@ tr:hover td { background: var(--surface-dim); }
         <!-- v19.11: AI auto-extraction -->
         <div class="extract-bar">
           <button type="button" class="btn-extract" id="extractBtn" onclick="runExtraction()">✨ Auto-extract with AI</button>
-          <span class="extract-hint">Claude reads the passage, picks the framework, and drafts the key elements for your review.</span>
+          <span class="extract-hint">OpenAI reads the passage, picks the framework, and drafts the key elements for your review.</span>
         </div>
         <div class="extract-draft" id="extractDraft"></div>
 
@@ -1078,7 +1078,7 @@ async function runExtraction() {
   btn.disabled = true;
   btn.textContent = '✨ Extracting…';
   draftBox.className = 'extract-draft show';
-  draftBox.innerHTML = '<div class="draft-reason">Claude is reading the passage and drafting key elements…</div>';
+  draftBox.innerHTML = '<div class="draft-reason">OpenAI is reading the passage and drafting key elements…</div>';
 
   try {
     const r = await fetch(API + '/api/admin/passages/extract', {

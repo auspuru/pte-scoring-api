@@ -23,7 +23,8 @@ function api({ drafts = [coherent], planIssues = [], reviews = [{ issues: [] }] 
     app: { post: (url, fn) => { handler = fn; } },
     VOCAB_LEVELS: Array.from({ length: 5 }, () => ({ label: 'Clear English', desc: 'Clear and natural' })),
     detectUnsupportedClaims: () => [], splitSentences: text => text.split(/(?<=[.!?])\s+/),
-    anthropic: { messages: { create: async options => {
+    process: {env:{OPENAI_API_KEY:'test'}},
+    generateText: async options => {
       requests.push(options);
       const prompt = options.messages[0].content;
       let result;
@@ -33,7 +34,7 @@ function api({ drafts = [coherent], planIssues = [], reviews = [{ issues: [] }] 
         result = typeof review === 'string' ? review : JSON.stringify(review);
       } else result = drafts[Math.min(writing++, drafts.length - 1)];
       return { content: [{ text: result }] };
-    } } } };
+    } };
   vm.createContext(ctx);
   vm.runInContext(['getEffectiveTemplate', 'generateEssayPrompt', 'validateGeneratedEssayText'].map(name => fn(server, name)).join('\n'), ctx);
   const start = server.indexOf("app.post('/api/generate-essay',");
