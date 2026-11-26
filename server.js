@@ -4449,7 +4449,7 @@ function formatKeyElementsHint(keyElements) {
 async function judgeContentWithClaude(studentText, passageText, keyElements, timeoutMs = 30000, {legacy=false} = {}) {
   if (!anthropic) return null;
   const kpHint = formatKeyElementsHint(keyElements);
-  return (legacy ? legacySwtJudgmentService : swtJudgmentService).judge(studentText, passageText, kpHint, timeoutMs);
+  return (legacy ? legacySwtJudgmentService : previousSwtJudgmentService).judge(studentText, passageText, kpHint, timeoutMs);
 }
 
 async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = false, legacy = false, stage } = {}) {
@@ -4461,13 +4461,29 @@ async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = 
   return format.response(response, { repairReview });
 }
 
-const swtJudgmentService = createJudgmentService({
-  call: callSwtJudge, buildPrompt: buildJudgingPrompt, policyVersion: POLICY_VERSION,
+const createCurrentSwtService = call => createJudgmentService({
+  call, buildPrompt: buildJudgingPrompt, policyVersion: POLICY_VERSION,
   requireEditEvidence: true,
   isComplete: (result, summary, passage) => !applyScoringPolicy(result, summary, passage).needs_semantic_review,
   validationIssues: (result, summary, passage) => applyScoringPolicy(result, summary, passage).assessment_issues,
   onAttemptError: details => console.warn('[swt-grade] attempt failed:', JSON.stringify(details))
 });
+const openaiSummaryProvider = require('./mock-content-provider').createProvider();
+const swtJudgmentService = createCurrentSwtService(async (prompt, timeoutMs, {signal, semanticReassessment, stage} = {}) => {
+  const format = require('./swt-judge-format');
+  const repairReview = stage === 'repair-review';
+  const response = await openaiSummaryProvider.call(
+    format.request(prompt, openaiSummaryProvider.configuration.model, {semanticReassessment,repairReview}),
+    {timeoutMs,signal,task:'swt'}
+  );
+  return {...format.response(response, {repairReview}),source:'openai'};
+});
+const previousSwtJudgmentService = createCurrentSwtService(callSwtJudge);
+async function judgeWrittenSummary(studentText, passageText, keyElements, timeoutMs = 30000) {
+  if (!process.env.OPENAI_API_KEY) return null;
+  return swtJudgmentService.judge(studentText, passageText, formatKeyElementsHint(keyElements), timeoutMs);
+}
+
 const legacySwtJudgmentService = createJudgmentService({
   call: (prompt, timeoutMs, options) => callSwtJudge(prompt, timeoutMs, { ...options, legacy:true }),
   buildPrompt: legacySwtPolicy.buildJudgingPrompt, policyVersion: legacySwtPolicy.POLICY_VERSION,
@@ -4514,7 +4530,7 @@ app.post('/api/swt/sample/:id', async (req, res) => {
     const form = validateForm(sample);
     if (!sample || !form.valid) return res.json({ status: 'needs_revision', sample,
       note: 'This reference needs a form correction before it can be a full-score example.', scoring_version: POLICY_VERSION });
-    const raw = await judgeContentWithClaude(sample, p.text, p.keyElements);
+    const raw = await judgeWrittenSummary(sample, p.text, p.keyElements);
     if (!raw) return res.json({ status: 'unavailable', sample,
       note: 'The score check is unavailable. You can still use this example to study how the ideas connect.', scoring_version: POLICY_VERSION });
     const judged = applyScoringPolicy(raw, sample, p.text);
@@ -4950,7 +4966,7 @@ app.post('/api/grade', async (req, res) => {
     // one 90-second budget, including recovery for the independent review.
     // Do not start another provider retry loop at the route level.
     let [llmJudgment, enrichedSpelling] = await Promise.all([
-      judgeContentWithClaude(text, prompt, keyPoints).catch(error => {
+      judgeWrittenSummary(text, prompt, keyPoints).catch(error => {
         console.warn('[swt-grade] assessment unavailable:', error.code || error.name); return null;
       }),
       (EXTERNAL_SPELLCHECK_ENABLED ? enrichSpellingWithDatamuse(spelling, text) : Promise.resolve(spelling)).catch(() => spelling)
@@ -5189,7 +5205,7 @@ app.post('/api/grade', async (req, res) => {
       llm_used: !!llmJudgment,
       scoring_version: POLICY_VERSION,
       scoring_criteria: SWT_SCORING_CRITERIA,
-      mode: llmJudgment ? 'claude' : 'local',
+      mode: llmJudgment ? 'openai' : 'local',
       vocabulary_suggestions: generateVocabSuggestions(text),
       spelling_details: {
         count: spelling.count,
@@ -5252,7 +5268,7 @@ app.post('/api/grade', async (req, res) => {
         }))
         .filter(s => s.synonyms.length > 0);
       result.vocabulary_swap_suggestions = filtered;
-      result.swap_source = 'claude';
+      result.swap_source = 'openai';
       // v19.16 diagnostic: log how many swaps Claude returned vs how many survived
       // the substring-must-be-in-text filter. If "raw" is consistently low, Claude
       // is ignoring the prompt's 7-8 mandate. If "raw" is fine but "filtered" is
@@ -6552,6 +6568,20 @@ async function writingContentModel(prompt, { sstPractice = false } = {}) {
     throw error;
   }
 }
+async function scoreSpokenSummary(prompt, {sstPractice = false} = {}) {
+  try {
+    const result = await mockContent.writing(prompt);
+    return {...result,scoringProvider:mockContent.configuration.provider,scoringModel:mockContent.configuration.model};
+  } catch (error) {
+    if (error.code === 'MOCK_CONTENT_UNAVAILABLE') error.code = 'invalid_api_key';
+    if (sstPractice && ['MOCK_CONTENT_OUTPUT', 'MOCK_CONTENT_TRUNCATED', 'MOCK_CONTENT_REFUSAL'].includes(error.code)) return null;
+    throw error;
+  }
+}
+const openaiMockAdapters = require('./full-mock/adapters').createAdapters({ speakingContentModel:mockContent.speaking,
+  writingContentModel:scoreSpokenSummary, swtGrader:mockContent.swt, essayGrader:mockContent.essay });
+const previousMockAdapters = require('./full-mock/adapters').createAdapters({ speakingContentModel:mockContent.speaking,
+  writingContentModel, swtGrader:mockContent.swt, essayGrader:mockContent.essay });
 const fullMock = require('./full-mock/api').installFullMock(app, {
   requireAdmin,
   pool: pgPool, directory: path.join(DATA_DIR, 'full-mock'),
@@ -6561,17 +6591,15 @@ const fullMock = require('./full-mock/api').installFullMock(app, {
     users:process.env.FULL_MOCK_PREVIEW_USERS, verifyImpersonation:verifyImpersonationToken
   }),
   assessment: {
-    adapters: require('./full-mock/adapters').createAdapters({ speakingContentModel:mockContent.speaking, writingContentModel,
-      swtGrader:mockContent.swt, essayGrader:mockContent.essay }),
-    previousAdapters: require('./full-mock/adapters').createAdapters({ speakingContentModel:mockContent.speaking, writingContentModel:mockContent.writing,
-      swtGrader:mockContent.swt, essayGrader:mockContent.essay }),
-    previousProviderConfiguration:require('./full-mock/assessment').configuration(),
+    adapters:openaiMockAdapters,
+    previousAdapters:previousMockAdapters,
+    previousProviderConfiguration:require('./full-mock/assessment').claudeConfiguration(),
     // Attempts frozen before the model change keep their concrete providers.
     // Their successful stages are never repeated or relabelled as GPT grades.
     legacyAdapters: require('./full-mock/adapters').createAdapters({ speakingContentModel, writingContentModel,
       swtGrader:(question,text,options)=>judgeContentWithClaude(text,question.text,{},30000,options),essayGrader }),
     legacyProviderConfiguration:require('./full-mock/assessment').legacyConfiguration(),
-    providerConfiguration: require('./full-mock/assessment').claudeConfiguration()
+    providerConfiguration: require('./full-mock/assessment').configuration()
   }
 });
 const listeningPapers=require('./listening-mock/papers').registeredPapers();
@@ -6579,8 +6607,10 @@ const listeningMock=require('./full-mock/api').installFullMock(app,{
   variant:'listening',pool:pgPool,directory:path.join(DATA_DIR,'listening-mock'),paper:listeningPapers[0],papers:listeningPapers,
   verifyToken:token=>verifySessionToken(token)||verifyImpersonationToken(token),getAccount:getPracticeAccount,canPreview:()=>true,
   assessment:{
-    adapters:require('./full-mock/adapters').createAdapters({speakingContentModel:mockContent.speaking,writingContentModel,swtGrader:mockContent.swt,essayGrader:mockContent.essay}),
-    providerConfiguration:require('./full-mock/assessment').claudeConfiguration()
+    adapters:openaiMockAdapters,
+    previousAdapters:previousMockAdapters,
+    previousProviderConfiguration:require('./full-mock/assessment').claudeConfiguration(),
+    providerConfiguration:require('./full-mock/assessment').configuration()
   },
   legacyAttempts:async username=>(await writingLab.store.list(username,{omitMockAudio:true})).filter(a=>a.kind==='mock'&&a.module==='listening').map(a=>{
     const score=require('./public/writing-lab-report').summarize(a.questions,a.results,a);
@@ -6603,10 +6633,11 @@ const writingLab = require('./writing-lab').installWritingLab(app, {
   verifyToken: token => verifySessionToken(token) || verifyImpersonationToken(token),
   getAccount: getPracticeAccount,
   essayGrader,
-  swtGrader: (question,text) => judgeContentWithClaude(text,question.text,{}),
+  swtGrader: (question,text) => judgeWrittenSummary(text,question.text,{}),
   mockGraders:{callModel:mockContent.writing,swtGrader:mockContent.swt,essayGrader:mockContent.essay},
   overallGrader:mockContent.overall,
-  callModel: writingContentModel
+  callModel: scoreSpokenSummary,
+  historicalSstModel: writingContentModel
 });
 mockTestAlerts=require('./mock-test-alerts').createMockTestAlerts({pool:pgPool,directory:path.join(DATA_DIR,'mock-alerts'),delivery:speakingAlerts,enabled:mockAlertsEnabled,
   sources:require('./mock-test-alert-sources').createSources({pool:pgPool,speakingStore:speakingMock.store,writingStore:writingLab.store,fullStore:fullMock.store,listeningStore:listeningMock.store,

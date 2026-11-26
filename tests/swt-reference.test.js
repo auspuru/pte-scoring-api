@@ -157,7 +157,7 @@ test('Generic guide labels do not depend on database object key order', () => {
 async function checkReference(stored, judge, body) {
   let route, result, status = 200;
   const ctx = { studentPassage, POLICY_VERSION, applyScoringPolicy, validateForm,
-    PassageAPI: { getById: async () => stored }, judgeContentWithClaude: judge,
+    PassageAPI: { getById: async () => stored }, judgeWrittenSummary: judge,
     app: { post: (name, handler) => { route = handler; } } };
   vm.createContext(ctx);
   const start = server.indexOf("app.post('/api/swt/sample/:id'");

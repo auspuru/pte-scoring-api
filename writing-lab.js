@@ -165,7 +165,7 @@ function present(a) {
       ...(q.type === 'swt' ? {teachingSample:plainSwtSample(q.text)} : {}) } : {}) }));
   return result;
 }
-function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, essayGrader = null, swtGrader = null, mockGraders = null, overallGrader = null, onMockError = async()=>{}, speakingAllowed = require('./speaking-access').allowed, now = Date.now }) {
+function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, historicalSstModel = callModel, essayGrader = null, swtGrader = null, mockGraders = null, overallGrader = null, onMockError = async()=>{}, speakingAllowed = require('./speaking-access').allowed, now = Date.now }) {
   approvedAudio.install(app);
   const router = express.Router(), store = createStore(pool, directory), pending = new Map();
   randomPractice.install(app,{writingStore:store,verifyToken,getAccount,speakingAllowed});
@@ -177,7 +177,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   const recovery = require('./writing-lab-recovery').createRecovery({store,now,isConfirmed:(a,i)=>!!a.results[i]&&!retryableResult(a.results[i],a.questions[i],a)});
   const sstReassessment = require('./writing-lab-sst-reassessment').createRunner({store,now,
     model:process.env.CLAUDE_MODEL||'claude-haiku-4-5-20251001',
-    score:(question,answer)=>scoring.grade(question,answer,callModel),
+    score:(question,answer)=>scoring.grade(question,answer,historicalSstModel),
     onComplete:(uid,attempt)=>reviewer.ensure(uid,attempt)});
   // A submitted answer is immutable. Assess outside the answer-save transaction,
   // and share the same job with the results page to avoid duplicate model calls.

@@ -68,7 +68,7 @@ async function grade(fixture, semanticJudgment, { passageId, getPassage } = {}) 
     detectFirstPerson: () => ({ detected: false, isProblematic: false, hasPerspectiveShift: false, issues: [] }),
     checkSpelling: () => ({ count: 1, errors: ['recieved'],
       suggestions: [{ misspelled: 'recieved', suggestion: 'received' }] }),
-    judgeContentWithClaude: async () => semanticJudgment && structuredClone(semanticJudgment),
+    judgeWrittenSummary: async () => semanticJudgment && structuredClone(semanticJudgment),
     stripHtml: text => text,
     checkKeyPoint: () => ({ present: true }),
     estimateSkillContributions: () => ({}),

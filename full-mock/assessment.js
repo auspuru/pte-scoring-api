@@ -139,7 +139,9 @@ const passageSearchPins = require('../content/full-mock/practice-passage-search-
 const rtsPracticeRepairPins = require('../content/full-mock/rts-practice-repair-compatible-pins.json');
 const sstPracticeRecoveryPins = require('../content/full-mock/sst-practice-recovery-compatible-pins.json');
 const submittedAnswerHistoryPins = require('../content/full-mock/submitted-answer-history-compatible-pins.json');
+const summaryProviderPins = require('../content/full-mock/summary-provider-compatible-pins.json');
 function previousRtsSnapshot(current) {
+  current = previousPracticeIndexSnapshot(current, summaryProviderPins) ?? current;
   current = previousPracticeIndexSnapshot(current, sstPracticeRecoveryPins) ?? current;
   current = previousPracticeIndexSnapshot(current, submittedAnswerHistoryPins) ?? current;
   current = previousPracticeIndexSnapshot(current, rtsPracticeRepairPins) ?? current;
@@ -159,6 +161,11 @@ function previousRtsSnapshot(current) {
   return { ...current, scoringSources: sources };
 }
 function compatibleTransportUpgrade(saved, current) {
+  // Source projections preserve the frozen provider and model for each task.
+  if (saved.configuration?.sst?.provider !== current.configuration.sst.provider
+    || saved.configuration?.sst?.model !== current.configuration.sst.model) return false;
+  const beforeSummaryProvider = previousPracticeIndexSnapshot(current, summaryProviderPins);
+  if (beforeSummaryProvider && (digest(saved) === digest(beforeSummaryProvider) || compatibleTransportUpgrade(saved, beforeSummaryProvider))) return true;
   const beforeSstPracticeRecovery = previousPracticeIndexSnapshot(current, sstPracticeRecoveryPins);
   if (beforeSstPracticeRecovery && (digest(saved) === digest(beforeSstPracticeRecovery) || compatibleTransportUpgrade(saved, beforeSstPracticeRecovery))) return true;
   const beforeSubmittedAnswerHistory = previousPracticeIndexSnapshot(current, submittedAnswerHistoryPins);
@@ -832,17 +839,27 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
   const trustedPapers = new Map([...papers, paper].map(value => [digest(value), value]));
   const trustedSnapshots = new Map([...trustedPapers].map(([paperHash, value]) => {
     const current = paperHash === currentSnapshot.paperHash ? currentSnapshot : snapshot(providerConfiguration, undefined, value);
-    const preRts = previousRtsSnapshot(current);
-    return [paperHash, { current, hash: digest(current), preRts, preRtsHash: preRts && digest(preRts),
-      previous: previousAdapters && previousProviderConfiguration ? snapshot(previousProviderConfiguration, undefined, value) : null,
+    const previous = previousAdapters && previousProviderConfiguration ? snapshot(previousProviderConfiguration, undefined, value) : null;
+    const preRts = previousRtsSnapshot(previous ?? current);
+    return [paperHash, { current, hash: digest(current), compatibleAdapters: new Map(), preRts, preRtsHash: preRts && digest(preRts),
+      previous,
       legacy: legacyAdapters && legacyProviderConfiguration ? snapshot(legacyProviderConfiguration, undefined, value) : null }];
   }));
   function validate(state) {
     const saved = state.assessment, trusted = trustedSnapshots.get(state.paperHash);
     if (trusted && saved && digest(saved.snapshot) === saved.snapshotHash && saved.version === VERSION && saved.snapshot.paperHash === state.paperHash) {
-      if (saved.snapshotHash === trusted.hash || saved.snapshotHash === trusted.preRtsHash || compatibleTransportUpgrade(saved.snapshot,trusted.current)) return adapters;
-      if (trusted.previous && compatibleTransportUpgrade(saved.snapshot,trusted.previous)) return previousAdapters;
-      if (trusted.legacy && compatibleTransportUpgrade(saved.snapshot,trusted.legacy)) return legacyAdapters;
+      if (saved.snapshotHash === trusted.hash) return adapters;
+      if (saved.snapshotHash === trusted.preRtsHash) return trusted.previous ? previousAdapters : adapters;
+      const cached = trusted.compatibleAdapters.get(saved.snapshotHash);
+      if (cached) return cached;
+      // Reuse a verified match for subsequent scoring stages of the same
+      // frozen snapshot. Its integrity is still checked on every read.
+      for (const [candidate, adapter] of [[trusted.current, adapters], [trusted.previous, previousAdapters], [trusted.legacy, legacyAdapters]]) {
+        if (candidate && compatibleTransportUpgrade(saved.snapshot,candidate)) {
+          trusted.compatibleAdapters.set(saved.snapshotHash,adapter);
+          return adapter;
+        }
+      }
     }
     throw fail('This attempt uses a different assessment version. Its saved answers and results are retained.', 409);
   }

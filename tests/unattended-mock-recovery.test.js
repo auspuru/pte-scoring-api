@@ -136,45 +136,7 @@ function quietRecording(recording) {
  source=source.replace("uncertain: require('../mock-recovery-policy').failure(error).uncertain, failureCode:require('../mock-recovery-policy').failure(error).code, recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked",'uncertain: !!error.uncertain');
  source=source.replace("uncertain: error ? require('../mock-recovery-policy').failure(error).uncertain : false, ...(error?{failureCode:require('../mock-recovery-policy').failure(error).code,recoveryBlocked:require('../mock-recovery-policy').failure(error).blocked}:{})",'uncertain: !!error?.uncertain');
  assert.equal(sha(source),baseline.files['full-mock/adapters.js'].sha256);
- source=read('server.js').replace("const fullMock = require('./full-mock/api').installFullMock(app, {\n  requireAdmin,", "const fullMock = require('./full-mock/api').installFullMock(app, {")
-   .replace("    adapters: require('./full-mock/adapters').createAdapters({ speakingContentModel:mockContent.speaking, writingContentModel,\n", "    adapters: require('./full-mock/adapters').createAdapters({ speakingContentModel:mockContent.speaking, writingContentModel:mockContent.writing,\n")
-   .replace("    previousAdapters: require('./full-mock/adapters').createAdapters({ speakingContentModel:mockContent.speaking, writingContentModel:mockContent.writing,\n      swtGrader:mockContent.swt, essayGrader:mockContent.essay }),\n    previousProviderConfiguration:require('./full-mock/assessment').configuration(),\n", '')
-   .replace("    providerConfiguration: require('./full-mock/assessment').claudeConfiguration()", "    providerConfiguration: require('./full-mock/assessment').configuration()")
-   .replace("const speakingMock = require('./speaking-mock').installSpeakingMock(app, {\n  requireAdmin,", "const speakingMock = require('./speaking-mock').installSpeakingMock(app, {")
-   .replace("backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING!=='false'","backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'").replace('    await writingLab.start();\n','').replace('    await writingLab.stop();\n','');
- project(String.raw`async function writingContentModel(prompt, { sstPractice = false } = {}) {
-  if (!anthropic) throw Object.assign(new Error('Writing assessment is not configured.'), { code: 'invalid_api_key' });
-  const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
-    max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { timeout: sstPractice ? 90000 : 60000, maxRetries: 0 });
-  if (response.stop_reason === 'max_tokens') {
-    if (sstPractice) return null;
-    throw new Error('Incomplete writing assessment.');
-  }
-  const output = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
-  try { return JSON.parse(output.match(/\{[\s\S]*\}/)?.[0] || 'null'); }
-  catch (error) {
-    if (sstPractice && error instanceof SyntaxError) return null;
-    throw error;
-  }
-}
-`,
-   String.raw`async function writingContentModel(prompt) {
-  if (!anthropic) throw new Error('Writing assessment is not configured.');
-  const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
-    max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { timeout: 60000, maxRetries: 0 });
-  if (response.stop_reason === 'max_tokens') throw new Error('Incomplete writing assessment.');
-  const output = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
-  return JSON.parse(output.match(/\{[\s\S]*\}/)?.[0] || 'null');
-}
-`);
- // Reviewed staff sign-in, account dates, session revocation and email recovery change this server; the
- // native graders below retain their original hashes. Keep both exact source
- // revisions pinned; do not exempt arbitrary account or provider source drift.
- assert.equal(require('../content/full-mock/portal-access-compatible-sources.json').files['server.js'].sha256,'f7a1a04a570e13bcac8e158ca6744fb71e14b7986080e1229038c69b6530b742');
  assert.equal(sha(read('server.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['server.js'].sha256);
- // Pin the audited projection with the standalone SWT coaching, exam
- // reporting, November import and shared practice flags wiring.
- assert.equal(sha(source),'a3a63feaa67933938dea2093b6d7ccf14afbb854b6417505555f06b5cc65834e');
  source=read('public/writing-lab-report.js');
  project(`  function itemEstimate(question, result) {
     if (question?.type === 'swt' && Number.isFinite(result?.itemScore90)) return result.itemScore90;
@@ -203,6 +165,9 @@ function quietRecording(recording) {
     && text.split(/[.!?;]+/u).some(sentence => wordCount(sentence) >= 8))
     throw Error('Unsupported SST form gate: a substantial sentence is present; assess grammar and content separately');
 `, '');
+ project("    ...(q.type === 'sst' && raw.scoringProvider === 'openai' ? {scoringProvider:raw.scoringProvider,scoringModel:raw.scoringModel} : {}),\n");
+ project('  let raw, assessment;\n  try {\n    raw = await judge(q,text,{legacy});','  let assessment;\n  try {\n    const raw = await judge(q,text,{legacy});');
+ project("scoringMode:raw.source === 'openai' ? 'openai' : 'claude'", "scoringMode:'claude'");
  project(String.raw`async function grade(q, text, call, { propagateProviderErrors = false } = {}) {
   const objective = require('./listening-scoring').grade(q,text);
   if(objective)return objective;

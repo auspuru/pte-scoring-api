@@ -199,7 +199,7 @@ test('SWT defaults to Sonnet for scoring and review independently of the global 
   assert.deepEqual(models({CLAUDE_REASSESSMENT_MODEL:'legacy-review-model'}), ['claude-sonnet-4-6','claude-sonnet-4-6','claude-sonnet-4-6']);
 });
 
-test('The production SWT call selects the dedicated scorer and retains the provider model identity', async () => {
+test('The frozen Claude SWT call selects the dedicated scorer and retains the provider model identity', async () => {
   const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
   const source = fs.readFileSync(path.join(__dirname,'..','server.js'),'utf8');
   const start = source.indexOf('async function callSwtJudge('), end = source.indexOf('\n}',start)+2;

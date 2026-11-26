@@ -118,6 +118,7 @@ function normalize(q, text, raw) {
   }
   return { version: q.type === 'swt' ? SWT_POLICY_VERSION : VERSION, assessmentType: 'AI practice assessment', scores, maxima, total, maximum, wordCount: form.count, gated, reasons,
     ...(q.type === 'swt' ? {itemScore90:itemScore90(scores.content,total), source_identity:swtQuestionSourceIdentity(q)} : {}),
+    ...(q.type === 'sst' && raw.scoringProvider === 'openai' ? {scoringProvider:raw.scoringProvider,scoringModel:raw.scoringModel} : {}),
     ...(synthesis ? { summary_assessment: { synthesis }, full_content_eligible: !gated && scores.content === 4 && synthesis.quality === 'effective' } : {}),
     feedback,
     strengths: raw.strengths.filter(x => typeof x === 'string').slice(0,3), improvements: [...reasons, ...improvements], errors };
@@ -176,9 +177,9 @@ async function gradeUnifiedSwt(q, text, judge, {legacy=false} = {}) {
   const identity = legacy ? {} : {source_identity:swtQuestionSourceIdentity(q)};
   if (!form.score) return {...zeroResult('swt',text,form.reasons),version,score_provisional:false,
     ...identity,...(legacy?{}:{itemScore90:10})};
-  let assessment;
+  let raw, assessment;
   try {
-    const raw = await judge(q,text,{legacy});
+    raw = await judge(q,text,{legacy});
     if (!raw) throw Error('The shared SWT assessment is unavailable.');
     assessment = (legacy ? legacyPolicy.applyScoringPolicy : applyScoringPolicy)(raw,text,q.text);
     if (assessment.needs_semantic_review || !raw.consistency_reviewed) throw Error('The shared SWT review is incomplete.');
@@ -193,7 +194,7 @@ async function gradeUnifiedSwt(q, text, judge, {legacy=false} = {}) {
     const items=assessment[key+'_annotations'].filter(item=>item.affects_score);
     return items.map(item=>item.meaning_effect).filter(Boolean).join(' ') || 'Meaning is clear and preserved.';
   };
-  return {version,assessmentType:'Unified SWT practice assessment',scoringMode:'claude',score_provisional:false,
+  return {version,assessmentType:'Unified SWT practice assessment',scoringMode:raw.source === 'openai' ? 'openai' : 'claude',score_provisional:false,
     scores,maxima:MAXIMA.swt,total,maximum:9,wordCount:form.count,gated,
     ...identity,...(legacy?{}:{itemScore90:itemScore90(scores.content,total)}),
     reasons:gated?['The response does not convey the passage’s central message.']:[],...(gated?{diagnosticScores}:{}),

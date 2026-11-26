@@ -20,3 +20,24 @@ test('New Full Mocks freeze Claude for SST while the last GPT snapshot keeps its
     scoringSources:require('../content/full-mock/sst-claude-previous-sources.json')};
   assert.equal(engine.validate({paperHash:frozen.paperHash,assessment:{version:assessment.VERSION,snapshot:frozen,snapshotHash:digest(frozen)}}),previous);
 });
+
+test('New mock SST uses OpenAI while in-progress Claude SST uses the frozen adapter',()=>{
+  const pins=require('../content/full-mock/summary-provider-compatible-pins.json');
+  const current={},previous={};
+  const engine=assessment.createEngine({store:{},adapters:current,previousAdapters:previous,
+    previousProviderConfiguration:assessment.claudeConfiguration({})});
+  const validate=snapshot=>engine.validate({paperHash:snapshot.paperHash,
+    assessment:{version:assessment.VERSION,snapshot,snapshotHash:digest(snapshot)}});
+  assert.equal(engine.snapshot.configuration.sst.provider,'openai');
+  assert.equal(validate(engine.snapshot),current);
+
+  const frozen=structuredClone(assessment.snapshot(assessment.claudeConfiguration({})));
+  for (const [file,sha256] of Object.entries(pins.previousFiles)) frozen.scoringSources.files[file].sha256=sha256;
+  assert.equal(digest(frozen.scoringSources),pins.previousDigest);
+  assert.equal(validate(frozen),previous);
+
+  const earlier={...frozen,configuration:assessment.configuration({})};
+  assert.equal(validate(earlier),current);
+  frozen.scoringSources.files['server.js'].sha256='0'.repeat(64);
+  assert.throws(()=>validate(frozen),/different assessment version/);
+});
