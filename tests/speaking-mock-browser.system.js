@@ -64,3 +64,109 @@ for(const [mobile,paperIndex] of [[false,0],[true,0],[false,3],[true,4]])test('S
  assert.deepEqual(dialogs,[]);assert.deepEqual(errors,[]);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
  }catch(error){t.diagnostic('Screen: '+await page.$eval('body',node=>node.innerText.slice(-2000)));t.diagnostic('Requests: created='+created+' uploads='+uploads+'; page errors='+errors.join('; '));throw error;}
 });
+
+test('Speaking Mock 6 loads its prompts, fits all five images and reports the saved question references',{timeout:90000},async t=>{
+ const paper=bank.papers.find(candidate=>candidate.id==='speaking-mock-6');
+ assert(paper,'Mock 6 is available to start');
+ const directory=await fs.mkdtemp(path.join(os.tmpdir(),'speaking-mock-6-browser-'));
+ let offset=0,browser;
+ const app=express();app.use(express.json());
+ const service=installSpeakingMock(app,{directory,now:()=>Date.now()+offset,verifyToken:token=>token==='alice'?'alice':null,getAccount:async()=>({}),azureAvailable:true,
+   gradeResponse:async q=>{
+     const maximum=require('../speaking-mock-report').contentMaximum(q);
+     return {transcript:'Saved answer for '+q.id,content:{scoringMode:'ai',total:maximum,maximum},azure:{status:'assessed',pronunciation:{score:4},fluency:{score:4}}};
+   }});
+ await service.store.initialise();
+ app.use(express.static(path.join(root,'public'),{index:false}));
+ const styles=(await fs.readFile(path.join(root,'public','index.html'),'utf8')).match(/<link rel="stylesheet" href="(?!https?:|\/\/)[^"]+"[^>]*>/g).join('');
+ app.get('/',(req,res)=>res.type('html').send(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">
+ ${styles}</head>
+ <body style="margin:0"><main id="appShell"><section id="speakingMockPane" class="pane active"></section></main>
+ <script>window.currentUserId="alice";sessionStorage.setItem("pte_session_token","alice");window.__mockOffset=0;const realNow=Date.now;Date.now=()=>realNow()+window.__mockOffset;</script>
+ <script src="/portal-exam-mode.js"></script><script src="/speaking-start-cue.js"></script><script src="/speaking-images.js"></script><script src="/mock-impact-feedback.js"></script><script src="/mock-report-ui.js"></script>
+ <script>
+ // The tests above cover native fullscreen. Keep its viewport styling here while independently exercising all Mock 6 questions.
+ const examSet=PortalExamMode.set;
+ PortalExamMode.set=(owner,enabled,pane)=>examSet(owner,enabled,pane);
+ PortalExamMode.prepare=async(owner,pane)=>{examSet(owner,true,pane);return true;};
+ </script>
+ <script src="/speaking-mock-client.js"></script><script>SpeakingMock.open({history:true});</script></body></html>`));
+ const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
+ t.after(async()=>{await browser?.close();await service.waitForJobs();server.closeAllConnections();await new Promise(resolve=>server.close(resolve));await fs.rm(directory,{recursive:true,force:true});});
+ const base='http://127.0.0.1:'+server.address().port,id=require('node:crypto').randomUUID();
+ const request=async(route,body)=>{
+   const recording=Buffer.isBuffer(body),reply=await fetch(base+'/api/speaking-mocks'+route,{method:body===undefined?'GET':'POST',headers:{'x-session-token':'alice','Content-Type':recording?'audio/webm':'application/json'},body:recording?body:JSON.stringify(body)});
+   const result=await reply.json();
+   assert(reply.ok,route+': '+JSON.stringify(result));
+   return result;
+ };
+ assert((await request('/catalog')).papers.some(candidate=>candidate.id===paper.id));
+ const attempt='/attempts/'+id;
+ let active=await request('/attempts',{id,paperId:paper.id});
+ assert.equal(active.deadline-active.startedAt,40*60000);
+ browser=await puppeteer.launch({headless:true,...(process.env.FULL_MOCK_TEST_CHROME_PATH?{executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH}:{}),args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']});
+ const page=await browser.newPage();
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ page.setDefaultTimeout(8000);
+ const images=[];
+ for(const [index,question] of paper.questions.entries()){
+   assert.equal(active.question.id,question.id);
+   const {audioUrl,imageUrl,displayImageUrl}=active.question;
+   for(const [url,type] of [[audioUrl,'audio/'],[imageUrl,'image/'],[displayImageUrl,'image/']]){
+     if(!url)continue;
+     const media=await fetch(base+url);
+     assert(media.ok&&media.headers.get('content-type')?.startsWith(type),question.id+' failed to load '+url);
+     assert((await media.arrayBuffer()).byteLength>100,question.id+' has an empty media file');
+   }
+   if(question.type==='di'){
+     images.push({index,question});
+     await page.setViewport({width:1366,height:768});
+     await page.goto(base);
+     await page.evaluate(ms=>window.__mockOffset=ms,offset);
+     await page.waitForSelector('[data-sm="resume"]');
+     await page.click('[data-sm="resume"]');
+     await page.waitForFunction(title=>document.querySelector('.sm-exam-image img')?.naturalWidth>0&&document.querySelector('.sm-image-title')?.textContent===title,{},question.title).catch(async error=>{t.diagnostic(await page.$eval('body',node=>node.innerText.slice(-1400)));throw error;});
+     for(const viewport of [{width:1280,height:720},{width:1366,height:768},{width:1440,height:900}]){
+       await page.setViewport(viewport);
+       const dimensions=await page.$eval('.sm-exam-image img',img=>{
+         const rect=img.getBoundingClientRect(),area=document.querySelector('.sm-exam-main').getBoundingClientRect();
+         return {width:rect.width,height:rect.height,ratio:img.naturalWidth/img.naturalHeight,scale:rect.width/img.naturalWidth,fits:rect.top>=area.top&&rect.bottom<=area.bottom&&rect.left>=area.left&&rect.right<=area.right,objectFit:getComputedStyle(img).objectFit};
+       });
+       assert(dimensions.fits&&dimensions.width>=260&&dimensions.height>=180,question.id+' viewport '+JSON.stringify(dimensions));
+       assert(Math.abs(dimensions.width/dimensions.height-dimensions.ratio)<.02,question.id+' image aspect ratio');
+       assert(dimensions.scale<=1.01&&dimensions.objectFit==='contain',question.id+' image scaling');
+       await page.click('.sm-image-enlarge');
+       await page.waitForSelector('#sm-image-dialog[open] img');
+       assert.equal(await page.$eval('#sm-image-dialog h3',node=>node.textContent),question.title);
+       await page.click('[data-image-action="in"]');
+       assert.equal(await page.$eval('[data-image-scale]',node=>node.textContent),'125%');
+       await page.click('[data-image-action="close"]');
+     }
+     await page.goto('about:blank');
+   }
+   active=await request(attempt+'/begin',{index});
+   offset+=Math.max(0,active.timing.recordingAt-Date.now()-offset+500);
+   await request(attempt+'/recordings/'+index,Buffer.alloc(200,index+1));
+   active=await request(attempt+'/next',{index});
+ }
+ assert.equal(images.length,5);
+ assert.equal(active.status,'submitted');
+ await service.waitForJobs();
+ const outcome=await request(attempt),saved=await service.store.get('alice',id);
+ assert.equal(outcome.grading.status,'complete');
+ for(const [index,question] of paper.questions.entries()){
+   assert.equal(saved.responses[index].recording.hash,require('node:crypto').createHash('sha256').update(Buffer.alloc(200,index+1)).digest('hex'));
+   assert.equal(outcome.responses[index].question.id,question.id);
+   assert.equal(outcome.responses[index].question.sample,question.sample);
+   assert.deepEqual(outcome.responses[index].question.facts,question.facts);
+ }
+ await page.goto(base);await page.waitForSelector('[data-sm="resume"]');await page.click('[data-sm="resume"]');await page.waitForSelector('#sm-report');
+ await page.click('#sm-tab-answers');await page.select('#sm-task-picker','di');
+ for(const {index,question} of images){
+   await page.select('#sm-question-picker',String(index));
+   assert.equal(await page.$eval('#sm-review-heading',node=>node.textContent),question.title);
+   await page.click('#sm-response-tab-sample');
+   assert.equal(await page.$eval('.sm-sample-response p:not(.sm-eyebrow)',node=>node.textContent),question.sample);
+ }
+ assert.deepEqual(errors,[]);
+});

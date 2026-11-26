@@ -25,6 +25,23 @@ test('new selectable papers preserve all old paper snapshots and use ten distinc
  }
 });
 
+test('Mock 6 uses the ordered portal-bank selection with progressively harder Repeat Sentence prompts',()=>{
+ const p=bank.papers.find(paper=>paper.id==='speaking-mock-6');
+ assert.equal(p.title,'Speaking Mock Test 6');
+ const expected=['intro',...Array(6).fill('ra'),...Array(10).fill('rs'),...Array(5).fill('di'),'rl','rl','sgd','sgd','rts','rts'];
+ assert.deepEqual(p.questions.map(q=>q.type),expected);
+ const practice=new Map(require('../content/speaking-bank').questions.map(q=>[q.id,q]));
+ const earlier=bank.papers.slice(0,5).flatMap(paper=>paper.questions);
+ for(const q of p.questions.slice(1)){
+  assert(practice.has(q.id),q.id);
+  assert(!earlier.some(old=>old.id===q.id||old.sourceId===q.id),q.id);
+ }
+ const rs=p.questions.filter(q=>q.type==='rs'), lengths=rs.map(q=>q.text.trim().split(/\s+/u).length);
+ assert(lengths.slice(0,7).every(n=>n>=5&&n<=8));
+ assert(lengths.slice(7).every((n,i)=>n>lengths[6+i]));
+ assert(rs.slice(7).every((q,i)=>q.audioSeconds>rs[6+i].audioSeconds));
+});
+
 test('new papers serve every exact public prompt recording, including supplied situations',async t=>{
  const express=require('express'),os=require('node:os'),{randomUUID}=require('node:crypto'),app=express();app.use(express.json());
  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'new-speaking-prompts-'));
@@ -44,7 +61,7 @@ test('new papers serve every exact public prompt recording, including supplied s
 
 test('current revision starts with short repeat sentences and preserves historical prompt playback',()=>{
  const revision=require('../docs/speaking-mocks-4-5-revision-2.json');
- for(const p of bank.papers.slice(3)){
+ for(const p of bank.papers.slice(3,5)){
   const rs=p.questions.filter(q=>q.type==='rs');assert.equal(p.contentVersion,3);assert.equal(rs.length,10);assert(rs.slice(0,8).every(q=>q.text.split(/\s+/).length<=8));assert(rs.every(q=>q.text.split(/\s+/).length<=12));
   for(const q of rs.slice(0,8)){assert.equal(q.contentOrigin.kind,'instructor-requested-short-adaptation');assert(q.audioSeconds>=2&&q.audioSeconds<=9);}
   const original=revision.previousQuestions[p.id],before=structuredClone(original),updated=bank.reattemptQuestions({paperId:p.id,questions:original});
@@ -56,7 +73,7 @@ test('current revision starts with short repeat sentences and preserves historic
 
 test('targeted media revision has distinct clean RS files, static then comparison bars, and unchanged final images',()=>{
  const audio=require('../content/speaking-audio-manifest')(),writing=require('../content/writing-audio/manifest.json'),ids=new Set(),texts=new Set(),hashes=new Set();
- for(const [offset,p] of bank.papers.slice(3).entries()){
+ for(const [offset,p] of bank.papers.slice(3,5).entries()){
   const images=p.questions.filter(q=>q.type==='di');assert.deepEqual(images.map(q=>q.imageCategory),['pie','bar','bar','line',offset?'diagram':'process']);
   assert.equal(images[1].id,offset?'mock-di-reference-20261111-classical-music-britain':'mock-di-reference-20261111-pop-music');
   assert.equal(images[2].id,offset?'mock-di-reference-20261111-asian-elephants-comparison':'mock-di-reference-20261111-transport');

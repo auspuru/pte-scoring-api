@@ -5,7 +5,15 @@ const speaking=require('../content/speaking-mocks'),refs=require('../content/di-
 const graph=new Set(['bar','line','pie','mixed']);
 function composition(questions,nonGraph='map'){const types=questions.map(q=>refs.entries[q.sourceId||q.id].mapping.category);assert.equal(types.filter(t=>graph.has(t)).length,4);assert.equal(types.filter(t=>t===nonGraph).length,1);}
 test('Selectable mocks have four graphs and one source-bound map or diagram, with source-bound clear images',()=>{
- for(const p of speaking.papers){composition(p.questions.filter(q=>q.type==='di'),p.id==='speaking-mock-4'?'process':p.id==='speaking-mock-5'?'diagram':'map');for(const q of p.questions.filter(q=>q.type==='di')){assert(speaking.suppliedMockImage(q));assert(display.forQuestion(q).displayImageUrl);}}
+ for(const p of speaking.papers){
+  const images=p.questions.filter(q=>q.type==='di');
+  if(p.id==='speaking-mock-6'){
+   assert.deepEqual(images.map(q=>refs.entries[q.id].mapping.category),['pie','bar','line','map','process']);
+  }else{
+   composition(images,p.id==='speaking-mock-4'?'process':p.id==='speaking-mock-5'?'diagram':'map');
+  }
+  for(const q of images){assert(speaking.suppliedMockImage(q));assert(display.forQuestion(q).displayImageUrl);}
+ }
  for(const p of registeredPapers({activeOnly:true})){
   composition(p.questions.filter(c=>c.question.type==='di').map(c=>c.question));
   for(const c of p.questions.filter(c=>c.image)){

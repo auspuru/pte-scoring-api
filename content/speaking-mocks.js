@@ -103,6 +103,32 @@ for(const [offset,number] of [[0,4],[1,5]]){
   current.questions=current.questions.map(q=>q.type==='rs'?repeats[rs++]:q.type==='di'?references.apply({...bank.types.di,...structuredClone(images[di++])}):q);
   current.contentVersion=3;
 }
+// Fixed portal-bank questions for the sixth paper, in exam order.
+const mockSix = [
+  ...[
+    'ra-user-20261125-booklet-008', 'ra-user-20261125-booklet-029', 'ra-user-20261125-booklet-053',
+    'ra-original-20261125-004', 'ra-original-20261125-021', 'ra-user-20261125-booklet-055',
+  ].map(pick),
+  ...[
+    'rs-user-20261125-booklet-063', 'rs-user-20261125-108', 'rs-user-20261125-136',
+    'rs-user-20261125-081', 'rs-user-20261125-155', 'rs-user-20261125-booklet-153',
+    'rs-user-20261125-015', 'rs-user-20261125-006', 'rs-user-20261125-booklet-080',
+    'rs-user-20261125-055',
+  ].map(id => source(pick(id), 'speaking')),
+  ...[
+    'di-user-20261125038', 'di-user-2026111754', 'di-user-20261125052',
+    'di-user-20261125044', 'di-user-20261125025',
+  ].map(pick),
+  ...[
+    'rl-user-20261125-booklet-012', 'rl-user-20261125-booklet-039',
+    'sgd-user-20261125-booklet-002', 'sgd-user-20261125-booklet-004',
+    'rts-user-20261124-65', 'rts-user-20261125-booklet-041',
+  ].map(id => source(pick(id), 'speaking')),
+];
+papers.push({
+  ...paper(6, [structuredClone(questions[0]), ...mockSix]),
+  title: 'Speaking Mock Test 6',
+});
 const audioQuestions=[...new Map([...historicalQuestions,...revisionTwoQuestions,...papers.flatMap(p=>p.questions)].filter(q=>q.audioSource).map(q=>[q.id,q])).values()];
 function publicQuestion(q,reveal=false){
   return {id:q.id,type:q.type,name:q.name,preparation:q.preparation,seconds:q.seconds,instruction:q.instruction,

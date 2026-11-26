@@ -6,7 +6,7 @@ const top=()=>({status:'scored',pattern:'minor_slips',overallImpact:'none',score
 const raw=()=>({assessable:true,overallScore:90,summary:'Generally clear and connected speech throughout the mock.',pronunciation:top(),fluency:top()});
 
 test('The speaking paper has full task counts, an unscored introduction and only existing verified audio',async()=>{
-  assert.equal(bank.papers.length,5);
+  assert.equal(bank.papers.length,6);
   for(const p of bank.papers){assert.equal(p.questionCount,27);assert.equal(p.questions.length,28);
   assert.deepEqual(Object.fromEntries(Object.keys(require('../content/speaking-bank').types).map(type=>[type,p.questions.filter(q=>q.type===type).length])),{ra:6,rs:10,di:5,rl:2,sgd:2,rts:2});
   assert.equal(new Set(p.questions.map(q=>q.id)).size,28);
