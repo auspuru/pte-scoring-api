@@ -72,7 +72,13 @@ test('SST practice keeps a saved fallback pending and recovers automatically fro
   const suffix = '/' + id;
   assert.equal((await post('', { id, testId: question.id, mode: 'practice', timedPractice: true })).status, 200);
   assert.equal((await post(suffix + '/begin')).status, 200);
-  assert.equal((await post(suffix + '/answer', { index: 0, revision: 1, text: answer, next: true })).status, 200);
+  const response = await post(suffix + '/answer', { index: 0, revision: 1, text: answer, next: true });
+  assert.equal(response.status, 200);
+  const submitted = await response.json();
+  assert.deepEqual(submitted.practiceFeedback.form, { score:2, maximum:2, reasons:[] });
+  assert.deepEqual(submitted.practiceFeedback.transcriptIdeas, question.keyPoints);
+  assert.equal(submitted.report.score90, null);
+  assert.deepEqual((await service.store.get('tester', id)).practiceFeedback, submitted.practiceFeedback);
   await service.waitForJobs();
   assert.equal((await service.store.get('tester', id)).results[0].score_provisional, true);
 
@@ -83,7 +89,14 @@ test('SST practice keeps a saved fallback pending and recovers automatically fro
   assert.equal((await get('')).find(a => a.id === id).score90, null);
   assert.equal(pending.assessmentStatus, 'pending');
   assert.equal(calls, 2);
-  assert.equal((await post(suffix + '/score/0')).status, 503);
+  const legacyResponse = await post(suffix + '/score/0');
+  assert.equal(legacyResponse.status, 200);
+  const legacy = await legacyResponse.json();
+  assert.equal(legacy.total, null);
+  assert.deepEqual(legacy.maxima, { form:2 });
+  assert.match(legacy.feedback.form, /prepared automatically/);
+  assert.deepEqual(legacy.practiceFeedback, submitted.practiceFeedback);
+  assert.deepEqual((await get(suffix + '?assessment=1')).practiceFeedback, submitted.practiceFeedback);
   assert.equal(calls, 2);
 
   available = true;
@@ -110,7 +123,46 @@ test('SST practice keeps a saved fallback pending and recovers automatically fro
   assert.equal(held.assessmentStatus, 'unavailable');
   assert.equal(held.answers[0], answer);
   assert.deepEqual(held.results, [null]);
-  assert.equal((await post(heldSuffix + '/score/0')).status, 503);
+  const heldLegacy = await post(heldSuffix + '/score/0');
+  assert.equal(heldLegacy.status, 200);
+  assert.match((await heldLegacy.json()).feedback.form, /AI estimate is unavailable/);
+  const heldId = heldSuffix.slice(1);
+  await service.store.update('tester', heldId, value => {
+    delete value.practiceFeedback;
+    value.startedAt = now - 30 * 86400000;
+    return value;
+  });
+  await service.recover();
+  await service.recover();
+  await service.waitForJobs();
+  assert.deepEqual((await service.store.get('tester', heldId)).practiceFeedback, submitted.practiceFeedback);
+  assert.equal((await get('')).find(a => a.id === heldId).assessmentStatus, 'unavailable');
+  assert.equal(calls, 4);
+
+  const shortSuffix = '/' + randomUUID();
+  const shortAnswer = 'The lecture discussed this topic.';
+  assert.equal((await post('', { id: shortSuffix.slice(1), testId: question.id, mode: 'practice' })).status, 200);
+  assert.equal((await post(shortSuffix + '/begin')).status, 200);
+  const submission = await post(shortSuffix + '/answer', { index: 0, revision: 1, text: shortAnswer, next: true });
+  assert.equal(submission.status, 200);
+  const immediate = await submission.json();
+  assert.equal(immediate.report.score90, 10);
+  assert.match(immediate.results[0].reasons.join(' '), /allowed range/);
+  assert.deepEqual(immediate.questions[0].keyPoints, question.keyPoints);
+  const saved = await get(shortSuffix);
+  assert.equal(saved.answers[0], shortAnswer);
+  assert.deepEqual(saved.results, immediate.results);
+
+  const timedId = randomUUID(), timedSuffix = '/' + timedId;
+  assert.equal((await post('', { id: timedId, testId: question.id, mode: 'practice', timedPractice: true })).status, 200);
+  assert.equal((await post(timedSuffix + '/begin')).status, 200);
+  assert.equal((await post(timedSuffix + '/answer', { index: 0, revision: 1, text: shortAnswer })).status, 200);
+  await service.store.update('tester', timedId, value => ({ ...value, deadline: Date.now() - 1 }));
+  const expired = await get(timedSuffix);
+  assert.equal(expired.completed[0].reason, 'Time expired');
+  assert.equal(expired.report.score90, 10);
+  assert.equal(expired.answers[0], shortAnswer);
+  await service.waitForJobs();
   assert.equal(calls, 4);
 });
 test('A substantial SST sentence cannot be erased by an unsupported fragment form gate',async()=>{

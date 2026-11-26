@@ -279,7 +279,7 @@
         const all=await api('/attempts');listeningHistory=all;
         if(!target.isConnected) return;
         const history=all.filter(a=>a.kind===historyKind && (historyKind!=='mock'||(a.module||'writing')===mockModule));
-        target.innerHTML=history.length?history.map(a=>'<article class="history-row"><div><b>'+esc(a.title)+'</b><p class="muted">'+new Date(a.startedAt).toLocaleString()+' · '+(a.mode==='practice'?'Supported practice':a.mode==='exam'?'Exam-style':'')+' · '+(a.status==='submitted'?(a.total==null?'Submitted · feedback pending':a.total+'/'+a.maximum+' marks'+(a.score90==null?'':' · '+a.score90+'/90 practice result')):'In progress · '+a.completed+'/'+a.questions+' submitted')+'</p></div><button class="secondary" data-resume="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join(''):'<p class="empty">Your attempts will appear here after you start.</p>';
+        target.innerHTML=history.length?history.map(a=>'<article class="history-row"><div><b>'+esc(a.title)+'</b><p class="muted">'+new Date(a.startedAt).toLocaleString()+' · '+(a.mode==='practice'?'Supported practice':a.mode==='exam'?'Exam-style':'')+' · '+(a.status==='submitted'?(a.total==null?(a.kind==='sst'?'Practice feedback ready':'Submitted · feedback pending'):a.total+'/'+a.maximum+' marks'+(a.score90==null?'':' · '+a.score90+'/90 practice result')):'In progress · '+a.completed+'/'+a.questions+' submitted')+'</p></div><button class="secondary" data-resume="'+a.id+'">'+(a.status==='submitted'?'Review':'Resume')+'</button></article>').join(''):'<p class="empty">Your attempts will appear here after you start.</p>';
         if(window.MockReportUI&&historyKind==='mock'&&history.length)target.innerHTML='<div class="ipr-history-grid">'+history.map(a=>window.MockReportUI.historyCard({title:a.title,at:a.startedAt,status:a.status==='submitted'?'Completed':'In progress',score:a.score90,detail:a.status==='submitted'?a.questions+' questions':a.completed+'/'+a.questions+' submitted',actions:'<button class="secondary" data-resume="'+esc(a.id)+'">'+(a.status==='submitted'?'Score report':'Continue')+'</button>'+(a.status==='submitted'?'<button class="secondary" data-resume="'+esc(a.id)+'" data-mock-target="lab-'+esc(a.id)+'" data-mock-open="answers">Answers</button>':'')})).join('')+'</div>';
       } catch(e) { if(target.isConnected) target.innerHTML='<p class="error">'+esc(e.message)+'</p><button class="secondary" data-tab="history">Retry</button>'; }
     }
@@ -668,7 +668,7 @@
   function practiceHistory() {
     if(!attempt||attempt.kind==='mock'||!practiceTypes.includes(attempt.kind))return '';
     const rows=listeningHistory.filter(a=>a.testId===attempt.testId&&a.id!==attempt.id&&(attempt.status!=='submitted'||a.status==='submitted')).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));
-    return window.PracticeStudio.attemptHistory(rows.map((a,i)=>({id:a.id,label:'Attempt '+(rows.length-i),date:window.PracticeStudio.brisbaneDate(a.startedAt),mode:practiceModeLabel(a),status:a.status==='submitted'?(a.total==null?'Feedback pending':a.total+'/'+a.maximum+' marks'):'In progress',actions:'<button type="button" class="secondary" data-listening-attempt="'+esc(a.id)+'">'+(a.status==='submitted'?'Answer &amp; feedback':'Resume saved attempt')+'</button>'})));
+    return window.PracticeStudio.attemptHistory(rows.map((a,i)=>({id:a.id,label:'Attempt '+(rows.length-i),date:window.PracticeStudio.brisbaneDate(a.startedAt),mode:practiceModeLabel(a),status:a.status==='submitted'?(a.total==null?(a.kind==='sst'?'Practice feedback ready':'Feedback pending'):a.total+'/'+a.maximum+' marks'):'In progress',actions:'<button type="button" class="secondary" data-listening-attempt="'+esc(a.id)+'">'+(a.status==='submitted'?'Answer &amp; feedback':'Resume saved attempt')+'</button>'})));
   }
   async function movePractice(direction,button) {
     if(moving||saveConflict||!attempt)return;
@@ -746,7 +746,7 @@
     const scoreNote='Practice results.';
     const randomActions=attempt.practiceSet?'<button class="secondary" data-random-practice>Practice sets</button><button class="secondary" data-random-again>New random set</button>':null;
     const retry=practiceTypes.includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
-    let resultsHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?scoreNote:'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="overall-feedback"></div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+'</section>';
+    let resultsHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?scoreNote:attempt.kind==='sst'?'Your practice feedback is ready below.':'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="overall-feedback"></div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map((q,i)=>reviewCard(q,i)).join('')+'</section>';
     if(attempt.kind==='mock'&&window.MockReportUI){
       const layout=window.MockReportUI,skill=attempt.module==='listening'?'Listening':'Writing';
       const taskFilters='<div class="ipr-section-tabs" role="group" aria-label="Filter answers by task"><button type="button" data-mock-filter="all" aria-pressed="true">All tasks</button>'+[...new Set(attempt.questions.map(q=>q.type))].map(type=>'<button type="button" data-mock-filter="'+esc(type)+'" aria-pressed="false">'+esc(report.labels[type])+'</button>').join('')+'</div>';
@@ -776,17 +776,17 @@
     if(!status) return;
     status.setAttribute('role','status');
     if(attempt.assessmentStatus==='unavailable') {
-      status.textContent='Assessment is currently unavailable. Your summary is saved.';
+      status.textContent='The AI estimate is currently unavailable. Your practice feedback is ready.';
       return;
     }
-    status.textContent='Preparing your assessment. Your summary is saved. You can leave and return later.';
+    status.textContent='Preparing your assessment automatically. You can leave and return later.';
     const current=attempt, serial=navigationSerial, ownerToken=token();
     let checks=0;
     const stillViewing=()=>attempt===current && navigationSerial===serial && token()===ownerToken && workspaceVisible && status.isConnected;
     async function check() {
       if(!stillViewing()) return;
       try {
-        const saved=await api('/attempts/'+current.id);
+        const saved=await api('/attempts/'+current.id+'?assessment=1');
         if(!stillViewing()) return;
         if(saved.id===current.id && (saved.results?.[0] || saved.assessmentStatus==='unavailable')) {
           current.results=saved.results;
@@ -824,12 +824,24 @@
       ? '<strong>SWT item estimate '+esc(report.itemEstimate(q,r))+'/90</strong>' : '';
     return '<article class="review-card ipr-question-card" id="review-'+i+'" tabindex="-1" data-mock-question-type="'+esc(q.type)+'"><header class="review-top"><div><p class="ipr-eyebrow">Question '+(i+1)+' · '+esc(report.labels[q.type])+'</p><h2>'+esc(q.title)+'</h2></div>'+swtEstimate+'</header>'+traits+(q.type==='sst'?mockSstFeedback(q,i,'answer'):'')+'<h3>Question</h3>'+question+content+(q.type==='wfd'&&listeningTasks?.wordDiff?listeningTasks.wordDiff(q.text,attempt.answers[i]):'')+(q.type==='wfd'&&Array.isArray(r?.wordFeedback)?'<h3>Sentence check</h3><div class="word-feedback">'+r.wordFeedback.map(word=>'<span class="'+(word.correct?'word-correct':'word-missed')+'">'+esc(word.word)+'</span>').join(' ')+'</div>':'')+(q.type==='sst'?'':q.type==='swt'&&window.SwtMockFeedback?window.SwtMockFeedback.render(window.SwtMockFeedback.project(r||{},{confirmed:!!r&&!report.needsReview(r,q),answer:attempt.answers[i]||'',source:q.text||''}),attempt.answers[i]||'','writing-'+i):(r?'<div class="feedback-box"><h3>Feedback</h3><p>'+esc(r.gated?'Review the task requirements and your saved response.':r.overallVerdict||r.overview||r.feedback?.content||'Review the saved feedback and compare your response with the reference.')+'</p></div>'+bullets('What worked well',r.strengths)+bullets('What to improve',r.improvements)+criteria+(r.errors?.length?'<h3>Corrections</h3><ul>'+r.errors.map(error=>'<li><strong>'+esc(error.phrase)+'</strong> → '+esc(error.correction)+'<p>'+esc(error.explanation)+'</p></li>').join('')+'</ul>':''):''))+'<details><summary>'+(audioQuestion(q)?'Transcript and key points':'Question and key points')+'</summary><div class="response">'+esc(q.text)+'</div>'+bullets('Key points',q.keyPoints)+'</details><details><summary>'+(q.type==='wfd'?'Correct sentence':q.teachingSample?'Plain-English sample':'Sample response')+'</summary><div class="response">'+esc(q.teachingSample||q.sample||q.text||'')+'</div></details></article>';
   }
+  function sstPracticeFeedback(q, result) {
+    if (attempt.kind !== 'sst' || q.type !== 'sst') return '';
+    const local = attempt.practiceFeedback;
+    const form = local?.form;
+    const ideas = (local?.transcriptIdeas || q.keyPoints || []).filter(idea => typeof idea === 'string' && idea.trim());
+    const formFeedback = form && !result ? '<p>Form check '+esc(form.score)+'/'+esc(form.maximum)+' · '+esc(local.wordCount)+' words.</p>'+
+      (form.reasons?.length ? '<p>'+esc(form.reasons.join(' '))+'</p>' : '') : '';
+    const ideasFeedback = ideas.length ? '<h3>Ideas you could use from the transcript</h3><p>Choose the main idea and connect it to one or two supporting points in your own words.</p><ul>'+
+      ideas.map(idea=>'<li>'+esc(idea)+'</li>').join('')+'</ul>' : '';
+    return formFeedback || ideasFeedback ? '<section class="feedback-box">'+formFeedback+ideasFeedback+'</section>' : '';
+  }
   function reviewCard(q,i) {
     if(attempt.kind==='mock'&&window.MockReportUI)return mockReviewCard(q,i);
     const r=attempt.results[i], listening=audioQuestion(q), dictation=q.type==='wfd';
     if(listeningTasks?.isObjective(q))return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><strong>'+(r?r.total+'/'+r.maximum+' points':'Awaiting assessment')+'</strong></div><p class="muted">'+esc(report.labels[q.type])+'</p>'+(listeningTasks.review?listeningTasks.review(q,attempt.answers[i]):'<h3>Your response</h3><div class="response">'+esc(listeningTasks.response(q,attempt.answers[i]))+'</div><h3>Correct answer</h3><div class="response sample">'+esc(listeningTasks.correct(q))+'</div>')+'<p>'+esc(q.explanation)+'</p><details><summary>Review recording and transcript</summary><audio controls src="'+esc(q.audioUrl)+'" preload="none"></audio><div class="response">'+esc(q.text)+'</div></details></article>';
     const structured = q.type==='essay' && !!r?.feedbackVersion && r.feedbackVersion===window.EssayFeedback?.VERSION;
-    return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><div><strong>'+(r?(retryableAssessment(i)?'Provisional ':'')+'Estimate '+report.itemEstimate(q,r)+'/90':'Awaiting estimate')+'</strong></div></div><p class="muted">'+report.labels[q.type]+' · '+count(attempt.answers[i])+' words · '+esc(attempt.completed[i]?.reason||'Submitted')+'</p><h3>Your response</h3><div class="response">'+esc(attempt.answers[i]||'No answer submitted.')+'</div>'+
+    return '<article class="review-card" id="review-'+i+'"><div class="review-top"><h2>'+(i+1)+'. '+esc(q.title)+'</h2><div><strong>'+(r?(retryableAssessment(i)?'Provisional ':'')+'Estimate '+report.itemEstimate(q,r)+'/90':attempt.kind==='sst'?'Practice feedback ready':'Awaiting estimate')+'</strong></div></div><p class="muted">'+report.labels[q.type]+' · '+count(attempt.answers[i])+' words · '+esc(attempt.completed[i]?.reason||'Submitted')+'</p><h3>Your response</h3><div class="response">'+esc(attempt.answers[i]||'No answer submitted.')+'</div>'+
+      sstPracticeFeedback(q,r)+
       (r? (r.gated&&!retryableAssessment(i)?'<div class="gate"><b>This response did not meet the scoring requirement.</b> '+esc(r.reasons.join(' '))+'</div>':'')+
       (q.type==='swt' ? window.PteEstimateDisplay.render(report.score90(r.scores.content,r.maxima.content),report.itemEstimate(q,r),{swtItem:Number.isFinite(r.itemScore90)}) : '')+
       (dictation&&listeningTasks?.wordDiff?listeningTasks.wordDiff(q.text,attempt.answers[i]):'')+

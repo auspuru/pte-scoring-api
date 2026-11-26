@@ -45,7 +45,9 @@ test('Listening workspace preserves native saving, grading, feedback, mock timer
    assert(body.includes('report.itemEstimate(q,r)'));
    assert(body.includes(',{swtItem:Number.isFinite(r.itemScore90)}'));
    body=body.replaceAll('report.itemEstimate(q,r)','report.score90(r.total,r.maximum)')
-    .replace(',{swtItem:Number.isFinite(r.itemScore90)}','');
+    .replace(',{swtItem:Number.isFinite(r.itemScore90)}','')
+    .replace('      sstPracticeFeedback(q,r)+\n','')
+    .replace("attempt.kind==='sst'?'Practice feedback ready':'Awaiting estimate'","'Awaiting estimate'");
   }
   if (name==='mockReviewCard') {
    const itemEstimate = `    const swtEstimate=q.type==='swt'&&Number.isFinite(r?.itemScore90)&&!report.needsReview(r,q)

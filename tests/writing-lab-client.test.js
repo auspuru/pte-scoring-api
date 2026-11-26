@@ -363,9 +363,17 @@ test('A start API failure pauses playback and permits a fresh click to retry',as
 test('Submitted SST polls saved assessment and shows reviewed feedback without a retry request', async () => {
   const h=harness(), q=bank.spoken[0], base=attempt();
   const submitted={...base,kind:'sst',testId:q.id,status:'submitted',questions:[q],answers:[q.sample],
-    completed:[{at:100100,reason:'Submitted'}],results:[null],playback:[null],assessmentStatus:'pending'};
+    completed:[{at:100100,reason:'Submitted'}],results:[null],playback:[null],assessmentStatus:'pending',
+    practiceFeedback:{wordCount:55,form:{score:2,maximum:2,reasons:[]},transcriptIdeas:['<img src=x onerror=alert(1)>']}};
   open(h,submitted);
   assert.match(h.nodes.get('scoring-status').textContent,/Preparing your assessment/);
+  assert.match(h.nodes.get('lab').innerHTML,/Form check 2\/2 · 55 words/);
+  assert.match(h.nodes.get('lab').innerHTML,/&lt;img src=x onerror=alert\(1\)&gt;/);
+  const unavailable=harness();
+  open(unavailable,{...submitted,assessmentStatus:'unavailable'});
+  assert.match(unavailable.nodes.get('scoring-status').textContent,/AI estimate is currently unavailable/);
+  assert.match(unavailable.nodes.get('lab').innerHTML,/Form check 2\/2/);
+  assert.doesNotMatch(unavailable.nodes.get('lab').innerHTML,/Retry assessment/);
   const result={total:8,maximum:12,maxima:{content:4},scores:{content:2},feedback:{content:'Reviewed feedback.'}};
   h.context.reply={...submitted,results:[result],assessmentStatus:undefined};
   const check=[...h.timeouts.values()].find(timer=>timer.ms===5000);
@@ -373,6 +381,20 @@ test('Submitted SST polls saved assessment and shows reviewed feedback without a
   await check.fn();
   assert.deepEqual(h.hooks.current().results,[result]);
   assert.match(h.nodes.get('lab').innerHTML,/Reviewed feedback/);
+  assert.equal(h.requests.filter(request=>request.url.includes('/score/')).length,0);
+});
+test('A gated standalone SST result shows the form reason and visible transcript ideas', async () => {
+  const h=harness(), q=bank.spoken[0], base=attempt();
+  const answer='A response that is too short.';
+  const result=await require('../writing-lab-scoring').grade(q,answer);
+  const submitted=present({...base,kind:'sst',testId:q.id,status:'submitted',questions:[q],answers:[answer],
+    completed:[{at:100100,reason:'Submitted'}],results:[result],playback:[null]});
+  open(h,submitted);
+  const html=h.nodes.get('lab').innerHTML;
+  assert.match(html,/Estimate 10\/90/);
+  assert.match(html,/This response did not meet the scoring requirement/);
+  const visibleIdeas=html.slice(html.indexOf('Ideas you could use from the transcript'),html.indexOf('</section>',html.indexOf('Ideas you could use from the transcript')));
+  assert.ok(visibleIdeas.includes(q.keyPoints[0]));
   assert.equal(h.requests.filter(request=>request.url.includes('/score/')).length,0);
 });
 test('Submitted standalone SST results offer a fresh reattempt while retaining the completed attempt',async()=>{

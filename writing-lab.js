@@ -112,6 +112,30 @@ function reconcile(a, now = Date.now()) {
   while (a.status === 'active' && !a.pause && a.deadline != null && now >= a.deadline) advance(a, a.deadline, 'Time expired');
   return a;
 }
+function sstPracticeFeedback(attempt) {
+  if (attempt.kind !== 'sst' || attempt.status !== 'submitted') return null;
+  if (attempt.practiceFeedback) return attempt.practiceFeedback;
+  const form = scoring.formFor('sst', attempt.answers[0] || '');
+  return {
+    wordCount: form.count,
+    form: { score: form.score, maximum: scoring.MAXIMA.sst.form, reasons: form.reasons },
+    transcriptIdeas: (attempt.questions[0].keyPoints || []).filter(point => typeof point === 'string' && point.trim())
+  };
+}
+async function saveSstPracticeFeedback(attempt) {
+  const feedback = sstPracticeFeedback(attempt);
+  if (!feedback) return attempt;
+  attempt.practiceFeedback = feedback;
+  if (!attempt.results[0] && !feedback.form.score) {
+    const result = await scoring.grade(attempt.questions[0], attempt.answers[0] || '');
+    attempt.results[0] = { ...result, assessmentType: 'SST practice form check' };
+  }
+  return attempt;
+}
+function sstAssessmentStatus(attempt) {
+  const status = attempt.assessmentRecovery?.[0]?.status;
+  return ['held', 'exhausted'].includes(status) ? 'unavailable' : 'pending';
+}
 function pendingSstPractice(attempt, result) {
   return attempt.kind === 'sst' && (result?.score_provisional === true || result?.needs_semantic_review === true);
 }
@@ -124,9 +148,10 @@ function present(a) {
   const {assessmentRecovery,sstReassessment,sstReassessmentHistory,...visible}=a;
   const results = a.status === 'submitted' ? reviewedResults(a) : a.questions.map(() => null);
   const result = { ...visible, results, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, results, a) : null };
-  if (a.kind === 'sst' && a.status === 'submitted' && !results[0]) {
-    const status = assessmentRecovery?.[0]?.status;
-    result.assessmentStatus = ['held','exhausted'].includes(status) ? 'unavailable' : 'pending';
+  const feedback = sstPracticeFeedback(a);
+  if (feedback) {
+    result.practiceFeedback = feedback;
+    result.assessmentStatus = results[0] ? 'complete' : sstAssessmentStatus(a);
   }
   result.overallFeedback = overall.view(a);
   result.impactFeedback = require('./mock-feedback').lab(a, result.report || undefined);
@@ -175,7 +200,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
         return;
       }
       queue.push(async () => {
-        let receipt;
+        let receipt, assessmentStarted;
         try {
           // Reload after waiting in the queue: a review request may have saved it.
           const current = await store.update(uid, a.id, value => {
@@ -207,12 +232,15 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
             } else if (question.type === 'swt' && graders.swtGrader) {
               result = await scoring.gradeUnifiedSwt(question,current.answers[index],graders.swtGrader);
             } else if (current.kind === 'sst') {
+              assessmentStarted = performance.now();
               result = await scoring.grade(question,current.answers[index],prompt=>callModel(prompt,{sstPractice:true}),
                 {propagateProviderErrors:true});
             } else {
               result = await scoring.grade(question, current.answers[index], question.type==='sst' ? callModel : graders.callModel);
             }
           }
+          if (a.kind === 'sst' && pendingSstPractice(a,result))
+            console.warn('[writing-lab] SST assessment', { reason:'validation', attempt:receipt?.attempts, durationMs:Math.round(performance.now()-assessmentStarted) });
           const updated = receipt ? await recovery.save(uid,a.id,index,receipt,result) : await store.update(uid, a.id, value => {
             if (!value) throw bad('Attempt not found.', 404);
             if (!value.results[index] || retryableResult(value.results[index],value.questions[index],value)) value.results[index] = result;
@@ -221,7 +249,17 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
           failedAt.delete(key);
           if(updated.status==='submitted'&&updated.questions.every((q,i)=>updated.results[i]&&!retryableResult(updated.results[i],q,updated)))void reviewer.ensure(uid,updated).catch(()=>{});
           resolve(updated.results[index]);
-        } catch (error) { if(receipt)await recovery.fail(uid,a.id,index,receipt,error).catch(()=>{}); failedAt.set(key, now()); reject(error); }
+        } catch (error) {
+          if (a.kind === 'sst' && receipt) {
+            const failure = require('./mock-recovery-policy').failure(error);
+            const reason = failure.uncertain ? 'uncertain_provider_outcome' : failure.blocked ? 'provider_blocked'
+              : Number(failure.code) === 429 ? 'provider_rate_limit' : Number(failure.code) >= 500 ? 'provider_unavailable' : 'assessment_error';
+            console.warn('[writing-lab] SST assessment', { reason, status:typeof failure.code==='number'?failure.code:undefined,
+              attempt:receipt.attempts, durationMs:assessmentStarted==null ? undefined : Math.round(performance.now()-assessmentStarted) });
+          }
+          if(receipt)await recovery.fail(uid,a.id,index,receipt,error).catch(()=>{});
+          failedAt.set(key, now()); reject(error);
+        }
         finally { pending.delete(key); }
       });
     });
@@ -245,7 +283,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       const saved=a.assessmentRecovery?.[index];
       if(saved&&(['held','exhausted'].includes(saved.status)||saved.nextAt>now()||saved.status==='calling'&&saved.expiresAt>now()))return;
       if (a.completed[index] && (!a.results[index] || a.results[index].score_provisional===true || a.results[index].needs_semantic_review===true) && now() - (failedAt.get(key) || -Infinity) > 30000)
-        assess(uid, a, index).catch(error => console.warn('[writing-lab] background assessment', error.message));
+        assess(uid, a, index).catch(error => { if(a.kind!=='sst')console.warn('[writing-lab] background assessment', error.message); });
     });
   }
   const route = fn => async (req,res) => { try { await fn(req,res); } catch(e) {
@@ -297,12 +335,13 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const all = await store.list(req.labUser);
     const entries = [];
     for (const a of all) {
-      const current = a.status==='active' && a.deadline!=null && Date.now()>=a.deadline ? await store.update(req.labUser,a.id, value => reconcile(value)) : a;
+      const current = a.status==='active' && a.deadline!=null && Date.now()>=a.deadline ? await store.update(req.labUser,a.id, value => saveSstPracticeFeedback(reconcile(value))) : a;
       const summary = report.summarize(current.questions, reviewedResults(current), current);
       entries.push({ id:current.id,testId:current.testId,title:current.title,kind:current.kind,module:current.module || 'writing',mode:current.mode || 'exam',...(current.timedPractice===true?{timedPractice:true}:{}),supported:current.mode==='practice',playCount:(current.playback||[]).reduce((n,p)=>n+(p?.plays||0),0),status:current.status,startedAt:current.startedAt,
         index:current.index, completed:current.completed.filter(Boolean).length,questions:current.questions.length,
         questionIds:current.questions.map(q=>q.id),
         total:summary.complete ? summary.total : null, maximum:summary.maximum, score90:summary.score90,
+        ...(current.kind==='sst' && current.status==='submitted' ? { assessmentStatus: summary.complete ? 'complete' : sstAssessmentStatus(current) } : {}),
         byType:summary.byType, weighting:summary.weighting || null, integrity:current.integrity || null,...(current.practiceSet?{practiceSet:current.practiceSet}:{}) });
     }
     res.set('Cache-Control','no-store'); res.json(entries);
@@ -318,7 +357,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const q = structuredClone(mock ? mock.questions : [individual]).map(approvedAudio.current);
     if (!mock) delete q[0].timeGroup;
     const a = await store.update(req.labUser, id, existing => {
-      if (existing) {if(config&&(!existing.practiceSet||existing.practiceSet.type!==config.type||existing.practiceSet.count!==config.count))throw bad('This attempt belongs to another practice set.',409);return reconcile(existing);}
+      if (existing) {if(config&&(!existing.practiceSet||existing.practiceSet.type!==config.type||existing.practiceSet.count!==config.count))throw bad('This attempt belongs to another practice set.',409);return saveSstPracticeFeedback(reconcile(existing));}
       return { id,testId:config?mock.id:testId,...(config?{practiceSet:mock.practiceSet}:{}),title:mock?.title || individual.title,module:mock?.module || (mock ? 'writing' : 'listening'),kind:mock ? 'mock' : individual.type,questions:q,index:0,
         mode:mock ? 'exam' : mode || 'exam',
         ...(!mock&&mode==='practice'&&timedPractice===true?{timedPractice:true}:{}),
@@ -330,8 +369,13 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     res.json(present(a));
   }));
   router.get('/attempts/:id', route(async(req,res) => {
-    const a = await store.update(req.labUser,req.params.id,value => { if (!value) throw bad('Attempt not found.',404); return reconcile(value); });
-    assessSubmitted(req.labUser, a);
+    if (req.query.assessment === '1') {
+      const saved = await store.get(req.labUser,req.params.id);
+      if (!saved || saved.kind !== 'sst' || saved.status !== 'submitted') throw bad('Submitted SST attempt not found.',404);
+      return res.set('Cache-Control','no-store').json(present(saved));
+    }
+    const a = await store.update(req.labUser,req.params.id,value => { if (!value) throw bad('Attempt not found.',404); return saveSstPracticeFeedback(reconcile(value)); });
+    if (a.kind !== 'sst') assessSubmitted(req.labUser, a);
     res.set('Cache-Control','no-store'); res.json(present(a));
   }));
   router.post('/attempts/:id/pause', route(async(req,res) => {
@@ -358,7 +402,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const a = await store.update(req.labUser,req.params.id,value => {
       if (!value) throw bad('Attempt not found.',404);
       if(value.status === 'ready') { value.status='active'; value.startedAt=Date.now(); value.deadline=value.mode==='practice'&&value.kind!=='mock'&&value.timedPractice!==true?null:value.startedAt+value.questions[0].minutes*60000; }
-      return reconcile(value);
+      return saveSstPracticeFeedback(reconcile(value));
     });
     assessSubmitted(req.labUser, a);
     res.json(present(a));
@@ -386,7 +430,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       if(!value) throw bad('Attempt not found.',404);
       reconcile(value);
       // A repeated Next request returns the new state without skipping another item.
-      if(value.status !== 'active' || value.pause || index !== value.index) return value;
+      if(value.status !== 'active' || value.pause || index !== value.index) return saveSstPracticeFeedback(value);
       if(revision <= value.revisions[index]) return value;
       value.answers[index]=text; value.revisions[index]=revision;
       if(typeof notes === 'string') value.notes=notes;
@@ -399,22 +443,33 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
           finished:(!!old?.finished && old.position > 0) || (playback.finished && playback.position > 0)};
       }
       if(next === true) advance(value,Date.now(),'Submitted');
-      return value;
+      return saveSstPracticeFeedback(value);
     });
     assessSubmitted(req.labUser, a);
     res.json(present(a));
   }));
   router.post('/attempts/:id/score/:index', route(async(req,res) => {
-    const a = await store.update(req.labUser,req.params.id,value => { if(!value) throw bad('Attempt not found.',404); return reconcile(value); });
+    const a = await store.update(req.labUser,req.params.id,value => { if(!value) throw bad('Attempt not found.',404); return saveSstPracticeFeedback(reconcile(value)); });
     const index=Number(req.params.index);
     if(a.status !== 'submitted') throw bad('Finish the attempt before viewing scores.',409);
     if(!Number.isInteger(index) || !a.questions[index]) throw bad('Question not found.',404);
     if(a.results[index] && !retryableResult(a.results[index],a.questions[index],a)) return res.json(a.results[index]);
-    const result = await assess(req.labUser, a, index);
-    if (pendingSstPractice(a,result)) {
-      return res.status(503).json({ error:'Assessment is unavailable. Your answer is saved. Please retry.', retryable:false });
+    if (a.kind === 'sst') {
+      // Older clients assign any successful response directly to the result card.
+      // Keep its feedback fields and leave the overall mark absent.
+      const practiceFeedback = sstPracticeFeedback(a);
+      const { form } = practiceFeedback;
+      const assessmentStatus = sstAssessmentStatus(a);
+      return res.json({
+        assessmentStatus, practiceFeedback, total:null, maximum:report.maximumFor(a.questions[index]),
+        scores:{ form:form.score }, maxima:{ form:form.maximum },
+        feedback:{ form:form.reasons.join(' ') || (assessmentStatus==='unavailable'
+          ? 'Form check complete. The AI estimate is unavailable.'
+          : 'Form check complete. The AI estimate is being prepared automatically.') },
+        improvements:practiceFeedback.transcriptIdeas
+      });
     }
-    res.json(result);
+    res.json(await assess(req.labUser, a, index));
   }));
   router.post('/attempts/:id/overall-feedback', route(async(req,res) => {
     const a = await store.get(req.labUser,req.params.id);
@@ -432,6 +487,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       const rows=await store.scanForScoring(cursor,20,{since:now()-14*86400000});cursor=rows.length?rows.at(-1).data.id:'';
       for(const row of rows){if(stopped)break;try{let a=row.data;
         if(a.status==='active'&&a.deadline!=null&&now()>=a.deadline)a=await store.update(row.username,a.id,value=>reconcile(value,now()));
+        if(a.kind==='sst'&&!a.practiceFeedback)a=await store.update(row.username,a.id,saveSstPracticeFeedback);
         assessSubmitted(row.username,a);
       }catch{console.warn('[writing-lab] Saved mock recovery will be checked again.');}}
     })().finally(()=>{recoveryTask=null;});return recoveryTask;
