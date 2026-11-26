@@ -1,8 +1,10 @@
 /* Evidence-led SWT review UI. Reads saved feedback; never grades or changes marks. */
 (function(root,factory){
-  const api=factory(typeof module==='object'&&module.exports?require('./swt-feedback'):root.SwtStudentFeedback);
+  const common=typeof module==='object'&&module.exports;
+  const api=factory(common ? require('./swt-feedback') : root.SwtStudentFeedback,
+    common ? require('./swt-highlight-guide') : root.SwtHighlightGuide);
   if(typeof module==='object'&&module.exports)module.exports=api;else root.SwtFeedbackReview=api;
-})(typeof globalThis!=='undefined'?globalThis:this,function(feedback){
+})(typeof globalThis!=='undefined'?globalThis:this,function(feedback,highlightGuide){
   'use strict';
   const clean=v=>typeof v==='string'?v.trim():'';
   const list=v=>Array.isArray(v)?v:[];
@@ -119,6 +121,8 @@
     if (darwinIdeas.every(([,phrase]) => text.includes(phrase))) {
       return darwinIdeas.map(([label,phrase,idea]) => ({label,phrases:[phrase],idea}));
     }
+    const mapped = highlightGuide?.[passage?.passageHash]?.items;
+    if (mapped?.length && mapped.every(item=>item.phrases.every(phrase=>location(text,phrase)))) return mapped;
     const guide = passage?.studyGuide;
     const items = list(guide?.items);
     return items.map(item => ({
