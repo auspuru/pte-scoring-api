@@ -273,3 +273,21 @@ body.dark #swtPane {
  #swtPane .swt-review-annotated{font-size:15px;padding:12px}
  #swtPane .swt-review-actions .btn{width:100%}
 }
+
+#swtPane .swt-result-passage { padding: 24px; }
+#swtPane .swt-result-passage h2 { margin: 0 0 12px; }
+#swtPane .swt-result-passage .swt-details { margin-top: 16px; }
+#swtPane .swt-source-highlight, #swtPane .swt-source-key {
+  color: #17342d;
+  background: var(--swt-idea-color, #e4f1e9);
+  border-radius: 3px;
+  padding: 1px 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+#swtPane .swt-source-key { display: inline-block; }
+#swtPane .swt-source-tone-1 { --swt-idea-color: #f6e4eb; }
+#swtPane .swt-source-tone-2 { --swt-idea-color: #f9edca; }
+#swtPane .swt-source-tone-3 { --swt-idea-color: #e5e8f7; }
+#swtPane .swt-source-tone-4 { --swt-idea-color: #f4e7d6; }
+#swtPane .swt-source-tone-5 { --swt-idea-color: #d8eeeb; }

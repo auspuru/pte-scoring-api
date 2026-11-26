@@ -157,3 +157,28 @@ test('A temporary failure offers retry and the saved edit without relabelling a 
   assert.equal(target.querySelector('[data-example-retry]'),null);
   assert.match(target.textContent,/could not be verified/);
 });
+
+test('Post-submission highlights carry the Darwin story and preserve the full source verbatim',()=>{
+ const source=require('../passages.json').find(p=>p.title==='Darwin and the Origin of Species');
+ const ideas=review.passageIdeas(source);
+ const {document}=parseHTML('<main>'+review.highlightedPassage(source)+'</main>');
+ const marked=[...document.querySelectorAll('mark')].map(el=>el.textContent);
+ assert.equal(document.querySelector('main').textContent,source.text);
+ assert.equal(marked.length,6);
+ assert.deepEqual(marked,ideas.flatMap(item=>item.phrases));
+ assert(marked.includes('observing numerous signs that species were not fixed'));
+ assert(marked.includes('still has scientific value more than 150 years after its publication'));
+ assert(!marked.some(phrase=>phrase.includes('cuidado')||phrase.includes('copies sold')));
+ assert.equal(review.passageIdeas({...source,text:source.text.replace('1859','1860')}).length,0);
+});
+
+test('Passage rendering escapes markup and does not highlight incidental matches',()=>{
+ const source={text:'<script>bad()</script> Trees cool cities and shade people.',studyGuide:{items:[
+  {label:'Main idea',phrases:['Trees cool cities'],idea:'Trees cool cities and shade people.'},
+  {label:'Background',phrases:['shade people'],idea:'Trees offer shade on hot days.'}
+ ]}};
+ const {document}=parseHTML('<main>'+review.highlightedPassage(source)+'</main>');
+ assert.equal(document.querySelector('main').textContent,source.text);
+ assert.equal(document.querySelector('script'),null);
+ assert.deepEqual([...document.querySelectorAll('mark')].map(el=>el.textContent),['Trees cool cities and shade people.']);
+});

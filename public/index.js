@@ -16299,19 +16299,22 @@ function renderAnnotatedSubmission(data, passage, spellData, submittedText){
 
 function renderAnnotatedPassage(passage){
   const el = document.getElementById('annotatedPassage');
-  if (el) el.textContent = (passage && passage.text) || '—';
+  if (!el) return;
+  if (typeof SwtFeedbackReview !== 'undefined' && passage?.text) el.innerHTML = SwtFeedbackReview.highlightedPassage(passage);
+  else el.textContent = passage?.text || '—';
 }
 
 function renderSwtKeyPhrases(passage){
   const el = document.getElementById('swtKeyPhrases');
   if (!el) return;
   const guide = passage.studyGuide || {};
-  const items = Array.isArray(guide.items) ? guide.items : Object.entries(passage.keyElements || {})
+  const items = Array.isArray(guide.items) && typeof SwtFeedbackReview !== 'undefined'
+    ? SwtFeedbackReview.passageIdeas(passage) : Array.isArray(guide.items) ? guide.items : Object.entries(passage.keyElements || {})
     .filter(([, idea]) => typeof idea === 'string' && idea.trim())
     .map(([, idea]) => ({ label: 'Key idea', phrases: [], idea }));
   el.innerHTML = (guide.overview ? '<p class="swt-help">' + escapeHtml(guide.overview) + '</p>' : '') +
-    (items.length ? '<ul class="swt-key-grid">' + items.map(item =>
-      '<li><h3>' + escapeHtml(item.label || 'Key idea') + '</h3>' +
+    (items.length ? '<ul class="swt-key-grid">' + items.map((item, index) =>
+      '<li><h3 class="swt-source-key swt-source-tone-' + (index % 6) + '">' + escapeHtml(item.label || 'Key idea') + '</h3>' +
       '<div class="swt-key-phrases">' + (Array.isArray(item.phrases) ? item.phrases : [])
         .map(phrase => '<q>' + escapeHtml(phrase) + '</q>').join('') + '</div>' +
       '<p>' + escapeHtml(item.idea || '') + '</p></li>').join('') + '</ul>'

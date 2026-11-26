@@ -196,7 +196,11 @@ for(const width of [1366,1920])test('Unified practice library '+width+'px: all 2
  const dictationRows=dictationLibrary+' .practice-library-row';
  const newOnly=dictationLibrary+' [data-library-new-only]';
  const featured=[1,3,4,8,11,14,15,19,20,24,31,32,33];
- assert.deepEqual(await page.$$eval(dictationRows,rows=>rows.map(row=>row.querySelector('h3').textContent)),Array.from({length:232},(_,i)=>'#'+(i+1)));
+ const expectedDictation = listeningQuestions.filter(question=>question.type==='wfd')
+  .map((question,index)=>({id:question.id,title:'#'+(index+1)}));
+ assert.deepEqual(await page.$$eval(dictationRows,rows=>rows.map(row=>({
+  id:row.dataset.questionKey,title:row.querySelector('h3').textContent
+ }))),expectedDictation);
  assert.equal(await page.$$eval(dictationRows,rows=>rows.some(row=>/Prediction|\bNov\b/.test(row.textContent))),false);
  assert.deepEqual(await page.$$eval(dictationRows,rows=>rows.filter(row=>Number(row.dataset.questionNumber)<=33&&row.querySelector('.practice-library-label')?.textContent==='NEW').map(row=>Number(row.dataset.questionNumber))),featured);
  await page.locator(newOnly).click();

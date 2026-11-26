@@ -106,6 +106,44 @@
       section(2,'Grammar & spelling',m.pending?'Assessment incomplete':!m.valid?'Repair form first':m.annotations.some(x=>!x.optional)?'Corrections to review':m.annotations.length?'Optional refinements':'Review saved feedback',grammar,'swtReviewLanguage')+
       section(3,'Form',m.pending?'Assessment incomplete':m.valid?'Meets form checks':'Needs attention',form,'swtReviewForm')+revision;
   }
+  const darwinIdeas = [
+    ['What Darwin saw', 'observing numerous signs that species were not fixed', 'Darwin’s observations helped him develop his theory of evolution.'],
+    ['Why he waited', 'there was insufficient evidence to make it public at that time', 'He needed more evidence before making the theory public.'],
+    ['What he did next', 'Over the next 20 years, Darwin continuously accumulated a vast amount of data', 'He spent about twenty years gathering more evidence.'],
+    ['When he published', 'It was not until 1859, when "On the Origin of Species" was published, that his ideas became accessible to the general readership', 'The book made his ideas available to the public in 1859.'],
+    ['How people reacted', 'receiving both praise from the scientific community and fierce criticism from the religious community and conservative forces', 'The book drew praise and criticism, showing the debate it sparked.'],
+    ['Why it still matters', 'still has scientific value more than 150 years after its publication', 'The book still matters to science. This is the passage’s final point.']
+  ];
+  function passageIdeas(passage) {
+    const text = String(passage?.text || '');
+    if (darwinIdeas.every(([,phrase]) => text.includes(phrase))) {
+      return darwinIdeas.map(([label,phrase,idea]) => ({label,phrases:[phrase],idea}));
+    }
+    const guide = passage?.studyGuide;
+    const items = list(guide?.items);
+    return items.map(item => ({
+      label:clean(item.label) || 'Key idea',
+      idea:clean(item.idea),
+      // Curated guides give authored source excerpts. For ordinary guides,
+      // highlight only a complete verbatim key idea, which avoids marking
+      // incidental words shared by a paraphrase and the passage.
+      phrases:(guide.overview ? list(item.phrases) : [item.idea]).map(phrase=>exact(text,phrase)).filter(Boolean)
+    })).filter(item=>item.idea);
+  }
+  function highlightedPassage(passage) {
+    const text = String(passage?.text || '');
+    const ranges = passageIdeas(passage).flatMap((item,index)=>item.phrases.flatMap(phrase=>{
+      const range=location(text,phrase);
+      return range ? [{...range,index}] : [];
+    })).sort((a,b)=>a.start-b.start || b.end-a.end);
+    let at=0, output='';
+    for (const {start,end,index} of ranges) {
+      if(start<at)continue;
+      output+=esc(text.slice(at,start))+'<mark class="swt-source-highlight swt-source-tone-'+index%6+'">'+esc(text.slice(start,end))+'</mark>';
+      at=end;
+    }
+    return output+esc(text.slice(at));
+  }
   function mount(target,data,passage,text,options={}){
     const m=model(data,passage,text);target.innerHTML=render(m);
     const valid=()=>options.isCurrent?.()!==false;
@@ -182,5 +220,5 @@
       }
     }
   }
-  return {model,render,mount,mountCorrection};
+  return {model,render,mount,mountCorrection,passageIdeas,highlightedPassage};
 });
