@@ -142,6 +142,31 @@ function quietRecording(recording) {
    .replace("    providerConfiguration: require('./full-mock/assessment').claudeConfiguration()", "    providerConfiguration: require('./full-mock/assessment').configuration()")
    .replace("const speakingMock = require('./speaking-mock').installSpeakingMock(app, {\n  requireAdmin,", "const speakingMock = require('./speaking-mock').installSpeakingMock(app, {")
    .replace("backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING!=='false'","backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING==='true'").replace('    await writingLab.start();\n','').replace('    await writingLab.stop();\n','');
+ project(String.raw`async function writingContentModel(prompt, { sstPractice = false } = {}) {
+  if (!anthropic) throw Object.assign(new Error('Writing assessment is not configured.'), { code: 'invalid_api_key' });
+  const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
+    max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { timeout: sstPractice ? 90000 : 60000, maxRetries: 0 });
+  if (response.stop_reason === 'max_tokens') {
+    if (sstPractice) return null;
+    throw new Error('Incomplete writing assessment.');
+  }
+  const output = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
+  try { return JSON.parse(output.match(/\{[\s\S]*\}/)?.[0] || 'null'); }
+  catch (error) {
+    if (sstPractice && error instanceof SyntaxError) return null;
+    throw error;
+  }
+}
+`,
+   String.raw`async function writingContentModel(prompt) {
+  if (!anthropic) throw new Error('Writing assessment is not configured.');
+  const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
+    max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { timeout: 60000, maxRetries: 0 });
+  if (response.stop_reason === 'max_tokens') throw new Error('Incomplete writing assessment.');
+  const output = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
+  return JSON.parse(output.match(/\{[\s\S]*\}/)?.[0] || 'null');
+}
+`);
  // Reviewed staff sign-in, account dates, session revocation and email recovery change this server; the
  // native graders below retain their original hashes. Keep both exact source
  // revisions pinned; do not exempt arbitrary account or provider source drift.
@@ -178,6 +203,40 @@ function quietRecording(recording) {
     && text.split(/[.!?;]+/u).some(sentence => wordCount(sentence) >= 8))
     throw Error('Unsupported SST form gate: a substantial sentence is present; assess grammar and content separately');
 `, '');
+ project(String.raw`async function grade(q, text, call, { propagateProviderErrors = false } = {}) {
+  const objective = require('./listening-scoring').grade(q,text);
+  if(objective)return objective;
+  if (q.type === 'essay') return gradeUnifiedEssay(q, text, call);
+  if (q.type === 'wfd') return gradeDictation(q, text);
+  const form = formFor(q.type, text);
+  if (!form.score) return zeroResult(q.type, text, form.reasons);
+  let error;
+  for (let i = 0; i < 2; i++) {
+    const prompt = buildPrompt(q, text) + (i ? '\nVALIDATION RETRY: '+error.message+'. Return all required fields with valid exact response quotations. For SWT, one complete sentence within 5–75 words earns FULL Form 1/1; never require multiple sentences.' : '');
+    let raw;
+    try { raw = await call(prompt); }
+    catch (e) { if (propagateProviderErrors) throw e; error = e; continue; }
+    try { return normalize(q, text, raw); }
+    catch (e) { error = e; }
+  }
+  return localGrade(q, text, { reason: error?.message || 'AI assessment unavailable' });
+}
+`,
+   String.raw`async function grade(q, text, call) {
+  const objective = require('./listening-scoring').grade(q,text);
+  if(objective)return objective;
+  if (q.type === 'essay') return gradeUnifiedEssay(q, text, call);
+  if (q.type === 'wfd') return gradeDictation(q, text);
+  const form = formFor(q.type, text);
+  if (!form.score) return zeroResult(q.type, text, form.reasons);
+  let error;
+  for (let i = 0; i < 2; i++) {
+    try { return normalize(q, text, await call(buildPrompt(q, text) + (i ? '\nVALIDATION RETRY: '+error.message+'. Return all required fields with valid exact response quotations. For SWT, one complete sentence within 5–75 words earns FULL Form 1/1; never require multiple sentences.' : ''))); }
+    catch (e) { error = e; }
+  }
+  return localGrade(q, text, { reason: error?.message || 'AI assessment unavailable' });
+}
+`);
  assert.equal(sha(source),'e5e716589a9388f431420c9676aa3c93f78cceea20a664c339ad1f0e3f5a339f');
  assert.equal(sha(read('speaking-delivery.js')),require('../content/full-mock/scoring-lock.json').snapshot.files['speaking-delivery.js'].sha256);
  assert.equal(baseline.files['speaking-delivery.js'].sha256,require('../content/full-mock/delivery-bands-compatible-sources.json').files['speaking-delivery.js'].sha256);
