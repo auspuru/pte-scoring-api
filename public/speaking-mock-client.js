@@ -436,7 +436,19 @@
       if(focus){node.scrollIntoView?.({behavior:env.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches?'auto':'smooth',block:'start'});doc.getElementById('sm-review-heading')?.focus?.({preventScroll:true});}
       if(response.recording){try{
         const audioKey=key(id,index);let url=urls.get(audioKey);if(!url){const reply=await env.fetch('/api/speaking-mocks/attempts/'+id+'/recordings/'+index,{headers:{'x-session-token':token()},cache:'no-store'});if(!reply.ok)throw Error('Recording could not load.');const blob=await reply.blob();if(!valid(ticket)||a?.id!==id||selected!==index||audioTicket!==reviewAudioTicket)return;url=env.URL.createObjectURL(blob);urls.set(audioKey,url);}
-        if(valid(ticket)&&a?.id===id&&selected===index&&audioTicket===reviewAudioTicket){const slot=doc.getElementById('sm-review-audio');if(slot)slot.innerHTML='<audio controls preload="metadata" src="'+esc(url)+'" aria-label="Your recorded response"></audio>';}
+        if(valid(ticket)&&a?.id===id&&selected===index&&audioTicket===reviewAudioTicket){const slot=doc.getElementById('sm-review-audio');if(slot){
+          slot.innerHTML='<audio controls preload="metadata" src="'+esc(url)+'" aria-label="Your recorded response"></audio>';
+          let adminReview=false;
+          try{adminReview=Boolean(env.sessionStorage?.getItem('pte_impersonate_token'));}catch{}
+          if(adminReview){
+            const download=doc.createElement('a');
+            download.className='portal-button';
+            download.href=url;
+            download.download='';
+            download.textContent='Download original recording';
+            slot.appendChild(download);
+          }
+        }}
       }catch(error){if(valid(ticket)&&a?.id===id&&selected===index&&audioTicket===reviewAudioTicket){const slot=doc.getElementById('sm-review-audio');if(slot)slot.innerHTML='<p class="sm-muted">Your recording could not load. Select this question again to retry.</p>';}}}
     }
     async function refreshPublishedReport({manual=false}={}){
