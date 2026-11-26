@@ -184,8 +184,16 @@ async function fixture(t, options = {}) {
   return { id, store, engine, engines, directory, state:async () => (await store.get('alice', id)).state };
 }
 
-function snapshotBeforePassageSearch(current) {
+function snapshotBeforeSstPracticeRecovery(current) {
   const snapshot = structuredClone(current);
+  const pins = require('../content/full-mock/sst-practice-recovery-compatible-pins.json');
+  for (const [name, sha] of Object.entries(pins.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
+  assert.equal(digest(snapshot.scoringSources), pins.previousDigest);
+  return snapshot;
+}
+
+function snapshotBeforePassageSearch(current) {
+  const snapshot = snapshotBeforeSstPracticeRecovery(current);
   const submittedHistory = require('../content/full-mock/submitted-answer-history-compatible-pins.json');
   for (const [name, sha] of Object.entries(submittedHistory.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
   assert.equal(digest(snapshot.scoringSources), submittedHistory.previousDigest);
@@ -211,6 +219,8 @@ function snapshotBeforePracticeIndex(current) {
 test('Practice index and timers retain the exact previously served Full Mock assessment',async t=>{
   const f=await fixture(t);
   const previousRelease=await f.state();
+  previousRelease.assessment=require('../full-mock/assessment').stateFor(snapshotBeforeSstPracticeRecovery(f.engine.snapshot));
+  assert.doesNotThrow(()=>f.engine.validate(previousRelease));
   previousRelease.assessment=require('../full-mock/assessment').stateFor(snapshotBeforePassageSearch(f.engine.snapshot));
   assert.doesNotThrow(()=>f.engine.validate(previousRelease));
   const state=await f.state(),original=snapshotBeforePracticeIndex(f.engine.snapshot);

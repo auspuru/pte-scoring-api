@@ -55,7 +55,8 @@ test('Full Mock can resume the exact prior source snapshot and rejects scorer dr
   const engine = assessment.createEngine({ store: {}, adapters });
   const frozen = structuredClone(engine.snapshot);
   const submittedHistoryPins = require('../content/full-mock/submitted-answer-history-compatible-pins.json');
-  for (const release of [submittedHistoryPins, pins]) {
+  const sstRecoveryPins = require('../content/full-mock/sst-practice-recovery-compatible-pins.json');
+  for (const release of [sstRecoveryPins, submittedHistoryPins, pins]) {
     for (const [file, hash] of Object.entries(release.previousFiles)) frozen.scoringSources.files[file].sha256 = hash;
     assert.equal(digest(frozen.scoringSources), release.previousDigest);
     assert.equal(engine.validate({ paperHash: frozen.paperHash, assessment: assessment.stateFor(frozen) }), adapters);

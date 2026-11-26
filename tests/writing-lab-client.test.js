@@ -14,7 +14,7 @@ const express = require('express');
 const os = require('node:os');
 const client = fs.readFileSync(path.join(__dirname, '../public/writing-lab-client.js'), 'utf8');
 function harness({ audioReadyState = 4, protectedMode = false, portal = false, studioMode=false } = {}) {
-  const nodes = new Map(), intervals = new Map(), recordings = [], requests = [], memory = new Map();
+  const nodes = new Map(), intervals = new Map(), timeouts = new Map(), recordings = [], requests = [], memory = new Map();
   let now = 100000, seq = 0;
   class Element {
     constructor(id,tagName='DIV') { this.id=id; this.tagName=tagName; this.parentElement=null; this.children=[]; this.attrs=new Map();this.inert=false;this.hidden=false;this.value=''; this.isConnected=true; this.textContent=''; this.disabled=false;this.readOnly=false; this.classes=new Set(); this.events={};
@@ -66,7 +66,7 @@ function harness({ audioReadyState = 4, protectedMode = false, portal = false, s
     localStorage:{getItem:k=>memory.get(k)||null,setItem:(k,v)=>memory.set(k,v),removeItem:k=>memory.delete(k)},
     sessionStorage:{getItem:()=>null},
     setInterval:(fn,ms)=>{const id=++seq;intervals.set(id,{fn,ms});return id;},clearInterval:id=>intervals.delete(id),
-    setTimeout:()=>++seq,clearTimeout:()=>{},
+    setTimeout:(fn,ms)=>{const id=++seq;timeouts.set(id,{fn,ms});return id;},clearTimeout:id=>timeouts.delete(id),
     fetch:async(url,options)=>{ requests.push({url,body:options.body?JSON.parse(options.body):null});
       const value=structuredClone(context.reply || context.window.testApi.current());
       if(context.replyOnce) {context.reply=null;context.replyOnce=false;}
@@ -82,7 +82,7 @@ function harness({ audioReadyState = 4, protectedMode = false, portal = false, s
   vm.runInContext(instrumented,context);
   if(protectedMode)context.window.PortalExamMode=createController(document,context.window);
   const hooks=context.window.testApi;
-  return {hooks,nodes,recordings,requests,memory,context,intervals,document,setNow:value=>now=value,
+  return {hooks,nodes,recordings,requests,memory,context,intervals,timeouts,document,setNow:value=>now=value,
     countdown:async()=>{for(let i=0;i<3;i++) for(const task of [...intervals.values()]) if(task.ms===1000) await task.fn();}};
 }
 function attempt(index=3) {
@@ -360,6 +360,21 @@ test('A start API failure pauses playback and permits a fresh click to retry',as
   assert.equal(h.nodes.get('audio-status').textContent,'Playing…');
 });
 
+test('Submitted SST polls saved assessment and shows reviewed feedback without a retry request', async () => {
+  const h=harness(), q=bank.spoken[0], base=attempt();
+  const submitted={...base,kind:'sst',testId:q.id,status:'submitted',questions:[q],answers:[q.sample],
+    completed:[{at:100100,reason:'Submitted'}],results:[null],playback:[null],assessmentStatus:'pending'};
+  open(h,submitted);
+  assert.match(h.nodes.get('scoring-status').textContent,/Preparing your assessment/);
+  const result={total:8,maximum:12,maxima:{content:4},scores:{content:2},feedback:{content:'Reviewed feedback.'}};
+  h.context.reply={...submitted,results:[result],assessmentStatus:undefined};
+  const check=[...h.timeouts.values()].find(timer=>timer.ms===5000);
+  assert.ok(check);
+  await check.fn();
+  assert.deepEqual(h.hooks.current().results,[result]);
+  assert.match(h.nodes.get('lab').innerHTML,/Reviewed feedback/);
+  assert.equal(h.requests.filter(request=>request.url.includes('/score/')).length,0);
+});
 test('Submitted standalone SST results offer a fresh reattempt while retaining the completed attempt',async()=>{
   const h=harness();
   const q=structuredClone(bank.spoken[0]);

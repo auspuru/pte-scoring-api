@@ -205,7 +205,7 @@ async function gradeUnifiedSwt(q, text, judge, {legacy=false} = {}) {
     errors:corrections.map(item=>({phrase:item.phrase,correction:item.fix,explanation:item.meaning_effect || item.rationale || '',affectsScore:item.affects_score}))};
 }
 
-async function grade(q, text, call) {
+async function grade(q, text, call, { propagateProviderErrors = false } = {}) {
   const objective = require('./listening-scoring').grade(q,text);
   if(objective)return objective;
   if (q.type === 'essay') return gradeUnifiedEssay(q, text, call);
@@ -214,7 +214,11 @@ async function grade(q, text, call) {
   if (!form.score) return zeroResult(q.type, text, form.reasons);
   let error;
   for (let i = 0; i < 2; i++) {
-    try { return normalize(q, text, await call(buildPrompt(q, text) + (i ? '\nVALIDATION RETRY: '+error.message+'. Return all required fields with valid exact response quotations. For SWT, one complete sentence within 5–75 words earns FULL Form 1/1; never require multiple sentences.' : ''))); }
+    const prompt = buildPrompt(q, text) + (i ? '\nVALIDATION RETRY: '+error.message+'. Return all required fields with valid exact response quotations. For SWT, one complete sentence within 5–75 words earns FULL Form 1/1; never require multiple sentences.' : '');
+    let raw;
+    try { raw = await call(prompt); }
+    catch (e) { if (propagateProviderErrors) throw e; error = e; continue; }
+    try { return normalize(q, text, raw); }
     catch (e) { error = e; }
   }
   return localGrade(q, text, { reason: error?.message || 'AI assessment unavailable' });

@@ -124,6 +124,10 @@ function present(a) {
   const {assessmentRecovery,sstReassessment,sstReassessmentHistory,...visible}=a;
   const results = a.status === 'submitted' ? reviewedResults(a) : a.questions.map(() => null);
   const result = { ...visible, results, serverNow: Date.now(), report: a.status === 'submitted' ? report.summarize(a.questions, results, a) : null };
+  if (a.kind === 'sst' && a.status === 'submitted' && !results[0]) {
+    const status = assessmentRecovery?.[0]?.status;
+    result.assessmentStatus = ['held','exhausted'].includes(status) ? 'unavailable' : 'pending';
+  }
   result.overallFeedback = overall.view(a);
   result.impactFeedback = require('./mock-feedback').lab(a, result.report || undefined);
   result.questions = a.questions.map((q,i) => ({ id:q.id, type:q.type, title:q.title, minutes:q.minutes, timeGroup:q.timeGroup,
@@ -182,7 +186,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
           let result = current.results[index];
           if (retryableResult(result,current.questions[index],current)) result = null;
           if (!result) {
-            if(current.kind==='mock'){
+            if(current.kind==='mock'||current.kind==='sst'){
               receipt=await recovery.claim(uid,a.id,index);
               if(!receipt){const saved=await store.get(uid,a.id);if(saved?.results[index]&&!retryableResult(saved.results[index],saved.questions[index],saved))return resolve(saved.results[index]);throw Object.assign(Error('Assessment will continue automatically.'),{status:503,retryable:false});}
             }
@@ -202,6 +206,9 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
               };
             } else if (question.type === 'swt' && graders.swtGrader) {
               result = await scoring.gradeUnifiedSwt(question,current.answers[index],graders.swtGrader);
+            } else if (current.kind === 'sst') {
+              result = await scoring.grade(question,current.answers[index],prompt=>callModel(prompt,{sstPractice:true}),
+                {propagateProviderErrors:true});
             } else {
               result = await scoring.grade(question, current.answers[index], question.type==='sst' ? callModel : graders.callModel);
             }
@@ -234,8 +241,6 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     if(a.sstReassessment?.status==='queued')sstReassessment.run(uid,a.id).catch(()=>console.warn('[writing-sst-reassessment] Saved review needs attention.'));
     if(a.questions.every((q,i)=>a.results[i]&&!retryableResult(a.results[i],q,a)))reviewer.ensure(uid,a).catch(()=>console.warn('[writing-mock-overall] Saved feedback will recover automatically.'));
     a.questions.forEach((q, index) => {
-      // The practice review requests a fresh assessment for saved SST fallbacks.
-      if (pendingSstPractice(a,a.results[index])) return;
       const key = uid + ':' + a.id + ':' + index;
       const saved=a.assessmentRecovery?.[index];
       if(saved&&(['held','exhausted'].includes(saved.status)||saved.nextAt>now()||saved.status==='calling'&&saved.expiresAt>now()))return;
@@ -425,7 +430,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     if(stopped)return Promise.resolve();if(recoveryTask)return recoveryTask;
     recoveryTask=(async()=>{
       const rows=await store.scanForScoring(cursor,20,{since:now()-14*86400000});cursor=rows.length?rows.at(-1).data.id:'';
-      for(const row of rows){if(stopped)break;try{let a=row.data;if(a.kind!=='mock')continue;
+      for(const row of rows){if(stopped)break;try{let a=row.data;
         if(a.status==='active'&&a.deadline!=null&&now()>=a.deadline)a=await store.update(row.username,a.id,value=>reconcile(value,now()));
         assessSubmitted(row.username,a);
       }catch{console.warn('[writing-lab] Saved mock recovery will be checked again.');}}

@@ -37,17 +37,21 @@ test('Scoring rejects malformed traits and fabricated error evidence, gates off-
   assert.throws(()=>policy.normalize(q,text,{...raw,errors:[{phrase:'invented quotation',correction:'...',explanation:'...'}]}));
   assert.equal(policy.normalize(q,text,{...raw,scores:{...raw.scores,content:0},improvements:['Answer the lecture topic.']}).total,0);
 });
-test('SST practice keeps a saved fallback pending until a retry returns reviewed feedback', async t => {
+test('SST practice keeps a saved fallback pending and recovers automatically from the saved response', async t => {
   const directory = await fs.mkdtemp(path.join(os.tmpdir(), 'sst-practice-retry-'));
   const app = express();
   app.use(express.json());
+  let now = Date.now();
   let available = false;
+  let outcomeUncertain = false;
   let calls = 0;
   const feedback = Object.fromEntries(Object.keys(policy.MAXIMA.sst).map(key => [key, 'Reviewed feedback.']));
   const service = installWritingLab(app, { directory, verifyToken: token => token === 'tester' ? token : null,
-    getAccount: async () => ({}), callModel: async () => {
+    now: () => now, getAccount: async () => ({}), callModel: async (_, context) => {
+      assert.equal(context.sstPractice, true);
       calls++;
-      if (!available) throw Error('Provider unavailable');
+      if (outcomeUncertain) throw Object.assign(new Error('Provider timed out'), { name: 'APIConnectionTimeoutError' });
+      if (!available) return null;
       return { scores: { content: 2, form: 2, grammar: 1, vocabulary: 1, spelling: 2 },
         formInvalid: false, formReason: '', feedback, strengths: [], improvements: ['Link the main ideas.'], errors: [] };
     } });
@@ -77,15 +81,16 @@ test('SST practice keeps a saved fallback pending until a retry returns reviewed
   assert.deepEqual(pending.results, [null]);
   assert.equal(pending.report.score90, null);
   assert.equal((await get('')).find(a => a.id === id).score90, null);
-  const failure = await post(suffix + '/score/0');
-  assert.equal(failure.status, 503);
-  assert.equal((await failure.json()).retryable, false);
-  assert.equal(calls, 4);
+  assert.equal(pending.assessmentStatus, 'pending');
+  assert.equal(calls, 2);
+  assert.equal((await post(suffix + '/score/0')).status, 503);
+  assert.equal(calls, 2);
 
   available = true;
-  const reviewed = await post(suffix + '/score/0');
-  assert.equal(reviewed.status, 200);
-  const result = await reviewed.json();
+  now += 30001;
+  await service.recover();
+  await service.waitForJobs();
+  const result = (await get(suffix)).results[0];
   assert.equal(result.total, 8);
   assert.equal(result.feedback.grammar, feedback.grammar);
   const reopened = await get(suffix);
@@ -93,7 +98,20 @@ test('SST practice keeps a saved fallback pending until a retry returns reviewed
   assert.deepEqual(reopened.results[0], result);
   assert.equal((await get('')).find(a => a.id === id).score90, 63);
   assert.equal((await post(suffix + '/score/0')).status, 200);
-  assert.equal(calls, 5);
+  assert.equal(calls, 3);
+
+  outcomeUncertain = true;
+  const heldSuffix = '/' + randomUUID();
+  assert.equal((await post('', { id: heldSuffix.slice(1), testId: question.id, mode: 'practice' })).status, 200);
+  assert.equal((await post(heldSuffix + '/begin')).status, 200);
+  assert.equal((await post(heldSuffix + '/answer', { index: 0, revision: 1, text: answer, next: true })).status, 200);
+  await service.waitForJobs();
+  const held = await get(heldSuffix);
+  assert.equal(held.assessmentStatus, 'unavailable');
+  assert.equal(held.answers[0], answer);
+  assert.deepEqual(held.results, [null]);
+  assert.equal((await post(heldSuffix + '/score/0')).status, 503);
+  assert.equal(calls, 4);
 });
 test('A substantial SST sentence cannot be erased by an unsupported fragment form gate',async()=>{
   const q=bank.spoken[0],text=sentence(57);

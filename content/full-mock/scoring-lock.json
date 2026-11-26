@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "19577f727e9b8abf5b52512581a173b4a39e303d",
-  "checkedAt": "2026-11-24",
-  "scope": "Standalone practice index, timing, revision, exam reporting and transcript search with exact compatibility for saved Full Mock assessments.",
+  "baseCommit": "8466472bcccccef17d087aeec061bec395248645",
+  "checkedAt": "2026-11-26",
+  "scope": "Standalone SST assessment recovery and polling with exact compatibility for saved Full Mock assessments.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -120,7 +120,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "b3f9af4bb5f1b3f570ea834c0daa25416894731965179ec531fdd8a5a832c430",
+        "sha256": "a4299e2bdc361e5985d46bfdad42fd5add3ae0c92fc64ec29e4861ffc21d059c",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -213,7 +213,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "c06d7dd40adc22c9bd0461ada2d8fbc226d4efed320eefa0e38a971f6a016543",
+        "sha256": "bcd7ae8a8a4c9c3010ec20c47cfe000653ceecdf96571afdef1865c7ea62c320",
         "version": null
       },
       "situation-content-policy-developed.js": {
@@ -273,7 +273,7 @@
         "version": "20.3.17"
       },
       "writing-lab-scoring.js": {
-        "sha256": "ad672134e57bca252447bdef6cf4336fd23ff54c8f88b4e439cc72fb55226198",
+        "sha256": "03c8b9cda721541b8005ad92575448487994fa040b46bfa19b47a7140fec091f",
         "version": "exam-practice-2026-10-09.1"
       }
     }

@@ -178,8 +178,18 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
   async function scanForScoring(cursor='',limit=20,{since=0}={}){
     await initialise();
     if(table==='writing_lab_attempts'){
-      if(pool)return(await pool.query(`SELECT username,data FROM writing_lab_attempts WHERE id::text>$1 AND data->>'kind'='mock' AND data->>'status' IN ('active','submitted') AND CASE WHEN jsonb_typeof(data->'startedAt')='number' THEN (data->>'startedAt')::numeric ELSE 0 END >= $3 ORDER BY id LIMIT $2`,[cursor,limit,since])).rows;
-      const rows=[];for(const dir of await fs.readdir(directory,{withFileTypes:true})){if(!dir.isDirectory())continue;let uid;try{uid=await fs.readFile(path.join(directory,dir.name,'owner'),'utf8');}catch(e){if(e.code==='ENOENT')continue;throw e;}if(createHash('sha256').update(uid).digest('hex')!==dir.name)continue;for(const name of await fs.readdir(path.join(directory,dir.name))){if(!name.endsWith('.json')||name.slice(0,-5)<=cursor)continue;const a=JSON.parse(await fs.readFile(path.join(directory,dir.name,name),'utf8'));if(a.kind==='mock'&&Number(a.startedAt||0)>=since&&['active','submitted'].includes(a.status))rows.push({username:uid,data:a});}}
+      if(pool)return(await pool.query(`SELECT username,data FROM writing_lab_attempts WHERE id::text>$1 AND (
+        (data->>'kind'='mock' AND data->>'status' IN ('active','submitted'))
+        OR (data->>'kind'='sst' AND data->>'status'='submitted' AND (
+          jsonb_typeof(data->'results'->0) IS DISTINCT FROM 'object'
+          OR data->'results'->0 @> '{"score_provisional":true}'
+          OR data->'results'->0 @> '{"needs_semantic_review":true}'
+        ))
+      ) AND CASE WHEN jsonb_typeof(data->'startedAt')='number' THEN (data->>'startedAt')::numeric ELSE 0 END >= $3 ORDER BY id LIMIT $2`,[cursor,limit,since])).rows;
+      const rows=[];for(const dir of await fs.readdir(directory,{withFileTypes:true})){if(!dir.isDirectory())continue;let uid;try{uid=await fs.readFile(path.join(directory,dir.name,'owner'),'utf8');}catch(e){if(e.code==='ENOENT')continue;throw e;}if(createHash('sha256').update(uid).digest('hex')!==dir.name)continue;for(const name of await fs.readdir(path.join(directory,dir.name))){if(!name.endsWith('.json')||name.slice(0,-5)<=cursor)continue;const a=JSON.parse(await fs.readFile(path.join(directory,dir.name,name),'utf8'));const result=a.results?.[0];
+        const recoverableMock=a.kind==='mock'&&['active','submitted'].includes(a.status);
+        const pendingSst=a.kind==='sst'&&a.status==='submitted'&&(!result||result.score_provisional===true||result.needs_semantic_review===true);
+        if(Number(a.startedAt||0)>=since&&(recoverableMock||pendingSst))rows.push({username:uid,data:a});}}
       return rows.sort((a,b)=>a.data.id.localeCompare(b.data.id)).slice(0,limit);
     }
     if(table!=='speaking_mock_attempts')return[];

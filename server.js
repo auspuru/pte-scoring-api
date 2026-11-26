@@ -6537,13 +6537,20 @@ const speakingMock = require('./speaking-mock').installSpeakingMock(app, {
   backgroundEnabled:process.env.SPEAKING_PROGRESSIVE_SCORING!=='false'
 });
 const speakingAlertTransport=require('./speaking-alert-mailer').createAlertMailer({nodemailer});
-async function writingContentModel(prompt) {
-  if (!anthropic) throw new Error('Writing assessment is not configured.');
+async function writingContentModel(prompt, { sstPractice = false } = {}) {
+  if (!anthropic) throw Object.assign(new Error('Writing assessment is not configured.'), { code: 'invalid_api_key' });
   const response = await anthropic.messages.create({ model: CLAUDE_MODEL, temperature: 0,
-    max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { timeout: 60000, maxRetries: 0 });
-  if (response.stop_reason === 'max_tokens') throw new Error('Incomplete writing assessment.');
+    max_tokens: 3000, messages: [{ role: 'user', content: prompt }] }, { timeout: sstPractice ? 90000 : 60000, maxRetries: 0 });
+  if (response.stop_reason === 'max_tokens') {
+    if (sstPractice) return null;
+    throw new Error('Incomplete writing assessment.');
+  }
   const output = response.content.filter(item => item.type === 'text').map(item => item.text).join('\n');
-  return JSON.parse(output.match(/\{[\s\S]*\}/)?.[0] || 'null');
+  try { return JSON.parse(output.match(/\{[\s\S]*\}/)?.[0] || 'null'); }
+  catch (error) {
+    if (sstPractice && error instanceof SyntaxError) return null;
+    throw error;
+  }
 }
 const fullMock = require('./full-mock/api').installFullMock(app, {
   requireAdmin,

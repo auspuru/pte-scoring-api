@@ -764,11 +764,40 @@
     const overallTarget=document.getElementById('overall-feedback');
     if(overallTarget){overallTarget.innerHTML=overallHTML();bindOverall();}
     if(attempt.kind==='mock'&&!scored){const status=document.getElementById('scoring-status');if(status)status.textContent='Preparing your results. Your answers are saved and assessment continues automatically. You may leave and return later.';}
+    else if(attempt.kind==='sst'&&!scored) watchSstAssessment();
     else if(attempt.questions.some((q,i)=>retryableAssessment(i)) && !grading.has(attempt.id)) {
       const status=document.getElementById('scoring-status');
       if(status) status.innerHTML='Some assessments need review. <button class="secondary" id="retry-scores">Request a complete assessment</button>';
       document.getElementById('retry-scores')?.addEventListener('click',scoreRemaining);
     } else if(!scored && !grading.has(attempt.id)) scoreRemaining();
+  }
+  function watchSstAssessment() {
+    const status=document.getElementById('scoring-status');
+    if(!status) return;
+    status.setAttribute('role','status');
+    if(attempt.assessmentStatus==='unavailable') {
+      status.textContent='Assessment is currently unavailable. Your summary is saved.';
+      return;
+    }
+    status.textContent='Preparing your assessment. Your summary is saved. You can leave and return later.';
+    const current=attempt, serial=navigationSerial, ownerToken=token();
+    let checks=0;
+    const stillViewing=()=>attempt===current && navigationSerial===serial && token()===ownerToken && workspaceVisible && status.isConnected;
+    async function check() {
+      if(!stillViewing()) return;
+      try {
+        const saved=await api('/attempts/'+current.id);
+        if(!stillViewing()) return;
+        if(saved.id===current.id && (saved.results?.[0] || saved.assessmentStatus==='unavailable')) {
+          current.results=saved.results;
+          current.assessmentStatus=saved.assessmentStatus;
+          renderResults();
+          return;
+        }
+      } catch(_) { /* Recheck the saved assessment after a connection interruption. */ }
+      if(stillViewing()) setTimeout(check,++checks<12?5000:30000);
+    }
+    setTimeout(check,5000);
   }
   function mockSstFeedback(q,i,context){
     const r=attempt.results[i],id='sst-feedback-'+context+'-'+i;
