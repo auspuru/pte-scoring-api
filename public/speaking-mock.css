@@ -27,3 +27,11 @@ body.dark .sm-results{--report-mint:#29463b;--report-sand:#443e2b;--report-slate
 .sm-overall-clock{font-variant-numeric:tabular-nums;font-weight:700}.sm-overall-clock small{display:block;font-weight:400;font-size:11px}#sm-time-warning:not(:empty){padding:8px 12px;border:1px solid currentColor;border-radius:8px;font-weight:600}
 
 .sm-exam{grid-template-rows:minmax(54px,auto) minmax(0,1fr) minmax(64px,auto)}.sm-exam-header{flex-wrap:wrap;gap:8px;padding-block:10px}.sm-exam-header>div{flex-wrap:wrap}.sm-exam-footer{gap:12px;flex-wrap:wrap}.sm-image-dialog{overflow:auto}
+
+@media (min-width: 761px) and (max-height: 760px) {
+  .sm-exam-fit-image .sm-exam-main { padding-top: 16px; }
+  .sm-exam-fit-image .sm-instructions { margin-bottom: 18px; }
+  .sm-exam-fit-image .sm-stimulus .sm-exam-image img {
+    max-height: min(60vh, calc(100dvh - 307px));
+  }
+}
