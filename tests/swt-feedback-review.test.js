@@ -182,3 +182,25 @@ test('Passage rendering escapes markup and does not highlight incidental matches
  assert.equal(document.querySelector('script'),null);
  assert.deepEqual([...document.querySelectorAll('mark')].map(el=>el.textContent),['Trees cool cities and shade people.']);
 });
+
+test('Every bundled SWT passage has revision-matched highlights and plain-English explanations',()=>{
+ const {studentPassage}=require('../swt-reference');
+ const sources=require('../passages.json').map(studentPassage);
+ for(const source of sources){
+  const {document}=parseHTML('<main>'+review.highlightedPassage(source)+'</main>');
+  const main=document.querySelector('main'), marks=[...main.querySelectorAll('mark')];
+  assert.equal(main.textContent,source.text,source.title);
+  assert(marks.length>=2,source.title);
+  assert(review.passageIdeas(source).every(item=>item.idea&&item.phrases.every(phrase=>source.text.includes(phrase))),source.title);
+ }
+});
+
+test('A catalogue excerpt is dropped when the saved text does not contain it',()=>{
+ const {studentPassage}=require('../swt-reference');
+ const source=studentPassage(require('../passages.json')[0]);
+ const phrase=review.passageIdeas(source)[0].phrases[0];
+ const stale={...source,text:source.text.replace(phrase,'')};
+ const {document}=parseHTML('<main>'+review.highlightedPassage(stale)+'</main>');
+ assert.equal(document.querySelector('main').textContent,stale.text);
+ assert(![...document.querySelectorAll('mark')].some(el=>el.textContent===phrase));
+});

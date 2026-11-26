@@ -41,7 +41,7 @@
     "public/essay-scoring.js": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
     "public/essay-feedback.js": "215ad91cc24acbdb5637cc50f18e0af5e8ed8135aeb27439560bb125f36170f3",
     "public/swt-feedback.js": "af409d40b42b51ce3ced681d9b4ece76695cabe9598a2eea0494718aa99747a6",
-    "public/swt-feedback-review.js": "314a9a3ab277e500dfe19f1b3b94d8e170700fdf039be859821ac22365840077",
+    "public/swt-feedback-review.js": "0a10045adf03620a132862c0c9105714eb768589cb13e170ada2611bcb997ba4",
     "public/swt-mock-feedback.js": "77277ab08608528497f39c6a62f6cb49baa1d1f071d713f56bbd9bbe2d910b34",
     "content/full-mock/scoring-lock.json": "99948e5f55d30dda94958a41dfd7ca19781470f48b03cce251c756fbdc05c9ad",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
@@ -51,7 +51,8 @@
     "speaking-mock-completion.js": "880d440996216a193d566d75065e5c096e5e620aa9cc0b078206cc5d095e940a",
     "speaking-mock-reassessment.js": "dcb0352924d2408411629cae5ca9ad86acf2db6e3cb17946d34f2950c932a821",
     "speaking-delivery.js": "b4b046add57ba7f7f0031fc4c6db9d618fdc5abee1db452e693bd1c4970c5ad7",
-    "full-mock/delivery-reassessment.js": "f88c111dc01558160462e708fbf1a174d2ed33959f1c161dd46f00f412c4e34f"
+    "full-mock/delivery-reassessment.js": "f88c111dc01558160462e708fbf1a174d2ed33959f1c161dd46f00f412c4e34f",
+    "public/swt-highlight-guide.js": "89295dbc9a8abfae6cc4ec8e50a530136f0fb71715c735e18ca1ab1f366bc100"
   },
   "presentationUpdates": {
     "baselineCommit": "728476dedad6eeaba0afbd2fc2963bf194f9a254",
