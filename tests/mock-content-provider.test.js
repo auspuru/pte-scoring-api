@@ -82,3 +82,16 @@ test('Content transport failures stay secret-safe and never invoke another provi
   await assert.rejects(transport.call({messages:[]},{signal:controller.signal}),/Cancelled/);
   await assert.rejects(provider.createProvider({apiKey:''}).call({messages:[]}),{code:'MOCK_CONTENT_UNAVAILABLE'});
 });
+
+test('Plain text generation accepts a completed text response and rejects empty or refused output', async()=>{
+  const original={max_tokens:250,messages:[{role:'user',content:'Give concise vocabulary feedback.'}]};
+  for(const plainText of [true,false]){
+    const body=provider.request(original,{plainText});
+    assert.equal(body.text?.format.type,plainText?undefined:'json_object');
+    assert.deepEqual(body.input,original.messages);
+  }
+  const output=text=>({status:'completed',output:[{type:'message',status:'completed',content:[{type:'output_text',text}]}]});
+  assert.equal(provider.response(output('The word suits this sentence.'),original,{plainText:true}).content[0].text,'The word suits this sentence.');
+  assert.throws(()=>provider.response(output(' '),original,{plainText:true}),{code:'MOCK_CONTENT_OUTPUT'});
+  assert.throws(()=>provider.response({status:'completed',output:[{type:'message',status:'completed',content:[{type:'refusal'}]}]},original,{plainText:true}),{code:'MOCK_CONTENT_REFUSAL'});
+});

@@ -4,7 +4,7 @@ The owner requested the existing OpenAI key be reused for a GPT comparison after
 
 ## Provider and contract
 
-`essay-provider.js` selects `ESSAY_SCORING_PROVIDER=anthropic|openai` for the shared Essay Practice/Writing Mock grader, including its optional learning sample. `openai` uses the Responses API with `ESSAY_OPENAI_MODEL=gpt-6.1-sol` and `ESSAY_OPENAI_REASONING_EFFORT=medium`. The repository default remains `anthropic` for explicit rollback; production selects OpenAI by environment configuration. SWT, speaking and other task providers retain their existing settings.
+`essay-provider.js` selects `ESSAY_SCORING_PROVIDER=anthropic|openai` for the shared Essay Practice/Writing Mock grader, including its optional learning sample. `openai` uses the Responses API with `ESSAY_OPENAI_MODEL=gpt-6.1-sol` and `ESSAY_OPENAI_REASONING_EFFORT=medium`. The portal selects OpenAI for new Essay Practice assessments. The configurable provider remains available for previously frozen Full Mock assessments.
 
 `essay-openai-format.js` reuses the teaching prompts, canonical requirements and numbered-word evidence schemas. It uses forced strict function output, disables parallel tool calls and sends `store:false`. Reference definitions with sibling descriptions are inlined for OpenAI's strict schema requirements, without changing their meaning or the shared scoring definition. An Organisation-only review does not acquire unrelated prompt-coverage fields. Deletion corrections must quote enough context to supply a nonempty corrected phrase.
 

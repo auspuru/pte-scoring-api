@@ -7,6 +7,7 @@ const { studentPassage } = require('../swt-reference');
 const { POLICY_VERSION, buildJudgingPrompt, applyScoringPolicy } = require('../swt-scoring-policy');
 const { createJudgmentService } = require('../swt-judgment-service');
 const judgeFormat = require('../swt-judge-format');
+const transport = require('../mock-content-provider').createProvider();
 const seeds = require('../passages.json');
 const args = Object.fromEntries(process.argv.slice(2).map(value => value.replace(/^--/, '').split('=')));
 if (!args.url || !['proxy', 'grade'].includes(args.mode)) {
@@ -54,7 +55,7 @@ const judge = createJudgmentService({ policyVersion: POLICY_VERSION, buildPrompt
     // Exercise the same structured response contract as the production grader.
     let response;
     try {
-      response = await request('/api/claude', judgeFormat.request(prompt, args.model || judgeFormat.scoringModel(), {semanticReassessment}), { timeoutMs, signal });
+      response = await transport.call(judgeFormat.request(prompt, transport.configuration.model, {semanticReassessment}), { timeoutMs, signal, task:'swt' });
     } catch (error) { console.error('Calibration provider error: ' + error.message); throw error; }
     const result = judgeFormat.response(response);
     if (args.debug) console.error(JSON.stringify({ fixtureAssessment: result }));

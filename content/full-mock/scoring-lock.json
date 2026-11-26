@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "baseCommit": "8466472bcccccef17d087aeec061bec395248645",
   "checkedAt": "2026-11-26",
-  "scope": "OpenAI summary scoring with the preceding assessment sources pinned for frozen attempts.",
+  "scope": "OpenAI practice and generation routes with pinned scoring for frozen mock attempts.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -120,7 +120,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "ee98c5f5157912ddf98d6fe5a51ba3949c4baa80fc5f7abed6f08dcc0cda60e1",
+        "sha256": "dfe753c968de9915f17a24f4d9c88208faf6a1605462311b1133ef4aea146c62",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -189,7 +189,7 @@
         "version": null
       },
       "mock-content-provider.js": {
-        "sha256": "3efa737c0e2a8ae047bd24b0c140f6cc2c67e2329cb3184950ef38bb1f5e8492",
+        "sha256": "f1b7c49428cfbb61c93e5dbb0331ab9db8362503f4d3c925555395b59a71c9b2",
         "version": null
       },
       "mock-result-review.js": {
@@ -213,7 +213,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "c15445a54864c26e6ac3b022b305d5e74c51f2ed58b2906a072e90f7cfbda4eb",
+        "sha256": "c009be57e4c8ef37d14d8f7989f02fa34fe416c7f00ebe4b552a3733a9420fdc",
         "version": null
       },
       "situation-content-policy-developed.js": {
