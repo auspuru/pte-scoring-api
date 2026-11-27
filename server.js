@@ -15,7 +15,7 @@ const puppeteer = require('puppeteer');
 const { installGracefulShutdown } = require('./graceful-shutdown');
 const { createReadiness } = require('./service-readiness');
 const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt,
-  legacyPolicy: legacySwtPolicy, itemScore90: swtItemScore90, sourceIdentity: swtSourceIdentity } = require('./swt-scoring-policy');
+  legacyPolicy: legacySwtPolicy, previousPolicy: previousSwtPolicy, itemScore90: swtItemScore90, sourceIdentity: swtSourceIdentity } = require('./swt-scoring-policy');
 const SwtForm = require('./swt-form-policy');
 const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
 const AccountProgress = require('./public/account-progress');
@@ -4463,11 +4463,11 @@ async function callSwtJudge(prompt, timeoutMs, { signal, semanticReassessment = 
   return format.response(response, { repairReview });
 }
 
-const createCurrentSwtService = call => createJudgmentService({
-  call, buildPrompt: buildJudgingPrompt, policyVersion: POLICY_VERSION,
-  requireEditEvidence: true,
-  isComplete: (result, summary, passage) => !applyScoringPolicy(result, summary, passage).needs_semantic_review,
-  validationIssues: (result, summary, passage) => applyScoringPolicy(result, summary, passage).assessment_issues,
+const createCurrentSwtService = (call, policy = { buildJudgingPrompt, applyScoringPolicy, POLICY_VERSION }) => createJudgmentService({
+  call, buildPrompt: policy.buildJudgingPrompt, policyVersion: policy.POLICY_VERSION,
+  requireEditEvidence: true, protocolVersion: policy.POLICY_VERSION, applyPolicy: policy.applyScoringPolicy,
+  isComplete: (result, summary, passage) => !policy.applyScoringPolicy(result, summary, passage).needs_semantic_review,
+  validationIssues: (result, summary, passage) => policy.applyScoringPolicy(result, summary, passage).assessment_issues,
   onAttemptError: details => console.warn('[swt-grade] attempt failed:', JSON.stringify(details))
 });
 const openaiSummaryProvider = require('./mock-content-provider').createProvider();
@@ -4480,7 +4480,7 @@ const swtJudgmentService = createCurrentSwtService(async (prompt, timeoutMs, {si
   );
   return {...format.response(response, {repairReview}),source:'openai'};
 });
-const previousSwtJudgmentService = createCurrentSwtService(callSwtJudge);
+const previousSwtJudgmentService = createCurrentSwtService(callSwtJudge, previousSwtPolicy);
 async function judgeWrittenSummary(studentText, passageText, keyElements, timeoutMs = 30000) {
   if (!process.env.OPENAI_API_KEY) return null;
   return swtJudgmentService.judge(studentText, passageText, formatKeyElementsHint(keyElements), timeoutMs);

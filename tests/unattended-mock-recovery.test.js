@@ -49,6 +49,11 @@ test('Available-mark policy is exactly pinned and its legacy adapter projects to
  // that the historical adapter is exactly the previously deployed revision.
  assert.equal(sha(source),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/adapters.js'].sha256);
  const project=(from,to='')=>{assert(source.includes(from),'Expected available-marks projection');source=source.replace(from,to);};
+ const beforeVocabulary=require('../content/full-mock/swt-vocabulary-upgrade-pins.json').previousFiles;
+ project(', swtPolicyVersion');
+ project(', swtGrader, {policyVersion:swtPolicyVersion}', ', swtGrader');
+ project(',policyVersion:swtPolicyVersion');
+ assert.equal(sha(source),beforeVocabulary['full-mock/adapters.js'].sha256);
  const beforeSwt=require('../content/full-mock/swt-policy-previous-sources.json').files;
  // The new SWT-only paths must leave the exact prior native adapter recoverable.
  project(`  if (q.type === 'swt' && raw.itemScore90 === 10 && raw.gated && value.total === 0 && raw.maximum === value.maximum) {
@@ -159,7 +164,17 @@ function quietRecording(recording) {
  assert.deepEqual(rtsUpgrade.previousFiles['speaking-scoring.js'],baseline.files['speaking-scoring.js']);
  assert.equal(sha(read('speaking-scoring.js')),scoringLock.files['speaking-scoring.js'].sha256);
  assert.equal(sha(read('situation-content-policy.js')),baseline.files['situation-content-policy.js'].sha256);
- source=read('writing-lab-scoring.js').replace(`  // SST permits several sentences. An answer containing a substantial
+ source=read('writing-lab-scoring.js');
+ project(', previousPolicy');
+ project('{legacy=false, policyVersion}', '{legacy=false}');
+ project(`  const policy = legacy ? legacyPolicy : policyVersion === previousPolicy.POLICY_VERSION ? previousPolicy : {
+    POLICY_VERSION: SWT_POLICY_VERSION, applyScoringPolicy
+  };
+  const version = policy.POLICY_VERSION;`, '  const version = legacy ? legacyPolicy.POLICY_VERSION : SWT_POLICY_VERSION;');
+ project(',policyVersion:version');
+ project('assessment = policy.applyScoringPolicy(raw,text,q.text);', 'assessment = (legacy ? legacyPolicy.applyScoringPolicy : applyScoringPolicy)(raw,text,q.text);');
+ assert.equal(sha(source),beforeVocabulary['writing-lab-scoring.js'].sha256);
+ source=source.replace(`  // SST permits several sentences. An answer containing a substantial
   // punctuated sentence cannot be entirely short, disconnected fragments.
   if (q.type === 'sst' && form.score > 0 && raw.formInvalid
     && text.split(/[.!?;]+/u).some(sentence => wordCount(sentence) >= 8))

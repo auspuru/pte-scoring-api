@@ -1,0 +1,47 @@
+{
+  "previousDigest": "7231f07b9b2e1c12a708cd7ae21d7b89e023a35ce9e303d54fa2a7ed2991e8fa",
+  "previousFiles": {
+    "full-mock/adapters.js": {
+      "sha256": "b08379517a343298f7aecc7ef89f7ff06d50a7871a8126ee6efab71d1edf908b",
+      "version": "full-mock-adapters-2026-10-29.2"
+    },
+    "full-mock/assessment.js": {
+      "sha256": "dfe753c968de9915f17a24f4d9c88208faf6a1605462311b1133ef4aea146c62",
+      "version": "full-mock-assessment-2026-10-29.1"
+    },
+    "full-mock/report.js": {
+      "sha256": "0d6e9267ae7d0be9a4a7fad1c7dece97517bc9dd7798ec4a60f52070947ac9d2",
+      "version": "full-mock-report-2026-10-29.1"
+    },
+    "mock-content-assessment.js": {
+      "sha256": "fd62e92be6612ebb670515489836ad0d62ed9ed501ed839b603ca654bb524a2a",
+      "version": null
+    },
+    "server.js": {
+      "sha256": "c009be57e4c8ef37d14d8f7989f02fa34fe416c7f00ebe4b552a3733a9420fdc",
+      "version": null
+    },
+    "swt-judgment-service.js": {
+      "sha256": "d1a1d56026388d92ae93aac4f73f8fa7721d7be630e97d56e048781f6e97c037",
+      "version": null
+    },
+    "swt-scoring-policy.js": {
+      "sha256": "d8aa3656629cd44e54782774ab5ec0de7afd0d44980573448e6b4d636140c47f",
+      "version": "20.3.17"
+    },
+    "writing-lab-scoring.js": {
+      "sha256": "9a9b3226eac91648f0a6c9c25ae8b0b404851952ee6f9df203b08c1608ace264",
+      "version": "exam-practice-2026-10-09.1"
+    }
+  },
+  "currentFiles": {
+    "full-mock/adapters.js": "2bad4ee5855e357b9a2565599be87da39c6fd334ff3ab60d32fb2b3ebd2f251a",
+    "full-mock/assessment.js": "1d7082deb6d31a5fa7fe228646b561c83fb7c6c1780db0742c7a6b6127407a3b",
+    "full-mock/report.js": "b353158ba9653db40a7448f8ef30a96a5c522ec4e7bc6a9976d966a43bf2f0cc",
+    "mock-content-assessment.js": "09a8c0fde76c8866ef36857ace5663941bc6c58ac0b55c15356d5b44052d0c08",
+    "server.js": "69109e0c5285c75e9d6f8ecbda586e21df30677de55525ba8f1658d218c4cf68",
+    "swt-judgment-service.js": "57a6b6c0905d92b9dc5e23733f11d06681c92fc521d2397f322aaa315884f163",
+    "swt-scoring-policy.js": "f2cb16c7fc1d2958880a284bb2f28bb582365495f6ea0d587e6f62b77952cb8a",
+    "writing-lab-scoring.js": "2e817c2ab769fc3965569e6cb70cac813674eadb054386d13e049d36f9f83205"
+  }
+}

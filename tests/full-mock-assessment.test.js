@@ -184,8 +184,19 @@ async function fixture(t, options = {}) {
   return { id, store, engine, engines, directory, state:async () => (await store.get('alice', id)).state };
 }
 
-function snapshotBeforeSstPracticeRecovery(current) {
+function snapshotBeforeSwtVocabulary(current) {
   const snapshot = structuredClone(current);
+  const pins = require('../content/full-mock/swt-vocabulary-upgrade-pins.json');
+  for (const [name, entry] of Object.entries(pins.previousFiles)) {
+    if (entry) snapshot.scoringSources.files[name] = structuredClone(entry);
+    else delete snapshot.scoringSources.files[name];
+  }
+  assert.equal(digest(snapshot.scoringSources), pins.previousDigest);
+  return snapshot;
+}
+
+function snapshotBeforeSstPracticeRecovery(current) {
+  const snapshot = snapshotBeforeSwtVocabulary(current);
   const practicePins = require('../content/full-mock/practice-provider-compatible-pins.json');
   for (const [name, sha] of Object.entries(practicePins.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
   assert.equal(digest(snapshot.scoringSources), practicePins.previousDigest);
@@ -667,20 +678,24 @@ for(const changed of ['model','native-source','report-source'])test('SWT report 
  await assert.rejects(f.engine.request('alice',f.id),error=>error.status===409);assert.deepEqual((await f.state()).assessment.snapshot,original);
 });
 
-for (const release of ['teaching samples', 'practice rewrites', 'original 20.3.17']) test(`SWT exam reporting preserves confirmed marks from ${release}`, async t => {
+for (const release of ['current release', 'pre-vocabulary release', 'teaching samples', 'practice rewrites', 'original 20.3.17']) test(`SWT exam reporting preserves confirmed marks from ${release}`, async t => {
   const { stateFor } = require('../full-mock/assessment');
   const { inputHash } = require('../full-mock/aggregation');
   const pins = require('../content/full-mock/swt-policy-upgrade-pins.json');
   const swtCalls = [];
-  const f = await fixture(t, { adapters: { assess: async (q, response, { legacySwt }) => {
+  const f = await fixture(t, { adapters: { assess: async (q, response, { legacySwt, swtPolicyVersion }) => {
     if (q.type !== 'swt') return full(q);
-    swtCalls.push({ id: q.id, legacySwt });
-    return adapters.result(q, adapters.maxima(q), { nativeVersion: '20.3.17' });
+    swtCalls.push({ id: q.id, legacySwt, swtPolicyVersion });
+    return adapters.result(q, adapters.maxima(q), { nativeVersion: swtPolicyVersion });
   } } });
-  const original = snapshotBeforeRts(f.engine.snapshot);
-  assert.equal(original.scoringSources.files['swt-scoring-policy.js'].version, '20.3.17');
-  assert.equal(digest(original.scoringSources), pins.teachingSamples.currentDigest);
-  if (release !== 'teaching samples') {
+  const original = release === 'current release' ? structuredClone(f.engine.snapshot)
+    : release === 'pre-vocabulary release' ? snapshotBeforeSwtVocabulary(f.engine.snapshot) : snapshotBeforeRts(f.engine.snapshot);
+  const expectedVersion = release === 'current release' ? require('../swt-scoring-policy').POLICY_VERSION : '20.3.17';
+  assert.equal(original.scoringSources.files['swt-scoring-policy.js'].version, expectedVersion);
+  if (['teaching samples', 'practice rewrites', 'original 20.3.17'].includes(release)) {
+    assert.equal(digest(original.scoringSources), pins.teachingSamples.currentDigest);
+  }
+  if (['practice rewrites', 'original 20.3.17'].includes(release)) {
     for (const [name, sha256] of Object.entries(pins.teachingSamples.previousFiles)) original.scoringSources.files[name].sha256 = sha256;
     assert.equal(digest(original.scoringSources), pins.practiceRewrites.currentDigest);
   }
@@ -697,7 +712,7 @@ for (const release of ['teaching samples', 'practice rewrites', 'original 20.3.1
     for (const item of [confirmed, pending]) state.responses[item.responseIndex].answer = [item.question.sample];
     savedMark = {
       status: 'assessed', inputHash: inputHash(state.responses[confirmed.responseIndex]), snapshotHash: originalHash,
-      result: adapters.result(confirmed.question, { ...adapters.maxima(confirmed.question), content: 3 }, { nativeVersion: '20.3.17' }),
+      result: adapters.result(confirmed.question, { ...adapters.maxima(confirmed.question), content: 3 }, { nativeVersion: expectedVersion }),
       assessedAt: 1000
     };
     state.assessment.items[confirmed.id] = savedMark;
@@ -709,9 +724,9 @@ for (const release of ['teaching samples', 'practice rewrites', 'original 20.3.1
   await f.engine.drain();
   assert.equal((await f.engine.results('alice', f.id)).ready, true);
   const { assessment } = await f.state();
-  assert.deepEqual(swtCalls, [{ id: pending.question.id, legacySwt: false }]);
+  assert.deepEqual(swtCalls, [{ id: pending.question.id, legacySwt: false, swtPolicyVersion: expectedVersion }]);
   assert.deepEqual(assessment.items[confirmed.id], savedMark);
-  assert.equal(assessment.items[pending.id].result.nativeVersion, '20.3.17');
+  assert.equal(assessment.items[pending.id].result.nativeVersion, expectedVersion);
   assert.equal(assessment.items[pending.id].snapshotHash, originalHash);
   assert.deepEqual(assessment.snapshot, original);
 

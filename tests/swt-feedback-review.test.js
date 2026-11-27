@@ -204,3 +204,22 @@ test('A catalogue excerpt is dropped when the saved text does not contain it',()
  assert.equal(document.querySelector('main').textContent,stale.text);
  assert(![...document.querySelectorAll('mark')].some(el=>el.textContent===phrase));
 });
+
+test('Current practice feedback shows the mark-affecting agreement correction only',()=>{
+ const d=data();
+ d.scoring_version='20.3.18';
+ d.trait_scores.grammar=1;
+ d.grammar_details.grammar_annotations=[
+  {phrase:'Trees',fix:'Urban trees',affects_score:false,rationale:'Give more detail.'},
+  {phrase:'improves',fix:'improve',affects_score:true,rationale:'Use “improve” because “trees” means more than one.'}
+ ];
+ const {document,window}=parseHTML('<div id="review"></div>');
+ const target=document.getElementById('review');
+ const result=review.mount(target,d,passage,text);
+ assert.equal(result.annotations.length,1);
+ assert.equal(result.state.optional.length,0);
+ assert.match(target.querySelector('#swtReviewLanguage').textContent,/Grammar & vocabulary/);
+ target.querySelector('[data-review-fix]').dispatchEvent(new window.Event('click',{bubbles:true}));
+ assert.match(target.querySelector('#swtReviewCorrection').textContent,/improves.*improve.*trees.*more than one/);
+ assert.doesNotMatch(target.querySelector('#swtReviewLanguage').textContent,/Urban trees|Optional/);
+});

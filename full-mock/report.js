@@ -1,7 +1,7 @@
 'use strict';
 const swtFeedback = require('../public/swt-mock-feedback');
 const { plainSwtSample } = require('../swt-plain-samples');
-const { POLICY_VERSION: SWT_POLICY_VERSION } = require('../swt-scoring-policy');
+const { POLICY_VERSION: SWT_POLICY_VERSION, previousPolicy } = require('../swt-scoring-policy');
 const { swtQuestionSourceIdentity } = require('../writing-lab-scoring');
 const { TASKS } = require('./blueprint');
 const { aggregate, inputHash } = require('./aggregation');
@@ -61,7 +61,8 @@ const SWT_REPORT_REFERENCES = {
 };
 
 function swtReportReference(q, scored, snapshotVersion) {
-  if (q.type !== 'swt' || snapshotVersion !== SWT_POLICY_VERSION || scored?.nativeVersion !== SWT_POLICY_VERSION) return null;
+  if (q.type !== 'swt' || ![SWT_POLICY_VERSION, previousPolicy.POLICY_VERSION].includes(snapshotVersion)
+    || scored?.nativeVersion !== snapshotVersion) return null;
   const recorded = scored.native?.source_identity, expected = swtQuestionSourceIdentity(q);
   if (recorded?.passage_sha256 !== expected.passage_sha256 || recorded.reference_sha256 !== expected.reference_sha256) return null;
   return SWT_REPORT_REFERENCES[hash(JSON.stringify([q.text, q.keyPoints, q.sample]))] || null;
