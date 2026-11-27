@@ -1,0 +1,29 @@
+{
+  "previousDigest": "f90b13c4170c8a251a7c306b46d03a9874d1759ab453aecef886998dc584dbcf",
+  "previousFiles": {
+    "full-mock/assessment.js": {
+      "sha256": "f5cd018b962889694abd08374c46a37b92009b98b4b1631c0c5ca40dd1a8f1ca",
+      "version": "full-mock-assessment-2026-10-29.1"
+    },
+    "full-mock/rubrics.js": {
+      "sha256": "ef66e17716d20151473d6243e84c137f942cf3190864b090364ed3cf2bf76fb7",
+      "version": null
+    },
+    "server.js": {
+      "sha256": "69109e0c5285c75e9d6f8ecbda586e21df30677de55525ba8f1658d218c4cf68",
+      "version": null
+    },
+    "writing-lab-scoring.js": {
+      "sha256": "5299c6c2eff1e0f8dd689cf89a92e0daebfb847dfb66de8ecd98650b491115fa",
+      "version": "exam-practice-2026-10-09.1"
+    },
+    "swt-feedback-evidence.js": null
+  },
+  "currentFiles": {
+    "full-mock/assessment.js": "d7b2a6619cc5701e2992bff8bac36c2dc301084dd0e8a71d1d3480de3f7c82d1",
+    "full-mock/rubrics.js": "1ebfc26486b16b2940a607b80132841601e8a28f5c5d91e7a574c56d4d8eb6c9",
+    "server.js": "60eeb1c853334b86edc1cbdbd5f1c9b36c60c50ebbccc73ecaf619178ccd6bc1",
+    "writing-lab-scoring.js": "2792c4560f026554171a22b0bc69f90565f0ec34286ab0a1850983a8848b4f6f",
+    "swt-feedback-evidence.js": "4c1f7410fb1d2f691589da984a145afb98880bbf938ab23845e53e188899f5c0"
+  }
+}

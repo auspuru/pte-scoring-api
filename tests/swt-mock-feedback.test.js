@@ -13,9 +13,9 @@ test('Unconfirmed, provisional and local feedback stays pending without invented
  for(const input of [{...raw(),score_provisional:true},{...raw(),needs_semantic_review:true},{...raw(),scoringMode:'local'}])assert.deepEqual(swt.project(input,{confirmed:true,answer,source}),{version:1,status:'pending'});
  assert.deepEqual(swt.project(raw(),{confirmed:false,answer,source}),{version:1,status:'pending'});
 });
-test('Historical quotes are verified; optional and unclassified suggestions stay distinct',()=>{
+test('Historical quotes are verified and only marked corrections appear',()=>{
  const input=raw();input.summary_assessment.missing_dependencies[0].effect='invented learner quote';input.summary_assessment.missing_dependencies[0].missing_context='invented source quote';input.errors.push({phrase:'Trees',correction:'Urban trees',affectsScore:false});input.errors.push({phrase:'cities',correction:'urban areas'});
- const v=swt.project(input,{confirmed:true,answer,source});assert.equal(v.content.quote,'');assert.equal(v.content.sourceQuote,'');assert.equal(v.language[1].optional,true);assert.equal(v.language[2].optional,false);assert.equal(v.language[2].required,false);
+ const v=swt.project(input,{confirmed:true,answer,source});assert.equal(v.content.quote,'');assert.equal(v.content.sourceQuote,'');assert.equal(v.language.length,1);assert.equal(v.language[0].required,true);
 });
 test('Saved deletions remain actionable while missing replacements are excluded',()=>{
  const response='Trees cool cities and improve air quality, actually.';
@@ -28,7 +28,7 @@ test('Read-only report renderer escapes content and exposes no edit or submissio
  const input=raw();input.summary_assessment.missing_dependencies[0].explanation='<script>bad()</script>';
  input.summary_assessment.repair='…supply the entire legacy repair…';
  const html=swt.render(swt.project(input,{confirmed:true,answer,source}),answer,'fixture');
- assert(html.includes('&lt;script&gt;'));assert(!html.includes('<script>'));assert(!/<(?:input|textarea|select|form)\b/.test(html));assert(!/data-review-save|data-review-use|data-reattempt/.test(html));assert(html.includes('data-swt-mock-fix'));assert(html.includes('Grammar & spelling'));assert(html.includes('Form'));
+ assert(html.includes('&lt;script&gt;'));assert(!html.includes('<script>'));assert(!/<(?:input|textarea|select|form)\b/.test(html));assert(!/data-review-save|data-review-use|data-reattempt/.test(html));assert(html.includes('data-swt-mock-fix'));assert(html.includes('Grammar & vocabulary'));assert(html.includes('Form'));
  assert.doesNotMatch(html,/A possible repair|entire legacy repair/);
 });
 test('A content gate preserves diagnostic form; a flattened old gate does not invent form failure',()=>{
@@ -62,7 +62,7 @@ test('The mock Form panel gives word-budget guidance for full-length and over-li
  assert.match(swt.render({...saved,form:{valid:false}},answer(76)),/Cut at least 1 word\. Start with repeated points or optional examples\./);
 });
 
-test('Full Content leaves optional in-budget wording and its effect inside the mock language panel',()=>{
+test('Full Content omits optional wording in earlier saved mock feedback',()=>{
  const response='Trees cool cities and improve air quality, '+Array(67).fill('sometimes').join(' ')+'.';
  const input=raw();input.scores.content=4;
  input.errors=[
@@ -73,7 +73,7 @@ test('Full Content leaves optional in-budget wording and its effect inside the m
  assert.equal(value.content.full,true);assert.equal(value.content.repair,'');assert.equal(value.content.action,'');
  const html=swt.render(value,response);
  assert.match(html,/Full Content marks/);assert.doesNotMatch(html,/planting caution|the local air quality|A possible repair/);
- assert.match(html,/Optional refinement · no marks lost.*Specifies which cities.*75 of 75 words after this change alone/);
+ assert.doesNotMatch(html,/Optional refinement|Specifies which cities/);
  assert.equal(JSON.stringify(input),before);
 });
 
@@ -90,4 +90,42 @@ test('Current SWT mock feedback shows only verified corrections that cost marks'
  assert.match(html,/improves → improve/);
  assert.match(html,/Use the plural verb with trees\./);
  assert.doesNotMatch(html,/Urban trees|urban areas|Optional refinement/);
+});
+
+test('Submitted SWT review puts the complete passage, marks, three answers, and corrections in reading order',()=>{
+ const {parseHTML}=require('linkedom'),traits=require('../public/swt-trait-review');
+ const original='Trees cool cities and improves air quality.';
+ const passage='First paragraph.\n\nSecond paragraph <kept>.';
+ const input={...raw(),scores:{content:4,form:1,grammar:1,vocabulary:2},version:'20.3.18'};
+ const feedback=swt.project(input,{confirmed:true,answer:original,source:passage});
+ const sample='Street trees can cool cities and improve air quality.';
+ const scoreHtml=traits.render({key:'test',scores:input.scores,maxima:{content:4,form:1,grammar:2,vocabulary:2},details:{}});
+ const {document}=parseHTML(swt.render(feedback,original,'test',{passage,sample,traits:scoreHtml}));
+ const layout=document.querySelector('.swt-submitted-review');
+ assert.equal(layout.children[0].querySelector('.swt-submitted-text').textContent,passage);
+ assert.match(layout.children[1].textContent,/Total/);
+ const cards=layout.children[2].querySelectorAll('.swt-submitted-card');
+ assert.equal(cards.length,3);
+ assert.equal(cards[0].querySelector('.swt-submitted-text').textContent,original);
+ assert.match(cards[1].textContent,/Saved grammar and vocabulary corrections only/);
+ assert.equal(cards[1].querySelector('.swt-submitted-text').textContent,'Trees cool cities and improve air quality.');
+ assert.equal(cards[2].querySelector('.swt-submitted-text').textContent,sample);
+ assert.equal(layout.children[3].querySelectorAll('[data-swt-mock-correction]').length,1);
+});
+
+test('Repeated error spans are highlighted independently and an unresolved match never creates a corrected summary',()=>{
+ const response='Trees does cool streets and trees does clean air.';
+ const errors=[
+  {phrase:'does',correction:'do',phraseSpan:[2,2],trait:'grammar',affectsScore:true,explanation:'Trees means more than one.'},
+  {phrase:'does',correction:'do',phraseSpan:[7,7],trait:'grammar',affectsScore:true,explanation:'Use do with more than one tree.'}
+ ];
+ const input={...raw(),errors};
+ const options={confirmed:true,answer:response,source};
+ let html=swt.render(swt.project(input,options),response,'positions',{passage:source});
+ assert.equal((html.match(/data-swt-mock-fix=/g)||[]).length,2);
+ assert.match(html,/Trees do cool streets and trees do clean air\./);
+ delete errors[1].phraseSpan;
+ html=swt.render(swt.project(input,options),response,'unverified',{passage:source});
+ assert.equal((html.match(/data-swt-mock-correction=/g)||[]).length,2);
+ assert.match(html,/No checked revision is available/);
 });
