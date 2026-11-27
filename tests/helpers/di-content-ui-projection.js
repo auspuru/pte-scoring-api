@@ -9,6 +9,6 @@ module.exports=function project(source){
  replace("text=(!a.result||contentNeedsReview(a.result))?'Content review is still unavailable.","text=a.result?.scoringMode==='local'?'Content review is still unavailable.");
  replace('else if(contentNeedsReview(saved.result))contentRetries.add(saved.id);',"else if(saved.result?.scoringMode==='local')contentRetries.add(saved.id);");
  replace("rows.filter(a=>a.questionId===questionId&&(attempt.status!=='submitted'||a.status==='submitted')).sort","rows.filter(a=>a.questionId===questionId).sort");
- assert.equal(crypto.createHash('sha256').update(source).digest('hex'),'2314e5773293003cfeb8dc4b2e1bf82a0e09f7af297eca3dbe12064d6ca7841e');
+ assert.equal(crypto.createHash('sha256').update(source).digest('hex'),'d9089f0ea9d690920067a41110aecb24ce278208cdd4012b5c309565ba3c7078');
  return source;
 };
