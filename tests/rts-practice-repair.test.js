@@ -53,7 +53,7 @@ test('Full Mock can resume the exact prior source snapshot and rejects scorer dr
   const pins = require('../content/full-mock/rts-practice-repair-compatible-pins.json');
   const adapters = {};
   const engine = assessment.createEngine({ store: {}, adapters });
-  const frozen = structuredClone(engine.snapshot);
+  const frozen = require('./helpers/sst-coaching-baseline').sstCoachingBaseline(engine.snapshot);
   const submittedHistoryPins = require('../content/full-mock/submitted-answer-history-compatible-pins.json');
   const sstRecoveryPins = require('../content/full-mock/sst-practice-recovery-compatible-pins.json');
   const practiceProviderPins = require('../content/full-mock/practice-provider-compatible-pins.json');

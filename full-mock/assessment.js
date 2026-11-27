@@ -141,7 +141,20 @@ const sstPracticeRecoveryPins = require('../content/full-mock/sst-practice-recov
 const submittedAnswerHistoryPins = require('../content/full-mock/submitted-answer-history-compatible-pins.json');
 const summaryProviderPins = require('../content/full-mock/summary-provider-compatible-pins.json');
 const practiceProviderPins = require('../content/full-mock/practice-provider-compatible-pins.json');
+const sstCoachingPins = require('../content/full-mock/sst-coaching-compatible-pins.json');
+function previousSstCoachingSnapshot(current) {
+  const files = current.scoringSources.files;
+  if (!Object.entries(sstCoachingPins.currentFiles).every(([name, sha]) => files[name]?.sha256 === sha)) return null;
+  const sources = structuredClone(current.scoringSources);
+  for (const [name, previous] of Object.entries(sstCoachingPins.previousFiles)) {
+    if (previous) sources.files[name] = previous;
+    else delete sources.files[name];
+  }
+  if (digest(sources) !== sstCoachingPins.previousDigest) return null;
+  return { ...current, scoringSources:sources };
+}
 function previousRtsSnapshot(current) {
+  current = previousSstCoachingSnapshot(current) ?? current;
   current = previousPracticeIndexSnapshot(current, practiceProviderPins) ?? current;
   current = previousPracticeIndexSnapshot(current, summaryProviderPins) ?? current;
   current = previousPracticeIndexSnapshot(current, sstPracticeRecoveryPins) ?? current;
@@ -166,6 +179,8 @@ function compatibleTransportUpgrade(saved, current) {
   // Source projections preserve the frozen provider and model for each task.
   if (saved.configuration?.sst?.provider !== current.configuration.sst.provider
     || saved.configuration?.sst?.model !== current.configuration.sst.model) return false;
+  const beforeSstCoaching = previousSstCoachingSnapshot(current);
+  if (beforeSstCoaching && (digest(saved) === digest(beforeSstCoaching) || compatibleTransportUpgrade(saved, beforeSstCoaching))) return true;
   const beforePracticeProvider = previousPracticeIndexSnapshot(current, practiceProviderPins);
   if (beforePracticeProvider && (digest(saved) === digest(beforePracticeProvider) || compatibleTransportUpgrade(saved, beforePracticeProvider))) return true;
   const beforeSummaryProvider = previousPracticeIndexSnapshot(current, summaryProviderPins);
@@ -991,7 +1006,8 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
           const value = await assessWithSnapshot(activeAdapters, state, q, response, { recording, previous: stages, run: state.assessment.run,
             describeImagePolicy:state.assessment.snapshot.configuration.speakingContent.describeImagePolicy,
             deliveryPolicy:state.assessment.snapshot.configuration.delivery.version, ...(availableMarks(state)?{completionPolicy:COMPLETION_POLICY}:{}),
-            legacyDelivery:![currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256, PREVIOUS_SWT_SOURCES.files['full-mock/adapters.js'].sha256, require('../content/full-mock/di-number-context-previous-sources.json').files['full-mock/adapters.js'].sha256].includes(state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256),
+            legacyDelivery:![currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256, sstCoachingPins.previousFiles['full-mock/adapters.js'].sha256, PREVIOUS_SWT_SOURCES.files['full-mock/adapters.js'].sha256, require('../content/full-mock/di-number-context-previous-sources.json').files['full-mock/adapters.js'].sha256].includes(state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256),
+            sstCoaching:!!state.assessment.snapshot.scoringSources.files['sst-coverage.js'],
             legacySwt:state.assessment.snapshot.scoringSources.files['swt-scoring-policy.js']?.version !== currentSnapshot.scoringSources.files['swt-scoring-policy.js']?.version,
             checkpoint: value => persist({ status: 'processing', stages: value }) });
           const { stages: evidence = stages, ...result } = value;

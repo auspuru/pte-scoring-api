@@ -26,7 +26,7 @@ const RUBRICS = {
   reorder: { rule: 'adjacent-correct-pairs', files: ['public/reading-practice.js'] },
   wordbank: { rule: 'one-per-blank', files: ['public/reading-practice.js', 'public/reading-mock-tools.js'] },
   mcsa: { rule: 'single-correct-answer', files: ['public/reading-practice.js'] },
-  sst: { rule: 'rubric', traits: { content: 4, form: 2, grammar: 2, vocabulary: 2, spelling: 2 }, gates: ['content', 'form'], files: writingFiles },
+  sst: { rule: 'rubric', traits: { content: 4, form: 2, grammar: 2, vocabulary: 2, spelling: 2 }, gates: ['content', 'form'], files: [...writingFiles, 'sst-coverage.js', 'sst-idea-guide.js', 'content/sst-idea-guide.json'] },
   lmcma: { rule: 'correct-minus-incorrect-floor-zero', files: ['listening-scoring.js'] },
   lfi: { rule: 'one-per-correctly-spelled-blank', files: ['listening-scoring.js'] },
   hcs: { rule: 'single-correct-answer', files: ['listening-scoring.js'] },

@@ -3,6 +3,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { createStore } = require('./writing-lab-store');
 const scoring = require('./writing-lab-scoring');
+const { sstIdeas } = require('./sst-idea-guide');
 const listeningScoring = require('./listening-scoring');
 const report = require('./public/writing-lab-report');
 const overall = require('./writing-mock-overall');
@@ -127,8 +128,12 @@ async function saveSstPracticeFeedback(attempt) {
   if (!feedback) return attempt;
   attempt.practiceFeedback = feedback;
   if (!attempt.results[0] && !feedback.form.score) {
-    const result = await scoring.grade(attempt.questions[0], attempt.answers[0] || '');
-    attempt.results[0] = { ...result, assessmentType: 'SST practice form check' };
+    const question = attempt.questions[0], answer = attempt.answers[0] || '';
+    const result = await scoring.grade(question, answer);
+    // Publish confirmed Form marks immediately. Nonempty reviewed responses
+    // can still receive semantic coaching in the existing assessment worker.
+    attempt.results[0] = { ...result, assessmentType:'SST practice form check',
+      ...(answer.trim() && sstIdeas(question) ? {sstCoveragePending:true} : {}) };
   }
   return attempt;
 }
@@ -141,7 +146,15 @@ function pendingSstPractice(attempt, result) {
 }
 function reviewedResults(attempt) {
   return attempt.kind === 'sst'
-    ? attempt.results.map(result => pendingSstPractice(attempt, result) ? null : result)
+    ? attempt.results.map((result, index) => {
+      if (pendingSstPractice(attempt, result)) return null;
+      const recovery = attempt.assessmentRecovery?.[index];
+      if (result?.sstCoveragePending && ['held','exhausted'].includes(recovery?.status)) {
+        const { sstCoveragePending, ...complete } = result;
+        return complete;
+      }
+      return result;
+    })
     : attempt.results;
 }
 function present(a) {
@@ -162,7 +175,8 @@ function present(a) {
     ...(a.status === 'submitted' || i <= a.index ? { text:(['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && a.status !== 'submitted' ? '' : q.text } : {}),
     ...((['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && (i <= a.index || a.status === 'submitted') ? { audioUrl:approvedAudio.publicAudio(q)?.audioUrl || q.audioUrl || '/writing-audio/' + (q.audioId || q.id) + '.mp3?v=' + AUDIO_VERSION } : {}),
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation,
-      ...(q.type === 'swt' ? {teachingSample:plainSwtSample(q.text)} : {}) } : {}) }));
+      ...(q.type === 'swt' ? {teachingSample:plainSwtSample(q.text)} : {}),
+      ...(q.type === 'sst' ? {sstIdeas:sstIdeas(q)} : {}) } : {}) }));
   return result;
 }
 function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, historicalSstModel = callModel, essayGrader = null, swtGrader = null, mockGraders = null, overallGrader = null, onMockError = async()=>{}, speakingAllowed = require('./speaking-access').allowed, now = Date.now }) {
@@ -173,11 +187,11 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   const retryableSwt = (result,question) => !!(swtGrader && question?.type === 'swt' && result
     && (result.score_provisional === true || result.needs_semantic_review === true));
   const retryableResult = (result,question,attempt) => (attempt?.kind==='mock' && !!result && (result.score_provisional===true || result.needs_semantic_review===true)) || retryableSwt(result,question)
-    || pendingSstPractice(attempt,result) || (report.isWritingMock(attempt) && report.needsReview(result,question));
+    || (attempt.kind === 'sst' && result?.sstCoveragePending === true) || pendingSstPractice(attempt,result) || (report.isWritingMock(attempt) && report.needsReview(result,question));
   const recovery = require('./writing-lab-recovery').createRecovery({store,now,isConfirmed:(a,i)=>!!a.results[i]&&!retryableResult(a.results[i],a.questions[i],a)});
   const sstReassessment = require('./writing-lab-sst-reassessment').createRunner({store,now,
     model:process.env.CLAUDE_MODEL||'claude-haiku-4-5-20251001',
-    score:(question,answer)=>scoring.grade(question,answer,historicalSstModel),
+    score:(question,answer)=>scoring.grade(question,answer,historicalSstModel,{sstCoaching:false}),
     onComplete:(uid,attempt)=>reviewer.ensure(uid,attempt)});
   // A submitted answer is immutable. Assess outside the answer-save transaction,
   // and share the same job with the results page to avoid duplicate model calls.
@@ -235,6 +249,10 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
               assessmentStarted = performance.now();
               result = await scoring.grade(question,current.answers[index],prompt=>callModel(prompt,{sstPractice:true}),
                 {propagateProviderErrors:true});
+              if (current.results[index]?.sstCoveragePending) {
+                const { sstCoveragePending, ...confirmed } = current.results[index];
+                result = { ...confirmed, ...(result.sstCoverage ? {sstCoverage:result.sstCoverage} : {}) };
+              }
             } else {
               result = await scoring.grade(question, current.answers[index], question.type==='sst' ? callModel : graders.callModel);
             }
@@ -282,7 +300,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
       const key = uid + ':' + a.id + ':' + index;
       const saved=a.assessmentRecovery?.[index];
       if(saved&&(['held','exhausted'].includes(saved.status)||saved.nextAt>now()||saved.status==='calling'&&saved.expiresAt>now()))return;
-      if (a.completed[index] && (!a.results[index] || a.results[index].score_provisional===true || a.results[index].needs_semantic_review===true) && now() - (failedAt.get(key) || -Infinity) > 30000)
+      if (a.completed[index] && (!a.results[index] || a.results[index].score_provisional===true || a.results[index].needs_semantic_review===true || a.results[index].sstCoveragePending===true) && now() - (failedAt.get(key) || -Infinity) > 30000)
         assess(uid, a, index).catch(error => { if(a.kind!=='sst')console.warn('[writing-lab] background assessment', error.message); });
     });
   }
@@ -453,7 +471,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
     const index=Number(req.params.index);
     if(a.status !== 'submitted') throw bad('Finish the attempt before viewing scores.',409);
     if(!Number.isInteger(index) || !a.questions[index]) throw bad('Question not found.',404);
-    if(a.results[index] && !retryableResult(a.results[index],a.questions[index],a)) return res.json(a.results[index]);
+    if(a.results[index] && (a.results[index].sstCoveragePending || !retryableResult(a.results[index],a.questions[index],a))) return res.json(reviewedResults(a)[index]);
     if (a.kind === 'sst') {
       // Older clients assign any successful response directly to the result card.
       // Keep its feedback fields and leave the overall mark absent.

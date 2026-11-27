@@ -1,0 +1,38 @@
+{
+  "previousDigest": "7231f07b9b2e1c12a708cd7ae21d7b89e023a35ce9e303d54fa2a7ed2991e8fa",
+  "previousFiles": {
+    "content/sst-idea-guide.json": null,
+    "full-mock/adapters.js": {
+      "sha256": "b08379517a343298f7aecc7ef89f7ff06d50a7871a8126ee6efab71d1edf908b",
+      "version": "full-mock-adapters-2026-10-29.2"
+    },
+    "full-mock/assessment.js": {
+      "sha256": "dfe753c968de9915f17a24f4d9c88208faf6a1605462311b1133ef4aea146c62",
+      "version": "full-mock-assessment-2026-10-29.1"
+    },
+    "full-mock/report.js": {
+      "sha256": "0d6e9267ae7d0be9a4a7fad1c7dece97517bc9dd7798ec4a60f52070947ac9d2",
+      "version": "full-mock-report-2026-10-29.1"
+    },
+    "full-mock/rubrics.js": {
+      "sha256": "d1e3b112fd1e8e5e833654406f986d3db0cd1ed56f24889296fa571833fe67e9",
+      "version": null
+    },
+    "sst-coverage.js": null,
+    "sst-idea-guide.js": null,
+    "writing-lab-scoring.js": {
+      "sha256": "9a9b3226eac91648f0a6c9c25ae8b0b404851952ee6f9df203b08c1608ace264",
+      "version": "exam-practice-2026-10-09.1"
+    }
+  },
+  "currentFiles": {
+    "content/sst-idea-guide.json": "ecaac69123bcd60931865507c493fb88a62e737e6e0a169103401a954d2583a2",
+    "full-mock/adapters.js": "ff605f0194eb79ea5e7f8be7516c334fd9d981ef212993f0976f1801efbaac42",
+    "full-mock/assessment.js": "ccd3b3ee9131cc6bfd56c7148326e19a8cc223b318f34204f02c2c5a706114ab",
+    "full-mock/report.js": "3c0ac0029af37d09e0e7674de2643a0f256f4fd6dda9f32c7516181a058e3f87",
+    "full-mock/rubrics.js": "ef66e17716d20151473d6243e84c137f942cf3190864b090364ed3cf2bf76fb7",
+    "sst-coverage.js": "3423662d6bd3a54890c342ab6ce8b35ba5ca14d6610853a18dd91d8b942c7644",
+    "sst-idea-guide.js": "7d85a34bcccf818e4827eecd63d22ad1d3479ce8aed2308def4342341a65f338",
+    "writing-lab-scoring.js": "c53724d72a3ce27bc75ea0d3d6789d8a4c6e5c22f9c313cc3a19da8d708dc13e"
+  }
+}

@@ -185,7 +185,7 @@ async function fixture(t, options = {}) {
 }
 
 function snapshotBeforeSstPracticeRecovery(current) {
-  const snapshot = structuredClone(current);
+  const snapshot = require('./helpers/sst-coaching-baseline').sstCoachingBaseline(current);
   const practicePins = require('../content/full-mock/practice-provider-compatible-pins.json');
   for (const [name, sha] of Object.entries(practicePins.previousFiles)) snapshot.scoringSources.files[name].sha256 = sha;
   assert.equal(digest(snapshot.scoringSources), practicePins.previousDigest);

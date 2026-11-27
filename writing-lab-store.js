@@ -185,13 +185,14 @@ function createStore(pool, directory, { table = 'writing_lab_attempts' } = {}) {
           jsonb_typeof(data->'results'->0) IS DISTINCT FROM 'object'
           OR data->'results'->0 @> '{"score_provisional":true}'
           OR data->'results'->0 @> '{"needs_semantic_review":true}'
+          OR data->'results'->0 @> '{"sstCoveragePending":true}'
         ) AND (NOT (data ? 'practiceFeedback')
           OR COALESCE(data->'assessmentRecovery'->'0'->>'status','') NOT IN ('held','exhausted')))
       ) ORDER BY id LIMIT $2`,[cursor,limit,since])).rows;
       const rows=[];for(const dir of await fs.readdir(directory,{withFileTypes:true})){if(!dir.isDirectory())continue;let uid;try{uid=await fs.readFile(path.join(directory,dir.name,'owner'),'utf8');}catch(e){if(e.code==='ENOENT')continue;throw e;}if(createHash('sha256').update(uid).digest('hex')!==dir.name)continue;for(const name of await fs.readdir(path.join(directory,dir.name))){if(!name.endsWith('.json')||name.slice(0,-5)<=cursor)continue;const a=JSON.parse(await fs.readFile(path.join(directory,dir.name,name),'utf8'));const result=a.results?.[0];
         const recoverableMock=a.kind==='mock'&&['active','submitted'].includes(a.status);
         const pendingSst=a.kind==='sst'&&a.status==='submitted'
-          && (!result||result.score_provisional===true||result.needs_semantic_review===true)
+          && (!result||result.score_provisional===true||result.needs_semantic_review===true||result.sstCoveragePending===true)
           && (!a.practiceFeedback || !['held','exhausted'].includes(a.assessmentRecovery?.[0]?.status));
         if((recoverableMock&&Number(a.startedAt||0)>=since)||pendingSst)rows.push({username:uid,data:a});}}
       return rows.sort((a,b)=>a.data.id.localeCompare(b.data.id)).slice(0,limit);

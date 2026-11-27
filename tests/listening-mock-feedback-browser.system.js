@@ -19,7 +19,7 @@ async function fixture(t,width,admin){
  app.get('/api/writing-lab/attempts/:id',(req,res)=>{const a=attempts.get(req.params.id);if(!a)return res.sendStatus(404);res.json({...a,serverNow:Date.now()});});
  app.post('/api/writing-lab/*',(_,res)=>res.status(409).json({error:'Review must not reassess or change saved responses.'}));
  app.get('/fixture.mp3',(_,res)=>res.sendFile(path.join(root,'content/speaking-audio/rs-1.mp3')));
- app.get('/',(_,res)=>res.type('html').send(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/writing-lab-portal.css"><link rel="stylesheet" href="/exam-results.css"><link rel="stylesheet" href="/listening-mocks.css"><link rel="stylesheet" href="/practice-studio.css"><link rel="stylesheet" href="/listening-studio.css"><link rel="stylesheet" href="/portal-calm.css"><link rel="stylesheet" href="/mock-report-ui.css"></head><body><section id="writingLabScreen"><main id="lab" tabindex="-1"></main><div id="notice" role="status"></div></section><script>sessionStorage.setItem('pte_session_token','${admin?'synthetic-staff-session':token}');${admin?`sessionStorage.setItem('pte_impersonate_token','${token}');`:''}</script><script src="/practice-catalogue.js"></script><script src="/practice-studio.js"></script><script src="/listening-studio.js"></script><script src="/listening-tasks.js"></script><script src="/writing-lab-report.js"></script><script src="/mock-impact-feedback.js"></script><script src="/mock-report-ui.js"></script><script src="/writing-lab-client.js"></script><script>WritingLab.open({attemptId:'${saved.id}',tab:'mocks',module:'listening',requestId:'saved-listening-feedback'});</script></body></html>`));
+ app.get('/',(_,res)=>res.type('html').send(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/writing-lab-portal.css"><link rel="stylesheet" href="/exam-results.css"><link rel="stylesheet" href="/listening-mocks.css"><link rel="stylesheet" href="/practice-studio.css"><link rel="stylesheet" href="/listening-studio.css"><link rel="stylesheet" href="/portal-calm.css"><link rel="stylesheet" href="/mock-report-ui.css"><link rel="stylesheet" href="/sst-feedback.css"></head><body><section id="writingLabScreen"><main id="lab" tabindex="-1"></main><div id="notice" role="status"></div></section><script>sessionStorage.setItem('pte_session_token','${admin?'synthetic-staff-session':token}');${admin?`sessionStorage.setItem('pte_impersonate_token','${token}');`:''}</script><script src="/practice-catalogue.js"></script><script src="/practice-studio.js"></script><script src="/listening-studio.js"></script><script src="/listening-tasks.js"></script><script src="/writing-lab-report.js"></script><script src="/mock-impact-feedback.js"></script><script src="/mock-report-ui.js"></script><script src="/sst-feedback.js"></script><script src="/writing-lab-client.js"></script><script>WritingLab.open({attemptId:'${saved.id}',tab:'mocks',module:'listening',requestId:'saved-listening-feedback'});</script></body></html>`));
  app.use(express.static(path.join(root,'public')));const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
  t.after(async()=>{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));});
  const browser=await puppeteer.launch({headless:true,executablePath:process.env.FULL_MOCK_TEST_CHROME_PATH||'/usr/bin/chromium'});t.after(()=>browser.close());
@@ -61,4 +61,36 @@ test('Saved SST pending, valid-zero and legacy feedback remain truthful without 
   assert.equal(JSON.stringify(f.saved),before);
  }
  assert.deepEqual(f.posts,[]);assert.deepEqual(f.errors,[]);
+});
+
+test('SST idea feedback spans the review and opens full screen on desktop and mobile',{timeout:45000},async t=>{
+ for (const width of [1363,390]) {
+  await t.test(String(width),async child=>{
+   const f=await fixture(child,width,false),{page}=f;
+   const question=f.saved.questions[0];
+   question.sstIdeas=[{main:'Explain the main message.',supporting:['Add relevant detail.']}];
+   f.saved.results[0].sstCoverage={ideas:[{...question.sstIdeas[0],status:'missed'}],nextStep:'Connect the main message to the lecture.'};
+   await page.reload();
+   await page.waitForSelector('.ipt-mock-report');
+   await page.click('[data-mock-tab="answers"]');
+   const panel='#review-0 .sst-idea-feedback';
+   await page.waitForSelector(panel,{visible:true});
+   const normal=await page.$eval(panel,e=>({
+    fills:Math.abs(e.offsetWidth-(e.parentElement.clientWidth-2*parseFloat(getComputedStyle(e.parentElement).paddingLeft)))<=2,
+    overflows:e.scrollWidth>e.clientWidth+1,
+    text:e.innerText
+   }));
+   assert(normal.fills);
+   assert(!normal.overflows);
+   assert.match(normal.text,/Missed/);
+   await page.click(panel+' [data-sst-fullscreen]');
+   await page.waitForFunction(()=>document.fullscreenElement?.matches('.sst-idea-feedback'));
+   await page.waitForFunction(()=>document.fullscreenElement?.querySelector('[data-sst-fullscreen]')?.textContent==='Exit full screen');
+   assert.match(await page.$eval(panel,e=>e.innerText),/Connect the main message/);
+   await page.click(panel+' [data-sst-fullscreen]');
+   await page.waitForFunction(()=>document.fullscreenElement===null);
+   assert.deepEqual(f.posts,[]);
+   assert.deepEqual(f.errors,[]);
+  });
+ }
 });

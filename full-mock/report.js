@@ -3,6 +3,7 @@ const swtFeedback = require('../public/swt-mock-feedback');
 const { plainSwtSample } = require('../swt-plain-samples');
 const { POLICY_VERSION: SWT_POLICY_VERSION } = require('../swt-scoring-policy');
 const { swtQuestionSourceIdentity } = require('../writing-lab-scoring');
+const { sstIdeas } = require('../sst-idea-guide');
 const { TASKS } = require('./blueprint');
 const { aggregate, inputHash } = require('./aggregation');
 const { questionForPlayer } = require('./paper');
@@ -76,6 +77,26 @@ function reasonFor(job, trusted, recovering = false) {
   if (job.status === 'failed' && recovering) return {code:'assessment-pending',label:'Assessment pending',action:'Your response is saved. Feedback is being prepared automatically.'};
   if (job.status === 'failed') return { code:'assessment-unavailable', label:'Assessment interrupted', action:'Retry assessment to request the incomplete stages again. Completed stages are retained.' };
   return { code:'not-assessed', label:'Assessment pending', action:'This item is waiting for a verified assessment.' };
+}
+function sstReportFeedback(question, response, saved) {
+  const ideas = sstIdeas(question);
+  if (!ideas?.length) return null;
+  const answer = (response.answer || []).join(' ');
+  const reviewed = saved?.ideas;
+  const valid = Array.isArray(reviewed) && reviewed.length === ideas.length && ideas.every(({main}, index) => {
+    const row = reviewed[index];
+    return row?.main === main && (row.status === 'missed' ||
+      (['covered','partial'].includes(row.status) && typeof row.evidence === 'string' && row.evidence.trim() && answer.includes(row.evidence)));
+  });
+  if (!valid) return { ideas };
+  return {
+    ideas:ideas.map((idea, index) => ({
+      ...idea,
+      status:reviewed[index].status,
+      evidence:reviewed[index].status === 'missed' ? '' : reviewed[index].evidence
+    })),
+    nextStep:clean(saved.nextStep, 1000)
+  };
 }
 function feedbackFor(q, response, job, marks, trusted, recovering) {
   if (marks.status === 'excluded') return { overview:marks.exclusion.note + ' This question is excluded from the score calculation; the original recording is retained.', criteria:[], strengths:[], improvements:[], coverage:[], corrections:[], issues:[], changes:[] };
@@ -154,7 +175,10 @@ function buildReport(paper, state, at = Date.now()) {
       answer:structuredClone(response.answer), responseReason:clean(response.reason, 80), transcript:transcription, recordings,
       recovered:state.recoveries.filter(row => row.itemToken === response.token).map(row => ({ answer:structuredClone(row.answer), receivedAt:row.receivedAt, status:'needs-review' })),
       assessment:marks.status === 'assessed' ? { code:'assessed', label:marks.unavailableTraits?.length?'Assessed · some marks unavailable':'Assessed' } : marks.status === 'excluded' ? { code:marks.exclusion.reason, label:['automatic-recovery-exhausted','assessment-unavailable'].includes(marks.exclusion.reason) ? 'Excluded · assessment unavailable' : ['recording-missing','recording-incomplete'].includes(marks.exclusion.reason)?'Excluded · recording unavailable':['instructor-delivery-exclusion','instructor-transcription-exclusion','instructor-review-unavailable'].includes(marks.exclusion.reason) ? 'Excluded · instructor request' : 'Excluded · unusable audio', action:marks.exclusion.note } : reasonFor(job, trusted, state.assessment?.recovery?.status === 'scheduled'),
-      feedback:feedbackFor(q, response, job, marks, trusted, state.assessment?.recovery?.status === 'scheduled'), practice:{ path:'#/' + GUIDANCE[q.type][0], instruction:GUIDANCE[q.type][1] } };
+      feedback:{
+        ...feedbackFor(q, response, job, marks, trusted, state.assessment?.recovery?.status === 'scheduled'),
+        ...(q.type === 'sst' ? { sstCoverage:sstReportFeedback(q, response, marks.status === 'assessed' && trusted ? job.result.native?.sstCoverage ?? job.result.sstCoverage : null) } : {})
+      }, practice:{ path:'#/' + GUIDANCE[q.type][0], instruction:GUIDANCE[q.type][1] } };
   });
   const groups = TASKS.filter(task=>result.groups[task.type]).map(task => ({ type:task.type, label:task.label, section:task.section, skills:paper.module==='listening'?['listening']:[...task.skills], ...result.groups[task.type],
     assessedCount:items.filter(item => item.type === task.type && item.status === 'assessed').length }));
