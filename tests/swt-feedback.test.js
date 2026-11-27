@@ -224,7 +224,8 @@ test('Detailed SWT form and language panels do not confuse awarded zeros with di
   const data = { trait_scores: { content: 0, form: 0, grammar: 0, vocabulary: 0 },
     diagnostic_trait_scores: { content: 0, form: 1, grammar: 2, vocabulary: 2 },
     content_gate_triggered: true, score_gate: { status: 'zero_content' } };
-  const context = { document: { getElementById: id => targets[id] }, escapeHtml: String, fmtNum: String };
+  const context = { document: { getElementById: id => targets[id] }, escapeHtml: String, fmtNum: String,
+    SwtStudentFeedback: require('../public/swt-feedback'), window: {SwtTraitReview: require('../public/swt-trait-review')} };
   vm.createContext(context);
   for (const name of ['renderAnnotatedSubmission', 'renderTraitBreakdown']) {
     const start = source.indexOf('function ' + name + '(');
@@ -235,7 +236,8 @@ test('Detailed SWT form and language panels do not confuse awarded zeros with di
   context.renderTraitBreakdown(data, data.trait_scores);
   assert.match(targets.annotatedFeedback.innerHTML, /One sentence within/);
   assert(!targets.annotatedFeedback.innerHTML.includes('Check the form'));
-  assert.match(targets.traitBreakdown.innerHTML, /No Form points awarded because Content is 0/);
+  assert.match(targets.traitBreakdown.innerHTML, /<strong>Form<\/strong><span class="swt-trait-value">0 \/ 1<\/span><span>Item rule applied<\/span>/);
+  assert.doesNotMatch(targets.traitBreakdown.innerHTML, /point[s]? to gain/);
   assert(!targets.traitBreakdown.innerHTML.includes('Form requirement not met'));
   assert(!targets.traitBreakdown.innerHTML.includes('Review the grammar affecting meaning'));
 });

@@ -19,9 +19,9 @@ Readiness becomes unavailable before existing requests drain and resources close
 complete build in sequence. Any failure stops the release. It clears database,
 grading, speech and mail credentials from the test environment, preventing build
 checks from accessing production student storage or paid providers. Portal CI runs this
-release check before merge. Railway's build prepares the WebP logo, Edge TTS
-environment, and Chromium for the application. The deployment uses the committed
-frontend bundle, utility CSS, vendor assets and speaking recordings. The Railway
+release check before merge. Railway's build prepares the Edge TTS environment and Chromium. The deployment
+uses the committed frontend bundle, WebP logo, utility CSS, vendor assets and
+speaking recordings. The Railway
 build environment skips the repository's npm install-time verification, which
 remains available in CI and local installs.
 

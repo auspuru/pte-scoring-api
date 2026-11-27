@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "node scripts/postinstall.js",
     "verify:install": "node scripts/build-frontend.js && node scripts/validate-public-assets.js && node scripts/validate-writing-audio.js && npm run install:edge-tts && npm run validate:edge-tts && node scripts/generate-user-speaking-audio.js && node scripts/validate-speaking-content.js && npm run install:browser && node scripts/validate-puppeteer-browser.js",
-    "prepare:railway": "node scripts/build-frontend.js --logo-only && npm run install:edge-tts && puppeteer browsers install chrome",
+    "prepare:railway": "npm run install:edge-tts && puppeteer browsers install chrome",
     "validate:assets": "node scripts/validate-public-assets.js",
     "validate:audio": "node scripts/validate-writing-audio.js",
     "validate:speaking": "node scripts/validate-speaking-content.js",
