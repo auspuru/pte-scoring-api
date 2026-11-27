@@ -16,14 +16,7 @@
   const theme=doc.getElementById('themeToggleBtn'),footer=doc.querySelector('#portalSidebar .sidebar-footer');if(theme&&footer)footer.insertBefore(theme,footer.firstChild);
   doc.body.classList.add('portal-layout');
   let skill='speaking',scheduled=false,lastResultsOwner=null,lastSection=null;
-  const swtScreen=doc.getElementById('swtPracticeScreen'),swtHeading=swtScreen?.querySelector('.swt-heading');
-  let swtFocusButton;
-  function expandSwt(expanded){mark(doc.body,'portal-swt-expanded',expanded);if(swtFocusButton){const label=expanded?'Exit focus view':'Focus view';if(swtFocusButton.textContent!==label)swtFocusButton.textContent=label;if(swtFocusButton.getAttribute('aria-pressed')!==String(expanded))swtFocusButton.setAttribute('aria-pressed',String(expanded));}}
-  if(swtHeading){
-   swtFocusButton=doc.createElement('button');swtFocusButton.type='button';swtFocusButton.id='swtFocusButton';swtFocusButton.className='btn portal-swt-focus';swtFocusButton.textContent='Focus view';swtFocusButton.setAttribute('aria-pressed','false');
-   swtFocusButton.onclick=()=>expandSwt(!doc.body.classList.contains('portal-swt-expanded'));swtHeading.appendChild(swtFocusButton);
-   doc.addEventListener('keydown',event=>{if(event.key==='Escape'&&!event.defaultPrevented&&doc.body.classList.contains('portal-swt-expanded')){event.preventDefault();expandSwt(false);swtFocusButton.focus({preventScroll:true});}});
-  }
+  const swtScreen=doc.getElementById('swtPracticeScreen');
   function catalogue(){
    const host=doc.getElementById('practiceHubPane'),board=host?.querySelector('.practice-banners');if(!board)return;
    mark(host,'portal-layout-catalogue',true);
@@ -53,7 +46,6 @@
    const section=doc.body.dataset.section,exam=doc.body.classList.contains('portal-exam-active');
    const swtWriting=section==='swt'&&!exam&&swtScreen?.classList.contains('active')&&!doc.getElementById('swtResultsScreen')?.classList.contains('active');
    mark(doc.body,'portal-swt-workspace',swtWriting);
-   if(!swtWriting)expandSwt(false);
    for(const id of ['speakingPane','readingPane','writingLabScreen','swtPane','practiceScreen','speakingMockPane','fullMockPane']){
     const host=doc.getElementById(id);if(!host)continue;
     const report=[...host.querySelectorAll(reports)].some(node=>{const swt=node.closest('#swtResultsScreen');return !node.closest('[hidden]')&&(!swt||swt.classList.contains('active'));})||!!host.querySelector('#swtResultsScreen.active');mark(host,'portal-layout-report',report);
