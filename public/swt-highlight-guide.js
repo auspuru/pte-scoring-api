@@ -1629,8 +1629,7 @@
         "label": "Independent work is widespread",
         "phrases": [
           "various income streams",
-          "work independently",
-          "up to 162 million people"
+          "work independently"
         ],
         "idea": "This establishes that many people earn their living outside traditional payroll jobs."
       },
@@ -1640,6 +1639,15 @@
           "never been well measured in official statistics"
         ],
         "idea": "This explains why independent work remains poorly understood despite its scale."
+      },
+      {
+        "label": "Survey finding",
+        "phrases": [
+          "up to 162 million people",
+          "20 to 30 percent of the working-age population",
+          "engage in some form of independent work"
+        ],
+        "idea": "The survey estimated that up to 162 million people in Europe and the United States did independent work, about 20 to 30 percent of the working-age population."
       },
       {
         "label": "Motivation and income define groups",

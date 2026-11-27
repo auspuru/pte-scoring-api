@@ -253,6 +253,8 @@ test('The independent-work passage highlights individual ideas without painting 
  assert.equal(document.querySelector('main').textContent,source.text);
  assert(marked.includes('work independently'));
  assert(marked.includes('up to 162 million people'));
+ assert(marked.includes('20 to 30 percent of the working-age population'));
+ assert(marked.includes('engage in some form of independent work'));
  assert(marked.includes('casual earners'));
  assert(marked.every(phrase=>phrase.split(/\s+/).length<=8));
 });
