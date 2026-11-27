@@ -129,7 +129,39 @@
     ['How people reacted', 'receiving both praise from the scientific community and fierce criticism from the religious community and conservative forces', 'The book drew praise and criticism, showing the debate it sparked.'],
     ['Why it still matters', 'still has scientific value more than 150 years after its publication', 'The book still matters to science. This is the passage’s final point.']
   ];
+  const lightWords = new Set('a an and are as at be been being but by can could did do does for from had has have how i in into is it its may more not of on or our so than that the their them these they this through to up use was were what when which who will with would'.split(' '));
+  const wordForm = word => word.toLowerCase().replace(/(?:ies|ing|ed|s)$/, '');
+  function focusExcerpt(excerpt, item) {
+    const max = 8;
+    const tokens = [...excerpt.matchAll(/[\p{L}\p{N}]+(?:[-’'][\p{L}\p{N}]+)*/gu)];
+    const sentence = /[.!?][”’"')]*$/.test(excerpt);
+    if (!sentence && tokens.length <= max && excerpt.split(/\s+/).length <= max && !/[.;!?–—]/.test(excerpt)) return excerpt;
+    const terms = new Set((item.label+' '+item.idea).toLowerCase().match(/[\p{L}\p{N}]+/gu)
+      ?.filter(term => !lightWords.has(term)).map(wordForm));
+    let best = '', bestScore = -Infinity;
+    const limit = Math.min(max, sentence ? tokens.length-1 : tokens.length);
+    for (let start=0;start<tokens.length;start++) {
+      if (lightWords.has(tokens[start][0].toLowerCase())) continue;
+      let score = 0;
+      for (let end=start;end<tokens.length&&end-start<limit;end++) {
+        const token=tokens[end], value=token[0].toLowerCase();
+        if (end>start && /[,;:.!?()–—/]/.test(excerpt.slice(tokens[end-1].index+tokens[end-1][0].length,token.index))) break;
+        score += lightWords.has(value) ? -0.2 : terms.has(wordForm(value)) ? 3 : 0.15;
+        if (end===start || lightWords.has(value)) continue;
+        if (score>bestScore) {
+          bestScore=score;
+          best=excerpt.slice(tokens[start].index,token.index+token[0].length);
+        }
+      }
+    }
+    return best;
+  }
   function passageIdeas(passage) {
+    return passageEvidence(passage).map(item => ({
+      ...item, phrases:[...new Set(item.phrases.map(phrase=>focusExcerpt(phrase,item)).filter(Boolean))]
+    }));
+  }
+  function passageEvidence(passage) {
     const text = String(passage?.text || '');
     if (darwinIdeas.every(([,phrase]) => text.includes(phrase))) {
       return darwinIdeas.map(([label,phrase,idea]) => ({label,phrases:[phrase],idea}));

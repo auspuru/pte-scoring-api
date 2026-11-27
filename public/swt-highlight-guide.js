@@ -1628,21 +1628,35 @@
       {
         "label": "Independent work is widespread",
         "phrases": [
-          "Millions of people assemble various income streams and work independently, rather than in structured payroll jobs."
+          "various income streams",
+          "work independently"
         ],
         "idea": "This establishes that many people earn their living outside traditional payroll jobs."
       },
       {
         "label": "Official statistics miss activity",
         "phrases": [
-          "This is hardly a new phenomenon, yet it has never been well measured in official statistics and the resulting data gaps prevent a clear view of a large share of labor-market activity."
+          "never been well measured in official statistics"
         ],
         "idea": "This explains why independent work remains poorly understood despite its scale."
       },
       {
+        "label": "Survey finding",
+        "phrases": [
+          "up to 162 million people",
+          "20 to 30 percent of the working-age population",
+          "engage in some form of independent work"
+        ],
+        "idea": "The survey estimated that up to 162 million people in Europe and the United States did independent work, about 20 to 30 percent of the working-age population."
+      },
+      {
         "label": "Motivation and income define groups",
         "phrases": [
-          "While demographically diverse, independent workers largely fit into four segments (exhibit): free agents, who actively choose independent work and derive their primary income from it; casual earners, who use independent work for supplemental income and do so by choice; reluctants, who make their primary living from independent work but would prefer traditional jobs; and the financially strapped, who do supplemental independent work out of necessity."
+          "four segments",
+          "free agents",
+          "casual earners",
+          "reluctants",
+          "financially strapped"
         ],
         "idea": "This classifies workers by whether independent work is chosen or necessary and provides primary or supplemental income."
       }
