@@ -14,7 +14,7 @@ function functionSource(name, async = false) {
   return source.slice(start, source.indexOf('\n}', start) + 2);
 }
 
-test('The headline shows an estimate; raw traits have a dedicated breakdown', () => {
+test('The headline shows an estimate; raw traits live in a separate visible breakdown', () => {
   const hero = html.slice(html.indexOf('id="heroScore"'), html.indexOf('id="swtGuidanceBody"'));
   assert.match(hero, /PTE estimate/);
   assert.match(hero, /Your submitted summary/);
