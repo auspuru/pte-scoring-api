@@ -91,7 +91,10 @@ test('Opening saved attempts updates detail and history without regrading or ove
   assert.equal(present(pending).report.score90,null);
   const retry=await fetch(base+'/attempts/'+attempt.id+'/score/3',{method:'POST',headers});assert.equal(retry.status,200);
   const repaired=await retry.json();assert.notEqual(repaired.score_provisional,true);assert.equal(calls,1);
-  const after=await (await fetch(base+'/attempts/'+attempt.id,{headers})).json();assert.equal(after.report.score90,69);
+  assert.equal(repaired.scores.vocabulary,2,'New SST grading should credit accurate vocabulary without a quoted error.');
+  const after=await (await fetch(base+'/attempts/'+attempt.id,{headers})).json();
+  assert.equal(after.report.score90,71);
+  assert.deepEqual((await store.get('tester',attempt.id)).results.filter((_,i)=>i!==3),results.filter((_,i)=>i!==3));
   await store.update('tester',attempt.id,a=>{a.results[4]={total:8,maximum:999};a.answers[4]=a.questions[4].text;return a;});
   const invalid=await fetch(base+'/attempts/'+attempt.id+'/score/4',{method:'POST',headers});assert.equal(invalid.status,200);
   const fixed=await invalid.json();assert.equal(fixed.maximum,11);assert.equal(fixed.total,11);assert.equal(calls,1);

@@ -305,3 +305,24 @@ test('The provider confirms small phrase changes using student evidence without 
     assert.equal(applyScoringPolicy(materialiseEvidence(invalid,summary),summary).needs_semantic_review,true);
   }
 });
+
+test('SWT Content distinguishes optional detail, an important omission and material distortion', () => {
+  const caseFor = (answer, updates) => {
+    const raw=judgment();
+    Object.assign(raw.summary_assessment, updates);
+    const result=applyScoringPolicy(raw,answer);
+    assert.equal(result.needs_semantic_review,false);
+    assert.equal(result.vocabulary_score,2);
+    return result.content_score;
+  };
+  assert.equal(caseFor(summary,{}),4,'The volatile-statistics claim remains scoped without an interest-rate example.');
+  assert.equal(caseFor(summary.replace(', and predictions of volatile statistics have a poor track record',''),{
+    conclusion_status:'missing',
+    relationship_explanation:'The role and uncertainty are clear, but the answer leaves out the documented track record.'
+  }),3);
+  assert.equal(caseFor(summary.replace('predictions of volatile statistics have a poor track record','forecasts are unreliable across the board'),{
+    material_meaning_change:true,conclusion_status:'incorrect',
+    relationship_explanation:'Across the board erases the finding that some stable measures are forecast more accurately.'
+  }),2);
+  assert.equal(applyScoringPolicy(judgment('assembly'),summary).content_score,3);
+});
