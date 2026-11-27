@@ -14,13 +14,13 @@ function functionSource(name, async = false) {
   return source.slice(start, source.indexOf('\n}', start) + 2);
 }
 
-test('The headline shows an estimate; raw traits live in a collapsed breakdown', () => {
+test('The headline shows an estimate; raw traits live in a separate visible breakdown', () => {
   const hero = html.slice(html.indexOf('id="heroScore"'), html.indexOf('id="swtGuidanceBody"'));
   assert.match(hero, /PTE estimate/);
   assert.match(hero, /Your submitted summary/);
   assert(!hero.includes('Content score'));
   assert(!hero.includes('Trait total'));
-  assert.match(html, /<details[^>]*aria-labelledby="swtTraitsHeading"/);
+  assert.match(html, /<section[^>]*aria-labelledby="swtTraitsHeading"/);
   assert(!html.includes('Highlights are a reading aid'));
   assert(!html.includes('id="coverageTable"'));
   assert(!source.includes('Band-9 sample loaded'));

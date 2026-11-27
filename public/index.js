@@ -12584,7 +12584,7 @@ function ensureFullMockRuntimeLoaded() {
 function ensureWritingLabRuntimeLoaded() {
   if (window.WritingLab?.open) return Promise.resolve(window.WritingLab);
   if (writingLabRuntimeLoadPromise) return writingLabRuntimeLoadPromise;
-  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-b5d103347d7d', 'writing lab')
+  writingLabRuntimeLoadPromise = loadDeferredScript('/writing-lab-client.js?v=sha256-1edf489104d1', 'writing lab')
     .then(() => {
       if (!window.WritingLab?.open) throw new Error('Writing practice did not initialise.');
       return window.WritingLab;
