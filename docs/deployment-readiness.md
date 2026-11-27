@@ -18,8 +18,12 @@ Readiness becomes unavailable before existing requests drain and resources close
 `node scripts/verify-release.js` runs the test suite, offline calibration and
 complete build in sequence. Any failure stops the release. It clears database,
 grading, speech and mail credentials from the test environment, preventing build
-checks from accessing production student storage or paid providers. Both hosted
-CI and Railway's build command use this same release check.
+checks from accessing production student storage or paid providers. Portal CI runs this
+release check before merge. Railway's build prepares the WebP logo, Edge TTS
+environment, and Chromium for the application. The deployment uses the committed
+frontend bundle, utility CSS, vendor assets and speaking recordings. The Railway
+build environment skips the repository's npm install-time verification, which
+remains available in CI and local installs.
 
 Railway's deployment healthcheck runs when promoting a deployment; it is not a
 continuous uptime monitor. The attached volume permits only one active deployment,

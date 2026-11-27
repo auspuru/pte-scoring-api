@@ -47,14 +47,19 @@ function assertProductionHtml(html) {
   }
 }
 
+function buildLogo() {
+  execFileSync('ffmpeg', ['-loglevel','error','-y','-i',logoPngPath,'-c:v','libwebp','-quality','78','-compression_level','6',logoWebpPath], { cwd: root, stdio: 'inherit' });
+  const pngBytes = fs.statSync(logoPngPath).size, webpBytes = fs.statSync(logoWebpPath).size;
+  if (webpBytes >= pngBytes) throw new Error('Optimized logo WebP is not smaller than the PNG source.');
+  return { pngBytes, webpBytes };
+}
+
 function build() {
   require('./build-ux-vendor').build();
   const html = fs.readFileSync(htmlPath, 'utf8');
   assertProductionHtml(html);
   fs.writeFileSync(cssPath, css);
-  execFileSync('ffmpeg', ['-loglevel','error','-y','-i',logoPngPath,'-c:v','libwebp','-quality','78','-compression_level','6',logoWebpPath], { cwd: root, stdio: 'inherit' });
-  const pngBytes = fs.statSync(logoPngPath).size, webpBytes = fs.statSync(logoWebpPath).size;
-  if (webpBytes >= pngBytes) throw new Error('Optimized logo WebP is not smaller than the PNG source.');
+  const { pngBytes, webpBytes } = buildLogo();
   const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
   execFileSync(npx, ['--yes','terser@5.44.0', clientPath, '--compress', '--output', minClientPath], { cwd: root, stdio: 'inherit' });
   const sourceBytes = fs.statSync(clientPath).size, minBytes = fs.statSync(minClientPath).size;
@@ -62,5 +67,8 @@ function build() {
   console.log('Built public/utility.css (' + Buffer.byteLength(css) + ' bytes), optimized logo WebP (' + webpBytes + ' bytes from ' + pngBytes + '), and public/index.min.js (' + minBytes + ' bytes from ' + sourceBytes + ').');
 }
 
-if (require.main === module) build();
+if (require.main === module) {
+  if (process.argv[2] === '--logo-only') buildLogo();
+  else build();
+}
 module.exports = { build, assertProductionHtml, css };
