@@ -208,7 +208,8 @@ function installSpeakingMock(app,{pool,directory,verifyToken,getAccount,callMode
       const paperId=config?'practice-set-'+config.type+'-'+config.count:fixed.id;
       if(old){if(old.paperId!==paperId||config&&(!old.practiceSet||old.practiceSet.type!==config.type||old.practiceSet.count!==config.count))throw fail('This attempt belongs to another paper.',409);return old;}
       const paper=config?randomPractice.make(config,previous):fixed;
-      return {...profile(req.mockUser,paper.questions),id:req.body.id,paperId:paper.id,title:paper.title,...(paper.practiceSet?{practiceSet:paper.practiceSet}:{}),version:bank.VERSION,questionCount:paper.questionCount,questions:structuredClone(paper.questions),responses:[],index:0,status:'active',startedAt:now(),deadline:now()+paper.minutes*60000,integrity:{protected:true,events:[]}};
+      const startedAt=now();
+      return {...profile(req.mockUser,paper.questions),id:req.body.id,paperId:paper.id,title:paper.title,...(paper.practiceSet?{practiceSet:paper.practiceSet}:{}),version:bank.VERSION,questionCount:paper.questionCount,questions:structuredClone(paper.questions),responses:[],index:0,status:'active',startedAt,deadline:startedAt+paper.minutes*60000,integrity:{protected:true,events:[]}};
     });res.json(view(a));
   }));
   router.post('/attempts/:id/reattempt',limiter,wrap(async(req,res)=>{

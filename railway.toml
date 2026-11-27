@@ -1,6 +1,6 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "node scripts/verify-release.js"
+buildCommand = "npm run prepare:railway"
 
 [deploy]
 healthcheckPath = "/api/ready"

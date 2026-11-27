@@ -21,6 +21,9 @@ test('UX libraries: fuzzy catalogue search, real progress chart, sortable/search
  await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache/portal-layout-ux-progress.png')});
  await page.locator('.portal-ux-grid [data-progress-attempt="42"]').click();await page.waitForFunction(text=>document.body.textContent.includes(text),{},history[42].text);
  assert.equal(await page.$eval('#nav-progress',e=>e.getAttribute('aria-current')),null,'Saved response opens through its original report route');
+ await page.locator('#swtResultsScreen button[onclick="backToPractice()"]').click();
+ await page.locator('[data-writing-return="swt"]').click();
+ await page.waitForSelector('#swtQuestionLibrary.active',{visible:true});
  await page.locator('#nav-practice-hub').click();await page.locator('[data-layout-skill="speaking"]').click();await page.locator('[data-practice-route="speaking-rl"]').click();await page.waitForSelector('#speaking-search');await page.type('#speaking-search','neuronn');await page.waitForFunction(()=>document.querySelector('#speaking-library-list')?.textContent.toLowerCase().includes('neuron'));
  assert.equal(await page.$$eval('#speaking-library-list [data-speaking-question]',nodes=>nodes.length),1);await page.screenshot({path:path.join(root,'.cache/portal-layout-ux-search.png')});assert.deepEqual(errors,[]);
 });
