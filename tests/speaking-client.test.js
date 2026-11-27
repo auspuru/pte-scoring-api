@@ -1,6 +1,7 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
 const {createController,time}=require('../public/speaking-practice'),bank=require('../content/speaking-bank'),{present}=require('../speaking-lab');
+const {repeatAlignment}=require('../speaking-scoring');
 const readAloudCount=bank.questions.filter(q=>q.type==='ra'&&!q.predictionSource).length;
 function harness({includePredictions=false,audioCue=false}={}) {
   const nodes=new Map(),events={},intervals=new Map(),attempts=new Map(),requests=[],recorders=[],audio=[],storage=new Map();let seq=0,now=1000,stops=0,uid='alice';
@@ -38,6 +39,8 @@ function harness({includePredictions=false,audioCue=false}={}) {
       if(!a.transcript&&env.rejectTranscription)return reply({error:'Automatic transcription is temporarily unavailable.'},false);
       if(!a.transcript){a.transcript=env.recognizedTranscript??bank.questions.find(q=>q.id===a.questionId).text;a.transcription=a.transcript;a.revision++;}
       a.status='submitted';a.result={total:3,maximum:3,overview:'Content checked.',scoringMode:env.contentFallback?'local':'ai',strengths:[],improvements:['Review with your teacher.'],deliveryVersion:'test-delivery'};if(env.contentUnavailable)a.result={...a.result,total:null,scoringMode:'unavailable',score_provisional:true,contentStatus:'unavailable'};
+      const question=bank.questions.find(q=>q.id===a.questionId);
+      if(question.type==='rs')a.result.changes=repeatAlignment(question.text,a.transcript).changes;
     }
     return reply(present(a));
   };

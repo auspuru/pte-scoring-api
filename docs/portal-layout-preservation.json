@@ -34,7 +34,7 @@
     "public/mock-impact-feedback.js": "0db0538a9d8d7f948135d0dc282ebe02a8721afe1936920fbb0e6214c958beee",
     "public/writing-lab-report.js": "1aea3df348c26c8c9f8fc7448d7040d68e5b96be3e93b1d8bf4915ab0bbbc3ab",
     "public/writing-lab-client.js": "e9161715a2bca9b42e52f4fd2d045fc1ae4cface958e6a72eae77d69fa34cab2",
-    "public/speaking-practice.js": "9c0d6dd99fb7cd17dd680b3609e338c6b1ffbd8365a13f70f76fdee4a9cdb168",
+    "public/speaking-practice.js": "372ba034e5a006f9c70cd9869950de42466bbb5e1072cc4b01ecb85809a9e22c",
     "public/speaking-mock-client.js": "8cd2834f32fcf9c919081097efcf711ea0c2f71de1bd5865dffbd2ee3167f7dd",
     "public/reading-practice.js": "62693703fe3211c5084575d54163f731bbafee1cdef41bc45c70c9007787484e",
     "public/reading-review.js": "98e9c23a186fcc72034d552e0664f1d8ccb420600e21fa27fa6bbf987a1a2872",
@@ -89,7 +89,7 @@
       "public/speaking-practice.js": "23de89ada814b58b9645309f2c7816b24330cc92e4b36c435549358a7dee80d4"
     },
     "preservedFunctions": {
-      "feedback": "1d17c9a2a8e7d61dd6f880a9bef6218a0c2ef41910b443f0658c2e5f5060a665",
+      "feedback": "b5d474daa8a225397849e54f2084d7b8104a7dbe0cd37334ecfc3b3d762f2485",
       "requestAssessment": "5d17ab1b790ded488db21442b88f7d1dd5e60c22330890b34145dbc14f45872e",
       "uploadRecording": "d40267168f60b934fa045aaa573b21178be4c80298bac051a4eccc2061b6b8d2",
       "saveTranscript": "662ab9265813f6de911c3bbe0d0a19f9da74f9be757c44f20d2c102416de4a21",

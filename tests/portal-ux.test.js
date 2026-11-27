@@ -39,6 +39,6 @@ test('Practice controllers retain the reviewed standalone navigation and exact n
  const source=require('./helpers/di-content-ui-projection')(fs.readFileSync(path.join(root,'public/speaking-practice.js'),'utf8'));assert(source.includes(reader),'The reviewed token reader must match exactly.');
  const speaking=source.replace(reader,"    const token=()=>{try{return env.sessionStorage.getItem('pte_impersonate_token')||env.localStorage.getItem('pte_session_token')||'';}catch{return '';}};").split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')&&!line.includes('env.PortalUx?.recording(node);')).join('\n');
  const reading=fs.readFileSync(path.join(root,'public/reading-practice.js'),'utf8').split('\n').filter(line=>!line.includes('if(globalThis.PortalUx)return globalThis.PortalUx.search(')).join('\n');
- assert.equal(sha(speaking),'a3a5fe4c9ac5605772d0339f90af6475732d67a1e55d593a0df6a3ef032b1c12');
+ assert.equal(sha(speaking),'f7676a1867e422100a4fc4ab049197b7a6964c3dcdcc246f2df8173aa71533de');
  assert.equal(sha(reading),require('../docs/portal-layout-preservation.json').files['public/reading-practice.js']);
 });
