@@ -230,6 +230,18 @@ function snapshotBeforePracticeIndex(current) {
   return snapshot;
 }
 
+test('SST transcript review accepts the exact prior Full Mock snapshot and rejects report-source drift', async t => {
+  const f = await fixture(t);
+  const snapshot = require('./helpers/sst-coaching-baseline').sstTranscriptReviewBaseline(f.engine.snapshot);
+  const state = await f.state();
+  const { stateFor } = require('../full-mock/assessment');
+  state.assessment = stateFor(snapshot);
+  assert.doesNotThrow(() => f.engine.validate(state));
+  snapshot.scoringSources.files['full-mock/report.js'].sha256 = '0'.repeat(64);
+  state.assessment = stateFor(snapshot);
+  assert.throws(() => f.engine.validate(state), { status: 409 });
+});
+
 test('Feedback-only SWT review accepts the exact prior Full Mock snapshot and rejects evidence-source drift', async t => {
   const f = await fixture(t);
   const snapshot = require('./helpers/sst-coaching-baseline').swtReviewBaseline(f.engine.snapshot);

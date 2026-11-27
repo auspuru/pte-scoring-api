@@ -4,6 +4,7 @@ const assert = require('node:assert/strict');
 const { digest } = require('../../full-mock/paper');
 const pins = require('../../content/full-mock/sst-coaching-compatible-pins.json');
 const swtReviewPins = require('../../content/full-mock/swt-review-compatible-pins.json');
+const sstTranscriptReviewPins = require('../../content/full-mock/sst-transcript-review-compatible-pins.json');
 
 function restoreSnapshot(current, snapshotPins) {
   const snapshot = structuredClone(current);
@@ -15,6 +16,7 @@ function restoreSnapshot(current, snapshotPins) {
   return snapshot;
 }
 
-const swtReviewBaseline = current => restoreSnapshot(current, swtReviewPins);
+const sstTranscriptReviewBaseline = current => restoreSnapshot(current, sstTranscriptReviewPins);
+const swtReviewBaseline = current => restoreSnapshot(sstTranscriptReviewBaseline(current), swtReviewPins);
 const sstCoachingBaseline = current => restoreSnapshot(swtReviewBaseline(current), pins);
-module.exports = { sstCoachingBaseline, swtReviewBaseline };
+module.exports = { sstCoachingBaseline, swtReviewBaseline, sstTranscriptReviewBaseline };

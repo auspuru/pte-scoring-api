@@ -4,6 +4,7 @@ const { plainSwtSample } = require('../swt-plain-samples');
 const { POLICY_VERSION: SWT_POLICY_VERSION, previousPolicy } = require('../swt-scoring-policy');
 const { swtQuestionSourceIdentity } = require('../writing-lab-scoring');
 const { sstIdeas } = require('../sst-idea-guide');
+const { sstHighlights } = require('../sst-highlight-guide');
 const { TASKS } = require('./blueprint');
 const { aggregate, inputHash } = require('./aggregation');
 const { questionForPlayer } = require('./paper');
@@ -166,6 +167,7 @@ function buildReport(paper, state, at = Date.now()) {
     const teachingSample = q.type === 'swt' ? plainSwtSample(q.text) : null;
     // WFD and listening reference transcripts are deliberately submitted-only.
     const reference = { text:clean(q.text, 20000), sample:clean(reviewed?.sample ?? q.sample, 12000), ...(teachingSample ? {teachingSample} : {}), explanation:clean(q.explanation), facts:texts(facts), acceptedAnswers:texts(q.acceptedAnswers),
+      ...(q.type === 'sst' ? { highlights:sstHighlights(q) } : {}),
       answers:Array.isArray(q.answers) ? structuredClone(q.answers) : Number.isInteger(q.answer) ? [q.answer] : [],
       turns:Array.isArray(q.turns) ? q.turns.slice(0, 20).map(row => [clean(row[0], 100), clean(row[1], 5000)]) : [] };
     const recordings = response.segments.filter(segment => !segment.cancelled).map((segment, position) => ({ id:segment.id, number:position + 1,

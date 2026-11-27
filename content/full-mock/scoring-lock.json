@@ -1,14 +1,18 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "80d3cc78bea5cdd7798abb7e0f69a98335186fe2",
+  "baseCommit": "d723aa82795bcaa373c69239457d675b6a848108",
   "checkedAt": "2026-11-27",
-  "scope": "Score-backed SWT feedback from verified correction and main-idea evidence. Frozen Full Mock attempts retain their assessment versions and confirmed marks.",
+  "scope": "SST report layout and submitted-only transcript highlights. Frozen Full Mock attempts retain their assessment versions and confirmed marks.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
     "files": {
       "azure-continuous-delivery.js": {
         "sha256": "63533d41e2a176c765ff82e4b9c301fe6e9ad4d431d699afa3917cdc7701aa65",
+        "version": null
+      },
+      "content/sst-highlight-guide.json": {
+        "sha256": "3a26179a62b7b8bf7ccc9905cb02a7fc2caf32a34c242d1977fcd01262442d3f",
         "version": null
       },
       "content/sst-idea-guide.json": {
@@ -124,11 +128,11 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "d7b2a6619cc5701e2992bff8bac36c2dc301084dd0e8a71d1d3480de3f7c82d1",
+        "sha256": "f3bd471cfea82ec0c5952c0349d52a10ba27d46e25e2d10c6e8c6a50bbc8f59d",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
-        "sha256": "aa28fcc602bdbf1ed1c9805739540f91f22c35f9cc37a57a23d24af397e930d8",
+        "sha256": "29a4df859e91da60ce9f70945bc2ac19f9d20a494e325fb0fb0c0b42e4e426ad",
         "version": null
       },
       "full-mock/blueprint.js": {
@@ -156,7 +160,7 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "d9b623a9cebe13d36e8c247ede100a02d30010ef621ca1392a1614ce3c8a6f3a",
+        "sha256": "e25cf2da361bcec6d32ddeeb586a79c26a5b2c321a6c2830cef153207d516aaf",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
@@ -250,6 +254,10 @@
       },
       "sst-coverage.js": {
         "sha256": "3423662d6bd3a54890c342ab6ce8b35ba5ca14d6610853a18dd91d8b942c7644",
+        "version": null
+      },
+      "sst-highlight-guide.js": {
+        "sha256": "3d8f8a8a402a9d99ad6009a8de7ca848455804b05558fc66130776f1fefca10d",
         "version": null
       },
       "sst-idea-guide.js": {

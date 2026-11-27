@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit');
 const { createStore } = require('./writing-lab-store');
 const scoring = require('./writing-lab-scoring');
 const { sstIdeas } = require('./sst-idea-guide');
+const { sstHighlights } = require('./sst-highlight-guide');
 const listeningScoring = require('./listening-scoring');
 const report = require('./public/writing-lab-report');
 const overall = require('./writing-mock-overall');
@@ -176,7 +177,7 @@ function present(a) {
     ...((['sst','wfd'].includes(q.type) || listeningScoring.TYPES.has(q.type)) && (i <= a.index || a.status === 'submitted') ? { audioUrl:approvedAudio.publicAudio(q)?.audioUrl || q.audioUrl || '/writing-audio/' + (q.audioId || q.id) + '.mp3?v=' + AUDIO_VERSION } : {}),
     ...(a.status === 'submitted' ? { sample:q.sample, keyPoints:q.keyPoints,answer:q.answer,answers:q.answers,explanation:q.explanation,
       ...(q.type === 'swt' ? {teachingSample:plainSwtSample(q.text)} : {}),
-      ...(q.type === 'sst' ? {sstIdeas:sstIdeas(q)} : {}) } : {}) }));
+      ...(q.type === 'sst' ? {sstIdeas:sstIdeas(q),sstHighlights:sstHighlights(q)} : {}) } : {}) }));
   return result;
 }
 function installWritingLab(app, { pool, directory, verifyToken, getAccount, callModel, historicalSstModel = callModel, essayGrader = null, swtGrader = null, mockGraders = null, overallGrader = null, onMockError = async()=>{}, speakingAllowed = require('./speaking-access').allowed, now = Date.now }) {

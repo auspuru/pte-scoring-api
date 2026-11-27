@@ -397,6 +397,57 @@ test('A gated standalone SST result shows the form reason and visible transcript
   assert.ok(visibleIdeas.includes(q.keyPoints[0]));
   assert.equal(h.requests.filter(request=>request.url.includes('/score/')).length,0);
 });
+test('Standalone and sectional SST reviews show the saved transcript, marks and coaching together', () => {
+  const quote='Trees cool cities by providing shade.';
+  const idea={ main:'Trees cool streets.', supporting:['Shade reduces heat.'] };
+  const q={ ...bank.spoken[0], text:'Opening. '+quote, audioUrl:'/test-audio.mp3',
+    sstIdeas:[idea], sstHighlights:[[quote]] };
+  const answer='Shade keeps streets cooler.';
+  const score={ total:8,maximum:12,maxima:{content:4,form:2,grammar:2,vocabulary:2,spelling:2},
+    scores:{content:2,form:2,grammar:1,vocabulary:2,spelling:1},feedback:{grammar:'Check the verb.'},
+    sstCoverage:{ ideas:[{...idea,status:'covered',evidence:answer}],nextStep:'Connect your ideas.' },
+    improvements:['Include the main relation.'],errors:[{phrase:'Shade keeps streets cooler.',correction:'Shade cools streets.'}] };
+  for (const kind of ['sst','mock']) {
+    const h=harness();
+    h.context.window.SstFeedback=require('../public/sst-feedback');
+    const a={...attempt(),kind,module:'listening',status:'submitted',questions:[q],answers:[answer],completed:[{reason:'Submitted'}],results:[score]};
+    h.hooks.set(a);h.hooks.renderResults();
+    const doc=require('linkedom').parseHTML(h.nodes.get('lab').innerHTML).document;
+    const review=doc.querySelector('#review-0');
+    assert.equal(review.querySelector('.sst-transcript mark').textContent,quote);
+    assert.equal(review.querySelector('.sst-transcript audio').getAttribute('src'),q.audioUrl);
+    assert.equal(review.querySelector('.sst-saved-summary').textContent,answer);
+    assert.equal(review.querySelector('.sst-score-strip dd').textContent,'8 / 12');
+    if (kind==='sst') {
+      assert.equal(doc.querySelector('.score-banner'),null);
+      assert.equal(doc.querySelector('.task-scores'),null);
+      assert.match(review.querySelector('.review-top').textContent,/Estimate 63\/90/);
+    }
+    assert.match(review.querySelector('.sst-marking').textContent,/Check the verb/);
+    assert.match(review.querySelector('.sst-idea-status').textContent,/Covered/);
+    assert.match(review.querySelector('.sst-next-step').textContent,/Connect your ideas/);
+    assert.match(review.textContent,/Shade cools streets/);
+    assert.equal(doc.querySelectorAll('audio').length,1);
+    assert.equal(h.requests.filter(request=>request.url.includes('/score/')).length,0);
+  }
+});
+test('The SST review shows source material without grading a pending or legacy summary', () => {
+  const h=harness(), q={...bank.spoken[0],text:'Lecture transcript.'};
+  h.context.window.SstFeedback=require('../public/sst-feedback');
+  const a={...attempt(),kind:'sst',status:'submitted',questions:[q],answers:['Saved summary.'],
+    completed:[{reason:'Submitted'}],results:[null],assessmentStatus:'unavailable',
+    practiceFeedback:{form:{score:1,maximum:2,reasons:[]},wordCount:43,transcriptIdeas:['A saved transcript point.']}};
+  h.hooks.set(a);h.hooks.renderResults();
+  const doc=require('linkedom').parseHTML(h.nodes.get('lab').innerHTML).document;
+  const review=doc.querySelector('#review-0');
+  assert.match(review.querySelector('.sst-coverage-notice').textContent,/estimate is currently unavailable/);
+  assert.equal(review.querySelector('.sst-score-strip dd').textContent,'—');
+  assert.equal(review.querySelector('.sst-idea-status'),null);
+  assert.equal(review.querySelector('.sst-transcript-text').textContent,q.text);
+  assert.match(review.textContent,/Form check 1\/2 · 43 words/);
+  assert.match(review.textContent,/A saved transcript point/);
+  assert.equal(h.requests.filter(request=>request.url.includes('/score/')).length,0);
+});
 test('Submitted standalone SST results offer a fresh reattempt while retaining the completed attempt',async()=>{
   const h=harness();
   const q=structuredClone(bank.spoken[0]);
