@@ -179,6 +179,15 @@ function quietRecording(recording) {
  assert.equal(sha(read('speaking-scoring.js')),scoringLock.files['speaking-scoring.js'].sha256);
  assert.equal(sha(read('situation-content-policy.js')),baseline.files['situation-content-policy.js'].sha256);
  source=read('writing-lab-scoring.js');
+ project("const { annotationEvidence } = require('./swt-feedback-evidence');\n");
+ project(`    errors:['grammar','vocabulary'].flatMap(trait=>assessment[trait+'_annotations'].flatMap(item=>{
+      const evidence=annotationEvidence(text,item);
+      return evidence?[{trait,...evidence,correction:item.fix,explanation:item.meaning_effect || item.rationale || '',
+        affectsScore:item.affects_score}]:[];
+    }))};
+`, "    errors:corrections.map(item=>({phrase:item.phrase,correction:item.fix,explanation:item.meaning_effect || item.rationale || '',affectsScore:item.affects_score}))};\n");
+ project('  const language = key => {', '  const corrections=[...assessment.grammar_annotations,...assessment.vocabulary_annotations];\n  const language = key => {');
+ assert.equal(sha(source),require('../content/full-mock/swt-review-compatible-pins.json').previousFiles['writing-lab-scoring.js'].sha256);
  project("const { sstIdeas, coveragePrompt, reviewCoverage } = require('./sst-coverage');\n");
  project(', sstCoaching = true');
  project(String.raw`  const ideas = q.type === 'sst' && sstCoaching ? sstIdeas(q) : null;

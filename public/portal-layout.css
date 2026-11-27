@@ -1,6 +1,5 @@
 /* Approved layout skeleton. No global tokens, type defaults, report styles or protected-exam rules are replaced. */
 .portal-layout-header{display:none}
-.portal-swt-focus{display:none}
 @media screen {
 body.portal-layout:not(.portal-exam-active) #appShell{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}
 body.portal-layout:not(.portal-exam-active) .portal-layout-header{display:block;grid-column:1/-1;background:var(--bg-card);border-bottom:1px solid var(--line);z-index:40}
@@ -186,7 +185,6 @@ body.portal-layout:not(.portal-exam-active) #portalSidebar [data-layout-assistan
  body.portal-layout.portal-swt-workspace #swtPracticeScreen>.swt-heading h2{font-size:22px}
  body.portal-layout.portal-swt-workspace #swtSummaryRequirements{margin-left:auto;max-width:none;gap:7px}
  body.portal-layout.portal-swt-workspace #swtSummaryRequirements li{font-size:11px;padding:4px 8px}
- body.portal-layout.portal-swt-workspace #swtFocusButton{display:inline-flex;align-items:center;flex-shrink:0;min-height:36px;padding:7px 12px;font-size:12px}
  body.portal-layout.portal-swt-workspace #swtPracticeNav{grid-column:1;display:flex;align-items:center;flex-wrap:nowrap;margin:0;padding:8px 12px;gap:12px}
  body.portal-layout.portal-swt-workspace #swtPracticeNav .swt-select-label{gap:2px;font-size:10px}
  body.portal-layout.portal-swt-workspace #swtPracticeNav select{min-height:36px;font-size:13px;padding:6px 28px 6px 10px}
@@ -211,8 +209,6 @@ body.portal-layout:not(.portal-exam-active) #portalSidebar [data-layout-assistan
  body.portal-layout.portal-swt-workspace #swtEditorHint{display:none}
  body.portal-layout.portal-swt-workspace #swtWritePane .write-actions{flex:0 0 auto;margin-top:10px;padding-top:10px;gap:6px}
  body.portal-layout.portal-swt-workspace #swtWritePane .scratch-note{flex:0 0 auto;margin:8px 0;font-size:12px}
- body.portal-layout.portal-swt-workspace.portal-swt-expanded #appShell{grid-template-rows:minmax(0,1fr)}
- body.portal-layout.portal-swt-workspace.portal-swt-expanded .portal-layout-header{display:none}
 }
 
 }
@@ -256,5 +252,53 @@ body.portal-layout:not(.portal-exam-active) #portalSidebar [data-layout-assistan
  body.portal-layout:not(.portal-exam-active) #writingLabScreen .studio-focused:has(.practice-question-library),
  body.portal-layout:not(.portal-exam-active) :is(#writingLabScreen,#lab) .listening-studio:has(.practice-question-library) {
   width:100%;max-width:none;margin-inline:0;
+ }
+}
+
+/* Keep the workspace expanded as questions move from answering to feedback. */
+@media screen {
+ body.portal-layout:not(.portal-exam-active):has(
+  #speakingPane.active .speaking-workspace[data-practice-question],
+  #readingPane.active :is(.reading-individual-layout, .reading-results-view),
+  #writingLabScreen.active .listening-practice-dock,
+  #swtPane.active :is(#swtPracticeScreen, #swtResultsScreen).active,
+  #practiceScreen.active #practiceContent .simulator-mode,
+  #practiceScreen.active #practiceContent:is([data-view="loading"], [data-view="results"]),
+  #fullMockPane.active [data-fm="retry"] + [data-fm="reload"],
+  #speakingMockPane.active .sm-results,
+  :is(#fullMockPane, #speakingMockPane, #writingLabScreen).active .ipt-mock-report
+ ) {
+  & #appShell {
+   grid-template-rows: minmax(0, 1fr);
+   min-height: 100dvh;
+  }
+  & :is(.portal-layout-header, .topbar) {
+   display: none !important;
+  }
+  & #portalContent > .pane.active {
+   width: 100%;
+   max-width: none !important;
+   margin-inline: 0;
+  }
+  & #portalContent > .pane.active:not(#practiceScreen, #writingLabScreen) {
+   padding-top: clamp(12px, 2vw, 24px);
+  }
+  & #swtPane #swtResultsScreen,
+  & #writingLabScreen .listening-studio,
+  & #fullMockPane .fm-shell,
+  & #portalContent > .pane.active .ipt-mock-report {
+   max-width: none;
+  }
+  @media (max-width: 640px) {
+   & .pane.active .practice-question-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+   }
+   & .pane.active .practice-question-actions button {
+    min-width: 0;
+    overflow-wrap: anywhere;
+   }
+  }
  }
 }

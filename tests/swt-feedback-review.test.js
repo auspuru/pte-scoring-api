@@ -223,3 +223,22 @@ test('Current practice feedback shows the mark-affecting agreement correction on
  assert.match(target.querySelector('#swtReviewCorrection').textContent,/improves.*improve.*trees.*more than one/);
  assert.doesNotMatch(target.querySelector('#swtReviewLanguage').textContent,/Urban trees|Optional/);
 });
+
+test('All scored corrections stay available even when repeated or overlapping quotes cannot be marked inline',()=>{
+ const d=data();
+ const answer='Trees cool cities and cool rivers, while several ideas seems incomplete.';
+ d.grammar_details.grammar_annotations=[
+  {phrase:'cool',fix:'shade',affects_score:true,rationale:'Saved repeated wording explanation.'},
+  {phrase:'ideas seems',fix:'ideas seem',affects_score:true,rationale:'Ideas means more than one.'},
+  {phrase:'seems incomplete',fix:'seem unclear',affects_score:true,rationale:'Saved overlapping wording explanation.'},
+  {phrase:'rivers',fix:'waterways',affects_score:false,rationale:'Optional replacement.'}
+ ];
+ const m=review.model(d,passage,answer,{deductionsOnly:true});
+ assert.equal(m.annotations.length,1);
+ assert.equal(m.corrections.length,3);
+ assert.equal(m.languageDraft,'');
+ const result=review.render(m);
+ assert.match(result,/Saved repeated wording explanation/);
+ assert.match(result,/Saved overlapping wording explanation/);
+ assert.doesNotMatch(result,/Optional replacement/);
+});

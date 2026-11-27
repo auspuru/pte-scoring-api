@@ -22,6 +22,19 @@ test('The mock adapter preserves the shared Content judgment and independent lan
   assert.equal(result.full_content_eligible,quality==='effective');
  }
 });
+test('SWT mock feedback preserves the correction trait and its submitted word range',async()=>{
+ const raw=judgment();
+ raw.grammar_annotations=[{type:'grammar_error',phrase:'Caffeine',phrase_span:[1,1],fix:'The caffeine',
+  meaning_impact:'none',meaning_effect:'',rationale:'The article identifies this specific source of caffeine.'}];
+ raw.vocabulary_annotations=[{type:'vocabulary_error',phrase:'useful',phrase_span:[3,3],fix:'beneficial',
+  meaning_impact:'none',meaning_effect:'',rationale:'This word choice is more precise in this context.'}];
+ const result=await scoring.gradeUnifiedSwt(q,fixture.summary,async()=>raw);
+ assert.equal(result.scores.grammar,1);assert.equal(result.scores.vocabulary,1);
+ assert.deepEqual(result.errors.map(({trait,phrase,phraseSpan,affectsScore})=>({trait,phrase,phraseSpan,affectsScore})),[
+  {trait:'grammar',phrase:'Caffeine',phraseSpan:[1,1],affectsScore:true},
+  {trait:'vocabulary',phrase:'useful',phraseSpan:[3,3],affectsScore:true}
+ ]);
+});
 test('Invalid form bypasses the grader, while an unreviewed primary stays provisional',async()=>{
  const zero=await scoring.gradeUnifiedSwt(q,'',()=>{throw Error('Must not call');});
  assert.equal(zero.total,0);assert.equal(zero.gated,true);

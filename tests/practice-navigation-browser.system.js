@@ -260,7 +260,7 @@ async function fixture(t,width,reportUI=false,taskType='sst',seedHistory=false){
    res.json({...a,serverNow:Date.now()});
  });
  app.get('/fixture.mp3',(_,res)=>res.sendFile(path.join(root,'content/speaking-audio/rs-1.mp3')));
- app.get('/spoken-text',(_,res)=>res.type('html').send(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/writing-lab-portal.css"><link rel="stylesheet" href="/listening-studio.css"><link rel="stylesheet" href="/question-navigation.css"><link rel="stylesheet" href="/practice-studio.css">${reportUI?'<link rel="stylesheet" href="/mock-report-ui.css">':''}</head><body><div id="lab" tabindex="-1"></div><div id="notice" role="status"></div><dialog id="confirm-dialog"><h2 id="confirm-title"></h2><p id="confirm-text"></p><button id="confirm-ok">Continue</button><button id="confirm-cancel">Cancel</button></dialog><script>localStorage.setItem('pte_session_token','fixture-only');</script><script src="/practice-catalogue.js"></script><script src="/practice-studio.js"></script><script src="/listening-studio.js"></script><script src="/listening-tasks.js"></script><script src="/writing-lab-report.js"></script>${reportUI?'<script src="/mock-impact-feedback.js"></script><script src="/swt-mock-feedback.js"></script><script src="/mock-report-ui.js"></script>':''}<script src="/writing-lab-client.js"></script></body></html>`));
+ app.get('/spoken-text',(_,res)=>res.type('html').send(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/writing-lab-portal.css"><link rel="stylesheet" href="/listening-studio.css"><link rel="stylesheet" href="/question-navigation.css"><link rel="stylesheet" href="/practice-studio.css">${reportUI?'<link rel="stylesheet" href="/mock-report-ui.css"><link rel="stylesheet" href="/swt-trait-review.css">':''}</head><body><div id="lab" tabindex="-1"></div><div id="notice" role="status"></div><dialog id="confirm-dialog"><h2 id="confirm-title"></h2><p id="confirm-text"></p><button id="confirm-ok">Continue</button><button id="confirm-cancel">Cancel</button></dialog><script>localStorage.setItem('pte_session_token','fixture-only');</script><script src="/practice-catalogue.js"></script><script src="/practice-studio.js"></script><script src="/listening-studio.js"></script><script src="/listening-tasks.js"></script><script src="/writing-lab-report.js"></script>${reportUI?'<script src="/mock-impact-feedback.js"></script><script src="/swt-trait-review.js"></script><script src="/swt-mock-feedback.js"></script><script src="/mock-report-ui.js"></script>':''}<script src="/writing-lab-client.js"></script></body></html>`));
  app.use(express.static(path.join(root,'public')));
  const server=app.listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
  t.after(async()=>{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));});
@@ -323,19 +323,14 @@ for(const width of [1363,390,320])test('SWT review: exact corrections, drafts, s
  const page=await browser.newPage();await page.setViewport({width,height:900});let calls=0;const errors=[];
  page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(r.method()==='POST'&&/\/(?:grade|score)(?:\/|$)/.test(new URL(r.url()).pathname))calls++;});
  const original='Trees cool cities and improves air quality.';
- const correction={
-  corrected:'Trees cool cities and improve air quality.',
-  change:'Use “improve” with the plural subject “Trees”.',
-  anchor:'improves'
- };
+ const corrected='Trees cool cities and improve air quality.';
  const prewrittenSample='The expedition led Darwin to question whether species change over time.';
  await page.setRequestInterception(true);
  page.on('request',request=>{
   const path=new URL(request.url()).pathname;
   if(path.startsWith('/api/swt/sample/')&&request.method()==='POST')return request.respond({status:200,contentType:'application/json',body:JSON.stringify({status:'verified',sample:prewrittenSample})});
-  if(!path.startsWith('/api/swt/response-examples/'))return request.continue();
-  const body=JSON.parse(request.postData());
-  return request.respond({status:body.text===original&&body.passage?200:400,contentType:'application/json',body:JSON.stringify(correction)});
+  assert(!path.startsWith('/api/swt/response-examples/'),'The result uses saved correction evidence.');
+  return request.continue();
  });
  await page.goto(f.base);await page.type('#loginUsername',name);await page.type('#loginPassword',password);await page.locator('#loginSubmitBtn').click();await page.waitForFunction(()=>document.getElementById('appShell')?.style.display==='grid'&&document.getElementById('loadingVeil')?.classList.contains('hidden')&&swtPassageAt(1)!==null&&currentUserId==='swt-review-browser');
  async function show(extra={}){await page.evaluate((text,extra,prewritten)=>{
@@ -344,9 +339,12 @@ for(const width of [1363,390,320])test('SWT review: exact corrections, drafts, s
   showResults(d,p,null,text);showSwtScreen('swtResultsScreen');
  },original,extra,prewrittenSample);}
  await show();
- await page.waitForFunction(expected=>document.querySelector('[data-example-corrected]')?.textContent===expected,{},correction.corrected);
- assert.equal(await page.$('[data-example-sample]'),null);
- assert.match(await page.$eval('#swtResponseExamples',e=>e.textContent),/plural subject/);
+ await page.waitForFunction(expected=>document.querySelector('#swtResponseExamples .annotated-text')?.textContent===expected,{},corrected);
+ assert.equal(await page.$$eval('#traitBreakdown .swt-trait-tile',tiles=>tiles.length),5);
+ if(width>800){
+  await page.hover('#traitBreakdown details:nth-child(3) summary');
+  await page.waitForFunction(()=>document.querySelector('#traitBreakdown details:nth-child(3) .swt-trait-explanation')?.getBoundingClientRect().height>0);
+ }
  assert.equal(await page.$eval('#annotatedSubmission',e=>e.textContent),original);
  assert.equal(await page.$eval('#swtResponseExamples',e=>e.scrollWidth<=e.clientWidth+1),true);
  await page.locator('#swtResultsScreen button[onclick="compareSwtSample()"]').click();
@@ -354,8 +352,8 @@ for(const width of [1363,390,320])test('SWT review: exact corrections, drafts, s
  assert.equal(await page.$eval('#sampleAnswerText',e=>e.textContent),prewrittenSample);
  assert.equal(await page.$eval('#sampleAnswerNotes',e=>e.textContent),'The portal check gave this sample full marks.');
  await page.locator('#sbsTabSummary').click();
- assert.deepEqual(await page.$$eval('.swt-review-heading h2',els=>els.map(e=>e.textContent.replace(/^\d/,''))),['Content & meaning','Grammar & spelling','Form','Revise & practise']);
- await page.locator('[data-review-fix]').click();await page.waitForFunction(()=>!document.getElementById('swtReviewCorrection').hidden);assert.match(await page.$eval('#swtReviewCorrection',e=>e.textContent),/improves.*improve/);
+ assert.deepEqual(await page.$$eval('.swt-review-heading h2',els=>els.map(e=>e.lastChild.textContent)),['Content & meaning','Grammar & vocabulary','Form','Revise & practise']);
+ await page.locator('[data-submission-fix]').click();await page.waitForFunction(()=>!document.getElementById('swtReviewCorrection').hidden);assert.match(await page.$eval('#swtReviewCorrection',e=>e.textContent),/improves.*improve/);
  await page.focus('[data-review-fix]');await page.keyboard.press('Enter');assert.equal(await page.$eval('[data-review-fix]',e=>e.getAttribute('aria-expanded')),'true');
  await page.locator('[data-review-use]').click();await page.waitForFunction(()=>!document.getElementById('swtReviewEditor').hidden);
  assert.equal(await page.$eval('#swtReviewDraft',e=>e.value),'Trees cool cities and improve air quality.');assert.equal(await page.$eval('#annotatedSubmission',e=>e.textContent),original);
@@ -641,14 +639,18 @@ for(const width of [1363,390,320])test('SWT mock feedback: submitted Writing and
  f.attempts.set(id,attempt);const before=JSON.stringify(attempt),requests=[];page.on('request',r=>{if(r.method()==='POST')requests.push(new URL(r.url()).pathname);});
  await page.evaluate(id=>window.WritingLab.open({attemptId:id,tab:'mocks',module:'writing',requestId:'swt-mock-fixture'}),id);await page.waitForSelector('.ipt-mock-report');
  await page.click('[data-mock-tab="answers"]');await page.waitForSelector('#review-0 .swt-mock-feedback');
+ assert.equal(await page.$eval('#review-0 .swt-submitted-review',root=>root.firstElementChild.querySelector('.swt-submitted-text').textContent),source);
+ assert.equal(await page.$$eval('#review-0 .swt-submitted-columns .swt-submitted-card',cards=>cards.length),3);
  assert.equal(await page.$$eval('#review-0 .swt-mock-section',els=>els.length),3);assert.equal(await page.$('#review-0 textarea,#review-0 input,#review-0 select'),null);
  await page.click('#review-0 [data-swt-mock-fix]');assert.equal(await page.$eval('#review-0 [data-swt-mock-correction]',e=>e.open),true);assert.match(await page.$eval('#review-0 [data-swt-mock-correction]',e=>e.textContent),/plural verb/);
  await page.click('#review-0 [data-swt-mock-fix="1"]');assert.match(await page.$eval('#review-0 [data-swt-mock-correction="1"]',e=>e.textContent),/Delete this text.*Remove the unnecessary aside/);
  await page.focus('#review-0 [data-swt-mock-fix]');await page.keyboard.press('Enter');assert.equal(await page.$eval('#review-0 .swt-mock-feedback',e=>e.scrollWidth<=e.clientWidth+1),true);
  const swt=require('../public/swt-mock-feedback'),full=require('../public/full-mock-report');
- const item={id:'full-swt',number:1,type:'swt',section:'speaking-writing',label:'SWT',title:'Trees',status:'assessed',total:7,maximum:9,scores:native.scores,maxima:native.maxima,assessment:{label:'Assessed'},question:{text:source},reference:{answers:[],acceptedAnswers:[],turns:[],facts:[],sample:native.summary_assessment.repair},answer:[answer],recordings:[],recovered:[],feedback:{swt:swt.project(native,{confirmed:true,answer,source})},practice:{path:'#/swt',instruction:'Practise SWT.'}};
+ const item={id:'full-swt',number:1,type:'swt',section:'speaking-writing',label:'SWT',title:'Trees',status:'assessed',total:7,maximum:9,scores:native.scores,maxima:native.maxima,assessment:{label:'Assessed'},question:{text:source},reference:{answers:[],acceptedAnswers:[],turns:[],facts:[],sample:native.summary_assessment.repair},answer:[answer],recordings:[],recovered:[],feedback:{criteria:[{key:'grammar',feedback:'Use a plural verb.'}],swt:swt.project(native,{confirmed:true,answer,source})},practice:{path:'#/swt',instruction:'Practise SWT.'}};
  const html=full.review(item);await page.evaluate(html=>{const aside=document.createElement('aside');aside.id='full-swt-browser';aside.className='ipt-mock-report';aside.innerHTML=html;document.body.append(aside);},html);
  assert.equal(await page.$$eval('#full-swt-browser .swt-mock-section',els=>els.length),3);assert.equal(await page.$('#full-swt-browser textarea,#full-swt-browser input,#full-swt-browser select'),null);
+ assert.equal(await page.$eval('#full-swt-browser .swt-submitted-review',root=>root.firstElementChild.querySelector('.swt-submitted-text').textContent),source);
+ assert.equal(await page.$$eval('#full-swt-browser .swt-submitted-columns .swt-submitted-card',cards=>cards.length),3);
  await page.locator('#full-swt-browser [data-swt-mock-fix]').click();assert.equal(await page.$eval('#full-swt-browser [data-swt-mock-correction]',e=>e.open),true);
  assert.equal(await page.$eval('#full-swt-browser .swt-mock-feedback',e=>e.scrollWidth<=e.clientWidth+1),true);assert.equal(JSON.stringify(attempt),before);assert.deepEqual(requests,[],'Read-only feedback does not save, submit or reassess the mock');
  if(process.env.CI){const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.$eval('#full-swt-browser .swt-mock-feedback',e=>e.scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:path.join(root,'.cache','swt-mock-'+width+'.png')});}
@@ -753,8 +755,10 @@ for(const width of [1366,390])test('Writing workspace: question menus preserve d
  await page.locator('[data-writing-result="swt"]').click();await page.waitForSelector('#swtResultsScreen.active');assert.equal(await page.$eval('#annotatedSubmission',e=>e.textContent),original.text);assert.equal(await page.evaluate(()=>localAccountProgress().summaries[swtPassageStorageId()].text),draft);await page.evaluate(()=>backToPractice());await page.waitForSelector('#summaryInput',{visible:true});assert.equal(await page.$eval('#summaryInput',e=>e.value),draft);
  await page.locator('[data-writing-reattempt="swt"]').click();assert.equal(await page.$eval('#summaryInput',e=>e.value),'');assert.equal(await page.evaluate(()=>localAccountProgress().history[swtPassageStorageId()][0].overall_score),79);
  await page.evaluate(()=>{switchSection('practice');startNewPractice();});await page.waitForSelector('#practiceQuestionPicker');await page.locator('[data-essay-open]').click();if(await page.$('.essay-guide-dialog[open]'))await page.locator('[data-guide-continue]').click();await page.waitForSelector('#practiceEssayInput',{visible:true});
+ assert.equal(await page.$eval('.portal-layout-header',e=>getComputedStyle(e).display),'none');
  const essay='A current essay response should survive returning to its own question list.';await page.type('#practiceEssayInput',essay);await page.locator('[data-writing-return="essay"]').click();await page.waitForSelector('#practiceQuestionPicker',{visible:true});await page.locator('[data-essay-resume]').click();await page.waitForSelector('#practiceEssayInput',{visible:true});assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),essay);
  await page.evaluate(()=>{const id=practiceState.selectedQuestionId;savePracticeHistory([{id:'saved-example-essay',date:100,questionId:id,questionTitle:practiceState.questionTitle,questionText:practiceState.questionText,essayText:'A separate older essay answer.',scores:{total:18}}]);PracticeWritingWorkspace.refreshEssay();});await page.waitForSelector('[data-writing-result="essay"]');await page.locator('[data-writing-result="essay"]').click();await page.waitForFunction(()=>practiceState.view==='results'&&practiceState.currentAttempt.id==='saved-example-essay');assert.equal(await page.evaluate(()=>practiceState.currentAttempt.essayText),'A separate older essay answer.');
+ assert.equal(await page.$eval('.portal-layout-header',e=>getComputedStyle(e).display),'none');
  await page.locator('[data-writing-return="essay"]').click();await page.locator('[data-essay-resume]').click();await page.waitForSelector('#practiceEssayInput',{visible:true});assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),essay);
  await page.locator('[data-writing-reattempt="essay"]').click();assert.equal(await page.$eval('#practiceEssayInput',e=>e.value),'');assert.equal(await page.evaluate(()=>getPracticeHistory().find(a=>a.id==='saved-example-essay').scores.total),18);
  const fs=require('node:fs/promises');await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.screenshot({path:path.join(root,'.cache','practice-writing-'+width+'.png')});assert.deepEqual(grades,[]);assert.deepEqual(errors,[]);
@@ -768,10 +772,12 @@ for(const width of [1366,390])test('Reading workspace: all five task menus prese
  const snapshot=()=>page.evaluate(()=>AccountProgress.unpackReading(JSON.parse(localStorage.getItem(ReadingPractice.storageKey(currentUserId)))));
  for(const type of ['dropdown','mcma','reorder','wordbank','mcsa']){
   await page.evaluate(type=>switchSection('reading-'+type),type);await page.waitForSelector('#readingPane [data-practice-uid]',{visible:true});const uid=await page.$eval('#readingPane [data-practice-uid]',e=>e.dataset.practiceUid);await page.locator('#readingPane [data-practice-uid]').click();await page.waitForSelector('#readingPane .reading-practice-dock');const first=(await snapshot()).session.id;
+  assert.equal(await page.$eval('.portal-layout-header',e=>getComputedStyle(e).display),'none',type);
   assert.equal(await page.$eval('#readingPane .reading-nav',e=>e.hidden),true);assert.equal(await page.$eval('#readingPane .reading-practice-dock',e=>{const r=e.getBoundingClientRect(),p=document.getElementById('readingPane').getBoundingClientRect();return r.top>=p.top-1&&r.bottom<=p.bottom+1;}),true,'The complete action bar stays inside the pane after native heading focus');await page.locator('#readingPane .reading-practice-dock [data-action="home"]').click();await page.waitForSelector('#readingPane [data-practice-uid]',{visible:true});await page.locator('#readingPane [data-reading-resume="'+first+'"]').click();await page.waitForSelector('#readingPane .reading-practice-dock');assert.equal((await snapshot()).session.id,first);
   await page.locator('#readingPane .reading-practice-dock [data-action="retry-question"]').click();await page.waitForFunction(id=>JSON.parse(localStorage.getItem(ReadingPractice.storageKey(currentUserId))).session.id!==id,{},first);const fresh=(await snapshot()).session.id;assert((await snapshot()).drafts.some(a=>a.id===first));await page.locator('[data-saved-practice-attempt="'+first+'"]').click();await page.waitForFunction(id=>JSON.parse(localStorage.getItem(ReadingPractice.storageKey(currentUserId))).session.id===id,{},first);assert((await snapshot()).drafts.some(a=>a.id===fresh));
   if(type==='dropdown'){
    const q=(await snapshot()).session.questions[0];for(const [i,value] of q.answers.entries())await page.select('#readingPane [data-answer="'+i+'"]',value);await page.locator('#readingPane [data-action="submit"]').click();await page.waitForSelector('#readingPane [data-review-session]');const completed=(await snapshot()).history.find(a=>a.id===first);assert.equal(completed.earned,completed.possible);
+   assert.equal(await page.$eval('.portal-layout-header',e=>getComputedStyle(e).display),'none');
    await page.locator('#readingPane .reading-practice-dock [data-action="retry-question"]').click();await page.waitForSelector('#readingPane .reading-practice-submit');assert.equal((await snapshot()).history.find(a=>a.id===first).earned,completed.earned);await page.locator('[data-saved-practice-attempt="'+first+'"]').click();await page.waitForSelector('#readingPane [data-review-session]');assert.equal((await snapshot()).session.id,first);
   }
  }
