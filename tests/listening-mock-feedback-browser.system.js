@@ -29,12 +29,16 @@ async function fixture(t,width,admin){
 for(const width of [1363,390,320])for(const admin of [false,true])test('Saved SST feedback is visible without expanding details for '+(admin?'admin view':'student')+' at '+width+'px',{timeout:45000},async t=>{
  const f=await fixture(t,width,admin),{page}=f;
  await page.click('[data-mock-tab="answers"]');await page.click('[data-mock-filter="sst"]');
- await page.waitForSelector('#review-0 .sst-mock-feedback',{visible:true,timeout:3000});
- const feedback=await page.$eval('#review-0 .sst-mock-feedback',e=>({text:e.innerText,collapsed:!!e.closest('details:not([open])'),overflow:e.scrollWidth>e.clientWidth+1,heading:e.querySelector('h3')?.textContent}));
- assert.match(feedback.heading,/Spoken Text feedback/);assert.match(feedback.text,/design choices support/);assert.match(feedback.text,/Use the plural verb/);assert.match(feedback.text,/spelling of the two highlighted words/);assert.match(feedback.text,/Students also need/);assert.equal(feedback.collapsed,false);assert.equal(feedback.overflow,false);
- assert.equal(await page.$('#review-0 .sst-mock-feedback script'),null);
- const answer=await page.$eval('#review-0 .sst-saved-summary',e=>{const range=document.createRange(),start=e.textContent.indexOf('The lecture');range.setStart(e.firstChild,start);range.setEnd(e.firstChild,start+20);const body=range.getBoundingClientRect(),box=e.getBoundingClientRect();return {text:e.textContent,height:e.clientHeight,scrollHeight:e.scrollHeight,tabIndex:e.tabIndex,bodyStartVisible:body.top>=box.top&&body.bottom<=box.bottom,afterFeedback:!!(document.querySelector('#review-0 .sst-mock-feedback').compareDocumentPosition(e)&Node.DOCUMENT_POSITION_FOLLOWING)};});
- assert.equal(answer.text,f.saved.answers[0]);assert(answer.height<=340);assert(answer.bodyStartVisible,'Saved line breaks must not hide the beginning of the summary below a blank scroll area.');assert.equal(answer.tabIndex,0);assert(answer.afterFeedback);
+ await page.waitForSelector('#review-0 .sst-review-surface',{visible:true,timeout:3000});
+ const feedback=await page.$eval('#review-0 .sst-review-surface',e=>({text:e.innerText,collapsed:!!e.closest('details:not([open])'),overflow:e.scrollWidth>e.clientWidth+1,heading:e.querySelector('h3')?.textContent}));
+ assert.match(feedback.heading,/Spoken Text feedback/);assert.match(feedback.text,/Connect the design choices/);assert.match(feedback.text,/Students also need/);assert.equal(feedback.collapsed,false);assert.equal(feedback.overflow,false);
+ assert.equal(await page.$eval('#review-0 .sst-score-strip dd',node=>node.textContent),'7 / 12');
+ await page.click('#review-0 .sst-marking summary');
+ const marking=await page.$eval('#review-0 .sst-marking',node=>node.innerText);
+ assert.match(marking,/design choices support/);assert.match(marking,/Use the plural verb/);assert.match(marking,/spelling of the two highlighted words/);
+ assert.equal(await page.$('#review-0 .sst-review-surface script'),null);
+ const answer=await page.$eval('#review-0 .sst-saved-summary',e=>{const range=document.createRange(),start=e.textContent.indexOf('The lecture');range.setStart(e.firstChild,start);range.setEnd(e.firstChild,start+20);const body=range.getBoundingClientRect(),box=e.getBoundingClientRect();return {text:e.textContent,height:e.clientHeight,scrollHeight:e.scrollHeight,tabIndex:e.tabIndex,bodyStartVisible:body.top>=box.top&&body.bottom<=box.bottom,insideFeedback:!!e.closest('.sst-idea-feedback')};});
+ assert.equal(answer.text,f.saved.answers[0]);assert(answer.height<=340);assert(answer.bodyStartVisible,'Saved line breaks must not hide the beginning of the summary below a blank scroll area.');assert.equal(answer.tabIndex,0);assert(answer.insideFeedback);
  await fs.mkdir(path.join(root,'.cache'),{recursive:true});await page.$eval('#review-0',e=>e.scrollIntoView({block:'start',behavior:'instant'}));await page.screenshot({path:path.join(root,'.cache','sst-listening-answers-'+width+'-'+(admin?'admin':'student')+'.png')});
  await (await page.$('#review-0 .sst-saved-summary')).screenshot({path:path.join(root,'.cache','sst-listening-summary-'+width+'-'+(admin?'admin':'student')+'.png')});
  await page.focus('#review-0 .sst-saved-summary');if(answer.scrollHeight>answer.height){await page.keyboard.press('End');await page.waitForFunction(()=>document.querySelector('#review-0 .sst-saved-summary').scrollTop>0,{timeout:2000});}
@@ -69,6 +73,8 @@ test('SST idea feedback spans the review and opens full screen on desktop and mo
    const f=await fixture(child,width,false),{page}=f;
    const question=f.saved.questions[0];
    question.sstIdeas=[{main:'Explain the main message.',supporting:['Add relevant detail.']}];
+   const quote=question.text.split(' ').slice(0,6).join(' ');
+   question.sstHighlights=[[quote]];
    f.saved.results[0].sstCoverage={ideas:[{...question.sstIdeas[0],status:'missed'}],nextStep:'Connect the main message to the lecture.'};
    await page.reload();
    await page.waitForSelector('.ipt-mock-report');
@@ -83,6 +89,9 @@ test('SST idea feedback spans the review and opens full screen on desktop and mo
    assert(normal.fills);
    assert(!normal.overflows);
    assert.match(normal.text,/Missed/);
+   assert.equal(await page.$eval(panel+' .sst-transcript mark',node=>node.textContent),quote);
+   await page.click(panel+' [data-sst-passage="0"]');
+   await page.waitForFunction(()=>document.activeElement?.matches('.sst-transcript mark.sst-highlight-active'));
    await page.click(panel+' [data-sst-fullscreen]');
    await page.waitForFunction(()=>document.fullscreenElement?.matches('.sst-idea-feedback'));
    await page.waitForFunction(()=>document.fullscreenElement?.querySelector('[data-sst-fullscreen]')?.textContent==='Exit full screen');

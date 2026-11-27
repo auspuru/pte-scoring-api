@@ -145,6 +145,7 @@ const summaryProviderPins = require('../content/full-mock/summary-provider-compa
 const practiceProviderPins = require('../content/full-mock/practice-provider-compatible-pins.json');
 const sstCoachingPins = require('../content/full-mock/sst-coaching-compatible-pins.json');
 const swtReviewPins = require('../content/full-mock/swt-review-compatible-pins.json');
+const sstTranscriptReviewPins = require('../content/full-mock/sst-transcript-review-compatible-pins.json');
 function previousReviewedSnapshot(current, pins) {
   if (!Object.entries(pins.currentFiles).every(([name, sha]) => current.scoringSources.files[name]?.sha256 === sha)) return null;
   const sources = structuredClone(current.scoringSources);
@@ -156,6 +157,7 @@ function previousReviewedSnapshot(current, pins) {
   return { ...current, scoringSources:sources };
 }
 function previousRtsSnapshot(current) {
+  current = previousReviewedSnapshot(current, sstTranscriptReviewPins) ?? current;
   current = previousReviewedSnapshot(current, swtReviewPins) ?? current;
   current = previousReviewedSnapshot(current, sstCoachingPins) ?? current;
   current = previousReviewedSnapshot(current, SWT_VOCABULARY_UPGRADE) ?? current;
@@ -183,6 +185,8 @@ function compatibleTransportUpgrade(saved, current) {
   // Source projections preserve the frozen provider and model for each task.
   if (saved.configuration?.sst?.provider !== current.configuration.sst.provider
     || saved.configuration?.sst?.model !== current.configuration.sst.model) return false;
+  const beforeSstTranscriptReview = previousReviewedSnapshot(current, sstTranscriptReviewPins);
+  if (beforeSstTranscriptReview && (digest(saved) === digest(beforeSstTranscriptReview) || compatibleTransportUpgrade(saved, beforeSstTranscriptReview))) return true;
   const beforeSwtReview = previousReviewedSnapshot(current, swtReviewPins);
   if (beforeSwtReview && (digest(saved) === digest(beforeSwtReview) || compatibleTransportUpgrade(saved, beforeSwtReview))) return true;
   const beforeSstCoaching = previousReviewedSnapshot(current, sstCoachingPins);

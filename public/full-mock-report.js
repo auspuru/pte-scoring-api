@@ -42,10 +42,23 @@
   }
   function review(item) {
     const q = item.question, ref = item.reference, feedback = item.feedback;
-    const sstIdeas = item.type === 'sst' && feedback.sstCoverage
-      ? sstFeedback?.render({ ...feedback.sstCoverage, response:answerText(item, item.answer) }) || ''
-      : '';
     const audio = q.audio ? '<button type="button" class="portal-button" data-fm="review-media" data-kind="prompt" data-asset="' + esc(q.audio.id) + '">Load question audio</button><div id="fm-review-prompt"></div>' : '';
+    const sstReview = item.type === 'sst' && sstFeedback?.render({
+      ...feedback.sstCoverage,
+      response:answerText(item, item.answer),
+      transcript:ref.text,
+      highlights:ref.highlights,
+      scores:item.status === 'assessed' ? item.scores : undefined,
+      maxima:item.maxima,
+      total:item.status === 'assessed' ? item.total : undefined,
+      maximum:item.maximum,
+      criterionFeedback:Object.fromEntries(feedback.criteria.map(row => [
+        row.key, feedback.gated ? 'Review the task requirements.' : feedbackText(row.feedback)
+      ])),
+      status:item.status !== 'assessed' ? item.assessment.action || item.assessment.label
+        : feedback.gated ? 'Review the task requirements and your response.' : feedbackText(feedback.overview),
+      recordingHtml:audio
+    });
     const image = q.image ? '<button type="button" class="portal-button" data-fm="review-media" data-kind="image" data-asset="' + esc(q.image.id) + '">Load question image</button><div id="fm-review-image"></div>' : '';
     const recordings = item.recordings.map(row => '<div><button type="button" class="portal-button" data-fm="review-media" data-kind="recording" data-segment="' + esc(row.id) + '"' + (row.ready ? '' : ' disabled') + '>Load your recording ' + row.number + '</button>' + (row.reviewRequired ? '<p>Recording needs teacher review.</p>' : row.ready ? '' : '<p>Recording still uploading.</p>') + '<div id="fm-review-recording-' + esc(row.id) + '"></div></div>').join('');
     const source = q.text || q.passage || q.prompt;
@@ -61,21 +74,19 @@
       return header + '</header>' + swtFeedback.render(feedback.swt, Array.isArray(item.answer)?item.answer.join(' '):'', key,
         { passage:source||ref.text, instruction:q.instruction, sample:ref.teachingSample||ref.sample, plainSample:!!ref.teachingSample, traits }) + recovered + footer;
     }
-    return header + traitRow() + '</header>'
-      + (sstIdeas ? '' : question)
-      + (sstIdeas ? '' : '<section><h4>Your saved response</h4>' + (['ra','rs','di','rl','asq','sgd','rts'].includes(item.type) ? (recordings || '<p>No recording is available for this item.</p>') + (item.transcript ? '<h5>Automatic transcript</h5><p>Speech recognition can omit or replace words. Check this text against your recording.</p><div class="fm-review-text">' + esc(item.transcript) + '</div>' : '') : '<div class="fm-review-text">' + esc(answerText(item, item.answer)) + '</div>') + '</section>')
-      + sstIdeas
+    return header + (sstReview ? '' : traitRow()) + '</header>'
+      + (sstReview || question + '<section><h4>Your saved response</h4>' + (['ra','rs','di','rl','asq','sgd','rts'].includes(item.type) ? (recordings || '<p>No recording is available for this item.</p>') + (item.transcript ? '<h5>Automatic transcript</h5><p>Speech recognition can omit or replace words. Check this text against your recording.</p><div class="fm-review-text">' + esc(item.transcript) + '</div>' : '') : '<div class="fm-review-text">' + esc(answerText(item, item.answer)) + '</div>') + '</section>')
       + recovered
-      + '<section><h4>Feedback</h4><p>' + esc(feedback.gated ? 'Review the task requirements and your response.' : feedbackText(feedback.overview)) + '</p>' + (feedback.criteria.length ? '<div class="fm-table-wrap"><table class="fm-table"><thead><tr><th scope="col">Criterion</th><th scope="col">Marks</th><th scope="col">Feedback</th></tr></thead><tbody>' + feedback.criteria.map(row => '<tr><th scope="row">' + esc(row.label) + '</th><td>' + (row.earned==null?'Not assessed':row.earned + '/' + row.maximum) + '</td><td>' + esc(feedback.gated ? 'Review the task requirements.' : feedbackText(row.feedback)) + list(row.evidence) + (row.practiceWords.length ? '<p>Words to practise: ' + esc(row.practiceWords.join(', ')) + '.</p>' : '') + '</td></tr>').join('') + '</tbody></table></div>' : '')
+      + '<section>' + (sstReview ? '' : '<h4>Feedback</h4><p>' + esc(feedback.gated ? 'Review the task requirements and your response.' : feedbackText(feedback.overview)) + '</p>' + (feedback.criteria.length ? '<div class="fm-table-wrap"><table class="fm-table"><thead><tr><th scope="col">Criterion</th><th scope="col">Marks</th><th scope="col">Feedback</th></tr></thead><tbody>' + feedback.criteria.map(row => '<tr><th scope="row">' + esc(row.label) + '</th><td>' + (row.earned==null?'Not assessed':row.earned + '/' + row.maximum) + '</td><td>' + esc(feedback.gated ? 'Review the task requirements.' : feedbackText(row.feedback)) + list(row.evidence) + (row.practiceWords.length ? '<p>Words to practise: ' + esc(row.practiceWords.join(', ')) + '.</p>' : '') + '</td></tr>').join('') + '</tbody></table></div>' : ''))
       + (feedback.strengths.length ? '<h5>Strengths</h5>' + list(feedback.strengths) : '') + (feedback.improvements.length ? '<h5>Improvement areas</h5>' + list(feedback.improvements) : '')
       + (feedback.coverage.length ? '<h5>Content feedback</h5>' + feedback.coverage.map(row => '<p><strong>' + esc(row.status) + ':</strong> ' + esc(row.point) + (row.evidence ? ' · “' + esc(row.evidence) + '”' : '') + '<br>' + esc(row.feedback) + '</p>').join('') : '')
       + (feedback.corrections.length ? '<h5>Corrections</h5>' + list(feedback.corrections.map(row => '“' + row.phrase + '” → “' + row.correction + '”. ' + row.explanation)) : '')
       + (feedback.issues.length ? '<h5>Evidence and next changes</h5>' + feedback.issues.map(row => '<article class="fm-feedback-issue"><p><strong>' + esc(row.priority) + ' · ' + esc(row.trait) + '</strong></p><blockquote>' + esc(row.evidence) + '</blockquote><p>' + esc(row.explanation) + '</p><p>' + esc(row.suggestedChange) + '</p>' + '</article>').join('') : '')
       + (feedback.changes.some(row => row.kind !== 'correct') ? '<h5>Transcript differences</h5>' + list(feedback.changes.filter(row => row.kind !== 'correct').map(row => row.kind + ': ' + (row.expected || '(no reference word)') + ' → ' + (row.actual || '(omitted)'))) : '') + '</section>'
-      + (sstIdeas ? question : '')
       + '<details class="fm-reference"><summary>Reference, answer key and sample response</summary>' + (ref.answers.length ? '<h4>Answer key</h4><div class="fm-review-text">' + esc(answerText(item, ref.answers)) + '</div>' : '') + (ref.acceptedAnswers.length ? '<h4>Accepted short answers</h4>' + list(ref.acceptedAnswers) : '')
-      + (ref.explanation ? '<p>' + esc(ref.explanation) + '</p>' : '') + (ref.turns.length ? '<h4>Discussion transcript</h4>' + ref.turns.map(row => '<p><strong>' + esc(row[0]) + ':</strong> ' + esc(row[1]) + '</p>').join('') : ref.text && ref.text !== q.text ? '<h4>Reference text / transcript</h4><div class="fm-review-text">' + esc(ref.text) + '</div>' : '')
-      + (ref.facts.length ? '<h4>Reference ideas</h4>' + list(ref.facts) : '') + (ref.sample ? '<h4>Sample response</h4><div class="fm-review-text">' + esc(ref.sample) + '</div>' : '') + '</details>'
+      + (sstReview ? '<p>' + esc(q.instruction) + '</p>' : '')
+      + (ref.explanation ? '<p>' + esc(ref.explanation) + '</p>' : '') + (ref.turns.length ? '<h4>Discussion transcript</h4>' + ref.turns.map(row => '<p><strong>' + esc(row[0]) + ':</strong> ' + esc(row[1]) + '</p>').join('') : !sstReview && ref.text && ref.text !== q.text ? '<h4>Reference text / transcript</h4><div class="fm-review-text">' + esc(ref.text) + '</div>' : '')
+      + (ref.facts.length && !(sstReview && feedback.sstCoverage) ? '<h4>Reference ideas</h4>' + list(ref.facts) : '') + (ref.sample ? '<h4>Sample response</h4><div class="fm-review-text">' + esc(ref.sample) + '</div>' : '') + '</details>'
       + footer;
   }
   function selector(report, selected) {

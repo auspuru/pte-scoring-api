@@ -89,9 +89,14 @@ test('SST review shows transcript ideas and only coverage tied to the verified s
   let item = reports.buildReport(paper, state).items[index];
   assert.deepEqual(item.feedback.sstCoverage, { ideas:reviewed, nextStep:'Connect the main ideas.' });
   assert.equal(item.total, job.result.total);
+  assert.equal(item.reference.highlights.length, guide.length);
+  for (const quote of item.reference.highlights.flat()) assert.ok(item.reference.text.includes(quote));
+  assert.ok(item.reference.highlights.flat().length);
   const { document } = parseHTML(renderer.review(item));
   assert.match(document.body.innerHTML || document.toString(), /Key ideas from the transcript/);
   assert.match(document.toString(), /Connect the main ideas/);
+  assert.equal(document.querySelectorAll('[data-fm="review-media"][data-kind="prompt"]').length, 1);
+  assert.equal(document.querySelectorAll('#fm-review-prompt').length, 1);
   reviewed[0].evidence = 'invented phrase';
   item = reports.buildReport(paper, state).items[index];
   assert.deepEqual(item.feedback.sstCoverage, { ideas:guide });

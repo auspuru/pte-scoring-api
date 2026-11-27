@@ -743,10 +743,11 @@
     setMockMode(false);
     shell.classList.remove('exam-mode'); clearInterval(timer);
     const summary=report.summarize(attempt.questions,attempt.results,attempt), scored=summary.complete;
-    const scoreNote='Practice results.';
+    const sharedSstReview=attempt.kind==='sst' && window.SstFeedback?.render;
     const randomActions=attempt.practiceSet?'<button class="secondary" data-random-practice>Practice sets</button><button class="secondary" data-random-again>New random set</button>':null;
     const retry=practiceTypes.includes(attempt.kind) && attempt.questions.length===1 ? '<button class="primary" data-reattempt="'+esc(attempt.testId)+'">Reattempt this question</button>' : '';
-    let resultsHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div><div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?scoreNote:attempt.kind==='sst'?'Your practice feedback is ready below.':'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div><div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="overall-feedback"></div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map(renderReviewCard).join('')+'</section>';
+    const scores=sharedSstReview?'':'<div class="score-banner"><div class="score-total">'+(scored?summary.score90:'—')+'<small> / 90</small></div><div><h2>Practice estimate</h2><p>'+(scored?'Practice results.':attempt.kind==='sst'?'Your practice feedback is ready below.':'Your answers are submitted. Preparing your estimate…')+'</p></div></div><div class="task-scores">'+summary.byType.map(g=>'<div class="task-score"><span>'+esc(g.label)+'</span><strong>'+(g.score90==null?'—':g.score90)+'<small> / 90</small></strong><small>'+g.count+' question'+(g.count===1?'':'s')+(g.score90==null?' · Estimate pending':' · estimated score')+'</small></div>').join('')+'</div>';
+    let resultsHTML='<section class="results"><div class="results-header"><div><p class="eyebrow" style="color:#287e8a">Attempt complete</p><h2>'+esc(attempt.title)+'</h2><p class="muted">'+new Date(attempt.startedAt).toLocaleString()+' · Saved to '+esc(username)+'</p></div><div class="results-actions"><button class="secondary" data-tab="history">My attempts</button>'+retry+'</div></div>'+scores+'<div data-integrity-report>'+(window.PortalExamMode?.reportHTML?.(attempt.integrity)||'')+'</div><div id="overall-feedback"></div><div id="scoring-status" class="scoring-status"></div>'+attempt.questions.map(renderReviewCard).join('')+'</section>';
     if(attempt.kind==='mock'&&window.MockReportUI){
       const layout=window.MockReportUI,skill=attempt.module==='listening'?'Listening':'Writing';
       const taskFilters='<div class="ipr-section-tabs" role="group" aria-label="Filter answers by task"><button type="button" data-mock-filter="all" aria-pressed="true">All tasks</button>'+[...new Set(attempt.questions.map(q=>q.type))].map(type=>'<button type="button" data-mock-filter="'+esc(type)+'" aria-pressed="false">'+esc(report.labels[type])+'</button>').join('')+'</div>';
@@ -801,25 +802,67 @@
     }
     setTimeout(check,5000);
   }
-  function sstIdeasFeedback(q, result, response) {
-    const coverage = result && !report.needsReview(result,q) ? result.sstCoverage : null;
-    return window.SstFeedback?.render({ ideas:q.sstIdeas, ...coverage, response }) || '';
+  function sstFeedbackNotes(result, nextStep) {
+    const bullets=(title,items)=>items.length?'<h4>'+title+'</h4><ul>'+items.map(value=>'<li>'+esc(value)+'</li>').join('')+'</ul>':'';
+    const strengths = Array.isArray(result.strengths)?result.strengths.filter(textSstFeedback):[];
+    const improvements = Array.isArray(result.improvements)?result.improvements.filter(value=>textSstFeedback(value) && value !== nextStep):[];
+    const errors = Array.isArray(result.errors)?result.errors.filter(error=>textSstFeedback(error?.phrase) && typeof error.correction==='string'):[];
+    const corrections=errors.length?'<h4>Corrections</h4><ul>'+errors.map(error=>'<li><strong>'+esc(error.phrase)+'</strong> → '+esc(error.correction)+'<p>'+esc(error.explanation)+'</p></li>').join('')+'</ul>':'';
+    const evidence=Array.isArray(result.feedbackIssues)?result.feedbackIssues.map(issue=>'<article class="ipr-feedback-note"><h4>'+esc(issue.trait||'Feedback')+'</h4><blockquote>'+esc(issue.evidence?.essayQuote||issue.evidence?.promptQuote||'')+'</blockquote><p>'+esc(issue.explanation)+'</p><p>'+esc(issue.suggestedChange)+'</p></article>').join(''):'';
+    return bullets('What worked well',strengths)+bullets('What to improve',improvements)+corrections+evidence;
   }
-  function mockSstFeedback(q,i,context){
+  function textSstFeedback(value) {
+    return typeof value==='string'?value.trim():'';
+  }
+  function sstCriterionFeedback(result) {
+    return Object.fromEntries(Object.keys(result.maxima || {}).map(key=>[
+      key, textSstFeedback(result.feedback?.[key]) || textSstFeedback(result.rationale?.[key]) || 'No detailed feedback was saved for this criterion.'
+    ]));
+  }
+  function mockSstFeedback(q,i,context) {
     const r=attempt.results[i],id='sst-feedback-'+context+'-'+i;
     const heading='<h3 id="'+id+'">Summarise Spoken Text feedback · Question '+(i+1)+'</h3>';
-    const keyIdeas = sstIdeasFeedback(q,r,attempt.answers[i] || '');
-    if(!r||report.needsReview(r,q))return '<section class="sst-mock-feedback" aria-labelledby="'+id+'">'+heading+'<p role="status">Feedback is still being prepared. Your saved summary is retained.</p>'+keyIdeas+'</section>';
-    const text=value=>typeof value==='string'?value.trim():'';
-    const bullets=(title,items)=>Array.isArray(items)&&items.some(value=>text(value))?'<h4>'+title+'</h4><ul>'+items.filter(value=>text(value)).map(value=>'<li>'+esc(value)+'</li>').join('')+'</ul>':'';
-    const overview=text(r.overallVerdict)||text(r.overview);
-    const criteria='<dl class="sst-mock-criteria">'+Object.keys(r.maxima||{}).map(key=>'<div><dt>'+esc(labels[key]||key)+'</dt><dd>'+esc(text(r.feedback?.[key])||text(r.rationale?.[key])||'No detailed feedback was saved for this criterion.')+'</dd></div>').join('')+'</dl>';
-    const errors=Array.isArray(r.errors)?r.errors.filter(error=>text(error?.phrase)&&typeof error.correction==='string'):[];
-    const corrections=errors.length?'<h4>Corrections</h4><ul>'+errors.map(error=>'<li><strong>'+esc(error.phrase)+'</strong> → '+esc(error.correction)+'<p>'+esc(error.explanation)+'</p></li>').join('')+'</ul>':'';
-    const evidence=Array.isArray(r.feedbackIssues)?r.feedbackIssues.map(issue=>'<article class="ipr-feedback-note"><h4>'+esc(issue.trait||'Feedback')+'</h4><blockquote>'+esc(issue.evidence?.essayQuote||issue.evidence?.promptQuote||'')+'</blockquote><p>'+esc(issue.explanation)+'</p><p>'+esc(issue.suggestedChange)+'</p></article>').join(''):'';
-    return '<section class="sst-mock-feedback" aria-labelledby="'+id+'">'+heading+keyIdeas+(overview?'<p>'+esc(overview)+'</p>':'')+(r.gated&&Array.isArray(r.reasons)?'<p>'+esc(r.reasons.join(' '))+'</p>':'')+criteria+bullets('What worked well',r.strengths)+bullets('What to improve',r.improvements)+corrections+evidence+(context==='overview'?'<button type="button" class="secondary" data-mock-jump="review-'+i+'">Open your response</button>':'')+'</section>';
+    const jump=context==='overview'?'<button type="button" class="secondary" data-mock-jump="review-'+i+'">Open your response</button>':'';
+    if(!r||report.needsReview(r,q))return '<section class="sst-mock-feedback" aria-labelledby="'+id+'">'+heading+'<p role="status">Feedback is still being prepared. Your saved summary is retained.</p>'+jump+'</section>';
+    const overview=textSstFeedback(r.overallVerdict)||textSstFeedback(r.overview);
+    const criteria='<dl class="sst-mock-criteria">'+Object.entries(sstCriterionFeedback(r)).map(([key, feedback])=>'<div><dt>'+esc(labels[key]||key)+'</dt><dd>'+esc(feedback)+'</dd></div>').join('')+'</dl>';
+    return '<section class="sst-mock-feedback" aria-labelledby="'+id+'">'+heading+(overview?'<p>'+esc(overview)+'</p>':'')+(r.gated&&Array.isArray(r.reasons)?'<p>'+esc(r.reasons.join(' '))+'</p>':'')+criteria+sstFeedbackNotes(r)+jump+'</section>';
+  }
+  function sstReviewCard(q,i) {
+    const result=attempt.results[i], confirmed=!!result&&!report.needsReview(result,q), mock=attempt.kind==='mock';
+    const coverage=confirmed?result.sstCoverage:null;
+    const ideas=coverage?.ideas||q.sstIdeas;
+    const nextStep=coverage?.nextStep||(confirmed&&Array.isArray(result.improvements)?result.improvements.find(textSstFeedback):'');
+    const response=attempt.answers[i]||'', id='sst-feedback-answer-'+i;
+    let status='';
+    if(!confirmed)status=attempt.assessmentStatus==='unavailable'
+      ? 'The AI estimate is currently unavailable. Your practice feedback is ready.'
+      : 'Feedback is still being prepared. Your saved summary is retained.';
+    else if(result.gated)status='This response did not meet the scoring requirement.'+(Array.isArray(result.reasons)&&result.reasons.length?' '+result.reasons.join(' '):'');
+    else if(result.sstCoveragePending)status='Preparing feedback on the main ideas. Your result and summary are saved.';
+    const feedback=window.SstFeedback.render({
+      ideas,nextStep,response,transcript:q.text,highlights:q.sstHighlights,
+      scores:confirmed?result.scores:undefined,maxima:confirmed?result.maxima:undefined,
+      total:confirmed?result.total:undefined,maximum:confirmed?result.maximum:undefined,
+      criterionFeedback:confirmed?sstCriterionFeedback(result):undefined,status,
+      recordingHtml:q.audioUrl?'<audio controls src="'+esc(q.audioUrl)+'" preload="none" aria-label="Listen to the recording"></audio>':''
+    });
+    if(!feedback)return reviewCard(q,i);
+    const estimate=!mock&&confirmed?'<strong>Estimate '+esc(report.itemEstimate(q,result))+'/90</strong>':'';
+    const form=mock?'':sstPracticeFeedback(q,result);
+    const unclassified=mock&&!ideas?.length?sstTranscriptPoints(q.keyPoints):'';
+    const notes=confirmed?sstFeedbackNotes(result,nextStep):'';
+    const overview=confirmed?textSstFeedback(result.overallVerdict)||textSstFeedback(result.overview):'';
+    const sample=q.teachingSample||q.sample;
+    return '<article class="review-card ipr-question-card" id="review-'+i+'" tabindex="-1" data-mock-question-type="sst"><header class="review-top"><div>'+
+      '<p class="ipr-eyebrow">'+(mock?'Question '+(i+1)+' · ':'')+esc(report.labels.sst)+'</p><h2>'+esc(q.title)+'</h2></div>'+estimate+'</header>'+
+      '<p class="muted">'+count(response)+' words · '+esc(attempt.completed[i]?.reason||'Submitted')+'</p>'+
+      '<section class="sst-review-surface" aria-labelledby="'+id+'"><h3 id="'+id+'">Summarise Spoken Text feedback</h3>'+feedback+form+unclassified+
+      (overview&&overview!==nextStep?'<p>'+esc(overview)+'</p>':'')+notes+'</section>'+
+      (sample?'<details><summary>View sample summary</summary><div class="response sample">'+esc(sample)+'</div></details>':'')+'</article>';
   }
   function renderReviewCard(q,i) {
+    if (q.type==='sst' && window.SstFeedback?.render) return sstReviewCard(q,i);
     if (attempt.kind !== 'mock' || q.type !== 'swt' || !window.SwtMockFeedback) return reviewCard(q,i);
     const r = attempt.results[i], answer = attempt.answers[i] || '', key = 'writing-' + i;
     const confirmed = !!r && !report.needsReview(r,q);
@@ -841,18 +884,19 @@
       ? '<strong>SWT item estimate '+esc(report.itemEstimate(q,r))+'/90</strong>' : '';
     return '<article class="review-card ipr-question-card" id="review-'+i+'" tabindex="-1" data-mock-question-type="'+esc(q.type)+'"><header class="review-top"><div><p class="ipr-eyebrow">Question '+(i+1)+' · '+esc(report.labels[q.type])+'</p><h2>'+esc(q.title)+'</h2></div>'+swtEstimate+'</header>'+traits+(q.type==='sst'?mockSstFeedback(q,i,'answer'):'')+'<h3>Question</h3>'+question+content+(q.type==='wfd'&&listeningTasks?.wordDiff?listeningTasks.wordDiff(q.text,attempt.answers[i]):'')+(q.type==='wfd'&&Array.isArray(r?.wordFeedback)?'<h3>Sentence check</h3><div class="word-feedback">'+r.wordFeedback.map(word=>'<span class="'+(word.correct?'word-correct':'word-missed')+'">'+esc(word.word)+'</span>').join(' ')+'</div>':'')+(q.type==='sst'?'':q.type==='swt'&&window.SwtMockFeedback?window.SwtMockFeedback.render(window.SwtMockFeedback.project(r||{},{confirmed:!!r&&!report.needsReview(r,q),answer:attempt.answers[i]||'',source:q.text||''}),attempt.answers[i]||'','writing-'+i):(r?'<div class="feedback-box"><h3>Feedback</h3><p>'+esc(r.gated?'Review the task requirements and your saved response.':r.overallVerdict||r.overview||r.feedback?.content||'Review the saved feedback and compare your response with the reference.')+'</p></div>'+bullets('What worked well',r.strengths)+bullets('What to improve',r.improvements)+criteria+(r.errors?.length?'<h3>Corrections</h3><ul>'+r.errors.map(error=>'<li><strong>'+esc(error.phrase)+'</strong> → '+esc(error.correction)+'<p>'+esc(error.explanation)+'</p></li>').join('')+'</ul>':''):''))+'<details><summary>'+(audioQuestion(q)?'Transcript and key points':'Question and key points')+'</summary><div class="response">'+esc(q.text)+'</div>'+bullets('Key points',q.keyPoints)+'</details><details><summary>'+(q.type==='wfd'?'Correct sentence':q.teachingSample?'Plain-English sample':'Sample response')+'</summary><div class="response">'+esc(q.teachingSample||q.sample||q.text||'')+'</div></details></article>';
   }
+  function sstTranscriptPoints(raw) {
+    const ideas=Array.isArray(raw)?raw.filter(textSstFeedback):[];
+    return ideas.length?'<h3>Transcript points</h3><p>Summarise the key ideas in your own words.</p><ul>'+
+      ideas.map(idea=>'<li>'+esc(idea)+'</li>').join('')+'</ul>':'';
+  }
   function sstPracticeFeedback(q, result) {
     if (attempt.kind !== 'sst' || q.type !== 'sst') return '';
     const local = attempt.practiceFeedback;
     const form = local?.form;
-    const ideas = (local?.transcriptIdeas || q.keyPoints || []).filter(idea => typeof idea === 'string' && idea.trim());
     const formFeedback = form && !result ? '<p>Form check '+esc(form.score)+'/'+esc(form.maximum)+' · '+esc(local.wordCount)+' words.</p>'+
       (form.reasons?.length ? '<p>'+esc(form.reasons.join(' '))+'</p>' : '') : '';
-    const reviewed = sstIdeasFeedback(q,result,attempt.answers[0] || '');
-    const transcriptPoints = !reviewed && ideas.length ? '<h3>Transcript points</h3><p>Summarise the key ideas in your own words.</p><ul>'+
-      ideas.map(idea=>'<li>'+esc(idea)+'</li>').join('')+'</ul>' : '';
-    const basicFeedback = formFeedback || transcriptPoints ? '<section class="feedback-box">'+formFeedback+transcriptPoints+'</section>' : '';
-    return reviewed + basicFeedback;
+    const transcriptPoints = !window.SstFeedback?.render || !q.sstIdeas?.length ? sstTranscriptPoints(local?.transcriptIdeas || q.keyPoints) : '';
+    return formFeedback || transcriptPoints ? '<section class="feedback-box">'+formFeedback+transcriptPoints+'</section>' : '';
   }
   function reviewCard(q,i) {
     if(attempt.kind==='mock'&&window.MockReportUI)return mockReviewCard(q,i);
