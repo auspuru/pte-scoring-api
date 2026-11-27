@@ -192,7 +192,7 @@ function installWritingLab(app, { pool, directory, verifyToken, getAccount, call
   const recovery = require('./writing-lab-recovery').createRecovery({store,now,isConfirmed:(a,i)=>!!a.results[i]&&!retryableResult(a.results[i],a.questions[i],a)});
   const sstReassessment = require('./writing-lab-sst-reassessment').createRunner({store,now,
     model:process.env.CLAUDE_MODEL||'claude-haiku-4-5-20251001',
-    score:(question,answer)=>scoring.grade(question,answer,historicalSstModel,{sstCoaching:false}),
+    score:(question,answer)=>scoring.grade(question,answer,historicalSstModel,{sstCoaching:false,sstVocabularyAccuracy:false}),
     onComplete:(uid,attempt)=>reviewer.ensure(uid,attempt)});
   // A submitted answer is immutable. Assess outside the answer-save transaction,
   // and share the same job with the results page to avoid duplicate model calls.

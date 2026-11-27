@@ -29,7 +29,7 @@ test('Question selection preserves native graders, models, weights and timing; f
     'swt-plain-samples.js', 'content/swt-plain-samples.json', 'swt-feedback-evidence.js'];
   const swtRevisions = ['swt-judge-format.js', 'swt-judgment-service.js', 'swt-reference.js', 'swt-scoring-policy.js', 'mock-content-assessment.js'];
   const transportRevisions = ['mock-content-provider.js'];
-  const sstCoachingAdditions = ['content/sst-idea-guide.json', 'sst-coverage.js', 'sst-idea-guide.js'];
+  const sstCoachingAdditions = ['content/sst-idea-guide.json', 'sst-coverage.js', 'sst-idea-guide.js', 'sst-vocabulary-policy.js'];
   const sstTranscriptReviewAdditions = ['content/sst-highlight-guide.json', 'sst-highlight-guide.js'];
   const lock = require('../content/full-mock/scoring-lock.json').snapshot;
   // Instructor publication adds an explicitly pinned support controller;

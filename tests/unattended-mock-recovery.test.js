@@ -49,6 +49,11 @@ test('Available-mark policy is exactly pinned and its legacy adapter projects to
  // that the historical adapter is exactly the previously deployed revision.
  assert.equal(sha(source),require('../content/full-mock/scoring-lock.json').snapshot.files['full-mock/adapters.js'].sha256);
  const project=(from,to='')=>{assert(source.includes(from),'Expected available-marks projection');source=source.replace(from,to);};
+ const sstVocabularyPins=require('../content/full-mock/sst-vocabulary-compatible-pins.json');
+ project(', sstVocabularyAccuracy = true');
+ project('writing.grade(q, text, writingContentModel, {sstVocabularyAccuracy})','writing.grade(q, text, writingContentModel)');
+ project(', {sstCoaching,sstVocabularyAccuracy}',', {sstCoaching}');
+ assert.equal(sha(source),sstVocabularyPins.previousFiles['full-mock/adapters.js'].sha256);
  const beforeSwt=require('../content/full-mock/swt-policy-previous-sources.json').files;
  const coachingPins=require('../content/full-mock/sst-coaching-compatible-pins.json');
  project(`  if (RUBRICS[q.type]?.gates?.some(key => scores[key] === 0)) {
@@ -179,6 +184,24 @@ function quietRecording(recording) {
  assert.equal(sha(read('speaking-scoring.js')),scoringLock.files['speaking-scoring.js'].sha256);
  assert.equal(sha(read('situation-content-policy.js')),baseline.files['situation-content-policy.js'].sha256);
  source=read('writing-lab-scoring.js');
+ project("const sstVocabulary = require('./sst-vocabulary-policy');\n");
+ project(', {sstVocabularyAccuracy=true} = {}');
+ project("${q.type === 'sst' && sstVocabularyAccuracy ? sstVocabulary.GUIDANCE : 'Vocabulary 2 appropriate range, 1 limited or imprecise, 0 seriously defective.'}", 'Vocabulary 2 appropriate range, 1 limited or imprecise, 0 seriously defective.');
+ project(', {sstVocabularyAccuracy=true} = {}');
+ project(`  const vocabulary = q.type === 'sst' && sstVocabularyAccuracy ? sstVocabulary.assess(raw.errors) : null;
+  if (vocabulary) scores.vocabulary = vocabulary.score;
+  const errors = (vocabulary?.errors ?? raw.errors).map(e => ({ phrase: e.phrase, correction: e.correction, explanation: e.explanation,
+    ...(vocabulary && e.trait === 'vocabulary' ? { trait: 'vocabulary', affectsScore: true } : {}) }));`,
+ '  const errors = raw.errors.map(e => ({ phrase: e.phrase, correction: e.correction, explanation: e.explanation }));');
+ project(' ...(vocabulary && !gated ? { vocabulary: vocabulary.feedback } : {}),');
+ project('    ...(vocabulary ? { vocabularyPolicyVersion: sstVocabulary.VERSION } : {}),\n');
+ project(',sstVocabularyAccuracy=true');
+ project("q.type==='sst'&&sstVocabularyAccuracy ? 2 : lang.vocabulary", 'lang.vocabulary');
+ project(', sstVocabularyAccuracy = true');
+ project('buildPrompt(q, text, {sstVocabularyAccuracy})', 'buildPrompt(q, text)');
+ project('normalize(q, text, raw, {sstVocabularyAccuracy})', 'normalize(q, text, raw)');
+ project(', sstVocabularyAccuracy }', ' }');
+ assert.equal(sha(source),sstVocabularyPins.previousFiles['writing-lab-scoring.js'].sha256);
  project("const { annotationEvidence } = require('./swt-feedback-evidence');\n");
  project(`    errors:['grammar','vocabulary'].flatMap(trait=>assessment[trait+'_annotations'].flatMap(item=>{
       const evidence=annotationEvidence(text,item);

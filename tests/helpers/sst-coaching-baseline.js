@@ -5,6 +5,7 @@ const { digest } = require('../../full-mock/paper');
 const pins = require('../../content/full-mock/sst-coaching-compatible-pins.json');
 const swtReviewPins = require('../../content/full-mock/swt-review-compatible-pins.json');
 const sstTranscriptReviewPins = require('../../content/full-mock/sst-transcript-review-compatible-pins.json');
+const sstVocabularyPins = require('../../content/full-mock/sst-vocabulary-compatible-pins.json');
 
 function restoreSnapshot(current, snapshotPins) {
   const snapshot = structuredClone(current);
@@ -16,7 +17,8 @@ function restoreSnapshot(current, snapshotPins) {
   return snapshot;
 }
 
-const sstTranscriptReviewBaseline = current => restoreSnapshot(current, sstTranscriptReviewPins);
+const sstVocabularyBaseline = current => restoreSnapshot(current, sstVocabularyPins);
+const sstTranscriptReviewBaseline = current => restoreSnapshot(sstVocabularyBaseline(current), sstTranscriptReviewPins);
 const swtReviewBaseline = current => restoreSnapshot(sstTranscriptReviewBaseline(current), swtReviewPins);
 const sstCoachingBaseline = current => restoreSnapshot(swtReviewBaseline(current), pins);
-module.exports = { sstCoachingBaseline, swtReviewBaseline, sstTranscriptReviewBaseline };
+module.exports = { sstCoachingBaseline, swtReviewBaseline, sstTranscriptReviewBaseline, sstVocabularyBaseline };
