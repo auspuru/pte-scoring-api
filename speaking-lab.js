@@ -39,11 +39,15 @@ function question(q,reveal=false) {
 }
 function present(a) {
   const q=attemptQuestion(a),shown=question(q,a.status==='submitted');
+  const result=azureResult(a);
+  if(q.type==='rs'&&a.status==='submitted'&&result&&!result.changes&&a.transcript?.trim()) {
+    result.changes=scoring.repeatAlignment(q.text,a.transcript).changes;
+  }
   if(q.type==='rts'&&!shown.audioUrl)shown.audioUrl='/api/speaking/attempts/'+a.id+'/prompt';
   return {practiceMode:a.practiceMode||'timed',id:a.id,questionId:a.questionId,status:a.status,startedAt:a.startedAt,transcript:a.transcript||'',revision:a.revision||0,
     recording:a.recording?{mime:a.recording.mime,bytes:Buffer.byteLength(a.recording.data,'base64')}:null,
     assessment:a.assessment||null,
-    transcribed:!!a.transcription,result:azureResult(a),question:shown};
+    transcribed:!!a.transcription,result,question:shown};
 }
 function attemptQuestion(a){
   const q=diReferences.forAttempt(a,rtsPrompts.forAttempt(a,bank.questions.find(q=>q.id===a.questionId)));

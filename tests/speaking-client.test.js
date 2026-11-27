@@ -36,7 +36,7 @@ function harness({includePredictions=false,audioCue=false}={}) {
     if(parts[2]==='transcribe'){if(env.rejectTranscription)return reply({error:'Transcription unavailable'},false);a.transcript=bank.questions.find(q=>q.id===a.questionId).text;a.transcription=a.transcript;a.revision++;}
     if(parts[2]==='submit'){
       if(!a.transcript&&env.rejectTranscription)return reply({error:'Automatic transcription is temporarily unavailable.'},false);
-      if(!a.transcript){a.transcript=bank.questions.find(q=>q.id===a.questionId).text;a.transcription=a.transcript;a.revision++;}
+      if(!a.transcript){a.transcript=env.recognizedTranscript??bank.questions.find(q=>q.id===a.questionId).text;a.transcription=a.transcript;a.revision++;}
       a.status='submitted';a.result={total:3,maximum:3,overview:'Content checked.',scoringMode:env.contentFallback?'local':'ai',strengths:[],improvements:['Review with your teacher.'],deliveryVersion:'test-delivery'};if(env.contentUnavailable)a.result={...a.result,total:null,scoringMode:'unavailable',score_provisional:true,contentStatus:'unavailable'};
     }
     return reply(present(a));
@@ -170,13 +170,20 @@ test('Preparation expiry opens the microphone automatically without a second cli
 });
 
 test('Repeat Sentence hides the transcript prompt, plays once automatically, then records and submits automatically',async()=>{
-  const h=harness();await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.tick(5000);await flush();
+  const h=harness();h.env.recognizedTranscript=bank.questions.find(q=>q.id==='rs-1').text.replace('remain ','');
+  await h.controller.open('rs');await h.click({speakingQuestion:'rs-1'});h.tick(5000);await flush();
   assert.doesNotMatch(h.host.innerHTML,/university library will remain/);
   assert.equal(h.audio.length,1);assert.equal(h.nodes.get('speaking-phase').textContent,'Listening');assert.equal(h.recorders.length,0);
   h.audio[0].onended();assert.equal(h.recorders[0].state,'recording');
   h.tick(15001);await flush();
   const a=[...h.attempts.values()][0];assert.equal(a.status,'submitted');assert.match(h.host.innerHTML,/Content checked/);
   assert(h.requests.some(r=>r.url.endsWith('/submit')));
+  assert.match(h.host.innerHTML,/data-repeat-review/);
+  assert.match(h.host.innerHTML,/<mark class="speaking-repeat-mark">remain<\/mark>/);
+  assert.match(h.host.innerHTML,/<h4>Words you missed<\/h4><p>remain<\/p>/);
+  assert.match(h.host.innerHTML,/aria-label="Hear original sentence"/);
+  assert(h.host.innerHTML.includes(h.env.recognizedTranscript));
+  assert.doesNotMatch(h.host.innerHTML,/View full word-by-word comparison|Sample response/);
 });
 
 test('Audio-prompt tasks show Skip preparation only after the prompt has finished',async()=>{
@@ -274,6 +281,7 @@ test('Assessment failure preserves the saved recording and offers Retry assessme
  h.tick(15001);await flush();
  const a=[...h.attempts.values()][0];assert(a.recording);assert.equal(a.status,'draft');assert.equal(h.nodes.get('speaking-assess-retry').hidden,false);
  assert.match(h.host.innerHTML,/recording is saved/i);
+ assert.doesNotMatch(h.host.innerHTML,/Words you missed|data-repeat-review/);
  h.env.rejectTranscription=false;await h.click({speakingAction:'submit'});await flush();assert.equal(a.status,'submitted');assert.match(h.host.innerHTML,/Your result/);
 });
 
