@@ -1,0 +1,29 @@
+{
+  "previousDigest": "59bda3f47fea97b7a601594b80d5e50ead9c344aa0a59d746d943ee8ac751fd5",
+  "previousFiles": {
+    "full-mock/adapters.js": {
+      "sha256": "9224adc19550c9d0fe4070c967f3a6c5fc55e647ee8cbe4dc1c23e3771300db5",
+      "version": "full-mock-adapters-2026-10-29.2"
+    },
+    "full-mock/assessment.js": {
+      "sha256": "f3bd471cfea82ec0c5952c0349d52a10ba27d46e25e2d10c6e8c6a50bbc8f59d",
+      "version": "full-mock-assessment-2026-10-29.1"
+    },
+    "full-mock/rubrics.js": {
+      "sha256": "1ebfc26486b16b2940a607b80132841601e8a28f5c5d91e7a574c56d4d8eb6c9",
+      "version": null
+    },
+    "writing-lab-scoring.js": {
+      "sha256": "2792c4560f026554171a22b0bc69f90565f0ec34286ab0a1850983a8848b4f6f",
+      "version": "exam-practice-2026-10-09.1"
+    },
+    "sst-vocabulary-policy.js": null
+  },
+  "currentFiles": {
+    "full-mock/adapters.js": "82a49f25ac07a8a808512c1ba8dd9b2a6eb9c33ac752c4be8156033075f5a08c",
+    "full-mock/assessment.js": "a4de766d337cd2cb920d7bd5b816685d65917d993cc746ab0495e2de682940ad",
+    "full-mock/rubrics.js": "9ce2d2f46db283e63efd091a4589f8720df48636267078ee93c37d2449eb58e0",
+    "writing-lab-scoring.js": "477e83d947aa9bd1b57861273c88f4868502faabe8ed6ee47ae39ef35d68d5ea",
+    "sst-vocabulary-policy.js": "c38956ed7aee403d2de440d200719c3492b36abdbfb06b8a3b67cfb1bfbfd184"
+  }
+}

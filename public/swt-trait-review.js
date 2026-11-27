@@ -6,7 +6,7 @@
 })(typeof globalThis==='undefined'?this:globalThis,function(){
   'use strict';
   const traits = [
-    ['content','Content','Combine the main ideas into a short, accurate summary that shows how they relate.'],
+    ['content','Content','Include the key ideas and show how they connect. Leaving out a minor example can still earn full marks. Missing a key idea can lower your score. If a missing cause, contrast or condition changes the main claim, Content can drop to 2/4 or lower.'],
     ['form','Form','Write one complete sentence of 5–75 words.'],
     ['grammar','Grammar','Use correct sentence structure and make each verb agree with its subject.'],
     ['vocabulary','Vocabulary','Choose words that fit the meaning. Simple words and accurate terms from the passage are fine.']

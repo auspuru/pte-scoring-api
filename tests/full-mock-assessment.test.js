@@ -230,6 +230,50 @@ function snapshotBeforePracticeIndex(current) {
   return snapshot;
 }
 
+for (const useNewPolicy of [true, false]) test(`Full Mock uses the ${useNewPolicy ? 'current' : 'frozen'} SST vocabulary rules`, async t => {
+  const prompts = [];
+  const writing = adapters.createAdapters({ writingContentModel: async prompt => {
+    prompts.push(prompt);
+    return {
+      scores:{content:4, form:2, grammar:2, vocabulary:1, spelling:2}, formInvalid:false, formReason:'',
+      feedback:{content:'Clear summary.', form:'Full form marks.', grammar:'Correct grammar.', vocabulary:'Limited range.', spelling:'Correct spelling.'},
+      strengths:['Summarises the main points.'], improvements:['Review your choice of words.'], errors:[]
+    };
+  } });
+  const f = await fixture(t, { adapters: { assess: async (q, response, options) => {
+    if (q.type !== 'sst') return full(q);
+    assert.equal(options.legacyDelivery, false);
+    assert.equal(options.sstVocabularyAccuracy, useNewPolicy);
+    return writing.assess(q, response, options);
+  } } });
+  const original = useNewPolicy ? f.engine.snapshot : require('./helpers/sst-coaching-baseline').sstVocabularyBaseline(f.engine.snapshot);
+  const { stateFor } = require('../full-mock/assessment');
+  const { inputHash } = require('../full-mock/aggregation');
+  const index = paper.questions.findIndex(({question}) => question.type === 'sst');
+  const { id, question } = paper.questions[index];
+  let confirmed;
+  await f.store.update('alice', f.id, state => {
+    state.assessment = { ...stateFor(original), status:'needs-attention', run:1 };
+    state.responses[index + 1].answer = [question.sample];
+    const first = paper.questions[0];
+    confirmed = {
+      status:'assessed', inputHash:inputHash(state.responses[1]), snapshotHash:state.assessment.snapshotHash,
+      result:full(first.question), assessedAt:1000
+    };
+    state.assessment.items[first.id] = confirmed;
+    return state;
+  });
+
+  await f.engine.request('alice', f.id, { retry:true });
+  await f.engine.drain();
+  const { assessment } = await f.state();
+  assert.equal(prompts.length, 1);
+  assert.equal(prompts[0].includes('Vocabulary 2 appropriate word choice'), useNewPolicy);
+  assert.equal(assessment.items[id].result.scores.vocabulary, useNewPolicy ? 2 : 1);
+  assert.deepEqual(assessment.items[paper.questions[0].id], confirmed);
+  assert.deepEqual(assessment.snapshot, original);
+});
+
 test('SST transcript review accepts the exact prior Full Mock snapshot and rejects report-source drift', async t => {
   const f = await fixture(t);
   const snapshot = require('./helpers/sst-coaching-baseline').sstTranscriptReviewBaseline(f.engine.snapshot);

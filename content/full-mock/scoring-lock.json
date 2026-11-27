@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "d723aa82795bcaa373c69239457d675b6a848108",
+  "baseCommit": "9df83ae071807f1d382fd66b44a2aa44f752363d",
   "checkedAt": "2026-11-27",
-  "scope": "SST report layout and submitted-only transcript highlights. Frozen Full Mock attempts retain their assessment versions and confirmed marks.",
+  "scope": "SST vocabulary uses accuracy and appropriateness for new assessments. Frozen Full Mock attempts retain their assessment versions and confirmed marks.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
@@ -112,7 +112,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "9224adc19550c9d0fe4070c967f3a6c5fc55e647ee8cbe4dc1c23e3771300db5",
+        "sha256": "82a49f25ac07a8a808512c1ba8dd9b2a6eb9c33ac752c4be8156033075f5a08c",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -128,7 +128,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "f3bd471cfea82ec0c5952c0349d52a10ba27d46e25e2d10c6e8c6a50bbc8f59d",
+        "sha256": "a4de766d337cd2cb920d7bd5b816685d65917d993cc746ab0495e2de682940ad",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -164,7 +164,7 @@
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
-        "sha256": "1ebfc26486b16b2940a607b80132841601e8a28f5c5d91e7a574c56d4d8eb6c9",
+        "sha256": "9ce2d2f46db283e63efd091a4589f8720df48636267078ee93c37d2449eb58e0",
         "version": null
       },
       "full-mock/session.js": {
@@ -264,6 +264,10 @@
         "sha256": "7d85a34bcccf818e4827eecd63d22ad1d3479ce8aed2308def4342341a65f338",
         "version": null
       },
+      "sst-vocabulary-policy.js": {
+        "sha256": "c38956ed7aee403d2de440d200719c3492b36abdbfb06b8a3b67cfb1bfbfd184",
+        "version": "sst-vocabulary-accuracy-1"
+      },
       "swt-feedback-evidence.js": {
         "sha256": "4c1f7410fb1d2f691589da984a145afb98880bbf938ab23845e53e188899f5c0",
         "version": null
@@ -297,7 +301,7 @@
         "version": "20.3.18"
       },
       "writing-lab-scoring.js": {
-        "sha256": "2792c4560f026554171a22b0bc69f90565f0ec34286ab0a1850983a8848b4f6f",
+        "sha256": "477e83d947aa9bd1b57861273c88f4868502faabe8ed6ee47ae39ef35d68d5ea",
         "version": "exam-practice-2026-10-09.1"
       }
     }

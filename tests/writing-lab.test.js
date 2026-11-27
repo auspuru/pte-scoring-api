@@ -108,12 +108,12 @@ test('SST practice keeps a saved fallback pending and recovers automatically fro
   await service.recover();
   await service.waitForJobs();
   const result = (await get(suffix)).results[0];
-  assert.equal(result.total, 8);
+  assert.equal(result.total, 9);
   assert.equal(result.feedback.grammar, feedback.grammar);
   const reopened = await get(suffix);
   assert.equal(reopened.answers[0], answer);
   assert.deepEqual(reopened.results[0], result);
-  assert.equal((await get('')).find(a => a.id === id).score90, 63);
+  assert.equal((await get('')).find(a => a.id === id).score90, 70);
   assert.equal((await post(suffix + '/score/0')).status, 200);
   assert.equal(calls, 3);
 
@@ -185,8 +185,8 @@ test('A substantial SST sentence cannot be erased by an unsupported fragment for
     return calls===1?invalid:{...invalid,scores:{...invalid.scores,form:2},formInvalid:false,formReason:''};
   });
   assert.equal(calls,2);
-  assert.deepEqual(result.scores,{content:1,form:2,grammar:0,vocabulary:1,spelling:0});
-  assert.equal(result.total,4);
+  assert.deepEqual(result.scores,{content:1,form:2,grammar:0,vocabulary:2,spelling:0});
+  assert.equal(result.total,5);
   assert.equal(result.gated,false);
   const unresolved=await policy.grade(q,text,async()=>invalid);
   assert.equal(unresolved.score_provisional,true);

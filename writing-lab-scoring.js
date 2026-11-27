@@ -7,6 +7,7 @@ const { POLICY_VERSION: SWT_POLICY_VERSION, SYNTHESIS_GUIDANCE, SYNTHESIS_CONTEN
 const report = require('./public/writing-lab-report');
 const { sstIdeas, coveragePrompt, reviewCoverage } = require('./sst-coverage');
 const localEngine = require('./local-scoring-engine');
+const sstVocabulary = require('./sst-vocabulary-policy');
 const essayPolicy = require('./public/essay-scoring');
 const ESSAY_MAXIMUM = Object.values(essayPolicy.MAXIMA).reduce((sum, value) => sum + Number(value || 0), 0);
 const { assessEssay } = require('./essay-assessment-service');
@@ -57,7 +58,7 @@ function calibrationText(type) {
   return items.length ? '\n' + items.join('\n\n') + '\n' : '';
 }
 
-function buildPrompt(q, text) {
+function buildPrompt(q, text, {sstVocabularyAccuracy=true} = {}) {
   const form = formFor(q.type, text);
   const taskRules = q.type === 'swt'
     ? 'SUMMARISE WRITTEN TEXT: exactly ONE complete sentence of 5–75 words. Form is out of ONE point, so 1/1 is FULL marks. A concise 25–45-word sentence can earn full content and form. For Content 4, relevant main ideas, useful support and any necessary conclusion must be concisely combined with clear relationships. Useful phrase or clause changes can be sufficient; do not check whether the summary is completely paraphrased. Content 3 can reflect a minor omission, vague connection, repetition or unnecessary detail; Content 2 can reflect an effortful chain of poorly selected excerpts. Retain appropriate names, technical terms and source phrases. Five synonym substitutions do not automatically improve Content, and source overlap alone never proves poor synthesis. Quote the actual weakness and recommend one achievable revision. Never ask for two or three sentences, extra paragraphs, or a minimum of 50 words. Do not confuse this task with spoken-text summaries or essays. A main clause with subordinate clauses or semicolons is one sentence. Do not classify a complete concise sentence as a fragment or thesis-only form failure.'
@@ -70,14 +71,14 @@ ${q.type === 'swt' ? SYNTHESIS_GUIDANCE : ''}
 
 Type: ${q.type}. Integer trait maxima: ${JSON.stringify(MAXIMA[q.type])}. Word count: ${form.count}. Computed length/form score: ${form.score}/${MAXIMA[q.type].form}.
 Content: assess accurate meaning, main ideas, synthesis and relevance; credit valid paraphrases, not keyword counts. Distinguish essential ideas from optional detail. Summary content: 4 comprehensive and coherent, 3 good with minor omissions, 2 partial, 1 disconnected or limited, 0 no understanding. Essay content: 6 developed response to all requirements, 4–5 mostly convincing, 2–3 incomplete or thin, 1 minimal, 0 off-topic. Require an opinion only when the prompt asks for one.
-Grammar 2 accurate structure, 1 errors without obstructing meaning, 0 obstructed meaning. Vocabulary 2 appropriate range, 1 limited or imprecise, 0 seriously defective. Spelling: 2 no errors, 1 one error, 0 multiple errors; accept established English spelling variants. Essay linguistic range and coherence each 0–6, from inaccessible/disconnected to varied, precise and smoothly organised.
+Grammar 2 accurate structure, 1 errors without obstructing meaning, 0 obstructed meaning. ${q.type === 'sst' && sstVocabularyAccuracy ? sstVocabulary.GUIDANCE : 'Vocabulary 2 appropriate range, 1 limited or imprecise, 0 seriously defective.'} Spelling: 2 no errors, 1 one error, 0 multiple errors; accept established English spelling variants. Essay linguistic range and coherence each 0–6, from inaccessible/disconnected to varied, precise and smoothly organised.
 Set formInvalid=false and formReason="" when the supplied form passes. Only override it for an incomplete sentence (SWT) or a response entirely composed of very short disconnected fragments (SST/essay). If you set formInvalid=true, scores.form MUST be 0 and formReason MUST identify the precise structural defect. Brevity within the allowed range, missing supporting detail, stylistic preferences and ordinary grammar slips are NEVER form failures. Missing content belongs under Content.
 Give specific concise feedback for every trait, up to 3 strengths and up to 3 actionable improvements. Do not invent errors, citations, plagiarism findings, or compulsory details. Errors must quote exact substrings of the response. Include minor errors as light corrections, separately from optional stylistic advice. Do not penalise valid template scaffolding itself; judge the actual substance. Your score and feedback must agree.
 For SWT only, also return synthesis: {"quality":"effective|assembly|partial|limited|fragments","evidence":"exact response substring","explanation":"specific explanation of relevant selection, connections and useful phrase changes"}. Small useful changes can be sufficient. Quote the actual weakness and identify an achievable improvement. Show the useful part of the passage and how to shorten or connect it in simple English. Prefer a local cut or replacement near 75 words, and check that the result remains one sentence of 5–75 words. Keep synthesis separate from language errors.
 Schema: {"scores":{each required trait:integer},"formInvalid":false,"formReason":"","feedback":{each trait:"specific short explanation"},"strengths":["..."],"improvements":["..."],"errors":[{"phrase":"exact response substring","correction":"...","explanation":"..."}]${q.type === 'swt' ? ',"synthesis":{"quality":"effective|assembly|partial|limited|fragments","evidence":"...","explanation":"..."}' : ''}}
 DATA: ${JSON.stringify({ prompt: q.text, mainIdeas: q.keyPoints, response: text })}`;
 }
-function normalize(q, text, raw) {
+function normalize(q, text, raw, {sstVocabularyAccuracy=true} = {}) {
   if (!raw || !raw.scores || !raw.feedback || typeof raw.formInvalid !== 'boolean') throw Error('Incomplete scoring response');
   const maxima = MAXIMA[q.type], scores = {};
   for (const [key, max] of Object.entries(maxima)) {
@@ -105,7 +106,10 @@ function normalize(q, text, raw) {
     || typeof e.correction !== 'string' || typeof e.explanation !== 'string')) {
     throw Error('Invalid scoring evidence');
   }
-  const errors = raw.errors.map(e => ({ phrase: e.phrase, correction: e.correction, explanation: e.explanation }));
+  const vocabulary = q.type === 'sst' && sstVocabularyAccuracy ? sstVocabulary.assess(raw.errors) : null;
+  if (vocabulary) scores.vocabulary = vocabulary.score;
+  const errors = (vocabulary?.errors ?? raw.errors).map(e => ({ phrase: e.phrase, correction: e.correction, explanation: e.explanation,
+    ...(vocabulary && e.trait === 'vocabulary' ? { trait: 'vocabulary', affectsScore: true } : {}) }));
   const reasons = [...form.reasons];
   if (raw.formInvalid) reasons.push(raw.formReason);
   if (!scores.content) reasons.push('The response does not adequately address the source or prompt.');
@@ -114,12 +118,13 @@ function normalize(q, text, raw) {
   const total = Object.values(scores).reduce((a,b) => a+b,0), maximum = Object.values(maxima).reduce((a,b) => a+b,0);
   const improvements = raw.improvements.filter(x => typeof x === 'string' && x.trim()).slice(0,3);
   if (total < maximum && !improvements.length && !reasons.length) throw Error('Missing improvement advice');
-  const feedback = { ...raw.feedback, form: reasons.length ? reasons.join(' ') : `${form.count} words. Form: ${scores.form}/${maxima.form}.` };
+  const feedback = { ...raw.feedback, ...(vocabulary && !gated ? { vocabulary: vocabulary.feedback } : {}), form: reasons.length ? reasons.join(' ') : `${form.count} words. Form: ${scores.form}/${maxima.form}.` };
   if (synthesis && synthesis.quality !== 'effective' && !feedback.content.includes(synthesis.explanation)) {
     feedback.content += ' ' + synthesis.explanation;
   }
   return { version: q.type === 'swt' ? SWT_POLICY_VERSION : VERSION, assessmentType: 'AI practice assessment', scores, maxima, total, maximum, wordCount: form.count, gated, reasons,
     ...(q.type === 'swt' ? {itemScore90:itemScore90(scores.content,total), source_identity:swtQuestionSourceIdentity(q)} : {}),
+    ...(vocabulary ? { vocabularyPolicyVersion: sstVocabulary.VERSION } : {}),
     ...(q.type === 'sst' && raw.scoringProvider === 'openai' ? {scoringProvider:raw.scoringProvider,scoringModel:raw.scoringModel} : {}),
     ...(synthesis ? { summary_assessment: { synthesis }, full_content_eligible: !gated && scores.content === 4 && synthesis.quality === 'effective' } : {}),
     feedback,
@@ -140,12 +145,12 @@ function localLanguage(q, text) {
   const spelling=maxima.spelling == null ? null : 2;
   return {form,grammar,vocabulary,spelling};
 }
-function localGrade(q,text,{reason='AI assessment unavailable'}={}) {
+function localGrade(q,text,{reason='AI assessment unavailable',sstVocabularyAccuracy=true}={}) {
   if(q.type==='essay') throw new Error('Essay scoring is available only through the unified essay engine.');
   if(q.type==='wfd') return gradeDictation(q,text);
   const maxima=MAXIMA[q.type], lang=localLanguage(q,text);
   if(!lang.form.score) return {...zeroResult(q.type,text,lang.form.reasons),assessmentType:'Local practice assessment',scoringMode:'local',fallbackReason:reason,score_provisional:false};
-  const scores={content:localContentScore(q,text),form:lang.form.score,grammar:lang.grammar,vocabulary:lang.vocabulary};
+  const scores={content:localContentScore(q,text),form:lang.form.score,grammar:lang.grammar,vocabulary:q.type==='sst'&&sstVocabularyAccuracy ? 2 : lang.vocabulary};
   if(maxima.spelling!=null)scores.spelling=lang.spelling;
   if (!scores.content) return { ...zeroResult(q.type,text,['The response does not adequately address the source or prompt.']),
     assessmentType:'Local practice assessment',scoringMode:'local',fallbackReason:reason,score_provisional:true,
@@ -214,7 +219,7 @@ async function gradeUnifiedSwt(q, text, judge, {legacy=false, policyVersion} = {
     }))};
 }
 
-async function grade(q, text, call, { propagateProviderErrors = false, sstCoaching = true } = {}) {
+async function grade(q, text, call, { propagateProviderErrors = false, sstCoaching = true, sstVocabularyAccuracy = true } = {}) {
   const objective = require('./listening-scoring').grade(q,text);
   if(objective)return objective;
   if (q.type === 'essay') return gradeUnifiedEssay(q, text, call);
@@ -234,17 +239,17 @@ async function grade(q, text, call, { propagateProviderErrors = false, sstCoachi
   }
   let error;
   for (let i = 0; i < 2; i++) {
-    const prompt = buildPrompt(q, text) + coveragePrompt(ideas) + (i ? '\nVALIDATION RETRY: '+error.message+'. Return all required fields with valid exact response quotations. For SWT, one complete sentence within 5–75 words earns FULL Form 1/1; never require multiple sentences.' : '');
+    const prompt = buildPrompt(q, text, {sstVocabularyAccuracy}) + coveragePrompt(ideas) + (i ? '\nVALIDATION RETRY: '+error.message+'. Return all required fields with valid exact response quotations. For SWT, one complete sentence within 5–75 words earns FULL Form 1/1; never require multiple sentences.' : '');
     let raw;
     try { raw = await call(prompt); }
     catch (e) { if (propagateProviderErrors) throw e; error = e; continue; }
     try {
-      const result = normalize(q, text, raw);
+      const result = normalize(q, text, raw, {sstVocabularyAccuracy});
       const sstCoverage = reviewCoverage(ideas, text, raw?.sstCoverage);
       return sstCoverage ? { ...result, sstCoverage } : result;
     } catch (e) { error = e; }
   }
-  return localGrade(q, text, { reason: error?.message || 'AI assessment unavailable' });
+  return localGrade(q, text, { reason: error?.message || 'AI assessment unavailable', sstVocabularyAccuracy });
 }
 function gradeDictation(q, text) {
   const expected = report.tokens(q.text), answer = report.tokens(text);

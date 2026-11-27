@@ -146,6 +146,7 @@ const practiceProviderPins = require('../content/full-mock/practice-provider-com
 const sstCoachingPins = require('../content/full-mock/sst-coaching-compatible-pins.json');
 const swtReviewPins = require('../content/full-mock/swt-review-compatible-pins.json');
 const sstTranscriptReviewPins = require('../content/full-mock/sst-transcript-review-compatible-pins.json');
+const sstVocabularyPins = require('../content/full-mock/sst-vocabulary-compatible-pins.json');
 function previousReviewedSnapshot(current, pins) {
   if (!Object.entries(pins.currentFiles).every(([name, sha]) => current.scoringSources.files[name]?.sha256 === sha)) return null;
   const sources = structuredClone(current.scoringSources);
@@ -157,6 +158,7 @@ function previousReviewedSnapshot(current, pins) {
   return { ...current, scoringSources:sources };
 }
 function previousRtsSnapshot(current) {
+  current = previousReviewedSnapshot(current, sstVocabularyPins) ?? current;
   current = previousReviewedSnapshot(current, sstTranscriptReviewPins) ?? current;
   current = previousReviewedSnapshot(current, swtReviewPins) ?? current;
   current = previousReviewedSnapshot(current, sstCoachingPins) ?? current;
@@ -185,6 +187,8 @@ function compatibleTransportUpgrade(saved, current) {
   // Source projections preserve the frozen provider and model for each task.
   if (saved.configuration?.sst?.provider !== current.configuration.sst.provider
     || saved.configuration?.sst?.model !== current.configuration.sst.model) return false;
+  const beforeSstVocabulary = previousReviewedSnapshot(current, sstVocabularyPins);
+  if (beforeSstVocabulary && (digest(saved) === digest(beforeSstVocabulary) || compatibleTransportUpgrade(saved, beforeSstVocabulary))) return true;
   const beforeSstTranscriptReview = previousReviewedSnapshot(current, sstTranscriptReviewPins);
   if (beforeSstTranscriptReview && (digest(saved) === digest(beforeSstTranscriptReview) || compatibleTransportUpgrade(saved, beforeSstTranscriptReview))) return true;
   const beforeSwtReview = previousReviewedSnapshot(current, swtReviewPins);
@@ -1020,8 +1024,9 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
           const value = await assessWithSnapshot(activeAdapters, state, q, response, { recording, previous: stages, run: state.assessment.run,
             describeImagePolicy:state.assessment.snapshot.configuration.speakingContent.describeImagePolicy,
             deliveryPolicy:state.assessment.snapshot.configuration.delivery.version, ...(availableMarks(state)?{completionPolicy:COMPLETION_POLICY}:{}),
-            legacyDelivery:![currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256, sstCoachingPins.previousFiles['full-mock/adapters.js']?.sha256, SWT_VOCABULARY_UPGRADE.previousFiles['full-mock/adapters.js']?.sha256, PREVIOUS_SWT_SOURCES.files['full-mock/adapters.js'].sha256, require('../content/full-mock/di-number-context-previous-sources.json').files['full-mock/adapters.js'].sha256].includes(state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256),
+            legacyDelivery:![currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256, sstVocabularyPins.previousFiles['full-mock/adapters.js']?.sha256, sstCoachingPins.previousFiles['full-mock/adapters.js']?.sha256, SWT_VOCABULARY_UPGRADE.previousFiles['full-mock/adapters.js']?.sha256, PREVIOUS_SWT_SOURCES.files['full-mock/adapters.js'].sha256, require('../content/full-mock/di-number-context-previous-sources.json').files['full-mock/adapters.js'].sha256].includes(state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256),
             sstCoaching:!!state.assessment.snapshot.scoringSources.files['sst-coverage.js'],
+            sstVocabularyAccuracy:!!state.assessment.snapshot.scoringSources.files['sst-vocabulary-policy.js'],
             legacySwt: ![PREVIOUS_SWT_VERSION, currentSnapshot.scoringSources.files['swt-scoring-policy.js']?.version].includes(swtPolicyVersion),
             swtPolicyVersion,
             checkpoint: value => persist({ status: 'processing', stages: value }) });
