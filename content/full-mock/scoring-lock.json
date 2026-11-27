@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "f10a80fed0810d43f9b5f61e5d6e20e15e8e8c82",
-  "checkedAt": "2026-11-26",
+  "baseCommit": "9db3ff924926981314feddc9bf5626a6add40ec8",
+  "checkedAt": "2026-11-27",
   "scope": "SST main-idea coaching and report presentation. Existing rubric, numeric gates, historical provider routing and confirmed results remain pinned.",
   "snapshot": {
     "schemaVersion": 1,
@@ -108,7 +108,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "ff605f0194eb79ea5e7f8be7516c334fd9d981ef212993f0976f1801efbaac42",
+        "sha256": "9224adc19550c9d0fe4070c967f3a6c5fc55e647ee8cbe4dc1c23e3771300db5",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -124,7 +124,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "ccd3b3ee9131cc6bfd56c7148326e19a8cc223b318f34204f02c2c5a706114ab",
+        "sha256": "f5cd018b962889694abd08374c46a37b92009b98b4b1631c0c5ca40dd1a8f1ca",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -156,7 +156,7 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "3c0ac0029af37d09e0e7674de2643a0f256f4fd6dda9f32c7516181a058e3f87",
+        "sha256": "d9b623a9cebe13d36e8c247ede100a02d30010ef621ca1392a1614ce3c8a6f3a",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
@@ -189,7 +189,7 @@
         "version": null
       },
       "mock-content-assessment.js": {
-        "sha256": "fd62e92be6612ebb670515489836ad0d62ed9ed501ed839b603ca654bb524a2a",
+        "sha256": "09a8c0fde76c8866ef36857ace5663941bc6c58ac0b55c15356d5b44052d0c08",
         "version": null
       },
       "mock-content-provider.js": {
@@ -217,7 +217,7 @@
         "version": null
       },
       "server.js": {
-        "sha256": "c009be57e4c8ef37d14d8f7989f02fa34fe416c7f00ebe4b552a3733a9420fdc",
+        "sha256": "69109e0c5285c75e9d6f8ecbda586e21df30677de55525ba8f1658d218c4cf68",
         "version": null
       },
       "situation-content-policy-developed.js": {
@@ -265,7 +265,7 @@
         "version": null
       },
       "swt-judgment-service.js": {
-        "sha256": "d1a1d56026388d92ae93aac4f73f8fa7721d7be630e97d56e048781f6e97c037",
+        "sha256": "57a6b6c0905d92b9dc5e23733f11d06681c92fc521d2397f322aaa315884f163",
         "version": null
       },
       "swt-legacy-policy.js": {
@@ -281,11 +281,11 @@
         "version": null
       },
       "swt-scoring-policy.js": {
-        "sha256": "d8aa3656629cd44e54782774ab5ec0de7afd0d44980573448e6b4d636140c47f",
-        "version": "20.3.17"
+        "sha256": "f2cb16c7fc1d2958880a284bb2f28bb582365495f6ea0d587e6f62b77952cb8a",
+        "version": "20.3.18"
       },
       "writing-lab-scoring.js": {
-        "sha256": "c53724d72a3ce27bc75ea0d3d6789d8a4c6e5c22f9c313cc3a19da8d708dc13e",
+        "sha256": "5299c6c2eff1e0f8dd689cf89a92e0daebfb847dfb66de8ecd98650b491115fa",
         "version": "exam-practice-2026-10-09.1"
       }
     }

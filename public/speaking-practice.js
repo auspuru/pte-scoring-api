@@ -122,9 +122,9 @@
       rememberClock();cacheDraft();if(attempt?.status==='draft'&&!busy)saveTranscript().catch(()=>{});
       visible=false;serial++;clearAudio();if(['preparing','listening','loading-prompt','lead-in','ready','cue','permission'].includes(phase))phase='idle';
     }
-    function chrome(content) {
+    function chrome(content, repeatReview=false) {
       const locked=!!(busy||navigationPending||uploadBlob||phase==='saving'||phase==='recording');
-      imageViewer.close();host.innerHTML='<div class="speaking-workspace practice-studio" '+(attempt?'data-practice-question':'')+'>'+studio.navigation('speaking','speaking-'+activeType,{disabled:locked})+'<div class="practice-studio-content"><p id="speaking-notice" role="status" aria-live="polite">'+esc(notice)+'</p>'+(!attempt?'<section class="practice-studio-library">'+content+'</section>':content)+'</div><dialog id="speaking-image-dialog" class="speaking-image-viewer" aria-label="Full-size question image"></dialog></div>';
+      imageViewer.close();host.innerHTML='<div class="speaking-workspace practice-studio" '+(attempt?'data-practice-question':'')+(repeatReview?' data-repeat-review':'')+'>'+studio.navigation('speaking','speaking-'+activeType,{disabled:locked})+'<div class="practice-studio-content"><p id="speaking-notice" role="status" aria-live="polite">'+esc(notice)+'</p>'+(!attempt?'<section class="practice-studio-library">'+content+'</section>':content)+'</div><dialog id="speaking-image-dialog" class="speaking-image-viewer" aria-label="Full-size question image"></dialog></div>';
       images.bindFallback(host);
       host.onclick=click;host.oninput=e=>{if(e.target.id==='speaking-search'){filters().search=e.target.value;filters().page=0;renderLibraryList();}else cacheDraft();};host.onchange=change;
     }
@@ -259,8 +259,42 @@
         if(saved)await resume(saved.id);else await start(target.id);
       }catch(e){message(e.message);}finally{navigationPending=false;refreshControls();}
     }
+    function repeatSentenceReview(q, result) {
+      const transcript=attempt.transcript.trim();
+      const reference=q.reference||'';
+      const changes=transcript&&Array.isArray(result?.changes)?result.changes:[];
+      const expected=changes.filter(change=>change.kind!=='insertion');
+      const words=[...reference.matchAll(/[\p{L}\p{N}]+(?:['’‘][\p{L}]+)*/gu)];
+      const aligned=words.length&&words.length===expected.length&&words.every(([word],i)=>
+        word.toLowerCase().replace(/[’‘]/g,"'")===expected[i].expected);
+      const missed=[];
+      const replacements=[];
+      let original=esc(reference);
+      if(aligned){
+        let end=0;
+        original=words.map(({0:word,index},i)=>{
+          const before=esc(reference.slice(end,index));
+          end=index+word.length;
+          const change=expected[i];
+          if(change.kind==='omission')missed.push(word);
+          if(change.kind==='replacement')replacements.push(word+' (heard “'+change.actual+'”)');
+          return before+(change.kind==='omission'||change.kind==='replacement'
+            ?'<mark class="speaking-repeat-mark">'+esc(word)+'</mark>':esc(word));
+        }).join('')+esc(reference.slice(end));
+      }
+      const extras=aligned?changes.filter(change=>change.kind==='insertion').map(change=>change.actual):[];
+      return '<section class="speaking-card speaking-repeat-review" aria-label="Repeat Sentence feedback">'
+        +'<div class="speaking-repeat-transcripts"><section><h3>Original sentence</h3><p>'+ (original||'Original sentence unavailable.')+'</p>'
+        +(q.audioUrl?'<audio controls preload="none" aria-label="Hear original sentence" src="'+esc(q.audioUrl)+'"></audio>':'')
+        +'</section><section><h3>Your transcript</h3><p>'+ (transcript?esc(transcript):'Transcript unavailable. Listen to your response audio below.')+'</p></section></div>'
+        +(aligned?'<div class="speaking-repeat-differences"><h4>Words you missed</h4><p>'+esc(missed.length?missed.join(', '):'No omitted words.')+'</p>'
+          +(replacements.length?'<h4>Words heard differently</h4><p>'+esc(replacements.join(', '))+'</p>':'')
+          +(extras.length?'<h4>Extra words</h4><p>'+esc(extras.join(', '))+'</p>':'')+'</div>':'')
+        +'</section>';
+    }
     function render() {
       if(!attempt)return;const q=attempt.question,r=attempt.result,submitted=attempt.status==='submitted'&&attempt.assessment?.status!=='pending';
+      const repeatReview=submitted&&q.type==='rs';
       const number=catalog.questions.filter(item=>item.type===q.type).findIndex(item=>item.id===q.id)+1;
       const examPanel=!submitted
         ? '<section class="speaking-card speaking-exam-panel">'
@@ -271,15 +305,15 @@
           +'</section>'
         : '';
       const review=submitted
-        ? '<div class="speaking-card speaking-recording-card"><div class="speaking-section-head"><div><span class="speaking-kicker">Recording</span><h3>Your response audio</h3></div>'+(catalog.deliveryAssessmentAvailable?'<span class="speaking-provider-badge">Audio assessment enabled</span>':'')+'</div><div id="speaking-playback"></div>'+(catalog.deliveryAssessmentAvailable?'<p class="speaking-footnote">Your saved audio can be checked for pronunciation and oral fluency. Scores are independent practice estimates, not Pearson scores.</p>':'<p class="speaking-footnote">Pronunciation and oral fluency are currently available for teacher review only.</p>')+'</div>'
+        ? (repeatReview?repeatSentenceReview(q,r):'')+'<div class="speaking-card speaking-recording-card"><div class="speaking-section-head"><div><span class="speaking-kicker">Recording</span><h3>Your response audio</h3></div>'+(catalog.deliveryAssessmentAvailable?'<span class="speaking-provider-badge">Audio assessment enabled</span>':'')+'</div><div id="speaking-playback"></div>'+(catalog.deliveryAssessmentAvailable?'<p class="speaking-footnote">Your saved audio can be checked for pronunciation and oral fluency. Scores are independent practice estimates, not Pearson scores.</p>':'<p class="speaking-footnote">Pronunciation and oral fluency are currently available for teacher review only.</p>')+'</div>'
           +'<section class="speaking-card speaking-result-card">'+(r?feedback(r):'<div class="speaking-empty-result"><span class="speaking-kicker">Assessment</span><h3>Feedback is pending</h3><p>Your response is saved. Retry the assessment when ready.</p><button class="portal-button primary" data-speaking-action="submit">Retry assessment</button></div>')+'</section>'
-          +'<details class="speaking-card speaking-collapsible"><summary><span><span class="speaking-kicker">Transcript</span><strong>Your response</strong></span><span aria-hidden="true">⌄</span></summary><p>'+esc(attempt.transcript||'No response supplied.')+'</p></details>'
-          +'<details class="speaking-card speaking-collapsible speaking-sample"><summary><span><span class="speaking-kicker">Reference</span><strong>Sample response</strong></span><span aria-hidden="true">⌄</span></summary><p>'+esc(q.sample)+'</p>'+(q.reference&&!['ra','rts'].includes(q.type)?'<details class="speaking-inner-details"><summary>Prompt transcript</summary><p>'+esc(q.reference).replace(/\n/g,'<br>')+'</p></details>':'')+'</details>'
+          +(repeatReview?'':'<details class="speaking-card speaking-collapsible"><summary><span><span class="speaking-kicker">Transcript</span><strong>Your response</strong></span><span aria-hidden="true">⌄</span></summary><p>'+esc(attempt.transcript||'No response supplied.')+'</p></details>'
+          +'<details class="speaking-card speaking-collapsible speaking-sample"><summary><span><span class="speaking-kicker">Reference</span><strong>Sample response</strong></span><span aria-hidden="true">⌄</span></summary><p>'+esc(q.sample)+'</p>'+(q.reference&&!['ra','rts'].includes(q.type)?'<details class="speaking-inner-details"><summary>Prompt transcript</summary><p>'+esc(q.reference).replace(/\n/g,'<br>')+'</p></details>':'')+'</details>')
 
         : (attempt.recording?'<section class="speaking-card"><h3>Your saved response</h3><div id="speaking-playback"></div><p>'+esc(attempt.assessment?.status==='pending'?'Feedback is being prepared. You can move to another question.':attempt.assessment?.error||'Your recording is saved. Select Submit saved recording when you are ready.')+'</p></section>':'');
-      chrome('<div class="speaking-heading"><div><p class="portal-eyebrow">'+esc(q.name)+' · '+modeName(modeOf(attempt))+'</p><h2>'+esc(q.title||'Question '+number)+'</h2><span class="speaking-question-meta">'+esc(q.id)+'</span></div></div><p class="speaking-intro">'+esc(q.instruction)+'</p>'
+      chrome('<div class="speaking-heading"><div><p class="portal-eyebrow">'+esc(q.name)+' · '+modeName(modeOf(attempt))+'</p><h2>'+esc(q.title||'Question '+number)+'</h2><span class="speaking-question-meta">'+esc(q.id)+'</span></div></div>'+(repeatReview?'':'<p class="speaking-intro">'+esc(q.instruction)+'</p>')
         +(q.text?'<div class="speaking-card speaking-prompt">'+esc(q.text)+'</div>':'')+(q.imageUrl?'<figure class="speaking-question-image"><button type="button" class="speaking-image-button" data-speaking-action="zoom-image" aria-label="Enlarge question image">'+images.image(q,'speaking-image')+'</button><button type="button" class="portal-button" data-speaking-action="zoom-image">Enlarge image</button>'+images.legend(q)+'</figure>':'')
-        +examPanel+review+questionNavigation()+'<div id="speaking-question-history"></div>');
+        +examPanel+review+questionNavigation()+'<div id="speaking-question-history"></div>',repeatReview);
       renderQuestionHistory();
       studio.pinNavigation?.(host,'nav[aria-label="Practice questions"]');
       env.PortalQuestionNavigation?.update({question:attempt.questionId,attempt:attempt.id,mode:modeOf(attempt),context:filters()});
@@ -382,11 +416,12 @@
         : '';
       const imageCoaching=describeImageCoaching(r);
       const hasImageCoaching=attempt?.question.type==='di'&&r.coaching&&Array.isArray(r.coaching.changes)&&!contentPending;
-      const mistakes=r.changes?r.changes.filter(c=>c.kind!=='correct'):[];
-      const comparison=r.changes
+      const wordChanges=attempt.question.type==='rs'?null:r.changes;
+      const mistakes=wordChanges?.filter(c=>c.kind!=='correct')||[];
+      const comparison=wordChanges
         ? '<div class="speaking-comparison"><h4>Word accuracy</h4>'
           +(mistakes.length?'<div class="speaking-word-diff speaking-word-errors">'+mistakes.map(c=>'<span class="'+c.kind+'" title="'+esc(c.kind)+'">'+(c.kind==='replacement'?esc(c.actual)+' → '+esc(c.expected):c.kind==='omission'?'Missing: '+esc(c.expected):'Extra: '+esc(c.actual))+'</span>').join('')+'</div>':'<p class="speaking-success-note">All reference words matched.</p>')
-          +'<details class="speaking-inner-details"><summary>View full word-by-word comparison</summary><div class="speaking-word-diff">'+r.changes.map(c=>'<span class="'+c.kind+'" title="'+esc(c.kind)+'">'+(c.kind==='replacement'?esc(c.actual)+' → '+esc(c.expected):c.kind==='omission'?'Missing: '+esc(c.expected):c.kind==='insertion'?'Extra: '+esc(c.actual):esc(c.actual))+'</span>').join('')+'</div></details></div>'
+          +'<details class="speaking-inner-details"><summary>View full word-by-word comparison</summary><div class="speaking-word-diff">'+wordChanges.map(c=>'<span class="'+c.kind+'" title="'+esc(c.kind)+'">'+(c.kind==='replacement'?esc(c.actual)+' → '+esc(c.expected):c.kind==='omission'?'Missing: '+esc(c.expected):c.kind==='insertion'?'Extra: '+esc(c.actual):esc(c.actual))+'</span>').join('')+'</div></details></div>'
         : '';
       const providerComparison=r.deliveryComparisons?'<section class="speaking-provider-scores" id="speaking-provider-scores" aria-live="polite">'+providerScores(r)+'</section>':'';
       return '<div class="speaking-result-head"><div><span class="speaking-kicker">Your result</span><h3>'+esc(r.overview)+'</h3></div><span class="speaking-result-label">Practice estimate</span></div>'

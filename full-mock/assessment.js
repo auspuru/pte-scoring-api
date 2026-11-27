@@ -11,6 +11,8 @@ const weighting = require('./profiles');
 const VERSION = 'full-mock-assessment-2026-10-29.1';
 const SWT_COMPATIBILITY = require('../content/full-mock/swt-policy-upgrade-pins.json');
 const PREVIOUS_SWT_SOURCES = require('../content/full-mock/swt-policy-previous-sources.json');
+const SWT_VOCABULARY_UPGRADE = require('../content/full-mock/swt-vocabulary-upgrade-pins.json');
+const PREVIOUS_SWT_VERSION = '20.3.17';
 function legacyConfiguration(env = process.env) {
   const content = env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001';
   const essay = require('../essay-provider').configuration(env);
@@ -142,19 +144,19 @@ const submittedAnswerHistoryPins = require('../content/full-mock/submitted-answe
 const summaryProviderPins = require('../content/full-mock/summary-provider-compatible-pins.json');
 const practiceProviderPins = require('../content/full-mock/practice-provider-compatible-pins.json');
 const sstCoachingPins = require('../content/full-mock/sst-coaching-compatible-pins.json');
-function previousSstCoachingSnapshot(current) {
-  const files = current.scoringSources.files;
-  if (!Object.entries(sstCoachingPins.currentFiles).every(([name, sha]) => files[name]?.sha256 === sha)) return null;
+function previousReviewedSnapshot(current, pins) {
+  if (!Object.entries(pins.currentFiles).every(([name, sha]) => current.scoringSources.files[name]?.sha256 === sha)) return null;
   const sources = structuredClone(current.scoringSources);
-  for (const [name, previous] of Object.entries(sstCoachingPins.previousFiles)) {
-    if (previous) sources.files[name] = previous;
+  for (const [name, entry] of Object.entries(pins.previousFiles)) {
+    if (entry) sources.files[name] = structuredClone(entry);
     else delete sources.files[name];
   }
-  if (digest(sources) !== sstCoachingPins.previousDigest) return null;
+  if (digest(sources) !== pins.previousDigest) return null;
   return { ...current, scoringSources:sources };
 }
 function previousRtsSnapshot(current) {
-  current = previousSstCoachingSnapshot(current) ?? current;
+  current = previousReviewedSnapshot(current, sstCoachingPins) ?? current;
+  current = previousReviewedSnapshot(current, SWT_VOCABULARY_UPGRADE) ?? current;
   current = previousPracticeIndexSnapshot(current, practiceProviderPins) ?? current;
   current = previousPracticeIndexSnapshot(current, summaryProviderPins) ?? current;
   current = previousPracticeIndexSnapshot(current, sstPracticeRecoveryPins) ?? current;
@@ -179,8 +181,11 @@ function compatibleTransportUpgrade(saved, current) {
   // Source projections preserve the frozen provider and model for each task.
   if (saved.configuration?.sst?.provider !== current.configuration.sst.provider
     || saved.configuration?.sst?.model !== current.configuration.sst.model) return false;
-  const beforeSstCoaching = previousSstCoachingSnapshot(current);
+  const beforeSstCoaching = previousReviewedSnapshot(current, sstCoachingPins);
   if (beforeSstCoaching && (digest(saved) === digest(beforeSstCoaching) || compatibleTransportUpgrade(saved, beforeSstCoaching))) return true;
+  // Pending SWT responses use the policy recorded in the frozen snapshot.
+  const beforeSwtVocabulary = previousReviewedSnapshot(current, SWT_VOCABULARY_UPGRADE);
+  if (beforeSwtVocabulary && (digest(saved) === digest(beforeSwtVocabulary) || compatibleTransportUpgrade(saved, beforeSwtVocabulary))) return true;
   const beforePracticeProvider = previousPracticeIndexSnapshot(current, practiceProviderPins);
   if (beforePracticeProvider && (digest(saved) === digest(beforePracticeProvider) || compatibleTransportUpgrade(saved, beforePracticeProvider))) return true;
   const beforeSummaryProvider = previousPracticeIndexSnapshot(current, summaryProviderPins);
@@ -1003,12 +1008,14 @@ function createEngine({ store, adapters = createAdapters(), providerConfiguratio
             if (audio.status !== 'ready') { await persist({ status: 'pending', reason: audio.reason || 'recording-not-ready' }); continue; }
             recording = audio.recording;
           }
+          const swtPolicyVersion = state.assessment.snapshot.scoringSources.files['swt-scoring-policy.js']?.version;
           const value = await assessWithSnapshot(activeAdapters, state, q, response, { recording, previous: stages, run: state.assessment.run,
             describeImagePolicy:state.assessment.snapshot.configuration.speakingContent.describeImagePolicy,
             deliveryPolicy:state.assessment.snapshot.configuration.delivery.version, ...(availableMarks(state)?{completionPolicy:COMPLETION_POLICY}:{}),
-            legacyDelivery:![currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256, sstCoachingPins.previousFiles['full-mock/adapters.js'].sha256, PREVIOUS_SWT_SOURCES.files['full-mock/adapters.js'].sha256, require('../content/full-mock/di-number-context-previous-sources.json').files['full-mock/adapters.js'].sha256].includes(state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256),
+            legacyDelivery:![currentSnapshot.scoringSources.files['full-mock/adapters.js']?.sha256, sstCoachingPins.previousFiles['full-mock/adapters.js']?.sha256, SWT_VOCABULARY_UPGRADE.previousFiles['full-mock/adapters.js']?.sha256, PREVIOUS_SWT_SOURCES.files['full-mock/adapters.js'].sha256, require('../content/full-mock/di-number-context-previous-sources.json').files['full-mock/adapters.js'].sha256].includes(state.assessment.snapshot.scoringSources.files['full-mock/adapters.js']?.sha256),
             sstCoaching:!!state.assessment.snapshot.scoringSources.files['sst-coverage.js'],
-            legacySwt:state.assessment.snapshot.scoringSources.files['swt-scoring-policy.js']?.version !== currentSnapshot.scoringSources.files['swt-scoring-policy.js']?.version,
+            legacySwt: ![PREVIOUS_SWT_VERSION, currentSnapshot.scoringSources.files['swt-scoring-policy.js']?.version].includes(swtPolicyVersion),
+            swtPolicyVersion,
             checkpoint: value => persist({ status: 'processing', stages: value }) });
           const { stages: evidence = stages, ...result } = value;
           if (!['assessed','pending','failed'].includes(result.status) || result.status === 'assessed' && (result.version !== adapterVersion || !(nativeValid(result, maxima(q)) || availableMarks(state) && partialValid(result,maxima(q),evidence,q.type)))) throw Error('Invalid native assessment result.');

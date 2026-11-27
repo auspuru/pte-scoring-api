@@ -10,7 +10,7 @@ const adapters = require('../full-mock/adapters');
 const { inputHash, aggregate } = require('../full-mock/aggregation');
 const { buildReport } = require('../full-mock/report');
 const { review } = require('../public/full-mock-report');
-const { POLICY_VERSION, legacyPolicy } = require('../swt-scoring-policy');
+const { POLICY_VERSION, previousPolicy, legacyPolicy } = require('../swt-scoring-policy');
 const { swtQuestionSourceIdentity } = require('../writing-lab-scoring');
 const { formFor } = require('../swt-form-policy');
 const { plainSwtSample } = require('../swt-plain-samples');
@@ -38,9 +38,9 @@ function references(paper, state) {
   return buildReport(paper, state).items.filter(item => item.type === 'swt');
 }
 
-test('Current SWT Full Mock reports correct exact active and retained references without changing evidence or marks', () => {
+for (const version of [POLICY_VERSION, previousPolicy.POLICY_VERSION]) test(`SWT Full Mock report ${version} corrects exact references without changing marks or evidence`, () => {
   for (const paper of [loadPaper('full-mock-2'), loadPaper('full-mock-2', 1)]) {
-    const state = submitted(paper), before = structuredClone(state), paperHash = digest(paper);
+    const state = submitted(paper, { snapshotVersion:version, itemVersion:version }), before = structuredClone(state), paperHash = digest(paper);
     const [darwin, independent] = references(paper, state);
     assert.match(darwin.reference.sample, /gathering evidence/);
     assert.doesNotMatch(darwin.reference.sample, /gathering support/);
@@ -62,7 +62,8 @@ test('Current SWT Full Mock reports correct exact active and retained references
     assert.deepEqual(state, before);
     assert.equal(digest(paper), paperHash);
   }
-  const paper = loadPaper('full-mock-3'), [complaints, education] = references(paper, submitted(paper));
+  const paper = loadPaper('full-mock-3');
+  const [complaints, education] = references(paper, submitted(paper, { snapshotVersion:version, itemVersion:version }));
   assert.match(education.reference.facts[1], /benefits remained unproven and teachers and their unions were cautious/);
   assert.equal(education.reference.sample, paper.questions.find(row => row.id === education.id).question.sample);
   assert.deepEqual(complaints.reference.facts, paper.questions.find(row => row.id === complaints.id).question.keyPoints);
@@ -71,7 +72,8 @@ test('Current SWT Full Mock reports correct exact active and retained references
 test('Prior snapshots, prior results, pending items and items without the exact saved identities retain the frozen reference', () => {
   const paper = loadPaper('full-mock-2'), candidate = paper.questions.find(row => row.question.type === 'swt');
   const original = candidate.question.sample, legacy = legacyPolicy.POLICY_VERSION;
-  for (const options of [{ snapshotVersion:legacy }, { itemVersion:legacy }, { recordIdentity:false }]) {
+  const previous = previousPolicy.POLICY_VERSION;
+  for (const options of [{ snapshotVersion:legacy }, { itemVersion:legacy }, { snapshotVersion:previous }, { itemVersion:previous }, { recordIdentity:false }]) {
     const [item] = references(paper, submitted(paper, options));
     assert.equal(item.reference.sample, original);
     assert.equal(item.reference.teachingSample, plainSwtSample(candidate.question.text));

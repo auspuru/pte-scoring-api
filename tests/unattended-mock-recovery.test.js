@@ -64,6 +64,11 @@ test('Available-mark policy is exactly pinned and its legacy adapter projects to
     }`, "    if (writing.formFor(q.type, text).score === 0) return { ...zero(q, 'Native Form gate'), stages };");
  project(', writingContentModel, {sstCoaching}', ', writingContentModel');
  assert.equal(sha(source),coachingPins.previousFiles['full-mock/adapters.js'].sha256);
+ const beforeVocabulary=require('../content/full-mock/swt-vocabulary-upgrade-pins.json').previousFiles;
+ project(', swtPolicyVersion');
+ project(', swtGrader, {policyVersion:swtPolicyVersion}', ', swtGrader');
+ project(',policyVersion:swtPolicyVersion');
+ assert.equal(sha(source),beforeVocabulary['full-mock/adapters.js'].sha256);
  // The new SWT-only paths must leave the exact prior native adapter recoverable.
  project(`  if (q.type === 'swt' && raw.itemScore90 === 10 && raw.gated && value.total === 0 && raw.maximum === value.maximum) {
     return { ...value, gated: true, reason: raw.reasons?.[0] || 'Native Content/Form gate' };
@@ -197,6 +202,15 @@ function quietRecording(recording) {
     } catch (e) { error = e; }
 `, '    try { return normalize(q, text, raw); }\n    catch (e) { error = e; }\n');
  assert.equal(sha(source),require('../content/full-mock/sst-coaching-compatible-pins.json').previousFiles['writing-lab-scoring.js'].sha256);
+ project(', previousPolicy');
+ project('{legacy=false, policyVersion}', '{legacy=false}');
+ project(`  const policy = legacy ? legacyPolicy : policyVersion === previousPolicy.POLICY_VERSION ? previousPolicy : {
+    POLICY_VERSION: SWT_POLICY_VERSION, applyScoringPolicy
+  };
+  const version = policy.POLICY_VERSION;`, '  const version = legacy ? legacyPolicy.POLICY_VERSION : SWT_POLICY_VERSION;');
+ project(',policyVersion:version');
+ project('assessment = policy.applyScoringPolicy(raw,text,q.text);', 'assessment = (legacy ? legacyPolicy.applyScoringPolicy : applyScoringPolicy)(raw,text,q.text);');
+ assert.equal(sha(source),beforeVocabulary['writing-lab-scoring.js'].sha256);
  source=source.replace(`  // SST permits several sentences. An answer containing a substantial
   // punctuated sentence cannot be entirely short, disconnected fragments.
   if (q.type === 'sst' && form.score > 0 && raw.formInvalid

@@ -29,13 +29,15 @@
     ? 'Use the short wording in the example below to connect the main ideas.'
     : text(edit.advice)||text(a.next_step))
    : '';
+  const correctionOnly=raw.language_feedback==='deductions-only'||raw.version==='20.3.18';
   const language=[];
   if(valid!==false&&!gated)for(const item of Array.isArray(raw.errors)?raw.errors:[]){
+   if(correctionOnly&&item?.affectsScore!==true)continue;
    const phrase=quote(answer,item?.phrase),fix=text(item?.correction);if(!phrase||typeof item?.correction!=='string'||language.some(x=>x.phrase===phrase&&x.fix===fix))continue;
    language.push({phrase,fix,reason:text(item.explanation),optional:item.affectsScore===false,required:item.affectsScore===true});
   }
   const why=needsContent?text(dependency?.explanation)||text(a.relationship_explanation)||text(a.synthesis?.explanation):'';
-  return {version:1,status:'complete',content:{full:fullContent,
+  return {version:1,status:'complete',...(correctionOnly?{correctionOnly}:{}),content:{full:fullContent,
    overview:needsContent&&!why?text(raw.feedback?.content||raw.overallVerdict||raw.overview):'',action,why,
    quote:needsContent?(wordBudget?editTarget:quote(answer,dependency?.effect)||quote(answer,a.synthesis?.evidence)):'',
    sourceQuote:needsContent?(wordBudget?editSource:quote(source,dependency?.missing_context)||quote(source,a.synthesis?.sourceQuote)):'',
@@ -49,7 +51,7 @@
   if(pending)return '<div class="swt-mock-feedback" data-swt-mock-feedback>'+section(1,'Content & meaning','<p>Feedback is being prepared. Your submitted response is saved; no learning judgement is available yet.</p>')+section(2,'Grammar & spelling','<p>Language feedback is not ready yet.</p>')+section(3,'Form','<p>Assessment is incomplete. Keep your saved response; an assessment delay does not indicate a writing error.</p>')+'</div>';
   const c=data.content||{},form=data.form||{},count=words(answer),language=[];
   for(const x of data.language||[]){
-   if(!quote(answer,x.phrase)||typeof x.fix!=='string')continue;
+   if(!quote(answer,x.phrase)||typeof x.fix!=='string'||(data.correctionOnly&&x.required!==true))continue;
    const start=answer.indexOf(x.phrase),reason=text(x.reason).replace(/^Optional refinement\s*[—–-]\s*no score deduction\.\s*/i,'');
    const after=words(answer.slice(0,start)+x.fix+answer.slice(start+x.phrase.length));
    if(x.optional&&(!reason||after<5||after>75||answer.indexOf(x.phrase,start+1)>=0))continue;
@@ -80,7 +82,7 @@
    const extra=count-75;
    formBody+='<p class="swt-mock-muted">Cut at least '+extra+' '+(extra===1?'word':'words')+'. Start with repeated points or optional examples.</p>';
   }
-  return '<div class="swt-mock-feedback" data-swt-mock-feedback>'+section(1,'Content & meaning',content)+section(2,'Grammar & spelling',grammar)+section(3,'Form',formBody)+'</div>';
+  return '<div class="swt-mock-feedback" data-swt-mock-feedback>'+section(1,'Content & meaning',content)+section(2,data.correctionOnly?'Grammar & vocabulary':'Grammar & spelling',grammar)+section(3,'Form',formBody)+'</div>';
  }
  function install(doc){if(!doc||doc.__swtMockFeedbackInstalled)return;doc.__swtMockFeedbackInstalled=true;doc.addEventListener('click',e=>{const button=e.target.closest?.('[data-swt-mock-fix]'),root=button?.closest('[data-swt-mock-feedback]');if(!root)return;const panel=root.querySelector('[data-swt-mock-correction="'+Number(button.dataset.swtMockFix)+'"]');if(!panel)return;panel.open=true;button.setAttribute('aria-expanded','true');panel.scrollIntoView?.({block:'nearest'});});}
  return {project,render,install};

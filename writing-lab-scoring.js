@@ -2,7 +2,7 @@
 const VERSION = 'exam-practice-2026-10-09.1';
 const SwtForm = require('./swt-form-policy');
 const { POLICY_VERSION: SWT_POLICY_VERSION, SYNTHESIS_GUIDANCE, SYNTHESIS_CONTENT_CAP, validSynthesis,
-  applyScoringPolicy, legacyPolicy, itemScore90, sourceIdentity } = require('./swt-scoring-policy');
+  applyScoringPolicy, previousPolicy, legacyPolicy, itemScore90, sourceIdentity } = require('./swt-scoring-policy');
 const report = require('./public/writing-lab-report');
 const { sstIdeas, coveragePrompt, reviewCoverage } = require('./sst-coverage');
 const localEngine = require('./local-scoring-engine');
@@ -172,17 +172,20 @@ function swtQuestionSourceIdentity(q) {
   return sourceIdentity(q.text, { key: q.keyPoints ?? null, sample: q.sample ?? null });
 }
 
-async function gradeUnifiedSwt(q, text, judge, {legacy=false} = {}) {
+async function gradeUnifiedSwt(q, text, judge, {legacy=false, policyVersion} = {}) {
   const form = formFor('swt', text);
-  const version = legacy ? legacyPolicy.POLICY_VERSION : SWT_POLICY_VERSION;
+  const policy = legacy ? legacyPolicy : policyVersion === previousPolicy.POLICY_VERSION ? previousPolicy : {
+    POLICY_VERSION: SWT_POLICY_VERSION, applyScoringPolicy
+  };
+  const version = policy.POLICY_VERSION;
   const identity = legacy ? {} : {source_identity:swtQuestionSourceIdentity(q)};
   if (!form.score) return {...zeroResult('swt',text,form.reasons),version,score_provisional:false,
     ...identity,...(legacy?{}:{itemScore90:10})};
   let raw, assessment;
   try {
-    raw = await judge(q,text,{legacy});
+    raw = await judge(q,text,{legacy,policyVersion:version});
     if (!raw) throw Error('The shared SWT assessment is unavailable.');
-    assessment = (legacy ? legacyPolicy.applyScoringPolicy : applyScoringPolicy)(raw,text,q.text);
+    assessment = policy.applyScoringPolicy(raw,text,q.text);
     if (assessment.needs_semantic_review || !raw.consistency_reviewed) throw Error('The shared SWT review is incomplete.');
   } catch (error) { return localGrade(q,text,{reason:error.message}); }
   const diagnosticScores={content:assessment.content_score,form:form.score,grammar:assessment.grammar_score,vocabulary:assessment.vocabulary_score};

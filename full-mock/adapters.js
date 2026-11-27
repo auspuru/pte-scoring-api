@@ -66,7 +66,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
   assessLegacyDelivery = assessDelivery === require('../azure-continuous-delivery').assessRecording
     ? require('../speaking-delivery').assessRecording : assessDelivery,
   speakingContentModel, writingContentModel, swtGrader, essayGrader } = {}) {
-  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, deliveryPolicy, describeImagePolicy, legacyDelivery = false, legacySwt = false, sstCoaching = true, contentOnly = false } = {}) {
+  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, deliveryPolicy, describeImagePolicy, legacyDelivery = false, legacySwt = false, swtPolicyVersion, sstCoaching = true, contentOnly = false } = {}) {
     const stages = structuredClone(previous);
     const failed = reason => ({ status: 'failed', version: VERSION, reason, stages });
     async function stage(name, call, verify = value => value != null) {
@@ -150,7 +150,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
     const marked = objective(q, answer); if (marked) return { ...marked, stages };
     const text = String(answer[0] || '');
     if (q.type === 'swt' && !legacySwt && !writing.formFor('swt', text).score) {
-      return { ...normalise(q, await writing.gradeUnifiedSwt(q, text, swtGrader)), stages };
+      return { ...normalise(q, await writing.gradeUnifiedSwt(q, text, swtGrader, {policyVersion:swtPolicyVersion})), stages };
     }
     if (!text.trim()) return { ...zero(q, 'Explicitly unanswered'), stages };
     if (writing.formFor(q.type, text).score === 0) {
@@ -161,7 +161,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
     }
     const raw = await stage('writing', async () => {
       let value;
-      if (q.type === 'swt') value = await writing.gradeUnifiedSwt(q, text, swtGrader, {legacy:legacySwt});
+      if (q.type === 'swt') value = await writing.gradeUnifiedSwt(q, text, swtGrader, {legacy:legacySwt,policyVersion:swtPolicyVersion});
       else if (q.type === 'essay') {
         if (!essayGrader) throw Error('Essay assessment unavailable');
         const assessed = await essayGrader.grade(q.text, text, '9', { feedbackV3: true, includeSample: false, totalTimeoutMs: 240000 });
