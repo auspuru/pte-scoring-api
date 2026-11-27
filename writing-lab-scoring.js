@@ -1,6 +1,7 @@
 'use strict';
 const VERSION = 'exam-practice-2026-10-09.1';
 const SwtForm = require('./swt-form-policy');
+const { annotationEvidence } = require('./swt-feedback-evidence');
 const { POLICY_VERSION: SWT_POLICY_VERSION, SYNTHESIS_GUIDANCE, SYNTHESIS_CONTENT_CAP, validSynthesis,
   applyScoringPolicy, previousPolicy, legacyPolicy, itemScore90, sourceIdentity } = require('./swt-scoring-policy');
 const report = require('./public/writing-lab-report');
@@ -193,7 +194,6 @@ async function gradeUnifiedSwt(q, text, judge, {legacy=false, policyVersion} = {
   const scores=gated ? Object.fromEntries(Object.keys(diagnosticScores).map(k=>[k,0])) : diagnosticScores;
   const a=assessment.summary_assessment;
   const total=Object.values(scores).reduce((n,v)=>n+v,0);
-  const corrections=[...assessment.grammar_annotations,...assessment.vocabulary_annotations];
   const language = key => {
     const items=assessment[key+'_annotations'].filter(item=>item.affects_score);
     return items.map(item=>item.meaning_effect).filter(Boolean).join(' ') || 'Meaning is clear and preserved.';
@@ -207,7 +207,11 @@ async function gradeUnifiedSwt(q, text, judge, {legacy=false, policyVersion} = {
     feedback:{content:assessment.content_reason,form:form.count+' words. Form: 1/1.',grammar:language('grammar'),vocabulary:language('vocabulary')},
     strengths:a.main_idea_accurate?['The passage’s main message is recognised.']:[],
     improvements:assessment.content_score<4?[a.next_step || 'Combine and briefly rephrase the essential ideas.']:[],
-    errors:corrections.map(item=>({phrase:item.phrase,correction:item.fix,explanation:item.meaning_effect || item.rationale || '',affectsScore:item.affects_score}))};
+    errors:['grammar','vocabulary'].flatMap(trait=>assessment[trait+'_annotations'].flatMap(item=>{
+      const evidence=annotationEvidence(text,item);
+      return evidence?[{trait,...evidence,correction:item.fix,explanation:item.meaning_effect || item.rationale || '',
+        affectsScore:item.affects_score}]:[];
+    }))};
 }
 
 async function grade(q, text, call, { propagateProviderErrors = false, sstCoaching = true } = {}) {

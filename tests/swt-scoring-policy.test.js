@@ -55,6 +55,7 @@ async function grade(fixture, semanticJudgment, { passageId, getPassage } = {}) 
   let route;
   const context = {
     ...policy, swtSourceIdentity: policy.sourceIdentity, swtItemScore90: policy.itemScore90,
+    annotationEvidence: require('../swt-feedback-evidence').annotationEvidence,
     SwtForm: require('../swt-form-policy'), SWT_SCORING_CRITERIA: policy.SCORING_CRITERIA,
     SWT_CONTENT_MAX: 4, SWT_MAX_RAW: 9, DEBUG: false,
     EXTERNAL_SPELLCHECK_ENABLED: false,
@@ -79,7 +80,7 @@ async function grade(fixture, semanticJudgment, { passageId, getPassage } = {}) 
   const functions = ['clampNumber', 'roundToTenth', 'countKeyElements', 'coverageToContentScore',
     'validateForm', 'checkGrammar', 'grammarScoreFromJudgment', 'scoreVocabulary',
     'rawToPTEDynamic', 'rawToBandDynamic', 'pteToRaw', 'buildPenaltiesList',
-    'detectStrongLocalContradiction', 'judgeContentLocal'];
+    'detectStrongLocalContradiction', 'judgeContentLocal', 'swtReviewAnnotations'];
   vm.runInContext(functions.map(functionSource).join('\n'), context);
   const start = source.indexOf("app.post('/api/grade',");
   const end = source.indexOf('\n});', start) + 4;
@@ -211,6 +212,35 @@ test('Article, agreement and spelling feedback never deduct marks without meanin
   assert.equal(result.raw_score, 9);
   assert(result.grammar_details.grammar_annotations.every(a => a.affects_score === false));
   assert(result.grammar_details.grammar_annotations.every(a => /no score deduction/.test(a.rationale)));
+});
+
+test('Standalone feedback retains complete corrections and their exact submitted spans', async () => {
+  const fixture = fixtures[1];
+  const words = fixture.summary.match(/\S+/g);
+  const fix = 'a detailed correction '.repeat(12).trim();
+  const reason = 'A detailed explanation of the correction. '.repeat(15).trim();
+  const corrections = words.slice(0, 24).map((phrase, index) => ({
+    ...annotation(phrase, fix, 'changed', reason),
+    type: 'grammar_error', rationale: reason, phrase_span: [index + 1, index + 1]
+  }));
+  const validVocab = { ...annotation(words[24], fix), type: 'vocabulary_error',
+    rationale: reason, phrase_span: [25, 25] };
+  const result = await grade(fixture, judgment(fixture, {
+    grammar_annotations: [...corrections, { ...corrections[0], phrase_span: [2, 2] }],
+    vocabulary_annotations: [validVocab, { ...validVocab, phrase_span: [1000, 1000] }]
+  }));
+  const grammar = result.grammar_details.grammar_annotations;
+  const vocabulary = result.vocabulary_details.vocabulary_annotations;
+  assert.equal(grammar.length, 24);
+  assert.equal(vocabulary.length, 1);
+  assert.equal(grammar[23].phrase, words[23]);
+  assert.equal(grammar[11].phrase, 'caffeine');
+  assert.deepEqual(grammar[23].phrase_span, [24, 24]);
+  assert.equal(grammar[23].fix, fix);
+  assert.equal(grammar[23].meaning_effect, reason);
+  assert.equal(vocabulary[0].rationale, reason);
+  assert.equal(result.trait_scores.grammar, 1);
+  assert.equal(result.trait_scores.vocabulary, 1);
 });
 
 test('Caffeine wording is optional feedback when the causal message remains intact', async () => {

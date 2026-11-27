@@ -26,7 +26,7 @@ test('Question selection preserves native graders, models, weights and timing; f
   const rtsAdditions = ['situation-content-policy-developed.js'];
   const rtsRevisions = ['speaking-scoring.js', 'speaking-judge-format.js'];
   const swtAdditions = ['content/swt-passage-guides.json', 'content/swt-publication-references.json', 'swt-legacy-policy.js',
-    'swt-plain-samples.js', 'content/swt-plain-samples.json'];
+    'swt-plain-samples.js', 'content/swt-plain-samples.json', 'swt-feedback-evidence.js'];
   const swtRevisions = ['swt-judge-format.js', 'swt-judgment-service.js', 'swt-reference.js', 'swt-scoring-policy.js', 'mock-content-assessment.js'];
   const transportRevisions = ['mock-content-provider.js'];
   const sstCoachingAdditions = ['content/sst-idea-guide.json', 'sst-coverage.js', 'sst-idea-guide.js'];

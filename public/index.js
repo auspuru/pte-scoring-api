@@ -12574,7 +12574,7 @@ function ensureSpeakingMockRuntimeLoaded() {
 let fullMockRuntimeLoadPromise = null;
 function ensureFullMockRuntimeLoaded() {
   if (window.FullMock) return Promise.resolve(window.FullMock);
-  if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-47c171357ddc', 'full mock report')
+  if (!fullMockRuntimeLoadPromise) fullMockRuntimeLoadPromise = loadDeferredScript('/full-mock-report.js?v=sha256-8c0b439f08e7', 'full mock report')
     .then(() => loadDeferredScript('/full-mock-client.js?v=sha256-45059d2f5806', 'full mock'))
     .then(() => { if (!window.FullMock) throw Error('Full mock did not load.'); return window.FullMock; })
     .catch(error => { fullMockRuntimeLoadPromise = null; throw error; });
@@ -16185,7 +16185,7 @@ function renderSwtFeedbackReview(data, passage, submittedText){
     && swtPassageStorageId() === passage.id
     && document.getElementById('swtPane')?.classList.contains('active')
     && document.getElementById('swtResultsScreen')?.classList.contains('active');
-  const review = SwtFeedbackReview.mount(target, data, passage, submittedText, { isCurrent,
+  const review = SwtFeedbackReview.mount(target, data, passage, submittedText, { isCurrent, deductionsOnly: true,
     saveDraft(text){
       if (!isCurrent() || passage.sampleVersionMismatch) return false;
       const summaries = LocalStore.get(getPteStorageKey('summaries')) || {};
@@ -16201,11 +16201,11 @@ function renderSwtFeedbackReview(data, passage, submittedText){
   }
   const correction = document.getElementById('swtResponseExamples');
   if (correction) {
-    SwtFeedbackReview.mountCorrection(correction, review, {
-      available: !review.correctionOnly && !passage.sampleVersionMismatch && !!passage.text && !!submission?.token,
-      isCurrent,
-      load: () => requestSwtResponseCorrection(submission)
-    });
+    const revision = !passage.sampleVersionMismatch && review.repair ? review.repair : review.languageDraft;
+    correction.hidden = !revision;
+    correction.innerHTML = revision ? '<h3>Corrected response</h3><p class="swt-help">'
+      + (revision === review.repair ? 'This version addresses the Content feedback. See individual language corrections below.' : 'This version applies the unambiguous language corrections.')
+      + '</p><p class="annotated-text">' + escapeHtml(revision) + '</p>' : '';
   }
 }
 async function requestSwtResponseCorrection(submission){
@@ -16612,44 +16612,25 @@ function switchSbsView(view){
 function renderTraitBreakdown(data, traits){
   const el = document.getElementById('traitBreakdown');
   if (!el) return;
-  const cMax = traits.content_max || 4;
-  const cd = data.content_details || {};
-  const contentGated = data.content_gate_triggered === true || data.score_gate?.status === 'zero_content';
-  const gateNote = 'No task points awarded because Content is 0. Form and language diagnostics remain separate.';
-  const concise = value => String(value || '').replace(/\s+/g, ' ').trim();
-  const contentNote = concise(cd.feedback_note || cd.notes || 'Strengthen the main idea and its supporting connections.');
-  const correctionOnly = data.language_feedback === 'deductions-only' || data.scoring_version === '20.3.18';
-
-  const rows = [
-    { name:'Content', score:traits.content||0, max:cMax,
-      note: data.score_provisional || data.ai_feedback_degraded ? 'Provisional: meaning and connections need a complete assessment.'
-        : (traits.content >= cMax) ? 'Main message, relevant support and conclusion connect clearly.' : contentNote },
-    { name:'Form', score:traits.form||0, max:1,
-      note: contentGated ? 'No Form points awarded because Content is 0; the sentence form is valid.' : (traits.form >= 1) ? 'Valid one-sentence summary within word limits.' : 'Form requirement not met — one sentence, 5–75 words.' },
-    { name:'Grammar', score:traits.grammar||0, max:2,
-      note: contentGated ? gateNote : data.score_provisional || data.ai_feedback_degraded ? 'Provisional: detailed grammar assessment unavailable.'
-        : (traits.grammar >= 2) ? (correctionOnly ? 'The sentence structure is correct.' : 'Meaning remains clear. Minor slips are optional refinements.')
-          : (correctionOnly ? 'See the grammar corrections in your feedback.' : 'Review the grammar affecting meaning in your next steps above.') },
-    { name:'Vocabulary', score:traits.vocabulary||0, max:2,
-      note: contentGated ? gateNote : data.score_provisional || data.ai_feedback_degraded ? 'Provisional: detailed vocabulary assessment unavailable.'
-        : (traits.vocabulary >= 2) ? 'Wording preserves the message. Accurate source words are welcome.'
-          : (correctionOnly ? 'See the word-choice corrections in your feedback.' : 'Review the wording affecting meaning in your next steps above.') }
-  ];
-
-  el.innerHTML = rows.map(r => {
-    const pct = r.max > 0 ? Math.min(100, (r.score / r.max) * 100) : 0;
-    let barColor = 'var(--swt-good)';
-    if(pct < 100) barColor = 'var(--swt-warn)';
-    return `
-      <div class="trait-row">
-        <div class="trait-head">
-          <span class="trait-name">${r.name}</span>
-          <span class="trait-score"><b>${fmtNum(r.score)}</b> / ${r.max}</span>
-        </div>
-        <div class="trait-bar"><div class="trait-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
-        <div class="trait-note">${escapeHtml(r.note)}</div>
-      </div>`;
-  }).join('');
+  const content = data.content_details || {};
+  const assessment = content.summary_assessment || {};
+  const confirmed = !SwtStudentFeedback.build(data).provisional && !data.ai_feedback_degraded;
+  const reasons = (items, fallback) => (Array.isArray(items) ? items : []).filter(item => item?.affects_score === true)
+    .map(item => item.meaning_effect || item.rationale).filter(Boolean).join(' ') || fallback;
+  el.innerHTML = window.SwtTraitReview.render({
+    scores: traits,
+    maxima: {content: traits.content_max || 4, form: 1, grammar: 2, vocabulary: 2},
+    pending: !confirmed,
+    gated: data.form_gate_triggered === true || data.content_gate_triggered === true
+      || ['zero_form', 'zero_content'].includes(data.score_gate?.status),
+    total: data.raw_score,
+    details: {
+      content: traits.content < (traits.content_max || 4) ? assessment.relationship_explanation || content.feedback_note || content.notes : '',
+      form: traits.form >= 1 ? 'Your answer is one complete sentence within the word limit.' : data.form_details?.reason || data.form_reason,
+      grammar: traits.grammar < 2 ? reasons(data.grammar_details?.grammar_annotations, '') : '',
+      vocabulary: traits.vocabulary < 2 ? reasons(data.vocabulary_details?.vocabulary_annotations, '') : ''
+    }
+  });
 }
 
 function renderCoverage(data, passage){

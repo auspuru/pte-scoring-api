@@ -17,6 +17,7 @@ const { createReadiness } = require('./service-readiness');
 const { POLICY_VERSION, SCORING_CRITERIA: SWT_SCORING_CRITERIA, applyScoringPolicy, buildJudgingPrompt,
   legacyPolicy: legacySwtPolicy, previousPolicy: previousSwtPolicy, itemScore90: swtItemScore90, sourceIdentity: swtSourceIdentity } = require('./swt-scoring-policy');
 const SwtForm = require('./swt-form-policy');
+const { annotationEvidence } = require('./swt-feedback-evidence');
 const { canonicalUserId, mergeDeleted, mergeHistory } = require('./essay-attempt-sync');
 const AccountProgress = require('./public/account-progress');
 const { createJudgmentService } = require('./swt-judgment-service');
@@ -4893,6 +4894,26 @@ function buildPenaltiesList(form, contentScore, vocab, spelling, contentMax) {
   return arr;
 }
 
+function swtReviewAnnotations(annotations, text, labelOptional = false) {
+  if (!Array.isArray(annotations)) return [];
+  return annotations.flatMap(item => {
+    const evidence = annotationEvidence(text, item);
+    if (!evidence || typeof item.fix !== 'string') return [];
+    return [{
+      phrase: evidence.phrase,
+      ...(evidence.phraseSpan ? { phrase_span: evidence.phraseSpan } : {}),
+      fix: item.fix,
+      severity: item.severity === 'major' ? 'major' : 'minor',
+      type: typeof item.type === 'string' ? item.type : 'style',
+      rationale: (labelOptional && !item.affects_score ? 'Optional refinement — no score deduction. ' : '')
+        + (typeof item.rationale === 'string' ? item.rationale : ''),
+      affects_score: item.affects_score === true,
+      meaning_impact: item.meaning_impact || 'none',
+      meaning_effect: typeof item.meaning_effect === 'string' ? item.meaning_effect : ''
+    }];
+  });
+}
+
 // ═══ GRADING ROUTE ═══
 app.post('/api/grade', async (req, res) => {
   try {
@@ -5116,37 +5137,7 @@ app.post('/api/grade', async (req, res) => {
         connector_quality: grammar.connector_quality,
         has_semicolon_before_connector: grammar.has_semicolon_before_connector,
         grammar_issues: grammar.grammar_issues,
-        // v19.12: inline grammar annotations from Claude. Each entry has phrase
-        // (verbatim substring), fix, severity (major/minor), type, rationale.
-        // The frontend renders these as tooltipped underlines on the summary.
-        // Filtered to only include phrases that actually appear in the student's
-        // text — Claude occasionally paraphrases despite the instruction, and we
-        // never want a tooltip that points to text the student didn't write.
-        grammar_annotations: (() => {
-          const ann = Array.isArray(contentVerdict.grammar_annotations) ? contentVerdict.grammar_annotations : [];
-          const lc = (text || '').toLowerCase();
-          const valid = ann.filter(a => a && typeof a.phrase === 'string' && typeof a.fix === 'string' && a.phrase.length > 0);
-          const inText = valid.filter(a => lc.includes(a.phrase.toLowerCase()));
-          // v19.12 diagnostic: surface what's happening to grammar_annotations on each grade call.
-          if (ann.length > 0 && inText.length < ann.length) {
-            if (DEBUG) console.log(`[grade] grammar_annotations: Claude returned ${ann.length}, ${inText.length} passed filter (phrase must be in summary)`);
-            // Log the dropped phrases so we can see if Claude is paraphrasing despite the instruction.
-            const dropped = valid.filter(a => !lc.includes(a.phrase.toLowerCase())).map(a => a.phrase);
-            if (dropped.length && DEBUG) console.log('  dropped phrases (paraphrased, not verbatim):', JSON.stringify(dropped));
-          }
-          return inText
-            .map(a => ({
-              phrase: a.phrase,
-              fix: String(a.fix).slice(0, 200),
-              severity: (a.severity === 'major' || a.severity === 'minor') ? a.severity : 'minor',
-              type: typeof a.type === 'string' ? a.type.slice(0, 30) : 'style',
-              rationale: (a.affects_score ? '' : 'Optional refinement — no score deduction. ') + (typeof a.rationale === 'string' ? a.rationale.slice(0, 500) : ''),
-              affects_score: a.affects_score === true,
-              meaning_impact: a.meaning_impact || 'none',
-              meaning_effect: typeof a.meaning_effect === 'string' ? a.meaning_effect.slice(0, 500) : ''
-            }))
-            .slice(0, 20);
-        })(),
+        grammar_annotations: swtReviewAnnotations(contentVerdict.grammar_annotations, text, true),
         first_person: grammar.first_person,
         spelling_errors: spelling.errors,
         spelling_suggestions: spelling.suggestions,
@@ -5164,7 +5155,7 @@ app.post('/api/grade', async (req, res) => {
         dangerous_swap_count: vocab.dangerous_swap_count,
         inappropriate_count: vocab.inappropriate_count || 0,
         meaning_changed: vocab.meaning_changed,
-        vocabulary_annotations: contentVerdict.vocabulary_annotations || [],
+        vocabulary_annotations: swtReviewAnnotations(contentVerdict.vocabulary_annotations, text),
         academic_words: vocab.academic_words,
         perspective_shifted: vocab.perspective_shifted,
         method: vocab.method,

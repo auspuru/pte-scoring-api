@@ -22,26 +22,30 @@
     const start=text.indexOf(phrase);
     return text.indexOf(phrase,start+1)<0?{start,end:start+phrase.length}:null;
   }
-  function model(data,passage,text){
+  function model(data,passage,text,{deductionsOnly=false}={}){
     text=String(text||'');const state=feedback.build(data),a=data.content_details?.summary_assessment||{},wordCount=words(text);
     const pending=state.provisional||data.ai_feedback_degraded===true;
-    const correctionOnly=feedback.deductionsOnly(data);
+    const correctionOnly=deductionsOnly||feedback.deductionsOnly(data);
     const valid=Number((data.diagnostic_trait_scores||data.trait_scores||{}).form)>=1;
-    const annotations=[];const claimed=[];
+    const annotations=[];const claimed=[];const corrections=[];
     if(!pending&&valid&&(!correctionOnly||!state.contentGated))for(const raw of [...list(data.grammar_details?.grammar_annotations),...list(data.vocabulary_details?.vocabulary_annotations)]){
       if(!raw||typeof raw.fix!=='string'||!exact(text,raw.phrase))continue;
       if(correctionOnly ? raw.affects_score!==true : !clean(raw.fix))continue;
-      const phrase=exact(text,raw.phrase),range=location(text,phrase,raw.phrase_span);if(!range)continue;const {start,end}=range;
-      if(claimed.some(r=>r.start<end&&r.end>start))continue;
+      const phrase=exact(text,raw.phrase);
+      const range=location(text,phrase,raw.phrase_span);
       const optional=raw.affects_score!==true;
       const kind=/spell/i.test(raw.type||'')?'Spelling':list(data.vocabulary_details?.vocabulary_annotations).includes(raw)?'Word choice':'Grammar';
       const fix=clean(raw.fix),reason=clean(raw.meaning_effect)||clean(raw.rationale).replace(/^Optional refinement\s*[—–-]\s*no score deduction\.\s*/i,'');
+      if(!optional&&!corrections.some(x=>x.phrase===phrase&&x.fix===fix&&x.kind===kind&&x.reason===reason))corrections.push({phrase,fix,kind,reason});
+      if(!range)continue;const {start,end}=range;
+      if(claimed.some(r=>r.start<end&&r.end>start))continue;
       const after=words(text.slice(0,start)+fix+text.slice(end));
       if(optional&&(!reason||after<5||after>75))continue;
       annotations.push({phrase,fix,start,end,optional,kind,reason,after});
       claimed.push({start,end});
     }
-    const dependency=list(a.missing_dependencies).find(d=>d&&clean(d.missing_context));
+    const dependencies=list(a.missing_dependencies).filter(d=>d&&clean(d.missing_context));
+    const dependency=dependencies[0];
     const weakSynthesis=['partial','limited','assembly','fragments'].includes(a.synthesis?.quality);
     const contentIssue=!pending&&valid&&!state.contentFull&&(state.contentGated||Number(data.trait_scores?.content)<Number(data.trait_scores?.content_max||4)||weakSynthesis);
     const source=String(passage?.text||'');
@@ -68,13 +72,15 @@
     const complete=t=>words(t)>=5&&words(t)<=75&&/[.!?]$/.test(t)&&t.split(/[.!?]+(?:\s+|$)/).filter(v=>v.trim()).length===1;
     let languageDraft='';
     const required=annotations.filter(x=>!x.optional).sort((a,b)=>b.start-a.start);
-    if(!contentIssue&&required.length){
+    if(required.length&&required.length===corrections.length){
       languageDraft=text;
       for(const item of required)languageDraft=languageDraft.slice(0,item.start)+item.fix+languageDraft.slice(item.end);
       if(!complete(languageDraft))languageDraft='';
     }
-    return {state,pending,valid,correctionOnly,annotations,quote,sourceQuote,contentIssue,action,why,repair:wordBudget?revised:'',languageDraft,wordBudget,
-      usable:!!wordBudget,text,wordCount,languageAdvice:state.priorities.filter(p=>/grammar|wording/i.test(p.title))};
+    return {state,pending,valid,correctionOnly,annotations,corrections,quote,sourceQuote,contentIssue,action,why,repair:wordBudget?revised:'',languageDraft,wordBudget,
+      usable:!!wordBudget,text,wordCount,extraDependencies:contentIssue?dependencies.slice(1).map(d=>({
+        phrase:exact(text,d.effect),reason:clean(d.explanation),source:exact(source,d.missing_context)
+      })).filter(d=>d.reason||d.source):[],languageAdvice:state.priorities.filter(p=>/grammar|wording/i.test(p.title))};
   }
   function heading(n,title,status){return '<div class="swt-review-heading"><h2><span>'+n+'</span>'+title+'</h2><span class="swt-review-status">'+esc(status)+'</span></div>';}
   function section(n,title,status,body,id){return '<section class="swt-review-section" id="'+id+'">'+heading(n,title,status)+'<div class="swt-review-body">'+body+'</div></section>';}
@@ -88,6 +94,8 @@
       (m.why?'<p><strong>Why this needs attention</strong><br>'+esc(m.why)+'</p>':'')+
       '<button type="button" class="btn btn-ghost" data-review-source>Review the original passage</button>':
       '<p class="swt-review-good">'+(m.state.contentFull?'Full Content marks. Your summary connects the essential ideas. Clear, simple words work well when they keep the meaning.':'Review the saved feedback alongside the passage.')+'</p>';
+    if(m.extraDependencies?.length)content+='<ul class="swt-scored-corrections">'+m.extraDependencies.map(d=>
+      '<li>'+(d.phrase?'<q>'+esc(d.phrase)+'</q> ':'')+esc(d.reason||d.source)+'</li>').join('')+'</ul>';
     if(m.repair&&m.wordBudget){
       const {revisedCount,wordsSaved}=m.wordBudget;
       content+='<details class="swt-review-suggestion"><summary>See an example with this edit</summary><div><p class="swt-review-revision">'+esc(m.repair)+'</p><button type="button" class="btn" data-review-use>Use in my revision draft</button></div></details>';
@@ -97,6 +105,8 @@
       (m.correctionOnly?'<p>No grammar or vocabulary corrections are shown for this response.</p>':'<p>Your saved assessment gives no phrase-level grammar or spelling edits.</p>'):
       (m.correctionOnly?'':'<div class="swt-review-legend"><span>Grammar / word choice</span><span>Spelling</span><span>Optional</span></div>')+
       '<p class="swt-help">Select an underlined phrase to see the change and why it helps.</p><p class="swt-review-annotated">'+annotationHtml(m)+'</p><div id="swtReviewCorrection" class="swt-review-correction" role="region" aria-live="polite" aria-label="Selected language correction" hidden></div>';
+    if(m.corrections?.length)grammar+='<div class="swt-scored-corrections">'+m.corrections.map(item=>
+      '<details><summary>'+esc(item.kind+': '+item.phrase+' → '+(item.fix||'Delete this text'))+'</summary><p>'+esc(item.reason||'No separate explanation was saved.')+'</p></details>').join('')+'</div>';
     if(!m.correctionOnly&&!m.pending&&m.valid&&m.languageAdvice.length)grammar+='<div class="swt-review-note">'+m.languageAdvice.map(p=>'<p>'+esc(p.detail)+'</p>').join('')+'</div>';
     if(m.annotations.some(x=>x.optional))grammar+='<p class="swt-help">Optional suggestions did not cost marks. Keep your total within 75 words.</p>';
     if(m.languageDraft)grammar+='<button type="button" class="btn" data-review-use="language">Use these language corrections in my draft</button>';
@@ -152,11 +162,24 @@
     return output+esc(text.slice(at));
   }
   function mount(target,data,passage,text,options={}){
-    const m=model(data,passage,text);target.innerHTML=render(m);
+    const m=model(data,passage,text,options);target.innerHTML=render(m);
     const valid=()=>options.isCurrent?.()!==false;
     const q=s=>target.querySelector(s);let undo=null;
     const original=()=>target.ownerDocument.getElementById('annotatedSubmission');
     const open=()=>{q('#swtReviewEditor').hidden=false;q('#swtReviewDraft').focus();};
+    const submitted=original();
+    if(options.deductionsOnly&&submitted&&m.annotations.length){
+      submitted.innerHTML=annotationHtml(m).replaceAll('data-review-fix=', 'data-submission-fix=');
+      submitted.onclick=event=>{
+        const button=event.target.closest('[data-submission-fix]');
+        if(!button||!valid())return;
+        const index=Number(button.dataset.submissionFix);
+        q('[data-review-fix="'+index+'"]')?.click();
+        submitted.querySelectorAll('[data-submission-fix]').forEach(el=>el.setAttribute('aria-expanded',String(el===button)));
+        const correction=q('#swtReviewCorrection');
+        correction?.scrollIntoView?.({block:'nearest'});
+      };
+    }else if(submitted)submitted.onclick=null;
     target.onclick=event=>{
       const button=event.target.closest('button');if(!button||!target.contains(button)||!valid())return;
       if(button.hasAttribute('data-review-fix')){

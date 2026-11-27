@@ -1,0 +1,41 @@
+.swt-trait-review{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;margin:8px 0 12px}
+.swt-trait-tile{position:relative;border:1px solid #cddcf2;border-radius:10px;background:#edf3fc;color:#284e83;min-width:0}
+.swt-trait-tile.earned{background:#eaf5ee;border-color:#cbe5d3;color:#246044}
+.swt-trait-tile.neutral{background:#f3f5f7;border-color:#dce2ea;color:#34475a}
+.swt-trait-tile.total{background:#f2effa;border-color:#ded6f0;color:#51408f}
+.swt-trait-tile>summary,.swt-trait-tile.total>div{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 8px;padding:9px 11px;list-style:none}
+.swt-trait-tile>summary::-webkit-details-marker{display:none}
+.swt-trait-tile>summary{cursor:pointer}
+.swt-trait-tile summary:focus-visible{outline:2px solid currentColor;outline-offset:2px;border-radius:9px}
+.swt-trait-tile :is(summary,.total>div)>span:last-child,.swt-trait-tile.total>div>span:last-child{grid-column:1/-1;font-size:.875rem}
+.swt-trait-value{font-weight:750;white-space:nowrap}
+.swt-trait-tile>.swt-trait-explanation{display:none;position:absolute;z-index:5;inset-inline-start:0;top:100%;width:max(100%,245px);max-width:340px;padding:12px;border-radius:9px;background:#fff;color:#21363b;border:1px solid #ccd9df;box-shadow:0 7px 18px #193c4926;white-space:normal}
+.swt-trait-tile:nth-child(n+3)>.swt-trait-explanation{inset-inline-start:auto;inset-inline-end:0}
+.swt-trait-tile:is([open],:hover,:focus-within)>.swt-trait-explanation{display:block}
+.swt-trait-explanation p{margin:0 0 6px}.swt-trait-explanation p:last-child{margin:0}
+.swt-submitted-review,.swt-submitted-passage{min-width:0}
+.swt-submitted-passage{white-space:pre-wrap;overflow-wrap:anywhere}
+.swt-submitted-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:12px}
+.swt-submitted-columns>*{min-width:0}
+.swt-scored-corrections{display:grid;gap:5px;margin-block:8px}
+.swt-scored-corrections details{border:1px solid #ecd8ae;border-radius:8px;padding:6px 10px;background:#fffaf0}
+.swt-scored-corrections summary{cursor:pointer}
+@media(max-width:800px){.swt-submitted-columns{grid-template-columns:1fr}.swt-trait-tile>.swt-trait-explanation{position:static;width:auto;max-width:none;box-shadow:none}.swt-trait-tile:hover:not([open]):not(:focus-within)>.swt-trait-explanation{display:none}}
+#swtPane #swtResultsScreen .swt-result-passage,#swtPane #swtResultsScreen .results-hero,#swtPane #swtResultsScreen .swt-compact-scores{padding:14px 18px}
+#swtPane #swtResultsScreen .swt-review-source-stack.swt-submitted-columns:has(#swtResponseExamples[hidden]){grid-template-columns:1fr}
+#swtPane #swtResultsScreen #swtReadingEstimate [role=img]{width:56px!important;height:56px!important}
+#swtPane #swtResultsScreen #swtReadingEstimate svg{width:56px;height:56px}
+#swtPane #swtResultsScreen #swtReadingEstimate strong{font-size:18px!important}
+#swtPane #swtResultsScreen #swtReadingEstimate>div{margin:8px 0!important;gap:10px!important}
+.swt-trait-tile:is(:hover,:focus-within)::details-content{content-visibility:visible}
+@media(min-width:801px){#swtPane #swtResultsScreen .swt-review-source-stack.swt-submitted-columns{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#swtPane #swtResultsScreen{max-width:none}
+#swtPane #swtResultsScreen #annotatedPassage{max-width:none;white-space:pre-wrap;overflow-wrap:anywhere}
+.swt-submitted-card{border:1px solid #dce8e0;border-radius:10px;padding:12px;background:#f8fbf9}
+.swt-submitted-card p{margin-block:6px}
+.swt-submitted-text{white-space:pre-wrap;overflow-wrap:anywhere}
+.swt-submitted-review .swt-mock-word{border:0;border-radius:4px;background:#fff3d8;color:#78500d;text-decoration:underline dotted;padding:0 2px;cursor:pointer;font:inherit}
+#swtPane #annotatedSubmission .swt-word-fix{border:0;border-radius:4px;background:#fff3d8;color:#78500d;text-decoration:underline dotted;padding:0 2px;cursor:pointer;font:inherit}
+.swt-submitted-sample{grid-column:1/-1}
+.swt-submitted-sample>summary{cursor:pointer;font-weight:700}
+.swt-submitted-sample[open]>.swt-submitted-text{margin-top:8px}

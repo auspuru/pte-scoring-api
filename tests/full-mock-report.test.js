@@ -122,7 +122,7 @@ test('Every task review is readable and escaped, with no form controls that can 
   assert.equal(document.querySelectorAll('.ipr-overall,.ipr-skill').length, 5); assert.match(document.querySelector('.ipr-overall').textContent, /90/);
   assert.equal(document.querySelectorAll('#fm-review-select option').length, 65);
   for (const item of report.items) {
-    const { document:doc } = parseHTML(renderer.review(item)); assert(doc.querySelector('h3,h4')); assert.equal(doc.querySelector('textarea,input,select'), null); assert(doc.querySelector('details.fm-reference'));
+    const { document:doc } = parseHTML(renderer.review(item)); assert(doc.querySelector('h3,h4')); assert.equal(doc.querySelector('textarea,input,select'), null); assert(doc.querySelector(item.type==='swt'?'details.swt-submitted-sample':'details.fm-reference'));
     assert.match(doc.querySelector('article').textContent, /marks/);
   }
 });
@@ -253,8 +253,8 @@ test('SWT report projects validated coaching from saved native results without e
  const state=complete(),candidate=paper.questions.find(x=>x.question.type==='swt'),index=paper.questions.indexOf(candidate)+1;
  const response=state.responses[index];response.answer=['Trees cool cities and improves air quality.'];
  const job=state.assessment.items[candidate.id];job.inputHash=inputHash(response);
- job.result.native={scores:{content:4,form:1,grammar:2,vocabulary:2},feedback:{content:'Saved content explanation'},summary_assessment:{next_step:'Review the saved recommendation.',repair:'A possible repair uses the saved evidence.'},errors:[{phrase:'improves',correction:'improve',explanation:'Use a plural verb.',affectsScore:false}],apiKey:'SECRET',summary_assessment_private:{credentials:'SECRET'}};
- const before=JSON.stringify(state),item=reports.buildReport(paper,state).items[index-1];assert.equal(item.feedback.swt.status,'complete');assert.equal(item.feedback.swt.language[0].optional,true);assert(!JSON.stringify(item).includes('SECRET'));assert.equal(JSON.stringify(state),before);
+ job.result.native={scores:{content:4,form:1,grammar:2,vocabulary:2},feedback:{content:'Saved content explanation'},summary_assessment:{next_step:'Review the saved recommendation.',repair:'A possible repair uses the saved evidence.'},errors:[{phrase:'improves',correction:'improve',explanation:'Use a plural verb.',affectsScore:true},{phrase:'Trees',correction:'Urban trees',explanation:'Optional wording.',affectsScore:false}],apiKey:'SECRET',summary_assessment_private:{credentials:'SECRET'}};
+ const before=JSON.stringify(state),item=reports.buildReport(paper,state).items[index-1];assert.equal(item.feedback.swt.status,'complete');assert.equal(item.feedback.swt.language.length,1);assert.equal(item.feedback.swt.language[0].required,true);assert(!JSON.stringify(item).includes('SECRET'));assert.equal(JSON.stringify(state),before);
  const {document}=parseHTML(renderer.review(item));assert.equal(document.querySelectorAll('.swt-mock-section').length,3);assert.equal(document.querySelector('textarea,input,select'),null);
  job.inputHash='stale';const stale=reports.buildReport(paper,state).items[index-1];assert.equal(stale.feedback.swt,undefined);assert(!renderer.review(stale).includes('Use a plural verb.'));
 });
