@@ -41,7 +41,7 @@
     "public/essay-scoring.js": "c69b6926206f78a9282d9bfd132821b51b72e8d0df83a34ded92a99be7457e08",
     "public/essay-feedback.js": "215ad91cc24acbdb5637cc50f18e0af5e8ed8135aeb27439560bb125f36170f3",
     "public/swt-feedback.js": "ddf39fbcae1de9623ac243555ab85b177d53efdfc6b2a77e28c158eb7fb3edca",
-    "public/swt-feedback-review.js": "84c7ed6639bdac504073d2692388b3d049a34040c2d75c749b236c668fe5e9a4",
+    "public/swt-feedback-review.js": "d6907a76b1474961d9eb0705aab615e539211e6741c608c832598ac79535fa72",
     "public/swt-mock-feedback.js": "76175c840a5125ddbad6b60a103d70ed4c19bc790e282e2aea5415a4d7a06685",
     "content/full-mock/scoring-lock.json": "90760afb380a1f149105ad02b3d6630347f00c461af3b6373f9a25d98ffb7cb3",
     "public/assets/ipt-brisbane-logo.png": "3c8f262fb2d99e311257d9a955cae96bb340ca6b1f171f03ec9ba230cf1f0e9c",
@@ -52,7 +52,7 @@
     "speaking-mock-reassessment.js": "dcb0352924d2408411629cae5ca9ad86acf2db6e3cb17946d34f2950c932a821",
     "speaking-delivery.js": "b4b046add57ba7f7f0031fc4c6db9d618fdc5abee1db452e693bd1c4970c5ad7",
     "full-mock/delivery-reassessment.js": "f88c111dc01558160462e708fbf1a174d2ed33959f1c161dd46f00f412c4e34f",
-    "public/swt-highlight-guide.js": "89295dbc9a8abfae6cc4ec8e50a530136f0fb71715c735e18ca1ab1f366bc100",
+    "public/swt-highlight-guide.js": "17b7d6807916f4ae6630913b94317edbbd9bbdf6da7ada1af3f68ea99211164e",
     "public/swt-trait-review.js": "200d4979162180545ad7efab909f1c8d1c812188224337d953bf67e4c6b54f88",
     "public/swt-trait-review.css": "cb8139b890df97e1e797cb4fee1f79fb687ed589fc6f8bf3a6024f7b7b744a15",
     "swt-feedback-evidence.js": "4c1f7410fb1d2f691589da984a145afb98880bbf938ab23845e53e188899f5c0"
