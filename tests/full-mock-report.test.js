@@ -73,6 +73,33 @@ test('Speaking delivery retains existing acoustic coaching and projects it witho
   assert.deepEqual(item.feedback.criteria.find(row => row.key === 'pronunciation').practiceWords, ['entrance']);
   assert(!JSON.stringify(item).includes('private-provider')); assert(!JSON.stringify(item).includes('SECRET'));
 });
+test('SST review shows transcript ideas and only coverage tied to the verified saved answer', () => {
+  const { sstIdeas } = require('../sst-idea-guide');
+  const state = complete();
+  const index = paper.questions.findIndex(row => row.question.type === 'sst' && sstIdeas(row.question));
+  assert.ok(index >= 0, 'The frozen paper has a reviewed SST reference');
+  const candidate = paper.questions[index], response = state.responses[index + 1], job = state.assessment.items[candidate.id];
+  const guide = sstIdeas(candidate.question);
+  response.answer = ['An exact phrase in the saved answer.'];
+  job.inputHash = inputHash(response);
+  const reviewed = guide.map((idea, position) => ({
+    ...idea, status:position ? 'missed' : 'covered', evidence:position ? '' : 'exact phrase'
+  }));
+  job.result.native = { sstCoverage:{ ideas:reviewed, nextStep:'Connect the main ideas.', providerDebug:'SECRET' } };
+  let item = reports.buildReport(paper, state).items[index];
+  assert.deepEqual(item.feedback.sstCoverage, { ideas:reviewed, nextStep:'Connect the main ideas.' });
+  assert.equal(item.total, job.result.total);
+  const { document } = parseHTML(renderer.review(item));
+  assert.match(document.body.innerHTML || document.toString(), /Key ideas from the transcript/);
+  assert.match(document.toString(), /Connect the main ideas/);
+  reviewed[0].evidence = 'invented phrase';
+  item = reports.buildReport(paper, state).items[index];
+  assert.deepEqual(item.feedback.sstCoverage, { ideas:guide });
+  job.status = 'failed';
+  item = reports.buildReport(paper, state).items[index];
+  assert.equal(item.status, 'failed');
+  assert.deepEqual(item.feedback.sstCoverage, { ideas:guide });
+});
 test('Reports reject active or corrupt records; historical reports preserve their saved profile versions', () => {
   const state = complete(), old = structuredClone(state);
   state.status = 'active'; assert.throws(() => reports.buildReport(paper, state), { status:409 });

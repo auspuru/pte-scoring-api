@@ -29,11 +29,12 @@ test('Question selection preserves native graders, models, weights and timing; f
     'swt-plain-samples.js', 'content/swt-plain-samples.json'];
   const swtRevisions = ['swt-judge-format.js', 'swt-judgment-service.js', 'swt-reference.js', 'swt-scoring-policy.js', 'mock-content-assessment.js'];
   const transportRevisions = ['mock-content-provider.js'];
+  const sstCoachingAdditions = ['content/sst-idea-guide.json', 'sst-coverage.js', 'sst-idea-guide.js'];
   const lock = require('../content/full-mock/scoring-lock.json').snapshot;
   // Instructor publication adds an explicitly pinned support controller;
   // every native grader below must still match its retained baseline.
-  assert.deepEqual([...Object.keys(before.files),'full-mock/exclusions.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','listening-mock/aggregation.js','describe-image-academy/number-context.js','describe-image-academy/legacy-scoring-policy.js',...swtAdditions,...rtsAdditions].sort(), Object.keys(after.files).sort());
-  for (const file of [...rtsAdditions, ...rtsRevisions, ...swtAdditions, ...swtRevisions, ...transportRevisions, 'full-mock/adapters.js', 'full-mock/assessment.js', 'public/writing-lab-report.js', 'server.js']) {
+  assert.deepEqual([...Object.keys(before.files),'full-mock/exclusions.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','listening-mock/aggregation.js','describe-image-academy/number-context.js','describe-image-academy/legacy-scoring-policy.js',...swtAdditions,...rtsAdditions,...sstCoachingAdditions].sort(), Object.keys(after.files).sort());
+  for (const file of [...rtsAdditions, ...rtsRevisions, ...swtAdditions, ...swtRevisions, ...transportRevisions, ...sstCoachingAdditions, 'full-mock/adapters.js', 'full-mock/assessment.js', 'public/writing-lab-report.js', 'server.js']) {
     assert.deepEqual(after.files[file], lock.files[file], file);
   }
   for(const file of ['full-mock/exclusions.js','full-mock/aggregation.js','full-mock/api.js','full-mock/audit.js','mock-result-review.js','full-mock/delivery-reassessment.js','azure-continuous-delivery.js','listening-mock/aggregation.js','speaking-delivery.js','writing-lab-scoring.js','full-mock/rubrics.js','describe-image-academy/scoring-policy.js','describe-image-feedback/scoring-policy.js','describe-image-academy/number-context.js','describe-image-academy/legacy-scoring-policy.js','describe-image-academy.js'])

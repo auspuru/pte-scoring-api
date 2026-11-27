@@ -1,0 +1,835 @@
+{
+  "4eb3a03f9cadc76ebd7c90147cabe7865f4b506a0518cdeb50ea515d41ee11bb": {
+    "id": "pred26-user-sst-01",
+    "ideas": [
+      {"main":"Infant smiles are strategically timed rather than purely spontaneous.","supporting":["Mothers usually sought simultaneous smiling, while babies mainly sought smiles from their mothers."]},
+      {"main":"The study suggests very young infants can influence social interaction through sophisticated timing.","supporting":[]}
+    ]
+  },
+  "2288d4484dc2d9265cbfa3e4feb0f9408545e85c18c5d8d521de4bc07b7c3601": {
+    "id": "pred26-user-sst-02",
+    "ideas": [
+      {"main":"Rome itself grew gradually and irregularly rather than from one master plan.","supporting":[]},
+      {"main":"Ideal Roman cities drew on the castrum or military-camp design.","supporting":["Romans used geometric grid planning for military camps."]}
+    ]
+  },
+  "0637bed990a3f0f526b5432cc6a901f8171981b81925970aaa8ab671b2bd3869": {
+    "id": "pred26-user-sst-03",
+    "ideas": [
+      {"main":"Government authority is divided into legislative, executive and judicial branches.","supporting":[]},
+      {"main":"The separation prevents any one branch from becoming too powerful through checks and balances.","supporting":["Independent courts and representative legislatures support fairness and stability."]}
+    ]
+  },
+  "e9de2a4c33c246354080b5984ad6b0251bd8561f98b49b102b1de2208008e847": {
+    "id": "pred26-user-sst-04",
+    "ideas": [
+      {"main":"Adequate sunlight can remove the dietary need for vitamin D.","supporting":["Vitamin D is described as a pro-hormone rather than a true vitamin."]},
+      {"main":"Migration away from equatorial regions created a greater dietary need for vitamin D, especially in winter.","supporting":[]}
+    ]
+  },
+  "86307728c538f3c2c2bf5a4d8799263fc78a7591ba35e2f534127f504907d5c5": {
+    "id": "pred26-user-sst-05",
+    "ideas": [
+      {"main":"Einstein proposed that space itself changes dynamically.","supporting":["Older thinkers regarded space as fixed and unchanging."]},
+      {"main":"Hubble later provided the observational discovery supporting this view.","supporting":[]}
+    ]
+  },
+  "7e1df17fc98ca325e42763fc17208f00216f91c23d7167643ee794ee3119ee48": {
+    "id": "pred26-user-sst-06",
+    "ideas": [
+      {"main":"English has borrowed from more than 350 languages and is not a pure language.","supporting":["Attitudes toward borrowed words have changed over time, including strong resistance in Shakespeare's period."]},
+      {"main":"The history of English is closely connected to the history of English-speaking people.","supporting":[]}
+    ]
+  },
+  "3a2972cb97fdcf0f9b94ec08066c03db34c8db725cabb6c3f5a9c3332b822aaa": {
+    "id": "pred26-user-sst-07",
+    "ideas": [
+      {"main":"The stock market connects investors who buy and sell shares and other investments.","supporting":[]},
+      {"main":"Traditional firms often used stocks to raise capital.","supporting":[]},
+      {"main":"Large modern companies can use stock markets differently because they may already generate substantial funds.","supporting":[]}
+    ]
+  },
+  "354b940cc39bfc2d24fb6b2734ce02a1af552f098e7323269cc148907475286a": {
+    "id": "pred26-user-sst-08",
+    "ideas": [
+      {"main":"Leadership ranges from quiet persuasion to highly visible authoritative power.","supporting":["Leaders define goals and mobilize people through many different methods."]},
+      {"main":"Historically visible leadership was dominated by men, but more women are now taking authoritative leadership roles.","supporting":[]}
+    ]
+  },
+  "94426f40a130444a43268187220e80ebd5e470c4d146fbd7480121a77d3c7cf7": {
+    "id": "pred26-user-sst-09",
+    "ideas": [
+      {"main":"Older interpretations emphasised inventors, machinery, factories and England's advantages.","supporting":["Earlier analysis treated faster and slower industrialising countries as winners and losers."]},
+      {"main":"Recent interpretations emphasise intensification of existing artisanal, craft and domestic production as well as factories.","supporting":[]}
+    ]
+  },
+  "8822b7e39e6abb2889a1ba976e25c63bb876ec4758d4a448172c1aa04b8c09ea": {
+    "id": "pred26-user-sst-10",
+    "ideas": [
+      {"main":"People differ in the stability and intensity of their emotions.","supporting":[]},
+      {"main":"Research links lasting happiness with mild contentment rather than extreme highs.","supporting":["Moderate productive strain combined with calm satisfaction can support emotional balance."]}
+    ]
+  },
+  "a43484cdc278be3b5646180e40cc282f507a3d64a61995cd7b376a387744f555": {
+    "id": "pred26-user-sst-11",
+    "ideas": [
+      {"main":"Basic emotions such as fear, anger and disgust serve survival functions.","supporting":[]},
+      {"main":"Powerful emotions and physical symptoms help people respond rapidly to danger.","supporting":["Threat information is processed quickly through primitive reactive brain systems."]}
+    ]
+  },
+  "0be00f66f4c6368c4730b43a0e24ffe9d9fc13305ca4e42cd61ba946f4c97d23": {
+    "id": "pred26-user-sst-12",
+    "ideas": [
+      {"main":"Modern cosmology places the Big Bang about 13.8 billion years ago.","supporting":["The age of the oldest stars is consistent with a universe slightly older than those stars."]},
+      {"main":"The same physical laws explain both tiny particles and conditions in the early universe.","supporting":[]}
+    ]
+  },
+  "f593a5ad702977c57728b9c5f810b36ab49cf86d1b50e07f7b7826ce08697942": {
+    "id": "pred26-user-sst-13",
+    "ideas": [
+      {"main":"After six months some participants lost body fat while others did not.","supporting":["Thirty-one women joined an exercise program without changing their prescribed diet."]},
+      {"main":"The lecture suggests increased eating or psychological factors as possible explanations for differing outcomes.","supporting":[]}
+    ]
+  },
+  "f2e59a21a5069aff22498cb3f12ec1175eb5996c34517fe5d4ee64f546f35a01": {
+    "id": "pred26-sst-01",
+    "ideas": [
+      {"main":"A strong business idea is rarely created from nothing; it usually combines existing knowledge in a way that solves a problem more effectively.","supporting":["Novelty matters, but usefulness matters as well, because an unusual idea has little value if it does not improve an experience, product or process."]},
+      {"main":"Entrepreneurs should therefore test whether customers understand the idea, whether it can be delivered reliably and whether competitors can copy it easily.","supporting":[]},
+      {"main":"Innovation continues after launch as feedback reveals weaknesses and new possibilities.","supporting":[]}
+    ]
+  },
+  "341373554753a5d5e50f10c4f0e2eb7e6299bf3dbaa32fda9eafe18c8ced7fdd": {
+    "id": "pred26-sst-02",
+    "ideas": [
+      {"main":"Managers work under time pressure, but continuing education can broaden the perspectives they bring to difficult decisions.","supporting":["Reading outside a narrow professional field exposes leaders to different ways of thinking about people, markets and organisations.","Formal study is valuable when it helps a manager connect experience with concepts such as strategy, motivation, ethics and organisational design.","Experience alone can produce habits that work in one situation but fail in another."]}
+    ]
+  },
+  "42357ab1358a441d304b20084f2ae030cd67aeb1de5663cf9358706a0ff44142": {
+    "id": "pred26-sst-03",
+    "ideas": [
+      {"main":"People differ in how strongly their moods change, with some experiencing sharp emotional swings and others remaining comparatively steady.","supporting":[]},
+      {"main":"Emotional health does not require constant excitement because a calm sense of satisfaction can be more sustainable than repeated extreme highs.","supporting":["Contentment also does not mean passivity; it can coexist with ambition and effort."]},
+      {"main":"A moderate level of challenge can support attention and growth, while excessive stress may reduce judgement and well-being.","supporting":[]}
+    ]
+  },
+  "b9a2c2f57610c812994ade14c50f430083092d1ae19eb933ac5a1290f6b8f5b6": {
+    "id": "pred26-sst-04",
+    "ideas": [
+      {"main":"The word need can describe very different things depending on context, from a strong personal desire to an essential condition for survival or function.","supporting":["Saying that someone needs a holiday expresses preference differently from saying that a plant needs water."]},
+      {"main":"Social policy adds another layer because communities debate which goods and services should count as basic needs.","supporting":["Psychological needs such as belonging and recognition can also influence behaviour even though they are not physical necessities."]}
+    ]
+  },
+  "f2d68196f346e094a8b7afd215260556f7756ad142767f3d84be659cfdfcd6b4": {
+    "id": "pred26-sst-05",
+    "ideas": [
+      {"main":"Washing fresh produce can remove soil and reduce some surface contamination before food is eaten or prepared.","supporting":["Running water is usually appropriate, while firm produce can be cleaned with a brush that is kept for food use."]},
+      {"main":"Cleaning the sink, hands and utensils is just as important as rinsing the food itself.","supporting":["Pre-washed packaged greens may not need another wash if the label says they are ready to eat, because extra handling can introduce contamination."]}
+    ]
+  },
+  "bc0c9def83b9022381568dab6663b9a53fea1230f79e62533fa7c716ba0f8d40": {
+    "id": "pred26-sst-06",
+    "ideas": [
+      {"main":"Scientific research can explain what is possible, but evidence alone does not decide how every discovery should be used.","supporting":["Choices about medicine, artificial intelligence, genetics and the environment involve values such as fairness, privacy, responsibility and harm."]},
+      {"main":"Ethical debate should be informed by accurate science so that decisions are not based on fear or misinformation.","supporting":["At the same time, technical experts need to hear from communities affected by the consequences of new technologies."]}
+    ]
+  },
+  "36102900bf6ef1cf10165c28cafc64da82e1fe43046cbcbe55c47baa3472068b": {
+    "id": "pred26-sst-07",
+    "ideas": [
+      {"main":"People often react more strongly to the possibility of losing something they already have than to an equally sized potential gain.","supporting":["This tendency, commonly described as loss aversion, can influence decisions about money, health and personal goals."]},
+      {"main":"Messages framed around avoiding a loss may therefore attract more attention than messages promising a future benefit.","supporting":["However, communicators should not exaggerate threats because fear-based messages can become manipulative or reduce trust."]}
+    ]
+  },
+  "ee8f82dffd99ba8e796b292e1acf8826545019ae29f3703fdeee9340919fa6a6": {
+    "id": "pred26-sst-08",
+    "ideas": [
+      {"main":"An economy built heavily around private cars can create jobs and mobility while also encouraging congestion, fuel use and dispersed urban development.","supporting":[]},
+      {"main":"Diversifying investment toward public transport, renewable energy and efficient urban infrastructure can create different industries and employment opportunities.","supporting":[]},
+      {"main":"Policy needs to support retraining and new investment while improving alternatives that people can actually use.","supporting":["The transition is not immediate because workers, businesses and communities depend on existing supply chains."]}
+    ]
+  },
+  "c0dc727bbf58f0bfd4ec5245bd2f881238880b43424994dc2028c725ddfb5c30": {
+    "id": "pred26-sst-09",
+    "ideas": [
+      {"main":"Rail travel cards can make frequent journeys cheaper and reduce the time passengers spend purchasing individual tickets.","supporting":["Different schemes may target students, older travellers, commuters or families, so the value depends on a passenger’s actual pattern of travel.","Some cards provide discounts while others work as prepaid or subscription products."]},
+      {"main":"Travellers should compare eligibility rules, peak-hour limits and the number of trips required before the card becomes economical.","supporting":[]}
+    ]
+  },
+  "d8afd639f2a5088e35aa132768d8a86375c82362edd6b8189eb43e7e88fbcd7a": {
+    "id": "pred26-sst-10",
+    "ideas": [
+      {"main":"Internal recruitment can reward employees, reduce induction time and use knowledge the organisation already has.","supporting":[]},
+      {"main":"External recruitment can widen the talent pool and bring skills or perspectives that are not available inside the company.","supporting":[]},
+      {"main":"Both methods have costs, and relying on only one approach can limit fairness or flexibility.","supporting":[]}
+    ]
+  },
+  "e76371fe626e547ad8678f0ddbc9a68644f1304ddf7facf71e2c5bc64e8c35c1": {
+    "id": "pred26-sst-11",
+    "ideas": [
+      {"main":"Computers support communication, analysis, record keeping and automated tasks across education, health, business and many other fields.","supporting":[]},
+      {"main":"Their speed and storage capacity can improve productivity, but greater dependence on digital systems also creates risks.","supporting":["Cybersecurity failures, unequal access and loss of basic manual processes can become serious problems when organisations digitise without planning."]},
+      {"main":"People still need judgement to decide what data means and whether an automated result is appropriate.","supporting":[]}
+    ]
+  },
+  "a8245c9ded613709491b43f847c810b1e4598a5031c848b62818bfc06d4dc667": {
+    "id": "pred26-sst-12",
+    "ideas": [
+      {"main":"Orientation helps new employees understand how an organisation works before they are expected to perform independently.","supporting":["A useful program explains responsibilities, safety, workplace policies, communication channels and where to obtain technical or personal support.","Meeting colleagues and managers early can reduce uncertainty and help newcomers understand how their role connects with the wider team.","Too much information in one session is easily forgotten, so important guidance should remain accessible afterwards."]}
+    ]
+  },
+  "7d0c9cd5e8162f46ef9ac2508a535481f73a7779415008d5e95e928967aee387": {
+    "id": "pred26-sst-13",
+    "ideas": [
+      {"main":"Travel can broaden experience, but distance alone does not guarantee learning or personal growth.","supporting":["People can pass through many places without reflecting on culture, history or the lives of local residents."]},
+      {"main":"Meaningful learning can also happen through local communities, books, digital resources and sustained contact with people from different backgrounds.","supporting":[]},
+      {"main":"Tourism may bring economic benefits while also increasing emissions, crowding and pressure on local traditions.","supporting":[]}
+    ]
+  },
+  "7148e73144f498e5c9f256edd98f1507099b404bfa56c4e9e21014fa32a50934": {
+    "id": "pred26-sst-14",
+    "ideas": [
+      {"main":"Information technology allows organisations to store, process and exchange data at a scale that has transformed work and public services.","supporting":["Digital systems can improve access to education, healthcare and communication across long distances."]},
+      {"main":"The same systems create responsibilities around privacy, cybersecurity, reliability and unequal access.","supporting":["Organisations need clear rules for who can use data and how failures are detected and corrected."]}
+    ]
+  },
+  "3553fb8de4fed022c8020036921e3668139a441e595492260ce1cf91662be701": {
+    "id": "pred26-sst-15",
+    "ideas": [
+      {"main":"Rejection is common in academic publishing and can be especially discouraging for researchers at the beginning of their careers.","supporting":[]},
+      {"main":"Revising carefully before sending the work to another journal can strengthen both the paper and the author’s future research practice.","supporting":["A rejected paper is not always worthless because reviewers may identify weak evidence, unclear argument or missing literature that can be improved.","Researchers should separate useful criticism from comments that are less relevant to the goals of the study."]}
+    ]
+  },
+  "1380ad5d63a33315eb6fb71d3798f034e1af4662b2a421c9b438bcb17dbaabc4": {
+    "id": "pred26-sst-16",
+    "ideas": [
+      {"main":"Online journalism can combine written reporting with photographs, audio, video and links to background material in a single story.","supporting":["Digital tools also make research faster because reporters can search documents, contact sources and check earlier coverage quickly."]},
+      {"main":"At the same time, speed increases the risk of publishing unverified information before facts have been confirmed.","supporting":[]},
+      {"main":"Traditional news organisations have also faced economic pressure as audiences and advertising moved online.","supporting":[]}
+    ]
+  },
+  "f0280e975170325db852e15ca7d85c9dd97ee897943e302159da1cbdfa4c196e": {
+    "id": "pred26-sst-17",
+    "ideas": [
+      {"main":"A honeybee colony functions through highly specialised roles that allow thousands of insects to behave as a coordinated system.","supporting":["The queen lays eggs, workers gather food and maintain the hive, and male drones have a narrower reproductive role.","Worker bees perform demanding tasks throughout short lives, while new generations continually replace those that die."]},
+      {"main":"Communication and division of labour allow the colony to regulate food, temperature and care for developing bees.","supporting":[]}
+    ]
+  },
+  "2a4e6af69c9407b803e54f1d80e13f9a58ecb36c21ab8a434505adcc749f7317": {
+    "id": "sst-user-20261124-01",
+    "ideas": [
+      {"main":"Research links hospital design to patient recovery, and Florence Nightingale identified benefits of colour and spatial design in 1855.","supporting":["Ninety percent of hospital patients and nurses associate well-designed hospitals with higher recovery rates."]},
+      {"main":"Grass, fresh air, sunlight and views of nature can support sleep and reduce stress and pain.","supporting":[]},
+      {"main":"Visits from family and friends and private single rooms can help patients recover sooner.","supporting":[]}
+    ]
+  },
+  "e634601df45cd07501392fa6c8ebfa86eb642b5f1bf70afc516961aee14423ee": {
+    "id": "sst-user-20261124-271",
+    "ideas": [
+      {"main":"The Internet helps researchers gather much more information quickly.","supporting":["Online methods can cost less and reach diverse or otherwise inaccessible groups."]},
+      {"main":"Online research has limitations that can affect the quality of evidence.","supporting":["Without face-to-face contact, researchers lose non-verbal cues.","Participant anonymity can make identities and data harder to verify."]},
+      {"main":"Researchers need to address these drawbacks while retaining the benefits to maintain research quality and credibility.","supporting":[]}
+    ]
+  },
+  "0c400660693925b9853199f9599d710f56bb8a0f9e0f581244e3f958f9f1e383": {
+    "id": "sst-user-20261124-40",
+    "ideas": [
+      {"main":"The lecture links rising greenhouse gas emissions to global warming and describes growing concern over the consequences.","supporting":["It refers to Ehrlich’s warning about population growth exceeding agricultural capacity and notes that eleven of the twelve most recent years in the cited record were among the warmest."]},
+      {"main":"The speaker urges precaution as precipitation patterns change.","supporting":[]}
+    ]
+  },
+  "1b09f41dac1468724042ff348aed3f73d407dada6c5637637d4030d66062c389": {
+    "id": "sst-user-20261124-108",
+    "ideas": [
+      {"main":"With instant communications, we can share ideas and access cultural artifacts from countries all over the world.","supporting":["Globalization is the idea that we all live in a global village."]},
+      {"main":"However, it also leads to the disappearance or erosion of traditional values.","supporting":["To be more specific, young people are rejecting the culture they have grown up in."]}
+    ]
+  },
+  "6715398ee565817634cba989a9a26a8400362c43ed3873a95299fbbd1f3a3dd0": {
+    "id": "sst-user-20261124-120",
+    "ideas": [
+      {"main":"The Great Depression was the beginning of modern food technology, when canned foods entered the market.","supporting":[]},
+      {"main":"Moreover, the Rural Electrification Administration enabled farmers to purchase appliances, meaning frozen foods were experiencing rapid growth.","supporting":["Meanwhile, refrigerators were very popular in urban and rural areas."]},
+      {"main":"As a result of these changes, people started to think about supermarkets with many freezer cases and canned foods.","supporting":[]}
+    ]
+  },
+  "8bc1462bb338bf75c57423001170a8f387d37e2901c10b581606597dd32a61a6": {
+    "id": "sst-user-20261124-123",
+    "ideas": [
+      {"main":"Negativity bias means humans usually pay more attention to negative emotions rather than positive emotions.","supporting":["We feel content and pleasant more frequently, but these positive emotions are lighter, which means they cannot be easily recalled or stay in our minds.","However, negative emotions happen less frequently, but they are strong and intense."]},
+      {"main":"Negativity bias can help us evaluate the environment and survive when we face life-threatening issues.","supporting":[]}
+    ]
+  },
+  "c5862cf77b3fc938e202b875d66858a02117b3cf0d740bcd61db2b2f1a3f31e0": {
+    "id": "sst-user-20261124-126",
+    "ideas": [
+      {"main":"He also says that the global food emergency could impact children and adults, so we must double the yield.","supporting":["The speaker mentions that people are going to suffer from a serious food crisis."]},
+      {"main":"Although there will be an increase of the cost of the production, there is also an opportunity for developing countries.","supporting":[]}
+    ]
+  },
+  "142f1b745ba0a9e0aa2acc17b1c434b217978e2ef4f37ade38066c63a0afb16b": {
+    "id": "sst-user-20261124-136",
+    "ideas": [
+      {"main":"We need to recycle water because we don't generate much new water.","supporting":["Generating water is not a process that happens a lot anymore."]},
+      {"main":"However, when we use water at home, there is very little recycling at a local level.","supporting":["This is because it’s not a closed loop in the home."]}
+    ]
+  },
+  "9110a60f7545ac88a8fca6834a9d0759956e7cb7be097a0a2a161f55ed9267f0": {
+    "id": "sst-user-20261124-144",
+    "ideas": [
+      {"main":"Firstly, it should be various and novel.","supporting":[]},
+      {"main":"Secondly, great ideas should be unique.","supporting":["Constant innovation effectively makes ideas unique.","A unique idea often serves its purpose in a better way."]},
+      {"main":"Thirdly, a great idea should be transformative and protectable.","supporting":[]}
+    ]
+  },
+  "b2a7d3aa8d5a39542c379f68b0d78c8e4122f8086c1dfb2174a6770f9785a2ee": {
+    "id": "sst-user-20261124-149",
+    "ideas": [
+      {"main":"It is also known as the integration of economic activities across borders.","supporting":["Globalization is an overused and often misunderstood concept.","First of all, it is industries and markets that globalize."]},
+      {"main":"Globalization is very important because it makes countries and markets more connected across the world, especially the financial and banking systems.","supporting":[]}
+    ]
+  },
+  "350eb58930f05777d52e55a1a366e3d40a8e3d72979200f3a160c4afc1a3e195": {
+    "id": "sst-user-20261124-162",
+    "ideas": [
+      {"main":"A child’s early circumstances can strongly shape their future opportunities.","supporting":["Children of well-educated parents often receive educational support early in life.","The speaker reports that these differences are already visible by age five."]},
+      {"main":"However, currently there is no obvious way to address this deep root of inequality in our society.","supporting":[]}
+    ]
+  },
+  "7314ddd57c836e7b0f8c7bdaec5a67fcdc6b0e106b0bd23380c346e18eb2274a": {
+    "id": "sst-user-20261124-166",
+    "ideas": [
+      {"main":"Risk combines the consequences of a hazard with the probability of those consequences occurring.","supporting":[]},
+      {"main":"Thus, safety usually means that we are free from harm or risk, or secure from danger or harm.","supporting":["It can also refer to the condition of being safe."]}
+    ]
+  },
+  "8d1dcd5c35380d7a146a4de95f0e768261c2d587118404974309fe89ba222abf": {
+    "id": "sst-user-20261124-169",
+    "ideas": [
+      {"main":"Firstly, it is immensely readable, as it is written like a living conversation.","supporting":["Secondly, the writer Plato has developed some very important ideas, and it is easy to read."]},
+      {"main":"Lastly, he addresses this absolutely fundamental question why we should be good in this book.","supporting":[]}
+    ]
+  },
+  "c39dfecf418daa7a7762600cdfb781e9ad173a2ba9419613603ecd48df2b62a0": {
+    "id": "sst-user-20261124-171",
+    "ideas": [
+      {"main":"Information technology is a young discipline that has advanced extraordinarily quickly.","supporting":["Under Moore’s Law, computing power expanded rapidly while computing, storage and communication costs fell.","This made it possible to introduce information technology into unexpected areas of life."]},
+      {"main":"The rush to seize the easiest opportunities shaped software development and continues to have consequences today.","supporting":[]}
+    ]
+  },
+  "c7a93d1d9790f05381ebf3caa1b497668be55f661d111835aba4fdbacc387c44": {
+    "id": "sst-user-20261124-172",
+    "ideas": [
+      {"main":"Historic buildings have undergone natural selection, with poorly designed structures either falling down or being modified to correct their design and construction flaws.","supporting":["So many of them now perform well, or better than when originally completed."]},
+      {"main":"In contrast, newer buildings may still have flaws just coming to light and are undergoing adaptation and selection.","supporting":["Therefore, criticizing their design flaws too early may be unfair."]}
+    ]
+  },
+  "bfde39c33b3159130d38ff06736c373d591587f49413078624ed26f878712824": {
+    "id": "sst-user-20261124-176",
+    "ideas": [
+      {"main":"Organizational studies draw on psychology, sociology, economics and other social sciences.","supporting":["The breadth of the field demands familiarity with several disciplines and can come at the expense of depth."]},
+      {"main":"The speaker argues that crossing academic boundaries frees researchers to combine methods and theories and better understand how the social world is organized.","supporting":[]}
+    ]
+  },
+  "e1b14b87de019afe1048ebe3f9467a6146ac9df7c2da21a1ed554cf856873ba0": {
+    "id": "sst-user-20261124-179",
+    "ideas": [
+      {"main":"All humans rely on wildlife as the source of food, and also the source of income.","supporting":["For example, we consider fish as the single most important source of protein."]},
+      {"main":"Therefore, the management of wild fish resources is very important to livelihoods and health.","supporting":[]},
+      {"main":"Moreover, in many places, wildlife tourism can be the No.1 source of foreign income for economies.","supporting":[]}
+    ]
+  },
+  "6cd87768dcd1b14eee2ee3feae4fb60ca0e78eebb5c43f528a05a1d7cd2e10fa": {
+    "id": "sst-user-20261124-211",
+    "ideas": [
+      {"main":"Brands can command a premium by offering greater value, but products must then deliver when customers use them.","supporting":["Consumers use years of experience to assess a brand’s appeal, performance and price in seconds."]},
+      {"main":"Engineers must balance competing requirements such as making a product both strong and soft or keeping a mixture from separating.","supporting":[]}
+    ]
+  },
+  "523a8bf8d9ac9a2aa68f23d531bc4546db2ca423f9fd82827dc93acc8c25a7d0": {
+    "id": "sst-user-20261124-217",
+    "ideas": [
+      {"main":"Bees are in decline.","supporting":["These declines are well-documented and real, as they are supported by good and strong scientific evidence."]},
+      {"main":"The drivers of decline vary depending on species, and the effects of pollinator loss could be absolutely huge.","supporting":[]},
+      {"main":"However, awareness is being raised all the time and people are taking action.","supporting":[]}
+    ]
+  },
+  "80b01f94cd616dc4493c53aabed23437df675fa6cb256e4a867ef6e373c21703": {
+    "id": "sst-user-20261124-218",
+    "ideas": [
+      {"main":"Keeping leftover medicines at home can lead to unsafe use.","supporting":["Firstly, they may be accidentally ingested by children.","Secondly, patients may use the drugs after their expiration date.","Thirdly, the leftover drugs may be taken for the wrong reasons."]},
+      {"main":"To solve this problem, physicians should prescribe the drugs only when appropriate, and the full course of the drug must be taken.","supporting":[]}
+    ]
+  },
+  "1f5060e0ba5271b7dbe5b52b3eefff65c5fae8c26e665a41f532af9049981bc6": {
+    "id": "sst-user-20261124-238",
+    "ideas": [
+      {"main":"Rejection is common in academic publishing and especially discouraging early in a research career.","supporting":[]},
+      {"main":"The speaker urges young researchers to use detailed feedback from experts to improve their papers before submitting elsewhere and to design stronger future studies.","supporting":["Rejection can ultimately improve the work, and publication alone does not guarantee funding."]}
+    ]
+  },
+  "934a8dffa41ecf0692c0c9ec0064db407b147ad4360d155b017ea598dfac5005": {
+    "id": "sst-user-20261124-239",
+    "ideas": [
+      {"main":"A brand is exclusive because of its high price and relatively small quantities of the product available.","supporting":["Despite the high price, luxury brands are still sold in millions."]},
+      {"main":"Therefore, the long answer is a complicated one, and it depends on whom you talk to.","supporting":["It is very hard to answer what makes a luxury brand and how we distinguish it."]}
+    ]
+  },
+  "94c4f67a1528b4b3fe25a7b9c0b3bf3bcc5d37f1a290cc2701218cf83c44ad1e": {
+    "id": "sst-user-20261124-246",
+    "ideas": [
+      {"main":"Several poets will be studied in detail, and they also demand a certain amount of close reading.","supporting":["This course is an introduction to the literature of modern poetry.","Meanwhile, some sense of the period in which they're writing will be given."]},
+      {"main":"Finally, the lecturer will give ways to possess and enjoy particular poems.","supporting":["In this way, students can learn from them and care about them."]}
+    ]
+  },
+  "68a8e01e77781551427fca28b4f2da49bc8cacf14a70590090e813d8ff7155da": {
+    "id": "sst-user-20261124-247",
+    "ideas": [
+      {"main":"Social skills and empathy help young people sustain friendships and manage conflict.","supporting":["Children without strong family relationships face greater risks of social difficulties."]},
+      {"main":"Researchers found that the filmmaking activity could improve the students’ self-regulation and critical thinking.","supporting":["In an eight-to-twelve-week high school experiment, students chose their stories and worked together to make films."]}
+    ]
+  },
+  "ad21342698f211342c102630d18dc5d05894cbdd9390b590a0646f5538eb4df0": {
+    "id": "sst-user-20261124-248",
+    "ideas": [
+      {"main":"Honeybees do a waggle dance to direct other bees to sources of nectar.","supporting":[]},
+      {"main":"After conducting an experiment, the scientists believe that the behavior warns dancers of a dangerous source of nectar.","supporting":["However, dancing bees can be halted by a headbutt from another bee, which has been found to be a warning signal."]}
+    ]
+  },
+  "c29e37cc4efe67db3c86947581a742af2669edd3820b49aff0cb1c8a1bb76063": {
+    "id": "sst-user-20261124-255",
+    "ideas": [
+      {"main":"In order to protect the next generation in the hive, the worker bees attack intruders and then die.","supporting":["This lecture discusses the genes of bees and their evolution."]},
+      {"main":"Darwin realized that by improving the reproductivity of the queen bees, the genetic legacy of the entire colony is safeguarded.","supporting":[]}
+    ]
+  },
+  "cce6aa95a3c8afad018fc242d1b43725f8d8c194d74658080862031482c9e60f": {
+    "id": "sst-user-20261124-256",
+    "ideas": [
+      {"main":"Now our life is dependent on machines from which people also make a profit.","supporting":["The development of machines is a sign of the development of the country.","Machines are getting more advanced with face recognition or language processing techniques."]},
+      {"main":"Therefore, we need to create more jobs, or more people will lose jobs and the unemployment rate will increase.","supporting":["However, as machines continue to improve, unemployment and redundancies will rise."]}
+    ]
+  },
+  "574e9eb309f233711ded7f4de17b623474d5a5e7cab3a2156b2772ca664dddcd": {
+    "id": "sst-user-20261124-257",
+    "ideas": [
+      {"main":"The speaker describes 5,000-year-old Neolithic stone balls found in Scotland as possible early evidence of humans exploring symmetry.","supporting":["Their patterned surfaces connect the makers’ work to the speaker’s own mathematical interests."]},
+      {"main":"Their purpose remains unknown, though they may have served for divination, games or as symbols of power, and that uncertainty makes them especially intriguing.","supporting":[]}
+    ]
+  },
+  "d8b947fa85be8c5358d69b6fdea9ff3f0a526d13ad2cd4e46b33ba85c6d33e25": {
+    "id": "sst-user-20261124-190",
+    "ideas": [
+      {"main":"Automation is classified into six levels, with drivers responsible for monitoring at lower levels and less responsible at higher levels.","supporting":["Humans are responsible for monitoring the vehicle in “driver assistance\" and “partial automation\".","Conditional, high and full automation are considered highly automated, where the driver is less responsible for monitoring the vehicle."]},
+      {"main":"Several systems work together to control an automated vehicle, which is how an automated vehicle works.","supporting":[]}
+    ]
+  },
+  "748cbec96fc5d1eb0205fc3be89cf35f7fd7510ba3a46508b75ea3e6db6585f4": {
+    "id": "sst-user-20261124-263",
+    "ideas": [
+      {"main":"Managers should read more to gain a broad range of perspectives, because reading widely enables them to apply their skills in different circumstances.","supporting":[]},
+      {"main":"The speaker argues that formal management knowledge offers longer-term guidance than experience alone.","supporting":["Thus, the best manager should not only know their organization better, but also be a professor of management."]}
+    ]
+  },
+  "9f890a25824ff489a1042ab9b6aefb125cb8dacc0f56c64fff7972f8c63c4ea8": {
+    "id": "sst-user-20261124-264",
+    "ideas": [
+      {"main":"Because of the economic model, the newspaper industry has been shrinking drastically, and newspapers have increased the cash flow.","supporting":["However, there are still some newspaper industries losing money because of a decrease in advertising and buyers."]},
+      {"main":"As a result, the staff working in the newspaper industry has decreased by more than 30%.","supporting":[]}
+    ]
+  },
+  "6c02be8d4424debc7acefd0b39a89cfbd1328b1a9964988810bec962d1718f12": {
+    "id": "sst-user-20261124-274",
+    "ideas": [
+      {"main":"We fight for the legal rights of non-human animals, and we decided upon chimpanzees.","supporting":["Our organization is called Nonhuman Rights Project.","After we found our chimpanzee, we filed three suits."]},
+      {"main":"However, the court didn't approve our appeal because they think chimpanzees are not humans, even if we proved to the court that chimpanzees also have cognitive capabilities.","supporting":[]}
+    ]
+  },
+  "465d2ec76c6054af4d06fa20b1e04af7b0ed639c15d151d9d121ce6703a6ef74": {
+    "id": "sst-user-20261124-278",
+    "ideas": [
+      {"main":"Moreover, we are no longer limited to the pieces, and we can even create new organisms.","supporting":["Life has evolved, and now we have the ability and the power to engineer and design it.","Thus, synthetic biology is the next level of genetic engineering.","For example, a cell that's programmed to make a useful compound is called a cellular factory."]}
+    ]
+  },
+  "034ce99b527ec2dc85a05446212c7a339a4733ffdda4a5b29ad12e00ae9d6b69": {
+    "id": "sst-user-20261124-280",
+    "ideas": [
+      {"main":"The result shows that customers are more motivated by a potential loss when not using this card, rather than by the benefit they could gain by using the card.","supporting":["In an experiment on customers’ behaviors, one group of inactive credit card users received a message offering benefits that they could gain by using the cards.","The other group received a message implying a penalty if it is not used."]}
+    ]
+  },
+  "5748098c6410fecef98f9f9a6055bbe46dd607e1524b8cbf88d98b1b2ee2d046": {
+    "id": "sst-user-20261124-283",
+    "ideas": [
+      {"main":"To start with, approach indicates a propensity to move toward a desired stimulus, while avoidance indicates a propensity to move away from it.","supporting":["Moreover, motivation is defined as the energization and direction of behavior.","Consequently, the valence of stimuli is at the core of the distinction between approach and avoidance."]}
+    ]
+  },
+  "b3dc32a80d1a174d2c71fb561455fd00057377b6b85ab5a97591227136d7786c": {
+    "id": "sst-user-20261124-284",
+    "ideas": [
+      {"main":"This can be achieved by a hook in the essay, which is a catchy sentence or paragraph.","supporting":["You are also suggested to build an emotional connection with your reader right from the start.","It serves as an attention element, and should be engaging and interesting.","It often appears in the first sentence."]}
+    ]
+  },
+  "109390dea4d8f0a8efa196844de75c8da730051f3fab59d59ff353d3880a8a01": {
+    "id": "sst-user-20261124-292",
+    "ideas": [
+      {"main":"This is because the rise of the Internet has a great impact on journalism, as it enables ordinary people to get involved in journalism.","supporting":["Recently, journalism has been faced with challenges."]},
+      {"main":"Moreover, the Internet not only speeds up the spread of news, but also helps people gain information in various ways.","supporting":[]}
+    ]
+  },
+  "139a7fe0937ec45881afa8d6a672fc49b1e942353ddfb990b2e612001e1f6ce8": {
+    "id": "sst-user-20261124-129",
+    "ideas": [
+      {"main":"Australia is a multicultural country with the world’s oldest continuous cultures and more than 270 ancestries.","supporting":["Nearly half its people were born overseas or have a parent who was."]},
+      {"main":"Migrants make a significant economic contribution and most feel a strong sense of belonging, although prejudice and unfair treatment persist.","supporting":[]},
+      {"main":"The speaker sees diversity as a national strength.","supporting":[]}
+    ]
+  },
+  "7053fb03d257db41d50834591fd83cfaaa4c6330d4c77dbebbdf257a2625a12f": {
+    "id": "sst-user-20261124-731",
+    "ideas": [
+      {"main":"Earlier historians portrayed the Industrial Revolution as the work of inventors whose machines transformed textiles, mining and factory production, with England at the centre.","supporting":[]},
+      {"main":"They emphasize the intensification of existing artisanal, craft and household production, including the work of women, men and children in the countryside.","supporting":["The speaker says historians now measure it more broadly."]}
+    ]
+  },
+  "1b327bea4580389a02b0b3c9e6d91456ca07e411de7784ceba714b9df9467131": {
+    "id": "sst-pte-nepal-20261122-003",
+    "ideas": [
+      {"main":"Managers need broad perspectives to lead effectively.","supporting":["Wide reading exposes them to ideas and strategies they can apply in changing circumstances.","Returning to university can challenge old habits and provide modern management knowledge.","Experience remains valuable, and formal learning helps managers avoid repeating mistakes, recognise opportunities for innovation and share what they learn with others."]}
+    ]
+  },
+  "61c3001e312cfb0b6016566c0a6a60c6a028d163ba41112142c36d6d2b0c4ef5": {
+    "id": "sst-pte-nepal-20261122-006",
+    "ideas": [
+      {"main":"The meaning of need depends on its context.","supporting":["It can express a strong subjective wish, such as wanting a holiday, or identify an objective requirement for survival or functioning, such as a planet needing water and sunlight."]},
+      {"main":"Social and psychological needs, including belonging and esteem, also drive behaviour and can help change social structures.","supporting":[]}
+    ]
+  },
+  "22c2342f7021402ed9aba10847abb846a0d9063dfbf5a811d6d52f16f0cf5223": {
+    "id": "sst-pte-nepal-20261122-007",
+    "ideas": [
+      {"main":"Washing produce reduces contamination and the risk of foodborne illness.","supporting":["Cold running water is usually enough, although a clean brush can help scrub firm-skinned produce."]},
+      {"main":"Packaging should be checked first because washing pre-cleaned greens again can introduce contamination from the sink.","supporting":["Specialised washes exist, but water and brushing are practical and accessible for most people."]}
+    ]
+  },
+  "e3086fc53ec7fde2664855a38a614415409797b8ece5aa1ba2efb816ae4bdc52": {
+    "id": "sst-pte-nepal-20261122-008",
+    "ideas": [
+      {"main":"Science produces knowledge, while human values guide its application.","supporting":["Advances in medicine, artificial intelligence and genetics offer benefits and raise questions about privacy, equity and misuse."]},
+      {"main":"Education can develop both scientific understanding and ethical reasoning, helping people use evidence alongside compassion, justice and responsibility when responding to problems such as climate change and pandemics.","supporting":[]}
+    ]
+  },
+  "e56afdf0758839db5510a116a3ae63fa0eb1bba2d6c3e24aff84b561bc3801ca": {
+    "id": "sst-pte-nepal-20261122-009",
+    "ideas": [
+      {"main":"Loss aversion describes the stronger emotional response people often have to a potential loss than to an equivalent gain.","supporting":[]},
+      {"main":"Warnings about losing money, health or progress can therefore motivate action more effectively than promises of rewards.","supporting":["Marketing, education and public health campaigns can use this tendency to frame information in ways that encourage behavioural change."]}
+    ]
+  },
+  "eccca12a19eb29acb90bbf53a93dd9c134336d3a771c185e0ddfc2b2819f45c6": {
+    "id": "sst-pte-nepal-20261122-010",
+    "ideas": [
+      {"main":"Dependence on the automobile industry has contributed to urban sprawl, environmental damage and fossil fuel consumption in the United States.","supporting":[]},
+      {"main":"Public transport, renewable energy and green technology can create jobs while reducing emissions and dependence on cars.","supporting":[]},
+      {"main":"Strategic investment and walkable urban planning could help diversify the economy and make it more resilient.","supporting":[]}
+    ]
+  },
+  "7b9d652c58325a5e045431e0fc63f1191467024a8a6c49231c637322d38947cc": {
+    "id": "sst-pte-nepal-20261122-011",
+    "ideas": [
+      {"main":"Railway cards make frequent train travel more convenient and affordable.","supporting":["They can provide reduced fares, booking or seating benefits, and options tailored to students, older people or families.","Prepaid and subscription cards simplify ticket purchases, while some schemes also reward regular use."]},
+      {"main":"Travellers should check eligibility rules and restrictions before choosing a card.","supporting":[]}
+    ]
+  },
+  "03712155574195520b19c0ef7b2e63f5fe7ffbd06f57593104aa0163e53adced": {
+    "id": "sst-pte-nepal-20261122-012",
+    "ideas": [
+      {"main":"Internal recruitment fills roles from within the organisation through mechanisms such as promotions and transfers, which can lower costs and support loyalty.","supporting":[]},
+      {"main":"External recruitment uses channels such as advertising, agencies and campus hiring to reach a wider pool and bring in new skills.","supporting":[]},
+      {"main":"Employers can combine both approaches according to their needs and long-term goals.","supporting":[]}
+    ]
+  },
+  "df73b0cacdaff4e562d6f7cc5593cbf8c95795288558c8e8ef1a0e8824aa0118": {
+    "id": "sst-pte-nepal-20261122-013",
+    "ideas": [
+      {"main":"Computers improve productivity by automating tasks and handling large amounts of data, and they support communication, business and education through tools such as video calls and virtual classrooms.","supporting":[]},
+      {"main":"Widespread use also creates concerns about dependency, cybersecurity and unequal access.","supporting":[]},
+      {"main":"Advances in artificial intelligence and quantum computing could bring further benefits.","supporting":[]}
+    ]
+  },
+  "646cf823fdbc670b101d908b67043494ad5c23380c33f5a27700be04b8e9cd4f": {
+    "id": "sst-pte-nepal-20261122-014",
+    "ideas": [
+      {"main":"New employee orientation helps newcomers understand an organisation's mission, culture and policies.","supporting":["It clarifies responsibilities and introduces resources such as training, IT support and wellness programmes.","Meeting colleagues and managers and taking part in interactive activities can encourage collaboration and belonging.","This preparation gives employees the knowledge and tools to begin their roles successfully."]}
+    ]
+  },
+  "63de502cbc48c59ae6ff927eb4368c3cb3f2858f5f0bbf4d9056d50e8fbf2f92": {
+    "id": "sst-pte-nepal-20261122-015",
+    "ideas": [
+      {"main":"Travel can expose people to unfamiliar places and cultures, yet personal growth also comes from experiences closer to home.","supporting":["Cost, time and environmental impact can limit the value of travel, while superficial visits may offer little insight."]},
+      {"main":"Reading, learning and engaging with local communities can provide meaningful ways to broaden perspectives without relying on travel.","supporting":[]}
+    ]
+  },
+  "cde453805979ad1b579ee402585ada6141b685793cae121acee96b6659883860": {
+    "id": "sst-pte-nepal-20261122-016",
+    "ideas": [
+      {"main":"Information technology changes how people communicate, handle data and work.","supporting":["It enables efficient services, global connectivity and innovation across fields such as business, education and healthcare."]},
+      {"main":"Dependence on digital systems also creates risks, including threats to privacy and security.","supporting":["The benefits can be sustained by managing these challenges as information technology continues to develop."]}
+    ]
+  },
+  "dcb70c3a6c04b7669f259a5b66c502da526ad6345414af5100efd948c81576fe": {
+    "id": "sst-pte-nepal-20261122-017",
+    "ideas": [
+      {"main":"The stronger response to a potential loss suggested that fear of losing something could motivate customers more than a reward.","supporting":["A bank compared two messages aimed at people who had stopped using its credit cards.","One group was promised benefits for using the cards, while the other was told that inactivity would lead to a penalty."]}
+    ]
+  },
+  "abbd8ecfbc20f33d4a87d56099afd9ede1f0590dc399f115d482da8c89d3b1f6": {
+    "id": "sst-pte-nepal-20261122-023",
+    "ideas": [
+      {"main":"Washing fruits and vegetables removes dirt, pesticides and other potential contaminants.","supporting":["Leafy greens such as spinach and lettuce may benefit from repeated washing because of their intricate leaves.","Special washers can use gentle agitation or filtered water to clean delicate produce.","The speaker presents washing as a routine way to make fresh produce safer to eat."]}
+    ]
+  },
+  "bf9ed50038a2d86532af05312729552b8ac5867f94c500328e57e2aa14f747b4": {
+    "id": "sst-pte-nepal-20261122-030",
+    "ideas": [
+      {"main":"Michael, standing by a tree, will lead rubbish collection.","supporting":[]},
+      {"main":"Karen will guide volunteers in removing plants that do not belong in the park, using pictures for identification.","supporting":[]},
+      {"main":"The organiser will lead the team repainting tables and chairs, and volunteers can choose which group to join.","supporting":[]}
+    ]
+  },
+  "31979058bb546b773b21e9046f99d0d02a9fce06ef2bd3c4c032f84ddc4c24e9": {
+    "id": "sst-pte-nepal-20261122-033",
+    "ideas": [
+      {"main":"Climate change threatens oceans and people who depend on them.","supporting":["Rising temperatures and acidification damage marine ecosystems, while changes in currents and weather intensify coastal risks from storms and rising seas.","Loss of coral reefs threatens biodiversity and fisheries."]},
+      {"main":"The speaker calls for urgent action to protect marine ecosystems and coastal communities.","supporting":[]}
+    ]
+  },
+  "40a917fa0fffb7a0b24bc7ccebea814c6657261799cb514f6d54ee9e058fd3a1": {
+    "id": "sst-pte-nepal-20261122-034",
+    "ideas": [
+      {"main":"A honeybee hive relies on specialised roles.","supporting":["Its queen can lay up to 2,500 eggs daily, and female workers form most of the colony.","Male drones cannot collect pollen or nectar and depend on workers for food."]},
+      {"main":"Although summer workers live only around thirty days, successive generations continually replenish the workforce and keep the hive functioning.","supporting":[]}
+    ]
+  },
+  "6186f69f2822001076bdea372905a744a3453ebe7a9765cd6bb42ea277216ddf": {
+    "id": "sst-pte-nepal-20261122-035",
+    "ideas": [
+      {"main":"Organisation studies can benefit students across public, private and nonprofit careers.","supporting":["The subject develops leadership and interpersonal skills alongside an understanding of organisational structure and how people work together."]},
+      {"main":"Alumni value these skills when dealing with colleagues, managers and strategic decisions.","supporting":["The speaker argues that these capabilities can support career advancement and long-term success."]}
+    ]
+  },
+  "867d5ef697b50d23c21275f25464bbc11da74e22e70098b046589ce971a7b8d2": {
+    "id": "sst-pte-nepal-20261122-036",
+    "ideas": [
+      {"main":"The United States Constitution separates power among the legislative, executive and judicial branches.","supporting":["Congress makes laws and can delegate regulatory authority, while the executive implements laws through agencies.","Courts interpret laws, review their constitutionality and check how they are applied."]},
+      {"main":"These roles create limits that prevent Congress or the executive from acting outside constitutional requirements.","supporting":[]}
+    ]
+  },
+  "69920a781b5622c168a271bf9cee57ef663f8c6b737b8ca7820824580ba102f5": {
+    "id": "sst-pte-nepal-20261122-037",
+    "ideas": [
+      {"main":"Moods strongly influence how people judge themselves and imagine their future.","supporting":["A hopeful outlook can suddenly give way to shame, sadness or fear, and the causes are often difficult to identify."]},
+      {"main":"Although mood changes are unavoidable, people can learn to manage them more effectively, making difficult periods easier to tolerate and reducing shame about emotional fluctuations.","supporting":[]}
+    ]
+  },
+  "7295706be6b3bf40ce27e07b327bd546dbdd85833db91cffe18f4c14963cb5b2": {
+    "id": "sst-pte-nepal-20261122-043",
+    "ideas": [
+      {"main":"A persuasive essay uses its introduction to catch attention, state the writer’s position and preview the argument.","supporting":[]},
+      {"main":"The speaker encourages writers to connect the hook to the subject and use an original approach that makes readers want to continue.","supporting":["Possible hooks include a short anecdote, a striking statistic, a question or a vivid scene."]}
+    ]
+  },
+  "777240b6900c73bc14163e0906bae145a7a51b6c96208fb478c2bf21b81f0a3d": {
+    "id": "sst-pte-nepal-20261122-044",
+    "ideas": [
+      {"main":"Tutorials use smaller groups than lectures and require advance reading and note-taking.","supporting":["Students discuss ideas, ask questions, receive support and present their group's conclusions."]},
+      {"main":"The speaker found that tutorials improved time management, critical thinking, confidence and teamwork.","supporting":["Completing assigned reading and speaking up help students take advantage of group discussion and explore topics in greater depth."]}
+    ]
+  },
+  "3644ffa53de5a2acd7a652a5a71086af9d14fd6aa0d41f57762f25f7997536d7": {
+    "id": "sst-pte-nepal-20261122-045",
+    "ideas": [
+      {"main":"A mathematician sees five-thousand-year-old Scottish stone balls as early explorations of symmetry.","supporting":["Their symmetrical carved arrangements suggest abstract thinking, although their original purpose is unknown and theories include divination, games and symbols of power."]},
+      {"main":"The speaker hopes they were made for the pleasure of discovering beautiful mathematical possibilities, much as mathematicians explore ideas today.","supporting":[]}
+    ]
+  },
+  "3d82546be98f478415565ff5169fe9e465db294f6666d875906ca5a2f889ee6e": {
+    "id": "sst-pte-nepal-20261122-050",
+    "ideas": [
+      {"main":"Consumer expectations shape a business's products and reputation.","supporting":[]},
+      {"main":"Buyers quickly assess price and quality and may pay more when they see value, but manufacturers must meet several design demands at once.","supporting":["The examples of toilet paper and Tide show how practical concerns about strength, ease of use and product performance can challenge businesses trying to satisfy customers."]}
+    ]
+  },
+  "4e46e1278abfda0626ac2ae7d4079275ee3fd814c510c40097176097dafcf017": {
+    "id": "sst-pte-nepal-20261122-053",
+    "ideas": [
+      {"main":"Wealthier individuals often report greater happiness, but rising national income does not necessarily produce the same effect across society.","supporting":["Despite decades of economic growth in Europe and the United States, surveys show little increase in overall happiness."]},
+      {"main":"One explanation is that people adapt to improvements such as central heating, prompting economists to study happiness alongside conventional economic measures.","supporting":[]}
+    ]
+  },
+  "b961587ea973b2d6f2d72cbb16d683503a2c14b735207a767a6280fbb9fed1bd": {
+    "id": "sst-pte-nepal-20261122-055",
+    "ideas": [
+      {"main":"Early industrialisation harmed many workers, and historical records suggest that life expectancy and living standards fell for parts of the population.","supporting":[]},
+      {"main":"These reforms helped reverse some of the damage and allowed market economies to distribute their benefits more widely than in the early industrial period.","supporting":["Democratic governments later regulated working conditions and introduced environmental protections."]}
+    ]
+  },
+  "bea1cc15577517e95951e008c6ab841b36f85bceb0812e156a6db03b6eaea8a2": {
+    "id": "sst-pte-nepal-20261122-057",
+    "ideas": [
+      {"main":"Basic emotions such as fear evolved to alert people to threats and support survival.","supporting":[]},
+      {"main":"The brain rapidly processes sensory information and triggers physical changes that can lead to fighting, fleeing or freezing.","supporting":[]},
+      {"main":"This response is useful when danger is present, but fear and related anxiety can also activate it too often when people perceive threats.","supporting":[]}
+    ]
+  },
+  "945f289202bdbc3207dc506b73eb8a61c15d85e24c3ffb61a3b3281b25c13797": {
+    "id": "sst-pte-nepal-20261122-063",
+    "ideas": [
+      {"main":"The speaker discusses how rapidly human cognition may have evolved over the last half-million years.","supporting":[]},
+      {"main":"A small number of genes may therefore account for some changes, and differences between modern humans and their ancestors may be smaller than assumed.","supporting":["Coordinated changes in dozens of genes, the speaker argues, would take too long to explain that pace."]}
+    ]
+  },
+  "b3248f3cf840c145643b7b99284632ed0f460706ade8975eab8f7ec3b474f613": {
+    "id": "sst-urban-trees",
+    "ideas": [
+      {"main":"Urban trees provide cooling and community benefits beyond appearance.","supporting":[]},
+      {"main":"Suitable species, space and ongoing maintenance are necessary.","supporting":[]},
+      {"main":"Planning should prioritise local needs, resident involvement and tree survival.","supporting":[]}
+    ]
+  },
+  "8748dca6643fa239cd37c85c9ae5d3aa70ea18401db5e807fbb7ae8c05054782": {
+    "id": "sst-active-learning",
+    "ideas": [
+      {"main":"Familiarity from rereading is different from independently recalling knowledge.","supporting":[]},
+      {"main":"Retrieval practice with corrective feedback reveals gaps in understanding.","supporting":[]},
+      {"main":"Spaced, low-pressure practice supports effective revision.","supporting":[]}
+    ]
+  },
+  "9a495b34e4ddc4ce7ea3751aaec2a06b48397d55aebf1751b17605fc20285810": {
+    "id": "sst-food-waste",
+    "ideas": [
+      {"main":"Food waste prevention starts with shopping and checking existing supplies.","supporting":[]},
+      {"main":"Visible storage and planned use of leftovers reduce avoidable waste.","supporting":[]},
+      {"main":"Flexible routines should fit different households; prevention comes before composting.","supporting":[]}
+    ]
+  },
+  "9822e01fd0bf20de9ce6c13db9bd017c89810b30b98b91772a9589ca9cd517e3": {
+    "id": "sst-hybrid-work",
+    "ideas": [
+      {"main":"Hybrid arrangements should match tasks rather than apply one universal schedule.","supporting":[]},
+      {"main":"Shared decisions and accessible meetings support fairness for remote staff.","supporting":[]},
+      {"main":"Outcome-based management and clear working boundaries are necessary.","supporting":[]}
+    ]
+  },
+  "f7f1e0a1d78cfc2f6247eec5fbb39440956fb7796d1f28f941ebcf2cdc8b5c01": {
+    "id": "sst-community-museums",
+    "ideas": [
+      {"main":"Community stories give objects context and include experiences missing from formal records.","supporting":[]},
+      {"main":"Consent and careful distinction between memory and verified fact are essential.","supporting":[]},
+      {"main":"Accessible preservation and continuing community relationships support responsible interpretation.","supporting":[]}
+    ]
+  },
+  "62c638025efee71c8566d9837415fab91cdbe5a94cf06ad9fe97347db7090cbb": {
+    "id": "sst-citizen-science",
+    "ideas": [
+      {"main":"Volunteers extend the geographic and time coverage of scientific observations.","supporting":[]},
+      {"main":"Clear instructions, uncertainty reporting and checks are needed to manage unreliable or uneven data.","supporting":[]},
+      {"main":"Sharing results supports learning and a continuing research partnership.","supporting":[]}
+    ]
+  },
+  "50b90becd315a17f2feac3f61a96d38e00c99f217152c2ccac1b631cecd63444": {
+    "id": "sst-sleep-memory",
+    "ideas": [
+      {"main":"Sleep helps process recently learned information but does not replace study.","supporting":[]},
+      {"main":"All-night study may undermine attention and recall the next day.","supporting":[]},
+      {"main":"Active learning and planned rest should be combined rather than valuing continuous effort.","supporting":[]}
+    ]
+  },
+  "b4afa25430389e7d74cf470b4c2a9ee1d2e18f4a65cb97c3a0f597b6c140923f": {
+    "id": "sst-water-reuse",
+    "ideas": [
+      {"main":"Reusing treated water for suitable purposes can reduce drinking-water demand.","supporting":[]},
+      {"main":"Treatment, separate infrastructure and monitoring must match the intended use.","supporting":[]},
+      {"main":"Costs, alternatives and public understanding determine whether reuse suits local needs.","supporting":[]}
+    ]
+  },
+  "72657bed3a8d510dfc6734ea4e16cab89ed7c3b131237b859f92bd207ae7a192": {
+    "id": "sst-public-transport",
+    "ideas": [
+      {"main":"Bus users value predictable journeys as well as affordable fares.","supporting":[]},
+      {"main":"Dedicated lanes, accessible stops and coordinated connections improve reliability.","supporting":[]},
+      {"main":"Planning should consider underserved neighbourhoods and complete passenger journeys.","supporting":[]}
+    ]
+  },
+  "2b5285c030fbb8208f40602448a5577f0f33c63ebf244e8958d20b544ffc0c64": {
+    "id": "sst-digital-archives",
+    "ideas": [
+      {"main":"Digital files may become unreadable when software or equipment becomes obsolete.","supporting":[]},
+      {"main":"Preservation requires metadata, checked backups and careful format migration.","supporting":[]},
+      {"main":"Organisations must prioritise valuable records and maintain an ongoing preservation process.","supporting":[]}
+    ]
+  },
+  "d292578a762e5b89e87c91bcf4dff81fe16514021da0e3e2039958542a54fc6a": {
+    "id": "sst-urban-pollinators",
+    "ideas": [
+      {"main":"Pollinators require seasonally varied food and suitable nesting spaces.","supporting":[]},
+      {"main":"Connected small habitats help insects move through cities.","supporting":[]},
+      {"main":"Locally appropriate planting, monitoring and long-term care matter more than appearance.","supporting":[]}
+    ]
+  },
+  "96ee413bab6d2d2a5403c9c3108e3e8b4da08d9c6847d86d403cc8c1a5a89ac2": {
+    "id": "sst-peer-feedback",
+    "ideas": [
+      {"main":"Clear criteria and shared examples make peer comments specific and useful.","supporting":[]},
+      {"main":"Both writers and reviewers develop judgement; peer comments are not definitive grades.","supporting":[]},
+      {"main":"Respectful discussion and time to revise are essential to learning from feedback.","supporting":[]}
+    ]
+  },
+  "745824eeb539fcae8c21ffbb8b7cf4a811036202e1f0ccccfe799c32a08a5896": {
+    "id": "sst-repair-cafes",
+    "ideas": [
+      {"main":"Repair workshops extend product use and teach practical maintenance skills.","supporting":[]},
+      {"main":"Safety limits, specialist referrals and accessible spare parts are necessary.","supporting":[]},
+      {"main":"Social learning matters alongside repair counts, with manufacturers and professionals retaining key roles.","supporting":[]}
+    ]
+  },
+  "e5c282d1d649f88a4e44c7a93214e6ab859b29b0401725684a17201097ae7cc9": {
+    "id": "sst-forecast-uncertainty",
+    "ideas": [
+      {"main":"Forecasts describe uncertain outcomes and change as new observations arrive.","supporting":[]},
+      {"main":"Rain probability, amount and consequences are distinct and matter differently to users.","supporting":[]},
+      {"main":"Clear, consistent explanations support practical decisions without promising certainty.","supporting":[]}
+    ]
+  },
+  "db255362558583905f1d04efa96b0480d82e65cf227bc43576300f806674b9b7": {
+    "id": "sst-shared-workspaces",
+    "ideas": [
+      {"main":"Open offices can support contact but also interrupt focused work.","supporting":[]},
+      {"main":"Varied spaces and fair access need clear shared rules.","supporting":[]},
+      {"main":"Evaluation and ongoing staff feedback should guide adjustments supporting concentration and collaboration.","supporting":[]}
+    ]
+  },
+  "0fecdacc5467dfd4d725538aad8107dce261b108e0e525916fa365d637cfffd7": {
+    "id": "wm1-sst",
+    "ideas": [
+      {"main":"Learning spaces need different sound conditions for different activities.","supporting":[]},
+      {"main":"Physical design and location must support quiet and collaborative areas.","supporting":[]},
+      {"main":"Student feedback and continuing evaluation help meet diverse learning needs.","supporting":[]}
+    ]
+  },
+  "035187aa612e88607dc91161f14e190d85b5143b5958aaa8149b8652aaa5cc9b": {
+    "id": "wm2-sst",
+    "ideas": [
+      {"main":"Uncertainty is normal because studies use samples and imperfect measurements.","supporting":[]},
+      {"main":"Researchers should explain both findings and limitations in accessible language.","supporting":[]},
+      {"main":"Decisions should reflect available evidence, comparison across studies and openness to revision.","supporting":[]}
+    ]
+  },
+  "0dcfd402a7ab9a0b9cf1e121225c4ab7c7d2fd18914dd313fe6ebbe14327fe0d": {
+    "id": "fm1-sst-01",
+    "ideas": [
+      {"main":"Useful public seating depends on location and inclusive design more than installation counts.","supporting":[]},
+      {"main":"Consultation should include different users and people who currently avoid the area.","supporting":[]},
+      {"main":"Maintenance and observation of supported journeys and social activity are essential to evaluation.","supporting":[]}
+    ]
+  }
+}

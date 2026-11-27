@@ -78,14 +78,31 @@ test('Partial delivery retry preserves its verified companion and never repeats 
   const retry = await service.assess(question, response(), { recording, previous:first.stages, run:2 });
   assert.equal(retry.status, 'assessed'); assert.equal(retry.scores.pronunciation, 4); assert.equal(retry.scores.fluency, 5); assert.equal(transcriptions, 1); assert.equal(deliveries, 2);
 });
-test('Blank and invalid-form Writing responses use native zero gates without paid calls', async () => {
+test('Blank and invalid-form Writing responses without SST coaching keep provider-free zero gates', async () => {
   let calls = 0; const fail = async () => { calls++; throw Error('Should not call'); };
   const service = adapters.createAdapters({ writingContentModel:fail, swtGrader:fail, essayGrader:{grade:fail} });
   for (const type of ['swt','essay','sst']) {
     assert.equal((await service.assess(q(type), response(['']))).total, 0);
-    assert.equal((await service.assess(q(type), response(['one word']))).total, 0);
+    assert.equal((await service.assess(q(type), response(['one word']), {sstCoaching:false})).total, 0);
   }
   assert.equal(calls, 0);
+});
+test('A Form-zero SST response receives coaching without changing its native gate', async () => {
+  const question = q('sst');
+  const ideas = require('../sst-idea-guide').sstIdeas(question);
+  assert.ok(ideas.length);
+  const prompts = [];
+  const service = adapters.createAdapters({ writingContentModel: async prompt => {
+    prompts.push(prompt);
+    return {sstCoverage:ideas.map(() => ({status:'missed', evidence:''}))};
+  } });
+  const result = await service.assess(question, response(['Flim zorba nesh.']));
+  assert.equal(result.total, 0);
+  assert.equal(result.maximum, 12);
+  assert.equal(result.reason, 'Native Form gate');
+  assert.deepEqual(result.sstCoverage.ideas.map(idea => idea.status), ideas.map(() => 'missed'));
+  assert.equal(prompts.length, 1);
+  assert.match(prompts[0], /for coaching only/);
 });
 test('SWT, Essay and SST consume the shared native graders and retain their individual traits', async () => {
   const fixture = require('./swt-meaning-fixtures.json')[1], question = { type:'swt', text:fixture.passage, keyPoints:['main idea'] };

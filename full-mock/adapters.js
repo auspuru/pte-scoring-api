@@ -43,7 +43,10 @@ function normalise(q, raw) {
   if (q.type === 'swt' && raw.itemScore90 === 10 && raw.gated && value.total === 0 && raw.maximum === value.maximum) {
     return { ...value, gated: true, reason: raw.reasons?.[0] || 'Native Content/Form gate' };
   }
-  if (RUBRICS[q.type]?.gates?.some(key => scores[key] === 0)) return zero(q, 'Native Content/Form gate');
+  if (RUBRICS[q.type]?.gates?.some(key => scores[key] === 0)) {
+    const gated = zero(q, 'Native Content/Form gate');
+    return q.type === 'sst' && raw.sstCoverage ? { ...gated, sstCoverage:raw.sstCoverage } : gated;
+  }
   if (value.total !== raw.total || value.maximum !== raw.maximum) throw Error('Native total does not match its traits.');
   return value;
 }
@@ -63,7 +66,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
   assessLegacyDelivery = assessDelivery === require('../azure-continuous-delivery').assessRecording
     ? require('../speaking-delivery').assessRecording : assessDelivery,
   speakingContentModel, writingContentModel, swtGrader, essayGrader } = {}) {
-  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, deliveryPolicy, describeImagePolicy, legacyDelivery = false, legacySwt = false, swtPolicyVersion, contentOnly = false } = {}) {
+  async function assess(q, response, { recording, previous = {}, run = 1, checkpoint = async () => {}, completionPolicy, deliveryPolicy, describeImagePolicy, legacyDelivery = false, legacySwt = false, swtPolicyVersion, sstCoaching = true, contentOnly = false } = {}) {
     const stages = structuredClone(previous);
     const failed = reason => ({ status: 'failed', version: VERSION, reason, stages });
     async function stage(name, call, verify = value => value != null) {
@@ -150,7 +153,12 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
       return { ...normalise(q, await writing.gradeUnifiedSwt(q, text, swtGrader, {policyVersion:swtPolicyVersion})), stages };
     }
     if (!text.trim()) return { ...zero(q, 'Explicitly unanswered'), stages };
-    if (writing.formFor(q.type, text).score === 0) return { ...zero(q, 'Native Form gate'), stages };
+    if (writing.formFor(q.type, text).score === 0) {
+      const gated = zero(q, 'Native Form gate');
+      if (q.type !== 'sst' || !sstCoaching) return { ...gated, stages };
+      const coached = await stage('writing', () => writing.grade(q, text, writingContentModel));
+      return { ...gated, ...(coached?.sstCoverage ? { sstCoverage:coached.sstCoverage } : {}), stages };
+    }
     const raw = await stage('writing', async () => {
       let value;
       if (q.type === 'swt') value = await writing.gradeUnifiedSwt(q, text, swtGrader, {legacy:legacySwt,policyVersion:swtPolicyVersion});
@@ -158,7 +166,7 @@ function createAdapters({ transcribe = require('../speaking-lab').transcribeReco
         if (!essayGrader) throw Error('Essay assessment unavailable');
         const assessed = await essayGrader.grade(q.text, text, '9', { feedbackV3: true, includeSample: false, totalTimeoutMs: 240000 });
         value = { ...assessed, version: assessed.scoring_version, maxima: maxima(q), total: assessed.scores?.total, maximum: Object.values(maxima(q)).reduce((sum, max) => sum + max, 0) };
-      } else value = await writing.grade(q, text, writingContentModel);
+      } else value = await writing.grade(q, text, writingContentModel, {sstCoaching});
       return normalise(q, value);
     });
     return raw ? { ...raw, stages } : failed('writing-unavailable');

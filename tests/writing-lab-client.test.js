@@ -393,7 +393,7 @@ test('A gated standalone SST result shows the form reason and visible transcript
   const html=h.nodes.get('lab').innerHTML;
   assert.match(html,/Estimate 10\/90/);
   assert.match(html,/This response did not meet the scoring requirement/);
-  const visibleIdeas=html.slice(html.indexOf('Ideas you could use from the transcript'),html.indexOf('</section>',html.indexOf('Ideas you could use from the transcript')));
+  const visibleIdeas=html.slice(html.indexOf('Transcript points'),html.indexOf('</section>',html.indexOf('Transcript points')));
   assert.ok(visibleIdeas.includes(q.keyPoints[0]));
   assert.equal(h.requests.filter(request=>request.url.includes('/score/')).length,0);
 });

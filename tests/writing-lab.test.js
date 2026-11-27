@@ -47,9 +47,13 @@ test('SST practice keeps a saved fallback pending and recovers automatically fro
   let calls = 0;
   const feedback = Object.fromEntries(Object.keys(policy.MAXIMA.sst).map(key => [key, 'Reviewed feedback.']));
   const service = installWritingLab(app, { directory, verifyToken: token => token === 'tester' ? token : null,
-    now: () => now, getAccount: async () => ({}), callModel: async (_, context) => {
+    now: () => now, getAccount: async () => ({}), callModel: async (prompt, context) => {
       assert.equal(context.sstPractice, true);
       calls++;
+      if (prompt.startsWith('Review the meaning of an SST response for coaching only')) {
+        const ideas = require('../sst-idea-guide').sstIdeas(question);
+        return {sstCoverage:ideas.map(() => ({ status:'missed', evidence:'' }))};
+      }
       if (outcomeUncertain) throw Object.assign(new Error('Provider timed out'), { name: 'APIConnectionTimeoutError' });
       if (!available) return null;
       return { scores: { content: 2, form: 2, grammar: 1, vocabulary: 1, spelling: 2 },
@@ -140,7 +144,7 @@ test('SST practice keeps a saved fallback pending and recovers automatically fro
   assert.equal(calls, 4);
 
   const shortSuffix = '/' + randomUUID();
-  const shortAnswer = 'The lecture discussed this topic.';
+  const shortAnswer = 'Flim zorba nesh, tral vorn shem.';
   assert.equal((await post('', { id: shortSuffix.slice(1), testId: question.id, mode: 'practice' })).status, 200);
   assert.equal((await post(shortSuffix + '/begin')).status, 200);
   const submission = await post(shortSuffix + '/answer', { index: 0, revision: 1, text: shortAnswer, next: true });
@@ -149,9 +153,13 @@ test('SST practice keeps a saved fallback pending and recovers automatically fro
   assert.equal(immediate.report.score90, 10);
   assert.match(immediate.results[0].reasons.join(' '), /allowed range/);
   assert.deepEqual(immediate.questions[0].keyPoints, question.keyPoints);
+  assert.equal(immediate.results[0].sstCoveragePending, true);
+  await service.waitForJobs();
   const saved = await get(shortSuffix);
   assert.equal(saved.answers[0], shortAnswer);
-  assert.deepEqual(saved.results, immediate.results);
+  assert.equal(saved.report.score90, immediate.report.score90);
+  assert.equal(saved.results[0].sstCoveragePending, undefined);
+  assert.ok(saved.results[0].sstCoverage.ideas.every(idea => idea.status === 'missed'));
 
   const timedId = randomUUID(), timedSuffix = '/' + timedId;
   assert.equal((await post('', { id: timedId, testId: question.id, mode: 'practice', timedPractice: true })).status, 200);
@@ -163,7 +171,7 @@ test('SST practice keeps a saved fallback pending and recovers automatically fro
   assert.equal(expired.report.score90, 10);
   assert.equal(expired.answers[0], shortAnswer);
   await service.waitForJobs();
-  assert.equal(calls, 4);
+  assert.equal(calls, 5);
 });
 test('A substantial SST sentence cannot be erased by an unsupported fragment form gate',async()=>{
   const q=bank.spoken[0],text=sentence(57);

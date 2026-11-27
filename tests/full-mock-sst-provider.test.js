@@ -31,7 +31,7 @@ test('New mock SST uses OpenAI while in-progress Claude SST uses the frozen adap
   assert.equal(engine.snapshot.configuration.sst.provider,'openai');
   assert.equal(validate(engine.snapshot),current);
 
-  const frozen=structuredClone(assessment.snapshot(assessment.claudeConfiguration({})));
+  const frozen=require('./helpers/sst-coaching-baseline').sstCoachingBaseline(assessment.snapshot(assessment.claudeConfiguration({})));
   const vocabularyPins=require('../content/full-mock/swt-vocabulary-upgrade-pins.json');
   for (const [file,entry] of Object.entries(vocabularyPins.previousFiles)) {
     frozen.scoringSources.files[file]=structuredClone(entry);

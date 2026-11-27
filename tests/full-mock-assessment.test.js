@@ -185,7 +185,7 @@ async function fixture(t, options = {}) {
 }
 
 function snapshotBeforeSwtVocabulary(current) {
-  const snapshot = structuredClone(current);
+  const snapshot = require('./helpers/sst-coaching-baseline').sstCoachingBaseline(current);
   const pins = require('../content/full-mock/swt-vocabulary-upgrade-pins.json');
   for (const [name, entry] of Object.entries(pins.previousFiles)) {
     if (entry) snapshot.scoringSources.files[name] = structuredClone(entry);

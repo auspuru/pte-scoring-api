@@ -1,14 +1,18 @@
 {
   "schemaVersion": 1,
-  "baseCommit": "26dee9b2b94b01880db803faf1875f1a8c0ef922",
+  "baseCommit": "9db3ff924926981314feddc9bf5626a6add40ec8",
   "checkedAt": "2026-11-27",
-  "scope": "Use Pearson-aligned grammar and vocabulary bands for new SWT attempts. Frozen Full Mock attempts retain their exact scoring policy, provider configuration, questions and confirmed marks.",
+  "scope": "SST main-idea coaching and report presentation. Existing rubric, numeric gates, historical provider routing and confirmed results remain pinned.",
   "snapshot": {
     "schemaVersion": 1,
     "blueprintVersion": "full-mock-blueprint-2026-10-28.1",
     "files": {
       "azure-continuous-delivery.js": {
         "sha256": "63533d41e2a176c765ff82e4b9c301fe6e9ad4d431d699afa3917cdc7701aa65",
+        "version": null
+      },
+      "content/sst-idea-guide.json": {
+        "sha256": "ecaac69123bcd60931865507c493fb88a62e737e6e0a169103401a954d2583a2",
         "version": null
       },
       "content/swt-passage-guides.json": {
@@ -104,7 +108,7 @@
         "version": null
       },
       "full-mock/adapters.js": {
-        "sha256": "2bad4ee5855e357b9a2565599be87da39c6fd334ff3ab60d32fb2b3ebd2f251a",
+        "sha256": "9224adc19550c9d0fe4070c967f3a6c5fc55e647ee8cbe4dc1c23e3771300db5",
         "version": "full-mock-adapters-2026-10-29.2"
       },
       "full-mock/aggregation.js": {
@@ -120,7 +124,7 @@
         "version": "full-mock-asq-2026-10-28.1"
       },
       "full-mock/assessment.js": {
-        "sha256": "1d7082deb6d31a5fa7fe228646b561c83fb7c6c1780db0742c7a6b6127407a3b",
+        "sha256": "f5cd018b962889694abd08374c46a37b92009b98b4b1631c0c5ca40dd1a8f1ca",
         "version": "full-mock-assessment-2026-10-29.1"
       },
       "full-mock/audit.js": {
@@ -152,11 +156,11 @@
         "version": "full-mock-recording-2026-10-29.2"
       },
       "full-mock/report.js": {
-        "sha256": "b353158ba9653db40a7448f8ef30a96a5c522ec4e7bc6a9976d966a43bf2f0cc",
+        "sha256": "d9b623a9cebe13d36e8c247ede100a02d30010ef621ca1392a1614ce3c8a6f3a",
         "version": "full-mock-report-2026-10-29.1"
       },
       "full-mock/rubrics.js": {
-        "sha256": "d1e3b112fd1e8e5e833654406f986d3db0cd1ed56f24889296fa571833fe67e9",
+        "sha256": "ef66e17716d20151473d6243e84c137f942cf3190864b090364ed3cf2bf76fb7",
         "version": null
       },
       "full-mock/session.js": {
@@ -244,6 +248,14 @@
         "sha256": "469d8543929f1035310868a6153e89424d1fef084e61c0a47e70892a5ae7a2e4",
         "version": "connected-spoken-summary-2026-10-25.1"
       },
+      "sst-coverage.js": {
+        "sha256": "3423662d6bd3a54890c342ab6ce8b35ba5ca14d6610853a18dd91d8b942c7644",
+        "version": null
+      },
+      "sst-idea-guide.js": {
+        "sha256": "7d85a34bcccf818e4827eecd63d22ad1d3479ce8aed2308def4342341a65f338",
+        "version": null
+      },
       "swt-form-policy.js": {
         "sha256": "43ffe8755a7b025cbb9ba354fb69058d85d90d716666ed0233a5826c678bb2c2",
         "version": null
@@ -273,7 +285,7 @@
         "version": "20.3.18"
       },
       "writing-lab-scoring.js": {
-        "sha256": "2e817c2ab769fc3965569e6cb70cac813674eadb054386d13e049d36f9f83205",
+        "sha256": "5299c6c2eff1e0f8dd689cf89a92e0daebfb847dfb66de8ecd98650b491115fa",
         "version": "exam-practice-2026-10-09.1"
       }
     }
