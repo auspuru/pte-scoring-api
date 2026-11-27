@@ -16202,7 +16202,7 @@ function renderSwtFeedbackReview(data, passage, submittedText){
   const correction = document.getElementById('swtResponseExamples');
   if (correction) {
     SwtFeedbackReview.mountCorrection(correction, review, {
-      available: !passage.sampleVersionMismatch && !!passage.text && !!submission?.token,
+      available: !review.correctionOnly && !passage.sampleVersionMismatch && !!passage.text && !!submission?.token,
       isCurrent,
       load: () => requestSwtResponseCorrection(submission)
     });
@@ -16618,6 +16618,7 @@ function renderTraitBreakdown(data, traits){
   const gateNote = 'No task points awarded because Content is 0. Form and language diagnostics remain separate.';
   const concise = value => String(value || '').replace(/\s+/g, ' ').trim();
   const contentNote = concise(cd.feedback_note || cd.notes || 'Strengthen the main idea and its supporting connections.');
+  const correctionOnly = data.language_feedback === 'deductions-only' || data.scoring_version === '20.3.18';
 
   const rows = [
     { name:'Content', score:traits.content||0, max:cMax,
@@ -16627,10 +16628,12 @@ function renderTraitBreakdown(data, traits){
       note: contentGated ? 'No Form points awarded because Content is 0; the sentence form is valid.' : (traits.form >= 1) ? 'Valid one-sentence summary within word limits.' : 'Form requirement not met — one sentence, 5–75 words.' },
     { name:'Grammar', score:traits.grammar||0, max:2,
       note: contentGated ? gateNote : data.score_provisional || data.ai_feedback_degraded ? 'Provisional: detailed grammar assessment unavailable.'
-        : (traits.grammar >= 2) ? 'Meaning remains clear. Minor slips are optional refinements.' : 'Review the grammar affecting meaning in your next steps above.' },
+        : (traits.grammar >= 2) ? (correctionOnly ? 'The sentence structure is correct.' : 'Meaning remains clear. Minor slips are optional refinements.')
+          : (correctionOnly ? 'See the grammar corrections in your feedback.' : 'Review the grammar affecting meaning in your next steps above.') },
     { name:'Vocabulary', score:traits.vocabulary||0, max:2,
       note: contentGated ? gateNote : data.score_provisional || data.ai_feedback_degraded ? 'Provisional: detailed vocabulary assessment unavailable.'
-        : (traits.vocabulary >= 2) ? 'Wording preserves the message. Accurate source words are welcome.' : 'Review the wording affecting meaning in your next steps above.' }
+        : (traits.vocabulary >= 2) ? 'Wording preserves the message. Accurate source words are welcome.'
+          : (correctionOnly ? 'See the word-choice corrections in your feedback.' : 'Review the wording affecting meaning in your next steps above.') }
   ];
 
   el.innerHTML = rows.map(r => {

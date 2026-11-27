@@ -9,6 +9,7 @@ function createMockContentAssessment(options={}) {
   const createSwtService = (policy, legacy) => require('./swt-judgment-service').createJudgmentService({
     policyVersion:policy.POLICY_VERSION+':'+provider.MODEL,
     buildPrompt:policy.buildJudgingPrompt,
+    protocolVersion:policy.POLICY_VERSION,
     applyPolicy:policy.applyScoringPolicy,
     requireEditEvidence:!legacy,
     totalTimeoutMs:180000,
@@ -23,6 +24,7 @@ function createMockContentAssessment(options={}) {
     onAttemptError:options.onAttemptError
   });
   const swtService = createSwtService(swtPolicy, false);
+  const previousSwtService = createSwtService(swtPolicy.previousPolicy, false);
   const legacySwtService = createSwtService(swtPolicy.legacyPolicy, true);
   const essayEnv = { ...process.env, ...options.env, ESSAY_SCORING_PROVIDER:'openai', ESSAY_OPENAI_MODEL:provider.MODEL,
     ESSAY_OPENAI_REASONING_EFFORT:provider.REASONING_EFFORT };
@@ -39,7 +41,11 @@ function createMockContentAssessment(options={}) {
         { timeoutMs:context.wholeMockEntries ? 120000 : 90000, task:context.question?.type || 'speaking-overall' });
       return speakingFormat.response(raw,context);
     },
-    swt:(question,text,{legacy=false}={}) => (legacy ? legacySwtService : swtService).judge(text,question.text,'',60000),
+    swt(question,text,{legacy=false,policyVersion}={}) {
+      const service = legacy ? legacySwtService
+        : policyVersion === swtPolicy.previousPolicy.POLICY_VERSION ? previousSwtService : swtService;
+      return service.judge(text,question.text,'',60000);
+    },
     async writing(prompt) {
       const raw = await transport.call({ max_tokens:3000, messages:[{role:'user',content:prompt}] },{task:'sst'});
       return JSON.parse(raw.content[0].text);

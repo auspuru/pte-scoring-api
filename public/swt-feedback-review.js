@@ -25,10 +25,12 @@
   function model(data,passage,text){
     text=String(text||'');const state=feedback.build(data),a=data.content_details?.summary_assessment||{},wordCount=words(text);
     const pending=state.provisional||data.ai_feedback_degraded===true;
+    const correctionOnly=feedback.deductionsOnly(data);
     const valid=Number((data.diagnostic_trait_scores||data.trait_scores||{}).form)>=1;
     const annotations=[];const claimed=[];
-    if(!pending&&valid)for(const raw of [...list(data.grammar_details?.grammar_annotations),...list(data.vocabulary_details?.vocabulary_annotations)]){
-      if(!raw||!clean(raw.fix)||!exact(text,raw.phrase))continue;
+    if(!pending&&valid&&(!correctionOnly||!state.contentGated))for(const raw of [...list(data.grammar_details?.grammar_annotations),...list(data.vocabulary_details?.vocabulary_annotations)]){
+      if(!raw||typeof raw.fix!=='string'||!exact(text,raw.phrase))continue;
+      if(correctionOnly ? raw.affects_score!==true : !clean(raw.fix))continue;
       const phrase=exact(text,raw.phrase),range=location(text,phrase,raw.phrase_span);if(!range)continue;const {start,end}=range;
       if(claimed.some(r=>r.start<end&&r.end>start))continue;
       const optional=raw.affects_score!==true;
@@ -71,7 +73,7 @@
       for(const item of required)languageDraft=languageDraft.slice(0,item.start)+item.fix+languageDraft.slice(item.end);
       if(!complete(languageDraft))languageDraft='';
     }
-    return {state,pending,valid,annotations,quote,sourceQuote,contentIssue,action,why,repair:wordBudget?revised:'',languageDraft,wordBudget,
+    return {state,pending,valid,correctionOnly,annotations,quote,sourceQuote,contentIssue,action,why,repair:wordBudget?revised:'',languageDraft,wordBudget,
       usable:!!wordBudget,text,wordCount,languageAdvice:state.priorities.filter(p=>/grammar|wording/i.test(p.title))};
   }
   function heading(n,title,status){return '<div class="swt-review-heading"><h2><span>'+n+'</span>'+title+'</h2><span class="swt-review-status">'+esc(status)+'</span></div>';}
@@ -92,9 +94,10 @@
       content+='<p class="swt-help">'+revisedCount+' of 75 words after the edit'+(wordsSaved>0?' · '+wordsSaved+' '+(wordsSaved===1?'word':'words')+' saved':'')+'</p>';
     }
     let grammar=m.pending?'<p>Language feedback is not ready yet.</p>':!m.valid?'<p>Repair the sentence form first. No complete language assessment is claimed here.</p>':!m.annotations.length?
-      '<p>Your saved assessment gives no phrase-level grammar or spelling edits.</p>':
-      '<div class="swt-review-legend"><span>Grammar / word choice</span><span>Spelling</span><span>Optional</span></div><p class="swt-help">Select an underlined phrase to see the change and why it helps.</p><p class="swt-review-annotated">'+annotationHtml(m)+'</p><div id="swtReviewCorrection" class="swt-review-correction" role="region" aria-live="polite" aria-label="Selected language correction" hidden></div>';
-    if(!m.pending&&m.valid&&m.languageAdvice.length)grammar+='<div class="swt-review-note">'+m.languageAdvice.map(p=>'<p>'+esc(p.detail)+'</p>').join('')+'</div>';
+      (m.correctionOnly?'<p>No grammar or vocabulary corrections are shown for this response.</p>':'<p>Your saved assessment gives no phrase-level grammar or spelling edits.</p>'):
+      (m.correctionOnly?'':'<div class="swt-review-legend"><span>Grammar / word choice</span><span>Spelling</span><span>Optional</span></div>')+
+      '<p class="swt-help">Select an underlined phrase to see the change and why it helps.</p><p class="swt-review-annotated">'+annotationHtml(m)+'</p><div id="swtReviewCorrection" class="swt-review-correction" role="region" aria-live="polite" aria-label="Selected language correction" hidden></div>';
+    if(!m.correctionOnly&&!m.pending&&m.valid&&m.languageAdvice.length)grammar+='<div class="swt-review-note">'+m.languageAdvice.map(p=>'<p>'+esc(p.detail)+'</p>').join('')+'</div>';
     if(m.annotations.some(x=>x.optional))grammar+='<p class="swt-help">Optional suggestions did not cost marks. Keep your total within 75 words.</p>';
     if(m.languageDraft)grammar+='<button type="button" class="btn" data-review-use="language">Use these language corrections in my draft</button>';
     let form=m.pending?'<p>Assessment is incomplete. Your saved answer remains available.</p>':'<ul class="swt-review-form"><li class="'+(m.wordCount>=5&&m.wordCount<=75?'good':'warn')+'">'+m.wordCount+' words · '+(m.wordCount>=5&&m.wordCount<=75?'Within 5–75 words':'Use 5–75 words')+'</li><li class="'+(m.valid?'good':'warn')+'">'+(m.valid?'One complete sentence within the form requirements.':esc(m.state.priorities[0]?.detail||'Join your ideas into one complete sentence and check the word limit.'))+'</li></ul>';
@@ -105,7 +108,7 @@
     }
     const revision=m.pending?'':section(4,'Revise & practise','Original preserved','<p>'+(m.action?esc(m.action):'Use the feedback above while improving your sentence. Further revision is optional when no repair is needed.')+'</p><button type="button" class="btn btn-primary" data-review-edit>Open revision draft</button><div id="swtReviewEditor" hidden><label for="swtReviewDraft">Your revision</label><textarea id="swtReviewDraft" rows="5" spellcheck="false">'+esc(m.text)+'</textarea><p class="swt-help"><span id="swtReviewWords">'+m.wordCount+'</span> words · One complete sentence · 5–75 words</p><div class="swt-review-actions"><button type="button" class="btn btn-primary" data-review-save>Save revision draft</button><button type="button" class="btn" data-review-continue>Continue to writing</button><button type="button" class="btn btn-ghost" data-review-undo hidden>Undo suggestion</button></div><p id="swtReviewSaveStatus" role="status" aria-live="polite"></p><p class="swt-help">Saving a draft does not assess it or replace your submitted answer. Submit deliberately from the writing screen for new feedback.</p></div>','swtReviewRevision');
     return section(1,'Content & meaning',m.pending?'Assessment incomplete':!m.valid?'Repair form first':m.contentIssue?'Priority repair':'Review saved feedback',content,'swtReviewContent')+
-      section(2,'Grammar & spelling',m.pending?'Assessment incomplete':!m.valid?'Repair form first':m.annotations.some(x=>!x.optional)?'Corrections to review':m.annotations.length?'Optional refinements':'Review saved feedback',grammar,'swtReviewLanguage')+
+      section(2,m.correctionOnly?'Grammar & vocabulary':'Grammar & spelling',m.pending?'Assessment incomplete':!m.valid?'Repair form first':m.annotations.some(x=>!x.optional)?'Corrections to review':m.annotations.length?'Optional refinements':'Review saved feedback',grammar,'swtReviewLanguage')+
       section(3,'Form',m.pending?'Assessment incomplete':m.valid?'Meets form checks':'Needs attention',form,'swtReviewForm')+revision;
   }
   const darwinIdeas = [
@@ -160,7 +163,7 @@
         const item=m.annotations[Number(button.dataset.reviewFix)];if(!item)return;
         target.querySelectorAll('[data-review-fix]').forEach(el=>el.setAttribute('aria-expanded',String(el===button)));
         const panel=q('#swtReviewCorrection');panel.hidden=false;
-        panel.innerHTML='<strong>'+esc(item.optional?'Optional '+item.kind.toLowerCase():item.kind)+'</strong><h3><s>'+esc(item.phrase)+'</s> → '+esc(item.fix)+'</h3><p>'+esc(item.reason||'Review this suggested correction in context before revising.')+'</p>'+(item.optional&&item.after>m.wordCount?'<p class="swt-help">'+item.after+' of 75 words after this change alone.</p>':'');
+        panel.innerHTML='<strong>'+esc(item.optional?'Optional '+item.kind.toLowerCase():item.kind)+'</strong><h3><s>'+esc(item.phrase)+'</s> → '+esc(item.fix||'Delete this text')+'</h3><p>'+esc(item.reason||'Review this suggested correction in context before revising.')+'</p>'+(item.optional&&item.after>m.wordCount?'<p class="swt-help">'+item.after+' of 75 words after this change alone.</p>':'');
       }
       if(button.hasAttribute('data-review-source')){const source=target.ownerDocument.getElementById('annotatedPassage');source?.closest('details')?.setAttribute('open','');source?.scrollIntoView({block:'center'});source?.focus();}
       if(button.hasAttribute('data-review-locate')&&original()&&m.quote){target.ownerDocument.getElementById('sbsTabSummary')?.click();const el=original(),start=m.text.indexOf(m.quote);el.innerHTML=esc(m.text.slice(0,start))+'<mark>'+esc(m.quote)+'</mark>'+esc(m.text.slice(start+m.quote.length));el.scrollIntoView({block:'center'});el.focus();}

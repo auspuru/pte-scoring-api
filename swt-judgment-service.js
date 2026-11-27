@@ -111,7 +111,7 @@ function materialiseEvidence(result, summary, passage = '') {
 // Identical source + response + rubric use one assessment, whether submitted
 // by a learner or checked as a reference. No sample-answer score overrides.
 function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, validationIssues = () => [],
-  applyPolicy = applyScoringPolicy, requireEditEvidence = false,
+  applyPolicy = applyScoringPolicy, requireEditEvidence = false, protocolVersion = POLICY_VERSION,
   onAttemptError = () => {}, totalTimeoutMs = 90000, maxEntries = 200, ttlMs = 20 * 60 * 1000 }) {
   const cache = new Map();
   const pending = new Map();
@@ -148,7 +148,7 @@ function createJudgmentService({ call, buildPrompt, policyVersion, isComplete, v
               return null;
             }
             const response = materialiseEvidence(rawResponse && requireEditEvidence
-              ? { ...rawResponse, scoring_protocol: POLICY_VERSION, verified_content_edit: null } : rawResponse, summary, passage);
+              ? { ...rawResponse, scoring_protocol: protocolVersion, verified_content_edit: null } : rawResponse, summary, passage);
             if (response && isComplete(response, summary, passage)) {
               if (requireEditEvidence) editProposals.push(response.summary_assessment);
             } else onAttemptError({ stage, attempt: attempts, code: response ? 'incomplete_assessment' : 'empty_response',

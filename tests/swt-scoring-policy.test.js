@@ -121,7 +121,7 @@ for (const fixture of fixtures) {
   });
 }
 
-test('A recoverable geothermal auxiliary correction stays optional through the route and student feedback', async () => {
+test('An optional geothermal wording correction stays out of current student feedback', async () => {
   // Supplied semantic labels test policy/presentation, not model accuracy.
   // The live fixtures separately exercise how Claude interprets the sentence.
   const cases = require('./fixtures/swt-grammar-regressions');
@@ -143,9 +143,37 @@ test('A recoverable geothermal auxiliary correction stays optional through the r
     assert.equal(result.overall_score, 79);
     const feedback = build(result);
     assert(!feedback.priorities.some(x => /grammar/i.test(x.title)));
-    if (c === cases[0]) assert(feedback.optional.some(x => x.phrase === 'which used to'));
+    assert.deepEqual(feedback.optional, []);
     assert.equal(presentation(result).estimate, 79);
   }
+});
+
+test('Clear grammar and vocabulary errors each cost one mark and retain their explanation', async () => {
+  const summary = 'The results shows that bees remember flower scents, so the researchers did a decision to study pollination.';
+  const raw = judgment();
+  Object.assign(raw.summary_assessment, {
+    main_idea_evidence: 'bees remember flower scents',
+    supporting_evidence: ['the researchers did a decision to study pollination'],
+    synthesis: { quality: 'effective', explanation: 'The answer links the finding to the decision.' }
+  });
+  raw.grammar_annotations = [{ ...annotation('The results shows', 'The results show'), type: 'grammar_error',
+    rationale: 'Results means more than one, so use show.' }];
+  raw.vocabulary_annotations = [{ ...annotation('did a decision', 'made a decision'), type: 'vocabulary_error',
+    rationale: 'We say make a decision.' }];
+  const current = policy.applyScoringPolicy(raw, summary);
+  assert.equal(current.grammar_score, 1);
+  assert.equal(current.vocabulary_score, 1);
+  assert.equal(current.grammar_annotations[0].meaning_effect, 'Results means more than one, so use show.');
+  assert.equal(policy.applyScoringPolicy(current, summary).grammar_score, 1);
+  const previous = policy.previousPolicy.applyScoringPolicy(raw, summary);
+  assert.equal(previous.grammar_score, 2);
+  assert.equal(previous.vocabulary_score, 2);
+
+  raw.vocabulary_annotations[0].meaning_impact = 'obscured';
+  raw.vocabulary_annotations[0].meaning_effect = 'The word choice leaves the decision unclear.';
+  assert.equal(policy.applyScoringPolicy(raw, summary).vocabulary_score, 0);
+  raw.vocabulary_annotations[0].phrase = 'words absent from the answer';
+  assert.equal(policy.applyScoringPolicy(raw, summary).vocabulary_score, 2);
 });
 
 test('The standalone result reports the actual assessment model without changing reviewed feedback', async () => {

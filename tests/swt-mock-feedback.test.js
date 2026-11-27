@@ -76,3 +76,18 @@ test('Full Content leaves optional in-budget wording and its effect inside the m
  assert.match(html,/Optional refinement · no marks lost.*Specifies which cities.*75 of 75 words after this change alone/);
  assert.equal(JSON.stringify(input),before);
 });
+
+test('Current SWT mock feedback shows only verified corrections that cost marks',()=>{
+ const input={...raw(),version:'20.3.18'};
+ input.errors.push(
+  {phrase:'Trees',correction:'Urban trees',explanation:'Give more detail.',affectsScore:false},
+  {phrase:'cities',correction:'urban areas',explanation:'Try a synonym.'}
+ );
+ const v=swt.project(input,{confirmed:true,answer,source});
+ assert.equal(v.language.length,1);
+ const html=swt.render(v,answer);
+ assert.match(html,/Grammar & vocabulary/);
+ assert.match(html,/improves → improve/);
+ assert.match(html,/Use the plural verb with trees\./);
+ assert.doesNotMatch(html,/Urban trees|urban areas|Optional refinement/);
+});

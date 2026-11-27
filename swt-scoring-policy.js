@@ -5,10 +5,18 @@ const { formFor, wordCount } = require('./swt-form-policy');
 const legacyPolicy = require('./swt-legacy-policy');
 const guides = require('./content/swt-passage-guides.json');
 
-const POLICY_VERSION = '20.3.17';
+const PREVIOUS_VERSION = '20.3.17';
+const POLICY_VERSION = '20.3.18';
 const SYNTHESIS_CONTENT_CAP = Object.freeze({ ...legacyPolicy.SYNTHESIS_CONTENT_CAP, assembly: 3, fragments: 1 });
 const SCORING_CRITERIA = Object.freeze({
   ...legacyPolicy.SCORING_CRITERIA,
+  grammar: Object.freeze({ ...legacyPolicy.SCORING_CRITERIA.grammar,
+    full: 'Correct grammatical structure.',
+    deductionRule: 'A quoted grammar error earns 1 when meaning is clear, or 0 when it could hinder communication.'
+  }),
+  vocabulary: Object.freeze({ ...legacyPolicy.SCORING_CRITERIA.vocabulary,
+    full: 'Appropriate words, including simple wording and accurate terms from the passage.'
+  }),
   content: Object.freeze({
     ...legacyPolicy.SCORING_CRITERIA.content,
     full: 'Accurate central meaning and essential relationships with at least one useful reformulation or integration of ideas. Optional support may be omitted. Accurate source words may stay.',
@@ -119,12 +127,29 @@ function contentEditIdentity(edit, summary, passage) {
     edit.source_evidence, edit.text, edit.revised]));
 }
 
-function applyScoringPolicy(judgment, summary, passage = '') {
+function scoreLanguage(result, trait) {
+  const field = trait + '_annotations';
+  result[field] = result[field].map(item => {
+    const affectsScore = Boolean(item.fix.trim() && item.fix.trim() !== item.phrase.trim()
+      && (item.affects_score || (item.type === trait + '_error' && item.rationale?.trim())));
+    return { ...item, affects_score: affectsScore,
+      meaning_effect: affectsScore ? item.meaning_effect?.trim() || item.rationale.trim() : '' };
+  });
+  const errors = result[field].filter(item => item.affects_score);
+  result[trait + '_score'] = errors.some(item => item.meaning_impact === 'obscured') ? 0 : errors.length ? 1 : 2;
+}
+
+function applyScoringPolicy(judgment, summary, passage = '', version = POLICY_VERSION) {
   const assessment = judgment.summary_assessment;
   const synth = synthesisForLegacy(assessment?.synthesis);
   const mapped = synth !== assessment?.synthesis;
   const input = mapped ? { ...judgment, summary_assessment: { ...assessment, synthesis: synth } } : judgment;
   const result = legacyPolicy.applyScoringPolicy(input, summary, passage);
+  if (version === POLICY_VERSION) {
+    scoreLanguage(result, 'grammar');
+    scoreLanguage(result, 'vocabulary');
+    result.recommended_swaps = [];
+  }
   const checked = result.summary_assessment;
   if (mapped) checked.synthesis = { ...assessment.synthesis };
   if (checked.synthesis?.quality === 'fragments') {
@@ -135,7 +160,7 @@ function applyScoringPolicy(judgment, summary, passage = '') {
       result.needs_semantic_review = true;
     }
   }
-  if (judgment.scoring_protocol !== POLICY_VERSION) return result;
+  if (judgment.scoring_protocol !== version) return result;
 
   const contentDeduction = result.content_score < 4;
   const { edit = null, retry } = contentDeduction ? prepareContentEdit(checked, summary, passage) : {};
@@ -153,7 +178,7 @@ function applyScoringPolicy(judgment, summary, passage = '') {
   return result;
 }
 
-function buildJudgingPrompt(summary, passage, diagnosticIdeas) {
+function buildJudgingPrompt(summary, passage, diagnosticIdeas, version = POLICY_VERSION) {
   const guide = guides[hash(passage)] || null;
   const wordsUsed = wordCount(summary);
   return `Score a Summarise Written Text response under IPT Brisbane's practice rubric.
@@ -171,9 +196,15 @@ Return effective, assembly, partial, limited or fragments. Cite a synthesis span
 
 Require only relationships needed to convey the central message. A cause, contrast or qualification is necessary when the selected conclusion depends on it. Check whether it is already stated or recoverable from the whole sentence. A conclusion can be implicit or unnecessary. Use not_applicable if there is no essential separate conclusion to assess. Optional examples and secondary concessions are safe to omit if the claim stays properly scoped. Check only examples actually selected, and trace their category to the source. If a contrast is left out but a claim is expressly limited to volatile measures, do not invent a claim about other measures. If a net effect is asserted, preserve what offsets what. A supported category-level paraphrase can replace a list. For additive passages, assess honest combinations of benefits rather than inventing causality. Read pronouns and locally stated reasons across the whole sentence. A loose connector alone is harmless if a faithful reading remains clear; an explicit false cause or reversed comparison is a meaning error. Distinguish an expanded passage's added main claim from optional examples.
 
-GRAMMAR AND VOCABULARY (separately /2, half marks allowed):
+${version === PREVIOUS_VERSION ? `GRAMMAR AND VOCABULARY (separately /2, half marks allowed):
 Give 2 for language that keeps the intended meaning clear, even with slips in articles, tense, spelling, punctuation, agreement or register. Keep harmless slips optional. Use 1.5 or 1 for a real local meaning problem, 0.5 for widespread obscurity and 0 when that trait prevents usable meaning. Quote the actual language error and describe its effect before deducting. Factual mistakes, gaps, discourse marker preferences and insufficient synthesis are Content concerns. A grammatically formed false assertion can earn Grammar 2. Do not debit language again just because a proposition is false. Read the whole sentence before deciding whether a missing auxiliary changes tense. Give Vocabulary 2 for simple, accurate words and appropriate source terms. Deduct only for word choice that changes or obscures meaning. Suggest synonyms only as optional coaching.
 
+` : `GRAMMAR AND VOCABULARY (score each 2, 1 or 0):
+Give 2 for correct grammar or appropriate word choices. Give 1 for a real grammar or word-usage error when the intended meaning is still clear. Give 0 when the structure or word choice could make the intended meaning hard to understand. Judge the whole response. Several errors can still earn 1 if the meaning is clear.
+Quote the student's exact words, give a short correction and use type grammar_error or vocabulary_error. Set meaning_impact to none if the intended meaning is clear, changed if a detail changes but the intention remains clear, or obscured if it could make the intended meaning hard to understand. For changed or obscured, explain the specific effect. In rationale, explain the error in simple English.
+For subject–verb agreement, point to the word that controls the verb. Example: Change “the results shows” to “the results show.” “Results” means more than one, so use “show.” With one result, write “the result shows.”
+Simple, accurate words and appropriate source terms earn full Vocabulary. Missing ideas, factual misunderstandings and synthesis belong under Content. Omit optional style, connector preferences and spelling-only suggestions from language annotations. Return an empty recommended_swaps array.
+`}
 FEEDBACK:
 The answer uses ${wordsUsed} words. SWT requires one complete sentence of 5–75 words. 75 is a maximum. Do not ask the student to include optional detail to fill the limit. At or near the limit, give a short replacement that keeps the meaning, or cut unnecessary detail to make room for an essential relationship. Check the whole revised sentence after applying the edit. It must fit within 75 words and use at least 5 words.
 
@@ -191,5 +222,11 @@ DATA:
 ${JSON.stringify({ passage, summary, passage_guide: guide, diagnostic_ideas: diagnosticIdeas })}`;
 }
 
-module.exports = { POLICY_VERSION, SCORING_CRITERIA, SYNTHESIS_GUIDANCE, SYNTHESIS_CONTENT_CAP, legacyPolicy,
+const previousPolicy = {
+  POLICY_VERSION: PREVIOUS_VERSION,
+  applyScoringPolicy: (judgment, summary, passage) => applyScoringPolicy(judgment, summary, passage, PREVIOUS_VERSION),
+  buildJudgingPrompt: (summary, passage, ideas) => buildJudgingPrompt(summary, passage, ideas, PREVIOUS_VERSION)
+};
+
+module.exports = { POLICY_VERSION, previousPolicy, SCORING_CRITERIA, SYNTHESIS_GUIDANCE, SYNTHESIS_CONTENT_CAP, legacyPolicy,
   validSynthesis, applyScoringPolicy, buildJudgingPrompt, itemScore90, sourceIdentity, prepareContentEdit, contentEditIdentity };

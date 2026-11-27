@@ -10,6 +10,7 @@
   // Normalise spacing without discarding the end of an explanation or repair.
   // These cards expand with their text, including saved assessment feedback.
   const compact = value => clean(value).replace(/\s+/g, ' ');
+  const deductionsOnly = data => data.language_feedback === 'deductions-only' || data.scoring_version === '20.3.18';
   function build(data) {
     const traits = data.trait_scores || {};
     const content = data.content_details || {};
@@ -33,6 +34,7 @@
     const contentFull = formValid && !contentGated && Number(traits.content) >= (traits.content_max || 4);
     const full = contentFull && !provisional && semanticFull && !synthesisNeedsWork
       && Number(traits.grammar) >= 2 && Number(traits.vocabulary) >= 2;
+    const correctionOnly = deductionsOnly(data);
     const priorities = [];
     const optional = [];
     const add = (title, detail) => priorities.push({ title, detail: compact(detail) });
@@ -64,10 +66,12 @@
             clean(assessment.relationship_explanation) || clean(content.feedback_note) || clean(content.notes) || 'Check how your supporting ideas connect to the main message. Include any context those ideas depend on.');
         }
       }
-      if (Number(traits.grammar) < 2) add('Correct the grammar affecting meaning', languageDetail(grammar, 'Review the quoted wording in your feedback. A deduction should identify how the sentence changes or obscures the intended meaning.'));
-      if (Number(traits.vocabulary) < 2) add('Use wording that preserves the meaning', languageDetail(vocabulary, 'Review the quoted word choices against the passage. Replace any wording that changes the original message.'));
+      if (Number(traits.grammar) < 2) add(correctionOnly ? 'Correct the grammar error' : 'Correct the grammar affecting meaning',
+        languageDetail(grammar, correctionOnly ? 'See the grammar corrections in your feedback.' : 'Review the quoted wording in your feedback. A deduction should identify how the sentence changes or obscures the intended meaning.'));
+      if (Number(traits.vocabulary) < 2) add(correctionOnly ? 'Correct the word choice' : 'Use wording that preserves the meaning',
+        languageDetail(vocabulary, correctionOnly ? 'See the word-choice corrections in your feedback.' : 'Review the quoted word choices against the passage. Replace any wording that changes the original message.'));
       if (full) add('Keep this approach', 'Your summary connects the essential ideas. Simple English and accurate source terms work well.');
-      for (const a of [...grammar, ...vocabulary]) {
+      for (const a of correctionOnly ? [] : [...grammar, ...vocabulary]) {
         if (!a || a.affects_score !== false || !clean(a.phrase) || !clean(a.fix)) continue;
         if (optional.some(item => item.phrase === a.phrase && item.fix === a.fix)) continue;
         const reason = clean(a.meaning_effect) || clean(a.rationale).replace(/^Optional refinement\s*[—–-]\s*no score deduction\.\s*/i, '');
@@ -118,5 +122,5 @@
         : feedback.degraded && data.mode === 'local' ? 'Local practice estimate; AI-only semantic annotations were unavailable.'
         : 'Practice estimate, not an official PTE score.' };
   }
-  return { build, presentation };
+  return { build, presentation, deductionsOnly };
 });
